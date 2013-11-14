@@ -1,0 +1,206 @@
+body {
+	background: #F0EAD6;
+	position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+	font-family: Helvetica, arial, freesans, clean, sans-serif;
+	font-size: 14px;
+	margin:0;
+	padding:0;
+}
+.table {
+	display: table;
+	width:100%;
+	height:100%;
+}
+section {
+	margin-top: 0;
+	margin-bottom: 8px;
+}
+#left, #right {
+	display: table-cell;
+	max-width: 30%;
+	height:100%;
+	padding: 4px;
+    vertical-align: top;
+}
+#left {
+	display: table-cell;
+	width: 180px;
+	height:100%;
+	padding: 4px;
+    vertical-align: top;
+}
+#right {
+	display: table-cell;
+	width: 350px;
+	height:100%;
+	padding: 4px;
+    vertical-align: top;
+}
+#rightcontainer {
+	width:100%;
+	height:100%;
+	overflow-y: auto;
+}
+#center {
+	display: table-cell;
+	background: white;
+	padding:0;
+    vertical-align: top;
+}
+#users .user {
+	cursor: pointer;
+}
+#messagescell {
+	display: table-row;
+}
+#messages {
+	margin-top:0;
+    vertical-align: top;
+	width:100%;
+	height:100%;
+    overflow-y: scroll;
+}
+.message {
+}
+.message.me {
+	background-color: #fdf6e5;
+}
+.message + .message {
+	border-top: thin dotted #eee;
+}
+.message .user {
+	width: 120px;
+	display:inline-block;
+	padding-left: 2px;
+	color: #555;
+}
+.message .content {
+	width: calc(100% - 122px);
+	display:inline-block;
+}
+.message .content img {
+	border: none;
+	max-width: 100%;
+	max-height: 150px;
+	cursor: pointer;
+}
+#inputpanel {
+	background: #F0EAD6;
+	display: table-row;	
+	width:100%;
+	height: 94px;
+	text-align: center;
+}
+#input {
+	width: calc(100% - 14px - 100px);
+	height:80px;
+	margin-top: 4px;
+	margin-left: 2px;
+	resize: none; 
+	float: left;
+}
+#send {
+	width: 100px;
+	float: right;
+	margin-top: 4px;
+	margin-right: 2px;
+}
+h1 {
+	color: #988;
+	font-size: 130%;
+	margin-top: 0;
+	margin-bottom: 2px;
+}
+pre {
+	margin-top: 2px;
+}
+.mask {
+	position: fixed;
+	z-index:10;
+	left:0;
+	top:0;
+	right:0;
+	bottom:0;
+	background: white;
+	opacity: 0.8;
+	display: none;
+}
+span.error {
+	color: red;
+}
+span.warning {
+	color: orange;
+}
+
+.dialog {
+	position:fixed;
+	right: 30%;
+	left: 30%;
+	z-index: 30;
+	top: 20%;
+	opacity:.96;
+	box-shadow: 0px 6px 10px #666;
+	border-radius: 5px;
+	padding: 0;
+	display: none;
+	background: white;
+}
+.dialog[error] {
+	background-color:#C33;
+}
+.dialog  a {
+	text-decoration: underline;
+}
+.dialog_title {
+	margin-top: 0;
+	margin-bottom: 10px;
+	padding: 4px;
+	background: #E3DAC9;
+	font-size: 105%;
+	font-weight: normal;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	text-align: center;
+}
+
+.dialog_title[error] {
+	border-color: red;
+}
+span.button  {
+	margin-top: 10px;
+	margin-bottom: 3px;
+	text-align: right;
+	cursor: pointer;
+	border: thin solid black;
+	padding: 3px;
+	border-radius: 3px;
+}
+span.button:hover {
+	background-color: #eed;
+}
+.dialog_buttons {
+	float: right;
+	padding: 11px 7px;
+}
+.dialog_content {
+	padding: 7px;
+}
+.close_dialog {
+	float: right;
+	margin-top: 10px;
+	margin-right: 10px;
+	margin-bottom: 6px;
+	cursor: pointer;
+}
+.close_dialog:hover {
+	background: #333;
+}
+
+:invalid {
+	border: 2px solid red;
+}
+

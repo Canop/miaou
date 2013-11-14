@@ -1,0 +1,70 @@
+doctype 5
+html
+	head
+		title Miaou
+		link(rel='stylesheet', href='/static/main.css')
+		script(src="/static/jquery-2.0.3.min.js")
+		script(src="/static/socket.io.min.js")
+		script(src="/static/vis.js")
+		script(src="/static/miaou.dialog.js")
+		script(src="/static/miaou.notify.js")
+		script(src="/static/miaou.main.js")
+	body
+		div.table
+			div#left
+				section#prefs
+				section
+					h1 Users
+					div#users here be dragons
+			div#center
+				div.table
+					div#messagescell
+						div#messages
+					div#inputpanel
+						textarea#input
+						button#send Send (ctrl ⏎)
+			div#right
+				div#rightcontainer
+					section#roominfo
+						h1#roomname
+						p room info here
+					section#news
+						h1 TODO
+						pre.
+							☒ basic engine & UI
+							☒ recent room history on enter
+							☒ login
+							☒ user list
+							☒ tab title updates
+							☒ ping & notifications
+							☒ image oneboxing
+							☐ project repository on github
+							☐ message edit, ↑↓
+							☐ project how-to
+							☐ change room, room URL
+							☐ prettier buttons & UI
+							☐ @ syntax autocomplete
+							☐ room info
+							☐ reply to message
+							☐ ▼▲ on long messages
+							☐ stars
+							☐ notif. options : quiet mode
+							☐ markdown, code formatting
+							☐ persistent history
+							☐ links to messages
+							☐ local image hiding
+							☐ persistent authentication
+							☐ user icons
+							☐ room admins
+							☐ private rooms
+							☐ invitations
+							☐ consistency with SO
+							☐ consistency with MH
+							☐ bot API
+							☐ .ico
+							☐ Firefox compatibility
+							☒ NSA backdoor
+							☐ user ban				
+							☐ help				
+	script.
+		miaou.init();
