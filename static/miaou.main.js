@@ -57,13 +57,16 @@ var miaou = miaou || {};
 		if (/^https?:\/\/[^\s]+\.(bmp|png|webp|gif|jpg|jpeg|svg)$/i.test(content)) {
 			content = $('<img>').attr('src',content).load(function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) });
 		}
+		var $content = $('<div>').addClass('content').append(content);
 		var $md = $('<div>').addClass('message').append(
 			$('<div>').addClass('user').text(user.name)
-		).append(
-			$('<div>').addClass('content').append(content)
-		).data('id', message.id);
+		).append($content).data('id', message.id);
 		if (user.name===me.name) $md.addClass('me');
 		$md.hide().appendTo('#messages').fadeIn('slow');
+		if ($content.height()>320) {
+			$content.addClass("closed");
+			$md.append('<div class=opener>');
+		}
 		$('#messages').scrollTop($('#messages')[0].scrollHeight);
 	}
 	
@@ -123,7 +126,6 @@ var miaou = miaou || {};
 				$('#send').on('click', sendInput);
 				console.log('Miaou!');
 				
-				$('#messages').on('click', '.message .content img', function(){ window.open(this.src) });
 				$('#users').on('click', '.user', function(){
 					var val = $input.val(), username = this.innerHTML;
 					if (pingRegex(username).test(val)) {
@@ -131,6 +133,12 @@ var miaou = miaou || {};
 					} else {
 						$input.val(val+' @'+this.innerHTML+' ');
 					}
+				});
+				$('#messages').on('click', '.message .content img', function(){ window.open(this.src) });
+				$('#messages').on('click', '.opener', function(){
+					$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
+				}).on('click', '.closer', function(){
+					$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
 				});
 			});
 		});

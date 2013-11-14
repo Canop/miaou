@@ -70,7 +70,7 @@ section {
 	background-color: #fdf6e5;
 }
 .message + .message {
-	border-top: thin dotted #eee;
+	border-top: thin dotted #ddd;
 }
 .message .user {
 	width: 120px;
@@ -204,3 +204,24 @@ span.button:hover {
 	border: 2px solid red;
 }
 
+.closed {
+	max-height: 298px;
+	overflow: hidden;
+}
+.opener,
+.closer {
+  height: 13px;
+  text-align: center;
+  cursor: pointer;
+  color: #988;
+}
+.opener:hover,
+.closer:hover {
+  color: black;
+}
+.opener::before {
+  content: '▼';
+}
+.closer::before {
+  content: '▲';
+}
