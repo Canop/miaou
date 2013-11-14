@@ -22,7 +22,6 @@ var miaou = miaou || {};
 	});
 	
 	miaou.notify = function(room, user, content){
-		console.log('notify', room, user, content);
 		if (!miaou.wantNotifs) return;
 		var n = new Notification(user.name + ' in ' + room, {body: content});
 		setTimeout(function(){ n.close() }, 15000);
