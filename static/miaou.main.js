@@ -52,10 +52,15 @@ var miaou = miaou || {};
 	}
 
 	function addMessage(message){
+		// a markdown transformer will be inserted here
 		var user = message.user, content = message.content;
-		content = content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') // a markdown transformer will be inserted here
+		content = content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') ;
 		if (/^https?:\/\/[^\s]+\.(bmp|png|webp|gif|jpg|jpeg|svg)$/i.test(content)) {
 			content = $('<img>').attr('src',content).load(function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) });
+		} else {
+			content = content.replace(/(https?|ftp):\/\/[^\s"]+/ig, function(href){ // TODO better regex
+				return '<a target=_blank href="'+href+'">'+href+'</a>';
+			});
 		}
 		var $content = $('<div>').addClass('content').append(content);
 		var $md = $('<div>').addClass('message').append(
