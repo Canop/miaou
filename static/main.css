@@ -14,6 +14,7 @@ body {
 	display: table;
 	width:100%;
 	height:100%;
+	table-layout: fixed;
 }
 section {
 	margin-top: 0;
@@ -21,21 +22,20 @@ section {
 }
 #left, #right {
 	display: table-cell;
-	max-width: 30%;
 	height:100%;
 	padding: 4px;
     vertical-align: top;
 }
 #left {
 	display: table-cell;
-	width: 180px;
+	width: 150px;
 	height:100%;
 	padding: 4px;
     vertical-align: top;
 }
 #right {
 	display: table-cell;
-	width: 350px;
+	width: 260px;
 	height:100%;
 	padding: 4px;
     vertical-align: top;
@@ -44,6 +44,7 @@ section {
 	width:100%;
 	height:100%;
 	overflow-y: auto;
+    overflow-x: hidden;
 }
 #center {
 	display: table-cell;
@@ -81,6 +82,7 @@ section {
 .message .content {
 	width: calc(100% - 122px);
 	display:inline-block;
+	word-wrap: break-word;
 }
 .message .content img {
 	border: none;
