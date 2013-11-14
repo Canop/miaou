@@ -4,7 +4,7 @@ var miaou = miaou || {};
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		messages = [],
 		users = [],
-		room = localStorage['lastRoom'] || 'beta',
+		room = localStorage['lastRoom'] || 'miaou beta',
 		me = {name:'anonymous'};
 		
 	function loadUser(cb){
