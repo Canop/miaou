@@ -54,6 +54,7 @@ section {
 }
 #users .user {
 	cursor: pointer;
+	padding: 2px;
 }
 #messagescell {
 	display: table-row;
@@ -66,6 +67,7 @@ section {
     overflow-y: scroll;
 }
 .message {
+    padding: 3px;
 }
 .message.me {
 	background-color: #fdf6e5;
@@ -87,7 +89,7 @@ section {
 .message .content img {
 	border: none;
 	max-width: 100%;
-	max-height: 150px;
+	max-height: 130px;
 	cursor: pointer;
 }
 #inputpanel {
@@ -207,7 +209,7 @@ span.button:hover {
 }
 
 .closed {
-	max-height: 298px;
+	max-height: 138px;
 	overflow: hidden;
 }
 .opener,
