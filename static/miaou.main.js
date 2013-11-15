@@ -27,17 +27,20 @@ var miaou = miaou || {};
 				)
 			);
 			// other fields (SO id, MH id, etc.) will come here
-			console.log('bbb');
 			miaou.dialog({
 				title: "Please log in",
 				content: $c,
 				buttons: {
 					OK: function(){
-						if (!$('#username_input')[0].validity.valid){ // not compatible with IE, that's fine 
+						var input = document.getElementById('username_input');
+						if (!input.validity.valid){ // not compatible with IE, that's fine 
 							alert('Please type a 3 to 20 characters long name');
 							return false;
+						} else if (/wisely/i.test(input.value)) {
+							alert('More wisely, less "wisely", please.');
+							return false;
 						}
-						localStorage['username'] = username = $('#username_input').val();
+						localStorage['username'] = username = input.value;
 						me = {name: username}
 						cb();
 					}
@@ -146,10 +149,13 @@ var miaou = miaou || {};
 				$('#users').on('click', '.user', function(){
 					var val = $input.val(), username = this.innerHTML;
 					if (pingRegex(username).test(val)) {
-						$input.val(val.replace(pingRegex(username), '')); // FIXME : lets too many spaces
+						$input.val(val.replace(pingRegex(username), '')); // fixme too many spaces left
 					} else {
-						$input.val(val+' @'+this.innerHTML+' ');
+						// fixme insert at insertion point AND move the selection point after the inserted text
+						$input.focus();
+						$input[0].value += ' @'+this.innerHTML+' ';
 					}
+					$input.focus();
 				});
 				$('#messages').on('click', '.message .content img', function(){ window.open(this.src) });
 				$('#messages').on('click', '.opener', function(){
