@@ -97,6 +97,9 @@ code {
 	color: #333;
 	white-space: pre;
 }
+.indent {
+	margin-left: 15px;
+}
 
 #inputpanel {
 	background: #F0EAD6;

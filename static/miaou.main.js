@@ -53,21 +53,26 @@ var miaou = miaou || {};
 
 	function addMessage(message){
 		var user = message.user, content = message.content;
-		// todo quote, block-code
+		// todo quote
+		// fixme ensure tags doesn't interlace
 		content = content.replace(/</g,'&lt;').replace(/>/g,'&gt;')
 			.replace(/(^|\W)`([^\*]+)`(\W|$)/g, "$1<code>$2</code>$3")
-			.replace(/(^|\W)\*\*([^\*]+)\*\*(\W|$)/g, "$1<b>$2</b>$3")
+			.replace(/(^|\W)\*\*([^\*<>]+)\*\*(\W|$)/g, "$1<b>$2</b>$3")
 			.replace(/(^|\W)\*([^\*]+)\*(\W|$)/g, "$1<i>$2</i>$3")
-			.replace(/(^|\n)(?:    |\t)([^\n]+)(?=\n|$)/g, "$1<code>$2</code>")
+			.replace(/(^|\n)(?:    |\t)([^\n]+)(?=\n|$)/g, "$1<code class=indent>$2</code>")
 			.trim()
 			.replace(/\n/g,'<br>');
-		console.log(message.content, content);
 		if (/^https?:\/\/[^\s]+\.(bmp|png|webp|gif|jpg|jpeg|svg)$/i.test(content)) {
 			content = $('<img>').attr('src',content).load(function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) });
 		} else {
-			content = content.replace(/(https?|ftp):\/\/[^\s"]+/ig, function(href){ // TODO better regex
-				return '<a target=_blank href="'+href+'">'+href+'</a>';
-			});
+			content = content.replace(/(^|\s)\[([^\]]+)\]\(([^\)\s"<>]+)\)(\s|$)/g, '$1<a target=_blank href="$3">$2</code>$4')
+			// todo find something more elegant than the following trick...
+			// the following applies replacement to what isn't in a html tag
+			content = ('>'+content+'<').replace(/>([^<]+)</g, function(_,s){
+				return '>'+s.replace(/(https?|ftp):\/\/[^\s"\(\)\[\]]+/ig, function(href){
+					return '<a target=_blank href="'+href+'">'+href+'</a>';
+				})+'<'
+			}).slice(1,-1);
 		}
 		var $content = $('<div>').addClass('content').append(content);
 		var $md = $('<div>').addClass('message').append(
