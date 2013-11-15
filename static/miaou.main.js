@@ -52,9 +52,11 @@ var miaou = miaou || {};
 	}
 
 	function addMessage(message){
-		// a markdown transformer will be inserted here
 		var user = message.user, content = message.content;
-		content = content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') ;
+		content = content.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+			.replace(/(^|\W)\*\*([^\*]+)\*\*(\W|$)/g, "$1<b>$2</b>$3")
+			.replace(/(^|\W)\*([^\*]+)\*(\W|$)/g, "$1<i>$2</i>$3")
+			.replace(/\n/g,'<br>');
 		if (/^https?:\/\/[^\s]+\.(bmp|png|webp|gif|jpg|jpeg|svg)$/i.test(content)) {
 			content = $('<img>').attr('src',content).load(function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) });
 		} else {
@@ -68,7 +70,7 @@ var miaou = miaou || {};
 		).append($content).data('id', message.id);
 		if (user.name===me.name) $md.addClass('me');
 		$md.hide().appendTo('#messages').fadeIn('slow');
-		if ($content.height()>320) {
+		if ($content.height()>150) {
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
 		}

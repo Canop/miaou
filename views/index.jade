@@ -2,13 +2,13 @@ doctype 5
 html
 	head
 		title Miaou
-		link(rel='stylesheet', href='/static/main.css')
-		script(src="/static/jquery-2.0.3.min.js")
-		script(src="/static/socket.io.min.js")
-		script(src="/static/vis.js")
-		script(src="/static/miaou.dialog.js")
-		script(src="/static/miaou.notify.js")
-		script(src="/static/miaou.main.js")
+		link(rel='stylesheet', href='static/main.css')
+		script(src="static/jquery-2.0.3.min.js")
+		script(src="static/socket.io.min.js")
+		script(src="static/vis.js")
+		script(src="static/miaou.dialog.js")
+		script(src="static/miaou.notify.js")
+		script(src="static/miaou.main.js")
 	body
 		div.table
 			div#left
@@ -40,6 +40,9 @@ html
 							☒ image oneboxing
 							☒ project repository on github
 							☒ clickable links
+							☐ code formatting (inline and bloc, ^K)
+							☐ markdown style links
+							☐ remove disconnected users from list
 							☐ message edit, ↑↓
 							☐ project how-to
 							☐ change room, room URL
@@ -50,8 +53,6 @@ html
 							☒ ▼▲ on long messages
 							☐ message info on hover (date)
 							☐ stars
-							☐ notif. options : quiet mode
-							☐ markdown, code formatting
 							☐ persistent history
 							☐ links to messages
 							☐ local image hiding
@@ -66,7 +67,8 @@ html
 							☐ .ico
 							☐ Firefox compatibility
 							☒ NSA backdoor
-							☐ user ban				
+							☐ user ban		
+							☐ rate limit		
 							☐ help				
 	script.
 		miaou.init();
