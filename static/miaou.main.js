@@ -53,10 +53,15 @@ var miaou = miaou || {};
 
 	function addMessage(message){
 		var user = message.user, content = message.content;
+		// todo quote, block-code
 		content = content.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+			.replace(/(^|\W)`([^\*]+)`(\W|$)/g, "$1<code>$2</code>$3")
 			.replace(/(^|\W)\*\*([^\*]+)\*\*(\W|$)/g, "$1<b>$2</b>$3")
 			.replace(/(^|\W)\*([^\*]+)\*(\W|$)/g, "$1<i>$2</i>$3")
+			.replace(/(^|\n)(?:    |\t)([^\n]+)(?=\n|$)/g, "$1<code>$2</code>")
+			.trim()
 			.replace(/\n/g,'<br>');
+		console.log(message.content, content);
 		if (/^https?:\/\/[^\s]+\.(bmp|png|webp|gif|jpg|jpeg|svg)$/i.test(content)) {
 			content = $('<img>').attr('src',content).load(function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) });
 		} else {
@@ -121,8 +126,8 @@ var miaou = miaou || {};
 				
 				var $input = $('#input');
 				function sendInput(){
-					var txt = $input.val().trim();
-					if (txt.length){
+					var txt = $input.val();
+					if (txt.trim().length){
 						socket.emit('message', txt);
 						$input.val('');
 					}

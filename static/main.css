@@ -92,6 +92,12 @@ section {
 	max-height: 130px;
 	cursor: pointer;
 }
+code {
+	font-family: monospace;
+	color: #333;
+	white-space: pre;
+}
+
 #inputpanel {
 	background: #F0EAD6;
 	display: table-row;	
@@ -229,3 +235,4 @@ span.button:hover {
 .closer::before {
   content: '▲';
 }
+
