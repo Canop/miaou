@@ -100,6 +100,12 @@ code {
 .indent {
 	margin-left: 15px;
 }
+.citation {
+	border-left: medium solid #bbb;
+	margin-left: 15px;
+	padding-left: 3px;
+	display: inline-block;
+}
 
 #inputpanel {
 	background: #F0EAD6;

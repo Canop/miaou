@@ -58,13 +58,15 @@ var miaou = miaou || {};
 		var user = message.user, content = message.content;
 		// todo quote
 		// fixme ensure tags doesn't interlace
-		content = content.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+		content = content
+			.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+			.replace(/(^|\n)(?:&gt; )([^\n]+)(?=\n|$)/g, "\n<span class=citation>$2</span>")
 			.replace(/(^|\W)`([^\*]+)`(\W|$)/g, "$1<code>$2</code>$3")
 			.replace(/(^|\W)\*\*([^\*<>]+)\*\*(\W|$)/g, "$1<b>$2</b>$3")
 			.replace(/(^|\W)\*([^\*]+)\*(\W|$)/g, "$1<i>$2</i>$3")
 			.replace(/(^|\n)(?:    |\t)([^\n]+)(?=\n|$)/g, "$1<code class=indent>$2</code>")
 			.trim()
-			.replace(/\n/g,'<br>');
+			.replace(/\n+/g,'<br>');
 		if (/^https?:\/\/[^\s]+\.(bmp|png|webp|gif|jpg|jpeg|svg)$/i.test(content)) {
 			content = $('<img>').attr('src',content).load(function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) });
 		} else {
