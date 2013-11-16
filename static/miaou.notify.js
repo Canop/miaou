@@ -13,7 +13,6 @@ var miaou = miaou || {};
 						if (!('permission' in Notification)) { // from the MDN - not sure if useful
 							Notification.permission = permission; 
 						}
-						console.log('User set permission to ', permission);
 					});
 				}
 			})

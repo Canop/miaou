@@ -60,15 +60,15 @@ var miaou = miaou || {};
 		// fixme ensure tags doesn't interlace
 		content = content
 			.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-			.replace(/(^|\n)(?:&gt; )([^\n]+)(?=\n|$)/g, "\n<span class=citation>$2</span>")
-			.replace(/(^|\W)`([^\*]+)`(\W|$)/g, "$1<code>$2</code>$3")
-			.replace(/(^|\W)\*\*([^\*<>]+)\*\*(\W|$)/g, "$1<b>$2</b>$3")
-			.replace(/(^|\W)\*([^\*]+)\*(\W|$)/g, "$1<i>$2</i>$3")
+			.replace(/(^|\n)(?:&gt;\s*)([^\n]+)(?=\n|$)/g, "\n<span class=citation>$2</span>")
+			.replace(/(^|\W)`([^`]+)`(?=\W|$)/g, "$1<code>$2</code>")
+			.replace(/(^|\W)\*\*([^\*<>]+)\*\*(?=\W|$)/g, "$1<b>$2</b>")
+			.replace(/(^|\W)\*([^\*<>]+)\*(?=\W|$)/g, "$1<i>$2</i>")
 			.replace(/(^|\n)(?:    |\t)([^\n]+)(?=\n|$)/g, "$1<code class=indent>$2</code>")
 			.trim()
-			.replace(/(^|\n)(https?:\/\/[^\s<>]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\n|$)/g, "$1<img src=$2.$3>$4")
+			.replace(/(^|\n)(https?:\/\/[^\s<>]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(?=\n|$)/g, "$1<img src=$2.$3>")
 			.replace(/\n+/g,'<br>')
-			.replace(/(^|\s)\[([^\]]+)\]\(([^\)\s"<>]+)\)(\s|$)/g, '$1<a target=_blank href="$3">$2</code>$4');
+			.replace(/(^|\s)\[([^\]]+)\]\(([^\)\s"<>]+)\)(?=\s|$)/g, '$1<a target=_blank href="$3">$2</code>');
 		// todo find something more elegant than the following trick...
 		// the following applies replacement to what isn't in a html tag
 		content = ('>'+content+'<').replace(/>([^<]+)</g, function(_,s){
@@ -102,9 +102,8 @@ var miaou = miaou || {};
 		$('#users').html(users.map(function(u){ return '<span class=user>'+u.name+'</span>' }).reverse().join('<br>'));
 	}
 	
-		
 	$(function(){
-	var socket = io.connect(location.origin);
+		var socket = io.connect(location.origin);
 		loadUser(function(){
 			socket.emit('enter', {user:me, room:room});
 			
@@ -127,42 +126,20 @@ var miaou = miaou || {};
 					}
 					document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room;
 				}
-			});
-			socket.on('enter', function(user){
+			})
+			.on('enter', function(user){
 				addToUserList(user);
 			});
 			
-			var $input = $('#input');
-			function sendInput(){
-				var txt = $input.val();
-				if (txt.trim().length){
-					socket.emit('message', txt);
-					$input.val('');
-				}
-			}
-			$input.on('keyup', function(e){
-				if (e.which==13 && e.ctrlKey) sendInput();
-			}).focus();
-			$('#send').on('click', sendInput);
-			console.log('Miaou!');
-			
-			$('#users').on('click', '.user', function(){
-				var val = $input.val(), username = this.innerHTML;
-				if (pingRegex(username).test(val)) {
-					$input.val(val.replace(pingRegex(username), '')); // fixme too many spaces left
-				} else {
-					// fixme insert at insertion point AND move the selection point after the inserted text
-					$input.focus();
-					$input[0].value += ' @'+this.innerHTML+' ';
-				}
-				$input.focus();
-			});
-			$('#messages').on('click', '.message .content img', function(){ window.open(this.src) });
-			$('#messages').on('click', '.opener', function(){
+			$('#messages').on('click', '.message .content img', function(){ window.open(this.src) })
+			.on('click', '.opener', function(){
 				$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
 			}).on('click', '.closer', function(){
 				$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
 			});
+
+			$('#input').editFor(socket);
+			console.log('Miaou!');
 		});
 	});
 })();

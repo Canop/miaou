@@ -8,11 +8,19 @@ html
 		script(src="static/vis.js")
 		script(src="static/miaou.dialog.js")
 		script(src="static/miaou.notify.js")
+		script(src="static/miaou.editor.js")
 		script(src="static/miaou.main.js")
 	body
 		div.table
 			div#left
 				section#prefs
+				section
+					h1 I need help on
+					pre.
+						☐ websocket proxying
+						☐ choose: mysql or pg
+						☐ webrtc
+						☐ keeping it alive
 				section
 					h1 Users
 					div#users here be dragons
@@ -22,7 +30,7 @@ html
 						div#messages
 					div#inputpanel
 						textarea#input
-						button#send Send (ctrl ⏎)
+						button#send Send
 			div#right
 				div#rightcontainer
 					section#roominfo
@@ -43,20 +51,21 @@ html
 							☒ clickable links
 							☒ code formatting, inline and bloc
 							☒ > for citations
-							☐ ^K, ^I, ^B, ^Q
+							☒ ^K, ^I, ^B, ^Q, ^L
 							☒ markdown style links
-							☐ remove disconnected users from list
+							☐ help				
 							☐ message info on hover (date)
+							☐ persistent history
+							☐ remove disconnected users from list
 							☐ message edit, ↑↓
-							☐ project how-to
 							☐ change room, room URL
 							☐ prettier buttons & UI
 							☐ @ syntax autocomplete
 							☐ room info
+							☐ project how-to
+							☐ links to messages
 							☐ reply to message
 							☐ stars
-							☐ persistent history
-							☐ links to messages
 							☐ local image hiding
 							☐ persistent authentication
 							☐ user icons
@@ -71,5 +80,4 @@ html
 							☒ NSA backdoor
 							☐ user ban		
 							☐ rate limit		
-							☐ help				
 							☐ server-wide pings				

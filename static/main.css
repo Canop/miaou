@@ -115,7 +115,7 @@ code {
 	text-align: center;
 }
 #input {
-	width: calc(100% - 14px - 100px);
+	width: calc(100% - 14px - 70px);
 	height:80px;
 	margin-top: 4px;
 	margin-left: 2px;
@@ -123,7 +123,7 @@ code {
 	float: left;
 }
 #send {
-	width: 100px;
+	width: 70px;
 	float: right;
 	margin-top: 4px;
 	margin-right: 2px;
@@ -135,6 +135,8 @@ h1 {
 	margin-bottom: 2px;
 }
 pre {
+	font-family: Helvetica, arial, freesans, clean, sans-serif;
+	font-size: 14px;
 	margin-top: 2px;
 }
 .mask {
