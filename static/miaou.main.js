@@ -66,19 +66,16 @@ var miaou = miaou || {};
 			.replace(/(^|\W)\*([^\*]+)\*(\W|$)/g, "$1<i>$2</i>$3")
 			.replace(/(^|\n)(?:    |\t)([^\n]+)(?=\n|$)/g, "$1<code class=indent>$2</code>")
 			.trim()
-			.replace(/\n+/g,'<br>');
-		if (/^https?:\/\/[^\s]+\.(bmp|png|webp|gif|jpg|jpeg|svg)$/i.test(content)) {
-			content = $('<img>').attr('src',content).load(function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) });
-		} else {
-			content = content.replace(/(^|\s)\[([^\]]+)\]\(([^\)\s"<>]+)\)(\s|$)/g, '$1<a target=_blank href="$3">$2</code>$4')
-			// todo find something more elegant than the following trick...
-			// the following applies replacement to what isn't in a html tag
-			content = ('>'+content+'<').replace(/>([^<]+)</g, function(_,s){
-				return '>'+s.replace(/(https?|ftp):\/\/[^\s"\(\)\[\]]+/ig, function(href){
-					return '<a target=_blank href="'+href+'">'+href+'</a>';
-				})+'<'
-			}).slice(1,-1);
-		}
+			.replace(/(^|\n)(https?:\/\/[^\s<>]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\n|$)/g, "$1<img src=$2.$3>$4")
+			.replace(/\n+/g,'<br>')
+			.replace(/(^|\s)\[([^\]]+)\]\(([^\)\s"<>]+)\)(\s|$)/g, '$1<a target=_blank href="$3">$2</code>$4');
+		// todo find something more elegant than the following trick...
+		// the following applies replacement to what isn't in a html tag
+		content = ('>'+content+'<').replace(/>([^<]+)</g, function(_,s){
+			return '>'+s.replace(/(https?|ftp):\/\/[^\s"\(\)\[\]]+/ig, function(href){
+				return '<a target=_blank href="'+href+'">'+href+'</a>';
+			})+'<'
+		}).slice(1,-1);
 		var $content = $('<div>').addClass('content').append(content);
 		var $md = $('<div>').addClass('message').append(
 			$('<div>').addClass('user').text(user.name)
@@ -89,7 +86,9 @@ var miaou = miaou || {};
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
 		}
-		$('#messages').scrollTop($('#messages')[0].scrollHeight);
+		var scrollToBottom = function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) };
+		$content.find('img').load(scrollToBottom);
+		scrollToBottom();
 	}
 	
 	function addToUserList(user) {
@@ -103,69 +102,67 @@ var miaou = miaou || {};
 		$('#users').html(users.map(function(u){ return '<span class=user>'+u.name+'</span>' }).reverse().join('<br>'));
 	}
 	
-	miaou.init = function(){
-		var socket = io.connect(location.origin);
 		
-		$(function(){
-			loadUser(function(){
-				socket.emit('enter', {user:me, room:room});
-				
-				$('#roomname').text('Room : ' + room);
-				document.title = room;
-				vis(function(){
-					if (vis()) {
-						nbUnseenMessages = 0; nbUnseenPings = 0;
-						document.title = room;						
-					}
-				});
-				
-				socket.on('message', function(message){
-					addMessage(message);
-					addToUserList(message.user);
-					if (!vis()) {
-						if (pingRegex(me.name).test(message.content)) {
-							miaou.notify(room, message.user, message.content);
-							nbUnseenPings++;
-						}
-						document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room;
-					}
-				});
-				socket.on('enter', function(user){
-					addToUserList(user);
-				});
-				
-				var $input = $('#input');
-				function sendInput(){
-					var txt = $input.val();
-					if (txt.trim().length){
-						socket.emit('message', txt);
-						$input.val('');
-					}
+	$(function(){
+	var socket = io.connect(location.origin);
+		loadUser(function(){
+			socket.emit('enter', {user:me, room:room});
+			
+			$('#roomname').text('Room : ' + room);
+			document.title = room;
+			vis(function(){
+				if (vis()) {
+					nbUnseenMessages = 0; nbUnseenPings = 0;
+					document.title = room;						
 				}
-				$input.on('keyup', function(e){
-					if (e.which==13 && e.ctrlKey) sendInput();
-				}).focus();
-				$('#send').on('click', sendInput);
-				console.log('Miaou!');
-				
-				$('#users').on('click', '.user', function(){
-					var val = $input.val(), username = this.innerHTML;
-					if (pingRegex(username).test(val)) {
-						$input.val(val.replace(pingRegex(username), '')); // fixme too many spaces left
-					} else {
-						// fixme insert at insertion point AND move the selection point after the inserted text
-						$input.focus();
-						$input[0].value += ' @'+this.innerHTML+' ';
+			});
+			
+			socket.on('message', function(message){
+				addMessage(message);
+				addToUserList(message.user);
+				if (!vis()) {
+					if (pingRegex(me.name).test(message.content)) {
+						miaou.notify(room, message.user, message.content);
+						nbUnseenPings++;
 					}
+					document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room;
+				}
+			});
+			socket.on('enter', function(user){
+				addToUserList(user);
+			});
+			
+			var $input = $('#input');
+			function sendInput(){
+				var txt = $input.val();
+				if (txt.trim().length){
+					socket.emit('message', txt);
+					$input.val('');
+				}
+			}
+			$input.on('keyup', function(e){
+				if (e.which==13 && e.ctrlKey) sendInput();
+			}).focus();
+			$('#send').on('click', sendInput);
+			console.log('Miaou!');
+			
+			$('#users').on('click', '.user', function(){
+				var val = $input.val(), username = this.innerHTML;
+				if (pingRegex(username).test(val)) {
+					$input.val(val.replace(pingRegex(username), '')); // fixme too many spaces left
+				} else {
+					// fixme insert at insertion point AND move the selection point after the inserted text
 					$input.focus();
-				});
-				$('#messages').on('click', '.message .content img', function(){ window.open(this.src) });
-				$('#messages').on('click', '.opener', function(){
-					$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
-				}).on('click', '.closer', function(){
-					$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
-				});
+					$input[0].value += ' @'+this.innerHTML+' ';
+				}
+				$input.focus();
+			});
+			$('#messages').on('click', '.message .content img', function(){ window.open(this.src) });
+			$('#messages').on('click', '.opener', function(){
+				$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
+			}).on('click', '.closer', function(){
+				$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
 			});
 		});
-	}
+	});
 })();

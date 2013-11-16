@@ -1,3 +1,4 @@
+// manages desktop notifications
 var miaou = miaou || {};
 (function(){
 	miaou.wantNotifs = localStorage['wantNotifs']==="true" || false; // TODO set on a per room basis
