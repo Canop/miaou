@@ -99,7 +99,7 @@ var miaou = miaou || {};
 			}
 		}
 		users.push(user);
-		$('#users').html(users.map(function(u){ return '<span class=user>'+u.name+'</span>' }).reverse().join('<br>'));
+		$('#users').html(users.map(function(u){ return '<span class=user>'+u.name+'</span>' }).reverse().join(''));
 	}
 	
 	$(function(){

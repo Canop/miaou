@@ -1,0 +1,8 @@
+{
+	"port": 8204,
+	"database": {
+		"name": "miaou",
+		"user": "miaou",
+		"password": "miaoupwd"
+	}
+}

@@ -17,27 +17,27 @@ body {
 	table-layout: fixed;
 }
 section {
-	margin-top: 0;
-	margin-bottom: 8px;
+	margin: 0 0 8px 0;
 }
 #left, #right {
 	display: table-cell;
 	height:100%;
-	padding: 4px;
+	padding: 0;
     vertical-align: top;
 }
 #left {
 	display: table-cell;
 	width: 150px;
 	height:100%;
-	padding: 4px;
     vertical-align: top;
+}
+#prefs{
+	padding: 4px;
 }
 #right {
 	display: table-cell;
 	width: 260px;
 	height:100%;
-	padding: 4px;
     vertical-align: top;
 }
 #rightcontainer {
@@ -54,7 +54,11 @@ section {
 }
 #users .user {
 	cursor: pointer;
-	padding: 2px;
+	padding: 1px 5px;
+	display: block;
+}
+#users .user:hover {
+	background: #FFFAE6;
 }
 #messagescell {
 	display: table-row;
@@ -133,11 +137,17 @@ h1 {
 	font-size: 130%;
 	margin-top: 0;
 	margin-bottom: 2px;
+	padding-left: 4px;
+}
+p {
+	padding: 4px;
+	margin: 4px;
 }
 pre {
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
 	font-size: 14px;
 	margin-top: 2px;
+	padding-left: 2px;
 }
 .mask {
 	position: fixed;
