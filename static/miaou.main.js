@@ -2,9 +2,9 @@ var miaou = miaou || {};
 (function(){
 	var NB_MESSAGES = 100,
 		nbUnseenMessages = 0, nbUnseenPings = 0,
-		messages = [],
 		users = [],
-		room = localStorage['lastRoom'] || 'miaou beta',
+		oldestMessageTime,
+		room = 'miaou',
 		me = {name:'anonymous'};
 		
 	function loadUser(cb){
@@ -54,10 +54,17 @@ var miaou = miaou || {};
 		return new RegExp('@'+name+'(\\b|$)')
 	}
 
+	function scrollToBottom(){
+		$('#messages').scrollTop($('#messages')[0].scrollHeight)
+	}
+
 	function addMessage(message){
-		var user = message.user, content = message.content;
-		// todo quote
-		// fixme ensure tags doesn't interlace
+		var content = message.content, isOld=false;
+		//~ console.log(message);
+		if (oldestMessageTime===undefined || message.created<oldestMessageTime) {
+			isOld = true;
+			oldestMessageTime = message.created;
+		}
 		content = content
 			.replace(/</g,'&lt;').replace(/>/g,'&gt;')
 			.replace(/(^|\n)(?:&gt;\s*)([^\n]+)(?=\n|$)/g, "\n<span class=citation>$2</span>")
@@ -66,10 +73,10 @@ var miaou = miaou || {};
 			.replace(/(^|\W)\*([^\*<>]+)\*(?=\W|$)/g, "$1<i>$2</i>")
 			.replace(/(^|\n)(?:    |\t)([^\n]+)(?=\n|$)/g, "$1<code class=indent>$2</code>")
 			.trim()
-			.replace(/(^|\n)(https?:\/\/[^\s<>]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(?=\n|$)/g, "$1<img src=$2.$3>")
+			.replace(/(^|\n)(https?:\/\/[^\s<>]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(?=\n|$)/g, "$1<img src=$2.$3>") // exemple : http://mustachify.me/?src=http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg
+			.replace(/(^|\n)(https?:\/\/[^\s<>?]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?]*)?(?=\n|$)/g, "$1<img src=$2.$3$4>") // exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&modified_at=1384796271&ratio_x=03&ratio_y=02&width=900
 			.replace(/\n+/g,'<br>')
-			.replace(/(^|\s)\[([^\]]+)\]\(([^\)\s"<>]+)\)(?=\s|$)/g, '$1<a target=_blank href="$3">$2</code>');
-		// todo find something more elegant than the following trick...
+			.replace(/(^|\s)\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)(?=\s|$)/g, '$1<a target=_blank href="$3">$2</code>'); // exemple : [dystroy](http://dystroy.org)
 		// the following applies replacement to what isn't in a html tag
 		content = ('>'+content+'<').replace(/>([^<]+)</g, function(_,s){
 			return '>'+s.replace(/(https?|ftp):\/\/[^\s"\(\)\[\]]+/ig, function(href){
@@ -78,16 +85,23 @@ var miaou = miaou || {};
 		}).slice(1,-1);
 		var $content = $('<div>').addClass('content').append(content);
 		var $md = $('<div>').addClass('message').append(
-			$('<div>').addClass('user').text(user.name)
+			$('<div>').addClass('user').text(message.authorname)
 		).append($content).data('id', message.id);
-		if (user.name===me.name) $md.addClass('me');
-		$md.hide().appendTo('#messages').fadeIn('slow');
+		if (message.authorname===me.name) $md.addClass('me');
+		$md.hide()[isOld?'prependTo':'appendTo']('#messages').fadeIn('slow');
 		if ($content.height()>150) {
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
 		}
-		var scrollToBottom = function(){ $('#messages').scrollTop($('#messages')[0].scrollHeight) };
 		$content.find('img').load(scrollToBottom);
+		scrollToBottom();
+	}
+	
+	function showError(error){
+		console.log('ERROR', error);
+		var $md = $('<div>').addClass('message error').append(
+			$('<div>').addClass('user error').text("Miaou Server")
+		).append(error).appendTo('#messages');
 		scrollToBottom();
 	}
 	
@@ -106,8 +120,7 @@ var miaou = miaou || {};
 		var socket = io.connect(location.origin);
 		loadUser(function(){
 			socket.emit('enter', {user:me, room:room});
-			
-			$('#roomname').text('Room : ' + room);
+
 			document.title = room;
 			vis(function(){
 				if (vis()) {
@@ -118,18 +131,18 @@ var miaou = miaou || {};
 			
 			socket.on('message', function(message){
 				addMessage(message);
-				addToUserList(message.user);
+				addToUserList({id: message.author, name: message.authorname});
 				if (!vis()) {
 					if (pingRegex(me.name).test(message.content)) {
-						miaou.notify(room, message.user, message.content);
+						miaou.notify(room, message.authorname, message.content);
 						nbUnseenPings++;
 					}
 					document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room;
 				}
-			})
-			.on('enter', function(user){
-				addToUserList(user);
-			});
+			}).on('room', function(room){
+				$('#roomname').text('Room : ' + room.name);
+				$('#roomdescription').text(room.description);
+			}).on('enter', addToUserList).on('error', showError);
 			
 			$('#messages').on('click', '.message .content img', function(){ window.open(this.src) })
 			.on('click', '.opener', function(){

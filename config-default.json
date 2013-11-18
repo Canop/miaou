@@ -1,8 +1,11 @@
+
+	copy this file under the name "config.json", change it according to your need and remove this help
+
 {
 	"port": 8204,
+	"maxMessageContentSize": 2000,
+	"minDelayBetweenMessages": 5000,
 	"database": {
-		"name": "miaou",
-		"user": "miaou",
-		"password": "miaoupwd"
+		"url": "postgres://database_user:database_pwd@localhost/miaou"
 	}
 }

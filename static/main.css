@@ -160,7 +160,7 @@ pre {
 	opacity: 0.8;
 	display: none;
 }
-span.error {
+.error, .user.error {
 	color: red;
 }
 span.warning {

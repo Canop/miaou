@@ -21,9 +21,9 @@ var miaou = miaou || {};
 		).appendTo('#prefs');
 	});
 	
-	miaou.notify = function(room, user, content){
+	miaou.notify = function(room, authorname, content){
 		if (!miaou.wantNotifs) return;
-		var n = new Notification(user.name + ' in ' + room, {body: content});
+		var n = new Notification(authorname + ' in ' + room, {body: content});
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
 	}
