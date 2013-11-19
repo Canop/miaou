@@ -10,8 +10,9 @@ html
 		div#content
 			h1 Miaou Help
 			h2 About
-			div.
-				stuff to be written
+			div
+				p Miaou is an <a target=_blank href=https://github.com/Canop/miaou>open-source</a> multi-room persisted chat server with more emphasy on efficiency and usability than on flashy features and smileys.
+				p For now it's in an early stage of the development. It's very usable but there's no privacy nor authentication and it only works on Chrom(e|ium).
 			h2 Writing Messages
 			div
 				p.
@@ -19,25 +20,30 @@ html
 				p.
 					When you want to start a new line without immediately sending your message, hit <kbd>ctrl</kbd><kbd>⏎</kbd> or <kbd>alt</kbd><kbd>⏎</kbd>.
 				p.
-					Miaou uses a limited set of Markdown features in order to allow a better formatting without being too flashy or distracting. The following sections detail that syntax and the related shortcuts.
+					Miaou uses a limited set of Markdown features in order to allow a better formatting without being too flashy or distracting. The following sections mostly detail that syntax and the related shortcuts.
 				h3 Italic and Bold
 				div
-					h4 Short Answer
-					p <kbd>ctrl</kbd><kbd>I</kbd> and <kbd>ctrl</kbd><kbd>B</kbd>
-					h4 Long Answer
-					p.
-						stuff to be written
-				h3 Citation
+					p As in makdown you can set some text in italic or in bold by writing it between stars or double stars.
+					pre *This sentence is in italic.* Not this one. **This one is in bold.**
+					p would appear as
+					div.message-content <i>This sentence is in italic.</i> Not this one. <b>This one is in bold.</b>
+					p But you don't <i>have</i> to write the stars yourself, you can select some text and hit <kbd>ctrl</kbd><kbd>I</kbd> or <kbd>ctrl</kbd><kbd>B</kbd>.
+				h3 Citations
 				div
-					h4 Short Answer
-					p <kbd>ctrl</kbd><kbd>Q</kbd>
-					h4 Long Answer
-					p.
-						stuff to be written
-				h3 Code
+					p A citation appears like this :
+					div.message-content
+						span.citation this is a citation
+					p You can write the markdown yourself :
+					pre > this is a citation
+					p Or you can select some text and hit <kbd>ctrl</kbd><kbd>Q</kbd>.
+					p If you want to set just one line in citation, you can put your cursor in the line before hitting <kbd>ctrl</kbd><kbd>Q</kbd> without selecting the whole line.
+				h3 Links
 				p.
 					stuff to be written
 				h3 Images
+				p.
+					stuff to be written
+				h3 Code
 				p.
 					stuff to be written
 				h3 All Shortcuts
@@ -50,7 +56,7 @@ html
 			p.
 				stuff to be written
 				
-		script
+		script.
 			$('h2+div, h2+p, h3+div, h3+p').hide();
 			$('h2, h3').click(function(){
 				$(this).toggleClass('open').next('div, p').toggle();
