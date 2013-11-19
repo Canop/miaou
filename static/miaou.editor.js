@@ -51,7 +51,7 @@ $.fn.editFor = function(socket){
 	}
 	
 	$input.on('keydown', function(e){
-		if (e.ctrlKey){
+		if (e.ctrlKey) {
 			var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;
 			switch(e.which){
 				case 75: // K : toggle code
@@ -76,6 +76,11 @@ $.fn.editFor = function(socket){
 				$input.replaceSelection(function(s){ return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*' });
 				return false;
 				case 13: // enter : insert new line
+				$input.replaceSelection(function(s){ return s+'\n' });
+				return false;
+			}
+		} else if (e.altKey) {
+			if (e.which==13) {
 				$input.replaceSelection(function(s){ return s+'\n' });
 				return false;
 			}

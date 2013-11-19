@@ -15,3 +15,4 @@ CREATE TABLE message (
 	created bigint NOT NULL,
 	changed bigint
 );
+create index message_room_created on message (room, created);

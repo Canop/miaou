@@ -1,0 +1,70 @@
+doctype 5
+html
+	head
+		title Miaou
+		link(rel='stylesheet', href='static/help.css')
+		script(src="static/jquery-2.0.3.min.js")
+	body
+		div#summary
+			h1 Summary
+		div#content
+			h1 Miaou Help
+			h2 About
+			div.
+				stuff to be written
+			h2 Writing Messages
+			div
+				p.
+					You send a message by typing in the text area at the bottom of the screen and then hitting <kbd>⏎</kbd>.
+				p.
+					When you want to start a new line without immediately sending your message, hit <kbd>ctrl</kbd><kbd>⏎</kbd> or <kbd>alt</kbd><kbd>⏎</kbd>.
+				p.
+					Miaou uses a limited set of Markdown features in order to allow a better formatting without being too flashy or distracting. The following sections detail that syntax and the related shortcuts.
+				h3 Italic and Bold
+				div
+					h4 Short Answer
+					p <kbd>ctrl</kbd><kbd>I</kbd> and <kbd>ctrl</kbd><kbd>B</kbd>
+					h4 Long Answer
+					p.
+						stuff to be written
+				h3 Citation
+				div
+					h4 Short Answer
+					p <kbd>ctrl</kbd><kbd>Q</kbd>
+					h4 Long Answer
+					p.
+						stuff to be written
+				h3 Code
+				p.
+					stuff to be written
+				h3 Images
+				p.
+					stuff to be written
+				h3 All Shortcuts
+				p.
+					stuff to be written
+			h2 Rooms
+			p.
+				stuff to be written
+			h2 Miaou Development
+			p.
+				stuff to be written
+				
+		script
+			$('h2+div, h2+p, h3+div, h3+p').hide();
+			$('h2, h3').click(function(){
+				$(this).toggleClass('open').next('div, p').toggle();
+			}).each(function(){
+				var hash = '#'+this.innerText.replace(/\W/g,'_');
+				if (hash===location.hash) {
+					$(this).parents().prev('h2').add(this).click();
+				}
+				$(this).clone().appendTo('#summary').click(function(){
+					location.hash = hash;
+					location.reload();
+				});
+			});
+			$('#summary h1').click(function(){
+				location.hash = '';
+				location.reload();
+			});

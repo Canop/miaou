@@ -17,6 +17,9 @@ function startServer(){
 	app.get('/', function(req, res){
 		res.render('index.jade');
 	});
+	app.get('/help', function(req, res){
+		res.render('help.jade');
+	});
 	console.log('Miaou server starting on port', config.port);
 	server.listen(config.port);
 
@@ -56,12 +59,12 @@ function startServer(){
 		}).on('message', function (content) {
 			var now = Date.now();
 			if (!(user && room)) {
-				error('user or room not defined');
+				error('User or room not defined');
 			} else if (content.length>maxContentLength) {
-				error('message too big');
+				error('Message too big, consider posting a link instead');
 				console.log(content.length, maxContentLength);
 			} else if (now-lastMessageTime<minDelayBetweenMessages) {
-				error("You're too fast (min delay between messages : "+minDelayBetweenMessages+" ms)");
+				error("You're too fast (minimal delay between messages : "+minDelayBetweenMessages+" ms)");
 			} else {
 				lastMessageTime = now;
 				var m = { content: content, author: user.id, authorname: user.name, room: room.id, created: now};

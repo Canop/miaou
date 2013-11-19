@@ -88,7 +88,7 @@ var miaou = miaou || {};
 			$('<div>').addClass('user').text(message.authorname)
 		).append($content).data('id', message.id);
 		if (message.authorname===me.name) $md.addClass('me');
-		$md.hide()[isOld?'prependTo':'appendTo']('#messages').fadeIn('slow');
+		$md.hide()[isOld?'prependTo':'appendTo']('#messages').fadeIn('fast');
 		if ($content.height()>150) {
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
