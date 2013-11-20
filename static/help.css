@@ -5,13 +5,14 @@ body {
 }
 #content {
 	margin-left: 250px;
+	max-width: 950px;
 }
 #summary h1, h2, h3 {
 	cursor: pointer;
 }
 #content h2:before, #content h3:before {
 	content: "\25B6 ";
-	font-size: 80%;
+	font-size: 66%;
 	padding-right: 4px;
 }
 #content h2.open:before, #content h3.open:before {

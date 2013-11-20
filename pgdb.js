@@ -71,6 +71,7 @@ Con.prototype.storeMessage = function(m, cb){
 
 exports.init = function(dbConfig){
 	conString = dbConfig.url;
+	pg.defaults.parseInt8 = true;
 	return this;
 }
 // cb(err, con)

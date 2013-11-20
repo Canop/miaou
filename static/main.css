@@ -1,10 +1,10 @@
 body {
 	background: #F0EAD6;
 	position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
 	font-size: 14px;
 	margin:0;
@@ -23,13 +23,13 @@ section {
 	display: table-cell;
 	height:100%;
 	padding: 0;
-    vertical-align: top;
+	vertical-align: top;
 }
 #left {
 	display: table-cell;
 	width: 150px;
 	height:100%;
-    vertical-align: top;
+	vertical-align: top;
 }
 #prefs{
 	padding: 4px;
@@ -38,19 +38,19 @@ section {
 	display: table-cell;
 	width: 260px;
 	height:100%;
-    vertical-align: top;
+	vertical-align: top;
 }
 #rightcontainer {
 	width:100%;
 	height:100%;
 	overflow-y: auto;
-    overflow-x: hidden;
+	overflow-x: hidden;
 }
 #center {
 	display: table-cell;
 	background: white;
 	padding:0;
-    vertical-align: top;
+	vertical-align: top;
 }
 #users .user {
 	cursor: pointer;
@@ -65,13 +65,23 @@ section {
 }
 #messages {
 	margin-top:0;
-    vertical-align: top;
+	vertical-align: top;
 	width:100%;
 	height:100%;
-    overflow-y: scroll;
+	overflow-y: scroll;
 }
 .message {
-    padding: 3px;
+	padding: 3px;
+	position: relative;
+}
+.messageinfo {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	background: white;
+	color: black;
+	opacity: 0.85;
+	font-size: 80%;
 }
 .message.me {
 	background-color: #fdf6e5;
@@ -126,7 +136,7 @@ code {
 	resize: none; 
 	float: left;
 }
-#send {
+#inputpanel button {
 	width: 70px;
 	float: right;
 	margin-top: 4px;

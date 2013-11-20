@@ -5,6 +5,7 @@ html
 		link(rel='stylesheet', href='static/main.css')
 		script(src="static/jquery-2.0.3.min.js")
 		script(src="static/socket.io.min.js")
+		script(src="static/moment.min.js")
 		script(src="static/vis.js")
 		script(src="static/miaou.dialog.js")
 		script(src="static/miaou.notify.js")
@@ -16,7 +17,7 @@ html
 				section#prefs
 				section
 					h1 Users
-					div#users here be dragons
+					div#users
 			div#center
 				div.table
 					div#messagescell
@@ -24,6 +25,7 @@ html
 					div#inputpanel
 						textarea#input
 						button#send Send
+						button#help Help
 			div#right
 				div#rightcontainer
 					section#roominfo
@@ -32,9 +34,6 @@ html
 					section#news
 						h1 TODO
 						pre.
-							☒ basic engine & UI
-							☒ recent room history on enter
-							☒ login
 							☒ user list
 							☒ tab title updates
 							☒ ping & notifications
@@ -46,33 +45,29 @@ html
 							☒ > for citations
 							☒ ^K, ^I, ^B, ^Q, ^L
 							☒ markdown style links
-							☐ show message date
+							☒ show message date
 							☒ persistent history
-							☐ remove disconnected users from list
+							☒ remove disconnected users from list
 							☐ message edit, ↑↓
-							☐ help				
+							☒ help				
 							☐ change room, room URL
-							☐ white board
-							☐ prettier buttons & UI
-							☐ @ syntax autocomplete
+							☐ persistent authentication
 							☒ room info
 							☐ project how-to
 							☐ links to messages
 							☐ reply to message
 							☐ stars
-							☐ local image hiding
-							☐ persistent authentication
 							☐ user icons
-							☐ licence (help welcome)
+							☐ white board
 							☐ room admins
 							☐ private rooms
 							☐ invitations
 							☐ consistency with SO
 							☐ consistency with MH
+							☐ @ syntax autocomplete
 							☐ bot API
 							☐ .ico
 							☐ Firefox compatibility
-							☒ NSA backdoor
 							☐ user ban		
 							☒ rate limit, message size cap		
 							☐ server-wide pings		

@@ -38,6 +38,7 @@ function startServer(){
 					con.fetchUser(data.user.name, function(err, u){
 						if (err) return error(err);						
 						user = u;
+						socket.set('user', user);
 						if (room) socket.leave(room.name);
 						con.fetchRoom(data.room, function(err, r){
 							if (err) return error(err);
@@ -49,6 +50,12 @@ function startServer(){
 							}).on('end', function(){
 								con.ok();
 								socket.broadcast.to(room.id).emit('enter', user);
+							});
+							io.sockets.clients(room.id).forEach(function(s){
+								s.get('user', function(err, u){
+									if (err) console.log('missing user on socket', err);
+									else socket.emit('enter', u);
+								});
 							});
 						});
 					});
@@ -64,7 +71,7 @@ function startServer(){
 				error('Message too big, consider posting a link instead');
 				console.log(content.length, maxContentLength);
 			} else if (now-lastMessageTime<minDelayBetweenMessages) {
-				error("You're too fast (minimal delay between messages : "+minDelayBetweenMessages+" ms)");
+				error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
 			} else {
 				lastMessageTime = now;
 				var m = { content: content, author: user.id, authorname: user.name, room: room.id, created: now};
@@ -79,6 +86,8 @@ function startServer(){
 					});
 				});
 			}
+		}).on('disconnect', function(){
+			if (room) socket.broadcast.to(room.id).emit('leave', user);
 		});
 	});
 }

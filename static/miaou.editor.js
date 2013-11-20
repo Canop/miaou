@@ -79,7 +79,7 @@ $.fn.editFor = function(socket){
 				$input.replaceSelection(function(s){ return s+'\n' });
 				return false;
 			}
-		} else if (e.altKey) {
+		} else if (e.altKey || e.shiftKey) {
 			if (e.which==13) {
 				$input.replaceSelection(function(s){ return s+'\n' });
 				return false;

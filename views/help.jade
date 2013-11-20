@@ -1,7 +1,7 @@
 doctype 5
 html
 	head
-		title Miaou
+		title Miaou Help
 		link(rel='stylesheet', href='static/help.css')
 		script(src="static/jquery-2.0.3.min.js")
 	body
@@ -15,15 +15,12 @@ html
 				p For now it's in an early stage of the development. It's very usable but there's no privacy nor authentication and it only works on Chrom(e|ium).
 			h2 Writing Messages
 			div
-				p.
-					You send a message by typing in the text area at the bottom of the screen and then hitting <kbd>⏎</kbd>.
-				p.
-					When you want to start a new line without immediately sending your message, hit <kbd>ctrl</kbd><kbd>⏎</kbd> or <kbd>alt</kbd><kbd>⏎</kbd>.
-				p.
-					Miaou uses a limited set of Markdown features in order to allow a better formatting without being too flashy or distracting. The following sections mostly detail that syntax and the related shortcuts.
+				p You send a message by typing in the text area at the bottom of the screen and then hitting <kbd>⏎</kbd>.
+				p When you want to start a new line without immediately sending your message, hit <kbd>ctrl</kbd><kbd>⏎</kbd> or <kbd>alt</kbd><kbd>⏎</kbd> or <kbd>⇧</kbd><kbd>⏎</kbd>.
+				p Miaou uses a limited set of Markdown features in order to allow a better formatting without being too flashy or distracting. The following sections mostly detail that syntax and the related shortcuts.
 				h3 Italic and Bold
 				div
-					p As in makdown you can set some text in italic or in bold by writing it between stars or double stars.
+					p You can set some text in italic or in bold by writing it between stars or double stars.
 					pre *This sentence is in italic.* Not this one. **This one is in bold.**
 					p would appear as
 					div.message-content <i>This sentence is in italic.</i> Not this one. <b>This one is in bold.</b>
@@ -31,30 +28,94 @@ html
 				h3 Citations
 				div
 					p A citation appears like this :
-					div.message-content
-						span.citation this is a citation
+					div.message-content: span.citation this is a citation
 					p You can write the markdown yourself :
 					pre > this is a citation
 					p Or you can select some text and hit <kbd>ctrl</kbd><kbd>Q</kbd>.
 					p If you want to set just one line in citation, you can put your cursor in the line before hitting <kbd>ctrl</kbd><kbd>Q</kbd> without selecting the whole line.
 				h3 Links
-				p.
-					stuff to be written
+				div
+					p When you paste an URL, it appears in the code as you'd expect :
+					div.message-content: A link : <a href=http://dystroy.org/miaou/help#Links>http://dystroy.org/miaou/help#Links</a>
+					p If you want to give a specific label, as in
+					div.message-content: A link : <a href=http://dystroy.org/miaou/help#Links>How to do links</a>
+					p then you may use this Markdown syntax :
+					pre link : [How to do links](http://dystroy.org/miaou/help#Links)
 				h3 Images
-				p.
-					stuff to be written
+				div
+					p If the URL of an image is the only thing you have in one line of your message, then the image is boxed. For example the message
+					pre http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg
+					p is rendered as
+					div.message-content(style="width:500px"): a(href="http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg",target="_blank"): img(src="http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg")
 				h3 Code
-				p.
-					stuff to be written
+				div
+					p Code can be inlined in the text :
+					div.message-content You can use <code>Array.apply(0,Array(N)).map(Math.random)</code> to generate an array of N random numbers.
+					p This is done using backtick quotes :
+					pre You can use `Array.apply(0,Array(N)).map(Math.random)` to generate an array of N random numbers.
+					p You can also have whole blocks of code :
+					div.message-content Here's a fast replacement for jQuery's old <code>toggle</code> function :<code class=indent><br>$.fn.toggleFuncs = function() {<br>    var functions = Array.prototype.slice.call(arguments);<br>    var _this = this.click(function(){<br>        var i = _this.data('func_count') || 0;<br>        functions[i%functions.length].call(_this);<br>        _this.data('func_count', i+1);<br>    });<br>}</code>
+					p To do that, indent the whole block of code with four spaces or a tabulation :
+					pre
+						span Here's a fast replacement for jQuery's old `toggle` function :
+						div.indent.
+							$.fn.toggleFuncs = function() {
+								var functions = Array.prototype.slice.call(arguments);
+								var _this = this.click(function(){
+									var i = _this.data('func_count') || 0;
+									functions[i%functions.length].call(_this);
+									_this.data('func_count', i+1);
+								});
+							}
+					p You don't have to manually put the backtick quotes or the tabulations : you may also use <kbd>ctrl</kbd><kbd>K</kbd>.
+				h3 Ping
+				div
+					p You can alert somebody who's in the chat by typing an arobase followed by his/her username in a message, as in
+					pre Hello @dystroy !
+					p If the user checked the "Be notified on ping" checkbox, he'll see a silent desktop notification.
+					p Clicking the name of the user in the list inserts the related ping in the message area.
 				h3 All Shortcuts
-				p.
-					stuff to be written
+				div
+					table.indent
+						tr
+							td <kbd>⏎</kbd>
+							td sends the message
+						tr
+							td <kbd>alt</kbd><kbd>⏎</kbd>
+							td inserts a new line
+						tr
+							td <kbd>⇧</kbd><kbd>⏎</kbd>
+							td inserts a new line
+						tr
+							td <kbd>ctrl</kbd><kbd>⏎</kbd>
+							td inserts a new line
+						tr
+							td <kbd>ctrl</kbd><kbd>I</kbd>
+							td sets the selection in italic
+						tr
+							td <kbd>ctrl</kbd><kbd>B</kbd>
+							td sets the selection in bold
+						tr
+							td <kbd>ctrl</kbd><kbd>Q</kbd>
+							td converts the selection to citation
+						tr
+							td <kbd>ctrl</kbd><kbd>K</kbd>
+							td converts the selection to code (extend it to whole lines if there's a new line inside)
+						tr
+							td <kbd>ctrl</kbd><kbd>L</kbd>
+							td extends the selection to whole lines
+					p Most often, the effect of a shorctut is reversed by redoing it. 
 			h2 Rooms
 			p.
 				stuff to be written
 			h2 Miaou Development
-			p.
-				stuff to be written
+			div
+				h3 Technical Stack
+				p Miaou is mostly coded in JavaScript. Stuff includes node.js, express, postgresql, node-postgress, jade, socket.io, jQuery, Moment.js and nginx.
+				h3 Repository
+				p Miaou is designed to be simple and should remain so. You may easily dive into the code which is shared on GitHub : <a href=https://github.com/Canop/miaou target=_blank>Canop/miaou</a>. If you'd like to help, contact me in the Miaou chat or in the StackOverflow JavaScript room where I often hang out. 
+				h3 Use the software on your server
+				p You can, of course, it's open-source for a reason. But you might want to contact me before, to be sure you run something that's stable enough.
 				
 		script.
 			$('h2+div, h2+p, h3+div, h3+p').hide();
