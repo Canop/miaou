@@ -15,7 +15,9 @@ Con.prototype.nok = function(cb, err){
 
 // returns a user found by its name, creates it if necessary
 //   cb(err, user)
+// DEPRECATED
 Con.prototype.fetchUser = function(name, cb){
+	console.log('DEPRECATED fetchUser');
 	var con = this;
 	con.client.query('select id from player where name=$1', [name], function(err, result){
 		if (err) {
@@ -30,6 +32,46 @@ Con.prototype.fetchUser = function(name, cb){
 		}
 	});
 }
+
+// returns a user found by the Google OAuth profile, creates it if it doesn't exist
+// Private fields are included in the returned object
+Con.prototype.fetchCompleteUserFromOAuthProfile = function(profile, cb){
+	console.log("--------------fetchCompleteUserFromOAuthProfile--------------");
+	console.dir(profile);
+	var con = this, email = profile.emails[0].value, returnedCols = 'id, name, oauthDisplayName, email';
+	con.client.query('select '+returnedCols+' from player where email=$1', [email], function(err, result){
+		if (err) {
+			con.nok(cb, err);
+		} else if (result.rows.length) {
+			cb(null, result.rows[0]);
+		} else {
+			con.client.query(
+				'insert into player (oauthId, oauthProvider, email, oauthDisplayName) values ($1, $2, $3, $4) returning '+returnedCols,
+				[profile.id, profile.provider, email, profile.displayName],
+				function(err, result)
+			{
+				if (err) return con.nok(cb, err);
+				cb(null, [0])
+			});
+		}
+	});
+}
+
+// returns an existing user found by his id
+// Only public fields are returned
+Con.prototype.fetchUserById = function(id, cb){
+	var con = this;
+	con.client.query('select id, name from player where id=$1', [id], function(err, result){
+		if (err) {
+			con.nok(cb, err);
+		} else if (!result.rows.length) {
+			cb(new Error('Player "'+id+'" not found'));
+		} else {
+			cb(null, result.rows[0]);
+		}
+	});
+}
+
 
 // returns an existing room found by its name
 Con.prototype.fetchRoom = function(name, cb){
