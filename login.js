@@ -106,14 +106,13 @@ var suggestUsername = exports.suggestUsername = function(completeName) {
 }
 
 exports.isValidUsername = function(username) {
-	return username && /^\w[\w_\-\d]{3,19}$/.test(username);
+	return username && /^\w[\w_\-\d]{2,19}$/.test(username);
 }
 
 exports.test = function(){
 	[
-		'Denys Séguret', ' Alphonse Daudet', '☒ show message date ', '', 'अभिषेक', '<<<', 'www', 'abcd\0eee'
+		'Denys Séguret', ' Alphonse Daudet', '☒ show message date ', '', 'अभिषेक', '<<<', 'www', 'abcd\0eee', validChars
 	].forEach(function(s){
 		console.log(s, suggestUsername(s));
 	});
-	
 }

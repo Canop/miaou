@@ -4,51 +4,7 @@ var miaou = miaou || {};
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
 		oldestMessageTime,
-		room = 'miaou',
-		me = {name:'anonymous'};
-		
-	function loadUser(cb){
-		var username = localStorage['username'];
-		if (username) {
-			me = {name: username};
-			cb();
-		} else {
-			var $c = $('<div>');
-			$c.append(
-				$('<p>').html(
-					"Don't forget we're still in beta, so try to be helpful :"+
-					" Pick a name by which you will be recognized."+
-					"<br>Choose wisely (not &quot;wisely&quot;)."
-				)
-			);
-			$c.append(
-				$('<table>').append(
-					$('<tr>').append('<th id=username_label>Login :</th>').append('<input size=20 pattern="\\w[\\w_\\-\\d]{2,19}" id=username_input>')
-				)
-			);
-			// other fields (SO id, MH id, etc.) will come here
-			miaou.dialog({
-				title: "Please log in",
-				content: $c,
-				buttons: {
-					OK: function(){
-						var input = document.getElementById('username_input');
-						if (!input.validity.valid){ // not compatible with IE, that's fine 
-							alert('Please type a 3 to 20 characters long name');
-							return false;
-						} else if (/wisely/i.test(input.value)) {
-							alert('More wisely, less "wisely", please.');
-							return false;
-						}
-						localStorage['username'] = username = input.value;
-						me = {name: username}
-						cb();
-					}
-				}
-			});
-			$('#username_input').focus();
-		}
-	}
+		room = 'miaou';
 	
 	function pingRegex(name) {
 		return new RegExp('@'+name+'(\\b|$)')
@@ -60,7 +16,6 @@ var miaou = miaou || {};
 
 	function addMessage(message){
 		var content = message.content, isOld=false;
-		//~ console.log(message);
 		if (oldestMessageTime===undefined || message.created<oldestMessageTime) {
 			isOld = true;
 			oldestMessageTime = message.created;
@@ -122,46 +77,46 @@ var miaou = miaou || {};
 	
 	$(function(){
 		var socket = io.connect(location.origin);
-		loadUser(function(){
-			socket.emit('enter', {user:me, room:room});
+		var room;
 
-			document.title = room;
-			vis(function(){
-				if (vis()) {
-					nbUnseenMessages = 0; nbUnseenPings = 0;
-					document.title = room;						
-				}
-			});
-			
-			socket.on('message', function(message){
-				addMessage(message);
-				if (!vis()) {
-					if (pingRegex(me.name).test(message.content)) {
-						miaou.notify(room, message.authorname, message.content);
-						nbUnseenPings++;
-					}
-					document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room;
-				}
-			}).on('room', function(room){
-				$('#roomname').text('Room : ' + room.name);
-				$('#roomdescription').text(room.description);
-			}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
-			
-			$('#messages').on('click', '.message .content img', function(){ window.open(this.src) })
-			.on('click', '.opener', function(){
-				$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
-			}).on('click', '.closer', function(){
-				$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
-			}).on('mouseenter', '.message', function(){
-				var message = $(this).data('message');
-				$('<div>').addClass('messageinfo').text(moment(message.created).fromNow()).appendTo(this);
-			}).on('mouseleave', '.message', function(){
-				$('.messageinfo').remove();
-			});
-
-			$('#input').editFor(socket);
-			$('#help').click(function(){ window.open('help#Writing_Messages') });
-			console.log('Miaou!');
+		vis(function(){
+			if (vis()) {
+				nbUnseenMessages = 0; nbUnseenPings = 0;
+				document.title = room ? room.name : 'no room';						
+			}
 		});
+		
+		socket.on('message', function(message){
+			addMessage(message);
+			if (!vis()) {
+				console.log('me:', me);
+				if (pingRegex(me.name).test(message.content)) {
+					miaou.notify(room, message.authorname, message.content);
+					nbUnseenPings++;
+				}
+				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + (room ? room.name : 'no room');
+			}
+		}).on('room', function(r){
+			room = r;
+			document.title = room.name;
+			$('#roomname').text('Room : ' + room.name);
+			$('#roomdescription').text(room.description);
+		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
+		
+		$('#messages').on('click', '.message .content img', function(){ window.open(this.src) })
+		.on('click', '.opener', function(){
+			$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
+		}).on('click', '.closer', function(){
+			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
+		}).on('mouseenter', '.message', function(){
+			var message = $(this).data('message');
+			$('<div>').addClass('messageinfo').text(moment(message.created*1000).fromNow()).appendTo(this);
+		}).on('mouseleave', '.message', function(){
+			$('.messageinfo').remove();
+		});
+
+		$('#input').editFor(socket);
+		$('#help').click(function(){ window.open('help#Writing_Messages') });
+		console.log('Miaou!');
 	});
 })();

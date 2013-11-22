@@ -2,10 +2,15 @@
 	copy this file under the name "config.json", change it according to your need and remove this help
 
 {
+	"server": "server_name",
 	"port": 8204,
 	"maxMessageContentSize": 2000,
 	"minDelayBetweenMessages": 5000,
 	"database": {
 		"url": "postgres://database_user:database_pwd@localhost/miaou"
+	},
+	"googleOAuthParameters": {
+		"clientID": "your client ID, see https://code.google.com/apis/console/",
+		"clientSecret": "your client secret",
 	}
 }

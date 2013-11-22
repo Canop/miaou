@@ -7,9 +7,9 @@ CREATE TABLE player (
     id serial primary key,
     name varchar(30) UNIQUE,
 	email varchar(150) UNIQUE NOT NULL,
-	oauthProvider varchar(50),
-	oauthId varchar(150),
-	oauthDisplayName varchar(255)
+	oauthprovider varchar(50),
+	oauthid varchar(150),
+	oauthdisplayname varchar(255)
 );
 CREATE TABLE message (
 	id bigserial primary key,

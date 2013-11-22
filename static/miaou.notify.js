@@ -23,7 +23,7 @@ var miaou = miaou || {};
 	
 	miaou.notify = function(room, authorname, content){
 		if (!miaou.wantNotifs) return;
-		var n = new Notification(authorname + ' in ' + room, {body: content});
+		var n = new Notification(authorname + ' in ' + room.name, {body: content});
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
 	}

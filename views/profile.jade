@@ -3,6 +3,31 @@ html
 	head
 		title Miaou - Profile
 		link(rel='stylesheet', href='static/main.css')
+		script(src="static/jquery-2.0.3.min.js")
 	body
-		p Here's the form to change the profile
-		p= JSON.stringify(user)
+		form(method="post",action="/profile")
+			div.dialog
+				div.dialog_title Choose the name by which you'll appear to other users
+				div.dialog_content
+					p Don't forget we're still in beta, so try to be helpful : Pick a name by which you will be recognized.
+					p Choose wisely (not &quot;wisely&quot;).
+					p
+						input#name(name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}", style="width:90%;margin-left:5%")
+						p#err.error
+				div.dialog_buttons
+					input(type='submit', value='Save')#submit
+		
+		script.
+			$('#name').focus().keyup(function(){
+				if (!this.validity.valid){ // not compatible with IE, that's fine 
+					$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');
+					$('#submit').prop('disabled', true);
+				} else if (/wisely/i.test(this.value)) {
+					$('#err').text('More wisely, less "wisely", please.');
+					$('#submit').prop('disabled', true);
+				} else {
+					$('#err').text('');
+					$('#submit').prop('disabled', false);
+				}
+			});
+			

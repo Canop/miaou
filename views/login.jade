@@ -4,4 +4,17 @@ html
 		title Miaou
 		link(rel='stylesheet', href='static/main.css')
 	body
-		<a href="/auth/google">Sign On with Google</a>
+		div.dialog
+			div.dialog_title Authentication
+			div.dialog_content
+				p Miaou requires users to be logged to prevent impersonation.
+				p In order to avoid managing one more password, we use Google authentication.
+			div.dialog_buttons
+				button#ok Sign On with Google
+		
+		script.
+			var ok = document.getElementById('ok');
+			ok.onclick = function(){
+				location='/auth/google';
+			}
+			ok.focus();

@@ -24,7 +24,7 @@ var miaou = miaou || {};
 		});
 		$d.appendTo(document.body);
 		var $mask = $('<div class=mask>').appendTo(document.body);
-		$d = $d.add($mask).fadeIn();
+		$d = $d.add($mask).hide().fadeIn();
 		var d = {
 			close: close, // removes the dialog
 			hide: function(callback){ $d.fadeOut(callback) }, // just hides it so that it can be reopened (be careful not to let them accumulate)

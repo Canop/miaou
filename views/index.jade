@@ -16,11 +16,6 @@ html
 			div#left
 				section#prefs
 				section
-					h1 user:
-					p= user.name
-					h1 id:
-					p= user.id
-				section
 					h1 Users
 					div#users
 			div#center
@@ -77,3 +72,7 @@ html
 							☒ rate limit, message size cap		
 							☐ server-wide pings		
 							☐ icons in user list for "typing" ones
+			
+		script.
+			var me = !{JSON.stringify(user)};
+			console.log(me);

@@ -1,20 +1,21 @@
-// https://github.com/jaredhanson/passport-google-oauth/tree/master/examples/oauth2
-// https://code.google.com/apis/console/
-
 var fs = require("fs"),
+	http = require('http'),
+	connect = require('connect'),
 	express = require('express'),
 	passport = require('passport'),
+  	jade = require('jade'),
+	socketio = require('socket.io'),
+	SessionSockets = require('session.socket.io'),
 	util = require('util'),
 	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-  	jade = require('jade'),
-	http = require('http'),
 	config = eval('('+fs.readFileSync('config.json')+')'),
 	mdb = require('./pgdb.js').init(config.database),
 	loginutil = require('./login.js'),
 	maxContentLength = config.maxMessageContentSize || 500,
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000,
-	app,
-	server;
+	cookieParser = express.cookieParser('wouf!'),
+	sessionStore = new connect.middleware.session.MemoryStore(),
+	app, io, server;
 
 passport.serializeUser(function(user, done) {
 	console.log('serializeUser:', user);
@@ -32,33 +33,19 @@ passport.deserializeUser(function(id, done) {
 	});
 });
 
-
-
-console.log('config.googleOAuthParameters:', config.googleOAuthParameters);
-// Use the GoogleStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Google
-//   profile), and invoke a callback with a user object.
-passport.use(new GoogleStrategy(config.googleOAuthParameters, function(accessToken, refreshToken, profile, done) {
-	console.log("--------------GoogleStrategy callback--------------");
-	//~ console.log(accessToken, refreshToken, profile);
-	console.log('OAuth profile:', profile);
+var oauthParameters = config.googleOAuthParameters;
+oauthParameters.callbackURL = "http://"+config.server+":"+config.port+"/auth/google/callback";
+passport.use(new GoogleStrategy(oauthParameters, function(accessToken, refreshToken, profile, done) {
 	mdb.con(function(err, con){
 		if (err) return done(new Error('no connection'));
 		con.fetchCompleteUserFromOAuthProfile(profile, function(err, user){
 			if (err) { console.log('ERR:',err);return done(err); }
 			con.ok();
-			console.log('google profile changed into ', user);
 			done(null, user);
 		});
 	});
 }));
 
-// Simple route middleware to ensure user is authenticated.
-//   Use this route middleware on any resource that needs to be protected.  If
-//   the request is authenticated (typically via a persistent login session),
-//   the request will proceed.  Otherwise, the user will be redirected to the
-//   login page.
 function ensureAuthenticated(req, res, next) {
 	console.log('ensureAuthenticated');
 	if (req.isAuthenticated()) return next();
@@ -69,33 +56,70 @@ function ensureAuthenticated(req, res, next) {
 //  (a valid name is needed). If not, the user is redirected to the profile
 //  page until he makes his profile complete.
 function ensureCompleteProfile(req, res, next) {
-	console.log('ensureCompleteProfile', req.user);
-	console.log("IS VALID : ", loginutil.isValidUsername(req.user.name));
 	if (loginutil.isValidUsername(req.user.name)) return next();
 	res.redirect('/profile');
 }
 
-function startServer(){
-	app = express();
-	server = http.createServer(app),
+// handles the socket, whose life should be the same as the presence of the user in a room without reload
+function handleUserInRoom(socket, completeUser, room) {
+	function error(err){
+		console.log('ERR', err, 'for user', completeUser.name, 'in room', room.name);
+		socket.emit('error', err.toString());
+	}
+	var lastMessageTime,
+		publicUser = {id:completeUser.id, name:completeUser.name};
 
-	app.set('views', __dirname + '/views');
-	app.set('view engine', 'jade');
-	app.set("view options", { layout: false });
-	app.use('/static', express.static(__dirname + '/static'));
-	app.use(express.logger());
-	app.use(express.cookieParser());
-	app.use(express.bodyParser());
-	app.use(express.methodOverride());
-	app.use(express.session({ secret: 'keyboard cat' }));
-	// Initialize Passport!  Also use passport.session() middleware, to support
-	// persistent login sessions (recommended).
-	app.use(passport.initialize());
-	app.use(passport.session());
-	app.use(app.router);
+	socket.set('publicUser', publicUser);
+	socket.emit('room', room);
+	socket.join(room.id);
+	mdb.con(function(err, con){
+		if (err) return error('no connection');
+		con.queryLastMessages(room.id, 300).on('row', function(message){
+			socket.emit('message', message);
+		}).on('end', function(){
+			con.ok();
+			socket.broadcast.to(room.id).emit('enter', publicUser);
+		});
+	});
+	io.sockets.clients(room.id).forEach(function(s){
+		s.get('publicUser', function(err, u){
+			if (err) console.log('missing user on socket', err);
+			else socket.emit('enter', u);
+		});
+	});
 
+	socket.on('message', function (content) {
+		var now = Date.now();
+		if (content.length>maxContentLength) {
+			error('Message too big, consider posting a link instead');
+			console.log(content.length, maxContentLength);
+		} else if (now-lastMessageTime<minDelayBetweenMessages) {
+			error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
+		} else {
+			lastMessageTime = now;
+			var m = { content: content, author: publicUser.id, authorname: publicUser.name, room: room.id, created: ~~(now/1000)};
+			//~ console.log(m);
+			mdb.con(function(err, con){
+				if (err) return error('no connection');
+				con.storeMessage(m, function(err, m){
+					if (err) return error(err);
+					con.ok();
+					console.log("user ", publicUser.name, 'send a message to', room.name);
+					io.sockets.in(room.id).emit('message', m);
+				});
+			});
+		}
+	}).on('disconnect', function(){
+		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);
+	});
+}
+
+
+// defines the routes to be taken by GET and POST requests
+function defineAppRoutes(){
+	
 	app.get('/', ensureAuthenticated, ensureCompleteProfile, function(req, res){
-		console.log('**** get /', req.user);
+		console.log('GET /', req.user);
 		res.render('index.jade', { user: req.user });
 	});
 	app.get('/account', ensureAuthenticated, function(req, res){
@@ -105,116 +129,104 @@ function startServer(){
 		res.render('login.jade', { user: req.user });
 	});
 	app.get('/profile', function(req, res){
-		console.log('GET /profile', req.user);
-		res.render('profile.jade', { user: req.user });
+		res.render('profile.jade', {
+			user: req.user,
+			suggestedName: loginutil.suggestUsername(req.user.oauthdisplayname)
+		});
+	});
+	app.post('/profile', function(req, res){
+		var name = req.param('name');
+		console.log('POST /profile name:', name);
+		if (loginutil.isValidUsername(name)) {
+			mdb.con(function(err, con){
+				if (err) return done(new Error('no connection'));
+				req.user.name = name;
+				con.updateUser(req.user, function(err){
+					if (err) {
+						console.log('error in update user', err);
+						return; // fixme : what to do/render here ?
+					}
+					con.ok();
+					res.redirect('/');
+				});
+			});
+		} else {
+			res.render('profile.jade', { user: req.user });
+		}
 	});
 
-	// GET /auth/google
-	//   Use passport.authenticate() as route middleware to authenticate the
-	//   request.  The first step in Google authentication will involve
-	//   redirecting the user to google.com.  After authorization, Google
-	//   will redirect the user back to this application at /auth/google/callback
 	app.get('/auth/google',
-	  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile',
-												'https://www.googleapis.com/auth/userinfo.email'] }),
-	  function(req, res){
-		// The request will be redirected to Google for authentication, so this
-		// function will not be called.
-	  });
-
-	// GET /auth/google/callback
-	//   Use passport.authenticate() as route middleware to authenticate the
-	//   request.  If authentication fails, the user will be redirected back to the
-	//   login page.  Otherwise, the primary route function function will be called,
-	//   which, in this example, will redirect the user to the home page.
-	app.get('/auth/google/callback', 
-	  passport.authenticate('google', { failureRedirect: '/login' }),
-	  function(req, res) {
-		res.redirect('/');
-	  });
+		passport.authenticate(
+			'google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }
+		)
+	);
+	
+	app.get(
+		'/auth/google/callback',  // This is called by google back after authentication
+		passport.authenticate('google', { failureRedirect: '/login' }),
+		function(req, res) { res.redirect('/') }
+	);
 
 	app.get('/logout', function(req, res){
-	  req.logout();
-	  res.redirect('/');
+		req.logout();
+		res.redirect('/');
 	});
-
 
 	app.get('/help', function(req, res){
 		res.render('help.jade');
 	});
+}
+
+// starts the whole server, both regular http and websocket
+function startServer(){
+	app = express();
+	server = http.createServer(app),
+
+	app.set('views', __dirname + '/views');
+	app.set('view engine', 'jade');
+	app.set("view options", { layout: false });
+	app.use('/static', express.static(__dirname + '/static'));
+	app.use(express.logger()); // todo : check it's useful
+	app.use(express.bodyParser()); // todo : check it's useful
+	app.use(express.methodOverride()); // todo : check it's useful
+	app.use(cookieParser);
+	app.use(express.session({ store: sessionStore }));
+	app.use(passport.initialize());
+	app.use(passport.session());
+	app.use(app.router);
+
+	defineAppRoutes();
+
 	console.log('Miaou server starting on port', config.port);
 	server.listen(config.port);
 
-	io = require('socket.io').listen(server);
+	io = socketio.listen(server);
 	io.set('log level', 1);
-	io.sockets.on('connection', function (socket) {
-		var user, room, lastMessageTime;
-		function error(err){
-			console.log('ERR', err, 'for user', user, 'in room', room);
+	
+	var sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
+	sessionSockets.on('connection', function (err, socket, session) {
+		function die(err){
+			console.log('ERR', err);
 			socket.emit('error', err.toString());
+			socket.disconnect();
 		}
-		socket.on('enter', function (data) {
-			if (data.user && data.user.name && /^\w[\w_\-\d]{2,19}$/.test(data.user.name) && data.room) {
-				mdb.con(function(err, con){
-					if (err) return error('no connection');
-					con.fetchUser(data.user.name, function(err, u){
-						if (err) return error(err);						
-						user = u;
-						socket.set('user', user);
-						if (room) socket.leave(room.name);
-						con.fetchRoom(data.room, function(err, r){
-							if (err) return error(err);
-							room = r;
-							socket.emit('room', room) 
-							socket.join(room.id);
-							con.queryLastMessages(room.id, 300).on('row', function(message){
-								socket.emit('message', message);
-							}).on('end', function(){
-								con.ok();
-								socket.broadcast.to(room.id).emit('enter', user);
-							});
-							io.sockets.clients(room.id).forEach(function(s){
-								s.get('user', function(err, u){
-									if (err) console.log('missing user on socket', err);
-									else socket.emit('enter', u);
-								});
-							});
-						});
-					});
+		if (! (session && session.passport && session.passport.user)) return die ('invalid session');
+		var userId = session.passport.user;
+		if (!userId) return die('no authenticated user in session');
+		mdb.con(function(err, con){
+			if (err) return die(err);
+			con.fetchUserById(userId, function(err, completeUser){
+				if (err) return die(err);
+				con.fetchRoom('miaou', function(err, room){
+					if (err) return die(err);
+					con.ok();
+					handleUserInRoom(socket, completeUser, room);
 				});
-			} else {
-				error('bad login');
-			}
-		}).on('message', function (content) {
-			var now = Date.now();
-			if (!(user && room)) {
-				error('User or room not defined');
-			} else if (content.length>maxContentLength) {
-				error('Message too big, consider posting a link instead');
-				console.log(content.length, maxContentLength);
-			} else if (now-lastMessageTime<minDelayBetweenMessages) {
-				error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
-			} else {
-				lastMessageTime = now;
-				var m = { content: content, author: user.id, authorname: user.name, room: room.id, created: now/1000};
-				//~ console.log(m);
-				mdb.con(function(err, con){
-					if (err) return error('no connection');
-					con.storeMessage(m, function(err, m){
-						if (err) return error(err);						
-						con.ok();
-						console.log("user ", user.name, 'send a message to', room);
-						io.sockets.in(room.id).emit('message', m);
-					});
-				});
-			}
-		}).on('disconnect', function(){
-			if (room) socket.broadcast.to(room.id).emit('leave', user);
+			});
 		});
 	});
 }
 
 (function main() { // main
 	startServer();
-	//loginutil.test();
 })();
