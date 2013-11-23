@@ -16,7 +16,7 @@ var miaou = miaou || {};
 
 	function addMessage(message){
 		if ($('[mid='+message.id+']').length) {
-			console.log('message '+message.id+' already here'); // todo : better design
+			console.log('message '+message.id+' already here'); // todo : replace existing message instead
 			return;
 		}
 
