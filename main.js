@@ -13,8 +13,9 @@ var fs = require("fs"),
 	loginutil = require('./login.js'),
 	maxContentLength = config.maxMessageContentSize || 500,
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000,
-	cookieParser = express.cookieParser('wouf!'),
-	sessionStore = new connect.middleware.session.MemoryStore(),
+	cookieParser = express.cookieParser(config.secret),
+	RedisStore = require('connect-redis')(express),
+	sessionStore = new RedisStore({}),
 	app, io, server;
 
 passport.serializeUser(function(user, done) {
@@ -186,9 +187,9 @@ function startServer(){
 	app.set('view engine', 'jade');
 	app.set("view options", { layout: false });
 	app.use('/static', express.static(__dirname + '/static'));
-	app.use(express.logger()); // todo : check it's useful
-	app.use(express.bodyParser()); // todo : check it's useful
-	app.use(express.methodOverride()); // todo : check it's useful
+	//app.use(express.logger());
+	app.use(express.json());
+	app.use(express.urlencoded());
 	app.use(cookieParser);
 	app.use(express.session({ store: sessionStore }));
 	app.use(passport.initialize());

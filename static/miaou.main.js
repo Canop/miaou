@@ -15,6 +15,11 @@ var miaou = miaou || {};
 	}
 
 	function addMessage(message){
+		if ($('[mid='+message.id+']').length) {
+			console.log('message '+message.id+' already here'); // todo : better design
+			return;
+		}
+
 		var content = message.content, isOld=false;
 		if (oldestMessageTime===undefined || message.created<oldestMessageTime) {
 			isOld = true;
@@ -41,10 +46,20 @@ var miaou = miaou || {};
 		var $content = $('<div>').addClass('content').append(content);
 		var $md = $('<div>').addClass('message').append(
 			$('<div>').addClass('user').text(message.authorname)
-		).append($content).data('message', message);
+		).append($content).data('message', message).attr('mid', message.id);
 		if (message.authorname===me.name) $md.addClass('me');
 		$md.hide()[isOld?'prependTo':'appendTo']('#messages').fadeIn('fast');
-		if (!isOld) addToUserList({id: message.author, name: message.authorname});
+		if (!isOld) {
+			addToUserList({id: message.author, name: message.authorname});
+			if (!vis()) {
+				console.log('me:', me);
+				if (pingRegex(me.name).test(message.content)) {
+					miaou.notify(room, message.authorname, message.content);
+					nbUnseenPings++;
+				}
+				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + (room ? room.name : 'no room');
+			}
+		}
 		if ($content.height()>150) {
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
@@ -88,14 +103,6 @@ var miaou = miaou || {};
 		
 		socket.on('message', function(message){
 			addMessage(message);
-			if (!vis()) {
-				console.log('me:', me);
-				if (pingRegex(me.name).test(message.content)) {
-					miaou.notify(room, message.authorname, message.content);
-					nbUnseenPings++;
-				}
-				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + (room ? room.name : 'no room');
-			}
 		}).on('room', function(r){
 			room = r;
 			document.title = room.name;
