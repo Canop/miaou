@@ -9,10 +9,15 @@ html
 			div.dialog_content
 				p Miaou requires users to be logged to prevent impersonation.
 				p In order to avoid managing one more password, we use Google authentication.
-			div.dialog_buttons
+			div.dialog_buttons#buttons
 				button#ok Sign On with Google
 		
 		script.
+			if (localStorage['successfulLoginLastTime']) {
+				delete localStorage['successfulLoginLastTime'];
+				document.getElementById('buttons').innerHTML = '<i>Authentication in progress...</i>';
+				location='/auth/google';
+			}
 			var ok = document.getElementById('ok');
 			ok.onclick = function(){
 				location='/auth/google';

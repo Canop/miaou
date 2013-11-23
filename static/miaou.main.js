@@ -52,7 +52,6 @@ var miaou = miaou || {};
 		if (!isOld) {
 			addToUserList({id: message.author, name: message.authorname});
 			if (!vis()) {
-				console.log('me:', me);
 				if (pingRegex(me.name).test(message.content)) {
 					miaou.notify(room, message.authorname, message.content);
 					nbUnseenPings++;
@@ -105,6 +104,8 @@ var miaou = miaou || {};
 			addMessage(message);
 		}).on('room', function(r){
 			room = r;
+			localStorage['lastRoom'] = room.name;
+			localStorage['successfulLoginLastTime'] = "yes";
 			document.title = room.name;
 			$('#roomname').text('Room : ' + room.name);
 			$('#roomdescription').text(room.description);
