@@ -2,7 +2,7 @@
 	copy this file under the name "config.json", change it according to your need and remove this help
 
 {
-	"server": "server_name",
+	"server": "http://dystroy.org/miaou",
 	"port": 8204,
 	"maxMessageContentSize": 2000,
 	"minDelayBetweenMessages": 5000,

@@ -34,8 +34,13 @@ passport.deserializeUser(function(id, done) {
 	});
 });
 
+function url(pathname){ // todo cleaner way in express not supposing absolute paths ?
+	console.log(' -> url: '+config.server+pathname);
+	return config.server+pathname;
+}
+
 var oauthParameters = config.googleOAuthParameters;
-oauthParameters.callbackURL = "http://"+config.server+":"+config.port+"/auth/google/callback";
+oauthParameters.callbackURL = url("/auth/google/callback");
 passport.use(new GoogleStrategy(oauthParameters, function(accessToken, refreshToken, profile, done) {
 	mdb.con(function(err, con){
 		if (err) return done(new Error('no connection'));
@@ -50,7 +55,7 @@ passport.use(new GoogleStrategy(oauthParameters, function(accessToken, refreshTo
 function ensureAuthenticated(req, res, next) {
 	console.log('ensureAuthenticated');
 	if (req.isAuthenticated()) return next();
-	res.redirect('/login');
+	res.redirect(url('/login'));
 }
 
 // Checks that the profile is complete enough to be used for the chat
@@ -58,7 +63,7 @@ function ensureAuthenticated(req, res, next) {
 //  page until he makes his profile complete.
 function ensureCompleteProfile(req, res, next) {
 	if (loginutil.isValidUsername(req.user.name)) return next();
-	res.redirect('/profile');
+	res.redirect(url('/profile'));
 }
 
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
@@ -120,14 +125,13 @@ function handleUserInRoom(socket, completeUser, room) {
 function defineAppRoutes(){
 	
 	app.get('/', ensureAuthenticated, ensureCompleteProfile, function(req, res){
-		console.log('GET /', req.user);
 		res.render('index.jade', { user: req.user });
 	});
 	app.get('/account', ensureAuthenticated, function(req, res){
 		res.render('account.jade', { user: req.user });
 	});
 	app.get('/login', function(req, res){
-		res.render('login.jade', { user: req.user });
+		res.render('login.jade', { user: req.user, authurl: url('/auth/google') });
 	});
 	app.get('/profile', function(req, res){
 		res.render('profile.jade', {
@@ -148,7 +152,7 @@ function defineAppRoutes(){
 						return; // fixme : what to do/render here ?
 					}
 					con.ok();
-					res.redirect('/');
+					res.redirect(url('/'));
 				});
 			});
 		} else {
@@ -162,15 +166,14 @@ function defineAppRoutes(){
 		)
 	);
 	
-	app.get(
-		'/auth/google/callback',  // This is called by google back after authentication
+	app.get('/auth/google/callback',  // This is called by google back after authentication
 		passport.authenticate('google', { failureRedirect: '/login' }),
-		function(req, res) { res.redirect('/') }
+		function(req, res) { res.redirect(url('/')) }
 	);
 
 	app.get('/logout', function(req, res){
 		req.logout();
-		res.redirect('/');
+		res.redirect(url('/'));
 	});
 
 	app.get('/help', function(req, res){

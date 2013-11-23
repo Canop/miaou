@@ -5,7 +5,7 @@ html
 		link(rel='stylesheet', href='static/main.css')
 		script(src="static/jquery-2.0.3.min.js")
 	body
-		form(method="post",action="/profile")
+		form(method="post")
 			div.dialog
 				div.dialog_title Choose the name by which you'll appear to other users
 				div.dialog_content
@@ -18,6 +18,7 @@ html
 					input(type='submit', value='Save')#submit
 		
 		script.
+			$('form')[0].action = location;
 			$('#name').focus().keyup(function(){
 				if (!this.validity.valid){ // not compatible with IE, that's fine 
 					$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');

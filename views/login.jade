@@ -13,13 +13,14 @@ html
 				button#ok Sign On with Google
 		
 		script.
+			var authurl = "#{authurl}";
 			if (localStorage['successfulLoginLastTime']) {
 				delete localStorage['successfulLoginLastTime'];
 				document.getElementById('buttons').innerHTML = '<i>Authentication in progress...</i>';
-				location='/auth/google';
+				location=authurl;
 			}
 			var ok = document.getElementById('ok');
 			ok.onclick = function(){
-				location='/auth/google';
+				location=authurl;
 			}
 			ok.focus();
