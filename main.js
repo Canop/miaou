@@ -19,11 +19,9 @@ var fs = require("fs"),
 	app, io, server;
 
 passport.serializeUser(function(user, done) {
-	console.log('serializeUser:', user);
 	done(null, user.id);
 });
 passport.deserializeUser(function(id, done) {
-	console.log('deserializeUser:', id);
 	mdb.con(function(err, con){
 		if (err) return done(new Error('no connection'));
 		con.fetchUserById(id, function(err, user){
@@ -35,7 +33,6 @@ passport.deserializeUser(function(id, done) {
 });
 
 function url(pathname){ // todo cleaner way in express not supposing absolute paths ?
-	console.log(' -> url: '+config.server+pathname);
 	return config.server+pathname;
 }
 
@@ -53,7 +50,6 @@ passport.use(new GoogleStrategy(oauthParameters, function(accessToken, refreshTo
 }));
 
 function ensureAuthenticated(req, res, next) {
-	console.log('ensureAuthenticated');
 	if (req.isAuthenticated()) return next();
 	res.redirect(url('/login'));
 }
@@ -104,7 +100,6 @@ function handleUserInRoom(socket, completeUser, room) {
 		} else {
 			lastMessageTime = now;
 			var m = { content: content, author: publicUser.id, authorname: publicUser.name, room: room.id, created: ~~(now/1000)};
-			//~ console.log(m);
 			mdb.con(function(err, con){
 				if (err) return error('no connection');
 				con.storeMessage(m, function(err, m){
@@ -124,11 +119,25 @@ function handleUserInRoom(socket, completeUser, room) {
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
-	app.get('/', ensureAuthenticated, ensureCompleteProfile, function(req, res){
-		res.render('index.jade', { user: req.user });
-	});
-	app.get('/account', ensureAuthenticated, function(req, res){
-		res.render('account.jade', { user: req.user });
+	app.get(/^\/(\d+)?$/, ensureAuthenticated, ensureCompleteProfile, function(req, res){
+		var session = req.session, roomId = +req.params[0];
+		if (roomId && (session.room==null || session.room.id != roomId)) {
+			mdb.con(function(err, con){
+				if (err) return new Error('no connection'); // fixme : send to error page
+				con.fetchRoom(roomId, function(err, room){
+					if (err) return die(err);
+					con.ok();
+					if (room) {
+						session.room = room;
+						res.render('index.jade', { user: JSON.stringify(req.user), room: JSON.stringify(session.room) });
+					} else {
+						res.redirect(url('/rooms'));
+					}
+				});
+			});
+		} else {
+			res.render('index.jade', { user: JSON.stringify(req.user), room: JSON.stringify(session.room)||'null' });
+		}
 	});
 	app.get('/login', function(req, res){
 		res.render('login.jade', { user: req.user, authurl: url('/auth/google') });
@@ -141,10 +150,9 @@ function defineAppRoutes(){
 	});
 	app.post('/profile', function(req, res){
 		var name = req.param('name');
-		console.log('POST /profile name:', name);
 		if (loginutil.isValidUsername(name)) {
 			mdb.con(function(err, con){
-				if (err) return done(new Error('no connection'));
+				if (err) return new Error('no connection'); // fixme : send to error page
 				req.user.name = name;
 				con.updateUser(req.user, function(err){
 					if (err) {
@@ -171,6 +179,18 @@ function defineAppRoutes(){
 		function(req, res) { res.redirect(url('/')) }
 	);
 
+	app.get('/rooms', function(req, res){
+		mdb.con(function(err, con){
+			if (err) return new Error('no connection'); // fixme : send to error page
+			con.listPublicRooms(function(err, rooms){
+				if (err) return; // fixme : what to do/render here ?
+				con.ok();
+				console.log('rooms:', rooms);
+				res.render('rooms.jade', { rooms: rooms });
+			});
+		});
+	});
+
 	app.get('/logout', function(req, res){
 		req.logout();
 		res.redirect(url('/'));
@@ -190,7 +210,6 @@ function startServer(){
 	app.set('view engine', 'jade');
 	app.set("view options", { layout: false });
 	app.use('/static', express.static(__dirname + '/static'));
-	//app.use(express.logger());
 	app.use(express.json());
 	app.use(express.urlencoded());
 	app.use(cookieParser);
@@ -214,18 +233,15 @@ function startServer(){
 			socket.emit('error', err.toString());
 			socket.disconnect();
 		}
-		if (! (session && session.passport && session.passport.user)) return die ('invalid session');
+		if (! (session && session.passport && session.passport.user && session.room)) return die ('invalid session');
 		var userId = session.passport.user;
 		if (!userId) return die('no authenticated user in session');
 		mdb.con(function(err, con){
 			if (err) return die(err);
 			con.fetchUserById(userId, function(err, completeUser){
 				if (err) return die(err);
-				con.fetchRoom('miaou', function(err, room){
-					if (err) return die(err);
-					con.ok();
-					handleUserInRoom(socket, completeUser, room);
-				});
+				con.ok();
+				handleUserInRoom(socket, completeUser, session.room);
 			});
 		});
 	});

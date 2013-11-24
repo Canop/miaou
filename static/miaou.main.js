@@ -91,7 +91,6 @@ var miaou = miaou || {};
 	
 	$(function(){
 		var socket = io.connect(location.origin);
-		var room;
 
 		vis(function(){
 			if (vis()) {
@@ -125,6 +124,8 @@ var miaou = miaou || {};
 
 		$('#input').editFor(socket);
 		$('#help').click(function(){ window.open('help#Writing_Messages') });
+		
+		$('#changeroom').click(function(){ location='rooms' });
 		console.log('Miaou!');
 	});
 })();

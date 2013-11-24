@@ -12,32 +12,9 @@ Con.prototype.nok = function(cb, err){
 	cb(err);
 }
 
-
-// returns a user found by its name, creates it if necessary
-//   cb(err, user)
-// DEPRECATED
-Con.prototype.fetchUser = function(name, cb){
-	console.log('DEPRECATED fetchUser');
-	var con = this;
-	con.client.query('select id from player where name=$1', [name], function(err, result){
-		if (err) {
-			con.nok(cb, err);
-		} else if (result.rows.length) {
-			cb(null, {id:result.rows[0].id, name:name})
-		} else {
-			con.client.query('insert into player (name) values ($1) returning id', [name], function(err, result){
-				if (err) return con.nok(cb, err);
-				cb(null, {id:result.rows[0].id, name:name})
-			});
-		}
-	});
-}
-
 // returns a user found by the Google OAuth profile, creates it if it doesn't exist
 // Private fields are included in the returned object
 Con.prototype.fetchCompleteUserFromOAuthProfile = function(profile, cb){
-	console.log("--------------fetchCompleteUserFromOAuthProfile--------------");
-	console.dir(profile);
 	var con = this, email = profile.emails[0].value, returnedCols = 'id, name, oauthdisplayname, email';
 	con.client.query('select '+returnedCols+' from player where email=$1', [email], function(err, result){
 		if (err) {
@@ -82,16 +59,28 @@ Con.prototype.updateUser = function(user, cb){
 	});
 }
 
-// returns an existing room found by its name
-Con.prototype.fetchRoom = function(name, cb){
+// returns an existing room found by its id
+Con.prototype.fetchRoom = function(id, cb){
 	var con = this;
-	con.client.query('select id, name, description from room where name=$1', [name], function(err, result){
+	con.client.query('select id, name, description from room where id=$1', [id], function(err, result){
 		if (err) {
 			con.nok(cb, err);
 		} else if (!result.rows.length) {
-			cb(new Error('Room "'+name+'" not found'));
+			cb(new Error('Room "'+id+'" not found'));
 		} else {
 			cb(null, result.rows[0]);
+		}
+	});
+}
+
+// gives to cb an array of all public rooms
+Con.prototype.listPublicRooms = function(cb){
+	var con = this;
+	con.client.query('select id, name, description from room', function(err, result){
+		if (err) {
+			con.nok(cb, err);
+		} else {
+			cb(null, result.rows);
 		}
 	});
 }
@@ -108,7 +97,6 @@ Con.prototype.queryLastMessages = function(roomId, N){
 // stores a message and sets its id
 Con.prototype.storeMessage = function(m, cb){
 	var con = this;
-	console.dir(m);
 	con.client.query(
 		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
 		[m.room, m.author, m.content, m.created],

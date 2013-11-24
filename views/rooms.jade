@@ -1,0 +1,16 @@
+doctype 5
+html
+	head
+		title Miaou - Rooms
+		link(rel='stylesheet', href='static/main.css')
+	body
+		div#list
+			h1 Miaou Public Rooms
+			table.list
+				each room, i in rooms
+					tr
+						th: a(href=room.id) #{room.name}
+						td #{room.description}
+			
+		script.
+			delete localStorage['room'];

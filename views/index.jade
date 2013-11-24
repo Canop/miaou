@@ -29,6 +29,7 @@ html
 			div#right
 				div#rightcontainer
 					section#roominfo
+						button#changeroom change
 						h1#roomname
 						p#roomdescription
 					section#news
@@ -74,4 +75,9 @@ html
 							☐ icons in user list for "typing" ones
 			
 		script.
-			var me = !{JSON.stringify(user)};
+			var me = !{user},
+				room = !{room};
+			if (!room) {
+				if (localStorage['room']) location = localStorage['room'];
+				else location = 'rooms';
+			}

@@ -266,3 +266,23 @@ span.button:hover {
   content: '▲';
 }
 
+#list {
+	margin: auto;
+	width: 80%;
+	max-width: 900px;
+	padding: 30px;
+}
+.list th, .list td {
+	padding: 8px;
+}
+.list td {
+	background: #eee;
+	opacity: 0.85;
+	border-radius: 7px;
+}
+
+#changeroom {
+	font-size: 60%;
+	float: right;
+	margin: 2px;
+}
