@@ -111,6 +111,11 @@ var miaou = miaou || {};
 		socket.on('message', function(message){
 			addMessage(message);
 		}).on('room', function(r){
+			if (room.id!==r.id) {
+				// due to a problem in express session management (no window session), we may be connected to
+				// the bad room after a (silent) reconnect
+				location.reload();
+			}
 			room = r;
 			localStorage['successfulLoginLastTime'] = "yes";
 			localStorage['room'] = room.id;
