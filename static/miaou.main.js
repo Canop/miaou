@@ -3,8 +3,7 @@ var miaou = miaou || {};
 	var NB_MESSAGES = 100,
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
-		oldestMessageTime,
-		room = 'miaou';
+		messages = [];
 	
 	function pingRegex(name) {
 		return new RegExp('@'+name+'(\\b|$)')
@@ -14,18 +13,8 @@ var miaou = miaou || {};
 		$('#messages').scrollTop($('#messages')[0].scrollHeight)
 	}
 
-	function addMessage(message){
-		if ($('[mid='+message.id+']').length) {
-			console.log('message '+message.id+' already here'); // todo : replace existing message instead
-			return;
-		}
-
-		var content = message.content, isOld=false;
-		if (oldestMessageTime===undefined || message.created<oldestMessageTime) {
-			isOld = true;
-			oldestMessageTime = message.created;
-		}
-		content = content
+	function makeMessageDiv(message){
+		var content = message.content
 			.replace(/</g,'&lt;').replace(/>/g,'&gt;')
 			.replace(/(^|\n)(?:&gt;\s*)([^\n]+)(?=\n|$)/g, "\n<span class=citation>$2</span>")
 			.replace(/(^|\W)`([^`]+)`(?=\W|$)/g, "$1<code>$2</code>")
@@ -37,7 +26,7 @@ var miaou = miaou || {};
 			.replace(/(^|\n)(https?:\/\/[^\s<>?]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?]*)?(?=\n|$)/g, "$1<img src=$2.$3$4>") // exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&modified_at=1384796271&ratio_x=03&ratio_y=02&width=900
 			.replace(/\n+/g,'<br>')
 			.replace(/(^|\s)\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)(?=\s|$)/g, '$1<a target=_blank href="$3">$2</code>'); // exemple : [dystroy](http://dystroy.org)
-		// the following applies replacement to what isn't in a html tag
+		// the following applies replacement to what isn't in a html tag - todo : find somthing more elegant 
 		content = ('>'+content+'<').replace(/>([^<]+)</g, function(_,s){
 			return '>'+s.replace(/(https?|ftp):\/\/[^\s"\(\)\[\]]+/ig, function(href){
 				return '<a target=_blank href="'+href+'">'+href+'</a>';
@@ -48,8 +37,33 @@ var miaou = miaou || {};
 			$('<div>').addClass('user').text(message.authorname)
 		).append($content).data('message', message).attr('mid', message.id);
 		if (message.authorname===me.name) $md.addClass('me');
-		$md.hide()[isOld?'prependTo':'appendTo']('#messages').fadeIn('fast');
-		if (!isOld) {
+		if ($content.height()>150) {
+			$content.addClass("closed");
+			$md.append('<div class=opener>');
+		}
+		$content.find('img').load(scrollToBottom);
+		return $md;
+	}
+
+	function addMessage(message){
+		var insertionIndex = messages.length; // -1 : insert at end, i>=0 : insert before i
+		if (messages.length===0 || message.id>messages[messages.length-1].id) {
+			insertionIndex = -1;
+		} else if (messages[0].id>message.id) {
+			insertionIndex = 0;
+		} else {
+			while (messages[--insertionIndex].id>message.id);
+		}
+		var $md = makeMessageDiv(message);
+		if (~insertionIndex) {
+			if (messages[insertionIndex].id===message.id) {
+				return; // later, with edition features, this behavior will change
+			}
+			messages.splice(insertionIndex, 0, message);
+			$('#messages .message').eq(insertionIndex).before($md);
+		} else {
+			messages.push(message);
+			$md.hide().appendTo('#messages').fadeIn('fast');
 			addToUserList({id: message.author, name: message.authorname});
 			if (!vis()) {
 				if (pingRegex(me.name).test(message.content)) {
@@ -59,11 +73,6 @@ var miaou = miaou || {};
 				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + (room ? room.name : 'no room');
 			}
 		}
-		if ($content.height()>150) {
-			$content.addClass("closed");
-			$md.append('<div class=opener>');
-		}
-		$content.find('img').load(scrollToBottom);
 		scrollToBottom();
 	}
 	
@@ -103,8 +112,8 @@ var miaou = miaou || {};
 			addMessage(message);
 		}).on('room', function(r){
 			room = r;
-			localStorage['lastRoom'] = room.name;
 			localStorage['successfulLoginLastTime'] = "yes";
+			localStorage['room'] = room.id;
 			document.title = room.name;
 			$('#roomname').text('Room : ' + room.name);
 			$('#roomdescription').text(room.description);

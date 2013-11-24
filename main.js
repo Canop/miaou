@@ -115,7 +115,6 @@ function handleUserInRoom(socket, completeUser, room) {
 	});
 }
 
-
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
