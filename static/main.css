@@ -31,9 +31,6 @@ section {
 	height:100%;
 	vertical-align: top;
 }
-#prefs{
-	padding: 4px;
-}
 #right {
 	display: table-cell;
 	width: 260px;
@@ -52,10 +49,25 @@ section {
 	padding:0;
 	vertical-align: top;
 }
-#users .user {
+#prefs {
+	padding: 4px;
+}
+#prefs .pref {
+	line-height: 180%;
+}
+#prefs .user, #users .user {
 	cursor: pointer;
 	padding: 1px 5px;
 	display: block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+#me {
+	position: relative;
+	text-decoration: none;
+	color: black	;
+	display: block;
+	text-align: center;
 }
 #users .user:hover {
 	background: #FFFAE6;
@@ -94,6 +106,8 @@ section {
 	display:inline-block;
 	padding-left: 2px;
 	color: #555;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 .message .content {
 	width: calc(100% - 122px);

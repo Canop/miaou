@@ -144,7 +144,7 @@ function defineAppRoutes(){
 	app.get('/profile', function(req, res){
 		res.render('profile.jade', {
 			user: req.user,
-			suggestedName: loginutil.suggestUsername(req.user.oauthdisplayname)
+			suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname)
 		});
 	});
 	app.post('/profile', function(req, res){

@@ -140,6 +140,7 @@ var miaou = miaou || {};
 		$('#help').click(function(){ window.open('help#Writing_Messages') });
 		
 		$('#changeroom').click(function(){ location='rooms' });
+		$('#me').text(me.name);
 		console.log('Miaou!');
 	});
 })();
