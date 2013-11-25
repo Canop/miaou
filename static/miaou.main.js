@@ -107,14 +107,16 @@ var miaou = miaou || {};
 				document.title = room ? room.name : 'no room';						
 			}
 		});
-		
-		socket.on('message', function(message){
+		socket.emit('enter', room.id);		
+		socket.on('get_room', function(unhandledMessage){
+			console.log('Server asks room');
+			socket.emit('enter', room.id);
+			socket.emit('message', unhandledMessage);
+		}).on('message', function(message){
 			addMessage(message);
 		}).on('room', function(r){
 			if (room.id!==r.id) {
-				// due to a problem in express session management (no window session), we may be connected to
-				// the bad room after a (silent) reconnect
-				location.reload();
+				console.log('SHOULD NOT HAPPEN!');
 			}
 			room = r;
 			localStorage['successfulLoginLastTime'] = "yes";
@@ -122,6 +124,13 @@ var miaou = miaou || {};
 			document.title = room.name;
 			$('#roomname').text('Room : ' + room.name);
 			$('#roomdescription').text(room.description);
+		}).on('reconnect', function(){
+			console.log('RECONNECT, sending room again');
+			setTimeout(function(){
+				socket.emit('enter', room.id);
+			}, 500); // first message after reconnect not always received by server if I don't delay it
+		}).on('disconnect', function(){
+			console.log('DISCONNECT');
 		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
 		
 		$('#messages').on('click', '.message .content img', function(){ window.open(this.src) })
