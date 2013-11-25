@@ -286,3 +286,9 @@ span.button:hover {
 	float: right;
 	margin: 2px;
 }
+
+@media screen and (max-width: 830px) {
+    #left, #right {
+	display: none;
+    }
+}
