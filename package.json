@@ -1,0 +1,21 @@
+{
+    "name": "miaou",
+    "version": "0.1.0",
+    "description": "A node based chat server",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Canop/miaou"
+    },
+    "dependencies": { express, jade, pg, passport, socket.io, redis, passport-google-oauth
+        "express": "~3.4.0",
+        "jade": "~0.35.0",
+        "pg": "~2.8.3",
+        "passport": "~0.1.17",
+        "socket.io": "~0.9.16",
+        "redis": "~0.9.1",
+        "passport-google": "~0.3.0"
+    },
+    "scripts": {
+        "start": "sh start.sh"
+    }
+}
