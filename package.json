@@ -6,7 +6,7 @@
         "type": "git",
         "url": "https://github.com/Canop/miaou"
     },
-    "dependencies": { express, jade, pg, passport, socket.io, redis, passport-google-oauth
+    "dependencies": {
         "express": "~3.4.0",
         "jade": "~0.35.0",
         "pg": "~2.8.3",
