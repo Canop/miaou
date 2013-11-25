@@ -63,34 +63,49 @@ function ensureCompleteProfile(req, res, next) {
 }
 
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
-function handleUserInRoom(socket, completeUser, room) {
+// Implementation details :
+//  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
+//     different rooms and there's a reconnect
+function handleUserInRoom(socket, completeUser) {
 	function error(err){
-		console.log('ERR', err, 'for user', completeUser.name, 'in room', room.name);
+		console.log('ERR', err, 'for user', completeUser.name, 'in room', (room||{}).name);
 		socket.emit('error', err.toString());
 	}
-	var lastMessageTime,
+	var room, lastMessageTime,
 		publicUser = {id:completeUser.id, name:completeUser.name};
 
-	socket.set('publicUser', publicUser);
-	socket.emit('room', room);
-	socket.join(room.id);
-	mdb.con(function(err, con){
-		if (err) return error('no connection');
-		con.queryLastMessages(room.id, 300).on('row', function(message){
-			socket.emit('message', message);
-		}).on('end', function(){
-			con.ok();
-			socket.broadcast.to(room.id).emit('enter', publicUser);
-		});
-	});
-	io.sockets.clients(room.id).forEach(function(s){
-		s.get('publicUser', function(err, u){
-			if (err) console.log('missing user on socket', err);
-			else socket.emit('enter', u);
-		});
-	});
+	console.log('starting handling new socket for', completeUser.name);
 
-	socket.on('message', function (content) {
+	socket.set('publicUser', publicUser);
+	socket.on('enter', function(roomId){
+		console.log(publicUser.name, 'enters', roomId);
+		mdb.con(function(err, con){
+			if (err) return error('no connection'); // todo kill everything
+			con.fetchRoom(roomId, function(err, r){
+				if (err) return error(err);
+				// todo handle missing room
+				room = r;
+				socket.emit('room', room);
+				socket.join(room.id);
+				con.queryLastMessages(room.id, 300).on('row', function(message){
+					socket.emit('message', message);
+				}).on('end', function(){
+					con.ok();
+					socket.broadcast.to(room.id).emit('enter', publicUser);
+				});
+				io.sockets.clients(room.id).forEach(function(s){
+					s.get('publicUser', function(err, u){
+						if (err) console.log('missing user on socket', err);
+						else socket.emit('enter', u);
+					});
+				});
+			});			
+		});
+	}).on('message', function (content) {
+		if (!room) {
+			socket.emit('get_room', content);
+			return;
+		}
 		var now = Date.now();
 		if (content.length>maxContentLength) {
 			error('Message too big, consider posting a link instead');
@@ -111,6 +126,7 @@ function handleUserInRoom(socket, completeUser, room) {
 			});
 		}
 	}).on('disconnect', function(){
+		console.log(completeUser.name, "disconnected");
 		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);
 	});
 }
@@ -240,7 +256,7 @@ function startServer(){
 			con.fetchUserById(userId, function(err, completeUser){
 				if (err) return die(err);
 				con.ok();
-				handleUserInRoom(socket, completeUser, session.room);
+				handleUserInRoom(socket, completeUser);
 			});
 		});
 	});
