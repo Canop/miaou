@@ -10,6 +10,7 @@ html
 		script(src="static/miaou.dialog.js")
 		script(src="static/miaou.notify.js")
 		script(src="static/miaou.editor.js")
+		script(src="static/miaou.format.js")
 		script(src="static/miaou.main.js")
 	body
 		div.table
@@ -27,6 +28,7 @@ html
 						textarea#input
 						button#send Send
 						button#help Help
+						button#cancelEdit(style="display:none") Cancel
 			div#right
 				div#rightcontainer
 					section#roominfo
@@ -50,14 +52,14 @@ html
 							☒ show message date
 							☒ persistent history
 							☒ remove disconnected users from list
-							☐ message edit, ↑↓
+							☒ message edit, ↑↓
 							☒ help				
 							☒ change room, room URL
 							☒ persistent authentication
 							☒ room info
-							☐ project how-to
 							☐ links to messages
 							☐ reply to message
+							☐ load older messages
 							☐ stars
 							☐ user icons
 							☐ white board
@@ -66,14 +68,14 @@ html
 							☐ invitations
 							☐ consistency with SO
 							☐ consistency with MH
-							☐ @ syntax autocomplete
 							☐ bot API
 							☐ .ico
 							☐ Firefox compatibility
-							☐ user ban		
+							☐ user ban
 							☒ rate limit, message size cap		
 							☐ server-wide pings		
 							☐ icons in user list for "typing" ones
+							☐ minify css & js
 			
 		script.
 			var me = !{user},

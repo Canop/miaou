@@ -1,6 +1,7 @@
 var miaou = miaou || {};
 (function(){
 	var NB_MESSAGES = 100,
+		MAX_AGE_FOR_EDIT = 800, // seconds (should be coherent with server settings) 
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
 		messages = [];
@@ -14,25 +15,7 @@ var miaou = miaou || {};
 	}
 
 	function makeMessageDiv(message){
-		var content = message.content
-			.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-			.replace(/(^|\n)(?:&gt;\s*)([^\n]+)(?=\n|$)/g, "\n<span class=citation>$2</span>")
-			.replace(/(^|\W)`([^`]+)`(?=\W|$)/g, "$1<code>$2</code>")
-			.replace(/(^|\W)\*\*([^\*<>]+)\*\*(?=\W|$)/g, "$1<b>$2</b>")
-			.replace(/(^|\W)\*([^\*<>]+)\*(?=\W|$)/g, "$1<i>$2</i>")
-			.replace(/(^|\n)(?:    |\t)([^\n]+)(?=\n|$)/g, "$1<code class=indent>$2</code>")
-			.trim()
-			.replace(/(^|\n)(https?:\/\/[^\s<>]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(?=\n|$)/g, "$1<img src=$2.$3>") // exemple : http://mustachify.me/?src=http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg
-			.replace(/(^|\n)(https?:\/\/[^\s<>?]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?]*)?(?=\n|$)/g, "$1<img src=$2.$3$4>") // exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&modified_at=1384796271&ratio_x=03&ratio_y=02&width=900
-			.replace(/\n+/g,'<br>')
-			.replace(/(^|\s)\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)(?=\s|$)/g, '$1<a target=_blank href="$3">$2</code>'); // exemple : [dystroy](http://dystroy.org)
-		// the following applies replacement to what isn't in a html tag - todo : find somthing more elegant 
-		content = ('>'+content+'<').replace(/>([^<]+)</g, function(_,s){
-			return '>'+s.replace(/(https?|ftp):\/\/[^\s"\(\)\[\]]+/ig, function(href){
-				return '<a target=_blank href="'+href+'">'+href+'</a>';
-			})+'<'
-		}).slice(1,-1);
-		var $content = $('<div>').addClass('content').append(content);
+		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content));
 		var $md = $('<div>').addClass('message').append(
 			$('<div>').addClass('user').text(message.authorname)
 		).append($content).data('message', message).attr('mid', message.id);
@@ -42,6 +25,7 @@ var miaou = miaou || {};
 			$md.append('<div class=opener>');
 		}
 		$content.find('img').load(scrollToBottom);
+		if (message.changed) $md.addClass('edited');
 		return $md;
 	}
 
@@ -57,13 +41,15 @@ var miaou = miaou || {};
 		var $md = makeMessageDiv(message);
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
-				return; // later, with edition features, this behavior will change
+				messages[insertionIndex] = message;
+				$('#messages .message').eq(insertionIndex).replaceWith($md);				
+			} else {
+				messages.splice(insertionIndex, 0, message);
+				$('#messages .message').eq(insertionIndex).before($md);				
 			}
-			messages.splice(insertionIndex, 0, message);
-			$('#messages .message').eq(insertionIndex).before($md);
 		} else {
 			messages.push(message);
-			$md.hide().appendTo('#messages').fadeIn('fast');
+			$md.appendTo('#messages');
 			addToUserList({id: message.author, name: message.authorname});
 			if (!vis()) {
 				if (pingRegex(me.name).test(message.content)) {
@@ -99,14 +85,13 @@ var miaou = miaou || {};
 	}
 	
 	$(function(){
-		var socket = io.connect(location.origin);
-
 		vis(function(){
 			if (vis()) {
 				nbUnseenMessages = 0; nbUnseenPings = 0;
 				document.title = room ? room.name : 'no room';						
 			}
 		});
+		var socket = io.connect(location.origin);
 		socket.emit('enter', room.id);		
 		socket.on('get_room', function(unhandledMessage){
 			console.log('Server asks room');
@@ -123,12 +108,12 @@ var miaou = miaou || {};
 			localStorage['room'] = room.id;
 			document.title = room.name;
 			$('#roomname').text('Room : ' + room.name);
-			$('#roomdescription').text(room.description);
+			$('#roomdescription').html(miaou.mdToHtml(room.description));
 		}).on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
 			setTimeout(function(){
 				socket.emit('enter', room.id);
-			}, 500); // first message after reconnect not always received by server if I don't delay it
+			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
 		}).on('disconnect', function(){
 			console.log('DISCONNECT');
 		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
@@ -139,10 +124,16 @@ var miaou = miaou || {};
 		}).on('click', '.closer', function(){
 			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
 		}).on('mouseenter', '.message', function(){
-			var message = $(this).data('message');
-			$('<div>').addClass('messageinfo').text(moment(message.created*1000).fromNow()).appendTo(this);
+			var message = $(this).data('message'), menuItems = [];
+			if ($(this).hasClass('me')) menuItems.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
+			menuItems.push(moment(message.created*1000).fromNow());
+			if (message.changed) menuItems.push('edited ' + moment(message.changed*1000).fromNow());
+			$('<div>').addClass('messageinfo').html(menuItems.join(' - ')).appendTo(this);
 		}).on('mouseleave', '.message', function(){
 			$('.messageinfo').remove();
+		}).on('click', '.message.me', function(){
+			var message = $(this).data('message');
+			if (Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT) $('#input').editMessage(message);
 		});
 
 		$('#input').editFor(socket);

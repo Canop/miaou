@@ -115,6 +115,9 @@ section {
 	display:inline-block;
 	word-wrap: break-word;
 }
+.message.edited .content:before {
+	content: '✎ ';
+}
 .message .content img {
 	border: none;
 	max-width: 100%;
@@ -123,7 +126,7 @@ section {
 }
 code {
 	font-family: monospace;
-	color: #333;
+	color: #444;
 	white-space: pre;
 }
 .indent {
@@ -135,6 +138,24 @@ code {
 	padding-left: 3px;
 	display: inline-block;
 }
+.olli {
+	margin: 0 5px;
+	font-weight: 700;
+}
+.olli:after {
+	content: ".";
+}
+.ulli:before {
+	content: "• ";
+}
+.h1 {
+	font-weight: bold;
+	text-decoration: underline;
+}
+.h2 {
+	text-decoration: underline;
+}
+
 
 #inputpanel {
 	background: #F0EAD6;

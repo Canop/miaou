@@ -94,18 +94,32 @@ Con.prototype.queryLastMessages = function(roomId, N){
 	);
 }
 
-// stores a message and sets its id
+// if id is set, updates the message if the author & room matches
+// else stores a message and sets its id
 Con.prototype.storeMessage = function(m, cb){
 	var con = this;
-	con.client.query(
-		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
-		[m.room, m.author, m.content, m.created],
-		function(err, result)
-	{
-		if (err) return con.nok(cb, err);
-		m.id = result.rows[0].id;
-		cb(null, m)
-	});
+	if (m.id && m.changed) {
+		// TODO : check the message isn't too old for edition
+		con.client.query(
+			'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5 returning created',
+			[m.content, m.changed, m.id, m.room, m.author],
+			function(err, result)
+		{
+			if (err) return con.nok(cb, err);
+			m.created = result.rows[0].created;
+			cb(null, m)
+		});
+	} else {
+		con.client.query(
+			'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
+			[m.room, m.author, m.content, m.created],
+			function(err, result)
+		{
+			if (err) return con.nok(cb, err);
+			m.id = result.rows[0].id;
+			cb(null, m)
+		});
+	}
 }
 
 exports.init = function(dbConfig){

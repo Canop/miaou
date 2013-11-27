@@ -3,6 +3,7 @@ html
 	head
 		title Miaou - Rooms
 		link(rel='stylesheet', href='static/main.css')
+		script(src="static/miaou.format.js")
 	body
 		div#list
 			h1 Miaou Public Rooms
@@ -14,3 +15,7 @@ html
 			
 		script.
 			delete localStorage['room'];
+			[].forEach.call(document.querySelectorAll('#list td'), function(td){
+				// ? take only first line here ?
+				td.innerHTML = miaou.mdToHtml(td.innerHTML)
+			});

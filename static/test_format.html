@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Message Format Sandbox</title>
+	<script src=jquery-2.0.3.min.js></script>
+	<script src=miaou.format.js></script>
+	<link rel="stylesheet" href="main.css"></link>
+	<style>
+		body {
+			background: #F0EAD6;
+			font-family: Helvetica, arial, freesans, clean, sans-serif;
+			font-size: 14px;
+			margin:0;
+			padding:0;
+		}
+		#C1 {
+			float: left;
+			width: 49%;
+		}
+		#test_input {
+			width:100%;
+			height: 500px;
+			margin: 3px;
+		}
+		#C2 {
+			float: right;
+			width: 49%;
+		}
+		#html, #result {
+			padding: 1%;
+			margin: 0.5%;
+			background: white;
+		}
+	</style>
+</head>
+<body>
+<div id=C1>
+<textarea id=test_input>
+	
+
+# Rules :
+
+1. you can test in this sandbox
+1. nothing is saved
+1. the existing text is just an example
+
+> Now a citation over 3 lines with some **bold** and some *italic*,
+> an URL : http://dystroy.org
+> and a markdown style link : [dystroy](http://dystroy.org)	
+
+* a list item
+* followed by ---**many** _other ones_--- __another__ _one_
+
+## Image :
+On the next line : ` http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg `
+ http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg 
+A line with `**inlined** _code_` and an equation : `y = 2*x`
+*(as you see stars and underscores are preserved in code)*
+
+*This sentence is in italic and the end is **in bold too***
+**Now the reverse : all in bold and the last word in *italic***
+## A code block :
+	#html, #result {
+		padding: 1%;
+		margin : 0.5%;
+		background: white;
+	}
+
+
+
+</textarea>
+<input type=checkbox id=showcode><label for=showcode>Show HTML</label>
+</div>
+<div id=C2 class=message>
+<div id=result class=content></div>
+<div id=html style="display:none;"></div>
+</div>
+<script>
+function format(){
+	$('#html').text(miaou.mdToHtml($('#test_input').val()));
+	$('#result').html(miaou.mdToHtml($('#test_input').val()));
+}
+$('#test_input').keyup(format).focus();
+format();
+$('#result').on('click', 'img', function(){ window.open(this.src) })
+$('#showcode').change(function(){ $('#html').toggle() });
+</script>
+</body>
+</html>

@@ -101,12 +101,12 @@ function handleUserInRoom(socket, completeUser) {
 				});
 			});			
 		});
-	}).on('message', function (content) {
+	}).on('message', function (message) {
 		if (!room) {
-			socket.emit('get_room', content);
+			socket.emit('get_room', message);
 			return;
 		}
-		var now = Date.now();
+		var now = Date.now(), seconds = ~~(now/1000), content = message.content;
 		if (content.length>maxContentLength) {
 			error('Message too big, consider posting a link instead');
 			console.log(content.length, maxContentLength);
@@ -114,7 +114,13 @@ function handleUserInRoom(socket, completeUser) {
 			error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
 		} else {
 			lastMessageTime = now;
-			var m = { content: content, author: publicUser.id, authorname: publicUser.name, room: room.id, created: ~~(now/1000)};
+			var m = { content: content, author: publicUser.id, authorname: publicUser.name, room: room.id};
+			if (message.id) {
+				m.id = message.id;
+				m.changed = seconds;				
+			} else {
+				m.created = seconds;				
+			}
 			mdb.con(function(err, con){
 				if (err) return error('no connection');
 				con.storeMessage(m, function(err, m){
@@ -200,7 +206,6 @@ function defineAppRoutes(){
 			con.listPublicRooms(function(err, rooms){
 				if (err) return; // fixme : what to do/render here ?
 				con.ok();
-				console.log('rooms:', rooms);
 				res.render('rooms.jade', { rooms: rooms });
 			});
 		});

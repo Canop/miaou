@@ -1,3 +1,8 @@
+// Handles the message editor
+// fixme the $(textarea) function isn't cleanly wrapped as there are
+//   relations to "send" and "cancel edit" buttons
+
+
 // replace the selected part by what is returned by cb
 $.fn.replaceSelection = function(cb){
 	return this.each(function(i){		
@@ -31,9 +36,16 @@ $.fn.editFor = function(socket){
 	var $input = this, input = this[0];
 
 	function sendInput(){
-		var txt = $input.val();
-		if (txt.trim().length){
-			socket.emit('message', txt);
+		var txt = $input.val().trim();
+		if (txt.length){
+			var m = {content: txt};
+			var id = $input.data('edited-message-id');
+			if (id) {
+				m.id = id;
+				$input.data('edited-message-id', null);
+				$('#cancelEdit').hide();
+			}
+			socket.emit('message', m);
 			$input.val('');
 		}
 	}
@@ -106,4 +118,18 @@ $.fn.editFor = function(socket){
 			$input.focus();
 		}
 	});
+
+	$('#cancelEdit').on('click', $.fn.cancelEdit.bind(this));
 }
+
+$.fn.editMessage = function(message){
+	this.data('edited-message-id', message.id);
+	this.val(message.content).focus();
+	$('#cancelEdit').show();
+}
+
+$.fn.cancelEdit = function(socket){
+	$('#cancelEdit').hide();
+	this.val('');
+	this.data('edited-message-id', null);
+};
