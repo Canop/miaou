@@ -102,6 +102,9 @@ section {
 .message + .message {
 	border-top: thin dotted #ddd;
 }
+.message + .message.disrupt {
+	border-top: thin solid #aaa;
+}
 .message .user {
 	width: 120px;
 	display:inline-block;
@@ -116,7 +119,8 @@ section {
 	word-wrap: break-word;
 }
 .message.edited .content:before {
-	content: '✎ ';
+	content: url(img/icon_pencil.png);
+	margin-right: 4px;
 }
 .message .content img {
 	border: none;
@@ -155,7 +159,6 @@ code {
 .h2 {
 	text-decoration: underline;
 }
-
 
 #inputpanel {
 	background: #F0EAD6;

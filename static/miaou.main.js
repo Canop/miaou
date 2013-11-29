@@ -2,6 +2,7 @@ var miaou = miaou || {};
 (function(){
 	var NB_MESSAGES = 100,
 		MAX_AGE_FOR_EDIT = 800, // seconds (should be coherent with server settings) 
+		DISRUPTION_THRESHOLD = 60*60, // seconds
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
 		messages = [];
@@ -12,6 +13,13 @@ var miaou = miaou || {};
 
 	function scrollToBottom(){
 		$('#messages').scrollTop($('#messages')[0].scrollHeight)
+	}
+	
+	function showMessageFlowDisruptions(){
+		$('.message').removeClass('disrupt').filter(function(i){
+			// we're assuming here that the elements are coherent with the messages array
+			return (i>0 && messages[i].created-messages[i-1].created > DISRUPTION_THRESHOLD);
+		}).addClass('disrupt');
 	}
 
 	function makeMessageDiv(message){
@@ -59,6 +67,7 @@ var miaou = miaou || {};
 				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + (room ? room.name : 'no room');
 			}
 		}
+		showMessageFlowDisruptions();
 		scrollToBottom();
 	}
 	
@@ -131,6 +140,8 @@ var miaou = miaou || {};
 			$('<div>').addClass('messageinfo').html(menuItems.join(' - ')).appendTo(this);
 		}).on('mouseleave', '.message', function(){
 			$('.messageinfo').remove();
+		}).on('click', 'a', function(e){
+			e.stopPropagation();
 		}).on('click', '.message.me', function(){
 			var message = $(this).data('message');
 			if (Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT) $('#input').editMessage(message);

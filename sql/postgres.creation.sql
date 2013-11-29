@@ -1,6 +1,7 @@
 CREATE TABLE room (
     id serial primary key,
     name varchar(50) UNIQUE NOT NULL,
+    private boolean NOT NULL default false,
     description text NOT NULL
 );
 CREATE TABLE player (
@@ -20,4 +21,21 @@ CREATE TABLE message (
 	changed integer
 );
 create index message_room_created on message (room, created);
-
+CREATE TYPE auth_level AS ENUM ('read', 'write', 'admin', 'own');
+CREATE TABLE room_auth (
+	room integer references room(id),
+	player integer references player(id),
+	auth auth_level NOT NULL,
+	granter integer references player(id),
+	granted integer,
+	PRIMARY KEY(room, player)
+);
+CREATE TABLE access_request (
+	room integer references room(id),
+	player integer references player(id),
+	requested integer NOT NULL,
+	answered integer,
+	answerer integer references player(id),
+	outcome auth_level
+);
+create index access_request_idx on access_request (room, requested);

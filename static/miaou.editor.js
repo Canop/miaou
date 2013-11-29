@@ -96,7 +96,9 @@ $.fn.editFor = function(socket){
 				$input.replaceSelection(function(s){ return s+'\n' });
 				return false;
 			}
-		} else if (e.which==13) {
+		} else if (e.which==27) { // esc
+			$input.cancelEdit();
+		} else if (e.which==13) { // enter
 			sendInput();
 			this.value = '';
 			return false;
@@ -129,7 +131,9 @@ $.fn.editMessage = function(message){
 }
 
 $.fn.cancelEdit = function(socket){
-	$('#cancelEdit').hide();
-	this.val('');
-	this.data('edited-message-id', null);
+	if ($('#cancelEdit').is(':visible')) {
+		this.val('');
+		$('#cancelEdit').hide();
+		this.data('edited-message-id', null);
+	}
 };

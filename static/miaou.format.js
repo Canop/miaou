@@ -28,7 +28,7 @@ var miaou = miaou || {};
 						.replace(/_([^_]+)_/g, "<i>$1</i>")
 						.replace(/---(.+?)---/g, "<strike>$1</strike>")
 						.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>,]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
-						.replace(/([^"])((https?|ftp):\/\/[^\s"\(\)\[\]]+)/ig, '$1<a target=_blank href="$2">$2</a>')
+						.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\(\)\[\]]+)/ig, '$1<a target=_blank href="$2">$2</a>')
 			}).join('');
 			if (m=s.match(/^(?:&gt;\s+)(.*)$/)) {
 				return '<span class=citation>'+m[1]+'</span>';
