@@ -81,7 +81,7 @@ function handleUserInRoom(socket, completeUser) {
 		console.log(publicUser.name, 'enters', roomId);
 		mdb.con(function(err, con){
 			if (err) return error('no connection'); // todo kill everything
-			con.fetchRoom(roomId, function(err, r){
+			con.fetchRoomAndUserAuth(roomId, publicUser.id, function(err, r){
 				if (err) return error(err);
 				// todo handle missing room
 				room = r;
@@ -137,49 +137,51 @@ function handleUserInRoom(socket, completeUser) {
 	});
 }
 
+// calls the callback with the room given by roomId or null
+function withRoom(roomId, userId, cb){
+	if (!roomId) return cb(null, null);
+	mdb.con(function(err, con){
+		if (err) cb(new Error('no connection'));
+		con.fetchRoomAndUserAuth(roomId, userId, function(err, room){
+			if (err) return cb(err);
+			con.ok();
+			cb(null, room);
+		});
+	});
+}
+
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
 	app.get(/^\/(\d+)?$/, ensureAuthenticated, ensureCompleteProfile, function(req, res){
-		var session = req.session, roomId = +req.params[0];
-		if (roomId && (session.room==null || session.room.id != roomId)) {
-			mdb.con(function(err, con){
-				if (err) return new Error('no connection'); // fixme : send to error page
-				con.fetchRoom(roomId, function(err, room){
-					if (err) return die(err);
-					con.ok();
-					if (room) {
-						session.room = room;
-						res.render('index.jade', { user: JSON.stringify(req.user), room: JSON.stringify(session.room) });
-					} else {
-						res.redirect(url('/rooms'));
-					}
-				});
-			});
-		} else {
-			res.render('index.jade', { user: JSON.stringify(req.user), room: JSON.stringify(session.room)||'null' });
-		}
+		withRoom(+req.params[0], req.user.id, function(err, room) {
+			if (room) {
+				req.session.room = room;
+				res.render('index.jade', { user: JSON.stringify(req.user), room: JSON.stringify(room) });
+			} else {
+				res.redirect(url('/rooms'));			
+			}
+		});
 	});
+	
 	app.get('/login', function(req, res){
 		res.render('login.jade', { user: req.user, authurl: url('/auth/google') });
 	});
+	
 	app.get('/profile', function(req, res){
 		res.render('profile.jade', {
 			user: req.user,
 			suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname)
 		});
 	});
-	app.post('/profile', function(req, res){
+	app.post('/profile', ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		var name = req.param('name');
 		if (loginutil.isValidUsername(name)) {
 			mdb.con(function(err, con){
-				if (err) return new Error('no connection'); // fixme : send to error page
+				if (err) return res.render('error.jade', { error: err.toString() });
 				req.user.name = name;
 				con.updateUser(req.user, function(err){
-					if (err) {
-						console.log('error in update user', err);
-						return; // fixme : what to do/render here ?
-					}
+					if (err) return res.render('error.jade', { error: err.toString() });
 					con.ok();
 					res.redirect(url('/'));
 				});
@@ -200,13 +202,42 @@ function defineAppRoutes(){
 		function(req, res) { res.redirect(url('/')) }
 	);
 
-	app.get('/rooms', function(req, res){
+	app.get('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){
+		withRoom(+req.param('id'), req.user.id, function(err, room) {
+			res.render('room.jade', { room: JSON.stringify(room), error: "null" });
+		});
+	});
+	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
+		var roomId = +req.param('id'), name = req.param('name');
+		if (!/^\w(\s?[\w\d\-_]){2,15}$/.test(name)) {
+			return; // todo error message
+		}
+		mdb.con(function(err, con){
+			if (err) return res.render('error.jade', { error: err.toString() });
+			var room = {id:roomId, name: name, private:req.param('private')||false, description:req.param('description')};
+			console.log('post room:', room);
+			con.storeRoom(room, req.user, function(err){
+				if (err) {
+					console.log('error in update or create room', err);
+					res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
+					return;
+				}
+				con.ok();
+				res.redirect(url('/'+room.id));
+			});
+		});
+	});
+
+	app.get('/rooms', ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		mdb.con(function(err, con){
 			if (err) return new Error('no connection'); // fixme : send to error page
-			con.listPublicRooms(function(err, rooms){
-				if (err) return; // fixme : what to do/render here ?
-				con.ok();
-				res.render('rooms.jade', { rooms: rooms });
+			con.listPublicRooms(function(err, publicRooms){
+				if (err) return res.render('error.jade', { error: err.toString() });
+				con.listUserRoomAuths(req.user.id, function(err, userRooms){
+					if (err) return res.render('error.jade', { error: err.toString() });
+					con.ok();
+					res.render('rooms.jade', { publicRooms:publicRooms, userRooms:userRooms });
+				});
 			});
 		});
 	});

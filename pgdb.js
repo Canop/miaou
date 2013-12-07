@@ -73,10 +73,35 @@ Con.prototype.fetchRoom = function(id, cb){
 	});
 }
 
+// returns an existing room found by its id and the user's auth level
+Con.prototype.fetchRoomAndUserAuth = function(roomId, userId, cb){
+	console.log('fetchRoomAndUserAuth', roomId, userId);
+	var con = this;
+	con.client.query('select id, name, description, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId], function(err, result){
+		if (err) {
+			con.nok(cb, err);
+		} else if (!result.rows.length) {
+			cb(new Error('Room "'+roomId+'" not found'));
+		} else {
+			cb(null, result.rows[0]);
+		}
+	});
+}
+
 // gives to cb an array of all public rooms
 Con.prototype.listPublicRooms = function(cb){
 	var con = this;
-	con.client.query('select id, name, description from room', function(err, result){
+	con.client.query('select id, name, description from room where private is not true', function(err, result){
+		if (err) {
+			con.nok(cb, err);
+		} else {
+			cb(null, result.rows);
+		}
+	});
+}
+Con.prototype.listUserRoomAuths = function(userId, cb){
+	var con = this;
+	con.client.query("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId], function(err, result){
 		if (err) {
 			con.nok(cb, err);
 		} else {
@@ -117,8 +142,61 @@ Con.prototype.storeMessage = function(m, cb){
 		{
 			if (err) return con.nok(cb, err);
 			m.id = result.rows[0].id;
-			cb(null, m)
+			cb(null, m);
 		});
+	}
+}
+
+Con.prototype.checkAuthLevel = function(roomId, userId, minimalLevel, cb){
+	var con = this;
+	console.log("select auth from room_auth where player=$1 and room=$2 and auth>=$3",
+		[roomId, userId, minimalLevel]);
+	con.client.query(
+		"select auth from room_auth where player=$1 and room=$2 and auth>=$3",
+		[userId, roomId, minimalLevel],
+		function(err, result)
+	{
+		if (err) return con.nok(cb, err);
+		if (result.rows.length) cb(null, result.rows[0].auth);
+		else cb(null, false);
+	});
+}
+
+Con.prototype.storeRoom = function(r, author, cb) {
+	var con = this, now = ~~(Date.now()/1000);
+	if (r.id) {
+		con.checkAuthLevel(r.id, author.id, 'admin', function(err, auth){
+			if (err) return con.nok(cb, err);
+			if (auth) {
+				con.client.query(
+					'update room set name=$1, private=$2, description=$3 where id=$4',
+					[r.name, r.private, r.description||'', r.id],
+					function(err, result)
+				{
+					if (err) return con.nok(cb, err);
+					cb(null, r);
+				});				
+			} else {
+				cb(new Error("Admin right is needed to change the room"));
+			}
+		});
+	} else {
+		con.client.query(
+			'insert into room (name, private, description) values ($1, $2, $3) returning id',
+			[r.name, r.private, r.description||''],
+			function(err, result)
+		{
+			if (err) return con.nok(cb, err);
+			r.id = result.rows[0].id;
+			con.client.query(
+				'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
+				[r.id, author.id, 'own', now],
+				function(err, result)
+			{
+				if (err) return con.nok(cb, err);
+				cb(null, r);
+			});
+		});		
 	}
 }
 

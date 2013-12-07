@@ -6,9 +6,17 @@ html
 		script(src="static/miaou.format.js")
 	body
 		div#list
-			h1 Miaou Public Rooms
+			a(href="room") Create a room
+			if userRooms.length
+				h2 Your Rooms
+				table.list
+					each room, i in userRooms
+						tr
+							th: a(href=room.id) #{room.name}
+							td #{room.description}
+			h2 Public Rooms
 			table.list
-				each room, i in rooms
+				each room, i in publicRooms
 					tr
 						th: a(href=room.id) #{room.name}
 						td #{room.description}

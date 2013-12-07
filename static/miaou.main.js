@@ -150,7 +150,9 @@ var miaou = miaou || {};
 		$('#input').editFor(socket);
 		$('#help').click(function(){ window.open('help#Writing_Messages') });
 		
-		$('#changeroom').click(function(){ location='rooms' });
+		$('#changeroom').click(function(){ window.open('rooms') });
+		$('#editroom').click(function(){ location='room?id='+room.id });
+		if (room.auth!='admin' && room.auth!='own') $('#editroom').hide();
 		$('#me').text(me.name);
 		console.log('Miaou!');
 	});

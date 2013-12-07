@@ -1,0 +1,12 @@
+doctype 5
+html
+	head
+		title Miaou - Tout cassé !
+		link(rel='stylesheet', href='static/main.css')
+	body
+		div.dialog
+			div.dialog_title An error occured
+			div.dialog_content
+				p#err.error= error
+			div.dialog_buttons
+				button(onclick="location='/'") Home			

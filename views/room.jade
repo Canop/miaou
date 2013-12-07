@@ -1,0 +1,57 @@
+doctype 5
+html
+	head
+		title Miaou - Room Edition
+		link(rel='stylesheet', href='static/main.css')
+		script(src="static/jquery-2.0.3.min.js")
+		script(src="static/miaou.format.js")
+	body
+		form(method="post")
+			div.dialog
+				div.dialog_title Room Creation
+				div.dialog_content
+					div.form
+						input#id(type="hidden", name="id")
+						label.label Name
+						input#name(type="text", name="name", value=suggestedName, pattern="\\w(\\s?[\\w\\d\\-_]){2,15}")
+						span.label Privacy
+						input#private(name="private", id="private", type="checkbox")
+						label.cblabel(for="private") private room
+						label.label Description
+							span.small Markdown allowed
+						textarea#description(name="description")
+						label.label.small Description Preview
+						div.rendered.input#preview
+					p#err.error
+				div.dialog_buttons
+					input#cancel(type='button', value='Cancel')
+					input(type='submit', value='Save')#submit
+		
+		script.
+			var room = !{room}, error=!{error};
+			if (room) {
+				$('.dialog_title').text('Room Edition');
+				$('#name').val(room.name);
+				$('#description').val(room.description);
+				$('#id').val(room.id);
+			}
+			if (error) {
+				$('#err').text(error);
+			}
+			$('form')[0].action = location;
+			$('#name').focus().keyup(function(){
+				if (!this.validity.valid){
+					$('#err').text('Please type a name with 3 to 16 standard characters, digits, "_" or "-" (and a few spaces if you insist)');
+					$('#submit').prop('disabled', true);
+				} else {
+					$('#err').text('');
+					$('#submit').prop('disabled', false);
+				}
+			});
+			$('#cancel').click(function(){ history.back() });
+			function format(){
+				$('#preview').html(miaou.mdToHtml($('#description').val()));
+			}
+			$('#description').keyup(format);
+			format();
+
