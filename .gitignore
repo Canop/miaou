@@ -1,4 +1,18 @@
+# running libraries
 node_modules
+
+# running configuration
 config.json
+
+# dystroy's scripts & utilities
 deploy.sh
+config-dys-tour.json
+config-dystroy.json
+
+# personal notes
+notes.dev
+sql/postgres.alter.sql
+
+# execution byproducts
 *.log
+dump.rdb

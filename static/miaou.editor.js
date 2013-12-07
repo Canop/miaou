@@ -2,7 +2,6 @@
 // fixme the $(textarea) function isn't cleanly wrapped as there are
 //   relations to "send" and "cancel edit" buttons
 
-
 // replace the selected part by what is returned by cb
 $.fn.replaceSelection = function(cb){
 	return this.each(function(i){		

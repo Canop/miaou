@@ -148,8 +148,7 @@ var miaou = miaou || {};
 		});
 
 		$('#input').editFor(socket);
-		$('#help').click(function(){ window.open('help#Writing_Messages') });
-		
+		$('#help').click(function(){ window.open('help#Writing_Messages') });		
 		$('#changeroom').click(function(){ location='rooms' });
 		$('#me').text(me.name);
 		console.log('Miaou!');
