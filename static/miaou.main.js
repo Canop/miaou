@@ -7,6 +7,16 @@ var miaou = miaou || {};
 		users = [],
 		messages = [];
 	
+	// returns true if the user's authorization level in room is at least the passed one
+	function checkAuth(auth) {
+		var levels = ['read', 'write', 'admin', 'own'];
+		for (var i=levels.length; i-->0;) {
+			if (levels[i]===room.auth) return true;
+            if (levels[i]===auth) return false;
+		}
+        return false;
+	}
+
 	function pingRegex(name) {
 		return new RegExp('@'+name+'(\\b|$)')
 	}
@@ -14,7 +24,7 @@ var miaou = miaou || {};
 	function scrollToBottom(){
 		$('#messages').scrollTop($('#messages')[0].scrollHeight)
 	}
-	
+
 	function showMessageFlowDisruptions(){
 		$('.message').removeClass('disrupt').filter(function(i){
 			// we're assuming here that the elements are coherent with the messages array
@@ -149,7 +159,9 @@ var miaou = miaou || {};
 
 		$('#input').editFor(socket);
 		$('#help').click(function(){ window.open('help#Writing_Messages') });		
-		$('#changeroom').click(function(){ location='rooms' });
+		$('#changeroom').click(function(){ window.open('rooms') });
+		$('#editroom').click(function(){ location='room?id='+room.id });
+		if (!checkAuth('admin')) $('#editroom').hide();
 		$('#me').text(me.name);
 		console.log('Miaou!');
 	});

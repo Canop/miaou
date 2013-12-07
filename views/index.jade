@@ -32,9 +32,10 @@ html
 			div#right
 				div#rightcontainer
 					section#roominfo
-						button#changeroom change
+						button#changeroom rooms
+						button#editroom edit
 						h1#roomname
-						p#roomdescription
+						p#roomdescription.rendered
 					section#news
 						h1 TODO
 						pre.
@@ -64,7 +65,4 @@ html
 		script.
 			var me = !{user},
 				room = !{room};
-			if (!room) {
-				if (localStorage['room']) location = localStorage['room'];
-				else location = 'rooms';
-			}
+			if (!room) location = 'rooms';

@@ -122,7 +122,7 @@ section {
 	content: url(img/icon_pencil.png);
 	margin-right: 4px;
 }
-.message .content img {
+.message .content img, .rendered img {
 	border: none;
 	max-width: 100%;
 	max-height: 130px;
@@ -263,10 +263,64 @@ span.button:hover {
 }
 .dialog_buttons {
 	float: right;
-	padding: 11px 7px;
+	padding: 11px 15px;
 }
 .dialog_content {
 	padding: 7px;
+}
+.dialog_content p {
+	clear: both;
+}
+.dialog_content .form {
+	clear: both;
+}
+.dialog_content .label {
+	display:block;
+	font-weight:bold;
+	text-align:right;
+	width:120px;
+	float:left;
+	padding: 8px 4px;
+	clear: both;
+}
+.dialog_content input[type=text], .dialog_content .input{
+	float:left;
+	padding:4px 2px;
+	width: calc( 100% - 155px );
+	margin: 4px 2px 15px 10px;
+}
+.dialog_content .small{
+	color:#666666;
+	display:block;
+	font-size:95%;
+	font-weight:normal;
+	text-align:right;
+	width:120px;
+}
+.dialog_content .cblabel{
+	float: left;
+	padding: 4px 2px;
+	width: calc( 100% - 200px );
+	margin: 2px 0 5px 0;
+}
+.dialog_content input[type=checkbox]{
+	float: left;
+	margin: 10px 10px;
+}
+.dialog_content textarea {
+	float:left;
+	padding:4px 2px;
+	border:solid 1px #888;
+	width: calc( 100% - 155px );
+	margin:2px 0 15px 10px;
+	height: 70px;
+}
+.dialog_content .mdpreview {
+	float:left;
+	padding:4px 2px;
+	width: calc( 100% - 155px );
+	margin:2px 0 20px 10px;
+	height: 70px;
 }
 .close_dialog {
 	float: right;
@@ -320,8 +374,8 @@ span.button:hover {
 	border-radius: 7px;
 }
 
-#changeroom {
-	font-size: 60%;
+#changeroom, #editroom {
+	font-size: 75%;
 	float: right;
 	margin: 2px;
 }

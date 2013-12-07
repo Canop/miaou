@@ -7,15 +7,17 @@ html
 	body
 		form(method="post")
 			div.dialog
-				div.dialog_title Choose the name by which you'll appear to other users
+				div.dialog_title Profile Edition
 				div.dialog_content
 					p Don't forget we're still in beta, so try to be helpful : Pick a name by which you will be recognized.
 					p Choose wisely (not &quot;wisely&quot;).
-					p
-						input#name(name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}", style="width:90%;margin-left:5%")
-						p#err.error
+					div.form
+						label.label Name
+						input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
+					p#err.error
 				div.dialog_buttons
-					input(type='submit', value='Save')#submit
+					input#cancel(type='button', value='Cancel')
+					input#submit(type='submit', value='Save')
 		
 		script.
 			$('form')[0].action = location;
@@ -31,4 +33,5 @@ html
 					$('#submit').prop('disabled', false);
 				}
 			});
+			$('#cancel').click(function(){ history.back() });
 			
