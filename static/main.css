@@ -188,7 +188,9 @@ code {
 	float: right;
 	margin-top: 4px;
 	margin-right: 2px;
+	margin-bottom: -2px;
 	text-align: center;
+	padding: 0;
 }
 #previewpanel {
 	background: #F0EAD6;
