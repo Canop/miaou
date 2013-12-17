@@ -52,10 +52,8 @@ Con.prototype.fetchUserById = function(id, cb){
 
 // right now it only updates the name, I'll enrich it if the need arises
 Con.prototype.updateUser = function(user, cb){
-	console.log('in update user', user);
 	var con = this;
 	con.client.query('update player set name=$1 where id=$2', [user.name, user.id], function(err, result){
-		console.log('update player outcome : ', err, result);
 		if (err) con.nok(cb, err);
 		else cb();
 	});

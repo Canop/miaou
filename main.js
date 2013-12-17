@@ -108,17 +108,14 @@ function defineAppRoutes(){
 	});
 	
 	app.get('/profile', function(req, res){
-		console.log('get /profile');
 		res.render('profile.jade', {
 			user: req.user,
 			suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname)
 		});
 	});
 	app.post('/profile', ensureAuthenticated, function(req, res){
-		console.log('post /profile');
 		var name = req.param('name');
 		if (loginutil.isValidUsername(name)) {
-			console.log('user name is valid');
 			mdb.con(function(err, con){
 				if (err) return res.render('error.jade', { error:err.toString() });
 				req.user.name = name;
