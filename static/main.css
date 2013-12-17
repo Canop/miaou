@@ -165,7 +165,6 @@ code {
 	display: table-row;	
 	width:100%;
 	height: 94px;
-	text-align: center;
 }
 #input {
 	width: calc(100% - 14px - 70px);
@@ -175,11 +174,28 @@ code {
 	resize: none; 
 	float: left;
 }
-#inputpanel button {
+#preview {
+	width: calc(100% - 9px - 70px);
+	height: calc(100% - 5px);
+	float: left;
+	word-wrap: break-word;
+	background: white;
+	overflow-y: auto;
+	padding: 2px;
+}
+#inputpanel button, #previewpanel button {
 	width: 70px;
 	float: right;
 	margin-top: 4px;
 	margin-right: 2px;
+	text-align: center;
+}
+#previewpanel {
+	background: #F0EAD6;
+	display: table-row;	
+	width:100%;
+	height: 94px;
+	display: none;
 }
 h1 {
 	color: #655;

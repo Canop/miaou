@@ -121,7 +121,9 @@ $.fn.editFor = function(socket){
 	});
 
 	$('#cancelEdit').on('click', $.fn.cancelEdit.bind(this));
+	return $input;
 }
+
 
 $.fn.editMessage = function(message){
 	this.data('edited-message-id', message.id);

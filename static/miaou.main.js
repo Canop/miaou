@@ -176,15 +176,12 @@ var miaou = miaou || {};
 		});
 
 		$('#input').editFor(socket);
-		$('#help').click(function(){ window.open('help#Writing_Messages') });		
-		$('#changeroom').click(function(){ window.open('rooms') });
 		if (checkAuth('admin')) {
 			$('#editroom').click(function(){ location = 'room?id='+room.id });
 			$('#auths').click(function(){ location = 'auths?id='+room.id });			
 		} else {
 			$('#editroom, #auths').hide();
 		}
-		$('#me').text(me.name);
 		console.log('Miaou!');
 	});
 })();

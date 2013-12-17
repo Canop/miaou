@@ -30,6 +30,11 @@ html
 						button#send Send
 						button#help Help
 						button#cancelEdit(style="display:none") Cancel
+						button#showPreview Preview
+					div#previewpanel
+						div#preview.rendered
+						button#hidePreview Hide
+						button#shortcuts Shortcuts
 			div#right
 				div#rightcontainer
 					section#roominfo
@@ -44,14 +49,13 @@ html
 							☒ room creation
 							☒ private rooms
 							☒ room admins
-							☐ preview
+							☒ preview
 							☐ links to messages
 							☐ reply to message
 							☐ load older messages
 							☐ stars
 							☐ user icons
 							☐ white board
-							☐ invitations
 							☐ ↑ to edit
 							☐ consistency with SO
 							☐ consistency with MH
@@ -73,3 +77,20 @@ html
 			if (room.private) {
 				$('#roomname').addClass('private').attr('title', 'This room is private');
 			}
+			$('#help').click(function(){ window.open('help#Writing_Messages') });		
+			$('#changeroom').click(function(){ window.open('rooms') });
+			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
+			$('#me').text(me.name);
+			$('#showPreview').click(function(){
+				$(this).hide();
+				$('#input').focus();
+				$('#previewpanel').css('display','table-row');
+			});
+			$('#hidePreview').click(function(){
+				$('#input').focus();
+				$('#showPreview').show();
+				$('#previewpanel').hide();
+			});
+			$('#input').on('change keyup', function(){
+				$('#preview').html(miaou.mdToHtml(this.value));
+			});
