@@ -18,7 +18,8 @@ html
 				section#prefs
 					a#me.pref(href="profile", title="Edit profile")
 				section
-					h1 Users
+					button#auths manage
+					h2 Users
 					div#users
 			div#center
 				div.table
@@ -34,15 +35,16 @@ html
 					section#roominfo
 						button#changeroom rooms
 						button#editroom edit
-						h1#roomname
+						h2#roomname
 						p#roomdescription.rendered
 					section#news
-						h1 TODO
+						h2 TODO
 						pre.
 							☐ server-wide pings		
-							☐ room creation
-							☐ room admins
-							☐ private rooms
+							☒ room creation
+							☒ private rooms
+							☒ room admins
+							☐ preview
 							☐ links to messages
 							☐ reply to message
 							☐ load older messages
@@ -65,4 +67,9 @@ html
 		script.
 			var me = !{user},
 				room = !{room};
-			if (!room) location = 'rooms';
+			if (!room) {
+				location = 'rooms';
+			}
+			if (room.private) {
+				$('#roomname').addClass('private').attr('title', 'This room is private');
+			}

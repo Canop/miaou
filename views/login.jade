@@ -13,6 +13,12 @@ html
 				button#ok Sign On with Google
 		
 		script.
+			var m = location.toString().match(/room=(\d+)/);
+			if (m) {
+				localStorage['login.room'] = m[1];
+			} else {
+				delete localStorage['login.room'];
+			}
 			var authurl = "#{authurl}";
 			if (localStorage['successfulLoginLastTime']) {
 				delete localStorage['successfulLoginLastTime'];

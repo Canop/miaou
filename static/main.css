@@ -182,9 +182,19 @@ code {
 	margin-right: 2px;
 }
 h1 {
-	color: #988;
-	font-size: 130%;
-	margin-top: 0;
+	color: #655;
+	font-size: 140%;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+h1 a {
+	margin: 5px;
+	text-decoration: none;
+}
+h2 {
+	color: #655;
+	font-size: 120%;
+	margin-top: 2px;
 	margin-bottom: 2px;
 	padding-left: 4px;
 }
@@ -268,11 +278,11 @@ span.button:hover {
 .dialog_content {
 	padding: 7px;
 }
-.dialog_content p {
+.dialog_content p, .dialog_content h2, .dialog_content .form {
 	clear: both;
 }
-.dialog_content .form {
-	clear: both;
+.dialog_content h2{
+	margin-left: 4px;
 }
 .dialog_content .label {
 	display:block;
@@ -359,23 +369,60 @@ span.button:hover {
   content: '▲';
 }
 
-#list {
-	margin: auto;
-	width: 80%;
-	max-width: 900px;
-	padding: 30px;
+.list {
+	min-width: 70%;
 }
 .list th, .list td {
 	padding: 8px;
+	background: #F7F4E9;
 }
-.list td {
-	background: #eee;
-	opacity: 0.85;
-	border-radius: 7px;
+.list th {
+	border-radius: 5px 0 0 5px;
+}
+.list td:last-child {
+	border-radius: 0 5px 5px 0;
+}
+.list td.role {
+	width: 45px;
 }
 
-#changeroom, #editroom {
+#changeroom, #editroom, #auths {
 	font-size: 75%;
 	float: right;
 	margin: 2px;
+}
+
+div.MP {
+	width: 90%;
+	max-width: 1200px;
+	margin: auto;
+}
+
+.CL, .CR {
+	width: 49%;
+	padding: 2px;
+}
+.CL {
+	float: left;
+}
+.CR {
+	float: right;
+}
+
+#response {
+	color: #555;
+}
+
+.private:before {
+	content:"⚷"
+}
+.notification {
+	padding: 5px;
+	background-color: #fffa9e;
+}
+.notification .user {
+	font-style:italic;
+}
+.notification button {
+	margin-left: 10px;
 }

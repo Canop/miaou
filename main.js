@@ -5,14 +5,12 @@ var fs = require("fs"),
 	passport = require('passport'),
   	jade = require('jade'),
 	socketio = require('socket.io'),
-	SessionSockets = require('session.socket.io'),
 	util = require('util'),
 	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
 	config = require('./config.json'),
 	mdb = require('./pgdb.js').init(config.database),
 	loginutil = require('./login.js'),
-	maxContentLength = config.maxMessageContentSize || 500,
-	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000,
+	ws = require('./ws.js'),
 	cookieParser = express.cookieParser(config.secret),
 	RedisStore = require('connect-redis')(express),
 	sessionStore = new RedisStore({}),
@@ -51,7 +49,7 @@ passport.use(new GoogleStrategy(oauthParameters, function(accessToken, refreshTo
 
 function ensureAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) return next();
-	res.redirect(url('/login'));
+	res.redirect(url('/login?room=' + req.params[0]));
 }
 
 // Checks that the profile is complete enough to be used for the chat
@@ -62,80 +60,6 @@ function ensureCompleteProfile(req, res, next) {
 	res.redirect(url('/profile'));
 }
 
-// handles the socket, whose life should be the same as the presence of the user in a room without reload
-// Implementation details :
-//  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
-//     different rooms and there's a reconnect
-function handleUserInRoom(socket, completeUser) {
-	function error(err){
-		console.log('ERR', err, 'for user', completeUser.name, 'in room', (room||{}).name);
-		socket.emit('error', err.toString());
-	}
-	var room, lastMessageTime,
-		publicUser = {id:completeUser.id, name:completeUser.name};
-
-	console.log('starting handling new socket for', completeUser.name);
-
-	socket.set('publicUser', publicUser);
-	socket.on('enter', function(roomId){
-		console.log(publicUser.name, 'enters', roomId);
-		mdb.con(function(err, con){
-			if (err) return error('no connection'); // todo kill everything
-			con.fetchRoomAndUserAuth(roomId, publicUser.id, function(err, r){
-				if (err) return error(err);
-				// todo handle missing room
-				room = r;
-				socket.emit('room', room);
-				socket.join(room.id);
-				con.queryLastMessages(room.id, 300).on('row', function(message){
-					socket.emit('message', message);
-				}).on('end', function(){
-					con.ok();
-					socket.broadcast.to(room.id).emit('enter', publicUser);
-				});
-				io.sockets.clients(room.id).forEach(function(s){
-					s.get('publicUser', function(err, u){
-						if (err) console.log('missing user on socket', err);
-						else socket.emit('enter', u);
-					});
-				});
-			});			
-		});
-	}).on('message', function (message) {
-		if (!room) {
-			socket.emit('get_room', message);
-			return;
-		}
-		var now = Date.now(), seconds = ~~(now/1000), content = message.content;
-		if (content.length>maxContentLength) {
-			error('Message too big, consider posting a link instead');
-			console.log(content.length, maxContentLength);
-		} else if (now-lastMessageTime<minDelayBetweenMessages) {
-			error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
-		} else {
-			lastMessageTime = now;
-			var m = { content: content, author: publicUser.id, authorname: publicUser.name, room: room.id};
-			if (message.id) {
-				m.id = message.id;
-				m.changed = seconds;				
-			} else {
-				m.created = seconds;				
-			}
-			mdb.con(function(err, con){
-				if (err) return error('no connection');
-				con.storeMessage(m, function(err, m){
-					if (err) return error(err);
-					con.ok();
-					console.log("user ", publicUser.name, 'send a message to', room.name);
-					io.sockets.in(room.id).emit('message', m);
-				});
-			});
-		}
-	}).on('disconnect', function(){
-		console.log(completeUser.name, "disconnected");
-		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);
-	});
-}
 
 // calls the callback with the room given by roomId or null
 function withRoom(roomId, userId, cb){
@@ -150,35 +74,53 @@ function withRoom(roomId, userId, cb){
 	});
 }
 
+function checkAuthAtLeast(auth, neededAuth) {
+	var levels = ['read', 'write', 'admin', 'own'];
+	for (var i=levels.length; i-->0;) {
+		if (levels[i]===auth) return true;
+		if (levels[i]===neededAuth) return false;
+	}
+	return false;
+}
+
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
 	app.get(/^\/(\d+)?$/, ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		withRoom(+req.params[0], req.user.id, function(err, room) {
-			if (room) {
-				req.session.room = room;
-				res.render('index.jade', { user: JSON.stringify(req.user), room: JSON.stringify(room) });
-			} else {
-				res.redirect(url('/rooms'));			
+			if (!room) return res.redirect(url('/rooms'));		
+			req.session.room = room;
+			if (!room.private) {
+				return res.render('index.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
 			}
+			mdb.con(function(err, con){
+				con.checkAuthLevel(room.id, req.user.id, 'write', function(err, auth){
+					if (auth) res.render('index.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
+					else res.render('request.jade', { room:room });
+					con.ok();
+				});
+			});
 		});
 	});
 	
 	app.get('/login', function(req, res){
-		res.render('login.jade', { user: req.user, authurl: url('/auth/google') });
+		res.render('login.jade', { user:req.user, authurl:url('/auth/google') });
 	});
 	
 	app.get('/profile', function(req, res){
+		console.log('get /profile');
 		res.render('profile.jade', {
 			user: req.user,
 			suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname)
 		});
 	});
-	app.post('/profile', ensureAuthenticated, ensureCompleteProfile, function(req, res){
+	app.post('/profile', ensureAuthenticated, function(req, res){
+		console.log('post /profile');
 		var name = req.param('name');
 		if (loginutil.isValidUsername(name)) {
+			console.log('user name is valid');
 			mdb.con(function(err, con){
-				if (err) return res.render('error.jade', { error: err.toString() });
+				if (err) return res.render('error.jade', { error:err.toString() });
 				req.user.name = name;
 				con.updateUser(req.user, function(err){
 					if (err) return res.render('error.jade', { error: err.toString() });
@@ -204,7 +146,12 @@ function defineAppRoutes(){
 
 	app.get('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		withRoom(+req.param('id'), req.user.id, function(err, room) {
-			res.render('room.jade', { room: JSON.stringify(room), error: "null" });
+			mdb.con(function(err, con){
+				con.checkAuthLevel(room.id, req.user.id, 'admin', function(err, auth){
+					if (auth) res.render('room.jade', { room: JSON.stringify(room), error: "null" });
+					else res.render('error.jade', { error: "Admin level is required to manage the room" });
+				});
+			});
 		});
 	});
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
@@ -215,10 +162,8 @@ function defineAppRoutes(){
 		mdb.con(function(err, con){
 			if (err) return res.render('error.jade', { error: err.toString() });
 			var room = {id:roomId, name: name, private:req.param('private')||false, description:req.param('description')};
-			console.log('post room:', room);
 			con.storeRoom(room, req.user, function(err){
 				if (err) {
-					console.log('error in update or create room', err);
 					res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
 					return;
 				}
@@ -227,17 +172,59 @@ function defineAppRoutes(){
 			});
 		});
 	});
+	
+	app.get('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
+		withRoom(+req.param('id'), req.user.id, function(err, room) {
+			if (!room) return res.render('error.jade', { error: "No room" });
+			mdb.con(function(err, con){
+				if (err) return res.render('error.jade', { error: "No connection" });
+				con.listRoomAuths(room.id, function(err, auths){
+					if (err) return res.render('error.jade', { error: err.toString() });
+					con.listOpenAccessRequests(room.id, function(err, requests){
+						if (err) return res.render('error.jade', { error: err.toString() });
+						con.ok();
+						res.render('auths.jade', { room:room, auths:auths, requests:requests });
+					});
+				});
+			});
+		});
+	});
+	app.post('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
+		withRoom(+req.param('room'), req.user.id, function(err, room) {
+			if (!room) return res.render('error.jade', { error: "No room" });
+			if (!checkAuthAtLeast(room.auth, 'admin')) return res.render('error.jade', { error: "Admin auth is required" });
+			mdb.con(function(err, con){
+				if (err) return res.render('error.jade', { error: "No connection" });
+				var m, actions = [];
+				for (var key in req.body){
+					if (m = key.match(/^answer_request_(\d+)$/)) {
+						var accepted = req.body[key]==='grant', modifiedUserId = +m[1];
+						if (accepted) actions.push({cmd:'insert_auth', auth:'write', user:modifiedUserId});
+						ws.emitAccessRequestAnswer(room.id, modifiedUserId, accepted);
+						actions.push({cmd:'delete_ar', user:modifiedUserId});
+					} else if (m = key.match(/^change_auth_(\d+)$/)) {
+						var new_auth = req.body[key], modifiedUserId = +m[1];
+						if (new_auth==='none') actions.push({cmd:'delete_auth', user:modifiedUserId});
+						else actions.push({cmd:'update_auth', user:modifiedUserId, auth:new_auth});
+					}
+				}
+				con.changeRights(actions, req.user.id, room, function(){
+					if (err) return res.render('error.jade', { error: err.toString() });
+					res.redirect(url('/'+room.id));
+				});
+			});
+		});
+	});
 
 	app.get('/rooms', ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		mdb.con(function(err, con){
-			if (err) return new Error('no connection'); // fixme : send to error page
-			con.listPublicRooms(function(err, publicRooms){
+			if (err) return res.render('error.jade', { error: "No connection" });
+			con.listAccessibleRooms(req.user.id, function(err, accessibleRooms){
 				if (err) return res.render('error.jade', { error: err.toString() });
-				con.listUserRoomAuths(req.user.id, function(err, userRooms){
-					if (err) return res.render('error.jade', { error: err.toString() });
-					con.ok();
-					res.render('rooms.jade', { publicRooms:publicRooms, userRooms:userRooms });
-				});
+				con.ok();
+				var rooms = {public:[], private:[]};
+				accessibleRooms.forEach(function(r) { rooms[r.private?'private':'public'].push(r); });
+				res.render('rooms.jade', { rooms:rooms });
 			});
 		});
 	});
@@ -274,28 +261,7 @@ function startServer(){
 	console.log('Miaou server starting on port', config.port);
 	server.listen(config.port);
 
-	io = socketio.listen(server);
-	io.set('log level', 1);
-	
-	var sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
-	sessionSockets.on('connection', function (err, socket, session) {
-		function die(err){
-			console.log('ERR', err);
-			socket.emit('error', err.toString());
-			socket.disconnect();
-		}
-		if (! (session && session.passport && session.passport.user && session.room)) return die ('invalid session');
-		var userId = session.passport.user;
-		if (!userId) return die('no authenticated user in session');
-		mdb.con(function(err, con){
-			if (err) return die(err);
-			con.fetchUserById(userId, function(err, completeUser){
-				if (err) return die(err);
-				con.ok();
-				handleUserInRoom(socket, completeUser);
-			});
-		});
-	});
+	ws.listen(server, sessionStore, cookieParser, mdb);
 }
 
 (function main() { // main

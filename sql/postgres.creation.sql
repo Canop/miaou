@@ -33,9 +33,6 @@ CREATE TABLE room_auth (
 CREATE TABLE access_request (
 	room integer references room(id),
 	player integer references player(id),
-	requested integer NOT NULL,
-	answered integer,
-	answerer integer references player(id),
-	outcome auth_level
+	requested integer NOT NULL
 );
 create index access_request_idx on access_request (room, requested);

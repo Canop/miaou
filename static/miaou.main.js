@@ -74,7 +74,7 @@ var miaou = miaou || {};
 					miaou.notify(room, message.authorname, message.content);
 					nbUnseenPings++;
 				}
-				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + (room ? room.name : 'no room');
+				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;
 			}
 		}
 		showMessageFlowDisruptions();
@@ -83,9 +83,24 @@ var miaou = miaou || {};
 	
 	function showError(error){
 		console.log('ERROR', error);
-		var $md = $('<div>').addClass('message error').append(
+		var $md = $('<div>').addClass('error').append(
 			$('<div>').addClass('user error').text("Miaou Server")
 		).append(error).appendTo('#messages');
+		scrollToBottom();
+	}
+	
+	function showRequestAccess(ar){
+		var h;
+		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room";
+		else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right";
+		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>";
+		var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
+		if (checkAuth('admin')) {
+			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
+			if (!vis()) {
+				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;				
+			}
+		}
 		scrollToBottom();
 	}
 	
@@ -111,8 +126,9 @@ var miaou = miaou || {};
 			}
 		});
 		var socket = io.connect(location.origin);
-		socket.emit('enter', room.id);		
-		socket.on('get_room', function(unhandledMessage){
+		socket.on('connect', function(){
+			socket.emit('enter', room.id);
+		}).on('get_room', function(unhandledMessage){
 			console.log('Server asks room');
 			socket.emit('enter', room.id);
 			socket.emit('message', unhandledMessage);
@@ -128,6 +144,8 @@ var miaou = miaou || {};
 			document.title = room.name;
 			$('#roomname').text('Room : ' + room.name);
 			$('#roomdescription').html(miaou.mdToHtml(room.description));
+		}).on('request', function(ar){
+			showRequestAccess(ar);
 		}).on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
 			setTimeout(function(){
@@ -160,8 +178,12 @@ var miaou = miaou || {};
 		$('#input').editFor(socket);
 		$('#help').click(function(){ window.open('help#Writing_Messages') });		
 		$('#changeroom').click(function(){ window.open('rooms') });
-		$('#editroom').click(function(){ location='room?id='+room.id });
-		if (!checkAuth('admin')) $('#editroom').hide();
+		if (checkAuth('admin')) {
+			$('#editroom').click(function(){ location = 'room?id='+room.id });
+			$('#auths').click(function(){ location = 'auths?id='+room.id });			
+		} else {
+			$('#editroom, #auths').hide();
+		}
 		$('#me').text(me.name);
 		console.log('Miaou!');
 	});

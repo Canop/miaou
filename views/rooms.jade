@@ -3,27 +3,51 @@ html
 	head
 		title Miaou - Rooms
 		link(rel='stylesheet', href='static/main.css')
+		script(src="static/jquery-2.0.3.min.js")
 		script(src="static/miaou.format.js")
 	body
-		div#list
-			a(href="room") Create a room
-			if userRooms.length
-				h2 Your Rooms
+		div.MP
+			h1 Miaou
+			p
+				a(href="room") Create a room
+			
+			div.CL
+				h2 Public Rooms
 				table.list
-					each room, i in userRooms
+					each room, i in rooms.public
 						tr
 							th: a(href=room.id) #{room.name}
-							td #{room.description}
-			h2 Public Rooms
-			table.list
-				each room, i in publicRooms
-					tr
-						th: a(href=room.id) #{room.name}
-						td #{room.description}
+							td.rendered #{room.description}
+							if room.auth
+								td.role= room.auth
+			div.CR
+				h2.private(title="Those are the private room whose access has been granted to you") Accessible Private Rooms
+				table.list
+					each room, i in rooms.private
+						tr
+							th: a(href=room.id) #{room.name}
+							td.rendered #{room.description}
+							if room.auth
+								td.role= room.auth
 			
 		script.
+			var loginRoom = localStorage['login.room'];
+			if (loginRoom) {
+				delete localStorage['login.room'];
+				location = loginRoom;
+			}
 			delete localStorage['room'];
-			[].forEach.call(document.querySelectorAll('#list td'), function(td){
-				// ? take only first line here ?
-				td.innerHTML = miaou.mdToHtml(td.innerHTML)
+			$('.rendered').html(function(_,h){ return miaou.mdToHtml(h) });
+			$('.role').attr('title', function() {
+				switch(this.innerHTML.trim()) {
+				case 'read':
+					return 'You can only read in this room';
+				case 'read':
+					return 'You can read and write in this room';
+				case 'admin':
+					return "You're an administrator of this room : you can change its name and description, give or revoke writing rights, and give admin rights.";
+				case 'own':
+					return "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights.";
+				}
 			});
+					

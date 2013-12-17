@@ -20,7 +20,7 @@ html
 					input#submit(type='submit', value='Save')
 		
 		script.
-			$('form')[0].action = location;
+			//$('form')[0].action = location;
 			$('#name').focus().keyup(function(){
 				if (!this.validity.valid){ // not compatible with IE, that's fine 
 					$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');

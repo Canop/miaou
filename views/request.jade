@@ -1,0 +1,44 @@
+doctype 5
+html
+	head
+		title Miaou - Request Room Access
+		link(rel='stylesheet', href='static/main.css')
+		script(src="static/jquery-2.0.3.min.js")
+		script(src="static/socket.io.min.js")
+		script(src="static/miaou.format.js")
+	body
+		div.dialog
+			div.dialog_title Request Room Access
+			div.dialog_content
+				h2= room.name
+				p This room is private.
+				p In order to enter, you must be authorized by a room admin.
+				p#response
+			div.dialog_buttons#buttons
+				button#cancel Go Home 
+				button#request Request Access
+
+		script.
+			var room = !{JSON.stringify(room)};
+			$('#cancel').click(function(){ location="rooms" });
+			$('#request').click(function(){
+				$(this).hide();
+				var socket = io.connect(location.origin);
+				socket.on('connect', function(){
+					socket.emit('request', room.id);
+					$('#cancel').hide();
+					$('#response').text("Your request is visible to the admins of the room. Don't close this window : You'll automaticaly enter the room as soon as one of them accepts it.");
+				}).on('request_denied', function(data){
+					$('#response').text('refused');				
+				}).on('request_accepted', function(data){
+					$('#response').text('accepted');
+				}).on('request_outcome', function(accepted){
+					console.log('request_outcome', accepted);
+					if (accepted) {
+						location = room.id;
+					} else {
+						$('#response').css('color','red').text("You have been denied access to the room.");
+					}
+				});
+				
+			});

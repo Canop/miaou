@@ -52,8 +52,10 @@ Con.prototype.fetchUserById = function(id, cb){
 
 // right now it only updates the name, I'll enrich it if the need arises
 Con.prototype.updateUser = function(user, cb){
+	console.log('in update user', user);
 	var con = this;
 	con.client.query('update player set name=$1 where id=$2', [user.name, user.id], function(err, result){
+		console.log('update player outcome : ', err, result);
 		if (err) con.nok(cb, err);
 		else cb();
 	});
@@ -62,7 +64,7 @@ Con.prototype.updateUser = function(user, cb){
 // returns an existing room found by its id
 Con.prototype.fetchRoom = function(id, cb){
 	var con = this;
-	con.client.query('select id, name, description from room where id=$1', [id], function(err, result){
+	con.client.query('select id, name, description, private from room where id=$1', [id], function(err, result){
 		if (err) {
 			con.nok(cb, err);
 		} else if (!result.rows.length) {
@@ -76,7 +78,7 @@ Con.prototype.fetchRoom = function(id, cb){
 // returns an existing room found by its id and the user's auth level
 Con.prototype.fetchRoomAndUserAuth = function(roomId, userId, cb){
 	var con = this;
-	con.client.query('select id, name, description, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId], function(err, result){
+	con.client.query('select id, name, description, private, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId], function(err, result){
 		if (err) {
 			con.nok(cb, err);
 		} else if (!result.rows.length) {
@@ -91,31 +93,106 @@ Con.prototype.fetchRoomAndUserAuth = function(roomId, userId, cb){
 Con.prototype.listPublicRooms = function(cb){
 	var con = this;
 	con.client.query('select id, name, description from room where private is not true', function(err, result){
-		if (err) {
-			con.nok(cb, err);
-		} else {
-			cb(null, result.rows);
-		}
+		if (err) con.nok(cb, err);
+		else cb(null, result.rows);
 	});
 }
-Con.prototype.listUserRoomAuths = function(userId, cb){
+// lists the authorizations a user has
+Con.prototype.listUserAuths = function(userId, cb){
 	var con = this;
 	con.client.query("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId], function(err, result){
-		if (err) {
-			con.nok(cb, err);
-		} else {
-			cb(null, result.rows);
-		}
+		if (err) con.nok(cb, err);
+		else cb(null, result.rows);
 	});
+}
+// lists the authorizations of the room
+Con.prototype.listRoomAuths = function(roomId, cb){
+	var con = this;
+	con.client.query("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId], function(err, result){
+		if (err) con.nok(cb, err);
+		else cb(null, result.rows);
+	});
+}
+
+// lists the 
+Con.prototype.listAccessibleRooms = function(userId, cb){
+	var con = this;
+	con.client.query("select id, name, description, private, auth from room r left join room_auth a on a.room=r.id and a.player=$1 where private is false or auth is not null order by auth desc nulls last, name", [userId], function(err, result){
+		if (err) con.nok(cb, err);
+		else cb(null, result.rows);
+	});
+}
+
+Con.prototype.insertAccessRequest = function(roomId, userId, cb){
+	var con = this;
+	con.client.query('delete from access_request where room=$1 and player=$2', [roomId, userId], function(err, result){
+		if (err) return con.nok(cb, err);
+		con.client.query(
+			'insert into access_request (room, player, requested) values ($1, $2, $3) returning *',
+			[roomId, userId, ~~(Date.now()/1000)],
+			function(err, result)
+		{
+			if (err) return con.nok(cb, err);
+			cb(null, result.rows[0]);
+		});
+	});
+}
+
+// userId : optionnal
+Con.prototype.listOpenAccessRequests = function(roomId, userId, cb){
+	var sql = "select player,name,requested from player p,access_request r where r.player=p.id and room=$1",
+		con = this, args = [roomId];		
+	if (typeof userId === "function") {
+		cb = userId;
+	} else {
+		sql += " and player=?";
+		args.push(userId);
+	}
+	con.client.query(sql, args, function(err, result){
+		if (err) return con.nok(cb, err);
+		cb(null, result.rows);
+	});	
 }
 
 // returns a query with the most recent messages of the room
 Con.prototype.queryLastMessages = function(roomId, N){
 	return this.client.query(
 		'select message.id, author, player.name as authorname, content, message.created as created, message.changed from message'+
-		' left join player on author=player.id where room=$1 order by created desc',
-		[roomId]
+		' left join player on author=player.id where room=$1 order by created desc limit $2',
+		[roomId, N]
 	);
+}
+
+// do actions on user rights
+// userId : id of the user doing the action
+Con.prototype.changeRights = function(actions, userId, room, cb){
+	var con = this, now= ~~(Date.now()/1000);
+	if (!actions.length) return cb();
+	(function doOne(err){
+		if (err) return cb(err);
+		var a = actions.pop(), sql, args;
+		switch (a.cmd) {
+		case "insert_auth": // we can assume there's no existing auth
+			sql = "insert into room_auth (room, player, auth, granter, granted) values ($1, $2, $3, $4, $5)";
+			args = [room.id, a.user, a.auth, userId, now];
+			break;
+		case "delete_ar":
+			sql = "delete from access_request where room=$1 and player=$2";
+			args = [room.id, a.user];
+			break;
+		case "update_auth":
+			// the exists part is used to check the user doing the change has at least as much auth than the modified user
+			sql = "update room_auth ma set auth=$1 where ma.player=$2 and ma.room=$3 and exists (select * from room_auth ua where ua.player=$4 and ua.room=$5 and ua.auth>=ma.auth)";
+			args = [a.auth, a.user, room.id, userId, room.id];
+			break;
+		case "delete_auth":
+			// the exists part is used to check the user doing the change has at least as much auth than the modified user
+			sql = "delete from room_auth ma where ma.player=$1 and ma.room=$2 and exists (select * from room_auth ua where ua.player=$3 and ua.room=$4 and ua.auth>=ma.auth)";
+			args = [a.user, room.id, userId, room.id];
+			break;
+		}
+		con.client.query(sql, args, actions.length ? doOne : cb);
+	})();
 }
 
 // if id is set, updates the message if the author & room matches
