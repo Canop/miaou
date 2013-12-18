@@ -37,9 +37,8 @@ var miaou = miaou || {};
 				nums[l]=(nums[l-1]||0)+1;
 				return '<span class=olli>'+nums[l]+'</span>'+m[1];
 			}
-			if (m=s.match(/^(?:\*\s+)(.*)$/))    return '<span class=ulli></span>'+m[1];
-			if (m=s.match(/^(?:#\s+)(.*)$/))     return '<span class=h1>'+m[1]+'</span>';
-			if (m=s.match(/^(?:#{2,}\s+)(.*)$/)) return '<span class=h2>'+m[1]+'</span>';
+			if (m=s.match(/^(?:\*\s+)(.*)$/))	return '<span class=ulli></span>'+m[1];
+			if (m=s.match(/^(?:(#+)\s+)(.*)$/))	return '<span class=h'+m[1].length+'>'+m[2]+'</span>';
 			return s;
 		}).join('<br>');
 	}

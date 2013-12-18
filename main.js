@@ -143,6 +143,7 @@ function defineAppRoutes(){
 
 	app.get('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		withRoom(+req.param('id'), req.user.id, function(err, room) {
+			if (!room) return res.render('room.jade', { room: "null", error: "null" });
 			mdb.con(function(err, con){
 				con.checkAuthLevel(room.id, req.user.id, 'admin', function(err, auth){
 					if (auth) res.render('room.jade', { room: JSON.stringify(room), error: "null" });

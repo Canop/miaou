@@ -159,7 +159,15 @@ code {
 .h2 {
 	text-decoration: underline;
 }
-
+.h3 {
+	border-bottom: 1px dashed black;
+}
+.h4 {
+	border-bottom: 1px dotted #333;
+}
+.h5 {
+	border-bottom: 1px dotted #999;
+}
 #inputpanel {
 	background: #F0EAD6;
 	display: table-row;	
