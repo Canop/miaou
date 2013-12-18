@@ -1,7 +1,7 @@
 var miaou = miaou || {};
 (function(){
 	var NB_MESSAGES = 100,
-		MAX_AGE_FOR_EDIT = 800, // seconds (should be coherent with server settings) 
+		MAX_AGE_FOR_EDIT = 1800, // seconds (should be coherent with server settings) 
 		DISRUPTION_THRESHOLD = 60*60, // seconds
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],

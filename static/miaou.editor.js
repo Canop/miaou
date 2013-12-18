@@ -124,14 +124,17 @@ $.fn.editFor = function(socket){
 	return $input;
 }
 
-
 $.fn.editMessage = function(message){
+	if (this.data('edited-message-id')==message.id) {
+		this.cancelEdit();
+		return;
+	}
 	this.data('edited-message-id', message.id);
 	this.val(message.content).focus();
 	$('#cancelEdit').show();
 }
 
-$.fn.cancelEdit = function(socket){
+$.fn.cancelEdit = function(){
 	if ($('#cancelEdit').is(':visible')) {
 		this.val('');
 		$('#cancelEdit').hide();
