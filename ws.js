@@ -49,15 +49,25 @@ function handleUserInRoom(socket, completeUser, mdb){
 			con.insertAccessRequest(roomId, publicUser.id, function(err, ar){
 				con.ok();
 				ar.user = publicUser;
-				console.log('insertion access request:', err, ar);
 				socket.broadcast.to(roomId).emit('request', ar);
 				socketWaitingApproval.push({
 					socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
 				});
 			});
 		});
-	}).on('enter', function(roomId){
+	}).on('clear_pings', function(ack){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
+		mdb.con(function(err, con){
+			if (err) return error('no connection'); // todo kill everything
+			con.deletePings(room.id, publicUser.id, function(err){
+				con.fetchUserPingRooms(publicUser.id, function(err, pings){
+					con.ok();
+					ack(pings);
+				});
+			});
+		});
+	}).on('enter', function(roomId, acq){
 		console.log(publicUser.name, 'enters', roomId);
+		if (acq) acq(~~(Date.now()/1000));
 		mdb.con(function(err, con){
 			if (err) return error('no connection'); // todo kill everything
 			con.fetchRoomAndUserAuth(roomId, publicUser.id, function(err, r){
@@ -70,13 +80,15 @@ function handleUserInRoom(socket, completeUser, mdb){
 				con.queryLastMessages(room.id, 300).on('row', function(message){
 					socket.emit('message', message);
 				}).on('end', function(){
-					con.ok();
 					socket.broadcast.to(room.id).emit('enter', publicUser);
 					socketWaitingApproval.forEach(function(o){
 						if (o.roomId===room.id) {
 							socket.emit('request', o.ar);
 						}
-					}); 
+					});
+					con.deletePings(room.id, publicUser.id, function(err){
+						con.ok();
+					});
 				});
 				io.sockets.clients(room.id).forEach(function(s){
 					s.get('publicUser', function(err, u){
@@ -94,7 +106,6 @@ function handleUserInRoom(socket, completeUser, mdb){
 		var now = Date.now(), seconds = ~~(now/1000), content = message.content;
 		if (content.length>maxContentLength) {
 			error('Message too big, consider posting a link instead');
-			console.log(content.length, maxContentLength);
 		} else if (now-lastMessageTime<minDelayBetweenMessages) {
 			error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
 		} else {
@@ -110,8 +121,14 @@ function handleUserInRoom(socket, completeUser, mdb){
 				if (err) return error('no connection');
 				con.storeMessage(m, function(err, m){
 					if (err) return error(err);
-					con.ok();
-					console.log("user ", publicUser.name, 'send a message to', room.name);
+					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
+					if (pings) {
+						con.storePings(room.id, pings.map(function(s){ return s.slice(1) }), m.id, function(){
+							con.ok();						
+						})
+					} else {
+						con.ok();
+					}
 					io.sockets.in(room.id).emit('message', m);
 				});
 			});

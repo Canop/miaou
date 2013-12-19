@@ -5,7 +5,12 @@ var miaou = miaou || {};
 		DISRUPTION_THRESHOLD = 60*60, // seconds
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
-		messages = [];
+		messages = [],
+		enterTime; // seconds since epoch, server time
+	
+	function setEnterTime(serverTime){
+		enterTime = serverTime;
+	}
 	
 	// returns true if the user's authorization level in room is at least the passed one
 	function checkAuth(auth) {
@@ -69,13 +74,6 @@ var miaou = miaou || {};
 			messages.push(message);
 			$md.appendTo('#messages');
 			addToUserList({id: message.author, name: message.authorname});
-			if (!vis()) {
-				if (pingRegex(me.name).test(message.content)) {
-					miaou.notify(room, message.authorname, message.content);
-					nbUnseenPings++;
-				}
-				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;
-			}
 		}
 		showMessageFlowDisruptions();
 		scrollToBottom();
@@ -119,21 +117,53 @@ var miaou = miaou || {};
 	}
 	
 	$(function(){
+		var socket = io.connect(location.origin);
+
+		function clearPings() {
+			// clear the pings of the current room and ask for the ones of the other rooms
+			socket.emit('clear_pings', function(pings){
+				if (pings.length) {
+					var h = "You've been pinged in room", links = pings.map(function(p){ return '<a target=room_'+p.room+' href='+p.room+'>'+p.name+'</a>' });
+					if (pings.length==1) h += ' '+links[0];
+					else h += 's '+links.slice(0,-1).join(', ')+' and '+links.pop();
+					$('<div>').html(h).addClass('notification').appendTo('#messages');
+					scrollToBottom();
+				}
+			});
+		}
+
 		vis(function(){
 			if (vis()) {
+				clearPings();
 				nbUnseenMessages = 0; nbUnseenPings = 0;
-				document.title = room ? room.name : 'no room';						
+				document.title = room ? room.name : 'no room';
 			}
 		});
-		var socket = io.connect(location.origin);
+
+		setInterval(function(){
+			if (vis()) clearPings();
+		}, 5*60*1000);
+
 		socket.on('connect', function(){
-			socket.emit('enter', room.id);
+			socket.emit('enter', room.id, setEnterTime);
 		}).on('get_room', function(unhandledMessage){
 			console.log('Server asks room');
-			socket.emit('enter', room.id);
+			socket.emit('enter', room.id, setEnterTime);
 			socket.emit('message', unhandledMessage);
 		}).on('message', function(message){
 			addMessage(message);
+			if (message.created>enterTime) {
+				var visible = vis(), ping = pingRegex(me.name).test(message.content);
+				if (ping) {
+					if (visible) {
+						clearPings();
+					} else {
+						miaou.notify(room, message.authorname, message.content);
+						nbUnseenPings++;
+					}
+				}
+				if (!visible) document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;
+			}
 		}).on('room', function(r){
 			if (room.id!==r.id) {
 				console.log('SHOULD NOT HAPPEN!');
@@ -149,7 +179,7 @@ var miaou = miaou || {};
 		}).on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
 			setTimeout(function(){
-				socket.emit('enter', room.id);
+				socket.emit('enter', room.id, setEnterTime);
 			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
 		}).on('disconnect', function(){
 			console.log('DISCONNECT');

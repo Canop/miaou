@@ -234,6 +234,43 @@ Con.prototype.checkAuthLevel = function(roomId, userId, minimalLevel, cb){
 	});
 }
 
+// pings must be a sanitized array of usernames
+Con.prototype.storePings = function(roomId, users, messageId, cb){
+	var con = this, now = ~~(Date.now()/1000),
+		sql = "insert into ping (room, player, message, created) select "
+		+ roomId + ", id, " + messageId + ", " + now + " from player where name in (" + users.map(function(n){ return "'"+n+"'" }).join(',') + ")";
+	con.client.query(sql, function(err){
+		if (err) return con.nok(cb, err);
+		cb(null);
+	});
+}
+
+Con.prototype.deletePings = function(roomId, userId, cb){
+	var con = this;
+	con.client.query("delete from ping where room=$1 and player=$2", [roomId, userId], function(err){
+		if (err) return con.nok(cb, err);
+		cb(null);
+	});
+}
+
+Con.prototype.fetchUserPings = function(userId, cb) {
+	var con = this;
+	con.client.query("select player, room, name, message from ping, room where player=$1 and room.id=ping.room", [userId], function(err, res){
+		if (err) return con.nok(cb, err);
+		cb(null, res.rows);
+	});
+}
+
+// returns the id and name of the rooms where the user has been pinged
+Con.prototype.fetchUserPingRooms = function(userId, cb) {
+	var con = this;
+	con.client.query("select distinct(room), name from ping, room where player=$1 and room.id=ping.room", [userId], function(err, res){
+		if (err) return con.nok(cb, err);
+		cb(null, res.rows);
+	});
+
+}
+
 Con.prototype.storeRoom = function(r, author, cb) {
 	var con = this, now = ~~(Date.now()/1000);
 	if (r.id) {

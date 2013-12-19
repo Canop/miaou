@@ -36,3 +36,10 @@ CREATE TABLE access_request (
 	requested integer NOT NULL
 );
 create index access_request_idx on access_request (room, requested);
+CREATE TABLE ping (
+	player integer references player(id),
+	room integer references room(id),
+	message bigint references message(id),
+	created integer NOT NULL
+);
+create index ping_idx on ping (player, room);

@@ -33,7 +33,6 @@ html
 				}).on('request_accepted', function(data){
 					$('#response').text('accepted');
 				}).on('request_outcome', function(accepted){
-					console.log('request_outcome', accepted);
 					if (accepted) {
 						location = room.id;
 					} else {
