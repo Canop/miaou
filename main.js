@@ -222,7 +222,9 @@ function defineAppRoutes(){
 				con.ok();
 				var rooms = {public:[], private:[]};
 				accessibleRooms.forEach(function(r) { rooms[r.private?'private':'public'].push(r); });
-				res.render('rooms.jade', { rooms:rooms });
+				con.fetchUserPingRooms(req.user.id, function(err, pings) {
+					res.render('rooms.jade', { rooms:rooms, pings:pings });
+				});
 			});
 		});
 	});

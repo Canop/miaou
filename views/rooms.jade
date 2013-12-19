@@ -10,7 +10,19 @@ html
 			h1 Miaou
 			p
 				a(href="room") Create a room
-			
+			h2 Notifications
+			if pings.length==1
+				p
+					| You've been pinged in room&nbsp;
+					a(href=pings[0].room)= pings[0].name
+			else if pings.length
+				p You've been pinged in rooms
+				ul 
+					each ping in pings
+						li
+							a(href=ping.room)= ping.name
+			else
+				p None
 			div.CL
 				h2 Public Rooms
 				table.list
@@ -29,7 +41,6 @@ html
 							td.rendered #{room.description}
 							if room.auth
 								td.role= room.auth
-			
 		script.
 			var loginRoom = localStorage['login.room'];
 			if (loginRoom) {
