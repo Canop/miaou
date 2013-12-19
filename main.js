@@ -219,10 +219,11 @@ function defineAppRoutes(){
 			if (err) return res.render('error.jade', { error: "No connection" });
 			con.listAccessibleRooms(req.user.id, function(err, accessibleRooms){
 				if (err) return res.render('error.jade', { error: err.toString() });
-				con.ok();
 				var rooms = {public:[], private:[]};
 				accessibleRooms.forEach(function(r) { rooms[r.private?'private':'public'].push(r); });
-				con.fetchUserPingRooms(req.user.id, function(err, pings) {
+				con.fetchUserPingRooms(req.user.id, 0, function(err, pings) {
+					if (err) return res.render('error.jade', { error: err.toString() });
+					con.ok();
 					res.render('rooms.jade', { rooms:rooms, pings:pings });
 				});
 			});

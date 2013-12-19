@@ -14,13 +14,13 @@ html
 			if pings.length==1
 				p
 					| You've been pinged in room&nbsp;
-					a(href=pings[0].room)= pings[0].name
+					a(href=pings[0].room)= pings[0].roomname
 			else if pings.length
 				p You've been pinged in rooms
 				ul 
 					each ping in pings
 						li
-							a(href=ping.room)= ping.name
+							a(href=ping.room)= ping.roomname
 			else
 				p None
 			div.CL

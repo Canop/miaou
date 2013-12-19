@@ -6,6 +6,7 @@ var miaou = miaou || {};
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
 		messages = [],
+		lastReceivedPing = 0, // seconds since epoch, server time
 		enterTime; // seconds since epoch, server time
 	
 	function setEnterTime(serverTime){
@@ -121,9 +122,10 @@ var miaou = miaou || {};
 
 		function clearPings() {
 			// clear the pings of the current room and ask for the ones of the other rooms
-			socket.emit('clear_pings', function(pings){
+			socket.emit('clear_pings', lastReceivedPing, function(pings){
 				if (pings.length) {
-					var h = "You've been pinged in room", links = pings.map(function(p){ return '<a target=room_'+p.room+' href='+p.room+'>'+p.name+'</a>' });
+					pings.forEach(function(p){ lastReceivedPing = Math.max(lastReceivedPing, p.last) });
+					var h = "You've been pinged in room", links = pings.map(function(p){ return '<a target=room_'+p.room+' href='+p.room+'>'+p.roomname+'</a>' });
 					if (pings.length==1) h += ' '+links[0];
 					else h += 's '+links.slice(0,-1).join(', ')+' and '+links.pop();
 					$('<div>').html(h).addClass('notification').appendTo('#messages');

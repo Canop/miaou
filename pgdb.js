@@ -262,10 +262,10 @@ Con.prototype.fetchUserPings = function(userId, cb) {
 	});
 }
 
-// returns the id and name of the rooms where the user has been pinged
-Con.prototype.fetchUserPingRooms = function(userId, cb) {
+// returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
+Con.prototype.fetchUserPingRooms = function(userId, after, cb) {
 	var con = this;
-	con.client.query("select distinct(room), name from ping, room where player=$1 and room.id=ping.room", [userId], function(err, res){
+	con.client.query("select room, max(name) as roomname, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after], function(err, res){
 		if (err) return con.nok(cb, err);
 		cb(null, res.rows);
 	});

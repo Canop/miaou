@@ -55,19 +55,19 @@ function handleUserInRoom(socket, completeUser, mdb){
 				});
 			});
 		});
-	}).on('clear_pings', function(ack){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
+	}).on('clear_pings', function(lastPingTime, ack){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
 		mdb.con(function(err, con){
 			if (err) return error('no connection'); // todo kill everything
 			con.deletePings(room.id, publicUser.id, function(err){
-				con.fetchUserPingRooms(publicUser.id, function(err, pings){
+				con.fetchUserPingRooms(publicUser.id, lastPingTime, function(err, pings){
 					con.ok();
-					ack(pings);
+					if (ack) ack(pings);
 				});
 			});
 		});
-	}).on('enter', function(roomId, acq){
+	}).on('enter', function(roomId, ack){
 		console.log(publicUser.name, 'enters', roomId);
-		if (acq) acq(~~(Date.now()/1000));
+		if (ack) ack(~~(Date.now()/1000));
 		mdb.con(function(err, con){
 			if (err) return error('no connection'); // todo kill everything
 			con.fetchRoomAndUserAuth(roomId, publicUser.id, function(err, r){
