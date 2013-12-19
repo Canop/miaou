@@ -8,7 +8,7 @@ var fs = require("fs"),
 	util = require('util'),
 	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
 	config = require('./config.json'),
-	mdb = require('./pgdb.js').init(config.database),
+	mdb = require('./pgdb.js'),
 	loginutil = require('./login.js'),
 	ws = require('./ws.js'),
 	cookieParser = express.cookieParser(config.secret),
@@ -265,5 +265,5 @@ function startServer(){
 }
 
 (function main() { // main
-	startServer();
+	mdb.init(config.database, startServer);
 })();
