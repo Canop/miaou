@@ -1,6 +1,7 @@
 // postgresql persistence
 
 var pg = require('pg').native,
+	pool,
 	conString;
 
 function Con(client, done) {
@@ -272,14 +273,23 @@ Con.prototype.storeRoom = function(r, author, cb) {
 	}
 }
 
-exports.init = function(dbConfig){
+exports.init = function(dbConfig, cb){
 	conString = dbConfig.url;
 	pg.defaults.parseInt8 = true;
-	return this;
+	pg.connect(conString, function(err, client, done){
+		if (err) {
+			console.log('Connection to PostgreSQL database failed');
+			return;
+		}
+		done();
+		console.log('Connection to PostgreSQL database successful');
+		pool = pg.pools.all[JSON.stringify(conString)];
+		cb();
+	})
 }
 // cb(err, con)
 exports.con = function(cb) {
-	pg.connect(conString, function(err, client, done){
+	pool.connect(function(err, client, done){
 		if (err) cb(err);
 		else cb(null, new Con(client, done));		
 	});
