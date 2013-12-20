@@ -56,6 +56,10 @@ function handleUserInRoom(socket, completeUser, mdb){
 			});
 		});
 	}).on('clear_pings', function(lastPingTime, ack){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
+		if (!room) {
+			console.log('No room in clear_pings');
+			return;
+		}
 		mdb.con(function(err, con){
 			if (err) return error('no connection'); // todo kill everything
 			con.deletePings(room.id, publicUser.id, function(err){
