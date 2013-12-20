@@ -195,8 +195,9 @@ var miaou = miaou || {};
 		}).on('click', '.closer', function(){
 			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
 		}).on('mouseenter', '.message', function(){
-			var message = $(this).data('message'), menuItems = [];
-			if ($(this).hasClass('me')) menuItems.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
+			var $message = $(this), message = $message.data('message'), menuItems = [];
+			if ($message.hasClass('me')) menuItems.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
+			else menuItems.push('click to reply');
 			menuItems.push(moment(message.created*1000).fromNow());
 			if (message.changed) menuItems.push('edited ' + moment(message.changed*1000).fromNow());
 			$('<div>').addClass('messageinfo').html(menuItems.join(' - ')).appendTo(this);
@@ -205,7 +206,7 @@ var miaou = miaou || {};
 		}).on('click', 'a', function(e){
 			e.stopPropagation();
 		}).on('click', '.message.me', function(){
-			var message = $(this).data('message');
+			var $message = $(this), message = $message.data('message');
 			if (Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT) $('#input').editMessage(message);
 		});
 
