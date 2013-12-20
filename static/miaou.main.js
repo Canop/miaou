@@ -187,8 +187,10 @@ var miaou = miaou || {};
 			console.log('DISCONNECT');
 		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
 		
-		$('#messages').on('click', '.message .content img', function(){ window.open(this.src) })
-		.on('click', '.opener', function(){
+		$('#messages').on('click', '.message .content img', function(){
+			window.open(this.src);
+			e.stopPropagation();
+		}).on('click', '.opener', function(){
 			$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
 		}).on('click', '.closer', function(){
 			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
@@ -214,6 +216,22 @@ var miaou = miaou || {};
 		} else {
 			$('#editroom, #auths').hide();
 		}
+		
+		$('#showPreview').click(function(){
+			$(this).hide();
+			$('#input').focus();
+			$('#previewpanel').css('display','table-row');
+			scrollToBottom();
+		});
+		$('#hidePreview').click(function(){
+			$('#input').focus();
+			$('#showPreview').show();
+			$('#previewpanel').hide();
+		});
+		$('#input').on('change keyup', function(){
+			$('#preview').html(miaou.mdToHtml(this.value));
+		});
+
 		console.log('Miaou!');
 	});
 })();
