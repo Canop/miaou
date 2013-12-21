@@ -124,6 +124,26 @@ $.fn.editFor = function(socket){
 	return $input;
 }
 
+// toggle reply to an existing message
+$.fn.replyToMessage = function(message){
+	var input=this[0], txt = input.value, r = /@(\w[\w_\-\d]{2,})#(\d+)/, m = txt.match(r),
+		s = input.selectionStart, e = input.selectionEnd, l = txt.length, yetPresent = false;
+	if (m) {
+		input.value = txt = txt.replace(r,'').replace(/^\s/,'');
+		yetPresent = m[1]===message.authorname && m[2]==message.id;
+	}
+	if (!yetPresent) {
+		if (!/^\s/.test(txt)) txt = ' '+txt;
+		input.value = '@'+message.authorname+'#'+message.id+txt;
+	}
+	var dl = (input.value.length-l);
+	input.selectionStart = s + dl;
+	input.selectionEnd = e + dl;
+	console.log(l, s, input.selectionStart);
+	input.focus();
+}
+
+// toggle edition of an existing message
 $.fn.editMessage = function(message){
 	if (this.data('edited-message-id')==message.id) {
 		this.cancelEdit();

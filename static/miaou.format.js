@@ -6,7 +6,8 @@ var miaou = miaou || {};
 		var nums=[];
 		return md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n').map(function(s,l){
 			var m;
-			s = s.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+			s = s.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+				.replace(/^@(\w[\w_\-\d]{2,})#(\d+)/, '<span class=reply to=$2>⬑</span>');
 			if (m=s.match(/^(?:    |\t)(.*)$/)) {
 				return '<code class=indent>'+m[1]+'</code>';
 			}

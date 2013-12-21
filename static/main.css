@@ -379,22 +379,34 @@ span.button:hover {
 }
 .opener,
 .closer {
-  height: 13px;
-  text-align: center;
-  cursor: pointer;
-  color: #988;
+	height: 13px;
+	text-align: center;
+	cursor: pointer;
+	color: #988;
 }
 .opener:hover,
 .closer:hover {
-  color: black;
+	color: black;
 }
 .opener::before {
-  content: '▼';
+	content: '▼';
 }
 .closer::before {
-  content: '▲';
+	content: '▲';
 }
-
+.reply {
+	color: #222;
+	cursor: pointer;
+	padding: 2px 2px 0 2px;
+	border-radius: 2px;
+	background: #ede7d3;
+}
+.reply:hover {
+	background: #d5cba6;
+}
+.message.target, .message.me.target,.message.goingto, .message.me.goingto {
+	background: #d5cba6;
+}
 .list {
 	min-width: 70%;
 }
@@ -452,3 +464,5 @@ div.MP {
 .notification button {
 	margin-left: 10px;
 }
+
+
