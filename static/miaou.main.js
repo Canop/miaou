@@ -145,6 +145,16 @@ var miaou = miaou || {};
 		setInterval(function(){
 			if (vis()) clearPings();
 		}, 5*60*1000);
+		
+		// returns false if the message isn't in the page
+		function goToMessage(mid) {
+			var $message;
+			$('#messages .message').each(function(){
+				if ($(this).data('message').id===mid) {
+					
+				}
+			});
+		}
 
 		socket.on('connect', function(){
 			socket.emit('enter', room.id, setEnterTime);
@@ -195,18 +205,40 @@ var miaou = miaou || {};
 		}).on('click', '.closer', function(){
 			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
 		}).on('mouseenter', '.message', function(){
-			var message = $(this).data('message'), menuItems = [];
-			if ($(this).hasClass('me')) menuItems.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
+			var $message = $(this), message = $message.data('message'), menuItems = [];
+			if (message.authorname===me.name) menuItems.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
+			else menuItems.push('click to reply');
 			menuItems.push(moment(message.created*1000).fromNow());
 			if (message.changed) menuItems.push('edited ' + moment(message.changed*1000).fromNow());
 			$('<div>').addClass('messageinfo').html(menuItems.join(' - ')).appendTo(this);
 		}).on('mouseleave', '.message', function(){
 			$('.messageinfo').remove();
+		}).on('click', '.message', function(){
+			var $message = $(this), message = $message.data('message');
+			if (message.authorname===me.name) {
+				if (Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT) $('#input').editMessage(message);
+			} else {
+				$('#input').replyToMessage(message);
+			}
+		}).on('mouseenter', '.reply', function(e){
+			$('.messageinfo').remove();
+			var mid = $(this).attr('to'), menuItems = [];
+			$('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');
+			menuItems.push('click to go to replied to message');
+			$('<div>').addClass('messageinfo').html(menuItems.join(' - ')).appendTo(this);
+			e.stopPropagation();
+		}).on('mouseleave', '.reply', function(){
+			$('.messageinfo').remove();
+			$('.target').removeClass('target');
+		}).on('click', '.reply', function(e){
+			var mid = +$(this).attr('to');
+			var $message = $('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('goingto');
+			var mtop = $message.offset().top;
+			if (mtop<0) $('#messages').animate({scrollTop: mtop+$('#messages').scrollTop()}, 400);
+			setTimeout(function(){ $message.removeClass('goingto'); }, 1000);
+			e.stopPropagation();			
 		}).on('click', 'a', function(e){
 			e.stopPropagation();
-		}).on('click', '.message.me', function(){
-			var message = $(this).data('message');
-			if (Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT) $('#input').editMessage(message);
 		});
 
 		$('#input').editFor(socket);
