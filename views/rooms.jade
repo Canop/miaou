@@ -33,11 +33,11 @@ html
 							if room.auth
 								td.role= room.auth
 			div.CR
-				h2.private(title="Those are the private room whose access has been granted to you") Accessible Private Rooms
+				h2(title="Those are the private room whose access has been granted to you") Accessible Private Rooms
 				table.list
 					each room, i in rooms.private
 						tr
-							th: a(href=room.id) #{room.name}
+							th.private: a(href=room.id) #{room.name}
 							td.rendered #{room.description}
 							if room.auth
 								td.role= room.auth

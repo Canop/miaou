@@ -459,7 +459,12 @@ div.MP {
 }
 
 .private:before {
-	content:"⚷"
+	font-family: "fontello";
+	content:"\e814";
+	margin-right: 3px;
+	opacity: 0.7;
+	padding-right: 1px;
+	font-size: 70%;
 }
 .notification {
 	padding: 5px;
