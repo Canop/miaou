@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'fontello';
+  src: url('fontello.woff?91738179') format('woff');
+}
+
 body {
 	background: #F0EAD6;
 	position: fixed;
@@ -119,7 +124,9 @@ section {
 	word-wrap: break-word;
 }
 .message.edited .content:before {
-	content: url(img/icon_pencil.png);
+	font-family: "fontello";
+	content: "\e80c";
+	color: #555;
 	margin-right: 4px;
 }
 .message .content img, .rendered img {
