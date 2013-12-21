@@ -38,21 +38,6 @@ var miaou = miaou || {};
 		}).addClass('disrupt');
 	}
 
-	function makeMessageDiv(message){
-		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content));
-		var $md = $('<div>').addClass('message').append(
-			$('<div>').addClass('user').text(message.authorname)
-		).append($content).data('message', message).attr('mid', message.id);
-		if (message.authorname===me.name) $md.addClass('me');
-		if ($content.height()>150) {
-			$content.addClass("closed");
-			$md.append('<div class=opener>');
-		}
-		$content.find('img').load(scrollToBottom);
-		if (message.changed) $md.addClass('edited');
-		return $md;
-	}
-
 	function addMessage(message){
 		var insertionIndex = messages.length; // -1 : insert at end, i>=0 : insert before i
 		if (messages.length===0 || message.id>messages[messages.length-1].id) {
@@ -62,7 +47,13 @@ var miaou = miaou || {};
 		} else {
 			while (messages[--insertionIndex].id>message.id);
 		}
-		var $md = makeMessageDiv(message);
+		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content));
+		var $md = $('<div>').addClass('message').append(
+			$('<div>').addClass('user').text(message.authorname)
+		).append($content).data('message', message).attr('mid', message.id);
+		if (message.authorname===me.name) $md.addClass('me');
+		$content.find('img').load(scrollToBottom);
+		if (message.changed) $md.addClass('edited');
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
 				messages[insertionIndex] = message;
@@ -75,6 +66,10 @@ var miaou = miaou || {};
 			messages.push(message);
 			$md.appendTo('#messages');
 			addToUserList({id: message.author, name: message.authorname});
+		}
+		if ($content.height()>150) {
+			$content.addClass("closed");
+			$md.append('<div class=opener>');
 		}
 		showMessageFlowDisruptions();
 		scrollToBottom();
