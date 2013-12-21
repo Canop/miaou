@@ -126,7 +126,7 @@ section {
 .message.edited .content:before {
 	font-family: "fontello";
 	content: "\e80c";
-	color: #555;
+	color: #666;
 	margin-right: 4px;
 }
 .message .content img, .rendered img {
