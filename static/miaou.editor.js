@@ -139,7 +139,6 @@ $.fn.replyToMessage = function(message){
 	var dl = (input.value.length-l);
 	input.selectionStart = s + dl;
 	input.selectionEnd = e + dl;
-	console.log(l, s, input.selectionStart);
 	input.focus();
 }
 
