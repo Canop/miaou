@@ -1,8 +1,7 @@
 @font-face {
-  font-family: 'fontello';
-  src: url('fontello.woff?91738179') format('woff');
+	font-family: 'fontello';
+	src: url('fontello.woff?91738179') format('woff');
 }
-
 body {
 	background: #F0EAD6;
 	position: fixed;

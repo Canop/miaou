@@ -1,3 +1,7 @@
+@font-face {
+	font-family: 'fontello';
+	src: url('fontello.woff?91738179') format('woff');
+}
 body {
 	background: #F0EAD6;
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
@@ -22,6 +26,10 @@ body {
 }
 #content div, #content p, #content pre {
 	margin-left: 20px;
+}
+.vote {
+	font-family: 'fontello';
+	margin: 0 7px;
 }
 
 #summary {
