@@ -55,7 +55,7 @@ var miaou = miaou || {};
 			.sort(function(a,b){ return b.pin*100+b.star*10+b.up-a.pin*100-a.star*10-a.up })
 			.slice(0,12)
 			.map(function(m){
-				return '<div class=message>'
+				return '<div class=message mid='+m.id+'>'
 					+ '<div class=content>' + miaou.mdToHtml(m.content.match(/^[^\n]{1,200}/)[0]) + '</div>'
 					+ '<div class=nminfo>' + votesAbstract(m) + ' ' + moment(m.created*1000).fromNow() + ' by ' + m.authorname + '</div>'
 					+ '</div>';
@@ -167,6 +167,13 @@ var miaou = miaou || {};
 				document.title = room ? room.name : 'no room';
 			}
 		});
+		
+		function gotoMessage(mid){
+			var $message = $('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('goingto');
+			var mtop = $message.offset().top;
+			if (mtop<0) $('#messages').animate({scrollTop: mtop+$('#messages').scrollTop()}, 400);
+			setTimeout(function(){ $message.removeClass('goingto'); }, 1000);			
+		}
 
 		setInterval(function(){
 			if (vis()) clearPings();
@@ -250,11 +257,7 @@ var miaou = miaou || {};
 		}).on('mouseleave', '.reply', function(){
 			$('.target').removeClass('target');
 		}).on('click', '.reply', function(e){
-			var mid = +$(this).attr('to');
-			var $message = $('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('goingto');
-			var mtop = $message.offset().top;
-			if (mtop<0) $('#messages').animate({scrollTop: mtop+$('#messages').scrollTop()}, 400);
-			setTimeout(function(){ $message.removeClass('goingto'); }, 1000);
+			gotoMessage($(this).attr('to'));
 			e.stopPropagation();			
 		}).on('click', 'a', function(e){
 			e.stopPropagation();
@@ -263,6 +266,11 @@ var miaou = miaou || {};
 			if (message.vote) socket.emit('vote', {action:'remove',  message:message.id, level:message.vote});
 			if (message.vote!=vote) socket.emit('vote', {action:'add',  message:message.id, level:vote});
 			return false;
+		});
+		
+		$('#notablemessages').on('click', '.message', function(e){
+			gotoMessage($(this).attr('mid'));
+			e.stopPropagation();			
 		});
 
 		$('#input').editFor(socket);

@@ -152,6 +152,9 @@ section {
 	width: calc(100% - 122px);
 	display:inline-block;
 }
+#notablemessages .message {
+	cursor: pointer;
+}
 #notablemessages .content {
 	opacity: 0.8;
 }
