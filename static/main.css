@@ -92,14 +92,40 @@ section {
 	padding: 3px;
 	position: relative;
 }
-.messageinfo {
+.messagemenu {
 	position: absolute;
-	top: 2px;
-	right: 2px;
+	top: 0;
+	right: 1px;
 	background: white;
 	color: black;
 	opacity: 0.85;
 	font-size: 80%;
+	color: #555;
+}
+.messagemenu .txt {
+	color: black;
+}
+.messagemenu .vote {
+	font-family: "fontello";
+	color: #888;
+	margin: 0 4px;
+	cursor: pointer;
+}
+.messagemenu .vote.on {
+	color: black;
+}
+.messagevotes {
+	position: absolute;
+	top: 14px;
+	right: 1px;
+	color: black;
+	opacity: 0.6;
+	font-size: 70%;
+}
+.messagevotes .vote {
+	font-family: "fontello";
+	color: black;
+	margin: 0 4px;
 }
 .message.me {
 	background-color: #fdf6e5;
@@ -110,7 +136,7 @@ section {
 .message + .message.disrupt {
 	border-top: thin solid #aaa;
 }
-.message .user {
+#messages .user {
 	width: 120px;
 	display:inline-block;
 	padding-left: 2px;
@@ -118,7 +144,7 @@ section {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
-.message .content {
+.content {
 	width: calc(100% - 122px);
 	display:inline-block;
 	word-wrap: break-word;
@@ -129,7 +155,7 @@ section {
 	color: #666;
 	margin-right: 4px;
 }
-.message .content img, .rendered img {
+.content img, .rendered img {
 	border: none;
 	max-width: 100%;
 	max-height: 130px;
@@ -252,7 +278,10 @@ pre {
 	opacity: 0.8;
 	display: none;
 }
-.error, .user.error {
+#messages .error {
+	display: inline-block;
+}
+.error, #messages .user.error {
 	color: red;
 }
 span.warning {

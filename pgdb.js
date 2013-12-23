@@ -154,12 +154,27 @@ Con.prototype.listOpenAccessRequests = function(roomId, userId, cb){
 }
 
 // returns a query with the most recent messages of the room
-Con.prototype.queryLastMessages = function(roomId, N){
+Con.prototype.queryLastMessages = function(roomId, userId, N){
 	return this.client.query(
-		'select message.id, author, player.name as authorname, content, message.created as created, message.changed from message'+
-		' left join player on author=player.id where room=$1 order by created desc limit $2',
-		[roomId, N]
+		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote from message'+
+		' left join message_vote on message.id=message and message_vote.player=$2'+
+		' inner join player on author=player.id'+
+		' where room=$1 order by created desc limit $3', [roomId, userId, N]
 	);
+}
+
+// fetches one message. Votes of the passed user are included
+Con.prototype.getMessage = function(messageId, userId, cb){
+	var con = this;
+	con.client.query(
+		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote from message'+
+		' left join message_vote on message.id=message and message_vote.player=$2'+
+		' inner join player on author=player.id'+
+		' where message.id=$1', [messageId, userId], function(err, res)
+	{
+		if (err) return con.nok(cb, err);
+		cb(null, res.rows[0]);
+	});
 }
 
 // do actions on user rights
@@ -269,13 +284,44 @@ Con.prototype.fetchUserPingRooms = function(userId, after, cb) {
 		if (err) return con.nok(cb, err);
 		cb(null, res.rows);
 	});
+}
 
+Con.prototype.updateGetMessage = function(messageId, expr, userId, cb){
+	var con = this;
+	con.client.query("update message set "+expr+" where id=$1", [messageId], function(err, res){
+		if (err) return con.nok(cb, err);
+		con.getMessage(messageId, userId, cb);
+	});
+}
+
+Con.prototype.addVote = function(roomId, userId, messageId, level, cb) {
+	var con = this, sql, args;
+	switch (level) {
+	case 'pin': case 'star': case 'up': case 'down':
+		sql = "insert into message_vote (message, player, vote) select $1, $2, $3";
+		sql += " where exists(select * from message where id=$1 and room=$4)"; // to avoid users cheating by voting on messages they're not allowed to
+		args = [messageId, userId, level, roomId];
+		break;
+	default:
+		return cb(new Error('Unknown vote level'));
+	}
+	con.client.query(sql, args, function(err, res){
+		if (err) return con.nok(cb, err);
+		con.updateGetMessage(messageId, level+"="+level+"+1", userId, cb);
+	});
+}
+Con.prototype.removeVote = function(roomId, userId, messageId, level, cb) {
+	var con = this;
+	con.client.query("delete from message_vote where message=$1 and player=$2 and vote=$3", [messageId, userId, level], function(err, res){
+		if (err) return con.nok(cb, err);
+		con.updateGetMessage(messageId, level+"="+level+"-1", userId, cb);
+	});
 }
 
 Con.prototype.storeRoom = function(r, author, cb) {
 	var con = this, now = ~~(Date.now()/1000);
 	if (r.id) {
-		con.checkAuthLevel(r.id, author.id, 'admin', function(err, auth){
+		con.checkAuthLevel(r.id, author.id, 'admin', function(err, auth){ // todo check this in update request to remove one request
 			if (err) return con.nok(cb, err);
 			if (auth) {
 				con.client.query(
@@ -285,7 +331,7 @@ Con.prototype.storeRoom = function(r, author, cb) {
 				{
 					if (err) return con.nok(cb, err);
 					cb(null, r);
-				});				
+				});
 			} else {
 				cb(new Error("Admin right is needed to change the room"));
 			}

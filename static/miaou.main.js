@@ -1,13 +1,12 @@
 var miaou = miaou || {};
 (function(){
-	var NB_MESSAGES = 100,
+	var NB_MESSAGES = 500,
 		MAX_AGE_FOR_EDIT = 1800, // seconds (should be coherent with server settings) 
 		DISRUPTION_THRESHOLD = 60*60, // seconds
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
-		messages = [],
-		lastReceivedPing = 0, // seconds since epoch, server time
-		enterTime; // seconds since epoch, server time
+		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}],
+		lastReceivedPing = 0, enterTime; // both in seconds since epoch, server time
 	
 	function setEnterTime(serverTime){
 		enterTime = serverTime;
@@ -32,14 +31,16 @@ var miaou = miaou || {};
 	}
 
 	function showMessageFlowDisruptions(){
-		$('.message').removeClass('disrupt').filter(function(i){
-			// we're assuming here that the elements are coherent with the messages array
-			return (i>0 && messages[i].created-messages[i-1].created > DISRUPTION_THRESHOLD);
-		}).addClass('disrupt');
+		var lastMessage;
+		$('#messages .message')/*.removeClass('disrupt')*/.each(function(i){
+			var $this = $(this), message = $this.data('message');
+			if (lastMessage && message.created-lastMessage.created > DISRUPTION_THRESHOLD) $this.addClass('disrupt')
+		});
 	}
 
 	function addMessage(message){
-		var insertionIndex = messages.length; // -1 : insert at end, i>=0 : insert before i
+		var messages = $('#messages .message').map(function(){ return $(this).data('message') }).get(),
+			insertionIndex = messages.length; // -1 : insert at end, i>=0 : insert before i
 		if (messages.length===0 || message.id>messages[messages.length-1].id) {
 			insertionIndex = -1;
 		} else if (messages[0].id>message.id) {
@@ -54,9 +55,13 @@ var miaou = miaou || {};
 		if (message.authorname===me.name) $md.addClass('me');
 		$content.find('img').load(scrollToBottom);
 		if (message.changed) $md.addClass('edited');
+		var votesHtml = voteLevels.map(function(l){
+			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
+		}).join('');
+		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
-				messages[insertionIndex] = message;
+				if (message.vote==='?') message.vote = messages[insertionIndex].vote; 
 				$('#messages .message').eq(insertionIndex).replaceWith($md);				
 			} else {
 				messages.splice(insertionIndex, 0, message);
@@ -67,6 +72,7 @@ var miaou = miaou || {};
 			$md.appendTo('#messages');
 			addToUserList({id: message.author, name: message.authorname});
 		}
+		if (message.vote==='?') message.vote=null;
 		if ($content.height()>150) {
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
@@ -79,7 +85,9 @@ var miaou = miaou || {};
 		console.log('ERROR', error);
 		var $md = $('<div>').addClass('error').append(
 			$('<div>').addClass('user error').text("Miaou Server")
-		).append(error).appendTo('#messages');
+		).append(
+			$('<div>').addClass('content').text(error)
+		).appendTo('#messages');
 		scrollToBottom();
 	}
 	
@@ -141,16 +149,6 @@ var miaou = miaou || {};
 			if (vis()) clearPings();
 		}, 5*60*1000);
 		
-		// returns false if the message isn't in the page
-		function goToMessage(mid) {
-			var $message;
-			$('#messages .message').each(function(){
-				if ($(this).data('message').id===mid) {
-					
-				}
-			});
-		}
-
 		socket.on('connect', function(){
 			socket.emit('enter', room.id, setEnterTime);
 		}).on('get_room', function(unhandledMessage){
@@ -158,6 +156,7 @@ var miaou = miaou || {};
 			socket.emit('enter', room.id, setEnterTime);
 			socket.emit('message', unhandledMessage);
 		}).on('message', function(message){
+			//~ console.log('received:', message);
 			addMessage(message);
 			if (message.created>enterTime) {
 				var visible = vis(), ping = pingRegex(me.name).test(message.content);
@@ -200,14 +199,19 @@ var miaou = miaou || {};
 		}).on('click', '.closer', function(){
 			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
 		}).on('mouseenter', '.message', function(){
-			var $message = $(this), message = $message.data('message'), menuItems = [];
-			if (message.authorname===me.name) menuItems.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
-			else menuItems.push('click to reply');
-			menuItems.push(moment(message.created*1000).fromNow());
-			if (message.changed) menuItems.push('edited ' + moment(message.changed*1000).fromNow());
-			$('<div>').addClass('messageinfo').html(menuItems.join(' - ')).appendTo(this);
+			var $message = $(this), message = $message.data('message'), infos = [];
+			if (message.author===me.id) infos.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
+			else infos.push('click to reply');
+			infos.push(moment(message.created*1000).fromNow());
+			if (message.changed) infos.push('edited ' + moment(message.changed*1000).fromNow());
+			$('<div>').addClass('messagemenu').html(
+				infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
+				voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(checkAuth('admin')?0:1).map(function(l){
+					return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+'>'+l.icon+'</span>'
+				}).join('')
+			).appendTo(this);
 		}).on('mouseleave', '.message', function(){
-			$('.messageinfo').remove();
+			$('.messagemenu').remove();
 		}).on('click', '.message', function(){
 			var $message = $(this), message = $message.data('message');
 			if (message.authorname===me.name) {
@@ -216,14 +220,10 @@ var miaou = miaou || {};
 				$('#input').replyToMessage(message);
 			}
 		}).on('mouseenter', '.reply', function(e){
-			$('.messageinfo').remove();
-			var mid = $(this).attr('to'), menuItems = [];
+			var mid = $(this).attr('to');
 			$('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');
-			menuItems.push('click to go to replied to message');
-			$('<div>').addClass('messageinfo').html(menuItems.join(' - ')).appendTo(this);
 			e.stopPropagation();
 		}).on('mouseleave', '.reply', function(){
-			$('.messageinfo').remove();
 			$('.target').removeClass('target');
 		}).on('click', '.reply', function(e){
 			var mid = +$(this).attr('to');
@@ -234,6 +234,11 @@ var miaou = miaou || {};
 			e.stopPropagation();			
 		}).on('click', 'a', function(e){
 			e.stopPropagation();
+		}).on('click', '.vote', function(e){
+			var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
+			if (message.vote) socket.emit('vote', {action:'remove',  message:message.id, level:message.vote});
+			if (message.vote!=vote) socket.emit('vote', {action:'add',  message:message.id, level:vote});
+			return false;
 		});
 
 		$('#input').editFor(socket);
@@ -243,7 +248,7 @@ var miaou = miaou || {};
 		} else {
 			$('#editroom, #auths').hide();
 		}
-		
+				
 		$('#showPreview').click(function(){
 			$(this).hide();
 			$('#input').focus();

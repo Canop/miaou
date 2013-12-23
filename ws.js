@@ -81,7 +81,7 @@ function handleUserInRoom(socket, completeUser, mdb){
 				room = r;
 				socket.emit('room', room);
 				socket.join(room.id);
-				con.queryLastMessages(room.id, 300).on('row', function(message){
+				con.queryLastMessages(room.id, publicUser.id, 300).on('row', function(message){
 					socket.emit('message', message);
 				}).on('end', function(){
 					socket.broadcast.to(room.id).emit('enter', publicUser);
@@ -137,7 +137,20 @@ function handleUserInRoom(socket, completeUser, mdb){
 				});
 			});
 		}
-	}).on('disconnect', function(){ // todo : are we really assured to get this event ?
+	}).on('vote', function(vote){
+		if (vote.level=='pin' && !(room.auth==='admin'||room.auth==='own')) return;
+		mdb.con(function(err, con){
+			if (err) return error('no connection');
+			con[vote.action==='add'?'addVote':'removeVote'](room.id, publicUser.id, vote.message, vote.level, function(err, updatedMessage){
+				if (err) return error(err);
+				con.ok();
+				socket.emit('message', updatedMessage);
+				var clone = {};
+				for (var key in updatedMessage) clone[key]= key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
+				socket.broadcast.to(room.id).emit('message', clone);
+			});
+		});		
+	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		console.log(completeUser.name, "disconnected");
 		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);
 		popon(socketWaitingApproval, function(o){ return o.socket===socket });

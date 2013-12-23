@@ -18,7 +18,11 @@ CREATE TABLE message (
 	author integer references player(id),
 	content text NOT NULL,
 	created integer NOT NULL,
-	changed integer
+	changed integer NOT NULL default 0,
+	pin integer NOT NULL default 0,
+	star integer NOT NULL default 0,
+	up integer NOT NULL default 0,
+	down integer NOT NULL default 0
 );
 create index message_room_created on message (room, created);
 CREATE TYPE auth_level AS ENUM ('read', 'write', 'admin', 'own');
@@ -43,3 +47,11 @@ CREATE TABLE ping (
 	created integer NOT NULL
 );
 create index ping_idx on ping (player, room);
+CREATE TYPE vote_level AS ENUM ('down', 'up', 'star', 'pin');
+CREATE TABLE message_vote (
+	message bigint references message(id),
+	player integer references player(id),
+	vote vote_level NOT NULL,
+	PRIMARY KEY(message, player)
+);
+create index vote_idx on message_vote (vote);
