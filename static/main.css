@@ -38,7 +38,7 @@ section {
 }
 #right {
 	display: table-cell;
-	width: 260px;
+	width: 320px;
 	height:100%;
 	vertical-align: top;
 }
@@ -122,7 +122,11 @@ section {
 	opacity: 0.6;
 	font-size: 70%;
 }
-.messagevotes .vote {
+.nminfo {
+	opacity: 0.7;
+	font-size: 80%;
+}
+.messagevotes .vote, .nminfo .vote {
 	font-family: "fontello";
 	color: black;
 	margin: 0 4px;
@@ -144,9 +148,14 @@ section {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
-.content {
+#messages .content {
 	width: calc(100% - 122px);
 	display:inline-block;
+}
+#notablemessages .content {
+	opacity: 0.8;
+}
+.content {
 	word-wrap: break-word;
 }
 .message.edited .content:before {

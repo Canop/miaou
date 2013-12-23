@@ -22,6 +22,10 @@ var miaou = miaou || {};
         return false;
 	}
 
+	function getMessages() {
+		return $('#messages .message').map(function(){ return $(this).data('message') }).get();
+	}
+
 	function pingRegex(name) {
 		return new RegExp('@'+name+'(\\b|$)')
 	}
@@ -37,10 +41,30 @@ var miaou = miaou || {};
 			if (lastMessage && message.created-lastMessage.created > DISRUPTION_THRESHOLD) $this.addClass('disrupt')
 		});
 	}
+	
+	function votesAbstract(message){
+		return voteLevels.map(function(l){
+			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
+		}).join('');
+	}
+	
+	// for now, the notable messages are just taken among the last 300, this will change
+	function showNotableMessages(){
+		$('#notablemessages').html(
+			getMessages().filter(function(m){ return m.pin||m.star })
+			.sort(function(a,b){ return b.pin*100+b.star*10+b.up-a.pin*100-a.star*10-a.up })
+			.slice(0,12)
+			.map(function(m){
+				return '<div class=message>'
+					+ '<div class=content>' + miaou.mdToHtml(m.content.match(/^[^\n]{1,200}/)[0]) + '</div>'
+					+ '<div class=nminfo>' + votesAbstract(m) + ' ' + moment(m.created*1000).fromNow() + ' by ' + m.authorname + '</div>'
+					+ '</div>';
+			}).join('')
+		);
+	}
 
 	function addMessage(message){
-		var messages = $('#messages .message').map(function(){ return $(this).data('message') }).get(),
-			insertionIndex = messages.length; // -1 : insert at end, i>=0 : insert before i
+		var messages = getMessages(), insertionIndex = messages.length; // -1 : insert at end, i>=0 : insert before i
 		if (messages.length===0 || message.id>messages[messages.length-1].id) {
 			insertionIndex = -1;
 		} else if (messages[0].id>message.id) {
@@ -48,16 +72,14 @@ var miaou = miaou || {};
 		} else {
 			while (messages[--insertionIndex].id>message.id);
 		}
-		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content));
+		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true));
 		var $md = $('<div>').addClass('message').append(
 			$('<div>').addClass('user').text(message.authorname)
 		).append($content).data('message', message).attr('mid', message.id);
 		if (message.authorname===me.name) $md.addClass('me');
 		$content.find('img').load(scrollToBottom);
 		if (message.changed) $md.addClass('edited');
-		var votesHtml = voteLevels.map(function(l){
-			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
-		}).join('');
+		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
@@ -79,6 +101,7 @@ var miaou = miaou || {};
 		}
 		showMessageFlowDisruptions();
 		scrollToBottom();
+		showNotableMessages();
 	}
 	
 	function showError(error){
@@ -147,7 +170,8 @@ var miaou = miaou || {};
 
 		setInterval(function(){
 			if (vis()) clearPings();
-		}, 5*60*1000);
+			showNotableMessages(); // so that the moment.fromNow ages appear less strange...
+		}, 3*60*1000);
 		
 		socket.on('connect', function(){
 			socket.emit('enter', room.id, setEnterTime);
