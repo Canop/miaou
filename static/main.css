@@ -172,6 +172,9 @@ section {
 	max-height: 130px;
 	cursor: pointer;
 }
+#notablemessages .content img {
+	max-height: 70px;
+}
 code {
 	font-family: monospace;
 	color: #444;
