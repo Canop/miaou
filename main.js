@@ -220,7 +220,10 @@ function defineAppRoutes(){
 			con.listAccessibleRooms(req.user.id, function(err, accessibleRooms){
 				if (err) return res.render('error.jade', { error: err.toString() });
 				var rooms = {public:[], private:[]};
-				accessibleRooms.forEach(function(r) { rooms[r.private?'private':'public'].push(r); });
+				accessibleRooms.forEach(function(r) {
+					r.url = r.id+'?'+loginutil.toUrlDecoration(r.name);
+					rooms[r.private?'private':'public'].push(r);
+				});
 				con.fetchUserPingRooms(req.user.id, 0, function(err, pings) {
 					if (err) return res.render('error.jade', { error: err.toString() });
 					con.ok();

@@ -28,7 +28,7 @@ html
 				table.list
 					each room, i in rooms.public
 						tr
-							th: a(href=room.id) #{room.name}
+							th: a(href=room.url) #{room.name}
 							td.rendered #{room.description}
 							if room.auth
 								td.role= room.auth
@@ -37,7 +37,7 @@ html
 				table.list
 					each room, i in rooms.private
 						tr
-							th.private: a(href=room.id) #{room.name}
+							th.private: a(href=room.url) #{room.name}
 							td.rendered #{room.description}
 							if room.auth
 								td.role= room.auth

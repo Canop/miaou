@@ -90,14 +90,14 @@ var defaultDiacriticsRemovalMap = [
 	{'base':'y','letters':/[\u0079\u24E8\uFF59\u1EF3\u00FD\u0177\u1EF9\u0233\u1E8F\u00FF\u1EF7\u1E99\u1EF5\u01B4\u024F\u1EFF]/g},
 	{'base':'z','letters':/[\u007A\u24E9\uFF5A\u017A\u1E91\u017C\u017E\u1E93\u1E95\u01B6\u0225\u0240\u2C6C\uA763]/g}
 ];
-var removeDiacritics = function(str) {
+var removeDiacritics = function(str){
 	for(var i=0; i<defaultDiacriticsRemovalMap.length; i++) {
 		str = str.replace(defaultDiacriticsRemovalMap[i].letters, defaultDiacriticsRemovalMap[i].base);
 	}
 	return str;
 }
 
-var suggestUsername = exports.suggestUsername = function(completeName) {
+var suggestUsername = exports.suggestUsername = function(completeName){
 	return (removeDiacritics(completeName.trim())+'@@@@@@@'.slice(completeName.length))
 		.replace(/^\W/g, function(){ return String.fromCharCode(~~(Math.random()*24)+97) })
 		.replace(/\s/g, '_')
@@ -105,7 +105,13 @@ var suggestUsername = exports.suggestUsername = function(completeName) {
 		.slice(0, 20)
 }
 
-exports.isValidUsername = function(username) {
+var toUrlDecoration = exports.toUrlDecoration = function(roomName){
+	return removeDiacritics(roomName)
+		.replace(/[^\w_\-\d\s]/g,'')
+		.replace(/\s+/g, '_');
+}
+
+exports.isValidUsername = function(username){
 	return username && /^\w[\w_\-\d]{2,19}$/.test(username);
 }
 
@@ -113,6 +119,6 @@ exports.test = function(){
 	[
 		'Denys Séguret', ' Alphonse Daudet', '☒ show message date ', '', 'अभिषेक', '<<<', 'www', 'abcd\0eee', validChars
 	].forEach(function(s){
-		console.log(s, suggestUsername(s));
+		console.log(s, 'suggested user name:', suggestUsername(s), 'room name in url:', toUrlDecoration(s));
 	});
 }

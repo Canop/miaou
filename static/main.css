@@ -182,7 +182,7 @@ section {
 	max-height: 130px;
 	cursor: pointer;
 }
-#notablemessages .content img {
+#notablemessages .content img, table.list .rendered img{
 	max-height: 70px;
 }
 code {
