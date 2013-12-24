@@ -81,8 +81,8 @@ section {
 	height: 100%;
 }
 #messageswrapper {
-  position: relative;
-  height: 100%;
+	position: relative;
+	height: 100%;
 }
 #messages {
 	position: absolute;

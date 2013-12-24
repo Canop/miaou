@@ -86,7 +86,7 @@ function checkAuthAtLeast(auth, neededAuth) {
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
-	app.get(/^\/(\d+)?$/, ensureAuthenticated, ensureCompleteProfile, function(req, res){
+	app.get(/^\/(\d+)?(\?[^\/]+)?$/, ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		withRoom(+req.params[0], req.user.id, function(err, room) {
 			if (!room) return res.redirect(url('/rooms'));		
 			req.session.room = room;
