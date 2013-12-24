@@ -222,13 +222,15 @@ var miaou = miaou || {};
 			console.log('DISCONNECT');
 		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
 		
-		$('#messages').on('click', '.message .content img', function(){
+		$('#messages').on('click', '.message .content img', function(e){
 			window.open(this.src);
 			e.stopPropagation();
-		}).on('click', '.opener', function(){
+		}).on('click', '.opener', function(e){
 			$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
-		}).on('click', '.closer', function(){
-			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');					
+			e.stopPropagation();			
+		}).on('click', '.closer', function(e){
+			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');
+			e.stopPropagation();			
 		}).on('mouseenter', '.message', function(){
 			var $message = $(this), message = $message.data('message'), infos = [];
 			if (message.author===me.id) infos.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');

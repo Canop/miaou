@@ -1,8 +1,8 @@
 # Miaou
 
-A node based chat server.
+A node based chat server with authentication, persistent history, markdown formatting, private rooms, stars and votes, and a few other features.
 
-You can see it in action on http://dystroy.org/miaou
+You can see it in action or use it, in public rooms or in private rooms you create for yourself, on http://dystroy.org/miaou
 
 # Compatibility
 
