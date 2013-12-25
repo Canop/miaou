@@ -36,9 +36,10 @@ var miaou = miaou || {};
 
 	function showMessageFlowDisruptions(){
 		var lastMessage;
-		$('#messages .message')/*.removeClass('disrupt')*/.each(function(i){
+		$('#messages .message').removeClass('disrupt').each(function(i){
 			var $this = $(this), message = $this.data('message');
 			if (lastMessage && message.created-lastMessage.created > DISRUPTION_THRESHOLD) $this.addClass('disrupt')
+			lastMessage = message;
 		});
 	}
 	

@@ -5,6 +5,11 @@ html
 		link(rel='stylesheet', href='static/main.css')
 		script(src="static/jquery-2.0.3.min.js")
 		script(src="static/miaou.format.js")
+		style.
+			#roomdescription {
+				padding: 2px;
+				background: #F0EAD6;
+			}
 	body
 		form(method="post")
 			div.dialog
@@ -21,7 +26,7 @@ html
 							span.small Markdown allowed
 						textarea#description(name="description")
 						label.label.small Description Preview
-						div.rendered.input#preview
+						div.rendered.input#roomdescription
 					p#err.error
 				div.dialog_buttons
 					input#cancel(type='button', value='Cancel')
@@ -52,7 +57,7 @@ html
 			});
 			$('#cancel').click(function(){ history.back() });
 			function format(){
-				$('#preview').html(miaou.mdToHtml($('#description').val()));
+				$('#roomdescription').html(miaou.mdToHtml($('#description').val()));
 			}
 			$('#description').keyup(format);
 			format();

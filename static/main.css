@@ -182,8 +182,11 @@ section {
 	max-height: 130px;
 	cursor: pointer;
 }
-#notablemessages .content img, table.list .rendered img{
+#notablemessages .content img, table.list .rendered img {
 	max-height: 70px;
+}
+#roomdescription.rendered img {
+	max-height: 250px;
 }
 code {
 	font-family: monospace;

@@ -4,6 +4,10 @@ var pg = require('pg').native,
 	pool,
 	conString;
 
+function logQuery(sql, args) { // used in debug
+	console.log(sql.replace(/\$(\d+)/g, function(_,i){ var s=args[i-1]; return typeof s==="string" ? "'"+s+"'" : s }));
+}
+
 function Con(client, done) {
 	this.client = client;
 	this.ok = done;
@@ -12,26 +16,34 @@ Con.prototype.nok = function(cb, err){
 	this.ok();
 	cb(err);
 }
+// returns an error if no row was found (select) or affected (insert, select)
+Con.prototype.queryRow = function(sql, args, cb){
+	var con = this;
+	con.client.query(sql, args, function(err, res){
+		if (err) con.nok(cb, err);
+		else if (res.rows.length || res.rowCount) cb(null, res.rows[0]);
+		else con.nok(cb, new Error('no row'));
+	});
+}
+Con.prototype.queryRows = function(sql, args, cb){
+	var con = this;
+	con.client.query(sql, args, function(err, res){
+		if (err) con.nok(cb, err);
+		else cb(null, res.rows)
+	});
+}
 
 // returns a user found by the Google OAuth profile, creates it if it doesn't exist
 // Private fields are included in the returned object
 Con.prototype.fetchCompleteUserFromOAuthProfile = function(profile, cb){
 	var con = this, email = profile.emails[0].value, returnedCols = 'id, name, oauthdisplayname, email';
 	con.client.query('select '+returnedCols+' from player where email=$1', [email], function(err, result){
-		if (err) {
-			con.nok(cb, err);
-		} else if (result.rows.length) {
-			cb(null, result.rows[0]);
-		} else {
-			con.client.query(
-				'insert into player (oauthid, oauthprovider, email, oauthdisplayname) values ($1, $2, $3, $4) returning '+returnedCols,
-				[profile.id, profile.provider, email, profile.displayName],
-				function(err, result)
-			{
-				if (err) return con.nok(cb, err);
-				cb(null, result.rows[0])
-			});
-		}
+		if (err) return con.nok(cb, err);
+		if (result.rows.length) return cb(null, result.rows[0]);
+		con.queryRow(
+			'insert into player (oauthid, oauthprovider, email, oauthdisplayname) values ($1, $2, $3, $4) returning '+returnedCols,
+			[profile.id, profile.provider, email, profile.displayName], cb
+		);
 	});
 }
 
@@ -39,118 +51,66 @@ Con.prototype.fetchCompleteUserFromOAuthProfile = function(profile, cb){
 // Only public fields are returned
 // Private fields are included in the returned object
 Con.prototype.fetchUserById = function(id, cb){
-	var con = this;
-	con.client.query('select id, name, oauthdisplayname, email from player where id=$1', [id], function(err, result){
-		if (err) {
-			con.nok(cb, err);
-		} else if (!result.rows.length) {
-			cb(new Error('Player "'+id+'" not found'));
-		} else {
-			cb(null, result.rows[0]);
-		}
-	});
+	this.queryRow('select id, name, oauthdisplayname, email from player where id=$1', [id], cb);
 }
 
 // right now it only updates the name, I'll enrich it if the need arises
 Con.prototype.updateUser = function(user, cb){
-	var con = this;
-	con.client.query('update player set name=$1 where id=$2', [user.name, user.id], function(err, result){
-		if (err) con.nok(cb, err);
-		else cb();
-	});
+	this.queryRow('update player set name=$1 where id=$2', [user.name, user.id], cb);
 }
 
 // returns an existing room found by its id
 Con.prototype.fetchRoom = function(id, cb){
-	var con = this;
-	con.client.query('select id, name, description, private from room where id=$1', [id], function(err, result){
-		if (err) {
-			con.nok(cb, err);
-		} else if (!result.rows.length) {
-			cb(new Error('Room "'+id+'" not found'));
-		} else {
-			cb(null, result.rows[0]);
-		}
-	});
+	this.queryRow('select id, name, description, private from room where id=$1', [id], cb);
 }
 
 // returns an existing room found by its id and the user's auth level
 Con.prototype.fetchRoomAndUserAuth = function(roomId, userId, cb){
-	var con = this;
-	con.client.query('select id, name, description, private, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId], function(err, result){
-		if (err) {
-			con.nok(cb, err);
-		} else if (!result.rows.length) {
-			cb(new Error('Room "'+roomId+'" not found'));
-		} else {
-			cb(null, result.rows[0]);
-		}
-	});
+	this.queryRow('select id, name, description, private, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId], cb);
 }
 
 // gives to cb an array of all public rooms
 Con.prototype.listPublicRooms = function(cb){
-	var con = this;
-	con.client.query('select id, name, description from room where private is not true', function(err, result){
-		if (err) con.nok(cb, err);
-		else cb(null, result.rows);
-	});
+	this.queryRows('select id, name, description from room where private is not true', [], cb);
 }
 // lists the authorizations a user has
 Con.prototype.listUserAuths = function(userId, cb){
-	var con = this;
-	con.client.query("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId], function(err, result){
-		if (err) con.nok(cb, err);
-		else cb(null, result.rows);
-	});
+	this.queryRows("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId], cb);
 }
 // lists the authorizations of the room
 Con.prototype.listRoomAuths = function(roomId, cb){
-	var con = this;
-	con.client.query("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId], function(err, result){
-		if (err) con.nok(cb, err);
-		else cb(null, result.rows);
-	});
+	this.queryRows("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId], cb);
 }
 
 // lists the 
 Con.prototype.listAccessibleRooms = function(userId, cb){
-	var con = this;
-	con.client.query("select id, name, description, private, auth from room r left join room_auth a on a.room=r.id and a.player=$1 where private is false or auth is not null order by auth desc nulls last, name", [userId], function(err, result){
-		if (err) con.nok(cb, err);
-		else cb(null, result.rows);
-	});
+	this.queryRows(
+		"select id, name, description, private, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+
+		" where private is false or auth is not null order by auth desc nulls last, name", [userId], cb
+	);
 }
 
 Con.prototype.insertAccessRequest = function(roomId, userId, cb){
 	var con = this;
 	con.client.query('delete from access_request where room=$1 and player=$2', [roomId, userId], function(err, result){
 		if (err) return con.nok(cb, err);
-		con.client.query(
+		con.queryRow(
 			'insert into access_request (room, player, requested) values ($1, $2, $3) returning *',
-			[roomId, userId, ~~(Date.now()/1000)],
-			function(err, result)
-		{
-			if (err) return con.nok(cb, err);
-			cb(null, result.rows[0]);
-		});
+			[roomId, userId, ~~(Date.now()/1000)], cb
+		);
 	});
 }
 
 // userId : optionnal
 Con.prototype.listOpenAccessRequests = function(roomId, userId, cb){
-	var sql = "select player,name,requested from player p,access_request r where r.player=p.id and room=$1",
-		con = this, args = [roomId];		
+	var sql = "select player,name,requested from player p,access_request r where r.player=p.id and room=$1", args = [roomId];		
 	if (typeof userId === "function") {
 		cb = userId;
 	} else {
 		sql += " and player=?";
 		args.push(userId);
 	}
-	con.client.query(sql, args, function(err, result){
-		if (err) return con.nok(cb, err);
-		cb(null, result.rows);
-	});	
+	this.queryRows(sql, args, cb);	
 }
 
 // returns a query with the most recent messages of the room
@@ -165,16 +125,12 @@ Con.prototype.queryLastMessages = function(roomId, userId, N){
 
 // fetches one message. Votes of the passed user are included
 Con.prototype.getMessage = function(messageId, userId, cb){
-	var con = this;
-	con.client.query(
+	this.queryRow(
 		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote from message'+
 		' left join message_vote on message.id=message and message_vote.player=$2'+
 		' inner join player on author=player.id'+
-		' where message.id=$1', [messageId, userId], function(err, res)
-	{
-		if (err) return con.nok(cb, err);
-		cb(null, res.rows[0]);
-	});
+		' where message.id=$1', [messageId, userId], cb
+	);
 }
 
 // do actions on user rights
@@ -262,28 +218,16 @@ Con.prototype.storePings = function(roomId, users, messageId, cb){
 }
 
 Con.prototype.deletePings = function(roomId, userId, cb){
-	var con = this;
-	con.client.query("delete from ping where room=$1 and player=$2", [roomId, userId], function(err){
-		if (err) return con.nok(cb, err);
-		cb(null);
-	});
+	this.queryRows("delete from ping where room=$1 and player=$2", [roomId, userId], cb);
 }
 
 Con.prototype.fetchUserPings = function(userId, cb) {
-	var con = this;
-	con.client.query("select player, room, name, message from ping, room where player=$1 and room.id=ping.room", [userId], function(err, res){
-		if (err) return con.nok(cb, err);
-		cb(null, res.rows);
-	});
+	this.queryRows("select player, room, name, message from ping, room where player=$1 and room.id=ping.room", [userId], cb);
 }
 
 // returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
 Con.prototype.fetchUserPingRooms = function(userId, after, cb) {
-	var con = this;
-	con.client.query("select room, max(name) as roomname, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after], function(err, res){
-		if (err) return con.nok(cb, err);
-		cb(null, res.rows);
-	});
+	this.queryRows("select room, max(name) as roomname, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after], cb);
 }
 
 Con.prototype.updateGetMessage = function(messageId, expr, userId, cb){
@@ -321,21 +265,11 @@ Con.prototype.removeVote = function(roomId, userId, messageId, level, cb) {
 Con.prototype.storeRoom = function(r, author, cb) {
 	var con = this, now = ~~(Date.now()/1000);
 	if (r.id) {
-		con.checkAuthLevel(r.id, author.id, 'admin', function(err, auth){ // todo check this in update request to remove one request
-			if (err) return con.nok(cb, err);
-			if (auth) {
-				con.client.query(
-					'update room set name=$1, private=$2, description=$3 where id=$4',
-					[r.name, r.private, r.description||'', r.id],
-					function(err, result)
-				{
-					if (err) return con.nok(cb, err);
-					cb(null, r);
-				});
-			} else {
-				cb(new Error("Admin right is needed to change the room"));
-			}
-		});
+		this.queryRow(
+			"update room set name=$1, private=$2, description=$3 where id=$4"+
+			" and exists(select auth from room_auth where player=$5 and room=$4 and auth>='admin')",
+			[r.name, r.private, r.description||'', r.id, author.id], cb
+		);
 	} else {
 		con.client.query(
 			'insert into room (name, private, description) values ($1, $2, $3) returning id',
@@ -344,14 +278,10 @@ Con.prototype.storeRoom = function(r, author, cb) {
 		{
 			if (err) return con.nok(cb, err);
 			r.id = result.rows[0].id;
-			con.client.query(
+			con.queryRow(
 				'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
-				[r.id, author.id, 'own', now],
-				function(err, result)
-			{
-				if (err) return con.nok(cb, err);
-				cb(null, r);
-			});
+				[r.id, author.id, 'own', now], cb
+			);
 		});		
 	}
 }

@@ -168,10 +168,7 @@ function defineAppRoutes(){
 			if (err) return res.render('error.jade', { error: err.toString() });
 			var room = {id:roomId, name: name, private:req.param('private')||false, description:req.param('description')};
 			con.storeRoom(room, req.user, function(err){
-				if (err) {
-					res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
-					return;
-				}
+				if (err) return res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
 				con.ok();
 				res.redirect(roomUrl(room));
 			});
