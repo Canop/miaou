@@ -31,8 +31,15 @@ passport.deserializeUser(function(id, done) {
 });
 
 function url(pathname){ // todo cleaner way in express not supposing absolute paths ?
-	return config.server+pathname;
+	return config.server+(pathname||'/');
 }
+function roomPath(room){
+	return room.id+'?'+loginutil.toUrlDecoration(room.name);	
+}
+function roomUrl(room){
+	return url('/'+roomPath(room));
+}
+
 
 var oauthParameters = config.googleOAuthParameters;
 oauthParameters.callbackURL = url("/auth/google/callback");
@@ -122,7 +129,7 @@ function defineAppRoutes(){
 				con.updateUser(req.user, function(err){
 					if (err) return res.render('error.jade', { error: err.toString() });
 					con.ok();
-					res.redirect(url('/'));
+					res.redirect(url());
 				});
 			});
 		} else {
@@ -138,7 +145,7 @@ function defineAppRoutes(){
 	
 	app.get('/auth/google/callback',  // This is called by google back after authentication
 		passport.authenticate('google', { failureRedirect: '/login' }),
-		function(req, res) { res.redirect(url('/')) }
+		function(req, res) { res.redirect(url()) }
 	);
 
 	app.get('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){
@@ -166,7 +173,7 @@ function defineAppRoutes(){
 					return;
 				}
 				con.ok();
-				res.redirect(url('/'+room.id));
+				res.redirect(roomUrl(room));
 			});
 		});
 	});
@@ -174,6 +181,7 @@ function defineAppRoutes(){
 	app.get('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		withRoom(+req.param('id'), req.user.id, function(err, room) {
 			if (!room) return res.render('error.jade', { error: "No room" });
+			room.path = roomPath(room)
 			mdb.con(function(err, con){
 				if (err) return res.render('error.jade', { error: "No connection" });
 				con.listRoomAuths(room.id, function(err, auths){
@@ -208,7 +216,7 @@ function defineAppRoutes(){
 				}
 				con.changeRights(actions, req.user.id, room, function(){
 					if (err) return res.render('error.jade', { error: err.toString() });
-					res.redirect(url('/'+room.id));
+					res.redirect(roomUrl(room));
 				});
 			});
 		});
@@ -221,7 +229,7 @@ function defineAppRoutes(){
 				if (err) return res.render('error.jade', { error: err.toString() });
 				var rooms = {public:[], private:[]};
 				accessibleRooms.forEach(function(r) {
-					r.url = r.id+'?'+loginutil.toUrlDecoration(r.name);
+					r.path = roomPath(r);
 					rooms[r.private?'private':'public'].push(r);
 				});
 				con.fetchUserPingRooms(req.user.id, 0, function(err, pings) {
@@ -235,7 +243,7 @@ function defineAppRoutes(){
 
 	app.get('/logout', function(req, res){
 		req.logout();
-		res.redirect(url('/'));
+		res.redirect(url());
 	});
 
 	app.get('/help', function(req, res){

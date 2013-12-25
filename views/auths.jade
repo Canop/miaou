@@ -18,7 +18,7 @@ html
 				h1
 					a(href="rooms") Miaou
 					| /
-					a(href=room.id)= room.name
+					a(href=room.path)= room.name
 				if room.private
 					p This room is private, only authorized users can enter.
 				else
