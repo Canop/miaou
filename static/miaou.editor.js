@@ -62,7 +62,7 @@ $.fn.editFor = function(socket){
 	}
 	
 	$input.on('keydown', function(e){
-		if (e.ctrlKey) {
+		if (e.ctrlKey && !e.shiftKey) {
 			var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;
 			switch(e.which){
 				case 75: // K : toggle code
