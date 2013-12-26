@@ -210,7 +210,7 @@ var miaou = miaou || {};
 			localStorage['successfulLoginLastTime'] = "yes";
 			localStorage['room'] = room.id;
 			document.title = room.name;
-			$('#roomname').text('Room : ' + room.name);
+			$('#roomname').text(room.name);
 			$('#roomdescription').html(miaou.mdToHtml(room.description));
 		}).on('request', function(ar){
 			showRequestAccess(ar);
