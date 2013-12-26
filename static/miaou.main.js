@@ -277,12 +277,9 @@ var miaou = miaou || {};
 		});
 
 		$('#input').editFor(socket);
-		if (checkAuth('admin')) {
-			$('#editroom').click(function(){ location = 'room?id='+room.id });
-			$('#auths').click(function(){ location = 'auths?id='+room.id });			
-		} else {
-			$('#editroom, #auths').hide();
-		}
+		if (checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });
+		else $('#editroom').hide();
+		$('#auths').click(function(){ location = 'auths?id='+room.id });			
 				
 		$('#showPreview').click(function(){
 			$(this).hide();
