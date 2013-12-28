@@ -6,10 +6,11 @@ var miaou = miaou || {};
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}],
-		lastReceivedPing = 0, enterTime; // both in seconds since epoch, server time
+		timeOffset, lastReceivedPing = 0, enterTime; // both in seconds since epoch, server time
 	
 	function setEnterTime(serverTime){
 		enterTime = serverTime;
+		timeOffset = Date.now()/1000 - serverTime;
 	}
 	
 	// returns true if the user's authorization level in room is at least the passed one
@@ -49,19 +50,53 @@ var miaou = miaou || {};
 		}).join('');
 	}
 	
-	// for now, the notable messages are just taken among the last 300, this will change
-	function showNotableMessages(){
-		$('#notablemessages').html(
-			getMessages().filter(function(m){ return m.pin||m.star })
-			.sort(function(a,b){ return b.pin*100+b.star*10+b.up-a.pin*100-a.star*10-a.up })
-			.slice(0,12)
-			.map(function(m){
-				return '<div class=message mid='+m.id+'>'
-					+ '<div class=content>' + miaou.mdToHtml(m.content.match(/^[^\n]{1,200}/)[0]) + '</div>'
-					+ '<div class=nminfo>' + votesAbstract(m) + ' ' + moment(m.created*1000).fromNow() + ' by ' + m.authorname + '</div>'
-					+ '</div>';
-			}).join('')
-		);
+	function updateNotableMessages(message){
+		var yetPresent = false, notableMessages = $('#notablemessages .message').map(function(){
+			var msg = $(this).data('message');
+			if (message && msg.id===message.id) yetPresent = true;
+			return msg;
+		}).get();
+		if (!yetPresent && message) notableMessages.push(message);
+		$('#notablemessages').empty();
+		notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){ return b.score-a.score })
+		.slice(0,12).forEach(function(m){
+			$('<div>').addClass('message').data('message',m).attr('mid',m.id).append(
+				$('<div>').addClass('content').html(miaou.mdToHtml(m.content.match(/^[^\n]{1,200}/)[0]))
+			).append(
+				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment(m.created*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)				
+			).appendTo('#notablemessages')
+		});
+	}
+	
+	function showHasOlderThan(messageId){
+		if ($('#messages .message').eq(0).data('message').id<messageId) return;
+		$('<div>').addClass('olderLoader').data('mid', messageId).text("load older messages")
+		.insertBefore('#messages .message[mid='+messageId+']');
+	}
+	
+	function showError(error){
+		console.log('ERROR', error);
+		var $md = $('<div>').addClass('error').append(
+			$('<div>').addClass('user error').text("Miaou Server")
+		).append(
+			$('<div>').addClass('content').text(error)
+		).appendTo('#messages');
+		scrollToBottom();
+	}
+	
+	function showRequestAccess(ar){
+		var h;
+		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room";
+		else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right";
+		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>";
+		var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
+		if (checkAuth('admin')) {
+			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
+			if (!vis()) {
+				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;				
+			}
+		}
+		scrollToBottom();
 	}
 
 	function addMessage(message){
@@ -101,33 +136,7 @@ var miaou = miaou || {};
 			$md.append('<div class=opener>');
 		}
 		showMessageFlowDisruptions();
-		scrollToBottom();
-		showNotableMessages();
-	}
-	
-	function showError(error){
-		console.log('ERROR', error);
-		var $md = $('<div>').addClass('error').append(
-			$('<div>').addClass('user error').text("Miaou Server")
-		).append(
-			$('<div>').addClass('content').text(error)
-		).appendTo('#messages');
-		scrollToBottom();
-	}
-	
-	function showRequestAccess(ar){
-		var h;
-		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room";
-		else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right";
-		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>";
-		var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
-		if (checkAuth('admin')) {
-			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
-			if (!vis()) {
-				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;				
-			}
-		}
-		scrollToBottom();
+		if (insertionIndex<0) scrollToBottom();
 	}
 	
 	function updateUserList(user, keep){
@@ -178,7 +187,6 @@ var miaou = miaou || {};
 
 		setInterval(function(){
 			if (vis()) clearPings();
-			showNotableMessages(); // so that the moment.fromNow ages appear less strange...
 		}, 3*60*1000);
 		
 		socket.on('connect', function(){
@@ -190,6 +198,7 @@ var miaou = miaou || {};
 		}).on('message', function(message){
 			//~ console.log('received:', message);
 			addMessage(message);
+			updateNotableMessages(message);
 			if (message.created>enterTime) {
 				var visible = vis(), ping = pingRegex(me.name).test(message.content);
 				if (ping) {
@@ -212,14 +221,14 @@ var miaou = miaou || {};
 			document.title = room.name;
 			$('#roomname').text(room.name);
 			$('#roomdescription').html(miaou.mdToHtml(room.description));
-		}).on('request', function(ar){
+		}).on('notable_message', updateNotableMessages).on('has_older', showHasOlderThan).on('request', function(ar){
 			showRequestAccess(ar);
 		}).on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
 			setTimeout(function(){
 				socket.emit('enter', room.id, setEnterTime);
 			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
-		}).on('disconnect', function(){
+		}).on('welcome', scrollToBottom).on('disconnect', function(){
 			console.log('DISCONNECT');
 		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
 		
@@ -236,7 +245,7 @@ var miaou = miaou || {};
 			var $message = $(this), message = $message.data('message'), infos = [];
 			if (message.author===me.id) infos.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
 			else infos.push('click to reply');
-			infos.push(moment(message.created*1000).fromNow());
+			infos.push(moment((message.created+timeOffset)*1000).fromNow());
 			if (message.changed) infos.push('edited ' + moment(message.changed*1000).fromNow());
 			$('<div>').addClass('messagemenu').html(
 				infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
@@ -269,6 +278,10 @@ var miaou = miaou || {};
 			if (message.vote) socket.emit('vote', {action:'remove',  message:message.id, level:message.vote});
 			if (message.vote!=vote) socket.emit('vote', {action:'add',  message:message.id, level:vote});
 			return false;
+		}).on('click', '.olderLoader', function(e){
+			var $this = $(this), mid = +$this.data('mid');
+			$this.remove();
+			socket.emit('get_older', mid);
 		});
 		
 		$('#notablemessages').on('click', '.message', function(e){

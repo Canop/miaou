@@ -10,7 +10,7 @@ function logQuery(sql, args) { // used in debug
 
 function Con(client, done) {
 	this.client = client;
-	this.ok = done;
+	this.ok = done.bind(this);
 }
 Con.prototype.nok = function(cb, err){
 	this.ok();
@@ -114,19 +114,33 @@ Con.prototype.listOpenAccessRequests = function(roomId, userId, cb){
 }
 
 // returns a query with the most recent messages of the room
-Con.prototype.queryLastMessages = function(roomId, userId, N){
-	return this.client.query(
-		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote from message'+
+// If before is provided, then we look for messages older than this
+Con.prototype.queryLastMessages = function(roomId, userId, N, before){
+	var args = [roomId, userId, N],
+		sql = 'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 		' left join message_vote on message.id=message and message_vote.player=$2'+
-		' inner join player on author=player.id'+
-		' where room=$1 order by created desc limit $3', [roomId, userId, N]
+		' inner join player on author=player.id where room=$1';
+	if (before) {
+		sql += ' and message.id<$4';
+		args.push(before);
+	}
+	sql += ' order by created desc limit $3';
+	//~ logQuery(sql, args);
+	return this.client.query(sql, args);
+}
+
+Con.prototype.getNotableMessages = function(roomId, createdAfter, cb){
+	this.queryRows(
+		'select message.id, author, player.name as authorname, content, created, pin, star, up, down, score from message'+
+		' inner join player on author=player.id where room=$1 and created>$2 and score>4'+
+		' order by score desc limit 12', [roomId, createdAfter], cb
 	);
 }
 
 // fetches one message. Votes of the passed user are included
 Con.prototype.getMessage = function(messageId, userId, cb){
 	this.queryRow(
-		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote from message'+
+		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 		' left join message_vote on message.id=message and message_vote.player=$2'+
 		' inner join player on author=player.id'+
 		' where message.id=$1', [messageId, userId], cb

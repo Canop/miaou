@@ -150,6 +150,8 @@ $.fn.editMessage = function(message){
 	}
 	this.data('edited-message-id', message.id);
 	this.val(message.content).focus();
+	var input = this[0];
+	input.selectionStart = input.selectionEnd = input.value.length;
 	$('#cancelEdit').show();
 }
 

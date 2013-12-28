@@ -4,6 +4,8 @@ var config = require('./config.json'),
 	socketio = require('socket.io'),
 	SessionSockets = require('session.socket.io'),
 	io,
+	maxAgeForNotableMessages = 14*24*60*60, // in seconds
+	nbMessagesPerPage = 100,
 	socketWaitingApproval = [];
 
 // using a filtering function, picks some elements, removes them from the array, 
@@ -24,6 +26,18 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted) {
 		return o.userId===userId && o.roomId===roomId
 	}, function(o){
 		o.socket.emit('request_outcome', granted)
+	});
+}
+
+function emitLastMessages(con, socket, roomId, userId, before, cb){
+	var nbSent = 0, oldestSent;
+	con.queryLastMessages(roomId, userId, nbMessagesPerPage, before).on('row', function(message){
+		socket.emit('message', message);
+		nbSent++;
+		if (!(message.id>oldestSent)) oldestSent = message.id;
+	}).on('end', function(){
+		if (nbSent===nbMessagesPerPage) socket.emit('has_older', oldestSent); // well... probably more
+		cb();
 	});
 }
 
@@ -71,7 +85,8 @@ function handleUserInRoom(socket, completeUser, mdb){
 		});
 	}).on('enter', function(roomId, ack){
 		console.log(publicUser.name, 'enters', roomId);
-		if (ack) ack(~~(Date.now()/1000));
+		var now = ~~(Date.now()/1000);
+		if (ack) ack(now);
 		mdb.con(function(err, con){
 			if (err) return error('no connection'); // todo kill everything
 			con.fetchRoomAndUserAuth(roomId, publicUser.id, function(err, r){
@@ -81,17 +96,17 @@ function handleUserInRoom(socket, completeUser, mdb){
 				room = r;
 				socket.emit('room', room);
 				socket.join(room.id);
-				con.queryLastMessages(room.id, publicUser.id, 300).on('row', function(message){
-					socket.emit('message', message);
-				}).on('end', function(){
+				emitLastMessages(con, socket, room.id, publicUser.id, null, function(){
 					socket.broadcast.to(room.id).emit('enter', publicUser);
 					socketWaitingApproval.forEach(function(o){
 						if (o.roomId===room.id) {
 							socket.emit('request', o.ar);
 						}
 					});
-					con.deletePings(room.id, publicUser.id, function(err){
-						con.ok();
+					con.getNotableMessages(room.id, now-maxAgeForNotableMessages, function(err, messages){
+						messages.forEach(function(m){ socket.emit('notable_message', m) });
+						con.deletePings(room.id, publicUser.id, con.ok);
+						socket.emit('welcome');
 					});
 				});
 				io.sockets.clients(room.id).forEach(function(s){
@@ -100,9 +115,14 @@ function handleUserInRoom(socket, completeUser, mdb){
 						else socket.emit('enter', u);
 					});
 				});
-			});			
+			});
 		});
-	}).on('message', function (message) {
+	}).on('get_older', function(mid){
+		mdb.con(function(err, con){
+			if (err) return error('no connection'); // todo kill everything
+			emitLastMessages(con, socket, room.id, publicUser.id, mid, con.ok);
+		});
+	}).on('message', function(message){
 		if (!room) {
 			socket.emit('get_room', message);
 			return;
