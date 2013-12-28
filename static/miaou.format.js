@@ -20,16 +20,18 @@ var miaou = miaou || {};
 				return '<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">';
 			}
 			s = s.split('`').map(function(t,i){
-				return i%2
-					? '<code>'+t+'</code>'
-					: t
-						.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-						.replace(/\*([^\*]+)\*/g, "<i>$1</i>")
-						.replace(/__(.+?)__/g, "<b>$1</b>")
-						.replace(/_([^_]+)_/g, "<i>$1</i>")
-						.replace(/---(.+?)---/g, "<strike>$1</strike>")
-						.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>,]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
-						.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\(\)\[\]]+)/ig, '$1<a target=_blank href="$2">$2</a>')
+				if (i%2) return '<code>'+t+'</code>';
+				return t.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>,]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
+				.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\(\)\[\]]+)/ig, '$1<a target=_blank href="$2">$2</a>')
+				.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // to do replacements only to what isn't in a tag
+					return a
+					+ b.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+					.replace(/\*([^\*]+)\*/g, "<i>$1</i>")
+					.replace(/__(.+?)__/g, "<b>$1</b>")
+					.replace(/_([^_]+)_/g, "<i>$1</i>")
+					.replace(/---(.+?)---/g, "<strike>$1</strike>")
+					+ c;
+				});
 			}).join('');
 			if (m=s.match(/^(?:&gt;\s+)(.*)$/)) {
 				return '<span class=citation>'+m[1]+'</span>';
