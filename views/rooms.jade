@@ -2,14 +2,35 @@ doctype 5
 html
 	head
 		title Miaou - Rooms
+		link(rel="icon",type="image/png",href="static/miaou-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="static/jquery-2.0.3.min.js")
 		script(src="static/miaou.format.js")
+		style.
+			#title {
+				display: table-row;
+			}
+			h1 {
+				margin-top: 0;
+				font-size: 600%;
+			}
+			#logo {
+				display: table-cell;
+			}
+			#title-text {
+				display: table-cell;
+				vertical-align: top;
+				padding: 9px;
+			}
 	body
 		div.MP
-			h1 Miaou
-			p
-				a(href="room") Create a room
+			div#title
+				div#logo
+					img(src="static/miaou-150.png")
+				div#title-text
+					h1 Miaou
+					p
+						a(href="room") Create a room
 			h2 Notifications
 			if pings.length==1
 				p

@@ -13,6 +13,10 @@ var miaou = miaou || {};
 		timeOffset = Date.now()/1000 - serverTime;
 	}
 	
+	function permalink(message){
+		return location.pathname + location.search + '#' + message.id;
+	}
+	
 	// returns true if the user's authorization level in room is at least the passed one
 	function checkAuth(auth) {
 		var levels = ['read', 'write', 'admin', 'own'];
@@ -58,7 +62,7 @@ var miaou = miaou || {};
 		}).get();
 		if (!yetPresent && message) notableMessages.push(message);
 		$('#notablemessages').empty();
-		notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){ return b.score-a.score })
+		notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){ return b.score-a.score + (a.created-b.created)/1e7})
 		.slice(0,12).forEach(function(m){
 			$('<div>').addClass('message').data('message',m).attr('mid',m.id).append(
 				$('<div>').addClass('content').html(miaou.mdToHtml(m.content.match(/^[^\n]{1,200}/)[0]))
@@ -178,11 +182,14 @@ var miaou = miaou || {};
 			}
 		});
 		
-		function gotoMessage(mid){
-			var $message = $('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('goingto');
-			var mtop = $message.offset().top;
-			if (mtop<0) $('#messages').animate({scrollTop: mtop+$('#messages').scrollTop()}, 400);
-			setTimeout(function(){ $message.removeClass('goingto'); }, 1000);			
+		function goToMessage(mid){
+			setTimeout(function(){
+				var $message = $('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('goingto');
+				if (!$message.length) return;
+				var mtop = $message.offset().top;
+				if (mtop<0) $('#messages').animate({scrollTop: mtop+$('#messages').scrollTop()}, 400);
+				setTimeout(function(){ $message.removeClass('goingto'); }, 4000);			
+			}, 300);
 		}
 
 		setInterval(function(){
@@ -228,7 +235,10 @@ var miaou = miaou || {};
 			setTimeout(function(){
 				socket.emit('enter', room.id, setEnterTime);
 			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
-		}).on('welcome', scrollToBottom).on('disconnect', function(){
+		}).on('welcome', function(){
+			if (location.hash) goToMessage(location.hash.slice(1));
+			else scrollToBottom();
+		}).on('disconnect', function(){
 			console.log('DISCONNECT');
 		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
 		
@@ -249,8 +259,9 @@ var miaou = miaou || {};
 			if (message.changed) infos.push('edited ' + moment(message.changed*1000).fromNow());
 			$('<div>').addClass('messagemenu').html(
 				infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
+				'<a class=link target=_blank href="'+permalink(message)+'" title="permalink : click to open or right-click to copy">&#xe815;</a> ' + 
 				voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(checkAuth('admin')?0:1).map(function(l){
-					return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+'>'+l.icon+'</span>'
+					return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 				}).join('')
 			).appendTo(this);
 		}).on('mouseleave', '.message', function(){
@@ -285,7 +296,7 @@ var miaou = miaou || {};
 		});
 		
 		$('#notablemessages').on('click', '.message', function(e){
-			gotoMessage($(this).attr('mid'));
+			goToMessage($(this).attr('mid'));
 			e.stopPropagation();			
 		});
 

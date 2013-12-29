@@ -120,6 +120,12 @@ section {
 	margin: 0 4px;
 	cursor: pointer;
 }
+.messagemenu .link {
+	font-family: "fontello";
+	color: #336;
+	margin: 0 4px;
+	text-decoration: none;
+}
 .messagemenu .vote.on {
 	color: black;
 }
