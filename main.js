@@ -98,11 +98,11 @@ function defineAppRoutes(){
 			if (!room) return res.redirect(url('/rooms'));		
 			req.session.room = room;
 			if (!room.private) {
-				return res.render('index.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
+				return res.render('chat.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
 			}
 			mdb.con(function(err, con){
 				con.checkAuthLevel(room.id, req.user.id, 'write', function(err, auth){
-					if (auth) res.render('index.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
+					if (auth) res.render('chat.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
 					else res.render('request.jade', { room:room });
 					con.ok();
 				});

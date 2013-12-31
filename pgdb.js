@@ -113,20 +113,32 @@ Con.prototype.listOpenAccessRequests = function(roomId, userId, cb){
 	this.queryRows(sql, args, cb);	
 }
 
-// returns a query with the most recent messages of the room
-// If before is provided, then we look for messages older than this
-Con.prototype.queryLastMessages = function(roomId, userId, N, before){
+// returns a query object usable for streaming messages for a specific user (including his votes)
+// see calls of this function to see how the additional arguments are used 
+Con.prototype.queryMessages = function(roomId, userId, N, chronoOrder){
 	var args = [roomId, userId, N],
 		sql = 'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 		' left join message_vote on message.id=message and message_vote.player=$2'+
 		' inner join player on author=player.id where room=$1';
-	if (before) {
-		sql += ' and message.id<$4';
-		args.push(before);
+	for (var i=0, j=4; arguments[j+1]; i++) {
+		sql += ' and message.id'+arguments[j]+'$'+(j++-i);
+		args.push(arguments[j++]);
 	}
-	sql += ' order by created desc limit $3';
-	//~ logQuery(sql, args);
+	sql += ' order by message.id '+ ( chronoOrder ? 'asc' : 'desc') + ' limit $3';
 	return this.client.query(sql, args);
+}
+
+// returns a query with the most recent messages of the room
+// If before is provided, then we look for messages older than this (not included)
+// If until is also provided, we don't want to look farther
+Con.prototype.queryMessagesBefore = function(roomId, userId, N, before, until){
+	return this.queryMessages(roomId, userId, N, false, '<', before, '>=', until);
+}
+// returns a query with the message messageId (if found)
+//  and the following ones up to N ones and up to the one with id before
+// If before is also provided, we don't want to look farther
+Con.prototype.queryMessagesAfter = function(roomId, userId, N, messageId, before){
+	return this.queryMessages(roomId, userId, N, true, '>=', messageId, '<=', before);	
 }
 
 Con.prototype.getNotableMessages = function(roomId, createdAfter, cb){

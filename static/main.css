@@ -540,10 +540,13 @@ div.MP {
 	margin-left: 10px;
 }
 
-.olderLoader {
+.olderLoader, .newerLoader {
 	cursor: pointer;
 	text-align: center;
 	font-style:italic;
 	font-size: 95%;
 	opacity: 0.7;
+}
+.newerLoader + .olderLoader {
+	border-top:solid 7px #ccc;	
 }

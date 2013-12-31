@@ -4,8 +4,8 @@ var config = require('./config.json'),
 	socketio = require('socket.io'),
 	SessionSockets = require('session.socket.io'),
 	io,
-	maxAgeForNotableMessages = 14*24*60*60, // in seconds
-	nbMessagesPerPage = 100,
+	maxAgeForNotableMessages = 60*24*60*60, // in seconds
+	nbMessagesAtLoad = 100, nbMessagesPerPage = 40, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 3,
 	socketWaitingApproval = [];
 
 // using a filtering function, picks some elements, removes them from the array, 
@@ -29,17 +29,33 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted) {
 	});
 }
 
-function emitLastMessages(con, socket, roomId, userId, before, cb){
+// emits messages before (not including) beforeId
+//  If beforeId is 0, then we look for the last messages of the room
+function emitMessagesBefore(con, socket, roomId, userId, beforeId, untilId, nbMessages, cb){
 	var nbSent = 0, oldestSent;
-	con.queryLastMessages(roomId, userId, nbMessagesPerPage, before).on('row', function(message){
+	con.queryMessagesBefore(roomId, userId, nbMessages, beforeId, untilId).on('row', function(message){
 		socket.emit('message', message);
 		nbSent++;
 		if (!(message.id>oldestSent)) oldestSent = message.id;
 	}).on('end', function(){
-		if (nbSent===nbMessagesPerPage) socket.emit('has_older', oldestSent); // well... probably more
+		if (nbSent===nbMessages) socket.emit('has_older', oldestSent);
 		cb();
 	});
 }
+
+// emits messages after and including untilId
+function emitMessagesAfter(con, socket, roomId, userId, fromId, untilId, nbMessages, cb){
+	var nbSent = 0, youngestSent;
+	con.queryMessagesAfter(roomId, userId, nbMessages, fromId, untilId).on('row', function(message){
+		socket.emit('message', message);
+		nbSent++;
+		if (!(message.id<youngestSent)) youngestSent = message.id;	
+	}).on('end', function(){
+		if (nbSent===nbMessages) socket.emit('has_newer', youngestSent);
+		cb();
+	});
+}
+
 
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
 // Implementation details :
@@ -96,7 +112,7 @@ function handleUserInRoom(socket, completeUser, mdb){
 				room = r;
 				socket.emit('room', room);
 				socket.join(room.id);
-				emitLastMessages(con, socket, room.id, publicUser.id, null, function(){
+				emitMessagesBefore(con, socket, room.id, publicUser.id, null, null, nbMessagesAtLoad, function(){
 					socket.broadcast.to(room.id).emit('enter', publicUser);
 					socketWaitingApproval.forEach(function(o){
 						if (o.roomId===room.id) {
@@ -117,10 +133,25 @@ function handleUserInRoom(socket, completeUser, mdb){
 				});
 			});
 		});
-	}).on('get_older', function(mid){
+	}).on('get_around', function(data, ack){ 
 		mdb.con(function(err, con){
 			if (err) return error('no connection'); // todo kill everything
-			emitLastMessages(con, socket, room.id, publicUser.id, mid, con.ok);
+			emitMessagesBefore(con, socket, room.id, publicUser.id, data.target, data.olderPresent, nbMessagesBeforeTarget, function(){
+				emitMessagesAfter(con, socket, room.id, publicUser.id, data.target, data.newerPresent, nbMessagesAfterTarget, function(){
+					ack();
+					con.ok();
+				});
+			});
+		});
+	}).on('get_older', function(data){
+		mdb.con(function(err, con){
+			if (err) return error('no connection'); // todo kill everything
+			emitMessagesBefore(con, socket, room.id, publicUser.id, data.before, data.olderPresent, nbMessagesPerPage, con.ok);
+		});
+	}).on('get_newer', function(data){
+		mdb.con(function(err, con){
+			if (err) return error('no connection'); // todo kill everything
+			emitMessagesAfter(con, socket, room.id, publicUser.id, data.after, data.newerPresent, nbMessagesPerPage, con.ok);
 		});
 	}).on('message', function(message){
 		if (!room) {

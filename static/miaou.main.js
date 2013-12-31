@@ -67,15 +67,32 @@ var miaou = miaou || {};
 			$('<div>').addClass('message').data('message',m).attr('mid',m.id).append(
 				$('<div>').addClass('content').html(miaou.mdToHtml(m.content.match(/^[^\n]{1,200}/)[0]))
 			).append(
-				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment(m.created*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)				
+				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment(m.created*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
 			).appendTo('#notablemessages')
 		});
 	}
 	
+	function updateOlderAndNewerLoaders(){
+		$('.olderLoader, .newerLoader').remove();
+		$('#messages .message.hasOlder').each(function(){
+			$('<div>').addClass('olderLoader').data('mid', this.getAttribute('mid')).text("load older messages").insertBefore(this);
+		});
+		$('#messages .message.hasNewer').each(function(){
+			$('<div>').addClass('newerLoader').data('mid', this.getAttribute('mid')).text("load newer messages").insertAfter(this);
+		});		
+	}
+	
+	function logMessagesOrder(s){
+		console.log(s, JSON.stringify($('#messages .message').map(function() { return +$(this).attr('mid') }).get()));
+	}
+	
 	function showHasOlderThan(messageId){
-		if ($('#messages .message').eq(0).data('message').id<messageId) return;
-		$('<div>').addClass('olderLoader').data('mid', messageId).text("load older messages")
-		.insertBefore('#messages .message[mid='+messageId+']');
+		$('#messages .message[mid='+messageId+']').addClass('hasOlder');
+		updateOlderAndNewerLoaders();
+	}
+	function showHasNewerThan(messageId){
+		$('#messages .message[mid='+messageId+']').addClass('hasNewer');
+		updateOlderAndNewerLoaders();
 	}
 	
 	function showError(error){
@@ -104,13 +121,11 @@ var miaou = miaou || {};
 	}
 
 	function addMessage(message){
-		var messages = getMessages(), insertionIndex = messages.length; // -1 : insert at end, i>=0 : insert before i
-		if (messages.length===0 || message.id>messages[messages.length-1].id) {
+		var messages = getMessages(), atEnd = false, insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
+		if (messages.length===0 || message.id<messages[0].id) {
 			insertionIndex = -1;
-		} else if (messages[0].id>message.id) {
-			insertionIndex = 0;
 		} else {
-			while (messages[--insertionIndex].id>message.id);
+			while (insertionIndex && messages[--insertionIndex].id>message.id);
 		}
 		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true));
 		var $md = $('<div>').addClass('message').append(
@@ -124,23 +139,23 @@ var miaou = miaou || {};
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
 				if (message.vote==='?') message.vote = messages[insertionIndex].vote; 
-				$('#messages .message').eq(insertionIndex).replaceWith($md);				
+				$('#messages .message').eq(insertionIndex).replaceWith($md);
 			} else {
-				messages.splice(insertionIndex, 0, message);
-				$('#messages .message').eq(insertionIndex).before($md);				
+				if (insertionIndex==messages.length-1) atEnd = true;
+				$('#messages .message').eq(insertionIndex).after($md);				
 			}
 		} else {
-			messages.push(message);
-			$md.appendTo('#messages');
-			addToUserList({id: message.author, name: message.authorname});
+			$md.prependTo('#messages');
 		}
+		addToUserList({id: message.author, name: message.authorname});
 		if (message.vote==='?') message.vote=null;
 		if ($content.height()>150) {
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
 		}
 		showMessageFlowDisruptions();
-		if (insertionIndex<0) scrollToBottom();
+		updateOlderAndNewerLoaders();
+		if (atEnd) scrollToBottom();
 	}
 	
 	function updateUserList(user, keep){
@@ -182,14 +197,37 @@ var miaou = miaou || {};
 			}
 		});
 		
-		function goToMessage(mid){
+		function goToMessageDiv(messageId){
+			var $messages = $('#messages'),
+				$message = $('.message', $messages).filter(function(){ return $(this).data('message').id==messageId }).addClass('goingto');
 			setTimeout(function(){
-				var $message = $('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('goingto');
-				if (!$message.length) return;
 				var mtop = $message.offset().top;
-				if (mtop<0) $('#messages').animate({scrollTop: mtop+$('#messages').scrollTop()}, 400);
-				setTimeout(function(){ $message.removeClass('goingto'); }, 4000);			
+				if (mtop<0 || mtop>$messages.height()) $('#messages').animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
+				setTimeout(function(){ $message.removeClass('goingto'); }, 3000);
 			}, 300);
+		}
+
+		// ensures the messages and the messages around it are loaded, and then scroll to it
+		//  and flashes it
+		function focusMessage(messageId){
+			var $messages = $('#messages .message'), l = $messages.length,
+				beforeId = 0, afterId = 0, present = false, mids = new Array($messages.length);
+			for (var i=0; i<l; i++) {
+				mids[i] = +$messages.eq(i).attr('mid');
+				if (mids[i]===messageId) return goToMessageDiv(messageId);
+			} 
+			for (var i=0; i<l; i++) {
+				if (mids[i]<messageId) beforeId=mids[i];
+				else break;
+			}
+			for (var i=l; i-->0;) {
+				if (mids[i]>messageId) afterId=mids[i];
+				else break;
+			}
+			console.log('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId });
+			socket.emit('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId }, function(){
+				goToMessageDiv(messageId);
+			});
 		}
 
 		setInterval(function(){
@@ -228,7 +266,9 @@ var miaou = miaou || {};
 			document.title = room.name;
 			$('#roomname').text(room.name);
 			$('#roomdescription').html(miaou.mdToHtml(room.description));
-		}).on('notable_message', updateNotableMessages).on('has_older', showHasOlderThan).on('request', function(ar){
+		}).on('notable_message', updateNotableMessages)
+		.on('has_older', showHasOlderThan).on('has_newer', showHasNewerThan)
+		.on('request', function(ar){
 			showRequestAccess(ar);
 		}).on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
@@ -236,7 +276,7 @@ var miaou = miaou || {};
 				socket.emit('enter', room.id, setEnterTime);
 			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
 		}).on('welcome', function(){
-			if (location.hash) goToMessage(location.hash.slice(1));
+			if (location.hash) focusMessage(+location.hash.slice(1));
 			else scrollToBottom();
 		}).on('disconnect', function(){
 			console.log('DISCONNECT');
@@ -280,7 +320,7 @@ var miaou = miaou || {};
 		}).on('mouseleave', '.reply', function(){
 			$('.target').removeClass('target');
 		}).on('click', '.reply', function(e){
-			gotoMessage($(this).attr('to'));
+			focusMessage(+$(this).attr('to'));
 			e.stopPropagation();			
 		}).on('click', 'a', function(e){
 			e.stopPropagation();
@@ -290,13 +330,21 @@ var miaou = miaou || {};
 			if (message.vote!=vote) socket.emit('vote', {action:'add',  message:message.id, level:vote});
 			return false;
 		}).on('click', '.olderLoader', function(e){
-			var $this = $(this), mid = +$this.data('mid');
+			var $this = $(this), mid = +$this.data('mid'), olderPresent = 0;
 			$this.remove();
-			socket.emit('get_older', mid);
+			$('.hasOlder[mid='+mid+']').removeClass('hasOlder');
+			getMessages().forEach(function(m){ if (m.id<mid) olderPresent=m.id });
+			socket.emit('get_older', {before:mid, olderPresent:olderPresent});
+		}).on('click', '.newerLoader', function(e){
+			var $this = $(this), mid = +$this.data('mid'), newerPresent = 0;
+			$this.remove();
+			getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
+			$('.hasOlder[mid='+mid+']').removeClass('hasNewer');
+			socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
 		});
 		
 		$('#notablemessages').on('click', '.message', function(e){
-			goToMessage($(this).attr('mid'));
+			focusMessage(+$(this).attr('mid'));
 			e.stopPropagation();			
 		});
 
