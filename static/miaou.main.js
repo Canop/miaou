@@ -57,7 +57,10 @@ var miaou = miaou || {};
 	function updateNotableMessages(message){
 		var yetPresent = false, notableMessages = $('#notablemessages .message').map(function(){
 			var msg = $(this).data('message');
-			if (message && msg.id===message.id) yetPresent = true;
+			if (message && msg.id===message.id) {
+				yetPresent = true;
+				return message;
+			}
 			return msg;
 		}).get();
 		if (!yetPresent && message) notableMessages.push(message);
@@ -224,7 +227,6 @@ var miaou = miaou || {};
 				if (mids[i]>messageId) afterId=mids[i];
 				else break;
 			}
-			console.log('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId });
 			socket.emit('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId }, function(){
 				goToMessageDiv(messageId);
 			});
