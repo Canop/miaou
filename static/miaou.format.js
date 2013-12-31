@@ -33,7 +33,7 @@ var miaou = miaou || {};
 					+ c;
 				});
 			}).join('');
-			if (m=s.match(/^(?:&gt;\s+)(.*)$/)) {
+			if (m=s.match(/^(?:&gt;\s*)(.*)$/)) {
 				return '<span class=citation>'+m[1]+'</span>';
 			}
 			if (m=s.match(/^(?:\d+\.\s+)(.*)$/)) {

@@ -205,8 +205,12 @@ code {
 .citation {
 	border-left: medium solid #bbb;
 	margin-left: 15px;
-	padding-left: 3px;
+	padding-left: 0;
 	display: inline-block;
+}
+.citation:before {
+	content: ".";
+	opacity: 0;
 }
 .olli {
 	margin: 0 5px;
