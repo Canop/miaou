@@ -26,6 +26,18 @@ var miaou = miaou || {};
 		}
         return false;
 	}
+	
+	function formatMoment(m) {
+		var now = new Date();
+		if (now/1000-m.unix()<15*60) return m.fromNow();
+		if (now.getFullYear()===m.year()) {
+			if (now.getMonth()===m.month() && now.getDate()===m.date()) {
+				return m.format("HH:mm");
+			}
+			return m.format("D MMMM HH:mm");
+		}
+		return m.format("D MMMM YYYY HH:mm");
+	}
 
 	function getMessages() {
 		return $('#messages .message').map(function(){ return $(this).data('message') }).get();
@@ -67,11 +79,14 @@ var miaou = miaou || {};
 		$('#notablemessages').empty();
 		notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){ return b.score-a.score + (a.created-b.created)/1e7})
 		.slice(0,12).forEach(function(m){
-			$('<div>').addClass('message').data('message',m).attr('mid',m.id).append(
-				$('<div>').addClass('content').html(miaou.mdToHtml(m.content.match(/^[^\n]{1,200}/)[0]))
-			).append(
-				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment(m.created*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
+			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content));
+			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
+				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment((m.created+timeOffset)*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
 			).appendTo('#notablemessages')
+			if ($content.height()>80) {
+				$content.addClass("closed");
+				$md.append('<div class=opener>');
+			}
 		});
 	}
 	
@@ -173,6 +188,15 @@ var miaou = miaou || {};
 	}
 	function addToUserList(user){
 		updateUserList(user, true);
+	}
+	
+	function opener(e){
+		$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
+		e.stopPropagation();
+	}
+	function closer(e){
+		$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');
+		e.stopPropagation();			
 	}
 	
 	$(function(){
@@ -287,18 +311,13 @@ var miaou = miaou || {};
 		$('#messages').on('click', '.message .content img', function(e){
 			window.open(this.src);
 			e.stopPropagation();
-		}).on('click', '.opener', function(e){
-			$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
-			e.stopPropagation();			
-		}).on('click', '.closer', function(e){
-			$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');
-			e.stopPropagation();			
-		}).on('mouseenter', '.message', function(){
-			var $message = $(this), message = $message.data('message'), infos = [];
-			if (message.author===me.id) infos.push(Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
+		}).on('click', '.opener', opener).on('click', '.closer', closer)
+		.on('mouseenter', '.message', function(){
+			var $message = $(this), message = $message.data('message'), infos = [],
+			created = message.created+timeOffset, m = moment(created*1000);
+			if (message.author===me.id) infos.push(Date.now()/1000 - created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
 			else infos.push('click to reply');
-			infos.push(moment((message.created+timeOffset)*1000).fromNow());
-			if (message.changed) infos.push('edited ' + moment(message.changed*1000).fromNow());
+			infos.push(formatMoment(m));
 			$('<div>').addClass('messagemenu').html(
 				infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
 				'<a class=link target=_blank href="'+permalink(message)+'" title="permalink : click to open or right-click to copy">&#xe815;</a> ' + 
@@ -348,7 +367,7 @@ var miaou = miaou || {};
 		$('#notablemessages').on('click', '.message', function(e){
 			focusMessage(+$(this).attr('mid'));
 			e.stopPropagation();			
-		});
+		}).on('click', '.opener', opener).on('click', '.closer', closer);
 
 		$('#input').editFor(socket);
 		if (checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });

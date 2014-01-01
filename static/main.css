@@ -149,8 +149,11 @@ section {
 .message.me {
 	background-color: #fdf6e5;
 }
-.message + .message {
+#messages .message + .message {
 	border-top: thin dotted #ddd;
+}
+#notablemessages .message {
+	border-bottom: thin dotted #aaa;
 }
 .message + .message.disrupt {
 	border-top: thin solid #aaa;
@@ -448,8 +451,13 @@ span.button:hover {
 }
 
 .closed {
-	max-height: 138px;
 	overflow: hidden;
+}
+#messages .closed {
+	max-height: 138px;
+}
+#notablemessages .closed {
+	max-height: 48px;
 }
 .opener,
 .closer {
