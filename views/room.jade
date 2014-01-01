@@ -19,7 +19,7 @@ html
 					div.form
 						input#id(type="hidden", name="id")
 						label.label Name
-						input#name(type="text", name="name", value=suggestedName, pattern="\\w(\\s?[\\w\\d\\-_]){2,15}")
+						input#name(type="text", name="name", value=suggestedName, pattern=".{2,20}")
 						span.label Privacy
 						input#private(name="private", id="private", type="checkbox")
 						label.cblabel(for="private") private room
@@ -49,7 +49,7 @@ html
 			$('form')[0].action = location;
 			$('#name').focus().keyup(function(){
 				if (!this.validity.valid){
-					$('#err').text('Please type a name with 3 to 16 standard characters, digits, "_" or "-" (and a few spaces if you insist)');
+					$('#err').text('Please type a ' + (this.value.length>20 ? 'shorter' : 'prettier') + ' name');
 					$('#submit').prop('disabled', true);
 				} else {
 					$('#err').text('');

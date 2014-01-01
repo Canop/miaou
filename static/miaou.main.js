@@ -100,10 +100,6 @@ var miaou = miaou || {};
 		});		
 	}
 	
-	function logMessagesOrder(s){
-		console.log(s, JSON.stringify($('#messages .message').map(function() { return +$(this).attr('mid') }).get()));
-	}
-	
 	function showHasOlderThan(messageId){
 		$('#messages .message[mid='+messageId+']').addClass('hasOlder');
 		updateOlderAndNewerLoaders();

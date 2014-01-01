@@ -5,7 +5,7 @@ var config = require('./config.json'),
 	SessionSockets = require('session.socket.io'),
 	io,
 	maxAgeForNotableMessages = 60*24*60*60, // in seconds
-	nbMessagesAtLoad = 100, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 3,
+	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	socketWaitingApproval = [];
 
 // using a filtering function, picks some elements, removes them from the array, 

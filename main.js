@@ -160,9 +160,9 @@ function defineAppRoutes(){
 		});
 	});
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
-		var roomId = +req.param('id'), name = req.param('name');
-		if (!/^\w(\s?[\w\d\-_]){2,15}$/.test(name)) {
-			return; // todo error message
+		var roomId = +req.param('id'), name = req.param('name').trim();
+		if (!/^.{2,20}$/.test(name)) {
+			return res.render('error.jade', { error: err.toString() });
 		}
 		mdb.con(function(err, con){
 			if (err) return res.render('error.jade', { error: err.toString() });
