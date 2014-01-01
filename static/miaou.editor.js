@@ -35,7 +35,7 @@ $.fn.editFor = function(socket){
 	var $input = this, input = this[0];
 
 	function sendInput(){
-		var txt = $input.val().trim();
+		var txt = $input.val().replace(/\s+$/,'');
 		if (txt.length){
 			var m = {content: txt};
 			var id = $input.data('edited-message-id');
