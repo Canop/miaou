@@ -81,8 +81,14 @@ Con.prototype.listUserAuths = function(userId, cb){
 Con.prototype.listRoomAuths = function(roomId, cb){
 	this.queryRows("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId], cb);
 }
+Con.prototype.listRecentUsers = function(roomId, N, cb){
+	this.queryRows(
+		"select message.author as id, min(player.name) as name, max(message.created) as mc from message join player on player.id=message.author"+
+		" where message.room=$1 group by message.author order by mc desc limit $2", [roomId, N], cb
+	);
+}
 
-// lists the 
+// lists the rooms a user can access, either public or whose access was explicitely granted
 Con.prototype.listAccessibleRooms = function(userId, cb){
 	this.queryRows(
 		"select id, name, description, private, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+

@@ -185,8 +185,18 @@ function defineAppRoutes(){
 					if (err) return res.render('error.jade', { error: err.toString() });
 					con.listOpenAccessRequests(room.id, function(err, requests){
 						if (err) return res.render('error.jade', { error: err.toString() });
-						con.ok();
-						res.render('auths.jade', { room:room, auths:auths, requests:requests });
+						con.listRecentUsers(room.id, 50, function(err, recentUsers){
+							if (err) return res.render('error.jade', { error: err.toString() });
+							var authorizedUsers = {}, unauthorizedUsers = [];
+							auths.forEach(function(a){
+								authorizedUsers[a.player] = true;
+							});
+							recentUsers.forEach(function(u){
+								if (!authorizedUsers[u.id]) unauthorizedUsers.push(u);
+							});
+							con.ok();
+							res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
+						});
 					});
 				});
 			});
@@ -205,6 +215,8 @@ function defineAppRoutes(){
 						if (accepted) actions.push({cmd:'insert_auth', auth:'write', user:modifiedUserId});
 						ws.emitAccessRequestAnswer(room.id, modifiedUserId, accepted);
 						actions.push({cmd:'delete_ar', user:modifiedUserId});
+					} else if (m = key.match(/^insert_auth_(\d+)$/)) {
+						actions.push({cmd:'insert_auth', auth:req.body[key], user:+m[1]});
 					} else if (m = key.match(/^change_auth_(\d+)$/)) {
 						var new_auth = req.body[key], modifiedUserId = +m[1];
 						if (new_auth==='none') actions.push({cmd:'delete_auth', user:modifiedUserId});

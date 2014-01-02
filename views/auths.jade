@@ -10,10 +10,10 @@ html
 		style.
 			#submit_bar {
 				clear:both;
-				display:none;
 			}
 	body
 		- authLevels = ['read', 'write', 'admin', 'own']
+		- rol = authLevels.indexOf(room.auth)
 		form(method="post")
 			input(type="hidden",name="room",value=room.id)
 			div.MP
@@ -24,7 +24,7 @@ html
 				if room.private
 					p This room is private, only authorized users can enter.
 				else
-					p This room is public, everybody can read and write but authorizations are needed to change the name and description or manage authorizations.
+					p This room is public, everybody can read and write messages but authorizations are needed to change the name and description or manage authorizations.
 				p
 					case room.auth
 						when 'own'
@@ -44,24 +44,41 @@ html
 							| Your authorization level doesn't make it possible for you to manage rights in this room.
 				div.CL
 					h2 Access Requests
-					table.list
-						each r, i in requests
-							tr
-								th= r.name
-								td.date= r.requested
-								td
-									- var name = "answer_request_"+r.player
-									input(type="radio", name=name, id="g"+i, value="grant")
-									label(for="g"+i) Grant Access
-									input(type="radio", name=name, id="d"+i, value="deny")
-									label(for="d"+i) Deny Access
+					if requests.length
+						table.list
+							each r, i in requests
+								tr
+									th= r.name
+									td.date= r.requested
+									td
+										- var name = "answer_request_"+r.player
+										input(type="radio", name=name, id="g"+i, value="grant")
+										label(for="g"+i) Grant Access
+										input(type="radio", name=name, id="d"+i, value="deny")
+										label(for="d"+i) Deny Access
+					else
+						p none currently
+					h2 Recent Users With No Authorization
+					if unauthorizedUsers.length
+						table.list
+							each u in unauthorizedUsers
+								tr
+									th= u.name
+									if rol>=2
+										td.auth
+											- var name = "insert_auth_"+u.id
+											select(name=name)
+												option(value="admin") admin
+												option(value="write") write
+												option(value="none",selected) no access
+					else
+						p none currently
 				div.CR
 					h2 Existing Authorizations
 					table.list
 						each ua in auths
 							tr
 								th= ua.name
-								- rol = authLevels.indexOf(room.auth)
 								- ual = authLevels.indexOf(ua.auth)
 								if rol>=2 && rol>=ual
 									td.auth
@@ -75,11 +92,15 @@ html
 								else
 									td.auth= ua.auth
 				p#submit_bar
-					input(type="reset", value="Cancel Changes")
-					input(type="submit", value="Validate Changes")
+					input(type="reset", value="Cancel Changes", disabled)
+					input(type="submit", value="Validate Changes", disabled)
 
 		script.
-			var auths = !{JSON.stringify(auths)};
+			var auths = !{JSON.stringify(auths)}, room = !{JSON.stringify(room)};
 			$('.date').text(function(_,t){ return moment(t*1000).fromNow() });
-			$('input, select').change(function(){ $('#submit_bar').show() })
-			$('input[type=reset]').click(function(){ $('#submit_bar').hide() });
+			if (!(room.auth==='own'||room.auth==='admin')) {
+				$('input,select').prop('disabled', true);
+			} else {
+				$('input, select').change(function(){ $('#submit_bar input').prop('disabled', false) })
+				$('input[type=reset]').click(function(){ $('#submit_bar input').prop('disabled', true) });
+			}
