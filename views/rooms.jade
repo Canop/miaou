@@ -21,6 +21,8 @@ html
 				a(href="room") Create a room
 				| -
 				a(href="help#About",target=help) Help
+				| -
+				a(id="logout",href="#") Log Out
 			h2 Notifications
 			if pings.length==1
 				p
@@ -72,4 +74,8 @@ html
 					return "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights.";
 				}
 			});
-					
+			$('#logout').click(function(){
+				delete localStorage['successfulLoginLastTime'];
+				location = 'logout';
+			});
+

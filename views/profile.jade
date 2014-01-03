@@ -10,7 +10,7 @@ html
 			div.dialog
 				div.dialog_title Profile Edition
 				div.dialog_content
-					p Don't forget we're still in beta, so try to be helpful : Pick a name by which you will be recognized.
+					p Pick a name by which you will be recognized.
 					p Choose wisely (not &quot;wisely&quot;).
 					div.form
 						label.label Name
@@ -19,6 +19,7 @@ html
 				div.dialog_buttons
 					input#cancel(type='button', value='Cancel')
 					input#submit(type='submit', value='Save')
+					input#logout(type='button', value='Log Out')
 		
 		script.
 			//$('form')[0].action = location;
@@ -35,4 +36,8 @@ html
 				}
 			});
 			$('#cancel').click(function(){ history.back() });
+			$('#logout').click(function(){
+				delete localStorage['successfulLoginLastTime'];
+				location = 'logout';
+			});
 			
