@@ -42,8 +42,14 @@ function roomUrl(room){
 
 (function configureOauth2Strategies(){
 	var impls = {
-		google: require('passport-google-oauth').OAuth2Strategy,
-		stackexchange: require('passport-stackexchange').Strategy
+		google: {
+			strategyConstructor: require('passport-google-oauth').OAuth2Strategy,
+			scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
+		}, stackexchange: {
+			strategyConstructor: require('passport-stackexchange').Strategy
+		}, github: {
+			strategyConstructor: require('passport-github').Strategy
+		}
 	};
 	var oauthConfigs = config.oauth2;
 	for (var key in oauthConfigs) {
@@ -53,7 +59,7 @@ function roomUrl(room){
 			continue;
 		}
 		params.callbackURL = url("/auth/"+key+"/callback");
-		passport.use(new impl(params, function(accessToken, refreshToken, profile, done) {
+		passport.use(new (impl.strategyConstructor)(params, function(accessToken, refreshToken, profile, done) {
 			mdb.con(function(err, con){
 				if (err) return done(new Error('no connection'));
 				con.fetchCompleteUserFromOAuthProfile(profile, function(err, user){
@@ -63,9 +69,8 @@ function roomUrl(room){
 				});
 			});
 		}));
-		oauth2Strategies[key] = {url: url('/auth/'+key)};
+		oauth2Strategies[key] = { url: url('/auth/'+key), scope: impl.scope||{} };
 	}
-	console.log('strategies:',oauth2Strategies);
 })();
 
 function ensureAuthenticated(req, res, next) {
@@ -151,20 +156,12 @@ function defineAppRoutes(){
 		}
 	});
 
-	app.get('/auth/google', passport.authenticate(
-		'google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }
-	));
-	app.get('/auth/google/callback', 
-		passport.authenticate('google', { failureRedirect: '/login' }),
-		function(req, res) { res.redirect(url()) }
-	);
-	app.get('/auth/stackexchange', passport.authenticate(
-		'stackexchange', { scope: {} }
-	));
-	app.get('/auth/stackexchange/callback',
-		passport.authenticate('stackexchange', { failureRedirect: '/login' }),
-		function(req, res) { res.redirect(url()) }
-	);
+	for (key in oauth2Strategies){
+		var s = oauth2Strategies[key];
+		console.log(key, s);
+		app.get('/auth/'+key, passport.authenticate(key, {scope:s.scope}));
+		app.get('/auth/'+key+'/callback', passport.authenticate(key, { failureRedirect: '/login' }), function(req, res) { res.redirect(url()) });		
+	};
 
 	app.get('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		withRoom(+req.param('id'), req.user.id, function(err, room) {

@@ -533,6 +533,10 @@ div.MP {
 	color: #555;
 }
 
+.icon {
+	font-family: "fontello";
+}
+
 .private:before {
 	font-family: "fontello";
 	content:"\e814";

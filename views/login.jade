@@ -10,7 +10,7 @@ html
 			div.dialog_title Authentication
 			div.dialog_content
 				p Miaou requires users to be logged to prevent impersonation.
-				p In order to avoid managing one more password, we use the OAuth2 scheme to let you use the authentication provider of your choice.
+				p To improve security and not manage your password, we use the OAuth2 scheme and let you use the authentication provider of your choice.
 			div.dialog_buttons#buttons
 		
 		script.
@@ -25,10 +25,14 @@ html
 				$('#buttons').html('<i>Authentication in progress...</i>');
 				setTimeout(function(){ location = strategies[localStorage['lastUsedStrategy']].url }, 100);
 			} else {
-				console.log(strategies);
+				var names = {
+					google: "<span class=icon>&#xe818;</span> Google",
+					stackexchange: "<span class=icon>&#xe816</span> StackExchange",
+					github: "<span class=icon>&#xe817;</span> GitHub"
+				};
 				for (var key in strategies) {
 					(function(key, strategy){
-						var html = 'Sign On with '+key;
+						var html = 'Sign On with '+ (names[key]||key);
 						$('<button>').html(html).click(function(){
 							localStorage['lastUsedStrategy'] = key;
 							location = strategies[key].url;

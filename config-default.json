@@ -17,6 +17,9 @@
 		}, "stackexchange": {
 			"clientID": "your client ID",
 			"clientSecret": "your client secret"
-		},
+		}, "github": {
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		}
 	}
 }
