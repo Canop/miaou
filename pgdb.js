@@ -210,13 +210,12 @@ Con.prototype.storeMessage = function(m, cb){
 	if (m.id && m.changed) {
 		// TODO : check the message isn't too old for edition
 		con.client.query(
-			'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5 returning created',
+			'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5 returning *',
 			[m.content, m.changed, m.id, m.room, m.author],
 			function(err, result)
 		{
 			if (err) return con.nok(cb, err);
-			m.created = result.rows[0].created;
-			cb(null, m)
+			cb(null, result.rows[0])
 		});
 	} else {
 		con.client.query(

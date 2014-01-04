@@ -17,9 +17,9 @@ html
 						input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
 					p#err.error
 				div.dialog_buttons
-					input#cancel(type='button', value='Cancel')
-					input#submit(type='submit', value='Save')
-					input#logout(type='button', value='Log Out')
+					button#cancel Cancel
+					button#submit Save
+					button#logout Log Out
 		
 		script.
 			//$('form')[0].action = location;

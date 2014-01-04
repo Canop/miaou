@@ -5,12 +5,13 @@ html
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="static/jquery-2.0.3.min.js")
-	body
+	body.logo
 		div.dialog
 			div.dialog_title Authentication
 			div.dialog_content
 				p Miaou requires users to be logged to prevent impersonation.
-				p To improve security and not manage your password, we use the OAuth2 scheme and let you use the authentication provider of your choice.
+				p To improve security and not manage your password we use the OAuth2 scheme and let you use the authentication provider of your choice.
+				p Sign In With :
 			div.dialog_buttons#buttons
 		
 		script.
@@ -32,8 +33,7 @@ html
 				};
 				for (var key in strategies) {
 					(function(key, strategy){
-						var html = 'Sign On with '+ (names[key]||key);
-						$('<button>').html(html).click(function(){
+						$('<button>').html(names[key]||key).click(function(){
 							localStorage['lastUsedStrategy'] = key;
 							location = strategies[key].url;
 						}).appendTo('#buttons');

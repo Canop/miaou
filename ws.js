@@ -184,6 +184,10 @@ function handleUserInRoom(socket, completeUser, mdb){
 					} else {
 						con.ok();
 					}
+					if (m.changed) {
+						m.authorname = publicUser.name;
+						m.vote = '?';
+					}
 					io.sockets.in(room.id).emit('message', m);
 				});
 			});

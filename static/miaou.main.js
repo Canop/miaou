@@ -148,11 +148,11 @@ var miaou = miaou || {};
 		if (message.authorname===me.name) $md.addClass('me');
 		$content.find('img').load(scrollToBottom);
 		if (message.changed) $md.addClass('edited');
-		var votesHtml = votesAbstract(message);
-		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
-				if (message.vote==='?') message.vote = messages[insertionIndex].vote; 
+				if (message.vote==='?') {
+					message.vote = messages[insertionIndex].vote;
+				}
 				$('#messages .message').eq(insertionIndex).replaceWith($md);
 			} else {
 				if (insertionIndex==messages.length-1) atEnd = true;
@@ -162,11 +162,12 @@ var miaou = miaou || {};
 			$md.prependTo('#messages');
 		}
 		addToUserList({id: message.author, name: message.authorname});
-		if (message.vote==='?') message.vote=null;
 		if ($content.height()>150) {
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
 		}
+		var votesHtml = votesAbstract(message);
+		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		showMessageFlowDisruptions();
 		updateOlderAndNewerLoaders();
 		if (atEnd) scrollToBottom();

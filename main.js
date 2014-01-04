@@ -158,7 +158,6 @@ function defineAppRoutes(){
 
 	for (key in oauth2Strategies){
 		var s = oauth2Strategies[key];
-		console.log(key, s);
 		app.get('/auth/'+key, passport.authenticate(key, {scope:s.scope}));
 		app.get('/auth/'+key+'/callback', passport.authenticate(key, { failureRedirect: '/login' }), function(req, res) { res.redirect(url()) });		
 	};

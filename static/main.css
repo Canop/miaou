@@ -248,7 +248,7 @@ code {
 	height: 94px;
 }
 #input {
-	width: calc(100% - 14px - 70px);
+	width: calc(100% - 14px - 76px);
 	height:80px;
 	margin-top: 4px;
 	margin-left: 2px;
@@ -256,7 +256,7 @@ code {
 	float: left;
 }
 #preview {
-	width: calc(100% - 9px - 70px);
+	width: calc(100% - 9px - 76px);
 	height: calc(100% - 5px);
 	float: left;
 	word-wrap: break-word;
@@ -265,8 +265,7 @@ code {
 	padding: 2px;
 }
 #inputpanel button, #previewpanel button {
-	width: 70px;
-	float: right;
+	width: 74px;
 	margin-top: 4px;
 	margin-right: 2px;
 	margin-bottom: -2px;
@@ -334,7 +333,6 @@ span.warning {
 	right: 30%;
 	left: 30%;
 	z-index: 30;
-	top: 20%;
 	opacity:.96;
 	box-shadow: 0px 6px 10px #666;
 	border-radius: 5px;
@@ -373,10 +371,6 @@ span.button  {
 }
 span.button:hover {
 	background-color: #eed;
-}
-.dialog_buttons {
-	float: right;
-	padding: 11px 15px;
 }
 .dialog_content {
 	padding: 7px;
@@ -444,6 +438,32 @@ span.button:hover {
 }
 .close_dialog:hover {
 	background: #333;
+}
+
+button {
+	background-color: #E3DAC9;
+	padding: 4px 8px;
+	border: 1px solid #999;
+	margin: 1px 4px;
+	border-radius: 2px;
+	box-shadow: 1px 1px 3px #999;
+    outline: none;
+    cursor: pointer;
+    color: #333;
+    transition: all 100ms ease;
+}
+button:hover,button:focus {
+    border-color: #666;
+    color: black;
+}
+button.small {
+	padding: 2px 4px;
+	border-radius: 2px;
+	box-shadow: 1px 1px 2px #999;
+}
+.dialog_buttons {
+	padding: 11px 15px;
+	text-align: center;
 }
 
 :invalid {
@@ -565,4 +585,31 @@ div.MP {
 }
 .newerLoader + .olderLoader {
 	border-top:solid 7px #ccc;	
+}
+
+@media (max-height: 400px) {
+	.dialog {
+		top: 10%;
+	}
+	body.logo {
+		background: #F0EAD6;
+	}
+}
+@media (min-height: 400px) and (max-height: 800px) {
+	.dialog {
+		top: 170px;
+	}
+	body.logo {
+		background: #F0EAD6 url(Miaou-300-f.png) center no-repeat;
+		background-position: 50% 1px;
+	}
+}
+@media (min-height: 800px) {
+	.dialog {
+		top: 35%;
+	}
+	body.logo {
+		background: #F0EAD6 url(Miaou-300-f.png) center no-repeat;
+		background-position: 50% 100px;
+	}
 }
