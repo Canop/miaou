@@ -23,23 +23,17 @@ body {
 section {
 	margin: 0 0 8px 0;
 }
-#left, #right {
+#left, #right, #center {
 	display: table-cell;
 	height:100%;
 	padding: 0;
 	vertical-align: top;
 }
 #left {
-	display: table-cell;
 	width: 150px;
-	height:100%;
-	vertical-align: top;
 }
 #right {
-	display: table-cell;
 	width: 320px;
-	height:100%;
-	vertical-align: top;
 }
 #rightcontainer {
 	width:100%;
@@ -48,10 +42,7 @@ section {
 	overflow-x: hidden;
 }
 #center {
-	display: table-cell;
 	background: white;
-	padding:0;
-	vertical-align: top;
 }
 #prefs {
 	padding: 4px;
