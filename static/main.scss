@@ -1,0 +1,43 @@
+@font-face {
+	font-family: 'fontello';
+	src: url('fontello.woff?91738179') format('woff');
+}
+$bg-color: #F0EAD6;
+body {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	font-family: Helvetica, arial, freesans, clean, sans-serif;
+	font-size: 14px;
+	margin:0;
+	padding:0;
+}
+.table {
+	display: table;
+	width:100%;
+	height:100%;
+	table-layout: fixed;
+}
+section {
+	margin: 0 0 8px 0;
+}
+#left, #right {
+	display: table-cell;
+	height:100%;
+	padding: 0;
+	vertical-align: top;
+}
+#left {
+	width: 150px;
+}
+#right {
+	width: 320px;
+}
+.colcontainer {
+	width:100%;
+	height:100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
