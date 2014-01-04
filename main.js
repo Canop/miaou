@@ -6,13 +6,13 @@ var fs = require("fs"),
   	jade = require('jade'),
 	socketio = require('socket.io'),
 	util = require('util'),
-	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
 	config = require('./config.json'),
 	mdb = require('./pgdb.js'),
 	loginutil = require('./login.js'),
 	ws = require('./ws.js'),
 	cookieParser = express.cookieParser(config.secret),
 	RedisStore = require('connect-redis')(express),
+	oauth2Strategies = {},
 	sessionStore = new RedisStore({}),
 	app, io, server;
 
@@ -40,19 +40,33 @@ function roomUrl(room){
 	return url('/'+roomPath(room));
 }
 
-
-var oauthParameters = config.googleOAuthParameters;
-oauthParameters.callbackURL = url("/auth/google/callback");
-passport.use(new GoogleStrategy(oauthParameters, function(accessToken, refreshToken, profile, done) {
-	mdb.con(function(err, con){
-		if (err) return done(new Error('no connection'));
-		con.fetchCompleteUserFromOAuthProfile(profile, function(err, user){
-			if (err) { console.log('ERR:',err);return done(err); }
-			con.ok();
-			done(null, user);
-		});
-	});
-}));
+(function configureOauth2Strategies(){
+	var impls = {
+		google: require('passport-google-oauth').OAuth2Strategy,
+		stackexchange: require('passport-stackexchange').Strategy
+	};
+	var oauthConfigs = config.oauth2;
+	for (var key in oauthConfigs) {
+		var params = oauthConfigs[key], impl = impls[key];
+		if (!impl) {
+			console.log('no implementation for ' + key + ' strategy');
+			continue;
+		}
+		params.callbackURL = url("/auth/"+key+"/callback");
+		passport.use(new impl(params, function(accessToken, refreshToken, profile, done) {
+			mdb.con(function(err, con){
+				if (err) return done(new Error('no connection'));
+				con.fetchCompleteUserFromOAuthProfile(profile, function(err, user){
+					if (err) { console.log('ERR:',err);return done(err); }
+					con.ok();
+					done(null, user);
+				});
+			});
+		}));
+		oauth2Strategies[key] = {url: url('/auth/'+key)};
+	}
+	console.log('strategies:',oauth2Strategies);
+})();
 
 function ensureAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) return next();
@@ -111,7 +125,7 @@ function defineAppRoutes(){
 	});
 	
 	app.get('/login', function(req, res){
-		res.render('login.jade', { user:req.user, authurl:url('/auth/google') });
+		res.render('login.jade', { user:req.user, oauth2Strategies:oauth2Strategies });
 	});
 	
 	app.get('/profile', function(req, res){
@@ -137,14 +151,18 @@ function defineAppRoutes(){
 		}
 	});
 
-	app.get('/auth/google',
-		passport.authenticate(
-			'google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }
-		)
-	);
-	
-	app.get('/auth/google/callback',  // This is called by google back after authentication
+	app.get('/auth/google', passport.authenticate(
+		'google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }
+	));
+	app.get('/auth/google/callback', 
 		passport.authenticate('google', { failureRedirect: '/login' }),
+		function(req, res) { res.redirect(url()) }
+	);
+	app.get('/auth/stackexchange', passport.authenticate(
+		'stackexchange', { scope: {} }
+	));
+	app.get('/auth/stackexchange/callback',
+		passport.authenticate('stackexchange', { failureRedirect: '/login' }),
 		function(req, res) { res.redirect(url()) }
 	);
 
@@ -251,7 +269,7 @@ function defineAppRoutes(){
 	});
 
 	app.get('/logout', function(req, res){
-		console.log('logout');
+		console.log('User ' + req.user.id + ' log out');
 		req.logout();
 		res.redirect(url());
 	});

@@ -8,7 +8,7 @@ CREATE TABLE room (
 CREATE TABLE player (
     id serial primary key,
     name varchar(30) UNIQUE,
-	email varchar(150) UNIQUE NOT NULL,
+	email varchar(150),
 	oauthprovider varchar(50),
 	oauthid varchar(150),
 	oauthdisplayname varchar(255)

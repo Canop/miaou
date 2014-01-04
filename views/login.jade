@@ -4,30 +4,35 @@ html
 		title Miaou
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
+		script(src="static/jquery-2.0.3.min.js")
 	body
 		div.dialog
 			div.dialog_title Authentication
 			div.dialog_content
 				p Miaou requires users to be logged to prevent impersonation.
-				p In order to avoid managing one more password, we use Google authentication.
+				p In order to avoid managing one more password, we use the OAuth2 scheme to let you use the authentication provider of your choice.
 			div.dialog_buttons#buttons
-				button#ok Sign On with Google
 		
 		script.
-			var m = location.toString().match(/room=(\d+)/);
+			var m = location.toString().match(/room=(\d+)/), strategies = !{JSON.stringify(oauth2Strategies)};
 			if (m) {
 				localStorage['login.room'] = m[1];
 			} else {
 				delete localStorage['login.room'];
 			}
-			var authurl = "#{authurl}";
-			if (localStorage['successfulLoginLastTime']) {
+			if (localStorage['successfulLoginLastTime'] && localStorage['lastUsedStrategy'] && strategies[localStorage['lastUsedStrategy']]) {
 				delete localStorage['successfulLoginLastTime'];
-				document.getElementById('buttons').innerHTML = '<i>Authentication in progress...</i>';
-				location=authurl;
+				$('#buttons').html('<i>Authentication in progress...</i>');
+				setTimeout(function(){ location = strategies[localStorage['lastUsedStrategy']].url }, 100);
+			} else {
+				console.log(strategies);
+				for (var key in strategies) {
+					(function(key, strategy){
+						var html = 'Sign On with '+key;
+						$('<button>').html(html).click(function(){
+							localStorage['lastUsedStrategy'] = key;
+							location = strategies[key].url;
+						}).appendTo('#buttons');
+					})(key, strategies[key]);
+				}
 			}
-			var ok = document.getElementById('ok');
-			ok.onclick = function(){
-				location=authurl;
-			}
-			ok.focus();

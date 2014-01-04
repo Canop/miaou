@@ -33,16 +33,22 @@ Con.prototype.queryRows = function(sql, args, cb){
 	});
 }
 
-// returns a user found by the Google OAuth profile, creates it if it doesn't exist
+// returns a user found by the OAuth profile, creates it if it doesn't exist
 // Private fields are included in the returned object
 Con.prototype.fetchCompleteUserFromOAuthProfile = function(profile, cb){
-	var con = this, email = profile.emails[0].value, returnedCols = 'id, name, oauthdisplayname, email';
-	con.client.query('select '+returnedCols+' from player where email=$1', [email], function(err, result){
+	//~ console.dir(profile);
+	var oauthid = profile.id || profile.user_id, // id for google, user_id for stackexchange
+		displayName = profile.displayName || profile.display_name, // displayName for google, display_name for stackexchange
+		provider = profile.provider;
+	if (!oauthid) return cb(new Error('no id found in OAuth profile'));
+	var con = this, email = null, returnedCols = 'id, name, oauthdisplayname, email';
+	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google
+	con.client.query('select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2', [provider, oauthid], function(err, result){
 		if (err) return con.nok(cb, err);
 		if (result.rows.length) return cb(null, result.rows[0]);
 		con.queryRow(
 			'insert into player (oauthid, oauthprovider, email, oauthdisplayname) values ($1, $2, $3, $4) returning '+returnedCols,
-			[profile.id, profile.provider, email, profile.displayName], cb
+			[oauthid, provider, email, displayName], cb
 		);
 	});
 }

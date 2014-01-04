@@ -10,8 +10,13 @@
 	"database": {
 		"url": "postgres://database_user:database_pwd@localhost/miaou"
 	},
-	"googleOAuthParameters": {
-		"clientID": "your client ID, see https://code.google.com/apis/console/",
-		"clientSecret": "your client secret",
+	"oauth2": {
+		"google": {
+			"clientID": "your client ID, see https://code.google.com/apis/console/",
+			"clientSecret": "your client secret"
+		}, "stackexchange": {
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
 	}
 }

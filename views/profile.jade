@@ -38,6 +38,5 @@ html
 			$('#cancel').click(function(){ history.back() });
 			$('#logout').click(function(){
 				delete localStorage['successfulLoginLastTime'];
-				location = 'logout';
+				setTimeout(function(){ location = 'logout' }, 100);
 			});
-			
