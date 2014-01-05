@@ -244,8 +244,9 @@ code {
 	width:100%;
 	height: 94px;
 }
+$input-buttons-width: 74px;
 #input {
-	width: calc(100% - 14px - 76px);
+	width: calc(100% - 16px - #{$input-buttons-width}); // TODO how to use $input-buttons-width here ?
 	height:80px;
 	margin-top: 4px;
 	margin-left: 2px;
@@ -253,7 +254,7 @@ code {
 	float: left;
 }
 #preview {
-	width: calc(100% - 9px - 76px);
+	width: calc(100% - 11px - #{$input-buttons-width});
 	height: calc(100% - 5px);
 	float: left;
 	word-wrap: break-word;
@@ -262,7 +263,7 @@ code {
 	padding: 2px;
 }
 #inputpanel button, #previewpanel button {
-	width: 74px;
+	width: $input-buttons-width;
 	margin-top: 4px;
 	margin-right: 2px;
 	margin-bottom: -2px;
