@@ -15,14 +15,14 @@ html
 		script(src="static/miaou.main.js")
 	body
 		div.table
-			div#left
+			div.col#left
 				section#prefs
 					a#me.pref(href="profile", title="Edit profile or log out")
 				section
 					button.small#auths authorizations
 					h2 Users
 					div#users
-			div#center
+			div.col#center
 				div.table
 					div#messagescell
 						div#messageswrapper	
@@ -37,8 +37,8 @@ html
 						div#preview.rendered
 						button.small#hidePreview Hide
 						button.small#shortcuts Shortcuts
-			div#right
-				div#rightcontainer
+			div.col#right
+				div.colcontainer
 					section#roominfo
 						button.small#changeroom rooms
 						button.small#editroom edit

@@ -114,7 +114,7 @@ var miaou = miaou || {};
 		var $md = $('<div>').addClass('error').append(
 			$('<div>').addClass('user error').text("Miaou Server")
 		).append(
-			$('<div>').addClass('content').text(error)
+			$('<div>').addClass('content').text(typeof error === "string" ? error : "an error occured - connexion might be damaged")
 		).appendTo('#messages');
 		scrollToBottom();
 	}
