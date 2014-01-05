@@ -4,7 +4,7 @@ node_modules
 # running configuration
 config.json
 
-# dystroy's scripts & utilities
+# dystroy's scripts, config & utilities
 deploy.sh
 config-dys-tour.json
 config-dystroy.json
@@ -12,6 +12,9 @@ config-dystroy.json
 # personal notes
 notes.dev
 sql/postgres.alter.sql
+
+# compilation byproducts
+static/.sass-cache/
 
 # execution byproducts
 *.log
