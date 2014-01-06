@@ -6,10 +6,9 @@ You can see it in action or use it, in public rooms or in private rooms you crea
 
 To discuss the code an feature of Miaou, please come to [the dedicated room](http://dystroy.org/miaou/1?Miaou).
 
-# Compatibility
+# technical stack
 
-Miaou is only compatible with Chrome, Chromium and Safari right now.
-
+As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Redis, Jade, Passport.js, jQuery, Moment.js and nginx.
 
 ## License
 
