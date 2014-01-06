@@ -9,10 +9,12 @@ html
 		div.dialog
 			div.dialog_title Authentication
 			div.dialog_content
-				p Miaou requires users to be logged to prevent impersonation.
-				p To improve security and not manage your password we use the OAuth2 scheme and let you use the authentication provider of your choice.
-				p.toRemoveWhenLogin Sign In With :
+				p Miaou is a multi-room persistent and feature-rich chat server. It's free to use and anybody can create public or private rooms.
+				p.toRemoveWhenLogin To prevent impersonation, users must be logged. Sign In With :
 			div.dialog_buttons#buttons
+
+		a(href="https://github.com/Canop/miaou",target="github")
+			img(style="position:absolute; top:0; right:0; border:0;",src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
 		
 		script.
 			var m = location.toString().match(/room=(\d+)/), strategies = !{JSON.stringify(oauth2Strategies)};

@@ -75,7 +75,8 @@ function roomUrl(room){
 
 function ensureAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) return next();
-	res.redirect(url('/login?room=' + req.params[0]));
+	var roomId = req.params[0];
+	res.redirect(url(roomId ? '/login?room=' + roomId : '/login'));
 }
 
 // Checks that the profile is complete enough to be used for the chat
