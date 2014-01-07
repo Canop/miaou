@@ -480,9 +480,10 @@ button.small {
 }
 
 .reply {
+	font-family: 'fontello';
 	color: #222;
 	cursor: pointer;
-	padding: 2px 2px 0 2px;
+	padding: 3px;
 	border-radius: 2px;
 	background: #ede7d3;
 	&:hover {
