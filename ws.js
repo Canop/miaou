@@ -79,15 +79,17 @@ function handleUserInRoom(socket, completeUser, db){
 
 	socket.on('request', function(roomId){
 		console.log(publicUser.name + ' requests access to room ' + roomId);
-		db.on([roomId, publicUser.id])
-		.spread(db.insertAccessRequest)
+		db.on()
+		.then(function(){ return this.deleteAccessRequests(roomId, publicUser.id) })
+		.then(function(){ return this.insertAccessRequest(roomId, publicUser.id) })
 		.then(function(ar){
 			ar.user = publicUser;
 			socket.broadcast.to(roomId).emit('request', ar);
 			socketWaitingApproval.push({
 				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
 			});			
-		}).finally(db.off);
+		}).catch(function(err){ console.log(err) }) // well...
+		.finally(db.off);
 	}).on('clear_pings', function(lastPingTime, ack){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
 		if (!room) return console.log('No room in clear_pings');
 		db.on([room.id, publicUser.id])

@@ -2,16 +2,15 @@
 // Usage :
 //   
 //  db.on(req.user)                             // returns a promise bound to the connection taken from the pool
-//	.then(db.updateUser)                        // quering functions are available on the db object and use the connection (context of the call)
-//	.then(function(user){                       // when you can't use the simple form
-//  	if (!user.bot) return this.ping(uid)    // `this` is the connection
-//	}).finally(db.off);                         // releases the connection which is returned to the pool
+//  .then(db.updateUser)                        // querying functions are available on the db object and use the connection (context of the call)
+//  .then(function(user){                       // when you can't use the simple form
+//      if (!user.bot) return this.ping(uid)    // `this` is the connection
+//  }).finally(db.off);                         // releases the connection which is returned to the pool
 // 
 
 var pg = require('pg').native,
 	Promise = require("bluebird"),
-	pool,
-	conString;
+	pool;
 
 Promise.longStackTraces(); // this will be removed in production in the future
 
@@ -129,12 +128,14 @@ proto.listRoomAuths = function(roomId){
 	return this.queryRows("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId]);
 }
 
+proto.deleteAccessRequests = function(roomId, userId){
+	return this.queryRows('delete from access_request where room=$1 and player=$2', [roomId, userId])
+}
 proto.insertAccessRequest = function(roomId, userId){
-	return this.queryRow('delete from access_request where room=$1 and player=$2', [roomId, userId])
-	.then(this.queryRow(
+	return this.queryRow(
 		'insert into access_request (room, player, requested) values ($1, $2, $3) returning *',
 		[roomId, userId, ~~(Date.now()/1000)]
-	));
+	);
 }
 
 // userId : optionnal
@@ -323,7 +324,7 @@ function logQuery(sql, args) { // used in debug
 // must be called before any call to connect
 // todo return a promise
 exports.init = function(dbConfig, cb){
-	conString = dbConfig.url;
+	var conString = dbConfig.url;
 	pg.defaults.parseInt8 = true;
 	pg.connect(conString, function(err, client, done){
 		if (err) {
