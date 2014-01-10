@@ -1,4 +1,5 @@
 var config = require('./config.json'),
+	Promise = require("bluebird"),
 	maxContentLength = config.maxMessageContentSize || 500,
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000,
 	socketio = require('socket.io'),
@@ -31,29 +32,34 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted) {
 
 // emits messages before (not including) beforeId
 //  If beforeId is 0, then we look for the last messages of the room
-function emitMessagesBefore(con, socket, roomId, userId, beforeId, untilId, nbMessages, cb){
-	var nbSent = 0, oldestSent;
-	con.queryMessagesBefore(roomId, userId, nbMessages, beforeId, untilId).on('row', function(message){
+// This function must be called on a Con object
+// TODO with promises, this function starts to be painful. I should probably refactor it away
+function emitMessagesBefore(socket, roomId, userId, beforeId, untilId, nbMessages){
+	var nbSent = 0, oldestSent, resolver = Promise.defer();
+	this.queryMessagesBefore(roomId, userId, nbMessages, beforeId, untilId).on('row', function(message){
 		socket.emit('message', message);
 		nbSent++;
 		if (!(message.id>oldestSent)) oldestSent = message.id;
 	}).on('end', function(){
 		if (nbSent===nbMessages) socket.emit('has_older', oldestSent);
-		cb();
+		resolver.resolve();
 	});
+	return resolver.promise.bind(this);
 }
 
 // emits messages after and including untilId
-function emitMessagesAfter(con, socket, roomId, userId, fromId, untilId, nbMessages, cb){
-	var nbSent = 0, youngestSent;
-	con.queryMessagesAfter(roomId, userId, nbMessages, fromId, untilId).on('row', function(message){
+// This function must be called on a Con object
+function emitMessagesAfter(socket, roomId, userId, fromId, untilId, nbMessages){
+	var nbSent = 0, youngestSent, resolver = Promise.defer();
+	this.queryMessagesAfter(roomId, userId, nbMessages, fromId, untilId).on('row', function(message){
 		socket.emit('message', message);
 		nbSent++;
 		if (!(message.id<youngestSent)) youngestSent = message.id;	
 	}).on('end', function(){
 		if (nbSent===nbMessages) socket.emit('has_newer', youngestSent);
-		cb();
+		resolver.resolve();
 	});
+	return resolver.promise.bind(this);
 }
 
 
@@ -61,98 +67,86 @@ function emitMessagesAfter(con, socket, roomId, userId, fromId, untilId, nbMessa
 // Implementation details :
 //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
 //     different rooms and there's a reconnect
-function handleUserInRoom(socket, completeUser, mdb){
+function handleUserInRoom(socket, completeUser, db){
 	function error(err){
 		console.log('ERR', err, 'for user', completeUser.name, 'in room', (room||{}).name);
 		socket.emit('error', err.toString());
 	}
 	var room, lastMessageTime,
 		publicUser = {id:completeUser.id, name:completeUser.name};
-
 	console.log('starting handling new socket for', completeUser.name);
-
 	socket.set('publicUser', publicUser);
+
 	socket.on('request', function(roomId){
 		console.log(publicUser.name + ' requests access to room ' + roomId);
-		mdb.con(function(err, con){
-			if (err) return error('no connection'); // todo kill everything
-			con.insertAccessRequest(roomId, publicUser.id, function(err, ar){
-				con.ok();
-				ar.user = publicUser;
-				socket.broadcast.to(roomId).emit('request', ar);
-				socketWaitingApproval.push({
-					socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
-				});
-			});
-		});
+		db.on([roomId, publicUser.id])
+		.spread(db.insertAccessRequest)
+		.then(function(ar){
+			ar.user = publicUser;
+			socket.broadcast.to(roomId).emit('request', ar);
+			socketWaitingApproval.push({
+				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
+			});			
+		}).finally(db.off);
 	}).on('clear_pings', function(lastPingTime, ack){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
-		if (!room) {
-			console.log('No room in clear_pings');
-			return;
-		}
-		mdb.con(function(err, con){
-			if (err) return error('no connection'); // todo kill everything
-			con.deletePings(room.id, publicUser.id, function(err){
-				con.fetchUserPingRooms(publicUser.id, lastPingTime, function(err, pings){
-					con.ok();
-					if (ack) ack(pings);
-				});
-			});
-		});
+		if (!room) return console.log('No room in clear_pings');
+		db.on([room.id, publicUser.id])
+		.spread(db.deletePings)
+		.then(function(){
+			return this.fetchUserPingRooms(publicUser.id, lastPingTime);
+		}).then(ack)
+		.finally(db.off);
 	}).on('enter', function(roomId, ack){
 		console.log(publicUser.name, 'enters', roomId);
 		var now = ~~(Date.now()/1000);
 		if (ack) ack(now);
-		mdb.con(function(err, con){
-			if (err) return error('no connection'); // todo kill everything
-			con.fetchRoomAndUserAuth(roomId, publicUser.id, function(err, r){
-				if (err) return error(err);
-				if (r==null) return error('Room not found');
-				if (r.private && !r.auth) return error('Unauthorized user');
-				room = r;
-				socket.emit('room', room);
-				socket.join(room.id);
-				emitMessagesBefore(con, socket, room.id, publicUser.id, null, null, nbMessagesAtLoad, function(){
-					socket.broadcast.to(room.id).emit('enter', publicUser);
-					socketWaitingApproval.forEach(function(o){
-						if (o.roomId===room.id) {
-							socket.emit('request', o.ar);
-						}
-					});
-					con.getNotableMessages(room.id, now-maxAgeForNotableMessages, function(err, messages){
-						messages.forEach(function(m){ socket.emit('notable_message', m) });
-						con.deletePings(room.id, publicUser.id, con.ok);
-						socket.emit('welcome');
-					});
-				});
-				io.sockets.clients(room.id).forEach(function(s){
-					s.get('publicUser', function(err, u){
-						if (err) console.log('missing user on socket', err);
-						else socket.emit('enter', u);
-					});
+		db.on([roomId, publicUser.id])
+		.spread(db.fetchRoomAndUserAuth)
+		.then(function(r){
+			if (r.private && !r.auth) throw new Error('Unauthorized user');
+			room = r;
+			socket.emit('room', room).join(room.id);
+			var nbSent = 0, oldestSent, resolver = Promise.defer();
+			return emitMessagesBefore.call(this, socket, room.id, publicUser.id, null, null, nbMessagesAtLoad)
+		}).then(function(){
+			socket.broadcast.to(room.id).emit('enter', publicUser);
+			socketWaitingApproval.forEach(function(o){
+				if (o.roomId===room.id) socket.emit('request', o.ar);
+			});
+			return this.getNotableMessages(room.id, now-maxAgeForNotableMessages);
+		}).then(function(messages){
+			messages.forEach(function(m){ socket.emit('notable_message', m) });
+			socket.emit('welcome');
+			io.sockets.clients(room.id).forEach(function(s){
+				s.get('publicUser', function(err, u){
+					if (err) console.log('missing user on socket', err);
+					else socket.emit('enter', u);
 				});
 			});
-		});
+			return this.deletePings(room.id, publicUser.id);
+		}).catch(db.NoRowError, function(){
+			error('Room not found');
+		}).catch(function(err){
+			error(err.toString());
+		}).finally(db.off)
 	}).on('get_around', function(data, ack){ 
-		mdb.con(function(err, con){
-			if (err) return error('no connection'); // todo kill everything
-			emitMessagesBefore(con, socket, room.id, publicUser.id, data.target, data.olderPresent, nbMessagesBeforeTarget, function(){
-				emitMessagesAfter(con, socket, room.id, publicUser.id, data.target, data.newerPresent, nbMessagesAfterTarget, function(){
-					ack();
-					con.ok();
-				});
-			});
-		});
+		db.on()
+		.then(function(){
+			return emitMessagesBefore.call(this, socket, room.id, publicUser.id, data.target, data.olderPresent, nbMessagesBeforeTarget)
+		}).then(function(){
+			return emitMessagesAfter.call(this, socket, room.id, publicUser.id, data.target, data.newerPresent, nbMessagesAfterTarget)
+		}).then(ack)
+		.finally(db.off);
 	}).on('get_older', function(data){
-		mdb.con(function(err, con){
-			if (err) return error('no connection'); // todo kill everything
-			emitMessagesBefore(con, socket, room.id, publicUser.id, data.before, data.olderPresent, nbMessagesPerPage, con.ok);
-		});
+		db.on()
+		.then(function(){
+			return emitMessagesBefore.call(this, socket, room.id, publicUser.id, data.before, data.olderPresent, nbMessagesPerPage)
+		}).finally(db.off);
 	}).on('get_newer', function(data){
-		mdb.con(function(err, con){
-			if (err) return error('no connection'); // todo kill everything
-			emitMessagesAfter(con, socket, room.id, publicUser.id, data.after, data.newerPresent, nbMessagesPerPage, con.ok);
-		});
+		db.on()
+		.then(function(){
+			return emitMessagesAfter.call(this, socket, room.id, publicUser.id, data.after, data.newerPresent, nbMessagesPerPage)
+		}).finally(db.off);
 	}).on('message', function(message){
 		if (!room) {
 			socket.emit('get_room', message);
@@ -172,47 +166,41 @@ function handleUserInRoom(socket, completeUser, mdb){
 			} else {
 				m.created = seconds;				
 			}
-			mdb.con(function(err, con){
-				if (err) return error('no connection');
-				con.storeMessage(m, function(err, m){
-					if (err) return error(err);
-					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
-					if (pings) {
-						con.storePings(room.id, pings.map(function(s){ return s.slice(1) }), m.id, function(){
-							con.ok();						
-						})
-					} else {
-						con.ok();
-					}
-					if (m.changed) {
-						m.authorname = publicUser.name;
-						m.vote = '?';
-					}
-					io.sockets.in(room.id).emit('message', m);
-				});
+			db.on(m)
+			.then(db.storeMessage)
+			.then(function(m){
+				if (m.changed) {
+					m.authorname = publicUser.name;
+					m.vote = '?';
+				}
+				var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
+				if (pings) return this.storePings(room.id, pings.map(function(s){ return s.slice(1) }), m.id);
+			}).finally(db.off)
+			.then(function(){
+				io.sockets.in(room.id).emit('message', m); // note : this must be called after the pings have been stored
 			});
 		}
 	}).on('vote', function(vote){
 		if (vote.level=='pin' && !(room.auth==='admin'||room.auth==='own')) return;
-		mdb.con(function(err, con){
-			if (err) return error('no connection');
-			con[vote.action==='add'?'addVote':'removeVote'](room.id, publicUser.id, vote.message, vote.level, function(err, updatedMessage){
-				if (err) return error(err);
-				con.ok();
-				socket.emit('message', updatedMessage);
-				var clone = {};
-				for (var key in updatedMessage) clone[key]= key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
-				socket.broadcast.to(room.id).emit('message', clone);
-			});
-		});		
+		db.on([room.id, publicUser.id, vote.message, vote.level])
+		.spread(db[vote.action==='add'?'addVote':'removeVote'])
+		.then(function(updatedMessage){
+			socket.emit('message', updatedMessage);
+			var clone = {};
+			for (var key in updatedMessage) clone[key]= key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
+			socket.broadcast.to(room.id).emit('message', clone);	
+		}).catch(function(err){ console.log('ERR in vote handling:', err) })		
+		.finally(db.off);
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		console.log(completeUser.name, "disconnected");
 		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);
 		popon(socketWaitingApproval, function(o){ return o.socket===socket });
 	});
+	
+	socket.emit('ready');
 }
 
-exports.listen = function(server, sessionStore, cookieParser, mdb){
+exports.listen = function(server, sessionStore, cookieParser, db){
 	io = socketio.listen(server);
 	io.set('log level', 1);
 	
@@ -226,13 +214,11 @@ exports.listen = function(server, sessionStore, cookieParser, mdb){
 		if (! (session && session.passport && session.passport.user && session.room)) return die ('invalid session');
 		var userId = session.passport.user;
 		if (!userId) return die('no authenticated user in session');
-		mdb.con(function(err, con){
-			if (err) return die(err);
-			con.fetchUserById(userId, function(err, completeUser){
-				if (err) return die(err);
-				con.ok();
-				handleUserInRoom(socket, completeUser, mdb);
-			});
-		});
+		db.on(userId)
+		.then(db.getUserById)
+		.then(function(completeUser){
+			handleUserInRoom(socket, completeUser, db);
+		}).catch(function(err){ die(err) })
+		.finally(db.off);
 	});
 }
