@@ -93,14 +93,6 @@ section {
 	.message + .message {
 		border-top: thin dotted #ddd;
 	}
-	.user {
-		width: 120px;
-		display:inline-block;
-		padding-left: 2px;
-		color: #555;
-		text-overflow: ellipsis;
-		overflow: hidden;
-	}
 	.content {
 		width: calc(100% - 122px);
 		display:inline-block;
@@ -110,6 +102,14 @@ section {
 .message {
 	padding: 3px;
 	position: relative;
+	.user {
+		width: 120px;
+		display:inline-block;
+		padding-left: 2px;
+		color: #555;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
 	&.me {
 		background-color: #fdf6e5;
 	}
@@ -480,9 +480,10 @@ button.small {
 }
 
 .reply {
+	font-family: 'fontello';
 	color: #222;
 	cursor: pointer;
-	padding: 2px 2px 0 2px;
+	padding: 3px;
 	border-radius: 2px;
 	background: #ede7d3;
 	&:hover {
@@ -558,6 +559,9 @@ div.MP {
 	}
 	button {
 		margin-left: 10px;
+	}
+	.remover {
+		float: right;
 	}
 }
 
