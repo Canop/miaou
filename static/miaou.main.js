@@ -121,10 +121,11 @@ var miaou = miaou || {};
 	
 	function showRequestAccess(ar){
 		var h;
-		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room";
-		else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right";
-		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>";
+		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room.";
+		else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right.";
+		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>.";
 		var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
+		$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
 		if (checkAuth('admin')) {
 			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
 			if (!vis()) {
@@ -204,10 +205,18 @@ var miaou = miaou || {};
 			socket.emit('clear_pings', lastReceivedPing, function(pings){
 				if (pings.length) {
 					pings.forEach(function(p){ lastReceivedPing = Math.max(lastReceivedPing, p.last) });
-					var h = "You've been pinged in room", links = pings.map(function(p){ return '<a target=room_'+p.room+' href='+p.room+'>'+p.roomname+'</a>' });
-					if (pings.length==1) h += ' '+links[0];
-					else h += 's '+links.slice(0,-1).join(', ')+' and '+links.pop();
-					$('<div>').html(h).addClass('notification').appendTo('#messages');
+					var h = "You've been pinged in room";
+					if (pings.length>1) h += 's';
+					var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
+					pings.forEach(function(p){
+						$md.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
+							window.open(p.room);
+							var $notif = $(this).closest('.notification');
+							if ($notif.find('.openroom').length==1) $notif.remove();
+							else $(this).remove();
+						}))
+					});
+					$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
 					scrollToBottom();
 				}
 			});
