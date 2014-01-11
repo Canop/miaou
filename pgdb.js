@@ -98,6 +98,7 @@ proto.fetchRoom = function(id){
 
 // returns an existing room found by its id and the user's auth level
 proto.fetchRoomAndUserAuth = function(roomId, userId){
+	if (!roomId) throw new NoRowError();
 	return this.queryRow('select id, name, description, private, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId]);
 }
 
