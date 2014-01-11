@@ -189,7 +189,9 @@ function handleUserInRoom(socket, completeUser, db){
 		.then(function(updatedMessage){
 			socket.emit('message', updatedMessage);
 			var clone = {};
-			for (var key in updatedMessage) clone[key]= key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
+			for (var key in updatedMessage) {
+				clone[key] = key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
+			}
 			socket.broadcast.to(room.id).emit('message', clone);	
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })		
 		.finally(db.off);

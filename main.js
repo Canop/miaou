@@ -3,7 +3,7 @@ var fs = require("fs"),
 	connect = require('connect'),
 	express = require('express'),
 	passport = require('passport'),
-  	jade = require('jade'),
+	jade = require('jade'),
 	socketio = require('socket.io'),
 	util = require('util'),
 	config = require('./config.json'),
@@ -145,7 +145,7 @@ function defineAppRoutes(){
 		}
 	});
 
-	for (key in oauth2Strategies){
+	for (var key in oauth2Strategies){
 		var s = oauth2Strategies[key];
 		app.get('/auth/'+key, passport.authenticate(key, {scope:s.scope}));
 		app.get('/auth/'+key+'/callback', passport.authenticate(key, { failureRedirect: '/login' }), function(req, res) { res.redirect(url()) });		
@@ -165,7 +165,7 @@ function defineAppRoutes(){
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
 		var roomId = +req.param('id'), name = req.param('name').trim();
 		if (!/^.{2,20}$/.test(name)) {
-			return res.render('error.jade', { error: err.toString() });
+			return res.render('error.jade', { error: "invalid room name" });
 		}
 		var room = {id:roomId, name: name, private:req.param('private')||false, description:req.param('description')};
 		db.on([room, req.user])

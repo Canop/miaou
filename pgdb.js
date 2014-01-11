@@ -31,8 +31,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 		displayName = profile.displayName || profile.display_name, // displayName for google, display_name for stackexchange
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
-	var con = this,
-		resolver = Promise.defer(),
+	var con = this, resolver = Promise.defer(),
 		email = null, returnedCols = 'id, name, oauthdisplayname, email';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google
 	con.client.query('select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2', [provider, oauthid], function(err, result){
@@ -79,18 +78,17 @@ proto.storeRoom = function(r, author) {
 			" and exists(select auth from room_auth where player=$5 and room=$4 and auth>='admin')",
 			[r.name, r.private, r.description||'', r.id, author.id]
 		);
-	} else {
-		return this.queryRow(
-			'insert into room (name, private, description) values ($1, $2, $3) returning id',
-			[r.name, r.private, r.description||'']
-		).then(function(row){
-			r.id = result.rows[0].id;
-			return this.queryRow(
-				'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
-				[r.id, author.id, 'own', now]
-			);
-		});		
 	}
+	return this.queryRow(
+		'insert into room (name, private, description) values ($1, $2, $3) returning id',
+		[r.name, r.private, r.description||'']
+	).then(function(row){
+		r.id = row.id;
+		return this.queryRow(
+			'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
+			[r.id, author.id, 'own', now]
+		);
+	});		
 }
 
 // returns an existing room found by its id
@@ -247,15 +245,14 @@ proto.storeMessage = function(m){
 			'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5 returning *',
 			[m.content, m.changed, m.id, m.room, m.author]
 		);
-	} else {
-		return this.queryRow(
-			'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
-			[m.room, m.author, m.content, m.created]
-		).then(function(row){
-			m.id = row.id;
-			return m;
-		});
 	}
+	return this.queryRow(
+		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
+		[m.room, m.author, m.content, m.created]
+	).then(function(row){
+		m.id = row.id;
+		return m;
+	});
 }
 
 proto.updateGetMessage = function(messageId, expr, userId){
@@ -271,8 +268,9 @@ proto.updateGetMessage = function(messageId, expr, userId){
 proto.storePings = function(roomId, users, messageId){
 	var now = ~~(Date.now()/1000);
 	return this.queryRows(
-		"insert into ping (room, player, message, created) select "
-		+ roomId + ", id, " + messageId + ", " + now + " from player where name in (" + users.map(function(n){ return "'"+n+"'" }).join(',') + ")"
+		"insert into ping (room, player, message, created) select " +
+		roomId + ", id, " + messageId + ", " + now +
+		" from player where name in (" + users.map(function(n){ return "'"+n+"'" }).join(',') + ")"
 	);
 }
 
@@ -362,22 +360,24 @@ proto.off = function(){
 			this.done();
 			this.done = null;
 		} else {
-			 console.log('connection already released'); // no worry
-		 }
+			console.log('connection already released'); // no worry
+		}
 	} else {
 		console.log('not a connection!'); // if this happens, there's probably a leaked connection
 	}
 }
 
-// throws a NoRowError if no row was found (select) or affected (insert, select)
+// throws a NoRowError if no row was found (select) or affected (insert, delete, update)
 proto.queryRow = function(sql, args){
 	var resolver = Promise.defer();
 	this.client.query(sql, args, function(err, res){
 		//~ logQuery(sql, args);
 		if (err) {
 			resolver.reject(err);
-		} else if (res.rows.length || res.rowCount) {
+		} else if (res.rows.length) {
 			resolver.resolve(res.rows[0]);
+		} else if (res.rowCount) {
+			resolver.resolve(res.rowCount);
 		} else {
 			resolver.reject(new NoRowError());
 		}
@@ -395,8 +395,8 @@ proto.queryRows = function(sql, args){
 	return resolver.promise.bind(this);
 }
 
-for (var name in proto) {
-	if (proto.hasOwnProperty(name) && typeof proto[name] === "function") {
-		exports[name] = proto[name];
+for (var fname in proto) {
+	if (proto.hasOwnProperty(fname) && typeof proto[fname] === "function") {
+		exports[fname] = proto[fname];
 	}
 }
