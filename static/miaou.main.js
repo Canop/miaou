@@ -146,7 +146,10 @@ var miaou = miaou || {};
 		var $md = $('<div>').addClass('message').append(
 			$('<div>').addClass('user').text(message.authorname)
 		).append($content).data('message', message).attr('mid', message.id);
-		if (message.authorname===me.name) $md.addClass('me');
+		if (message.authorname===me.name) {
+			$md.addClass('me');
+			$('.error').remove();
+		}
 		$content.find('img').load(scrollToBottom);
 		if (message.changed) $md.addClass('edited');
 		if (~insertionIndex) {
@@ -265,8 +268,10 @@ var miaou = miaou || {};
 			if (vis()) clearPings();
 		}, 3*60*1000);
 		
-		socket.on('connect', function(){
+		socket.on('ready', function(){			
+			console.log('emitting enter');
 			socket.emit('enter', room.id, setEnterTime);
+			console.log('enter emitted', room.id, setEnterTime);
 		}).on('get_room', function(unhandledMessage){
 			console.log('Server asks room');
 			socket.emit('enter', room.id, setEnterTime);

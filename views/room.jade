@@ -13,25 +13,26 @@ html
 			}
 	body
 		form(method="post")
-			div.dialog
-				div.dialog_title Room Creation
-				div.dialog_content
-					div.form
-						input#id(type="hidden", name="id")
-						label.label Name
-						input#name(type="text", name="name", value=suggestedName, pattern=".{2,20}")
-						span.label Privacy
-						input#private(name="private", id="private", type="checkbox")
-						label.cblabel(for="private") private room
-						label.label Description
-							span.small Markdown allowed
-						textarea#description(name="description")
-						label.label.small Description Preview
-						div.rendered.input#roomdescription
-					p#err.error
-				div.dialog_buttons
-					input#cancel(type='button', value='Cancel')
-					input(type='submit', value='Save')#submit
+			div#centerer
+				div.dialog.centered
+					div.dialog_title Room Creation
+					div.dialog_content
+						div.form
+							input#id(type="hidden", name="id")
+							label.label Name
+							input#name(type="text", name="name", value=suggestedName, pattern=".{2,20}")
+							span.label Privacy
+							input#private(name="private", id="private", type="checkbox")
+							label.cblabel(for="private") private room
+							label.label Description
+								span.small Markdown allowed
+							textarea#description(name="description")
+							label.label.small Description Preview
+							div.rendered.input#roomdescription
+						p#err.error
+					div.dialog_buttons
+						input#cancel(type='button', value='Cancel')
+						input(type='submit', value='Save')#submit
 		
 		script.
 			var room = !{room}, error=!{error};

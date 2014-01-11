@@ -1,184 +1,158 @@
 // postgresql persistence
+// Usage :
+//   
+//  db.on(req.user)                             // returns a promise bound to the connection taken from the pool
+//  .then(db.updateUser)                        // querying functions are available on the db object and use the connection (context of the call)
+//  .then(function(user){                       // when you can't use the simple form
+//      if (!user.bot) return this.ping(uid)    // `this` is the connection
+//  }).finally(db.off);                         // releases the connection which is returned to the pool
+// 
 
 var pg = require('pg').native,
-	pool,
-	conString;
+	Promise = require("bluebird"),
+	pool;
 
-function logQuery(sql, args) { // used in debug
-	console.log(sql.replace(/\$(\d+)/g, function(_,i){ var s=args[i-1]; return typeof s==="string" ? "'"+s+"'" : s }));
-}
+Promise.longStackTraces(); // this will be removed in production in the future
 
-function Con(client, done) {
-	this.client = client;
-	this.ok = done.bind(this);
-}
-Con.prototype.nok = function(cb, err){
-	this.ok();
-	cb(err);
-}
-// returns an error if no row was found (select) or affected (insert, select)
-Con.prototype.queryRow = function(sql, args, cb){
-	var con = this;
-	con.client.query(sql, args, function(err, res){
-		if (err) con.nok(cb, err);
-		else if (res.rows.length || res.rowCount) cb(null, res.rows[0]);
-		else con.nok(cb, new Error('no row'));
-	});
-}
-Con.prototype.queryRows = function(sql, args, cb){
-	var con = this;
-	con.client.query(sql, args, function(err, res){
-		if (err) con.nok(cb, err);
-		else cb(null, res.rows)
-	});
-}
+// The connection object which is used for all postgress accesses from other files
+function Con(){}
+var proto = Con.prototype;
 
-// returns a user found by the OAuth profile, creates it if it doesn't exist
+var NoRowError = exports.NoRowError = function(){};
+NoRowError.prototype = Object.create(Error.prototype);
+
+//////////////////////////////////////////////// #users
+
+// fetches a user found by the OAuth profile, creates it if it doesn't exist
 // Private fields are included in the returned object
-Con.prototype.fetchCompleteUserFromOAuthProfile = function(profile, cb){
+proto.getCompleteUserFromOAuthProfile = function(profile){
 	//~ console.dir(profile);
 	var oauthid = profile.id || profile.user_id, // id for google, user_id for stackexchange
 		displayName = profile.displayName || profile.display_name, // displayName for google, display_name for stackexchange
 		provider = profile.provider;
-	if (!oauthid) return cb(new Error('no id found in OAuth profile'));
-	var con = this, email = null, returnedCols = 'id, name, oauthdisplayname, email';
+	if (!oauthid) throw new Error('no id found in OAuth profile');
+	var con = this, resolver = Promise.defer(),
+		email = null, returnedCols = 'id, name, oauthdisplayname, email';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google
 	con.client.query('select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2', [provider, oauthid], function(err, result){
-		if (err) return con.nok(cb, err);
-		if (result.rows.length) return cb(null, result.rows[0]);
-		con.queryRow(
-			'insert into player (oauthid, oauthprovider, email, oauthdisplayname) values ($1, $2, $3, $4) returning '+returnedCols,
-			[oauthid, provider, email, displayName], cb
-		);
+		if (err) {
+			resolver.reject(err);
+		} else if (result.rows.length) {
+			resolver.resolve(result.rows[0]);
+		} else {
+			resolver.resolve(con.queryRow(
+				'insert into player (oauthid, oauthprovider, email, oauthdisplayname) values ($1, $2, $3, $4) returning '+returnedCols,
+				[oauthid, provider, email, displayName]
+			));
+		}
 	});
+	return resolver.promise.bind(this);
 }
 
 // returns an existing user found by his id
 // Only public fields are returned
 // Private fields are included in the returned object
-Con.prototype.fetchUserById = function(id, cb){
-	this.queryRow('select id, name, oauthdisplayname, email from player where id=$1', [id], cb);
+proto.getUserById = function(id){
+	return this.queryRow('select id, name, oauthdisplayname, email from player where id=$1', [id]);
 }
 
 // right now it only updates the name, I'll enrich it if the need arises
-Con.prototype.updateUser = function(user, cb){
-	this.queryRow('update player set name=$1 where id=$2', [user.name, user.id], cb);
+proto.updateUser = function(user){
+	return this.queryRow('update player set name=$1 where id=$2', [user.name, user.id]);
+}
+
+proto.listRecentUsers = function(roomId, N){
+	return this.queryRows(
+		"select message.author as id, min(player.name) as name, max(message.created) as mc from message join player on player.id=message.author"+
+		" where message.room=$1 group by message.author order by mc desc limit $2", [roomId, N]
+	);
+}
+
+///////////////////////////////////////////// #rooms
+
+proto.storeRoom = function(r, author) {
+	var now = ~~(Date.now()/1000);
+	if (r.id) {
+		return this.queryRow(
+			"update room set name=$1, private=$2, description=$3 where id=$4"+
+			" and exists(select auth from room_auth where player=$5 and room=$4 and auth>='admin')",
+			[r.name, r.private, r.description||'', r.id, author.id]
+		);
+	}
+	return this.queryRow(
+		'insert into room (name, private, description) values ($1, $2, $3) returning id',
+		[r.name, r.private, r.description||'']
+	).then(function(row){
+		r.id = row.id;
+		return this.queryRow(
+			'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
+			[r.id, author.id, 'own', now]
+		);
+	});		
 }
 
 // returns an existing room found by its id
-Con.prototype.fetchRoom = function(id, cb){
-	this.queryRow('select id, name, description, private from room where id=$1', [id], cb);
+proto.fetchRoom = function(id){
+	return this.queryRow('select id, name, description, private from room where id=$1', [id]);
 }
 
 // returns an existing room found by its id and the user's auth level
-Con.prototype.fetchRoomAndUserAuth = function(roomId, userId, cb){
-	this.queryRow('select id, name, description, private, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId], cb);
+proto.fetchRoomAndUserAuth = function(roomId, userId){
+	if (!roomId) throw new NoRowError();
+	return this.queryRow('select id, name, description, private, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId]);
 }
 
-// gives to cb an array of all public rooms
-Con.prototype.listPublicRooms = function(cb){
-	this.queryRows('select id, name, description from room where private is not true', [], cb);
-}
-// lists the authorizations a user has
-Con.prototype.listUserAuths = function(userId, cb){
-	this.queryRows("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId], cb);
-}
-// lists the authorizations of the room
-Con.prototype.listRoomAuths = function(roomId, cb){
-	this.queryRows("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId], cb);
-}
-Con.prototype.listRecentUsers = function(roomId, N, cb){
-	this.queryRows(
-		"select message.author as id, min(player.name) as name, max(message.created) as mc from message join player on player.id=message.author"+
-		" where message.room=$1 group by message.author order by mc desc limit $2", [roomId, N], cb
-	);
+// gets an array of all public rooms
+proto.listPublicRooms = function(){
+	return this.queryRows('select id, name, description from room where private is not true', []);
 }
 
 // lists the rooms a user can access, either public or whose access was explicitely granted
-Con.prototype.listAccessibleRooms = function(userId, cb){
-	this.queryRows(
+proto.listAccessibleRooms = function(userId){
+	return this.queryRows(
 		"select id, name, description, private, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+
-		" where private is false or auth is not null order by auth desc nulls last, name", [userId], cb
+		" where private is false or auth is not null order by auth desc nulls last, name", [userId]
 	);
 }
 
-Con.prototype.insertAccessRequest = function(roomId, userId, cb){
-	var con = this;
-	con.client.query('delete from access_request where room=$1 and player=$2', [roomId, userId], function(err, result){
-		if (err) return con.nok(cb, err);
-		con.queryRow(
-			'insert into access_request (room, player, requested) values ($1, $2, $3) returning *',
-			[roomId, userId, ~~(Date.now()/1000)], cb
-		);
-	});
+///////////////////////////////////////////// #auths
+
+// lists the authorizations a user has
+proto.listUserAuths = function(userId){
+	return this.queryRows("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId]);
+}
+
+// lists the authorizations of the room
+proto.listRoomAuths = function(roomId){
+	return this.queryRows("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId]);
+}
+
+proto.deleteAccessRequests = function(roomId, userId){
+	return this.queryRows('delete from access_request where room=$1 and player=$2', [roomId, userId])
+}
+proto.insertAccessRequest = function(roomId, userId){
+	return this.queryRow(
+		'insert into access_request (room, player, requested) values ($1, $2, $3) returning *',
+		[roomId, userId, ~~(Date.now()/1000)]
+	);
 }
 
 // userId : optionnal
-Con.prototype.listOpenAccessRequests = function(roomId, userId, cb){
+proto.listOpenAccessRequests = function(roomId, userId){
 	var sql = "select player,name,requested from player p,access_request r where r.player=p.id and room=$1", args = [roomId];		
-	if (typeof userId === "function") {
-		cb = userId;
-	} else {
+	if (userId) {
 		sql += " and player=?";
 		args.push(userId);
 	}
-	this.queryRows(sql, args, cb);	
-}
-
-// returns a query object usable for streaming messages for a specific user (including his votes)
-// see calls of this function to see how the additional arguments are used 
-Con.prototype.queryMessages = function(roomId, userId, N, chronoOrder){
-	var args = [roomId, userId, N],
-		sql = 'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
-		' left join message_vote on message.id=message and message_vote.player=$2'+
-		' inner join player on author=player.id where room=$1';
-	for (var i=0, j=4; arguments[j+1]; i++) {
-		sql += ' and message.id'+arguments[j]+'$'+(j++-i);
-		args.push(arguments[j++]);
-	}
-	sql += ' order by message.id '+ ( chronoOrder ? 'asc' : 'desc') + ' limit $3';
-	return this.client.query(sql, args);
-}
-
-// returns a query with the most recent messages of the room
-// If before is provided, then we look for messages older than this (not included)
-// If until is also provided, we don't want to look farther
-Con.prototype.queryMessagesBefore = function(roomId, userId, N, before, until){
-	return this.queryMessages(roomId, userId, N, false, '<', before, '>=', until);
-}
-// returns a query with the message messageId (if found)
-//  and the following ones up to N ones and up to the one with id before
-// If before is also provided, we don't want to look farther
-Con.prototype.queryMessagesAfter = function(roomId, userId, N, messageId, before){
-	return this.queryMessages(roomId, userId, N, true, '>=', messageId, '<=', before);	
-}
-
-Con.prototype.getNotableMessages = function(roomId, createdAfter, cb){
-	this.queryRows(
-		'select message.id, author, player.name as authorname, content, created, pin, star, up, down, score from message'+
-		' inner join player on author=player.id where room=$1 and created>$2 and score>4'+
-		' order by score desc limit 12', [roomId, createdAfter], cb
-	);
-}
-
-// fetches one message. Votes of the passed user are included
-Con.prototype.getMessage = function(messageId, userId, cb){
-	this.queryRow(
-		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
-		' left join message_vote on message.id=message and message_vote.player=$2'+
-		' inner join player on author=player.id'+
-		' where message.id=$1', [messageId, userId], cb
-	);
+	return this.queryRows(sql, args);
 }
 
 // do actions on user rights
 // userId : id of the user doing the action
-Con.prototype.changeRights = function(actions, userId, room, cb){
+proto.changeRights = function(actions, userId, room){
 	var con = this, now= ~~(Date.now()/1000);
-	if (!actions.length) return cb();
-	(function doOne(err){
-		if (err) return cb(err);
-		var a = actions.pop(), sql, args;
+	return Promise.map(actions, function(a){
+		var sql, args;
 		switch (a.cmd) {
 		case "insert_auth": // we can assume there's no existing auth
 			sql = "insert into room_auth (room, player, auth, granter, granted) values ($1, $2, $3, $4, $5)";
@@ -199,84 +173,125 @@ Con.prototype.changeRights = function(actions, userId, room, cb){
 			args = [a.user, room.id, userId, room.id];
 			break;
 		}
-		con.client.query(sql, args, actions.length ? doOne : cb);
-	})();
+		return con.queryRow(sql, args);
+	});	
+}
+
+proto.checkAuthLevel = function(roomId, userId, minimalLevel){
+	return this.queryRow(
+		"select auth from room_auth where player=$1 and room=$2 and auth>=$3",
+		[userId, roomId, minimalLevel]
+	).catch(NoRowError, function(){
+		return false;
+	}).then(function(row){
+		return row.auth;
+	});
+}
+
+//////////////////////////////////////////////// #messages
+
+// returns a query object usable for streaming messages for a specific user (including his votes)
+// see calls of this function to see how the additional arguments are used 
+proto.queryMessages = function(roomId, userId, N, chronoOrder){
+	var args = [roomId, userId, N],
+		sql = 'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
+		' left join message_vote on message.id=message and message_vote.player=$2'+
+		' inner join player on author=player.id where room=$1';
+	for (var i=0, j=4; arguments[j+1]; i++) {
+		sql += ' and message.id'+arguments[j]+'$'+(j++-i);
+		args.push(arguments[j++]);
+	}
+	sql += ' order by message.id '+ ( chronoOrder ? 'asc' : 'desc') + ' limit $3';
+	return this.client.query(sql, args);
+}
+
+// returns a query with the most recent messages of the room
+// If before is provided, then we look for messages older than this (not included)
+// If until is also provided, we don't want to look farther
+proto.queryMessagesBefore = function(roomId, userId, N, before, until){
+	return this.queryMessages(roomId, userId, N, false, '<', before, '>=', until);
+}
+
+// returns a query with the message messageId (if found)
+//  and the following ones up to N ones and up to the one with id before
+// If before is also provided, we don't want to look farther
+proto.queryMessagesAfter = function(roomId, userId, N, messageId, before){
+	return this.queryMessages(roomId, userId, N, true, '>=', messageId, '<=', before);	
+}
+
+Con.prototype.getNotableMessages = function(roomId, createdAfter){
+	return this.queryRows(
+		'select message.id, author, player.name as authorname, content, created, pin, star, up, down, score from message'+
+		' inner join player on author=player.id where room=$1 and created>$2 and score>4'+
+		' order by score desc limit 12', [roomId, createdAfter]
+	);
+}
+
+// fetches one message. Votes of the passed user are included
+proto.getMessage = function(messageId, userId){
+	return this.queryRow(
+		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
+		' left join message_vote on message.id=message and message_vote.player=$2'+
+		' inner join player on author=player.id'+
+		' where message.id=$1', [messageId, userId]
+	);
 }
 
 // if id is set, updates the message if the author & room matches
 // else stores a message and sets its id
-Con.prototype.storeMessage = function(m, cb){
-	var con = this;
+proto.storeMessage = function(m){
 	if (m.id && m.changed) {
 		// TODO : check the message isn't too old for edition
-		con.client.query(
+		return this.queryRow(
 			'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5 returning *',
-			[m.content, m.changed, m.id, m.room, m.author],
-			function(err, result)
-		{
-			if (err) return con.nok(cb, err);
-			cb(null, result.rows[0])
-		});
-	} else {
-		con.client.query(
-			'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
-			[m.room, m.author, m.content, m.created],
-			function(err, result)
-		{
-			if (err) return con.nok(cb, err);
-			m.id = result.rows[0].id;
-			cb(null, m);
-		});
+			[m.content, m.changed, m.id, m.room, m.author]
+		);
 	}
-}
-
-Con.prototype.checkAuthLevel = function(roomId, userId, minimalLevel, cb){
-	var con = this;
-	con.client.query(
-		"select auth from room_auth where player=$1 and room=$2 and auth>=$3",
-		[userId, roomId, minimalLevel],
-		function(err, result)
-	{
-		if (err) return con.nok(cb, err);
-		if (result.rows.length) cb(null, result.rows[0].auth);
-		else cb(null, false);
+	return this.queryRow(
+		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
+		[m.room, m.author, m.content, m.created]
+	).then(function(row){
+		m.id = row.id;
+		return m;
 	});
 }
+
+proto.updateGetMessage = function(messageId, expr, userId){
+	return this.queryRow("update message set "+expr+" where id=$1", [messageId])
+	.then(function(){
+		return this.getMessage(messageId, userId);
+	});
+}
+
+//////////////////////////////////////////////// #pings
 
 // pings must be a sanitized array of usernames
-Con.prototype.storePings = function(roomId, users, messageId, cb){
-	var con = this, now = ~~(Date.now()/1000),
-		sql = "insert into ping (room, player, message, created) select "
-		+ roomId + ", id, " + messageId + ", " + now + " from player where name in (" + users.map(function(n){ return "'"+n+"'" }).join(',') + ")";
-	con.client.query(sql, function(err){
-		if (err) return con.nok(cb, err);
-		cb(null);
-	});
+proto.storePings = function(roomId, users, messageId){
+	var now = ~~(Date.now()/1000);
+	return this.queryRows(
+		"insert into ping (room, player, message, created) select " +
+		roomId + ", id, " + messageId + ", " + now +
+		" from player where name in (" + users.map(function(n){ return "'"+n+"'" }).join(',') + ")"
+	);
 }
 
-Con.prototype.deletePings = function(roomId, userId, cb){
-	this.queryRows("delete from ping where room=$1 and player=$2", [roomId, userId], cb);
+proto.deletePings = function(roomId, userId){
+	return this.queryRows("delete from ping where room=$1 and player=$2", [roomId, userId]);
 }
 
-Con.prototype.fetchUserPings = function(userId, cb) {
-	this.queryRows("select player, room, name, message from ping, room where player=$1 and room.id=ping.room", [userId], cb);
+proto.fetchUserPings = function(userId) {
+	return this.queryRows("select player, room, name, message from ping, room where player=$1 and room.id=ping.room", [userId]);
 }
 
 // returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
-Con.prototype.fetchUserPingRooms = function(userId, after, cb) {
-	this.queryRows("select room, max(name) as roomname, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after], cb);
+proto.fetchUserPingRooms = function(userId, after) {
+	return this.queryRows("select room, max(name) as roomname, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after]);
 }
 
-Con.prototype.updateGetMessage = function(messageId, expr, userId, cb){
-	var con = this;
-	con.client.query("update message set "+expr+" where id=$1", [messageId], function(err, res){
-		if (err) return con.nok(cb, err);
-		con.getMessage(messageId, userId, cb);
-	});
-}
+//////////////////////////////////////////////// #votes
 
-Con.prototype.addVote = function(roomId, userId, messageId, level, cb) {
-	var con = this, sql, args;
+proto.addVote = function(roomId, userId, messageId, level) {
+	var sql, args;
 	switch (level) {
 	case 'pin': case 'star': case 'up': case 'down':
 		sql = "insert into message_vote (message, player, vote) select $1, $2, $3";
@@ -284,47 +299,31 @@ Con.prototype.addVote = function(roomId, userId, messageId, level, cb) {
 		args = [messageId, userId, level, roomId];
 		break;
 	default:
-		return cb(new Error('Unknown vote level'));
+		throw new Error('Unknown vote level');
 	}
-	con.client.query(sql, args, function(err, res){
-		if (err) return con.nok(cb, err);
-		con.updateGetMessage(messageId, level+"="+level+"+1", userId, cb);
+	console.log('in addVote');
+	return this.queryRow(sql, args)
+	.then(function(){
+		return this.updateGetMessage(messageId, level+"="+level+"+1", userId);
 	});
 }
-Con.prototype.removeVote = function(roomId, userId, messageId, level, cb) {
-	var con = this;
-	con.client.query("delete from message_vote where message=$1 and player=$2 and vote=$3", [messageId, userId, level], function(err, res){
-		if (err) return con.nok(cb, err);
-		con.updateGetMessage(messageId, level+"="+level+"-1", userId, cb);
+proto.removeVote = function(roomId, userId, messageId, level) {
+	return this.queryRow("delete from message_vote where message=$1 and player=$2 and vote=$3", [messageId, userId, level])
+	.then(function(){
+		return this.updateGetMessage(messageId, level+"="+level+"-1", userId);
 	});
 }
 
-Con.prototype.storeRoom = function(r, author, cb) {
-	var con = this, now = ~~(Date.now()/1000);
-	if (r.id) {
-		this.queryRow(
-			"update room set name=$1, private=$2, description=$3 where id=$4"+
-			" and exists(select auth from room_auth where player=$5 and room=$4 and auth>='admin')",
-			[r.name, r.private, r.description||'', r.id, author.id], cb
-		);
-	} else {
-		con.client.query(
-			'insert into room (name, private, description) values ($1, $2, $3) returning id',
-			[r.name, r.private, r.description||''],
-			function(err, result)
-		{
-			if (err) return con.nok(cb, err);
-			r.id = result.rows[0].id;
-			con.queryRow(
-				'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
-				[r.id, author.id, 'own', now], cb
-			);
-		});		
-	}
+//////////////////////////////////////////////// #global API
+
+function logQuery(sql, args) { // used in debug
+	console.log(sql.replace(/\$(\d+)/g, function(_,i){ var s=args[i-1]; return typeof s==="string" ? "'"+s+"'" : s }));
 }
 
+// must be called before any call to connect
+// todo return a promise
 exports.init = function(dbConfig, cb){
-	conString = dbConfig.url;
+	var conString = dbConfig.url;
 	pg.defaults.parseInt8 = true;
 	pg.connect(conString, function(err, client, done){
 		if (err) {
@@ -337,10 +336,68 @@ exports.init = function(dbConfig, cb){
 		cb();
 	})
 }
-// cb(err, con)
-exports.con = function(cb) {
+
+// returns a promise bound to a connection, available to issue queries
+//  The connection must be released using off
+exports.on = function(val){
+	var con = new Con(), resolver = Promise.defer();
 	pool.connect(function(err, client, done){
-		if (err) cb(err);
-		else cb(null, new Con(client, done));		
+		if (err) {
+			resolver.reject(err);
+		} else {
+			con.client = client;
+			con.done = done;
+			resolver.resolve(val);
+		}
 	});
+	return resolver.promise.bind(con);
+}
+
+// releases the connection which returns to the pool
+// It's ok to call this function more than once
+proto.off = function(){
+	if (this instanceof Con) {
+		if (this.done) {
+			this.done();
+			this.done = null;
+		} else {
+			console.log('connection already released'); // no worry
+		}
+	} else {
+		console.log('not a connection!'); // if this happens, there's probably a leaked connection
+	}
+}
+
+// throws a NoRowError if no row was found (select) or affected (insert, delete, update)
+proto.queryRow = function(sql, args){
+	var resolver = Promise.defer();
+	this.client.query(sql, args, function(err, res){
+		//~ logQuery(sql, args);
+		if (err) {
+			resolver.reject(err);
+		} else if (res.rows.length) {
+			resolver.resolve(res.rows[0]);
+		} else if (res.rowCount) {
+			resolver.resolve(res.rowCount);
+		} else {
+			resolver.reject(new NoRowError());
+		}
+	});
+	return resolver.promise.bind(this);
+}
+
+proto.queryRows = function(sql, args){
+	var resolver = Promise.defer();
+	this.client.query(sql, args, function(err, res){
+		//~ logQuery(sql, args);
+		if (err) resolver.reject(err);
+		else resolver.resolve(res.rows);
+	});
+	return resolver.promise.bind(this);
+}
+
+for (var fname in proto) {
+	if (proto.hasOwnProperty(fname) && typeof proto[fname] === "function") {
+		exports[fname] = proto[fname];
+	}
 }
