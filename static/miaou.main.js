@@ -136,7 +136,7 @@ var miaou = miaou || {};
 	}
 
 	function addMessage(message){
-		var messages = getMessages(), atEnd = false, insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
+		var messages = getMessages(), insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
 		if (messages.length===0 || message.id<messages[0].id) {
 			insertionIndex = -1;
 		} else {
@@ -156,7 +156,6 @@ var miaou = miaou || {};
 				}
 				$('#messages .message').eq(insertionIndex).replaceWith($md);
 			} else {
-				if (insertionIndex==messages.length-1) atEnd = true;
 				$('#messages .message').eq(insertionIndex).after($md);				
 			}
 		} else {
@@ -171,7 +170,7 @@ var miaou = miaou || {};
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		showMessageFlowDisruptions();
 		updateOlderAndNewerLoaders();
-		if (atEnd) scrollToBottom();
+		if (message.id==$('#messages .message').last().attr('mid')) scrollToBottom();
 	}
 	
 	function updateUserList(user, keep){
