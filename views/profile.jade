@@ -19,7 +19,6 @@ html
 				div.dialog_buttons
 					button#cancel Cancel
 					button#submit Save
-					button#logout Log Out
 		
 		script.
 			//$('form')[0].action = location;
@@ -36,7 +35,3 @@ html
 				}
 			});
 			$('#cancel').click(function(){ history.back() });
-			$('#logout').click(function(){
-				delete localStorage['successfulLoginLastTime'];
-				setTimeout(function(){ location = 'logout' }, 100);
-			});
