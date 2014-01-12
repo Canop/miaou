@@ -8,7 +8,7 @@ To discuss the code an feature of Miaou, please come to [the dedicated room](htt
 
 # Technical stack
 
-As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Redis, Jade, Passport.js, jQuery, Moment.js and nginx.
+As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Bluebird, Redis, Jade, Passport.js, jQuery, sass/scss, Moment.js and nginx.
 
 ## License
 

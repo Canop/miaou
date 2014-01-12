@@ -1,7 +1,7 @@
 var miaou = miaou || {};
 (function(){
 	var NB_MESSAGES = 500,
-		MAX_AGE_FOR_EDIT = 1800, // seconds (should be coherent with server settings) 
+		MAX_AGE_FOR_EDIT = 5000, // seconds (should be coherent with server settings) 
 		DISRUPTION_THRESHOLD = 60*60, // seconds
 		nbUnseenMessages = 0, nbUnseenPings = 0,
 		users = [],
@@ -242,8 +242,8 @@ var miaou = miaou || {};
 			}, 300);
 		}
 
-		// ensures the messages and the messages around it are loaded, and then scroll to it
-		//  and flashes it
+		// ensures the messages and the messages around it are loaded,
+		//  and then scroll to it and flashes it
 		function focusMessage(messageId){
 			var $messages = $('#messages .message'), l = $messages.length,
 				beforeId = 0, afterId = 0, present = false, mids = new Array($messages.length);
@@ -325,25 +325,26 @@ var miaou = miaou || {};
 		.on('mouseenter', '.message', function(){
 			var $message = $(this), message = $message.data('message'), infos = [],
 			created = message.created+timeOffset, m = moment(created*1000);
-			if (message.author===me.id) infos.push(Date.now()/1000 - created < MAX_AGE_FOR_EDIT ? 'click to edit' : 'too old for edition');
-			else infos.push('click to reply');
+			if (message.author===me.id) {
+				if (Date.now()/1000 - created < MAX_AGE_FOR_EDIT) $('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
+				else infos.push('too old for edition');
+			} else {
+				$('<button>').addClass('replyButton').text('reply').appendTo($message.find('.user'));
+			}
 			infos.push(formatMoment(m));
 			$('<div>').addClass('messagemenu').html(
 				infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
-				'<a class=link target=_blank href="'+permalink(message)+'" title="permalink : click to open or right-click to copy">&#xe815;</a> ' + 
+				'<a class=link target=_blank href="'+permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ' + 
 				voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(checkAuth('admin')?0:1).map(function(l){
 					return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 				}).join('')
 			).appendTo(this);
 		}).on('mouseleave', '.message', function(){
-			$('.messagemenu').remove();
-		}).on('click', '.message', function(){
-			var $message = $(this), message = $message.data('message');
-			if (message.authorname===me.name) {
-				if (Date.now()/1000 - message.created < MAX_AGE_FOR_EDIT) $('#input').editMessage(message);
-			} else {
-				$('#input').replyToMessage(message);
-			}
+			$('.messagemenu, .editButton, .replyButton').remove();
+		}).on('click', '.editButton', function(){
+			$('#input').editMessage($(this).closest('.message').data('message'));
+		}).on('click', '.replyButton', function(){
+			$('#input').replyToMessage($(this).closest('.message').data('message'));
 		}).on('mouseenter', '.reply', function(e){
 			var mid = $(this).attr('to');
 			$('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');

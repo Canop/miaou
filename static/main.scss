@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'fontello';
-	src: url('fontello.woff?91738179') format('woff');
+	src: url('fontello.woff?4b0a57ed') format('woff');
 }
 $bg-color: #F0EAD6;
 body {
@@ -97,6 +97,9 @@ section {
 		width: calc(100% - 122px);
 		display:inline-block;
 	}
+	.message + .message.disrupt {
+		border-top: thin solid #ccc;
+	}
 }
 
 .message {
@@ -112,6 +115,15 @@ section {
 	}
 	&.me {
 		background-color: #fdf6e5;
+	}
+	button {
+		float: right;
+		z-index:3;
+		padding: 0 5px;
+		margin: 0 7px 0 0;
+		border-radius: 2px;
+		box-shadow: 1px 1px 2px #999;		
+		font-size: 80%;
 	}
 }
 .content {
@@ -190,9 +202,6 @@ section {
 	.content {
 		opacity: 0.8;
 	}
-}
-.message + .message.disrupt {
-	border-top: thin solid #aaa;
 }
 code {
 	font-family: monospace;

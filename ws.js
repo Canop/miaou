@@ -164,7 +164,7 @@ function handleUserInRoom(socket, completeUser, db){
 			var m = { content: content, author: publicUser.id, authorname: publicUser.name, room: room.id};
 			if (message.id) {
 				m.id = message.id;
-				m.changed = seconds;				
+				m.changed = seconds;			
 			} else {
 				m.created = seconds;				
 			}
@@ -175,12 +175,10 @@ function handleUserInRoom(socket, completeUser, db){
 					m.authorname = publicUser.name;
 					m.vote = '?';
 				}
+				io.sockets.in(room.id).emit('message', m);
 				var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
 				if (pings) return this.storePings(room.id, pings.map(function(s){ return s.slice(1) }), m.id);
 			}).finally(db.off)
-			.then(function(){
-				io.sockets.in(room.id).emit('message', m); // note : this must be called after the pings have been stored
-			});
 		}
 	}).on('vote', function(vote){
 		if (vote.level=='pin' && !(room.auth==='admin'||room.auth==='own')) return;
