@@ -114,6 +114,7 @@ section {
 		text-overflow: ellipsis;
 		overflow: hidden;
 		min-height: 18px;
+		white-space: nowrap; 
 	}
 	&.me {
 		background-color: #fdf6e5;
