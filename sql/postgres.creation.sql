@@ -28,6 +28,7 @@ CREATE TABLE message (
 	score integer NOT NULL default 0
 );
 create index message_room_created on message (room, created);
+create index message_fts on message using GIN(to_tsvector('english', content));
 create index message_score on message (score);
 CREATE OR REPLACE FUNCTION message_score() RETURNS trigger AS '
 	BEGIN

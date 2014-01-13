@@ -44,9 +44,11 @@ html
 						button.small#editroom edit
 						h2#roomname
 						div#roomdescription.rendered
-					section
-						h2 Notable Messages
-						div#notablemessages
+					div.tabs
+						span.tab.selected(page="notablemessages") Notable Messages
+						span.tab(page="search") Search
+					div.page.selected#notablemessages
+					div.page#search What Search ?
 			
 		script.
 			var me = !{user},
@@ -61,3 +63,8 @@ html
 			$('#changeroom').click(function(){ window.open('rooms') });
 			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
 			$('#me').text(me.name);
+			$('.tab').click(function(){
+				$('.tab').removeClass('selected');
+				$(this).addClass('selected');
+				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
+			})
