@@ -106,22 +106,26 @@ section {
 	padding: 3px;
 	position: relative;
 	.user {
+		position: relative;
 		width: 120px;
 		display:inline-block;
 		padding-left: 2px;
 		color: #555;
 		text-overflow: ellipsis;
 		overflow: hidden;
+		min-height: 18px;
 	}
 	&.me {
 		background-color: #fdf6e5;
 	}
 	button {
-		float: right;
-		z-index:3;
-		padding: 0 5px;
-		margin: 0 7px 0 0;
-		border-radius: 2px;
+		position: absolute;
+		z-index: 3;
+		right: 0;
+		top: 0;
+		padding: 1px 8px;
+		margin: 0 3px 0 0;
+		border-radius: 3px;
 		box-shadow: 1px 1px 2px #999;		
 		font-size: 80%;
 	}
