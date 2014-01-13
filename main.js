@@ -174,25 +174,29 @@ function defineAppRoutes(){
 			return [
 				this.listRoomAuths(room.id),
 				this.listOpenAccessRequests(room.id),
-				this.listRecentUsers(room.id, 50)
-			]
-		}).spread(function(auths, requests, recentUsers) {
-				var authorizedUsers = {}, unauthorizedUsers = [];
-				auths.forEach(function(a){
-					authorizedUsers[a.player] = true;
-				});
-				recentUsers.forEach(function(u){
-					if (!authorizedUsers[u.id]) unauthorizedUsers.push(u);
-				});
-				res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
+				this.listRecentUsers(room.id, 50),
+				room
+			];
+		}).spread(function(auths, requests, recentUsers, room) {
+			var authorizedUsers = {}, unauthorizedUsers = [];
+			auths.forEach(function(a){
+				authorizedUsers[a.player] = true;
+			});
+			recentUsers.forEach(function(u){
+				if (!authorizedUsers[u.id]) unauthorizedUsers.push(u);
+			});
+			res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
 		}).catch(db.NoRowError, function(err){
+			console.log(err);
 			res.render('error.jade', { error: "room not found" });
 		}).finally(db.off);
 	});
 	app.post('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
+		var room; // todo find more elegant than storing as a variable in this scope
 		db.on([+req.param('room'), req.user.id])
 		.spread(db.fetchRoomAndUserAuth)
-		.then(function(room){
+		.then(function(r){
+			room = r;
 			if (!checkAuthAtLeast(room.auth, 'admin')) {
 				return res.render('error.jade', { error: "Admin auth is required" });
 			}
@@ -211,7 +215,7 @@ function defineAppRoutes(){
 					else actions.push({cmd:'update_auth', user:modifiedUserId, auth:new_auth});
 				}
 			}
-			return this.changeRights(actions, req.user.id, room);
+			return this.changeRights(actions, req.user.id, r);
 		}).then(function(){
 			res.redirect(roomUrl(room));
 		}).catch(db.NoRowError, function(err){

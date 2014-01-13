@@ -52,9 +52,9 @@ html
 									td.date= r.requested
 									td
 										- var name = "answer_request_"+r.player
-										input(type="radio", name=name, id="g"+i, value="grant")
+										input(type="radio", _name=name, id="g"+i, value="grant")
 										label(for="g"+i) Grant Access
-										input(type="radio", name=name, id="d"+i, value="deny")
+										input(type="radio", _name=name, id="d"+i, value="deny")
 										label(for="d"+i) Deny Access
 					else
 						p none currently
@@ -67,7 +67,7 @@ html
 									if rol>=2
 										td.auth
 											- var name = "insert_auth_"+u.id
-											select(name=name)
+											select(_name=name)
 												option(value="admin") admin
 												option(value="write") write
 												option(value="none",selected) no access
@@ -83,7 +83,7 @@ html
 								if rol>=2 && rol>=ual
 									td.auth
 										- var name = "change_auth_"+ua.player
-										select(name=name)
+										select(_name=name)
 											if room.auth==='own'
 												option(value="own", selected=ua.auth==="own") own
 											option(value="admin", selected=ua.auth==="admin") admin
@@ -98,6 +98,7 @@ html
 		script.
 			var auths = !{JSON.stringify(auths)}, room = !{JSON.stringify(room)};
 			$('.date').text(function(_,t){ return moment(t*1000).fromNow() });
+			$('input,select').change(function(){ this.name = this.getAttribute('_name') });
 			if (!(room.auth==='own'||room.auth==='admin')) {
 				$('input,select').prop('disabled', true);
 			} else {
