@@ -406,7 +406,12 @@ var miaou = miaou || {};
 			$('#preview').html(miaou.mdToHtml(this.value));
 		});
 		
-		$('#searchInput').on('keyup', function(){
+		$('#searchInput').on('keyup', function(e){
+			if (e.which===27) {
+				$(this).val('');
+				$('#searchresults').empty();
+				return;
+			}
 			socket.emit('search', {pattern:this.value.trim()}, function(results){
 				console.log('search results:', results);
 				showMessages(results, $('#searchresults'));
