@@ -65,6 +65,20 @@ var miaou = miaou || {};
 			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
 		}).join('');
 	}
+
+	function showMessages(messages, $div) {
+		$div.empty();
+		messages.forEach(function(m){
+			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content));
+			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
+				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment((m.created+timeOffset)*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
+			).appendTo($div)
+			if ($content.height()>80) {
+				$content.addClass("closed");
+				$md.append('<div class=opener>');
+			}
+		});
+	}
 	
 	function updateNotableMessages(message){
 		var yetPresent = false, notableMessages = $('#notablemessages .message').map(function(){
@@ -76,18 +90,10 @@ var miaou = miaou || {};
 			return msg;
 		}).get();
 		if (!yetPresent && message) notableMessages.push(message);
-		$('#notablemessages').empty();
-		notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){ return b.score-a.score + (a.created-b.created)/1e7})
-		.slice(0,12).forEach(function(m){
-			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content));
-			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
-				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment((m.created+timeOffset)*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
-			).appendTo('#notablemessages')
-			if ($content.height()>80) {
-				$content.addClass("closed");
-				$md.append('<div class=opener>');
-			}
-		});
+		notableMessages = notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){
+			return b.score-a.score + (a.created-b.created)/1e7
+		}).slice(0,12)
+		showMessages(notableMessages, $('#notablemessages'));
 	}
 	
 	function updateOlderAndNewerLoaders(){
@@ -375,7 +381,7 @@ var miaou = miaou || {};
 			socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
 		});
 		
-		$('#notablemessages').on('click', '.message', function(e){
+		$('#notablemessages, #searchresults').on('click', '.message', function(e){
 			focusMessage(+$(this).attr('mid'));
 			e.stopPropagation();			
 		}).on('click', '.opener', opener).on('click', '.closer', closer);
@@ -398,6 +404,13 @@ var miaou = miaou || {};
 		});
 		$('#input').on('change keyup', function(){
 			$('#preview').html(miaou.mdToHtml(this.value));
+		});
+		
+		$('#searchInput').on('keyup', function(){
+			socket.emit('search', {pattern:this.value.trim()}, function(results){
+				console.log('search results:', results);
+				showMessages(results, $('#searchresults'));
+			});
 		});
 
 		console.log('Miaou!');

@@ -48,7 +48,9 @@ html
 						span.tab.selected(page="notablemessages") Notable Messages
 						span.tab(page="search") Search
 					div.page.selected#notablemessages
-					div.page#search What Search ?
+					div.page#search
+						input#searchInput
+						div#searchresults
 			
 		script.
 			var me = !{user},
@@ -67,4 +69,5 @@ html
 				$('.tab').removeClass('selected');
 				$(this).addClass('selected');
 				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
-			})
+			});
+			$('.tab[page="search"]').click(function(){ $('#searchInput').focus() });

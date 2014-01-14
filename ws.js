@@ -193,6 +193,13 @@ function handleUserInRoom(socket, completeUser, db){
 			socket.broadcast.to(room.id).emit('message', clone);	
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })		
 		.finally(db.off);
+	}).on('search', function(search, reply){
+		db.on([room.id, search.pattern, 'english', 20])
+		.spread(db.search)
+		.then(function(results){
+			reply(results);
+		}).finally(db.off);
+		
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		console.log(completeUser.name, "disconnected");
 		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);

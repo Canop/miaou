@@ -147,7 +147,7 @@ section {
 	max-height: 130px;
 	cursor: pointer;
 }
-#notablemessages .content img, table.list .rendered img {
+#searchresults .content img, #notablemessages .content img, table.list .rendered img {
 	max-height: 70px;
 }
 #roomdescription.rendered img {
@@ -198,7 +198,7 @@ section {
 	color: black;
 	margin: 0 4px;
 }
-#notablemessages {
+#notablemessages, #searchresults {
 	.message {
 		border-bottom: thin dotted #aaa;
 	}
@@ -207,6 +207,9 @@ section {
 	}
 	.content {
 		opacity: 0.8;
+	}
+	.closed {
+		max-height: 48px;
 	}
 }
 code {
@@ -497,9 +500,7 @@ button.small {
 #messages .closed {
 	max-height: 138px;
 }
-#notablemessages .closed {
-	max-height: 48px;
-}
+
 .opener, .closer {
 	height: 13px;
 	text-align: center;
@@ -675,4 +676,9 @@ div.MP {
 	&.selected {
 		display: block;
 	}
+}
+
+#searchInput {
+	width: calc(100% - 12px);
+	margin: 4px;
 }
