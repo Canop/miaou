@@ -26,14 +26,14 @@ NoRowError.prototype = Object.create(Error.prototype);
 // fetches a user found by the OAuth profile, creates it if it doesn't exist
 // Private fields are included in the returned object
 proto.getCompleteUserFromOAuthProfile = function(profile){
-	//~ console.dir(profile);
-	var oauthid = profile.id || profile.user_id, // id for google, user_id for stackexchange
-		displayName = profile.displayName || profile.display_name, // displayName for google, display_name for stackexchange
+	console.dir(profile);
+	var oauthid = profile.id || profile.user_id, // id for google and github, user_id for stackexchange
+		displayName = profile.displayName || profile.display_name, // displayName for google and github, display_name for stackexchange
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
 	var con = this, resolver = Promise.defer(),
 		email = null, returnedCols = 'id, name, oauthdisplayname, email';
-	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google
+	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google, github
 	con.client.query('select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2', [provider, oauthid], function(err, result){
 		if (err) {
 			resolver.reject(err);
@@ -112,6 +112,19 @@ proto.listAccessibleRooms = function(userId){
 	return this.queryRows(
 		"select id, name, description, private, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+
 		" where private is false or auth is not null order by auth desc nulls last, name", [userId]
+	);
+}
+
+// lists the rooms that should make it to the front page :
+//  public, or not too empty, or where the user has a role
+// In the future a score might be computed, involving the number of messages
+//  and the age of the last one
+proto.listFrontPageRooms = function(userId){
+	return this.queryRows(
+		"select r.id, name, description, private, auth, (select count (*) from message m where m.room = r.id) as messageCount"+
+		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  
+		//~ " where private is false or auth is not null or messageCount>10"+  // ERREUR:  la colonne « messagecount » n'existe pas
+		" order by auth desc nulls last, private desc, messageCount desc limit 100", [userId]
 	);
 }
 

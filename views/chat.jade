@@ -25,7 +25,7 @@ html
 			div.col#center
 				div.table
 					div#messagescell
-						div#messageswrapper	
+						div.messageswrapper	
 							div#messages
 					div#inputpanel
 						textarea#input
@@ -45,9 +45,10 @@ html
 						h2#roomname
 						div#roomdescription.rendered
 					div.tabs
-						span.tab.selected(page="notablemessages") Notable Messages
+						span.tab.selected(page="notablemessagespage") Notable Messages
 						span.tab(page="search") Search
-					div.page.selected#notablemessages
+					div.page.selected#notablemessagespage
+						div#notablemessages
 					div.page#search
 						input#searchInput
 						div#searchresults

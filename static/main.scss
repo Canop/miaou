@@ -74,7 +74,7 @@ section {
 	display: table-row;
 	height: 100%;
 }
-#messageswrapper {
+.messageswrapper {
 	position: relative;
 	height: 100%;
 }
@@ -114,8 +114,10 @@ section {
 		color: #555;
 		text-overflow: ellipsis;
 		overflow: hidden;
-		min-height: 18px;
 		white-space: nowrap; 
+	}
+	.content {
+		word-wrap: break-word;
 	}
 	&.me {
 		background-color: #fdf6e5;
@@ -131,9 +133,6 @@ section {
 		box-shadow: 1px 1px 2px #999;		
 		font-size: 80%;
 	}
-}
-.content {
-	word-wrap: break-word;
 }
 .message.edited .content:before {
 	font-family: "fontello";

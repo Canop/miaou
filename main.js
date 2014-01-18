@@ -117,7 +117,7 @@ function defineAppRoutes(){
 	app.get('/profile', function(req, res){
 		res.render('profile.jade', {
 			user: req.user,
-			suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname)
+			suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || '')
 		});
 	});
 	app.post('/profile', ensureAuthenticated, function(req, res){
@@ -140,7 +140,7 @@ function defineAppRoutes(){
 	};
 
 	app.get('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){
-		db.on([+req.param('id'), req.user.id])
+		db.on([+req.param('id'), +req.user.id])
 		.spread(db.fetchRoomAndUserAuth)
 		.then(function(room){
 			if (!checkAuthAtLeast(room.auth, 'admin')) {
@@ -148,7 +148,7 @@ function defineAppRoutes(){
 			}
 			res.render('room.jade', { room: JSON.stringify(room), error: "null" });
 		}).catch(db.NoRowError, function(err){
-			res.render('error.jade', { error: "room not found" });
+			res.render('room.jade', { room: "null", error: "null" });
 		}).finally(db.off);
 	});
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
@@ -167,7 +167,7 @@ function defineAppRoutes(){
 	});
 	
 	app.get('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
-		db.on([+req.param('id'), req.user.id])
+		db.on([+req.param('id'), +req.user.id])
 		.spread(db.fetchRoomAndUserAuth)
 		.then(function(room){
 			room.path = roomPath(room);
@@ -193,7 +193,7 @@ function defineAppRoutes(){
 	});
 	app.post('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		var room; // todo find more elegant than storing as a variable in this scope
-		db.on([+req.param('room'), req.user.id])
+		db.on([+req.param('room'), +req.user.id])
 		.spread(db.fetchRoomAndUserAuth)
 		.then(function(r){
 			room = r;
@@ -226,18 +226,14 @@ function defineAppRoutes(){
 	});
 
 	app.get('/rooms', ensureAuthenticated, ensureCompleteProfile, function(req, res){
-		db.on(req.user.id)
+		db.on(+req.user.id)
 		.then(function(uid){
 			return [
-				this.listAccessibleRooms(uid),
+				this.listFrontPageRooms(uid),
 				this.fetchUserPingRooms(uid, 0)
 			]
-		}).spread(function(accessibleRooms, pings){
-			var rooms = {public:[], private:[]};
-			accessibleRooms.forEach(function(r) {
-				r.path = roomPath(r);
-				rooms[r.private?'private':'public'].push(r);
-			});
+		}).spread(function(rooms, pings){
+			rooms.forEach(function(r){ r.path = roomPath(r) });
 			res.render('rooms.jade', { rooms:rooms, pings:pings });
 		}).finally(db.off);
 	});

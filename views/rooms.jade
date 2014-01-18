@@ -44,22 +44,12 @@ html
 				p None
 			div.CL
 				h2 Public Rooms
-				table.list
-					each room, i in rooms.public
-						tr
-							th: a(href=room.path) #{room.name}
-							td.rendered #{room.description}
-							if room.auth
-								td.role= room.auth
+				table.list#publicRooms
 			div.CR
-				h2(title="Those are the private room whose access has been granted to you") Accessible Private Rooms
-				table.list
-					each room, i in rooms.private
-						tr
-							th.private: a(href=room.path) #{room.name}
-							td.rendered #{room.description}
-							if room.auth
-								td.role= room.auth
+				h2(title="Those are the private rooms whose access has been granted to you") Accessible Private Rooms
+				table.list#privateAccessibleRooms
+				h2(title="Those are important private rooms. You may request an access") Main Private Rooms
+				table.list#otherPrivateRooms
 		script.
 			var loginRoom = localStorage['login.room'];
 			if (loginRoom) {
@@ -67,19 +57,30 @@ html
 				location = loginRoom;
 			}
 			delete localStorage['room'];
-			$('.rendered').html(function(_,h){ return miaou.mdToHtml(h) });
-			$('.role').attr('title', function() {
-				switch(this.innerHTML.trim()) {
+			
+			console.log(!{JSON.stringify(rooms)});
+			!{JSON.stringify(rooms)}.forEach(function(r){
+				var $tr = $('<tr>').append(
+					$('<td>').addClass(r.private?'private':'public').append($('<a>').attr('href',r.path).text(r.name))
+				).append(
+					$('<td>').addClass('rendered').html(miaou.mdToHtml(r.description))
+				);
+				var title;
+				switch(r.auth) {
 				case 'read':
-					return 'You can only read in this room';
+					title = 'You can only read in this room';
 				case 'read':
-					return 'You can read and write in this room';
+					title = 'You can read and write in this room';
 				case 'admin':
-					return "You're an administrator of this room : you can change its name and description, give or revoke writing rights, and give admin rights.";
+					title = "You're an administrator of this room : you can change its name and description, give or revoke writing rights, and give admin rights.";
 				case 'own':
-					return "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights.";
+					title = "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights.";
 				}
+				if (r.auth) $tr.append($('<td>').addClass('role').text(r.auth).attr('title', title));
+				$tr.appendTo(r.private ? (r.auth ? '#privateAccessibleRooms' : '#otherPrivateRooms') : '#publicRooms');
 			});
+			$('h2','.CL,.CR').filter(function(){ return !$(this).next('.list').find('tr').length }).hide();
+			
 			$('#logout').click(function(){
 				delete localStorage['successfulLoginLastTime'];
 				setTimeout(function(){ location = 'logout' }, 100);

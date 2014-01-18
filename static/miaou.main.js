@@ -275,9 +275,7 @@ var miaou = miaou || {};
 		}, 3*60*1000);
 		
 		socket.on('ready', function(){			
-			console.log('emitting enter');
 			socket.emit('enter', room.id, setEnterTime);
-			console.log('enter emitted', room.id, setEnterTime);
 		}).on('get_room', function(unhandledMessage){
 			console.log('Server asks room');
 			socket.emit('enter', room.id, setEnterTime);
@@ -407,15 +405,14 @@ var miaou = miaou || {};
 		});
 		
 		$('#searchInput').on('keyup', function(e){
-			if (e.which===27) {
-				$(this).val('');
-				$('#searchresults').empty();
-				return;
+			if (e.which===27) $(this).val('');
+			if (this.value.trim().length) {
+				socket.emit('search', {pattern:this.value.trim()}, function(results){
+					showMessages(results, $('#searchresults'));
+				});
+			} else {
+				$('#searchresults').empty();				
 			}
-			socket.emit('search', {pattern:this.value.trim()}, function(results){
-				console.log('search results:', results);
-				showMessages(results, $('#searchresults'));
-			});
 		});
 
 		console.log('Miaou!');
