@@ -5,15 +5,17 @@
 $bg-color: #F0EAD6;
 body {
 	background: $bg-color;
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
 	font-size: 14px;
 	margin:0;
 	padding:0;
+	&.chat {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;	
+	}
 }
 .table {
 	display: table;

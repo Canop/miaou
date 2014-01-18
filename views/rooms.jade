@@ -58,7 +58,6 @@ html
 			}
 			delete localStorage['room'];
 			
-			console.log(!{JSON.stringify(rooms)});
 			!{JSON.stringify(rooms)}.forEach(function(r){
 				var $tr = $('<tr>').append(
 					$('<td>').addClass(r.private?'private':'public').append($('<a>').attr('href',r.path).text(r.name))
