@@ -16,6 +16,11 @@ body {
 		right: 0;
 		bottom: 0;	
 	}
+	&.home {
+		a {
+			color: black;
+		}
+	}
 }
 .table {
 	display: table;
@@ -491,6 +496,53 @@ button.small {
 	box-shadow: 1px 1px 2px #999;
 }
 
+div.radios {
+	text-align: center;
+	margin: 4px;
+	span.label {
+		font-size: 90%;
+		margin-right: 4px;
+	}
+	span.radio {
+		font-size: 80%;
+		background-color: #E3DAC9;
+		padding: 2px 2px;
+		border: 1px solid #999;
+		margin: 0;
+		cursor: pointer;
+		span {
+			position: relative;
+		}
+		&.selected {
+			span {
+				transform: translate(2px, 2px);
+				left: 1px;
+				top: 1px;
+			}
+			cursor: auto;
+			box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3);
+		}	
+		border-radius: 0;
+		border-left: none;	
+		border-right: none;	
+	}
+	:not(.radio) + span.radio {
+		border-radius: 7px 0 0 7px;
+		border-left: 1px solid #999;
+		border-right: 1px solid #999;
+		padding-left: 4px;
+	}
+	.radio + .radio {
+		border-radius: 0;
+	}
+	span.radio:last-child {
+		border-radius: 0 7px 7px 0;		
+		border-left: 1px solid #999;
+		border-right: 1px solid #999;
+		padding-right: 4px;
+	}
+}
+
 :invalid {
 	border: 2px solid red;
 }
@@ -535,17 +587,16 @@ button.small {
 }
 
 .list {
-	min-width: 70%;
+	width: 100%;
 	th, td {
 		padding: 8px;
-		background: #F7F4E9;
+		background: white;
 	}
-	th {
-		border-radius: 5px 0 0 5px;
-	}
-	td:last-child {
-		border-radius: 0 5px 5px 0;
-	}
+	tr:nth-child(even) {
+		th, td {
+			background: #faf7d5;
+		}
+	} 
 	td.role {
 		width: 45px;
 	}
@@ -556,22 +607,31 @@ button.small {
 	float: right;
 	margin: 2px;
 }
-
+div#logo {
+	background: $bg-color;
+	margin: 0;
+	padding: 3px;
+}
+div#notifs {
+	background: #968881;
+	color: #c2b0a8;
+}
 div.MP {
-	width: 90%;
-	max-width: 1200px;
+	width: 70%;
+	max-width: 1000px;
+	min-width: 400px;
 	margin: auto;
 }
 
 .CL, .CR {
-	width: 49%;
+	background: $bg-color;
+	width: 50%;
 	padding: 2px;
+	display: table-cell;
 }
 .CL {
-	float: left;
 }
 .CR {
-	float: right;
 }
 
 #response {

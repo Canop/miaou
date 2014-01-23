@@ -6,6 +6,7 @@ config.json
 
 # dystroy's scripts, config & utilities
 deploy.sh
+autopgbackup.sh
 config-dys-tour.json
 config-dystroy.json
 
@@ -16,6 +17,9 @@ sql/postgres.alter.sql
 # compilation byproducts
 .sass-cache
 static/.sass-cache
+
+# compiled files
+main.css
 
 # execution byproducts
 *.log
