@@ -16,8 +16,8 @@ html
 		script(src="static/miaou.main.js")
 	body.chat.mobile
 		div.mtabs
-			div.mtab#me(page="left") nom du user
-			div.mtab#roomname(page="right") Nom de la salle
+			div.mtab#me(page="left") pre-loading...
+			div.mtab#roomname(page="right") loading...
 		div.mpages
 			div.mpage
 				section#prefs
@@ -28,12 +28,12 @@ html
 					div#users
 			div.mpage
 				section#roomButtons
-					button.small#changeroom Change Room
 					button.small#editroom Edit Room
+					button.small#changeroom Change Room
 				section#roominfo
 					div#roomdescription.rendered
 				div.tabs
-					span.tab.selected(page="notablemessagespage") Notable Messages
+					span.tab.selected(page="notablemessagespage") Notable
 					span.tab(page="search") Search
 				div.page.selected#notablemessagespage
 					div#notablemessages
@@ -42,18 +42,12 @@ html
 					div#searchresults
 						i
 							p Type anything to search it (common English words are ignored)
-							p Hit <code>esc</code> to clear
 		div#messages
 			div#undertabs
 		div#inputpanel
 			textarea#input
 			button.small#send Send
 			
-		script.
-			$('.mtab').click(function(){
-				$('.mpage').eq($(this).index()).toggle();
-			});
-		
 		script.
 			var me = !{user},
 				room = !{room};
@@ -73,6 +67,9 @@ html
 				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
 			});
 
+			$('.mtab').click(function(){
+				$('.mpage').eq($(this).index()).toggle();
+			});
 			$('#editProfile').click(function(){
 				location = 'profile';
 			});
