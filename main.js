@@ -46,6 +46,8 @@ function roomUrl(room){
 			strategyConstructor: require('passport-stackexchange').Strategy
 		}, github: {
 			strategyConstructor: require('passport-github').Strategy
+		}, reddit: {
+			strategyConstructor: require('passport-reddit').Strategy			
 		}
 	};
 	var oauthConfigs = config.oauth2;
@@ -135,7 +137,7 @@ function defineAppRoutes(){
 
 	for (var key in oauth2Strategies){
 		var s = oauth2Strategies[key];
-		app.get('/auth/'+key, passport.authenticate(key, {scope:s.scope}));
+		app.get('/auth/'+key, passport.authenticate(key, {scope:s.scope, state:'Ohio', duration:'permanent'}));
 		app.get('/auth/'+key+'/callback', passport.authenticate(key, { failureRedirect: '/login' }), function(req, res) { res.redirect(url()) });		
 	};
 
