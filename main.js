@@ -14,6 +14,7 @@ var fs = require("fs"),
 	RedisStore = require('connect-redis')(express),
 	oauth2Strategies = {},
 	sessionStore = new RedisStore({}),
+	mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i,
 	app, io, server;
 
 passport.serializeUser(function(user, done) {
@@ -94,6 +95,10 @@ function checkAuthAtLeast(auth, neededAuth) {
 	return false;
 }
 
+function mobile(req){
+	return mobileRegex.test(req.headers['user-agent']);
+}
+
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
@@ -105,7 +110,8 @@ function defineAppRoutes(){
 			if (room.private && !checkAuthAtLeast(room.auth, 'write')) {
 				return res.render('request.jade', { room:room });
 			}
-			res.render('chat.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
+			console.log(req.user.name, 'user-agent:', req.headers['user-agent']);
+			res.render(mobile(req) ? 'chat.mob.jade' : 'chat.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
 		}).catch(db.NoRowError, function(err){
 			// not an error as it happens when there's no room id in url
 			res.redirect(url('/rooms'));
@@ -236,7 +242,7 @@ function defineAppRoutes(){
 			]
 		}).spread(function(rooms, pings){
 			rooms.forEach(function(r){ r.path = roomPath(r) });
-			res.render('rooms.jade', { rooms:rooms, pings:pings });
+			res.render(mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings });
 		}).finally(db.off);
 	});
 

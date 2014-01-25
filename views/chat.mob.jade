@@ -1,0 +1,76 @@
+doctype 5
+html
+	head
+		title Miaou
+		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
+		link(rel="icon",type="image/png",href="static/M-32.png")
+		link(rel='stylesheet',href='static/main.css')
+		script(src="static/jquery-2.0.3.min.js")
+		script(src="static/socket.io.min.js")
+		script(src="static/moment.min.js")
+		script(src="static/vis.js")
+		script(src="static/miaou.dialog.js")
+		script(src="static/miaou.notify.js")
+		script(src="static/miaou.editor.js")
+		script(src="static/miaou.format.js")
+		script(src="static/miaou.main.js")
+	body.chat.mobile
+		div.mtabs
+			div.mtab#me(page="left") pre-loading...
+			div.mtab#roomname(page="right") loading...
+		div.mpages
+			div.mpage
+				section#prefs
+					button.small#editProfile Edit Profile
+				section
+					button.small#auths authorizations
+					h2 Users
+					div#users
+			div.mpage
+				section#roomButtons
+					button.small#editroom Edit Room
+					button.small#changeroom Change Room
+				section#roominfo
+					div#roomdescription.rendered
+				div.tabs
+					span.tab.selected(page="notablemessagespage") Notable
+					span.tab(page="search") Search
+				div.page.selected#notablemessagespage
+					div#notablemessages
+				div.page#search
+					input#searchInput
+					div#searchresults
+						i
+							p Type anything to search it (common English words are ignored)
+		div#messages
+			div#undertabs
+		div#inputpanel
+			textarea#input
+			button.small#send Send
+			
+		script.
+			var me = !{user},
+				room = !{room};
+			if (!room) {
+				location = 'rooms';
+			}
+			if (room.private) {
+				$('#roomname').addClass('private').attr('title', 'This room is private');
+			}
+			$('#help').click(function(){ window.open('help#Writing_Messages') });		
+			$('#changeroom').click(function(){ window.open('rooms') });
+			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
+			$('#me').text(me.name);
+			$('.tab').click(function(){
+				$('.tab').removeClass('selected');
+				$(this).addClass('selected');
+				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
+			});
+
+			$('.mtab').click(function(){
+				$('.mpage').eq($(this).index()).toggle();
+			});
+			$('#editProfile').click(function(){
+				location = 'profile';
+			});
+

@@ -205,6 +205,32 @@ var miaou = miaou || {};
 		e.stopPropagation();			
 	}
 	
+	function showMessageMenus(){
+		hideMessageMenus();
+		var $message = $(this), message = $message.data('message'), infos = [],
+		created = message.created+timeOffset, m = moment(created*1000);
+		if (message.author===me.id) {
+			if (Date.now()/1000 - created < MAX_AGE_FOR_EDIT) $('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
+			else infos.push('too old for edition');
+		} else {
+			$('<button>').addClass('replyButton').text('reply').appendTo($message.find('.user'));
+		}
+		infos.push(formatMoment(m));
+		$('<div>').addClass('messagemenu').html(
+			infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
+			'<a class=link target=_blank href="'+permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ' + 
+			voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(checkAuth('admin')?0:1).map(function(l){
+				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
+			}).join('')
+		).appendTo(this);
+	}
+	function hideMessageMenus(){
+		$('.messagemenu, .editButton, .replyButton').remove();
+	}
+	function toggleMessageMenus(){
+		($('.messagemenu, .editButton, .replyButton', this).length ? hideMessageMenus : showMessageMenus).call(this);
+	}
+	
 	$(function(){
 		var socket = io.connect(location.origin);
 
@@ -274,6 +300,7 @@ var miaou = miaou || {};
 			if (vis()) clearPings();
 		}, 3*60*1000);
 		
+		
 		socket.on('ready', function(){			
 			socket.emit('enter', room.id, setEnterTime);
 		}).on('get_room', function(unhandledMessage){
@@ -322,30 +349,12 @@ var miaou = miaou || {};
 			console.log('DISCONNECT');
 		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
 		
+		
 		$('#messages').on('click', '.message .content img', function(e){
 			window.open(this.src);
 			e.stopPropagation();
 		}).on('click', '.opener', opener).on('click', '.closer', closer)
-		.on('mouseenter', '.message', function(){
-			var $message = $(this), message = $message.data('message'), infos = [],
-			created = message.created+timeOffset, m = moment(created*1000);
-			if (message.author===me.id) {
-				if (Date.now()/1000 - created < MAX_AGE_FOR_EDIT) $('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
-				else infos.push('too old for edition');
-			} else {
-				$('<button>').addClass('replyButton').text('reply').appendTo($message.find('.user'));
-			}
-			infos.push(formatMoment(m));
-			$('<div>').addClass('messagemenu').html(
-				infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
-				'<a class=link target=_blank href="'+permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ' + 
-				voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(checkAuth('admin')?0:1).map(function(l){
-					return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
-				}).join('')
-			).appendTo(this);
-		}).on('mouseleave', '.message', function(){
-			$('.messagemenu, .editButton, .replyButton').remove();
-		}).on('click', '.editButton', function(){
+		.on('click', '.editButton', function(){
 			$('#input').editMessage($(this).closest('.message').data('message'));
 		}).on('click', '.replyButton', function(){
 			$('#input').replyToMessage($(this).closest('.message').data('message'));
@@ -378,6 +387,12 @@ var miaou = miaou || {};
 			$('.hasOlder[mid='+mid+']').removeClass('hasNewer');
 			socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
 		});
+		
+		if ($(document.body).hasClass('mobile')) {
+			$('#messages').on('click', '.message', toggleMessageMenus);
+		} else {
+			$('#messages').on('mouseenter', '.message', showMessageMenus).on('mouseleave', '.message', hideMessageMenus);
+		}
 		
 		$('#notablemessages, #searchresults').on('click', '.message', function(e){
 			focusMessage(+$(this).attr('mid'));

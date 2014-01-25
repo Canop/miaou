@@ -2,49 +2,41 @@ doctype 5
 html
 	head
 		title Miaou - Rooms
+		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="static/jquery-2.0.3.min.js")
 		script(src="static/miaou.format.js")
-	body.home
-		a(href="https://github.com/Canop/miaou",target="github")
-			img(style="position:absolute; top:0; right:0; border:0;",src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
-
+	body.home.mobile
 		div#logo
-			div.MP
-				img(src="static/Miaou-300-f.png")
-				p.links
-					a(href="room") Create a room
-					| -
-					a(href="help#About",target=help) Help
-					| -
-					a(id="logout",href="#") Log Out
+			img(src="static/Miaou-300-f.png")
+			p.links
+				a(href="room") Create a room
+				| -
+				a(href="help#About",target=help) Help
+				| -
+				a(id="logout",href="#") Log Out
 		div#notifs
-			div.MP
-				h2 Notifications
-				if pings.length==1
-					p
-						| You've been pinged in room&nbsp;
-						a(href=pings[0].room)= pings[0].roomname
-				else if pings.length
-					p You've been pinged in rooms
-					ul 
-						each ping in pings
-							li
-								a(href=ping.room)= ping.roomname
-				else
-					p None
-		div.MP
-			div.table
-				div.CL
-					h2 Public Rooms
-					table.list#publicRooms
-				div.CR
-					h2(title="Those are the private rooms whose access has been granted to you") Accessible Private Rooms
-					table.list#privateAccessibleRooms
-					h2(title="Those are important private rooms. You may request an access") Main Private Rooms
-					table.list#otherPrivateRooms
-		script.		
+			h2 Notifications
+			if pings.length==1
+				p
+					| You've been pinged in room&nbsp;
+					a(href=pings[0].room)= pings[0].roomname
+			else if pings.length
+				p You've been pinged in rooms
+				ul 
+					each ping in pings
+						li
+							a(href=ping.room)= ping.roomname
+			else
+				p None
+		h2 Accessible Private Rooms
+		table.list#privateAccessibleRooms
+		h2 Public Rooms
+		table.list#publicRooms
+		h2 Main Private Rooms
+		table.list#otherPrivateRooms
+		script.
 			var loginRoom = localStorage['login.room'];
 			if (loginRoom) {
 				delete localStorage['login.room'];

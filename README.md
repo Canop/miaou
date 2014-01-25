@@ -22,11 +22,12 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * Answers
 * Message edition
 * Permanent links
-* All links are in place (no new window, no passive extracts)
+* All message links are in place (no new window, no passive extracts)
 * Authorization levels and administration
 * OAuth2 authentication (Google, StackExchange, GitHub)
 * User names are global and unique to prevent impersonation
 * Long messages appear reduced at first
+* Mobile Touch devices optimized interface
 
 # Technical stack
 

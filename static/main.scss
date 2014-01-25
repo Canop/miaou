@@ -3,6 +3,9 @@
 	src: url('fontello.woff?4b0a57ed') format('woff');
 }
 $bg-color: #F0EAD6;
+$mtab-height: 39px;   // height of the top tabs in mobile interface
+$input-height: 80px; // height of input
+$minput-height: 50px; // height of input in mobile interface
 body {
 	background: $bg-color;
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
@@ -15,10 +18,43 @@ body {
 		left: 0;
 		right: 0;
 		bottom: 0;	
+		&.mobile {
+			background: white;
+		}
+	}
+	&.logo.mobile  {
+		font-size: 40px;
+		button {
+			font-size: 40px;
+			margin: 13px;
+		}
 	}
 	&.home {
 		a {
 			color: black;
+		}
+		#logo {
+			margin-top: 6px;
+		}
+		p.links a {
+			margin-right: 5px;
+		}
+		p.links a+a {
+			margin-left: 5px;
+		}
+		&.mobile {
+			#logo {
+				margin-top: 6px;
+				text-align: center;
+			}
+			line-height: 25px;
+			padding: 5px;
+			p.links a {
+				margin-right: 15px;
+			}
+			p.links a+a {
+				margin-left: 15px;
+			}
 		}
 	}
 }
@@ -55,9 +91,15 @@ section {
 
 #prefs {
 	padding: 4px;
+	text-align: center;
 	.pref {
 		line-height: 180%;
 	}
+	button {
+		margin-bottom: 8px;
+	}
+}
+body.mobile #prefs {
 }
 #prefs .user, #users .user {
 	cursor: pointer;
@@ -66,6 +108,10 @@ section {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
+body.mobile #users .user {
+	line-height: 30px;
+}
+
 #me {
 	position: relative;
 	text-decoration: none;
@@ -86,15 +132,8 @@ section {
 	height: 100%;
 }
 #messages {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
   	margin-top:0;
 	vertical-align: top;
-	width:100%;
-	height:100%;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	.message + .message {
@@ -107,6 +146,27 @@ section {
 	.message + .message.disrupt {
 		border-top: thin solid #ccc;
 	}
+}
+.messageswrapper #messages {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width:100%;
+	height:100%;
+}
+body.mobile #messages {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: $minput-height + 8px;
+	left: 0;
+	overflow-y: scroll;
+	margin:0; padding:0;
+}
+#undertabs {
+	height: $mtab-height;
 }
 
 .message {
@@ -156,8 +216,11 @@ section {
 #searchresults .content img, #notablemessages .content img, table.list .rendered img {
 	max-height: 70px;
 }
-#roomdescription.rendered img {
-	max-height: 250px;
+#roomdescription {
+	padding: 1px;
+	img {
+		max-height: 250px;
+	}
 }
 .messagemenu {
 	position: absolute;
@@ -186,6 +249,9 @@ section {
 		margin: 0 4px;
 		text-decoration: none;
 	}
+}
+body.mobile .messagemenu .vote {
+	margin: 0 10px; // I have fat fingers, yes
 }
 .messagevotes {
 	position: absolute;
@@ -266,16 +332,25 @@ code {
 	background: #F0EAD6;
 	display: table-row;	
 	width:100%;
-	height: 94px;
+	height: $input-height + 10px;
+}
+body.mobile #inputpanel {
+	display: block;
+	position: fixed;
+	bottom:0; left:0; right:0;
+	height: $minput-height + 10px;
 }
 $input-buttons-width: 74px;
 #input {
-	width: calc(100% - 16px - #{$input-buttons-width}); // TODO how to use $input-buttons-width here ?
-	height:80px;
-	margin-top: 4px;
+	width: calc(100% - 16px - #{$input-buttons-width}); 
+	height: $input-height;
+	margin-top: 2px;
 	margin-left: 2px;
 	resize: none; 
 	float: left;
+}
+body.mobile #input {
+	height: $minput-height;
 }
 #preview {
 	width: calc(100% - 11px - #{$input-buttons-width});
@@ -291,6 +366,14 @@ $input-buttons-width: 74px;
 	margin-top: 4px;
 	margin-right: 2px;
 	margin-bottom: -2px;
+	text-align: center;
+	padding: 0;
+}
+body.mobile #inputpanel button {
+	width: $input-buttons-width;
+	height: $minput-height + 2px;
+	margin-left: 4px;
+	margin-top: 4px;
 	text-align: center;
 	padding: 0;
 }
@@ -389,6 +472,10 @@ span.warning {
 		text-decoration: underline;
 	}
 }
+body.mobile .dialog.intro { 
+	right: 3%;
+	left: 3%;
+}
 .dialog_title {
 	margin-top: 0;
 	margin-bottom: 10px;
@@ -485,6 +572,9 @@ button {
     cursor: pointer;
     color: #333;
     transition: all 100ms ease;
+    &.small {
+		font-size: 75%;
+    }
 }
 button:hover,button:focus {
     border-color: #666;
@@ -588,6 +678,7 @@ div.radios {
 
 .list {
 	width: 100%;
+	margin-bottom: 30px;
 	th, td {
 		padding: 8px;
 		background: white;
@@ -602,10 +693,15 @@ div.radios {
 	}
 }
 
+#roomButtons {
+	text-align: center;
+}
 #changeroom, #editroom, #auths {
-	font-size: 75%;
 	float: right;
 	margin: 2px;
+}
+body.mobile #changeroom, body.mobile #editroom{
+	float: inherit;
 }
 div#logo {
 	background: $bg-color;
@@ -619,7 +715,7 @@ div#notifs {
 div.MP {
 	width: 70%;
 	max-width: 1000px;
-	min-width: 400px;
+	min-width: 800px;
 	margin: auto;
 }
 
@@ -736,6 +832,50 @@ div.MP {
 	display: none;
 	&.selected {
 		display: block;
+	}
+}
+
+.mtabs {
+	background: none;
+}
+.mtab {
+	background: rgba($bg-color, .9);
+	text-align: center;
+	height: $mtab-height;
+	line-height: $mtab-height;
+	position: fixed;
+	z-index: 3;
+	top: 0;
+	&:first-child {
+		width: 39%;
+		left: 0;
+		border-radius: 0 0 10px 0;
+	}
+	&:last-child {
+		width: 49%;
+		right: 0;
+		border-radius: 0 0 0 10px;
+	}
+}
+.mpage {
+	display: none;
+	width: 48%;
+	position: fixed;
+	z-index: 2;
+	top: 0;	
+	bottom: $minput-height + 20px;
+	overflow-y: auto;
+	padding-top: $mtab-height + 4px;
+	background: rgba($bg-color, .9);
+	&:first-child {
+		width: 39%;
+		left: 0;
+		border-radius: 0 0 10px 0;
+	}
+	&:last-child {
+		width: 49%;
+		right: 0;
+		border-radius: 0 0 0 10px;
 	}
 }
 
