@@ -100,10 +100,6 @@ function mobile(req){
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
-	app.get('/m', function(req, res){
-		res.render('chat.mob.jade');
-	});
-	
 	app.get(/^\/(\d+)?$/, ensureAuthenticated, ensureCompleteProfile, function(req, res){
 		db.on([+req.params[0], req.user.id])
 		.spread(db.fetchRoomAndUserAuth)
