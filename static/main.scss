@@ -199,6 +199,9 @@ body.mobile #messages {
 		font-size: 80%;
 	}
 }
+body.mobile .message .user {
+	width: 75px;
+}
 .message.edited .content:before {
 	font-family: "fontello";
 	content: "\e80c";
@@ -848,11 +851,43 @@ div.MP {
 		width: 39%;
 		left: 0;
 		border-radius: 0 0 10px 0;
+		&.closed:before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; left: 5px;
+			content: '▼';
+			opacity: 0.12;
+			font-size: 35px;
+		}
+		&.open:before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; left: 5px;
+			content: '▲';
+			opacity: 0.12;
+			font-size: 35px;
+		}
 	}
 	&:last-child {
-		width: 49%;
+		width: 51%;
 		right: 0;
 		border-radius: 0 0 0 10px;
+		&.closed:before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; right: 5px;
+			content: '▼';
+			opacity: 0.12;
+			font-size: 35px;
+		}
+		&.open:before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; right: 5px;
+			content: '▲';
+			opacity: 0.12;
+			font-size: 35px;
+		}
 	}
 }
 .mpage {
@@ -871,7 +906,7 @@ div.MP {
 		border-radius: 0 0 10px 0;
 	}
 	&:last-child {
-		width: 49%;
+		width: 51%;
 		right: 0;
 		border-radius: 0 0 0 10px;
 	}

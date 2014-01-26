@@ -16,8 +16,8 @@ html
 		script(src="static/miaou.main.js")
 	body.chat.mobile
 		div.mtabs
-			div.mtab#me(page="left") pre-loading...
-			div.mtab#roomname(page="right") loading...
+			div.mtab.closed#me(page="left") pre-loading...
+			div.mtab.closed#roomname(page="right") loading...
 		div.mpages
 			div.mpage
 				section#prefs
@@ -67,6 +67,7 @@ html
 			});
 
 			$('.mtab').click(function(){
+				$(this).toggleClass('open closed');
 				$('.mpage').eq($(this).index()).toggle();
 			});
 			$('#editProfile').click(function(){
