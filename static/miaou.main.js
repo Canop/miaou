@@ -51,7 +51,7 @@ var miaou = miaou || {};
 		var $messages = $('#messages'), lastMessage = $messages.find('.message').last(), pt = parseInt($messages.css('padding-top'));
 		return lastMessage.length &&lastMessage.offset().top+lastMessage.height() < $messages.offset().top+ $messages.height() + pt + 5;
 	}
-	function scrollToBottom(){
+	var scrollToBottom = miaou.scrollToBottom = function(){
 		$('#messages').scrollTop($('#messages')[0].scrollHeight)
 	}
 

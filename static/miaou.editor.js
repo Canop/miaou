@@ -1,6 +1,7 @@
 // Handles the message editor
 // fixme the $(textarea) function isn't cleanly wrapped as there are
 //   relations to "send" and "cancel edit" buttons
+// TODO don't try to wrap as a jquery plugin
 
 // replace the selected part by what is returned by cb
 $.fn.replaceSelection = function(cb){
@@ -47,6 +48,7 @@ $.fn.editFor = function(socket){
 			socket.emit('message', m);
 			$input.val('')
 			if (!$(document.body).hasClass('mobile')) $input.focus();
+			miaou.scrollToBottom();
 		}
 	}
 	
