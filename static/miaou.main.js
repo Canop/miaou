@@ -47,6 +47,10 @@ var miaou = miaou || {};
 		return new RegExp('@'+name+'(\\b|$)')
 	}
 
+	function isAtBottom(){
+		var $messages = $('#messages'), lastMessage = $messages.find('.message').last(), pt = parseInt($messages.css('padding-top'));
+		return lastMessage.length &&lastMessage.offset().top+lastMessage.height() < $messages.offset().top+ $messages.height() + pt + 5;
+	}
 	function scrollToBottom(){
 		$('#messages').scrollTop($('#messages')[0].scrollHeight)
 	}
@@ -126,7 +130,7 @@ var miaou = miaou || {};
 	}
 	
 	function showRequestAccess(ar){
-		var h;
+		var h, wab = isAtBottom();
 		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room.";
 		else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right.";
 		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>.";
@@ -138,11 +142,12 @@ var miaou = miaou || {};
 				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;				
 			}
 		}
-		scrollToBottom();
+		if (wab) scrollToBottom();
 	}
 
 	function addMessage(message){
 		var messages = getMessages(), insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
+		var wasAtBottom = isAtBottom();
 		if (messages.length===0 || message.id<messages[0].id) {
 			insertionIndex = -1;
 		} else {
@@ -156,7 +161,7 @@ var miaou = miaou || {};
 			$md.addClass('me');
 			$('.error').remove();
 		}
-		$content.find('img').load(scrollToBottom);
+		if (wasAtBottom) $content.find('img').load(scrollToBottom);
 		if (message.changed) $md.addClass('edited');
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
@@ -179,7 +184,7 @@ var miaou = miaou || {};
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		showMessageFlowDisruptions();
 		updateOlderAndNewerLoaders();
-		if (message.id==$('#messages .message').last().attr('mid')) scrollToBottom();
+		if (wasAtBottom && message.id==$('#messages .message').last().attr('mid')) scrollToBottom();
 	}
 	
 	function updateUserList(user, keep){
@@ -269,7 +274,7 @@ var miaou = miaou || {};
 				$message = $('.message', $messages).filter(function(){ return $(this).data('message').id==messageId }).addClass('goingto');
 			setTimeout(function(){
 				var mtop = $message.offset().top;
-				if (mtop<0 || mtop>$messages.height()) $('#messages').animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
+				if (mtop<0 || mtop>$messages.height()) $messages.animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
 				setTimeout(function(){ $message.removeClass('goingto'); }, 3000);
 			}, 300);
 		}
