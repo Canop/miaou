@@ -11,11 +11,14 @@ html
 		div#logo
 			img(src="static/Miaou-300-f.png")
 			p.links
+				| You're logged as
+				a.username(href="profile")= user.name
+				br
+				a(id="logout",href="#") Log Out
+				| -
 				a(href="room") Create a room
 				| -
 				a(href="help#About",target=help) Help
-				| -
-				a(id="logout",href="#") Log Out
 		div#notifs
 			h2 Notifications
 			if pings.length==1

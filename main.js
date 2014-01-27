@@ -240,7 +240,7 @@ function defineAppRoutes(){
 			]
 		}).spread(function(rooms, pings){
 			rooms.forEach(function(r){ r.path = roomPath(r) });
-			res.render(mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings });
+			res.render(mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user });
 		}).finally(db.off);
 	});
 

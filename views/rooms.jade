@@ -14,11 +14,14 @@ html
 			div.MP
 				img(src="static/Miaou-300-f.png")
 				p.links
+					| You're logged as
+					a.username(href="profile",title="edit profile")= user.name
+					| -
+					a(id="logout",href="#") Log Out
+					| -
 					a(href="room") Create a room
 					| -
 					a(href="help#About",target=help) Help
-					| -
-					a(id="logout",href="#") Log Out
 		div#notifs
 			div.MP
 				h2 Notifications

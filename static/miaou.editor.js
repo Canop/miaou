@@ -46,7 +46,7 @@ $.fn.editFor = function(socket){
 				$('#cancelEdit').hide();
 			}
 			socket.emit('message', m);
-			$input.val('')
+			$input.val('');
 			if (!$(document.body).hasClass('mobile')) $input.focus();
 			miaou.scrollToBottom();
 		}
