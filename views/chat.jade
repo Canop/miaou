@@ -7,12 +7,7 @@ html
 		script(src="static/jquery-2.0.3.min.js")
 		script(src="static/socket.io.min.js")
 		script(src="static/moment.min.js")
-		script(src="static/vis.js")
-		script(src="static/miaou.dialog.js")
-		script(src="static/miaou.notify.js")
-		script(src="static/miaou.editor.js")
-		script(src="static/miaou.format.js")
-		script(src="static/miaou.main.js")
+		script(src="static/miaou.min.js")
 	body.chat
 		div.table
 			div.col#left
@@ -75,4 +70,5 @@ html
 				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
 			});
 			$('.tab[page="search"]').click(function(){ $('#searchInput').focus() });
+			miaou.chat();
 
