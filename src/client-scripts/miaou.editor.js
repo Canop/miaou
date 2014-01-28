@@ -51,7 +51,6 @@ $.fn.editFor = function(socket){
 			socket.emit('message', m);
 			$input.val('');
 			if (!$(document.body).hasClass('mobile')) $input.focus();
-			miaou.scrollToBottom();
 		}
 	}
 	
@@ -125,7 +124,7 @@ $.fn.editFor = function(socket){
 			$input.focus();
 		}
 	});
-
+	
 	$('#cancelEdit').on('click', $.fn.cancelEdit.bind(this));
 	return $input;
 }
