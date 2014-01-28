@@ -6,8 +6,8 @@
 // replace the selected part by what is returned by cb
 /** @this {jQueryElement} */
 $.fn.replaceSelection = function(cb){
-	return this.each(function(i){		
-		var v = this.value, s = this.selectionStart, e = this.selectionEnd, scrollTop = this.scrollTop;
+	return this.each(function(){		
+		var v = this.value, s = this.selectionStart, e = this.selectionEnd;
 		var toReplace = v.slice(s,e), replacement = cb.call(this, toReplace, v, s, e);
 		this.value = v.slice(0, s) + replacement + v.slice(e);
 		this.selectionEnd = e + replacement.length - toReplace.length;
