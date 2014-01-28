@@ -265,7 +265,7 @@ miaou.chat = function(){
 			if (vis()) {
 				clearPings();
 				nbUnseenMessages = 0; nbUnseenPings = 0;
-				document.title = room ? room.name : 'no room';
+				document.title = room.name;
 			}
 		});
 		
@@ -309,7 +309,6 @@ miaou.chat = function(){
 		socket.on('ready', function(){			
 			socket.emit('enter', room.id, setEnterTime);
 		}).on('get_room', function(unhandledMessage){
-			console.log('Server asks room');
 			socket.emit('enter', room.id, setEnterTime);
 			socket.emit('message', unhandledMessage);
 		}).on('message', function(message){

@@ -4,7 +4,6 @@
 // TODO don't try to wrap as a jquery plugin
 
 // replace the selected part by what is returned by cb
-/** @this {jQueryElement} */
 $.fn.replaceSelection = function(cb){
 	return this.each(function(){		
 		var v = this.value, s = this.selectionStart, e = this.selectionEnd;
@@ -17,7 +16,6 @@ $.fn.replaceSelection = function(cb){
 }
 
 // changes the selection so that it covers entire line(s)
-/** @this {jQueryElement} */
 $.fn.selectLines = function(){
 	return this.each(function(i,s){
 		if (this.selectionStart>0 && this.value[this.selectionStart-1]!=='\n') {
@@ -34,7 +32,6 @@ $.fn.selectLines = function(){
 }
 
 // sets the textarea as an editor emitting on the provided socket
-/** @this {jQueryElement} */
 $.fn.editFor = function(socket){
 	var $input = this, input = this[0];
 
@@ -131,7 +128,6 @@ $.fn.editFor = function(socket){
 }
 
 // toggle reply to an existing message
-/** @this {jQueryElement} */
 $.fn.replyToMessage = function(message){
 	var input=this[0], txt = input.value, r = /@(\w[\w_\-\d]{2,})#(\d+)/, m = txt.match(r),
 		s = input.selectionStart, e = input.selectionEnd, l = txt.length, yetPresent = false;
@@ -150,7 +146,6 @@ $.fn.replyToMessage = function(message){
 }
 
 // toggle edition of an existing message
-/** @this {jQueryElement} */
 $.fn.editMessage = function(message){
 	if (this.data('edited-message-id')==message.id) {
 		this.cancelEdit();
@@ -163,7 +158,6 @@ $.fn.editMessage = function(message){
 	$('#cancelEdit').show();
 }
 
-/** @this {jQueryElement} */
 $.fn.cancelEdit = function(){
 	if ($('#cancelEdit').is(':visible')) {
 		this.val('');
