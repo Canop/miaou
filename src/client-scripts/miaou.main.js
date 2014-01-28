@@ -2,9 +2,8 @@ var miaou = miaou || {};
 miaou.chat = function(){
 	
 	var nbUnseenMessages = 0, nbUnseenPings = 0,
-		/** @const */ NB_MESSAGES = 500,
-		/** @const */ MAX_AGE_FOR_EDIT = 5000, // seconds (should be coherent with server settings) 
-		/** @const */ DISRUPTION_THRESHOLD = 60*60, // seconds
+		MAX_AGE_FOR_EDIT = 5000, // seconds (should be coherent with server settings) 
+		DISRUPTION_THRESHOLD = 60*60, // seconds
 		users = [],
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}],
 		timeOffset, lastReceivedPing = 0, enterTime, // both in seconds since epoch, server time
@@ -59,7 +58,7 @@ miaou.chat = function(){
 
 	function showMessageFlowDisruptions(){
 		var lastMessage;
-		$('#messages .message').removeClass('disrupt').each(function(i){
+		$('#messages .message').removeClass('disrupt').each(function(){
 			var $this = $(this), message = $this.data('message');
 			if (lastMessage && message.created-lastMessage.created > DISRUPTION_THRESHOLD) $this.addClass('disrupt')
 			lastMessage = message;
@@ -122,8 +121,7 @@ miaou.chat = function(){
 	}
 	
 	function showError(error){
-		console.log('ERROR', error);
-		var $md = $('<div>').addClass('error').append(
+		$('<div>').addClass('error').append(
 			$('<div>').addClass('user error').text("Miaou Server")
 		).append(
 			$('<div>').addClass('content').text(typeof error === "string" ? error : "an error occured - connexion might be damaged")
@@ -267,7 +265,7 @@ miaou.chat = function(){
 			if (vis()) {
 				clearPings();
 				nbUnseenMessages = 0; nbUnseenPings = 0;
-				document.title = room ? room.name : 'no room';
+				document.title = room.name;
 			}
 		});
 		
@@ -285,7 +283,7 @@ miaou.chat = function(){
 		//  and then scroll to it and flashes it
 		function focusMessage(messageId){
 			var $messages = $('#messages .message'), l = $messages.length,
-				beforeId = 0, afterId = 0, present = false, mids = new Array($messages.length);
+				beforeId = 0, afterId = 0, mids = new Array($messages.length);
 			for (var i=0; i<l; i++) {
 				mids[i] = +$messages.eq(i).attr('mid');
 				if (mids[i]===messageId) return goToMessageDiv(messageId);
@@ -311,7 +309,6 @@ miaou.chat = function(){
 		socket.on('ready', function(){			
 			socket.emit('enter', room.id, setEnterTime);
 		}).on('get_room', function(unhandledMessage){
-			console.log('Server asks room');
 			socket.emit('enter', room.id, setEnterTime);
 			socket.emit('message', unhandledMessage);
 		}).on('message', function(message){
@@ -376,18 +373,18 @@ miaou.chat = function(){
 			e.stopPropagation();			
 		}).on('click', 'a', function(e){
 			e.stopPropagation();
-		}).on('click', '.vote', function(e){
+		}).on('click', '.vote', function(){
 			var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
 			if (message.vote) socket.emit('vote', {action:'remove',  message:message.id, level:message.vote});
 			if (message.vote!=vote) socket.emit('vote', {action:'add',  message:message.id, level:vote});
 			return false;
-		}).on('click', '.olderLoader', function(e){
+		}).on('click', '.olderLoader', function(){
 			var $this = $(this), mid = +$this.data('mid'), olderPresent = 0;
 			$this.remove();
 			$('.hasOlder[mid='+mid+']').removeClass('hasOlder');
 			getMessages().forEach(function(m){ if (m.id<mid) olderPresent=m.id });
 			socket.emit('get_older', {before:mid, olderPresent:olderPresent});
-		}).on('click', '.newerLoader', function(e){
+		}).on('click', '.newerLoader', function(){
 			var $this = $(this), mid = +$this.data('mid'), newerPresent = 0;
 			$this.remove();
 			getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
