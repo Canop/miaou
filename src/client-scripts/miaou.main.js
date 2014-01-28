@@ -1,5 +1,6 @@
-var miaou = window['miaou'] = miaou || {};
+var miaou = miaou || {};
 miaou.chat = function(){
+	
 	var nbUnseenMessages = 0, nbUnseenPings = 0,
 		/** @const */ NB_MESSAGES = 500,
 		/** @const */ MAX_AGE_FOR_EDIT = 5000, // seconds (should be coherent with server settings) 
