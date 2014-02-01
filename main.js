@@ -312,7 +312,7 @@ function defineAppRoutes(){
 			case 'write': auth='writer'; break;
 			case 'admin': auth='admin'; break;
 			case 'own'  : auth='owner'; break;
-			case null: case undefined: auth='no access';
+			case null: case undefined: auth= r.private ? 'no access' : 'none';
 			}
 			return externalProfileInfos;
 		}).map(function(epi){
