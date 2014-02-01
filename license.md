@@ -11,24 +11,17 @@ All included components are free. Most of them are included with source and refe
 
 I only precise here the licenses which otherwise wouldn't be easily found.
 
+
 ### Font Awesome
 
    Copyright (C) 2012 by Dave Gandy
-   Author:    Dave Gandy
-   License:   SIL ()
-   Homepage:  http://fortawesome.github.com/Font-Awesome/
-
-
-## Font Awesome
-
-   Copyright (C) 2012 by Dave Gandy
 
    Author:    Dave Gandy
    License:   SIL ()
    Homepage:  http://fortawesome.github.com/Font-Awesome/
 
 
-## Zocial
+### Zocial
 
    Copyright (C) 2012 by Sam Collins
 
@@ -37,7 +30,7 @@ I only precise here the licenses which otherwise wouldn't be easily found.
    Homepage:  http://zocial.smcllns.com/
 
 
-## Typicons
+### Typicons
 
    (c) Stephen Hutchings 2012
 

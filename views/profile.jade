@@ -16,13 +16,34 @@ html
 						div.form
 							label.label Name
 							input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
-						p#err.error
+						section.externalProfiles
+							h2 External Profiles
+							each ep in externalProfileInfos
+								section.externalProfileForm
+									h3.sectionOpener= ep.name
+									section
+										if ep.html
+											div.externalProfile !{ep.html}
+											div.inputs
+												- var cbid = "remove_"+ep.name
+												input(type="checkbox",name=cbid,id=cbid)
+												label(for=cbid) Remove this profile
+										else
+											table
+												each field in ep.fields
+													tr
+														td
+															label= field.label+' : '
+														td
+															input(type=(field.type||'text'),name=field.name)
+						if error
+							p#err.error= error
 					div.dialog_buttons
-						button#cancel Cancel
 						button#submit Save
+						button#close Close
 		
 		script.
-			//$('form')[0].action = location;
+			var externalProfileInfos = !{JSON.stringify(externalProfileInfos)};
 			$('#name').focus().keyup(function(){
 				if (!this.validity.valid){ // not compatible with IE, that's fine 
 					$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');
@@ -35,4 +56,9 @@ html
 					$('#submit').prop('disabled', false);
 				}
 			});
-			$('#cancel').click(function(){ history.back() });
+			$('#close').click(function(){ location = 'rooms'; return false; });
+			
+			$('.sectionOpener + section').hide();
+			$('.sectionOpener').click(function(){
+				$(this).toggleClass('sectionOpener sectionCloser').next('section').toggle();
+			});

@@ -285,8 +285,6 @@ proto.updateGetMessage = function(messageId, expr, userId){
 	});
 }
 
-
-
 //////////////////////////////////////////////// #pings
 
 // pings must be a sanitized array of usernames
@@ -325,7 +323,6 @@ proto.addVote = function(roomId, userId, messageId, level) {
 	default:
 		throw new Error('Unknown vote level');
 	}
-	console.log('in addVote');
 	return this.queryRow(sql, args)
 	.then(function(){
 		return this.updateGetMessage(messageId, level+"="+level+"+1", userId);
@@ -336,6 +333,21 @@ proto.removeVote = function(roomId, userId, messageId, level) {
 	.then(function(){
 		return this.updateGetMessage(messageId, level+"="+level+"-1", userId);
 	});
+}
+
+
+//////////////////////////////////////////////// #plugin
+
+proto.storePlayerPluginInfo = function(plugin, userId, info) {
+	return this.queryRow("insert into plugin_player_info (plugin, player, info) values($1, $2, $3)", [plugin, userId, info])
+}
+
+proto.getPlayerPluginInfo = function(plugin, userId) {
+	return this.queryRow("select * from plugin_player_info where plugin=$1 and player=$2", [plugin, userId], true);
+}
+
+proto.deletePlayerPluginInfo = function(plugin, userId) {
+	return this.queryRow("delete from plugin_player_info where plugin=$1 and player=$2", [plugin, userId], true);
 }
 
 //////////////////////////////////////////////// #global API
@@ -393,7 +405,8 @@ proto.off = function(){
 }
 
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
-proto.queryRow = function(sql, args){
+//  apart if noErrorOnNoRow
+proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	this.client.query(sql, args, function(err, res){
 		//~ logQuery(sql, args);
@@ -404,7 +417,8 @@ proto.queryRow = function(sql, args){
 		} else if (res.rowCount) {
 			resolver.resolve(res.rowCount);
 		} else {
-			resolver.reject(new NoRowError());
+			if (noErrorOnNoRow) resolver.resolve(null);
+			else resolver.reject(new NoRowError());
 		}
 	});
 	return resolver.promise.bind(this);

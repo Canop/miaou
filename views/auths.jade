@@ -16,7 +16,7 @@ html
 		- rol = authLevels.indexOf(room.auth)
 		form(method="post")
 			input(type="hidden",name="room",value=room.id)
-			div.MP
+			div.MP#authspage
 				h1
 					a(href="rooms") Miaou
 					| /
@@ -47,8 +47,9 @@ html
 					if requests.length
 						table.list
 							each r, i in requests
-								tr
-									th= r.name
+								tr.userLine(data-user={id:r.player})
+									th
+										span.user= r.name
 									td.date= r.requested
 									td
 										- var name = "answer_request_"+r.player
@@ -62,8 +63,9 @@ html
 					if unauthorizedUsers.length
 						table.list
 							each u in unauthorizedUsers
-								tr
-									th= u.name
+								tr.userLine(data-user={id:u.id})
+									th
+										span.user= u.name
 									if rol>=2
 										td.auth
 											- var name = "insert_auth_"+u.id
@@ -77,8 +79,9 @@ html
 					h2 Existing Authorizations
 					table.list
 						each ua in auths
-							tr
-								th= ua.name
+							tr.userLine(data-user={id:ua.player})
+								th
+									span.user= ua.name
 								- ual = authLevels.indexOf(ua.auth)
 								if rol>=2 && rol>=ual
 									td.auth
@@ -105,3 +108,8 @@ html
 				$('input, select').change(function(){ $('#submit_bar input').prop('disabled', false) })
 				$('input[type=reset]').click(function(){ $('#submit_bar input').prop('disabled', true) });
 			}
+			$('#authspage')
+			.on('mouseenter', '.user', miaou.showUserProfile).on('mouseleave', '.profile', miaou.hideUserProfile)
+			.on('mouseleave', '.user', function(e){
+				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
+			});

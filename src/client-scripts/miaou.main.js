@@ -1,4 +1,41 @@
 var miaou = miaou || {};
+
+miaou.eventIsOver = function(event, o) {
+	if ((!o) || o==null) return false;
+	var pos = o.offset();
+	var ex = event.pageX;
+	var ey = event.pageY;
+	return (
+		ex>=pos.left
+		&& ex<=pos.left+o.width()
+		&& ey>=pos.top
+		&& ey<pos.top+o.height()
+	);
+}
+// used both in chat.jade (in #messages) and auths.jade (in #auths)
+miaou.showUserProfile = function(){
+	miaou.hideUserProfile();
+	var $user = $(this), $message = $user.closest('.message,.notification,.userLine'),
+		up = $message.position(), uh = $user.height(), uw = $user.width(),
+		$container = $('#messages,#authspage'), cs = $container.scrollTop(), ch = $container.height();
+	var $p = $('<div>').addClass('profile').text('loading profile...');
+	if (up.top<ch/2 || ch<$(window).height()*.7) $p.css('top', up.top+cs+1);
+	else $p.css('bottom', ch-cs-up.top-uh-3);
+	if ($message.hasClass('notification')) { uw += 10; }; // bidouillage...
+	$p.css('left', up.left + uw);
+	$p.appendTo($container);
+	$user.addClass('profiled');
+	var userId, data;
+	if (data = $message.data('message')) userId = data.author;
+	else userId = $message.data('user').id;
+	$p.load('publicProfile?user='+userId+'&room='+room.id);
+	return false;
+}
+miaou.hideUserProfile = function(){
+	$('.profile').remove();
+	$('.user').removeClass('profiled');
+}
+
 miaou.chat = function(){
 	
 	var nbUnseenMessages = 0, nbUnseenPings = 0,
@@ -134,7 +171,7 @@ miaou.chat = function(){
 		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room.";
 		else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right.";
 		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>.";
-		var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
+		var $md = $('<div>').html(h).addClass('notification').data('user', ar.user).appendTo('#messages');
 		$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
 		if (checkAuth('admin')) {
 			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
@@ -235,6 +272,7 @@ miaou.chat = function(){
 	function toggleMessageMenus(){
 		($('.messagemenu, .editButton, .replyButton', this).length ? hideMessageMenus : showMessageMenus).call(this);
 	}
+	
 	
 	$(function(){
 		var socket = io.connect(location.origin);
@@ -396,7 +434,12 @@ miaou.chat = function(){
 			$('#messages').on('click', '.message', toggleMessageMenus);
 			$(window).resize(scrollToBottom);
 		} else {
-			$('#messages').on('mouseenter', '.message', showMessageMenus).on('mouseleave', '.message', hideMessageMenus);
+			$('#messages')
+			.on('mouseenter', '.message', showMessageMenus).on('mouseleave', '.message', hideMessageMenus)
+			.on('mouseenter', '.user', miaou.showUserProfile).on('mouseleave', '.profile', miaou.hideUserProfile)
+			.on('mouseleave', '.user', function(e){
+				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
+			});
 		}
 		
 		$('#notablemessages, #searchresults').on('click', '.message', function(e){

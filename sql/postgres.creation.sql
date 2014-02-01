@@ -73,3 +73,10 @@ CREATE TABLE message_vote (
 	PRIMARY KEY(message, player)
 );
 create index vote_idx on message_vote (vote);
+
+CREATE TABLE plugin_player_info (
+	plugin varchar(20),
+	player integer references player(id),
+	info json NOT NULL,
+	PRIMARY KEY(plugin, player)
+);

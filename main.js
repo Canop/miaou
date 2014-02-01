@@ -10,6 +10,7 @@ var fs = require("fs"),
 	db = require('./pgdb.js'),
 	loginutil = require('./login.js'),
 	ws = require('./ws.js'),
+	plugins = (config.plugins||[]).map(require),
 	cookieParser = express.cookieParser(config.secret),
 	RedisStore = require('connect-redis')(express),
 	oauth2Strategies = {},
@@ -108,7 +109,6 @@ function defineAppRoutes(){
 			if (room.private && !checkAuthAtLeast(room.auth, 'write')) {
 				return res.render('request.jade', { room:room });
 			}
-			console.log(req.user.name, 'user-agent:', req.headers['user-agent']);
 			res.render(mobile(req) ? 'chat.mob.jade' : 'chat.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
 		}).catch(db.NoRowError, function(err){
 			// not an error as it happens when there's no room id in url
@@ -120,23 +120,63 @@ function defineAppRoutes(){
 		res.render('login.jade', { user:req.user, oauth2Strategies:oauth2Strategies });
 	});
 	
-	app.get('/profile', function(req, res){
-		res.render('profile.jade', {
-			user: req.user,
-			suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || '')
+	app.all('/profile', ensureAuthenticated, function(req, res){
+		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
+			return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
 		});
-	});
-	app.post('/profile', ensureAuthenticated, function(req, res){
-		var name = req.param('name');
-		if (loginutil.isValidUsername(name)) {
-			req.user.name = name;
-			db.on(req.user)
-			.then(db.updateUser)
-			.then(function(){ res.redirect(url()); })
-			.finally(db.off);
-		} else {
-			res.render('profile.jade', { user: req.user });
-		}
+		var error;
+		db.on(externalProfileInfos)
+		.map(function(epi){
+			return this.getPlayerPluginInfo(epi.name, req.user.id);
+		}).then(function(ppis){ // todo use map(ppi,i) to avoid iteration
+			ppis.forEach(function(ppi,i){
+				if (ppi) externalProfileInfos[i].ppi = ppi.info;
+			});
+			return externalProfileInfos;
+		}).map(function(epi){
+			if (epi.ppi) epi.html = epi.ep.render(epi.ppi);
+			if (req.method==='POST') {
+				if (epi.html) {
+					if (req.param('remove_'+epi.name)) {
+						epi.ppi = null;
+						return this.deletePlayerPluginInfo(epi.name, req.user.id);
+					}
+				} else {
+					var vals = {}, allFilled = true;
+					epi.fields.forEach(function(f){
+						if (!(vals[f.name] = req.param(f.name))) allFilled = false;
+					});
+					if (allFilled) return epi.ep.creation.create(epi.ppi||{}, vals);
+				}
+			}
+		}).map(function(ppi, i){
+			var epi = externalProfileInfos[i];
+			if (typeof ppi === 'object') { // in case of creation success
+				epi.ppi = ppi;
+				this.storePlayerPluginInfo(epi.name, req.user.id, ppi);
+				epi.html = epi.ep.render(ppi);
+			} else if (ppi===1) { // deletion
+				epi.html = null;
+			}
+		}).then(function(){
+			if (req.method==='POST') {
+				var name = req.param('name');
+				if (name!=req.user.name && loginutil.isValidUsername(name)) {
+					req.user.name = name;
+					return this.updateUser(req.user);
+				}
+			}
+		}).catch(function(err){
+			console.log('Err...', err);
+			error = err;
+		}).then(function(){
+			res.render('profile.jade', {
+				user: req.user,
+				externalProfileInfos: externalProfileInfos,
+				suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || ''),
+				error: error
+			});
+		}).finally(db.off)
 	});
 
 	for (var key in oauth2Strategies){
@@ -252,6 +292,38 @@ function defineAppRoutes(){
 
 	app.get('/help', function(req, res){
 		res.render('help.jade');
+	});
+	
+	app.get('/publicProfile', function(req,res){
+		console.log('GET ','/publicProfile');
+		var userId = +req.param('user'), roomId = +req.param('room');
+		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
+			return { name:p.name, ep:p.externalProfile }
+		});			
+		if (!userId || !roomId) return res.render('error.jade', { error: 'room and user must be provided' });
+		var user, auth;
+		db.on(userId)
+		.then(db.getUserById)
+		.then(function(u){
+			user = u;
+			return this.fetchRoomAndUserAuth(roomId, userId);
+		}).then(function(r){
+			switch(r.auth) {
+			case 'write': auth='writer'; break;
+			case 'admin': auth='admin'; break;
+			case 'own'  : auth='owner'; break;
+			case null: case undefined: auth='no access';
+			}
+			return externalProfileInfos;
+		}).map(function(epi){
+			return this.getPlayerPluginInfo(epi.name, userId);
+		}).map(function(ppi, i){
+			if (ppi) externalProfileInfos[i].html = externalProfileInfos[i].ep.render(ppi.info);
+		}).then(function(){
+			externalProfileInfos = externalProfileInfos.filter(function(epi){ return epi.html });
+			res.render('publicProfile.jade', {user:user, auth:auth, externalProfileInfos:externalProfileInfos});
+		}).catch(function(err){ res.render('error.jade', { error: err.toString }); })
+		.finally(db.off);
 	});
 }
 
