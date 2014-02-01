@@ -6,12 +6,6 @@ var Promise = require("bluebird"),
 	iconvlite = require('iconv-lite'),
 	http = require('http');
 
-var soap_profil_query_format = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>'+
-	'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:SP_WebService" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/">'+
-	'<SOAP-ENV:Body><mns:Profil xmlns:mns="uri:mhSp" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'+
-	'<numero xsi:type="xsd:string">{{mh_num}}</numero><mdp xsi:type="xsd:string">{{mh_mdpr}}</mdp>'+
-	'</mns:Profil></SOAP-ENV:Body></SOAP-ENV:Envelope>';
-
 exports.name = "MountyHall";
 
 // queries a SP ("script public")
@@ -40,29 +34,6 @@ function fetchSP(sp, num, mdpr){
 	req.end();
 	return p.promise;
 }
-
-// doesn't seem to work
-//~ function fetchMHSOAPProfile(num, mdpr){
-	//~ var p = Promise.defer(),
-		//~ query = soap_profil_query_format.replace(/{{([^}]+)}}/g, function(_,n){ return vals[n] });
-	//~ console.log('QUERY:', query);
-	//~ var req = http.request({
-		//~ hostname: "sp.mountyhall.com",
-		//~ path: "/SP_WebService.php",
-		//~ method: "POST"
-	//~ }, function(res){
-		//~ console.log('STATUS: ' + res.statusCode);
-		//~ console.log('HEADERS: ' + JSON.stringify(res.headers));
-		//~ res.on('data', function (chunk) {
-			//~ console.log('BODY: ' + chunk);
-		//~ });
-	//~ });
-	//~ req.on('error', function(e) {
-		//~ console.log('problem with request: ' + e.message);
-	//~ });
-	//~ req.write(query);
-	//~ req.end();
-//~ }
 
 // returns a promise
 // updates and provides in resolution the pluginPlayerInfos if successful, else throws an error 
