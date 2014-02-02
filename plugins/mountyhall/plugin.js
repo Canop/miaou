@@ -44,6 +44,7 @@ function createMHProfile(pluginPlayerInfos, vals) {
 			id:l[0], nom:l[1], race:l[2], blason:l[6]
 		};
 		pluginPlayerInfos.troll = troll;
+		pluginPlayerInfos.mdpr = vals.mh_mdpr;
 		return pluginPlayerInfos;
 	}).catch(function(err){
 		console.log('Error in fetching SP', err);

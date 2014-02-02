@@ -35,6 +35,9 @@ miaou.hideUserProfile = function(){
 	$('.profile').remove();
 	$('.user').removeClass('profiled');
 }
+miaou.toggleUserProfile = function(){
+	miaou[$('.profile').length ? 'hideUserProfile' : 'showUserProfile'].call(this);
+}
 
 miaou.chat = function(){
 	
@@ -431,7 +434,8 @@ miaou.chat = function(){
 		});
 		
 		if ($(document.body).hasClass('mobile')) {
-			$('#messages').on('click', '.message', toggleMessageMenus);
+			$('#messages').on('click', '.message', toggleMessageMenus)
+			.on('click', '.user,.profile', miaou.toggleUserProfile);
 			$(window).resize(scrollToBottom);
 		} else {
 			$('#messages')
