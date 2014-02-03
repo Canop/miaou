@@ -98,6 +98,11 @@ function mobile(req){
 	return mobileRegex.test(req.headers['user-agent']);
 }
 
+function renderErr(res, err, base){
+	console.log(err);
+	res.render('error.jade', { base:base||'', error: err.toString() });
+}
+
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
@@ -190,7 +195,7 @@ function defineAppRoutes(){
 		.spread(db.fetchRoomAndUserAuth)
 		.then(function(room){
 			if (!checkAuthAtLeast(room.auth, 'admin')) {
-				return res.render('error.jade', { error: "Admin level is required to manage the room" });
+				return renderErr(res, "Admin level is required to manage the room");
 			}
 			res.render('room.jade', { room: JSON.stringify(room), error: "null" });
 		}).catch(db.NoRowError, function(err){
@@ -200,7 +205,7 @@ function defineAppRoutes(){
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
 		var roomId = +req.param('id'), name = req.param('name').trim();
 		if (!/^.{2,20}$/.test(name)) {
-			return res.render('error.jade', { error: "invalid room name" });
+			return renderErr(res, "invalid room name");
 		}
 		var room = {id:roomId, name: name, private:req.param('private')||false, description:req.param('description')};
 		db.on([room, req.user])
@@ -233,8 +238,7 @@ function defineAppRoutes(){
 			});
 			res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
 		}).catch(db.NoRowError, function(err){
-			console.log(err);
-			res.render('error.jade', { error: "room not found" });
+			renderErr(res, "room not found");
 		}).finally(db.off);
 	});
 	app.post('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
@@ -244,7 +248,7 @@ function defineAppRoutes(){
 		.then(function(r){
 			room = r;
 			if (!checkAuthAtLeast(room.auth, 'admin')) {
-				return res.render('error.jade', { error: "Admin auth is required" });
+				return renderErr(res, "Admin auth is required");
 			}
 			var m, actions = [];
 			for (var key in req.body){
@@ -265,9 +269,9 @@ function defineAppRoutes(){
 		}).then(function(){
 			res.redirect(roomUrl(room));
 		}).catch(db.NoRowError, function(err){
-			res.render('error.jade', { error: "room not found" });
+			renderErr(res, "room not found");
 		}).catch(function(err){
-			res.render('error.jade', { error: err.toString() });
+			renderErr(res, err);
 		}).finally(db.off);
 	});
 
@@ -300,7 +304,7 @@ function defineAppRoutes(){
 		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
 			return { name:p.name, ep:p.externalProfile }
 		});			
-		if (!userId || !roomId) return res.render('error.jade', { error: 'room and user must be provided' });
+		if (!userId || !roomId) return renderErr(res, 'room and user must be provided');
 		var user, auth;
 		db.on(userId)
 		.then(db.getUserById)
@@ -322,9 +326,28 @@ function defineAppRoutes(){
 		}).then(function(){
 			externalProfileInfos = externalProfileInfos.filter(function(epi){ return epi.html });
 			res.render('publicProfile.jade', {user:user, auth:auth, externalProfileInfos:externalProfileInfos});
-		}).catch(function(err){ res.render('error.jade', { error: err.toString }); })
-		.finally(db.off);
+		}).catch(function(err){
+			renderErr(res, err)
+		}).finally(db.off);
 	});
+	
+	app.get(/^\/user\/(\d+)$/, function(req,res){
+		db.on(+req.params[0])
+		.then(function(uid){
+			return [
+				this.getUserById(uid),
+				this.listRecentUserRooms(uid)
+			]
+		}).spread(function(user, rooms){
+			rooms.forEach(function(r){ r.path = roomPath(r) });
+			res.render('user.jade', {user:user, rooms:rooms});
+		}).catch(db.NoRowError, function(err){
+			renderErr(res, "User not found", '../');
+		}).catch(function(err){
+			renderErr(res, err, '../');
+		}).finally(db.off);
+	})
+
 }
 
 // starts the whole server, both regular http and websocket
