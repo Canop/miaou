@@ -111,6 +111,7 @@ miaou.chat = function(){
 		}).join('');
 	}
 
+	// used for notable messages and search results
 	function showMessages(messages, $div) {
 		$div.empty();
 		messages.forEach(function(m){
@@ -194,9 +195,9 @@ miaou.chat = function(){
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
 		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true));
-		var $md = $('<div>').addClass('message').append(
-			$('<div>').addClass('user').text(message.authorname)
-		).append($content).data('message', message).attr('mid', message.id);
+		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
+			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
+			$content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true)).appendTo($md);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -220,6 +221,7 @@ miaou.chat = function(){
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
 		}
+		$user.css('height', $content.height()+'px');
 		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		showMessageFlowDisruptions();
