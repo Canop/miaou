@@ -194,7 +194,6 @@ miaou.chat = function(){
 		} else {
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
-		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true));
 		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
 			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
 			$content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true)).appendTo($md);
