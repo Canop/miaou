@@ -94,7 +94,7 @@ miaou.chat = function(){
 	}
 	var scrollToBottom = function(){
 		setTimeout(function(){ // because it doesn't always work on Firefox without this 
-			$('#messages').scrollTop($('#messages')[0].scrollHeight)
+			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight)
 		},10);
 	}
 
@@ -322,7 +322,7 @@ miaou.chat = function(){
 		});
 		
 		function goToMessageDiv(messageId){
-			var $messages = $('#messages'),
+			var $messages = $('#messagescroller'),
 				$message = $('.message', $messages).filter(function(){ return $(this).data('message').id==messageId }).addClass('goingto');
 			setTimeout(function(){
 				var mtop = $message.offset().top;
@@ -470,7 +470,7 @@ miaou.chat = function(){
 		$('#showPreview').click(function(){
 			$(this).hide();
 			$('#input').focus();
-			$('#previewpanel').css('display','table-row');
+			$('#previewpanel').show();
 			scrollToBottom();
 		});
 		$('#hidePreview').click(function(){

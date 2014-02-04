@@ -6,6 +6,8 @@ $bg-color: #F0EAD6;
 $mtab-height: 39px;   // height of the top tabs in mobile interface
 $input-height: 80px; // height of input
 $minput-height: 50px; // height of input in mobile interface
+$left-panel-width: 150px;
+$right-panel-width: 320px;
 body {
 	background: $bg-color;
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
@@ -63,6 +65,35 @@ body {
 		}
 	}
 }
+#left, #right, #center {
+	position: fixed;
+	overflow-x: hidden;
+}
+#left {
+	top:0; left:0; bottom:0;
+	width: $left-panel-width;
+	overflow-y: auto;
+}
+#right {
+	top:0; right:0; bottom:0;
+	width: $right-panel-width;
+	overflow-y: auto;
+}
+#center {
+	display:flex;
+	flex-direction: column;
+	top:0;
+	left: $left-panel-width;
+	right: $right-panel-width;
+	bottom: 0;
+	background: white;
+}
+#messagescroller {
+	width: 100%;
+	overflow-y: scroll;
+	flex-grow: 1;
+	flex-basis: 0;
+}
 .table {
 	display: table;
 	width:100%;
@@ -71,27 +102,6 @@ body {
 }
 section {
 	margin: 0 0 8px 0;
-}
-.col {
-	display: table-cell;
-	height:100%;
-	padding: 0;
-	vertical-align: top;
-}
-.colcontainer {
-	width:100%;
-	height:100%;
-	overflow-y: auto;
-	overflow-x: hidden;
-}
-#left {
-	width: 150px;
-}
-#right {
-	width: 320px;
-}
-#center {
-	background: white;
 }
 
 #prefs {
@@ -128,19 +138,10 @@ body.mobile #users .user {
 	background: #FFFAE6;
 }
 
-#messagescell {
-	display: table-row;
-	height: 100%;
-}
-.messageswrapper {
-	position: relative;
-	height: 100%;
-}
 #messages {
   	margin-top:0;
 	vertical-align: top;
-	overflow-y: scroll;
-	overflow-x: hidden;
+	position: relative;
 	.message + .message {
 		border-top: thin dotted #ddd;
 	}
@@ -173,16 +174,8 @@ body.mobile #users .user {
 	box-shadow: 2px 2px 2px #999;
 	background: #fffcc5;
 }
-.messageswrapper #messages {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	width:100%;
-	height:100%;
-}
-body.mobile #messages {
+
+body.mobile #messagescroller {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -371,9 +364,9 @@ code {
 }
 #inputpanel {
 	background: #F0EAD6;
-	display: table-row;	
 	width:100%;
-	height: $input-height + 10px;
+	flex-basis:  $input-height + 10px;
+	flex-grow: 0;
 }
 body.mobile #inputpanel {
 	display: block;
@@ -395,7 +388,7 @@ body.mobile #input {
 }
 #preview {
 	width: calc(100% - 11px - #{$input-buttons-width});
-	height: calc(100% - 5px);
+	height: $input-height;
 	float: left;
 	word-wrap: break-word;
 	background: white;
@@ -420,9 +413,9 @@ body.mobile #inputpanel button {
 }
 #previewpanel {
 	background: #F0EAD6;
-	display: table-row;	
 	width:100%;
-	height: 94px;
+	height: $input-height + 8px;
+	flex-grow: 0;
 	display: none;
 }
 h1 {
