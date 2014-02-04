@@ -220,7 +220,7 @@ miaou.chat = function(){
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
 		}
-		$user.css('height', $content.height()+'px');
+		$user.height($content.height());
 		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		showMessageFlowDisruptions();
