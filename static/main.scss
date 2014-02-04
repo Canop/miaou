@@ -144,10 +144,6 @@ body.mobile #users .user {
 	.message + .message {
 		border-top: thin dotted #ddd;
 	}
-	.content {
-		width: calc(100% - 122px);
-		display:inline-block;
-	}
 	.message + .message.disrupt {
 		border-top: thin solid #ccc;
 	}
@@ -199,20 +195,27 @@ body.mobile #messages {
 
 .message {
 	position: relative;
-	min-height: 15px;
-	.user {
+    align-items: center;
+    align-content: center;
+    .user {
 		position: relative;
+		align-items: center;
+		align-content: center;
 		width: 120px;
-		display:inline-block;
 		padding: 1px;
 		color: #555;
 		text-overflow: ellipsis;
 		overflow: hidden;
-		white-space: nowrap; 
-		
+		white-space: nowrap;
+		z-index: 2;
 	}
 	.content {
 		word-wrap: break-word;
+		overflow-y: hidden;
+		line-height: 19px;
+		&.closed {
+			max-height: 120px;
+		}
 	}
 	&.me {
 		background-color: #fdf6e5;
@@ -220,13 +223,20 @@ body.mobile #messages {
 	button {
 		position: absolute;
 		z-index: 3;
-		right: 0;
-		top: 0;
-		padding: 1px 8px;
+		right: 25px;
+		top: calc(50% - 9px);
+		text-align:center;
+		padding: 0 8px;
 		margin: 0 3px 0 0;
 		border-radius: 3px;
 		box-shadow: 1px 1px 2px #999;		
 		font-size: 80%;
+	}
+}
+#messages .message {
+	display: flex;
+	.content {
+		width: calc(100% - 122px);
 	}
 }
 body.mobile .message .user {
@@ -286,7 +296,7 @@ body.mobile .messagemenu .vote {
 }
 .messagevotes {
 	position: absolute;
-	top: 14px;
+	top: 9px;
 	right: 1px;
 	color: black;
 	opacity: 0.6;
@@ -675,17 +685,24 @@ div.radios {
 .closed {
 	overflow: hidden;
 }
-#messages .closed {
-	max-height: 138px;
-}
 
 .opener, .closer {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
 	height: 13px;
 	text-align: center;
 	cursor: pointer;
 	color: #988;
 	&:hover {
 		color: black;
+	}
+}
+#messages .opener {
+	background: rgba(255,255,255,0.3);
+	&:hover {
+		background: rgba(255,255,255,0.6);
 	}
 }
 .opener::before {

@@ -29,7 +29,7 @@ miaou.showUserProfile = function(){
 	if (data = $message.data('message')) userId = data.author;
 	else userId = $message.data('user').id;
 	$p.load('publicProfile?user='+userId+'&room='+room.id);
-	return false;
+	//~ return false;
 }
 miaou.hideUserProfile = function(){
 	$('.profile').remove();
@@ -93,7 +93,9 @@ miaou.chat = function(){
 		return lastMessage.length &&lastMessage.offset().top+lastMessage.height() < $messages.offset().top+ $messages.height() + pt + 5;
 	}
 	var scrollToBottom = function(){
-		$('#messages').scrollTop($('#messages')[0].scrollHeight)
+		setTimeout(function(){ // because it doesn't always work on Firefox without this 
+			$('#messages').scrollTop($('#messages')[0].scrollHeight)
+		},10);
 	}
 
 	function showMessageFlowDisruptions(){
@@ -201,7 +203,6 @@ miaou.chat = function(){
 			$md.addClass('me');
 			$('.error').remove();
 		}
-		if (wasAtBottom) $content.find('img').load(scrollToBottom);
 		if (message.changed) $md.addClass('edited');
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
@@ -215,12 +216,21 @@ miaou.chat = function(){
 		} else {
 			$md.prependTo('#messages');
 		}
-		addToUserList({id: message.author, name: message.authorname});
-		if ($content.height()>150) {
-			$content.addClass("closed");
-			$md.append('<div class=opener>');
+		var resize = function(){
+			var h = $content.height();
+			if ($content.height()>138) {
+				$md.find('.opener').remove();
+				$content.addClass("closed");
+				h = $content.height()
+				$md.append('<div class=opener>');
+			}
+			$user.height(h).css('line-height',h+'px');
+			if (wasAtBottom) scrollToBottom();
 		}
-		$user.height($content.height());
+		resize();
+		$content.find('img').load(resize);
+		addToUserList({id: message.author, name: message.authorname});
+		
 		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		showMessageFlowDisruptions();
