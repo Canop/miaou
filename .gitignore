@@ -10,9 +10,11 @@ autopgbackup.sh
 config-dys-tour.json
 config-dystroy.json
 
-# personal notes
+# personal notes & work files
 notes.dev
 sql/postgres.alter.sql
+trav
+graphics/*.png
 
 # compilation byproducts
 .sass-cache
@@ -20,6 +22,8 @@ static/.sass-cache
 
 # compiled files
 main.css
+miaou.concat.js
+miaou.min.js
 
 # execution byproducts
 *.log
