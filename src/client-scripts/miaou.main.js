@@ -12,15 +12,16 @@ miaou.eventIsOver = function(event, o) {
 		&& ey<pos.top+o.height()
 	);
 }
-// used both in chat.jade (in #messages) and auths.jade (in #auths)
+// used in chat.jade, chat.mob.jade and auths.jade
 miaou.showUserProfile = function(){
 	miaou.hideUserProfile();
 	var $user = $(this), $message = $user.closest('.message,.notification,.userLine'),
 		up = $message.position(), uh = $user.height(), uw = $user.width(),
-		$container = $('#messages,#authspage'), cs = $container.scrollTop(), ch = $container.height();
+		$scroller = $('#messagescroller,#authspage'), ss = $scroller.scrollTop(), sh = $scroller.height(),
+		$container = $('#messages,#authspage'), ch = $container.height();
 	var $p = $('<div>').addClass('profile').text('loading profile...');
-	if (up.top<ch/2 || ch<$(window).height()*.7) $p.css('top', up.top+cs+1);
-	else $p.css('bottom', ch-cs-up.top-uh-3);
+	if (up.top-ss<sh/2) $p.css('top', up.top+1);
+	else $p.css('bottom', ch-up.top-uh-3);
 	if ($message.hasClass('notification')) { uw += 10; }; // bidouillage...
 	$p.css('left', up.left + uw);
 	$p.appendTo($container);
@@ -29,7 +30,6 @@ miaou.showUserProfile = function(){
 	if (data = $message.data('message')) userId = data.author;
 	else userId = $message.data('user').id;
 	$p.load('publicProfile?user='+userId+'&room='+room.id);
-	//~ return false;
 }
 miaou.hideUserProfile = function(){
 	$('.profile').remove();
