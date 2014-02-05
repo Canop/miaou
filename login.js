@@ -1,6 +1,5 @@
 // helpers for profile/login functions
 
-// Array.apply(0,Array(255)).map(function(_,i) { return String.fromCharCode(i) }).join('').replace(/[^\w\-_\d]/g,'')
 var validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
 
 // from https://github.com/backbone-paginator/backbone.paginator/blob/master/plugins/diacritic.js
