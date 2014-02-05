@@ -151,7 +151,7 @@ function defineAppRoutes(){
 					epi.fields.forEach(function(f){
 						if (!(vals[f.name] = req.param(f.name))) allFilled = false;
 					});
-					if (allFilled) return epi.ep.creation.create(epi.ppi||{}, vals);
+					if (allFilled) return epi.ep.creation.create(req.user, epi.ppi||{}, vals);
 				}
 			}
 		}).map(function(ppi, i){
@@ -175,6 +175,9 @@ function defineAppRoutes(){
 			console.log('Err...', err);
 			error = err;
 		}).then(function(){
+			externalProfileInfos.forEach(function(epi){
+				if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
+			});
 			res.render('profile.jade', {
 				user: req.user,
 				externalProfileInfos: externalProfileInfos,

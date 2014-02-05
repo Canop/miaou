@@ -37,7 +37,7 @@ function fetchSP(sp, num, mdpr){
 
 // returns a promise
 // updates and provides in resolution the pluginPlayerInfos if successful, else throws an error 
-function createMHProfile(pluginPlayerInfos, vals) {
+function createMHProfile(user, pluginPlayerInfos, vals) {
 	return fetchSP('ProfilPublic2', vals.mh_num, vals.mh_mdpr)
 	.then(function(lines){
 		var l = lines[0], troll = {
@@ -69,7 +69,6 @@ function renderMHProfile(ppi) {
 
 exports.externalProfile = {
 	creation: {
-		description: "",
 		fields: [
 			{ name:'mh_num', label:'Numéro', type:'Number' },
 			{ name:'mh_mdpr', label:'Mot de passe restreint'}
