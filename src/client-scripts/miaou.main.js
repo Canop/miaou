@@ -12,15 +12,16 @@ miaou.eventIsOver = function(event, o) {
 		&& ey<pos.top+o.height()
 	);
 }
-// used both in chat.jade (in #messages) and auths.jade (in #auths)
+// used in chat.jade, chat.mob.jade and auths.jade
 miaou.showUserProfile = function(){
 	miaou.hideUserProfile();
 	var $user = $(this), $message = $user.closest('.message,.notification,.userLine'),
 		up = $message.position(), uh = $user.height(), uw = $user.width(),
-		$container = $('#messages,#authspage'), cs = $container.scrollTop(), ch = $container.height();
+		$scroller = $('#messagescroller,#authspage'), ss = $scroller.scrollTop(), sh = $scroller.height(),
+		$container = $('#messages,#authspage'), ch = $container.height();
 	var $p = $('<div>').addClass('profile').text('loading profile...');
-	if (up.top<ch/2 || ch<$(window).height()*.7) $p.css('top', up.top+cs+1);
-	else $p.css('bottom', ch-cs-up.top-uh-3);
+	if (up.top-ss<sh/2) $p.css('top', up.top+1);
+	else $p.css('bottom', ch-up.top-uh-3);
 	if ($message.hasClass('notification')) { uw += 10; }; // bidouillage...
 	$p.css('left', up.left + uw);
 	$p.appendTo($container);
@@ -29,7 +30,6 @@ miaou.showUserProfile = function(){
 	if (data = $message.data('message')) userId = data.author;
 	else userId = $message.data('user').id;
 	$p.load('publicProfile?user='+userId+'&room='+room.id);
-	return false;
 }
 miaou.hideUserProfile = function(){
 	$('.profile').remove();
@@ -93,7 +93,9 @@ miaou.chat = function(){
 		return lastMessage.length &&lastMessage.offset().top+lastMessage.height() < $messages.offset().top+ $messages.height() + pt + 5;
 	}
 	var scrollToBottom = function(){
-		$('#messages').scrollTop($('#messages')[0].scrollHeight)
+		setTimeout(function(){ // because it doesn't always work on Firefox without this 
+			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight)
+		},10);
 	}
 
 	function showMessageFlowDisruptions(){
@@ -194,7 +196,6 @@ miaou.chat = function(){
 		} else {
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
-		var $content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true));
 		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
 			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
 			$content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true)).appendTo($md);
@@ -202,7 +203,6 @@ miaou.chat = function(){
 			$md.addClass('me');
 			$('.error').remove();
 		}
-		if (wasAtBottom) $content.find('img').load(scrollToBottom);
 		if (message.changed) $md.addClass('edited');
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
@@ -216,12 +216,21 @@ miaou.chat = function(){
 		} else {
 			$md.prependTo('#messages');
 		}
-		addToUserList({id: message.author, name: message.authorname});
-		if ($content.height()>150) {
-			$content.addClass("closed");
-			$md.append('<div class=opener>');
+		var resize = function(){
+			var h = $content.height();
+			if ($content.height()>138) {
+				$md.find('.opener').remove();
+				$content.addClass("closed");
+				h = $content.height()
+				$md.append('<div class=opener>');
+			}
+			$user.height(h).css('line-height',h+'px');
+			if (wasAtBottom) scrollToBottom();
 		}
-		$user.css('height', $content.height()+'px');
+		resize();
+		$content.find('img').load(resize);
+		addToUserList({id: message.author, name: message.authorname});
+		
 		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		showMessageFlowDisruptions();
@@ -313,7 +322,7 @@ miaou.chat = function(){
 		});
 		
 		function goToMessageDiv(messageId){
-			var $messages = $('#messages'),
+			var $messages = $('#messagescroller'),
 				$message = $('.message', $messages).filter(function(){ return $(this).data('message').id==messageId }).addClass('goingto');
 			setTimeout(function(){
 				var mtop = $message.offset().top;
@@ -461,7 +470,7 @@ miaou.chat = function(){
 		$('#showPreview').click(function(){
 			$(this).hide();
 			$('#input').focus();
-			$('#previewpanel').css('display','table-row');
+			$('#previewpanel').show();
 			scrollToBottom();
 		});
 		$('#hidePreview').click(function(){
