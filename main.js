@@ -339,7 +339,7 @@ function defineAppRoutes(){
 				this.listRecentUserRooms(uid)
 			]
 		}).spread(function(user, rooms){
-			rooms.forEach(function(r){ r.path = roomPath(r) });
+			rooms.forEach(function(r){ r.path = '../'+roomPath(r) });
 			res.render('user.jade', {user:user, rooms:rooms});
 		}).catch(db.NoRowError, function(err){
 			renderErr(res, "User not found", '../');
