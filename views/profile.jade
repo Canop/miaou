@@ -36,6 +36,8 @@ html
 															label= field.label+' : '
 														td
 															input(type=(field.type||'text'),name=field.name)
+											if ep.creationDescription
+												p !{ep.creationDescription}
 						if error
 							p#err.error= error
 					div.dialog_buttons

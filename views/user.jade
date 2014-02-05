@@ -6,27 +6,26 @@ html
 		link(rel='stylesheet', href='../static/main.css')
 		script(src="../static/jquery-2.0.3.min.js")
 		script(src="../static/miaou.min.js")
-	body.logo
-		div.dialog.intro
-			div.dialog_title= user.name
-			div.dialog_content
-				p
-					i.user= user.name+' '
-					case rooms.length
-						when 0
-							| didn't post in Miaou yet
-						when 1
-							| might be found in this room :
-						default
-							| can usually be found in these rooms :
-					table.list#recentRooms
-
-			div.dialog_buttons#buttons
-				button(onclick="location='..'") Miaou Home
-
-				
+	body.home
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
+		div#logo
+			div.MP
+				a(href="..")
+					img(src="../static/Miaou-300-f.png")
+		div.MP
+			p
+				i.user= user.name+' '
+				case rooms.length
+					when 0
+						| didn't post in Miaou yet
+					when 1
+						| might be found in this room :
+					default
+						| can usually be found in these rooms :
+				table.list#recentRooms
+				div.dialog_buttons#buttons
+					button(onclick="location='..'") Miaou Home
 		
 		script.
 			if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent)) $(document.body).addClass('mobile');

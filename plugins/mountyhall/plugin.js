@@ -37,7 +37,7 @@ function fetchSP(sp, num, mdpr){
 
 // returns a promise
 // updates and provides in resolution the pluginPlayerInfos if successful, else throws an error 
-function createMHProfile(pluginPlayerInfos, vals) {
+function createMHProfile(user, pluginPlayerInfos, vals) {
 	return fetchSP('ProfilPublic2', vals.mh_num, vals.mh_mdpr)
 	.then(function(lines){
 		var l = lines[0], troll = {
@@ -46,7 +46,7 @@ function createMHProfile(pluginPlayerInfos, vals) {
 		pluginPlayerInfos.troll = troll;
 		pluginPlayerInfos.mdpr = vals.mh_mdpr;
 		return pluginPlayerInfos;
-	}).catch(function(err){
+	}).catch(function(err){ // FIXME : check but I don't think there should be a catch here...
 		console.log('Error in fetching SP', err);
 	});
 }
@@ -69,7 +69,6 @@ function renderMHProfile(ppi) {
 
 exports.externalProfile = {
 	creation: {
-		description: "",
 		fields: [
 			{ name:'mh_num', label:'Numéro', type:'Number' },
 			{ name:'mh_mdpr', label:'Mot de passe restreint'}
