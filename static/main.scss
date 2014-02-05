@@ -205,7 +205,9 @@ body.mobile #messagescroller {
 	.content {
 		word-wrap: break-word;
 		overflow-y: hidden;
-		line-height: 19px;
+		min-height: 20px;
+		line-height: 18px;
+		padding-top: 1px;
 		&.closed {
 			max-height: 120px;
 		}
@@ -217,7 +219,7 @@ body.mobile #messagescroller {
 		position: absolute;
 		z-index: 3;
 		right: 25px;
-		top: calc(50% - 9px);
+		top: calc(50% - 8px);
 		text-align:center;
 		padding: 0 8px;
 		margin: 0 3px 0 0;
