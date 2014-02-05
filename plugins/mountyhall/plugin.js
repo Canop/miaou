@@ -46,7 +46,7 @@ function createMHProfile(pluginPlayerInfos, vals) {
 		pluginPlayerInfos.troll = troll;
 		pluginPlayerInfos.mdpr = vals.mh_mdpr;
 		return pluginPlayerInfos;
-	}).catch(function(err){
+	}).catch(function(err){ // FIXME : check but I don't think there should be a catch here...
 		console.log('Error in fetching SP', err);
 	});
 }
