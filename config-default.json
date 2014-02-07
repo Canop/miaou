@@ -10,7 +10,9 @@
 	"database": {
 		"url": "postgres://database_user:database_pwd@localhost/miaou"
 	},
-	"oauth2": {
+	"plugins": [
+		"./plugins/mountyhall/plugin.js"
+	],"oauth2": {
 		"google": {
 			"clientID": "your client ID, see https://code.google.com/apis/console/",
 			"clientSecret": "your client secret"

@@ -8,16 +8,11 @@ html
 		script(src="static/jquery-2.0.3.min.js")
 		script(src="static/socket.io.min.js")
 		script(src="static/moment.min.js")
-		script(src="static/vis.js")
-		script(src="static/miaou.dialog.js")
-		script(src="static/miaou.notify.js")
-		script(src="static/miaou.editor.js")
-		script(src="static/miaou.format.js")
-		script(src="static/miaou.main.js")
+		script(src="static/miaou.min.js")
 	body.chat.mobile
 		div.mtabs
-			div.mtab#me(page="left") pre-loading...
-			div.mtab#roomname(page="right") loading...
+			div.mtab.closed#me(page="left") pre-loading...
+			div.mtab.closed#roomname(page="right") loading...
 		div.mpages
 			div.mpage
 				section#prefs
@@ -42,8 +37,8 @@ html
 					div#searchresults
 						i
 							p Type anything to search it (common English words are ignored)
-		div#messages
-			div#undertabs
+		div#messagescroller
+			div#messages
 		div#inputpanel
 			textarea#input
 			button.small#send Send
@@ -58,7 +53,7 @@ html
 				$('#roomname').addClass('private').attr('title', 'This room is private');
 			}
 			$('#help').click(function(){ window.open('help#Writing_Messages') });		
-			$('#changeroom').click(function(){ window.open('rooms') });
+			$('#changeroom').click(function(){ location = 'rooms' });
 			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
 			$('#me').text(me.name);
 			$('.tab').click(function(){
@@ -68,9 +63,11 @@ html
 			});
 
 			$('.mtab').click(function(){
+				$(this).toggleClass('open closed');
 				$('.mpage').eq($(this).index()).toggle();
 			});
 			$('#editProfile').click(function(){
 				location = 'profile';
 			});
+			miaou.chat();
 

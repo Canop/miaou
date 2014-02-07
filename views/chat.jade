@@ -7,55 +7,46 @@ html
 		script(src="static/jquery-2.0.3.min.js")
 		script(src="static/socket.io.min.js")
 		script(src="static/moment.min.js")
-		script(src="static/vis.js")
-		script(src="static/miaou.dialog.js")
-		script(src="static/miaou.notify.js")
-		script(src="static/miaou.editor.js")
-		script(src="static/miaou.format.js")
-		script(src="static/miaou.main.js")
+		script(src="static/miaou.min.js")
 	body.chat
-		div.table
-			div.col#left
-				section#prefs
-					a#me.pref(href="profile", title="Edit profile")
-				section
-					button.small#auths authorizations
-					h2 Users
-					div#users
-			div.col#center
-				div.table
-					div#messagescell
-						div.messageswrapper	
-							div#messages
-					div#inputpanel
-						textarea#input
-						button.small#send Send
-						button.small#help Help
-						button.small#cancelEdit(style="display:none") Cancel
-						button.small#showPreview Preview
-					div#previewpanel
-						div#preview.rendered
-						button.small#hidePreview Hide
-						button.small#shortcuts Shortcuts
-			div.col#right
-				div.colcontainer
-					section#roominfo
-						button.small#changeroom Home
-						button.small#editroom edit
-						h2#roomname
-						div#roomdescription.rendered
-					div.tabs
-						span.tab.selected(page="notablemessagespage") Notable Messages
-						span.tab(page="search") Search
-					div.page.selected#notablemessagespage
-						div#notablemessages
-					div.page#search
-						input#searchInput
-						div#searchresults
-							i
-								p Type anything to search it (common English words are ignored)
-								p Hit <code>esc</code> to clear
-			
+		div#left
+			section#prefs
+				a#me.pref(href="profile", title="Edit profile")
+			section
+				button.small#auths authorizations
+				h2 Users
+				div#users
+		div#center
+			div#messagescroller
+				div#messages
+			div#inputpanel
+				textarea#input
+				button.small#send Send
+				button.small#showPreview Preview
+				button.small#cancelEdit(style="display:none") Cancel
+				button.small#help Help
+			div#previewpanel
+				div#preview.rendered
+				button.small#shortcuts Shortcuts
+				button.small#hidePreview Hide
+		div#right
+			section#roominfo
+				button.small#changeroom Home
+				button.small#editroom edit
+				h2#roomname
+				div#roomdescription.rendered
+			div.tabs
+				span.tab.selected(page="notablemessagespage") Notable Messages
+				span.tab(page="search") Search
+			div.page.selected#notablemessagespage
+				div#notablemessages
+			div.page#search
+				input#searchInput
+				div#searchresults
+					i
+						p Type anything to search it (common English words are ignored)
+						p Hit <code>esc</code> to clear
+
 		script.
 			var me = !{user},
 				room = !{room};
@@ -75,4 +66,5 @@ html
 				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
 			});
 			$('.tab[page="search"]').click(function(){ $('#searchInput').focus() });
+			miaou.chat();
 

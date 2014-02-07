@@ -1,0 +1,8 @@
+h1= user.name
+if auth != 'none'
+	p
+		| Role in this room :
+		i.role= ' '+auth
+each epi in externalProfileInfos
+	h2= epi.name
+	div.externalProfile !{epi.html}

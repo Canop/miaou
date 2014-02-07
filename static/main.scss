@@ -6,6 +6,10 @@ $bg-color: #F0EAD6;
 $mtab-height: 39px;   // height of the top tabs in mobile interface
 $input-height: 80px; // height of input
 $minput-height: 50px; // height of input in mobile interface
+$left-panel-width: 150px;
+$right-panel-width: 320px;
+$profile-bg-color: #fffcc5;
+$notifications-bg-color: #fffa9e;
 body {
 	background: $bg-color;
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
@@ -36,11 +40,16 @@ body {
 		#logo {
 			margin-top: 6px;
 		}
-		p.links a {
-			margin-right: 5px;
-		}
-		p.links a+a {
-			margin-left: 5px;
+		p.links {
+			margin-top: 5px;
+			.username {
+				margin: 0 5px;
+				font-style: italic;
+			}
+			a {
+				white-space:nowrap;
+				margin: 0 5px;
+			}
 		}
 		&.mobile {
 			#logo {
@@ -58,6 +67,35 @@ body {
 		}
 	}
 }
+#left, #right, #center {
+	position: fixed;
+	overflow-x: hidden;
+}
+#left {
+	top:0; left:0; bottom:0;
+	width: $left-panel-width;
+	overflow-y: auto;
+}
+#right {
+	top:0; right:0; bottom:0;
+	width: $right-panel-width;
+	overflow-y: auto;
+}
+#center {
+	display:flex;
+	flex-direction: column;
+	top:0;
+	left: $left-panel-width;
+	right: $right-panel-width;
+	bottom: 0;
+	background: white;
+}
+#messagescroller {
+	width: 100%;
+	overflow-y: scroll;
+	flex-grow: 1;
+	flex-basis: 0;
+}
 .table {
 	display: table;
 	width:100%;
@@ -66,27 +104,6 @@ body {
 }
 section {
 	margin: 0 0 8px 0;
-}
-.col {
-	display: table-cell;
-	height:100%;
-	padding: 0;
-	vertical-align: top;
-}
-.colcontainer {
-	width:100%;
-	height:100%;
-	overflow-y: auto;
-	overflow-x: hidden;
-}
-#left {
-	width: 150px;
-}
-#right {
-	width: 320px;
-}
-#center {
-	background: white;
 }
 
 #prefs {
@@ -102,11 +119,13 @@ section {
 body.mobile #prefs {
 }
 #prefs .user, #users .user {
+	position: relative;
 	cursor: pointer;
 	padding: 1px 5px;
 	display: block;
 	text-overflow: ellipsis;
 	overflow: hidden;
+	line-height: 18px;
 }
 body.mobile #users .user {
 	line-height: 30px;
@@ -120,86 +139,109 @@ body.mobile #users .user {
 	text-align: center;
 }
 #users .user:hover {
-	background: #FFFAE6;
+	background: $profile-bg-color;
 }
 
-#messagescell {
-	display: table-row;
-	height: 100%;
-}
-.messageswrapper {
-	position: relative;
-	height: 100%;
-}
 #messages {
   	margin-top:0;
 	vertical-align: top;
-	overflow-y: scroll;
-	overflow-x: hidden;
+	position: relative;
 	.message + .message {
 		border-top: thin dotted #ddd;
-	}
-	.content {
-		width: calc(100% - 122px);
-		display:inline-block;
 	}
 	.message + .message.disrupt {
 		border-top: thin solid #ccc;
 	}
 }
-.messageswrapper #messages {
+.profile {
 	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	width:100%;
-	height:100%;
+	z-index:5;
+	padding: 5px;
+	box-shadow: 2px 2px 2px #999;
+	width: 216px;
+	min-height: 24px;
+	color: black;
+	background: $profile-bg-color;
+	h1 {
+		width: 100%;
+		text-align: center;
+		font-size: 110%;
+	}
+	h2 {
+		font-size: 100%;
+	}
+	p {
+		padding: 0;
+	}
 }
-body.mobile #messages {
+.user.profiled {
+	box-shadow: 2px 2px 2px #999;
+	background: $profile-bg-color;
+}
+
+body.mobile #messagescroller {
 	position: fixed;
 	top: 0;
 	right: 0;
 	bottom: $minput-height + 8px;
 	left: 0;
 	overflow-y: scroll;
-	margin:0; padding:0;
-}
-#undertabs {
-	height: $mtab-height;
+	margin:0;
+	padding: $mtab-height 0 0 0;
 }
 
 .message {
-	padding: 3px;
 	position: relative;
-	.user {
+    align-items: center;
+    align-content: center;
+    .user {
 		position: relative;
+		align-items: center;
+		align-content: center;
 		width: 120px;
-		display:inline-block;
-		padding-left: 2px;
-		padding-top: 2px;
+		padding: 1px;
 		color: #555;
 		text-overflow: ellipsis;
 		overflow: hidden;
-		white-space: nowrap; 
+		white-space: nowrap;
+		z-index: 2;
 	}
 	.content {
 		word-wrap: break-word;
+		overflow-y: hidden;
+		min-height: 20px;
+		line-height: 18px;
+		padding-top: 1px;
+		&.closed {
+			max-height: 120px;
+		}
 	}
 	&.me {
 		background-color: #fdf6e5;
 	}
+}
+.message, .user {
 	button {
 		position: absolute;
 		z-index: 3;
-		right: 0;
-		top: 0;
-		padding: 1px 8px;
+		right: 25px;
+		top: calc(50% - 8px);
+		text-align:center;
+		padding: 0 8px;
 		margin: 0 3px 0 0;
 		border-radius: 3px;
 		box-shadow: 1px 1px 2px #999;		
 		font-size: 80%;
 	}
+}
+#messages .message {
+	display: flex;
+	.content {
+		width: calc(100% - 122px);
+	}
+}
+body.mobile .message .user {
+	width: 75px;
 }
 .message.edited .content:before {
 	font-family: "fontello";
@@ -255,7 +297,7 @@ body.mobile .messagemenu .vote {
 }
 .messagevotes {
 	position: absolute;
-	top: 14px;
+	top: 9px;
 	right: 1px;
 	color: black;
 	opacity: 0.6;
@@ -329,10 +371,10 @@ code {
 	border-bottom: 1px dotted #999;
 }
 #inputpanel {
-	background: #F0EAD6;
-	display: table-row;	
+	background: $bg-color;
 	width:100%;
-	height: $input-height + 10px;
+	flex-basis:  $input-height + 10px;
+	flex-grow: 0;
 }
 body.mobile #inputpanel {
 	display: block;
@@ -354,7 +396,7 @@ body.mobile #input {
 }
 #preview {
 	width: calc(100% - 11px - #{$input-buttons-width});
-	height: calc(100% - 5px);
+	height: $input-height;
 	float: left;
 	word-wrap: break-word;
 	background: white;
@@ -378,10 +420,10 @@ body.mobile #inputpanel button {
 	padding: 0;
 }
 #previewpanel {
-	background: #F0EAD6;
-	display: table-row;	
+	background: $bg-color;
 	width:100%;
-	height: 94px;
+	height: $input-height + 8px;
+	flex-grow: 0;
 	display: none;
 }
 h1 {
@@ -401,6 +443,10 @@ h2 {
 	padding-top: 2px;
 	margin-bottom: 2px;
 	padding-left: 4px;
+}
+h3 {
+	color: #655;
+	font-size: 110%;
 }
 p {
 	padding: 4px;
@@ -640,11 +686,12 @@ div.radios {
 .closed {
 	overflow: hidden;
 }
-#messages .closed {
-	max-height: 138px;
-}
 
 .opener, .closer {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
 	height: 13px;
 	text-align: center;
 	cursor: pointer;
@@ -653,11 +700,35 @@ div.radios {
 		color: black;
 	}
 }
+#messages .opener {
+	background: rgba(255,255,255,0.3);
+	&:hover {
+		background: rgba(255,255,255,0.6);
+	}
+}
 .opener::before {
 	content: '▼';
 }
 .closer::before {
 	content: '▲';
+}
+
+.sectionOpener, .sectionCloser {
+	cursor: pointer;
+	color: #988;
+	margin-bottom: 0;
+}
+.sectionOpener::before {
+	content: '▶ ';
+}
+.sectionCloser::before {
+	content: '▼ ';
+}
+.sectionCloser + section {
+	border-left: 2px solid rgba(#988,0.4);
+	padding: 5px;
+	margin-top: -4px;
+	margin-left: 6px;
 }
 
 .reply {
@@ -682,6 +753,7 @@ div.radios {
 	th, td {
 		padding: 8px;
 		background: white;
+		text-align: left;
 	}
 	tr:nth-child(even) {
 		th, td {
@@ -693,6 +765,9 @@ div.radios {
 	}
 }
 
+#authspage {
+	position: relative;
+}
 #roomButtons {
 	text-align: center;
 }
@@ -748,9 +823,11 @@ div.MP {
 }
 .notification {
 	padding: 5px;
-	background-color: #fffa9e;
+	background-color: $notifications-bg-color;
 	.user {
 		font-style:italic;
+		z-index: 6;
+		padding: 4px;
 	}
 	button {
 		margin-left: 10px;
@@ -850,11 +927,43 @@ div.MP {
 		width: 39%;
 		left: 0;
 		border-radius: 0 0 10px 0;
+		&.closed:before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; left: 5px;
+			content: '▼';
+			opacity: 0.12;
+			font-size: 35px;
+		}
+		&.open:before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; left: 5px;
+			content: '▲';
+			opacity: 0.12;
+			font-size: 35px;
+		}
 	}
 	&:last-child {
-		width: 49%;
+		width: 53%;
 		right: 0;
 		border-radius: 0 0 0 10px;
+		&.closed:before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; right: 5px;
+			content: '▼';
+			opacity: 0.12;
+			font-size: 35px;
+		}
+		&.open:before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; right: 5px;
+			content: '▲';
+			opacity: 0.12;
+			font-size: 35px;
+		}
 	}
 }
 .mpage {
@@ -873,11 +982,48 @@ div.MP {
 		border-radius: 0 0 10px 0;
 	}
 	&:last-child {
-		width: 49%;
+		width: 53%;
 		right: 0;
 		border-radius: 0 0 0 10px;
 	}
 }
+
+div.externalProfile {
+	margin: 4px;
+	width: 208px;
+	padding: 0;
+}
+.externalProfiles {
+	text-align: left;
+	margin-left: 8px;
+	section.externalProfileForm {
+		td {
+			text-align: left;
+		}
+		input {
+			float:none;
+			width: 100px;
+			margin: 0;
+			padding: 0;
+		}
+		input[type=checkbox]{
+			width: inherit;
+			margin: 2px 8px 0 0;
+		}
+		div.inputs {
+			padding: 10px 0;
+		}
+	}
+	h2 {
+		margin-left: -10px;
+		margin-bottom: -5px;
+		font-size: 110%;
+	}
+	h3 {
+		font-size: 100%;	
+	}
+}
+
 
 #searchInput {
 	width: calc(100% - 12px);

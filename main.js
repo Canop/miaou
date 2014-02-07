@@ -10,6 +10,7 @@ var fs = require("fs"),
 	db = require('./pgdb.js'),
 	loginutil = require('./login.js'),
 	ws = require('./ws.js'),
+	plugins = (config.plugins||[]).map(require),
 	cookieParser = express.cookieParser(config.secret),
 	RedisStore = require('connect-redis')(express),
 	oauth2Strategies = {},
@@ -99,6 +100,11 @@ function mobile(req){
 	return mobileRegex.test(req.headers['user-agent']);
 }
 
+function renderErr(res, err, base){
+	console.log(err);
+	res.render('error.jade', { base:base||'', error: err.toString() });
+}
+
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	
@@ -110,7 +116,6 @@ function defineAppRoutes(){
 			if (room.private && !checkAuthAtLeast(room.auth, 'write')) {
 				return res.render('request.jade', { room:room });
 			}
-			console.log(req.user.name, 'user-agent:', req.headers['user-agent']);
 			res.render(mobile(req) ? 'chat.mob.jade' : 'chat.jade', { user:JSON.stringify(req.user), room:JSON.stringify(room) });
 		}).catch(db.NoRowError, function(err){
 			// not an error as it happens when there's no room id in url
@@ -122,23 +127,66 @@ function defineAppRoutes(){
 		res.render('login.jade', { user:req.user, oauth2Strategies:oauth2Strategies });
 	});
 	
-	app.get('/profile', function(req, res){
-		res.render('profile.jade', {
-			user: req.user,
-			suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || '')
+	app.all('/profile', ensureAuthenticated, function(req, res){
+		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
+			return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
 		});
-	});
-	app.post('/profile', ensureAuthenticated, function(req, res){
-		var name = req.param('name');
-		if (loginutil.isValidUsername(name)) {
-			req.user.name = name;
-			db.on(req.user)
-			.then(db.updateUser)
-			.then(function(){ res.redirect(url()); })
-			.finally(db.off);
-		} else {
-			res.render('profile.jade', { user: req.user });
-		}
+		var error;
+		db.on(externalProfileInfos)
+		.map(function(epi){
+			return this.getPlayerPluginInfo(epi.name, req.user.id);
+		}).then(function(ppis){ // todo use map(ppi,i) to avoid iteration
+			ppis.forEach(function(ppi,i){
+				if (ppi) externalProfileInfos[i].ppi = ppi.info;
+			});
+			return externalProfileInfos;
+		}).map(function(epi){
+			if (epi.ppi) epi.html = epi.ep.render(epi.ppi);
+			if (req.method==='POST') {
+				if (epi.html) {
+					if (req.param('remove_'+epi.name)) {
+						epi.ppi = null;
+						return this.deletePlayerPluginInfo(epi.name, req.user.id);
+					}
+				} else {
+					var vals = {}, allFilled = true;
+					epi.fields.forEach(function(f){
+						if (!(vals[f.name] = req.param(f.name))) allFilled = false;
+					});
+					if (allFilled) return epi.ep.creation.create(req.user, epi.ppi||{}, vals);
+				}
+			}
+		}).map(function(ppi, i){
+			var epi = externalProfileInfos[i];
+			if (typeof ppi === 'object') { // in case of creation success
+				epi.ppi = ppi;
+				this.storePlayerPluginInfo(epi.name, req.user.id, ppi);
+				epi.html = epi.ep.render(ppi);
+			} else if (ppi===1) { // deletion
+				epi.html = null;
+			}
+		}).then(function(){
+			if (req.method==='POST') {
+				var name = req.param('name');
+				if (name!=req.user.name && loginutil.isValidUsername(name)) {
+					req.user.name = name;
+					return this.updateUser(req.user);
+				}
+			}
+		}).catch(function(err){
+			console.log('Err...', err);
+			error = err;
+		}).then(function(){
+			externalProfileInfos.forEach(function(epi){
+				if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
+			});
+			res.render('profile.jade', {
+				user: req.user,
+				externalProfileInfos: externalProfileInfos,
+				suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || ''),
+				error: error
+			});
+		}).finally(db.off)
 	});
 
 	for (var key in oauth2Strategies){
@@ -152,7 +200,7 @@ function defineAppRoutes(){
 		.spread(db.fetchRoomAndUserAuth)
 		.then(function(room){
 			if (!checkAuthAtLeast(room.auth, 'admin')) {
-				return res.render('error.jade', { error: "Admin level is required to manage the room" });
+				return renderErr(res, "Admin level is required to manage the room");
 			}
 			res.render('room.jade', { room: JSON.stringify(room), error: "null" });
 		}).catch(db.NoRowError, function(err){
@@ -162,7 +210,7 @@ function defineAppRoutes(){
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
 		var roomId = +req.param('id'), name = req.param('name').trim();
 		if (!/^.{2,20}$/.test(name)) {
-			return res.render('error.jade', { error: "invalid room name" });
+			return renderErr(res, "invalid room name");
 		}
 		var room = {id:roomId, name: name, private:req.param('private')||false, description:req.param('description')};
 		db.on([room, req.user])
@@ -195,8 +243,7 @@ function defineAppRoutes(){
 			});
 			res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
 		}).catch(db.NoRowError, function(err){
-			console.log(err);
-			res.render('error.jade', { error: "room not found" });
+			renderErr(res, "room not found");
 		}).finally(db.off);
 	});
 	app.post('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
@@ -206,7 +253,7 @@ function defineAppRoutes(){
 		.then(function(r){
 			room = r;
 			if (!checkAuthAtLeast(room.auth, 'admin')) {
-				return res.render('error.jade', { error: "Admin auth is required" });
+				return renderErr(res, "Admin auth is required");
 			}
 			var m, actions = [];
 			for (var key in req.body){
@@ -227,9 +274,9 @@ function defineAppRoutes(){
 		}).then(function(){
 			res.redirect(roomUrl(room));
 		}).catch(db.NoRowError, function(err){
-			res.render('error.jade', { error: "room not found" });
+			renderErr(res, "room not found");
 		}).catch(function(err){
-			res.render('error.jade', { error: err.toString() });
+			renderErr(res, err);
 		}).finally(db.off);
 	});
 
@@ -242,7 +289,7 @@ function defineAppRoutes(){
 			]
 		}).spread(function(rooms, pings){
 			rooms.forEach(function(r){ r.path = roomPath(r) });
-			res.render(mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings });
+			res.render(mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user });
 		}).finally(db.off);
 	});
 
@@ -253,8 +300,61 @@ function defineAppRoutes(){
 	});
 
 	app.get('/help', function(req, res){
+		res.setHeader("Cache-Control", "public, max-age=7200"); // 2 hours
 		res.render('help.jade');
 	});
+	
+	app.get('/publicProfile', function(req,res){
+		console.log('GET ','/publicProfile');
+		res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
+		var userId = +req.param('user'), roomId = +req.param('room');
+		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
+			return { name:p.name, ep:p.externalProfile }
+		});			
+		if (!userId || !roomId) return renderErr(res, 'room and user must be provided');
+		var user, auth;
+		db.on(userId)
+		.then(db.getUserById)
+		.then(function(u){
+			user = u;
+			return this.fetchRoomAndUserAuth(roomId, userId);
+		}).then(function(r){
+			switch(r.auth) {
+			case 'write': auth='writer'; break;
+			case 'admin': auth='admin'; break;
+			case 'own'  : auth='owner'; break;
+			case null: case undefined: auth= r.private ? 'no access' : 'none';
+			}
+			return externalProfileInfos;
+		}).map(function(epi){
+			return this.getPlayerPluginInfo(epi.name, userId);
+		}).map(function(ppi, i){
+			if (ppi) externalProfileInfos[i].html = externalProfileInfos[i].ep.render(ppi.info);
+		}).then(function(){
+			externalProfileInfos = externalProfileInfos.filter(function(epi){ return epi.html });
+			res.render('publicProfile.jade', {user:user, auth:auth, externalProfileInfos:externalProfileInfos});
+		}).catch(function(err){
+			renderErr(res, err)
+		}).finally(db.off);
+	});
+	
+	app.get(/^\/user\/(\d+)$/, function(req,res){
+		db.on(+req.params[0])
+		.then(function(uid){
+			return [
+				this.getUserById(uid),
+				this.listRecentUserRooms(uid)
+			]
+		}).spread(function(user, rooms){
+			rooms.forEach(function(r){ r.path = '../'+roomPath(r) });
+			res.render('user.jade', {user:user, rooms:rooms});
+		}).catch(db.NoRowError, function(err){
+			renderErr(res, "User not found", '../');
+		}).catch(function(err){
+			renderErr(res, err, '../');
+		}).finally(db.off);
+	})
+
 }
 
 // starts the whole server, both regular http and websocket

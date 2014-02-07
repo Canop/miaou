@@ -62,7 +62,6 @@ function emitMessagesAfter(socket, roomId, userId, fromId, untilId, nbMessages){
 	return resolver.promise.bind(this);
 }
 
-
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
 // Implementation details :
 //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
