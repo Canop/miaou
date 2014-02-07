@@ -8,6 +8,8 @@ $input-height: 80px; // height of input
 $minput-height: 50px; // height of input in mobile interface
 $left-panel-width: 150px;
 $right-panel-width: 320px;
+$profile-bg-color: #fffcc5;
+$notifications-bg-color: #fffa9e;
 body {
 	background: $bg-color;
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
@@ -117,11 +119,13 @@ section {
 body.mobile #prefs {
 }
 #prefs .user, #users .user {
+	position: relative;
 	cursor: pointer;
 	padding: 1px 5px;
 	display: block;
 	text-overflow: ellipsis;
 	overflow: hidden;
+	line-height: 18px;
 }
 body.mobile #users .user {
 	line-height: 30px;
@@ -135,7 +139,7 @@ body.mobile #users .user {
 	text-align: center;
 }
 #users .user:hover {
-	background: #FFFAE6;
+	background: $profile-bg-color;
 }
 
 #messages {
@@ -157,7 +161,7 @@ body.mobile #users .user {
 	width: 216px;
 	min-height: 24px;
 	color: black;
-	background: #fffcc5;
+	background: $profile-bg-color;
 	h1 {
 		width: 100%;
 		text-align: center;
@@ -172,7 +176,7 @@ body.mobile #users .user {
 }
 .user.profiled {
 	box-shadow: 2px 2px 2px #999;
-	background: #fffcc5;
+	background: $profile-bg-color;
 }
 
 body.mobile #messagescroller {
@@ -215,6 +219,8 @@ body.mobile #messagescroller {
 	&.me {
 		background-color: #fdf6e5;
 	}
+}
+.message, .user {
 	button {
 		position: absolute;
 		z-index: 3;
@@ -365,7 +371,7 @@ code {
 	border-bottom: 1px dotted #999;
 }
 #inputpanel {
-	background: #F0EAD6;
+	background: $bg-color;
 	width:100%;
 	flex-basis:  $input-height + 10px;
 	flex-grow: 0;
@@ -414,7 +420,7 @@ body.mobile #inputpanel button {
 	padding: 0;
 }
 #previewpanel {
-	background: #F0EAD6;
+	background: $bg-color;
 	width:100%;
 	height: $input-height + 8px;
 	flex-grow: 0;
@@ -747,6 +753,7 @@ div.radios {
 	th, td {
 		padding: 8px;
 		background: white;
+		text-align: left;
 	}
 	tr:nth-child(even) {
 		th, td {
@@ -758,6 +765,9 @@ div.radios {
 	}
 }
 
+#authspage {
+	position: relative;
+}
 #roomButtons {
 	text-align: center;
 }
@@ -813,7 +823,7 @@ div.MP {
 }
 .notification {
 	padding: 5px;
-	background-color: #fffa9e;
+	background-color: $notifications-bg-color;
 	.user {
 		font-style:italic;
 		z-index: 6;

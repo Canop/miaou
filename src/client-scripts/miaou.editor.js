@@ -33,8 +33,8 @@ $.fn.selectLines = function(){
 
 // sets the textarea as an editor emitting on the provided socket
 $.fn.editFor = function(socket){
-	var $input = this, input = this[0];
-
+	var $input = this;
+	
 	function sendInput(){
 		var txt = $input.val().replace(/\s+$/,'');
 		if (txt.length){
@@ -107,23 +107,22 @@ $.fn.editFor = function(socket){
 	}).focus();
 	$('#send').on('click', sendInput);
 			
-	$('#users').on('click', '.user', function(){
-		var val = input.value, username = this.innerHTML;
-		var r = new RegExp('\s?@'+username+'\\s*$');
-		if (r.test(val)) {
-			input.value = val.replace(r, '');
-			$input.focus();
-		} else {
-			var insert = ' @'+username+' ', s = input.selectionStart, e = input.selectionEnd;
-			input.value = val.slice(0,e)+insert+val.slice(e);
-			if (e==s) input.selectionStart += insert.length;
-			input.selectionEnd = e + insert.length;
-			$input.focus();
-		}
-	});
-	
 	$('#cancelEdit').on('click', $.fn.cancelEdit.bind(this));
 	return $input;
+}
+
+$.fn.ping = function(username){
+	var input = this[0], val = input.value;
+	var r = new RegExp('\s?@'+username+'\\s*$');
+	if (r.test(val)) {
+		input.value = val.replace(r, '');
+	} else {
+		var insert = ' @'+username+' ', s = input.selectionStart, e = input.selectionEnd;
+		input.value = val.slice(0,e)+insert+val.slice(e);
+		if (e==s) input.selectionStart += insert.length;
+		input.selectionEnd = e + insert.length;
+	}	
+	this.focus();
 }
 
 // toggle reply to an existing message

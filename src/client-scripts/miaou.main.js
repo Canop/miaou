@@ -2,9 +2,7 @@ var miaou = miaou || {};
 
 miaou.eventIsOver = function(event, o) {
 	if ((!o) || o==null) return false;
-	var pos = o.offset();
-	var ex = event.pageX;
-	var ey = event.pageY;
+	var pos = o.offset(), ex = event.pageX, ey = event.pageY;
 	return (
 		ex>=pos.left
 		&& ex<=pos.left+o.width()
@@ -16,19 +14,22 @@ miaou.eventIsOver = function(event, o) {
 miaou.showUserProfile = function(){
 	miaou.hideUserProfile();
 	var $user = $(this), $message = $user.closest('.message,.notification,.userLine'),
-		up = $message.position(), uh = $user.height(), uw = $user.width(),
-		$scroller = $('#messagescroller,#authspage'), ss = $scroller.scrollTop(), sh = $scroller.height(),
-		$container = $('#messages,#authspage'), ch = $container.height();
-	var $p = $('<div>').addClass('profile').text('loading profile...');
-	if (up.top-ss<sh/2) $p.css('top', up.top+1);
-	else $p.css('bottom', ch-up.top-uh-3);
-	if ($message.hasClass('notification')) { uw += 10; }; // bidouillage...
-	$p.css('left', up.left + uw);
-	$p.appendTo($container);
+		up = ($message.length ? $message : $user).position(),
+		uh = $user.height(), uw = $user.width(),
+		$scroller = $user.closest('#messagescroller,#authspage,#left'), ss = $scroller.scrollTop(), sh = $scroller.height(),
+		$container = $user.closest('#messages,#authspage,body').first(), ch = $container.height();
+	var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
+	if (up.top-ss<sh/2) css.top = up.top+1;
+	else css.bottom = ch-up.top-uh-3;
+	css.left = up.left + uw;
+	if (!$message.hasClass('message')) {
+		css.left += 10; css.bottom -= 12; // :-(
+	}
+	$p.css(css).appendTo($container);
 	$user.addClass('profiled');
 	var userId, data;
-	if (data = $message.data('message')) userId = data.author;
-	else userId = $message.data('user').id;
+	if ((data = $user.data('user') || (data = $message.data('user')))) userId = data.id;
+	else userId = $message.data('message').author;
 	$p.load('publicProfile?user='+userId+'&room='+room.id);
 }
 miaou.hideUserProfile = function(){
@@ -246,7 +247,10 @@ miaou.chat = function(){
 			}
 		}
 		if (keep) users.push(user);
-		$('#users').html(users.map(function(u){ return '<span class=user>'+u.name+'</span>' }).reverse().join(''));
+		var $users = $('#users').empty();
+		users.forEach(function(u){
+			$('<span class=user/>').text(u.name).data('user',u).prependTo($users);
+		});
 	}
 	function addToUserList(user){
 		updateUserList(user, true);
@@ -287,6 +291,15 @@ miaou.chat = function(){
 		($('.messagemenu, .editButton, .replyButton', this).length ? hideMessageMenus : showMessageMenus).call(this);
 	}
 	
+	function showUserPingButton(){
+		var username = $(this).data('user').name;
+		$('<button>').addClass('pingButton').text('ping').click(function(){
+			$('#input').ping(username);
+		}).appendTo(this);
+	}
+	function hideUserPingButtons(){
+		$('.pingButton').remove();
+	}
 	
 	$(function(){
 		var socket = io.connect(location.origin);
@@ -449,12 +462,15 @@ miaou.chat = function(){
 			.on('click', '.user,.profile', miaou.toggleUserProfile);
 			$(window).resize(scrollToBottom);
 		} else {
-			$('#messages')
+			$('#messages,#users')
 			.on('mouseenter', '.message', showMessageMenus).on('mouseleave', '.message', hideMessageMenus)
-			.on('mouseenter', '.user', miaou.showUserProfile).on('mouseleave', '.profile', miaou.hideUserProfile)
+			.on('mouseenter', '.user', miaou.showUserProfile);
+			$(document.body).on('mouseleave', '.profile', miaou.hideUserProfile)
 			.on('mouseleave', '.user', function(e){
 				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
 			});
+			$('#users').on('mouseenter', '.user', showUserPingButton)
+			.on('mouseleave', '.user', hideUserPingButtons);
 		}
 		
 		$('#notablemessages, #searchresults').on('click', '.message', function(e){

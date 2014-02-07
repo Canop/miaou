@@ -134,7 +134,7 @@ proto.listRecentUserRooms = function(userId){
 		"(select name from room where room.id=m.room),"+
 		"(select description from room where room.id=m.room),"+
 		"(select private from room where room.id=m.room)"+
-		" from message m left join room r on r.id=m.room where author=$1 group by room order by last_created desc limit 5;", [userId]
+		" from message m where author=$1 group by room order by last_created desc limit 10;", [userId]
 	);
 }
 
