@@ -42,7 +42,7 @@ function createSOProfile(user, ppi, vals) {
 // or undefined if there's no profile
 function renderSOProfile(ppi) {
 	if (ppi.num) {
-		var html = '<a href=http://stackoverflow.com/users/'+ppi.num+'>';
+		var html = '<a target=_blank href=http://stackoverflow.com/users/'+ppi.num+'>';
 		html += '<img src=http://stackoverflow.com/users/flair/'+ppi.num+'.png>';
 		html += '</a>';
 		return html
