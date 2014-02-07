@@ -303,7 +303,7 @@ function defineAppRoutes(){
 	});
 	
 	app.get('/publicProfile', function(req,res){
-		console.log('GET ','/publicProfile'); // here to remind me I should handle cache better
+		console.log('GET ','/publicProfile');
 		res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 		var userId = +req.param('user'), roomId = +req.param('room');
 		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
