@@ -100,7 +100,9 @@ html
 
 		script.
 			var auths = !{JSON.stringify(auths)}, room = !{JSON.stringify(room)};
-			$('.date').text(function(_,t){ return moment(t*1000).fromNow() });
+			$('.date').text(function(_,t){
+				return Date.now()/1000-t<15*60 ? "just now" : moment(t*1000).fromNow();
+			});
 			$('input,select').change(function(){ this.name = this.getAttribute('_name') });
 			if (!(room.auth==='own'||room.auth==='admin')) {
 				$('input,select').prop('disabled', true);
