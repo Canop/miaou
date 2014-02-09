@@ -90,8 +90,9 @@ miaou.chat = function(){
 	}
 
 	function isAtBottom(){
-		var $messages = $('#messages'), lastMessage = $messages.find('.message').last(), pt = parseInt($messages.css('padding-top'));
-		return lastMessage.length &&lastMessage.offset().top+lastMessage.height() < $messages.offset().top+ $messages.height() + pt + 5;
+		var $scroller = $('#messagescroller'), $messages = $('#messages'),
+			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
+		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
 	}
 	var scrollToBottom = function(){
 		setTimeout(function(){ // because it doesn't always work on Firefox without this 
@@ -192,6 +193,7 @@ miaou.chat = function(){
 	function addMessage(message){
 		var messages = getMessages(), insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
 		var wasAtBottom = isAtBottom();
+		console.log('wasAtBottom:',wasAtBottom);
 		if (messages.length===0 || message.id<messages[0].id) {
 			insertionIndex = -1;
 		} else {
