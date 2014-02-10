@@ -129,12 +129,16 @@ proto.listFrontPageRooms = function(userId){
 }
 
 proto.listRecentUserRooms = function(userId){
-	return this.queryRows( // TODO ? cleaner and more efficient query ?
-		"select m.room as id, count(*) number, max(created) last_created,"+
-		"(select name from room where room.id=m.room),"+
-		"(select description from room where room.id=m.room),"+
-		"(select private from room where room.id=m.room)"+
-		" from message m where author=$1 group by room order by last_created desc limit 10;", [userId]
+	return this.queryRows(
+		"select m.id, m.number, m.last_created, r.name, r.description, r.private"+
+		" from ("+
+    		"select m.room as id, count(*) number, max(created) last_created"+
+			" from message m"+
+			" where author=$1"+
+			" group by room "+
+		") m"+
+		" join room r on r.id = m.id"+
+		" order by m.last_created desc limit 10", [userId]
 	);
 }
 
