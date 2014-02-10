@@ -129,7 +129,7 @@ proto.listFrontPageRooms = function(userId){
 }
 
 proto.listRecentUserRooms = function(userId){
-	return this.queryRows( // TODO ? cleaner and more efficient query ?
+	return this.queryRows( // TODO http://stackoverflow.com/questions/21609165/avoid-useless-subqueries-or-aggregations-when-joining-and-grouping
 		"select m.room as id, count(*) number, max(created) last_created,"+
 		"(select name from room where room.id=m.room),"+
 		"(select description from room where room.id=m.room),"+
@@ -259,6 +259,11 @@ proto.search = function(roomId, pattern, lang, N){
 	);
 }
 
+// builds an histogram, each record relative to a utc day
+proto.messageHistogram = function(roomId) {
+	return this.queryRows("select count(*) n, floor(created/86400) d from message where room=$1 group by d order by d", [roomId]);
+}
+
 // fetches one message. Votes of the passed user are included
 proto.getMessage = function(messageId, userId){
 	return this.queryRow(
@@ -294,6 +299,7 @@ proto.updateGetMessage = function(messageId, expr, userId){
 		return this.getMessage(messageId, userId);
 	});
 }
+
 
 //////////////////////////////////////////////// #pings
 

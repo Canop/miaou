@@ -304,7 +304,7 @@ miaou.chat = function(){
 	}
 	
 	$(function(){
-		var socket = io.connect(location.origin);
+		var socket = miaou.socket = io.connect(location.origin);
 
 		function clearPings() {
 			// clear the pings of the current room and ask for the ones of the other rooms

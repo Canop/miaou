@@ -141,7 +141,14 @@ body.mobile #users .user {
 #users .user:hover {
 	background: $profile-bg-color;
 }
-
+#hist {
+	position: absolute;
+	background: rgba(255,255,255,0.3);
+	top:0; right:0; bottom:0;
+	width:50%;
+	display: none;
+	border-left: 5px solid white;
+}
 #messages {
   	margin-top:0;
 	vertical-align: top;
