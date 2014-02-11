@@ -193,7 +193,6 @@ miaou.chat = function(){
 	function addMessage(message){
 		var messages = getMessages(), insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
 		var wasAtBottom = isAtBottom();
-		console.log('wasAtBottom:',wasAtBottom);
 		if (messages.length===0 || message.id<messages[0].id) {
 			insertionIndex = -1;
 		} else {
@@ -348,7 +347,7 @@ miaou.chat = function(){
 
 		// ensures the messages and the messages around it are loaded,
 		//  and then scroll to it and flashes it
-		function focusMessage(messageId){
+		miaou.focusMessage = function(messageId){
 			var $messages = $('#messages .message'), l = $messages.length,
 				beforeId = 0, afterId = 0, mids = new Array($messages.length);
 			for (var i=0; i<l; i++) {
@@ -414,7 +413,7 @@ miaou.chat = function(){
 				socket.emit('enter', room.id, setEnterTime);
 			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
 		}).on('welcome', function(){
-			if (location.hash) focusMessage(+location.hash.slice(1));
+			if (location.hash) miaou.focusMessage(+location.hash.slice(1));
 			else scrollToBottom();
 		}).on('disconnect', function(){
 			console.log('DISCONNECT');
@@ -436,7 +435,7 @@ miaou.chat = function(){
 		}).on('mouseleave', '.reply', function(){
 			$('.target').removeClass('target');
 		}).on('click', '.reply', function(e){
-			focusMessage(+$(this).attr('to'));
+			miaou.focusMessage(+$(this).attr('to'));
 			e.stopPropagation();			
 		}).on('click', 'a', function(e){
 			e.stopPropagation();
@@ -476,7 +475,7 @@ miaou.chat = function(){
 		}
 		
 		$('#notablemessages, #searchresults').on('click', '.message', function(e){
-			focusMessage(+$(this).attr('mid'));
+			miaou.focusMessage(+$(this).attr('mid'));
 			e.stopPropagation();			
 		}).on('click', '.opener', opener).on('click', '.closer', closer);
 
