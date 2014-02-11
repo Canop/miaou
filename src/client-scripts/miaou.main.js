@@ -501,10 +501,12 @@ miaou.chat = function(){
 		
 		$('#searchInput').on('keyup', function(e){
 			if (e.which===27) $(this).val('');
-			if (this.value.trim().length) {
-				socket.emit('search', {pattern:this.value.trim()}, function(results){
+			var pat = this.value.trim();
+			if (pat) {
+				socket.emit('search', {pattern:pat}, function(results){
 					showMessages(results, $('#searchresults'));
 				});
+				if ($('#hist').length) miaou.hist.search(pat);
 			} else {
 				$('#searchresults').empty();				
 			}

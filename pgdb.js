@@ -264,8 +264,12 @@ proto.search = function(roomId, pattern, lang, N){
 }
 
 // builds an histogram, each record relative to a utc day
-proto.messageHistogram = function(roomId) {
-	return this.queryRows("select count(*) n, min(id) m, floor(created/86400) d from message where room=$1 group by d order by d", [roomId]);
+proto.messageHistogram = function(roomId, pattern, lang) {
+	return pattern ? this.queryRows(
+			"select count(*) n, min(id) m, floor(created/86400) d from message where room=$1"+
+			" and to_tsvector($2, content) @@ plainto_tsquery($2,$3)"+
+			" group by d order by d", [roomId, lang, pattern]
+		) : this.queryRows("select count(*) n, min(id) m, floor(created/86400) d from message where room=$1 group by d order by d", [roomId]);
 }
 
 // fetches one message. Votes of the passed user are included

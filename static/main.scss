@@ -125,13 +125,19 @@ body {
 			text-align: right;
 			&[m] {
 				cursor: pointer;
+			}	
+			&:hover {
+				background: #d5cba6;
 			}
-			.bb {
+			.bar {
 				position: absolute;
 				right: 0;
 				background-color: #655;
 				opacity: 0.4;
 				height: 100%;
+				&.hit {
+					opacity: 1;
+				}
 			}
 		}
 	}
