@@ -184,6 +184,8 @@ function defineAppRoutes(){
 				suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || ''),
 				error: error
 			});
+		}).catch(function(err){
+			renderErr(res, err);
 		}).finally(db.off)
 	});
 
@@ -203,6 +205,8 @@ function defineAppRoutes(){
 			res.render('room.jade', { room: JSON.stringify(room), error: "null" });
 		}).catch(db.NoRowError, function(err){
 			res.render('room.jade', { room: "null", error: "null" });
+		}).catch(function(err){
+			renderErr(res, err);
 		}).finally(db.off);
 	});
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
@@ -217,7 +221,7 @@ function defineAppRoutes(){
 			res.redirect(roomUrl(room));			
 		}).catch(function(err){
 			res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
-		}).finally(db.end);
+		}).finally(db.off);
 	});
 	
 	app.get('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
@@ -242,6 +246,8 @@ function defineAppRoutes(){
 			res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
 		}).catch(db.NoRowError, function(err){
 			renderErr(res, "room not found");
+		}).catch(function(err){
+			renderErr(res, err);
 		}).finally(db.off);
 	});
 	app.post('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
@@ -288,6 +294,8 @@ function defineAppRoutes(){
 		}).spread(function(rooms, pings){
 			rooms.forEach(function(r){ r.path = roomPath(r) });
 			res.render(mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user });
+		}).catch(function(err){
+			renderErr(res, err);
 		}).finally(db.off);
 	});
 
