@@ -96,7 +96,8 @@ miaou.chat = function(){
 	}
 	var scrollToBottom = function(){
 		setTimeout(function(){ // because it doesn't always work on Firefox without this 
-			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight)
+			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight);
+			miaou.hist.showPage();
 		},10);
 	}
 
@@ -228,6 +229,7 @@ miaou.chat = function(){
 			}
 			$user.height(h).css('line-height',h+'px');
 			if (wasAtBottom) scrollToBottom();
+			else miaou.hist.showPage();
 		}
 		resize();
 		$content.find('img').load(resize);
@@ -342,6 +344,7 @@ miaou.chat = function(){
 				var mtop = $message.offset().top;
 				if (mtop<0 || mtop>$messages.height()) $messages.animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
 				setTimeout(function(){ $message.removeClass('goingto'); }, 3000);
+				miaou.hist.showPage();
 			}, 300);
 		}
 
@@ -458,6 +461,10 @@ miaou.chat = function(){
 			socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
 		});
 		
+		if ($('#hist').length) {
+			$('#messagescroller').on('scroll', miaou.hist.showPage);
+		}
+		
 		if ($(document.body).hasClass('mobile')) {
 			$('#messages').on('click', '.message', toggleMessageMenus)
 			.on('click', '.user,.profile', miaou.toggleUserProfile);
@@ -506,10 +513,12 @@ miaou.chat = function(){
 				socket.emit('search', {pattern:pat}, function(results){
 					showMessages(results, $('#searchresults'));
 				});
-				if ($('#hist').length) miaou.hist.search(pat);
+				miaou.hist.search(pat);
 			} else {
-				$('#searchresults').empty();				
+				$('#searchresults').empty();
+				miaou.hist.clearSearch();
 			}
+			
 		});
 
 		console.log('Miaou!');

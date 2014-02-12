@@ -367,7 +367,6 @@ function defineAppRoutes(){
 function startServer(){
 	app = express();
 	server = http.createServer(app),
-
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
 	app.set("view options", { layout: false });
@@ -379,12 +378,9 @@ function startServer(){
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(app.router);
-
 	defineAppRoutes();
-
 	console.log('Miaou server starting on port', config.port);
 	server.listen(config.port);
-
 	ws.listen(server, sessionStore, cookieParser, db);
 }
 

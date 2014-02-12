@@ -99,23 +99,22 @@ body {
 	flex-basis: 0;
 }
 #hist {
-	height: 100%;
 	flex-basis: $hist-width;
 	flex-grow: 0;
 	background: rgba($bg-color,.8);
 	display: none;
 	overflow-y: scroll;
+	font-size: 70%;
+	color: #655;
 	.month {
 		position: relative;
 		border-bottom: thin dotted rgba(#655,0.4);
 		.label {
 			position: absolute;
-			font-size: 70%;
 			height: 100%;
 			left: 1px; top: 0;
 			z-index: 2;
 			opacity: 0.8;
-			color: #655;
 			pointer-events: none;
 		}
 		.day {
@@ -126,9 +125,6 @@ body {
 			&[m] {
 				cursor: pointer;
 			}	
-			&:hover {
-				background: #d5cba6;
-			}
 			.bar {
 				position: absolute;
 				right: 0;
@@ -138,6 +134,20 @@ body {
 				&.hit {
 					opacity: 1;
 				}
+			}
+			.bubble {
+				position: absolute;
+				top: 4px;
+				left: 30px;
+				text-align: left;
+				z-index: 3;
+				background: rgba(255,255,255,0.6);
+			}
+			&.vis {
+				background: white;
+			}
+			&.vis:hover, &:hover {
+				background: #d5cba6;
 			}
 		}
 	}
