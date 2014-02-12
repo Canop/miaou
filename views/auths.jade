@@ -21,6 +21,7 @@ html
 					a(href="rooms") Miaou
 					| /
 					a(href=room.path)= room.name
+					button#backToRoom Back to room
 				if room.private
 					p This room is private, only authorized users can enter.
 				else
@@ -115,3 +116,4 @@ html
 			.on('mouseleave', '.user', function(e){
 				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
 			});
+			$('#backToRoom').click(function(){ location = room.path });
