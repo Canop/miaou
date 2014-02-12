@@ -116,4 +116,4 @@ html
 			.on('mouseleave', '.user', function(e){
 				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
 			});
-			$('#backToRoom').click(function(){ location = room.path });
+			$('#backToRoom').click(function(){ location = room.path; return false });
