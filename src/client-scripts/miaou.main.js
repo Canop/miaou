@@ -120,7 +120,7 @@ miaou.chat = function(){
 	function showMessages(messages, $div) {
 		$div.empty();
 		messages.forEach(function(m){
-			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content));
+			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content, false, m.authorname));
 			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
 				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment((m.created+timeOffset)*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
 			).appendTo($div)
@@ -201,7 +201,7 @@ miaou.chat = function(){
 		}
 		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
 			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
-			$content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true)).appendTo($md);
+			$content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true, message.authorname)).appendTo($md);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -503,7 +503,7 @@ miaou.chat = function(){
 			$('#previewpanel').hide();
 		});
 		$('#input').on('change keyup', function(){
-			$('#preview').html(miaou.mdToHtml(this.value));
+			$('#preview').html(miaou.mdToHtml(this.value, false, me.name));
 		});
 		
 		$('#searchInput').on('keyup', function(e){
