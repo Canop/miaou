@@ -12,6 +12,7 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * Public and Private rooms
 * Persisted
 * Searchable
+* graphical view of chat's history
 * Votes
 * Pin and star
 * Markdown formatting, with keyboard shortcuts

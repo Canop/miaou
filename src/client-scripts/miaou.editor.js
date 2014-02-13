@@ -47,6 +47,7 @@ $.fn.editFor = function(socket){
 			}
 			socket.emit('message', m);
 			$input.val('');
+			$('#preview').html('');
 			if (!$(document.body).hasClass('mobile')) $input.focus();
 		}
 	}
