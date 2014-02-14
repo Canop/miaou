@@ -24,6 +24,9 @@ html
 							span.label Privacy
 							input#private(name="private", id="private", type="checkbox")
 							label.cblabel(for="private") private room
+							span.label Listings
+							input#listed(name="listed", id="listed", type="checkbox")
+							label.cblabel(for="listed") listed room 
 							label.label Description
 								span.small Markdown allowed
 							textarea#description(name="description")
@@ -41,6 +44,7 @@ html
 				$('#name').val(room.name);
 				$('#description').val(room.description);
 				if (room.private) $('#private').prop('checked', true);
+				if (room.listed) $('#listed').prop('checked', true);
 				if (room.auth!=='own') $('#private').prop('disabled', true);
 				$('#id').val(room.id);
 			}

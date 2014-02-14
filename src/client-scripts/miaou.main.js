@@ -294,13 +294,14 @@ miaou.chat = function(){
 		($('.messagemenu, .editButton, .replyButton', this).length ? hideMessageMenus : showMessageMenus).call(this);
 	}
 	
-	function showUserPingButton(){
+	function showUserHoverButtons(){
 		var username = $(this).data('user').name;
+		if (username===me.name) return;
 		$('<button>').addClass('pingButton').text('ping').click(function(){
 			$('#input').ping(username);
 		}).appendTo(this);
 	}
-	function hideUserPingButtons(){
+	function hideUserHoverButtons(){
 		$('.pingButton').remove();
 	}
 	
@@ -477,8 +478,8 @@ miaou.chat = function(){
 			.on('mouseleave', '.user', function(e){
 				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
 			});
-			$('#users').on('mouseenter', '.user', showUserPingButton)
-			.on('mouseleave', '.user', hideUserPingButtons);
+			$('#users').on('mouseenter', '.user', showUserHoverButtons)
+			.on('mouseleave', '.user', hideUserHoverButtons);
 		}
 		
 		$('#notablemessages, #searchresults').on('click', '.message', function(e){

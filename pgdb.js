@@ -74,14 +74,14 @@ proto.storeRoom = function(r, author) {
 	var now = ~~(Date.now()/1000);
 	if (r.id) {
 		return this.queryRow(
-			"update room set name=$1, private=$2, description=$3 where id=$4"+
-			" and exists(select auth from room_auth where player=$5 and room=$4 and auth>='admin')",
-			[r.name, r.private, r.description||'', r.id, author.id]
+			"update room set name=$1, private=$2, listed=$3, description=$4 where id=$5"+
+			" and exists(select auth from room_auth where player=$6 and room=$5 and auth>='admin')",
+			[r.name, r.private, r.listed, r.description||'', r.id, author.id]
 		);
 	}
 	return this.queryRow(
-		'insert into room (name, private, description) values ($1, $2, $3) returning id',
-		[r.name, r.private, r.description||'']
+		'insert into room (name, private, listed, description) values ($1, $2, $3, $4) returning id',
+		[r.name, r.private, r.listed, r.description||'']
 	).then(function(row){
 		r.id = row.id;
 		return this.queryRow(
@@ -93,44 +93,36 @@ proto.storeRoom = function(r, author) {
 
 // returns an existing room found by its id
 proto.fetchRoom = function(id){
-	return this.queryRow('select id, name, description, private from room where id=$1', [id]);
+	return this.queryRow('select id, name, description, private, listed from room where id=$1', [id]);
 }
 
 // returns an existing room found by its id and the user's auth level
 proto.fetchRoomAndUserAuth = function(roomId, userId){
 	if (!roomId) throw new NoRowError();
-	return this.queryRow('select id, name, description, private, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId]);
-}
-
-// gets an array of all public rooms
-proto.listPublicRooms = function(){
-	return this.queryRows('select id, name, description from room where private is not true', []);
+	return this.queryRow('select id, name, description, private, listed, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId]);
 }
 
 // lists the rooms a user can access, either public or whose access was explicitely granted
 proto.listAccessibleRooms = function(userId){
 	return this.queryRows(
-		"select id, name, description, private, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+
+		"select id, name, description, private, listed, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+
 		" where private is false or auth is not null order by auth desc nulls last, name", [userId]
 	);
 }
 
 // lists the rooms that should make it to the front page :
-//  public, or not too empty, or where the user has a role
-// In the future a score might be computed, involving the number of messages
-//  and the age of the last one
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
-		"select r.id, name, description, private, auth, (select count (*) from message m where m.room = r.id) as messageCount"+
+		"select r.id, name, description, private, listed, auth, (select count (*) from message m where m.room = r.id) as messageCount"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  
-		//~ " where private is false or auth is not null or messageCount>10"+  // ERREUR:  la colonne « messagecount » n'existe pas
+		" where listed is true or auth is not null"+
 		" order by auth desc nulls last, private desc, messageCount desc limit 100", [userId]
 	);
 }
 
 proto.listRecentUserRooms = function(userId){
 	return this.queryRows(
-		"select m.id, m.number, m.last_created, r.name, r.description, r.private"+
+		"select m.id, m.number, m.last_created, r.name, r.description, r.private, r.listed"+
 		" from ("+
     		"select m.room as id, count(*) number, max(created) last_created"+
 			" from message m"+
@@ -138,6 +130,7 @@ proto.listRecentUserRooms = function(userId){
 			" group by room "+
 		") m"+
 		" join room r on r.id = m.id"+
+		" where r.listed is true"+
 		" order by m.last_created desc limit 10", [userId]
 	);
 }
@@ -433,7 +426,7 @@ proto.off = function(){
 proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	this.client.query(sql, args, function(err, res){
-		//~ logQuery(sql, args);
+		logQuery(sql, args);
 		if (err) {
 			resolver.reject(err);
 		} else if (res.rows.length) {

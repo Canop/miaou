@@ -2,6 +2,7 @@ CREATE TABLE room (
     id serial primary key,
     name varchar(50) UNIQUE NOT NULL,
     private boolean NOT NULL default false,
+    listed boolean NOT NULL default true,
     description text NOT NULL
 );
 

@@ -214,7 +214,7 @@ function defineAppRoutes(){
 		if (!/^.{2,20}$/.test(name)) {
 			return renderErr(res, "invalid room name");
 		}
-		var room = {id:roomId, name: name, private:req.param('private')||false, description:req.param('description')};
+		var room = {id:roomId, name: name, private:req.param('private')||false, listed:req.param('listed')||false, description:req.param('description')};
 		db.on([room, req.user])
 		.spread(db.storeRoom)
 		.then(function(){
