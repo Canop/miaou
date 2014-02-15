@@ -8,12 +8,9 @@ If you don't know vagrant, please go to its [documentation](http://www.vagrantup
 
 TL;DR:
 
-    ./vagrant-deps
     vagrant up
 
 For now, it's only been tested on OSX/Linux.
-
-The `vagrant-deps` script installs a few [Puppet](http://puppetlabs.com/) dependencies necessary for the vagrant VM to properly install itself.
 
 Once the machine is up, simply run:
 
