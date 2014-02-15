@@ -28,3 +28,7 @@ miaou.min.js
 # execution byproducts
 *.log
 dump.rdb
+
+# vagrant
+.vagrant/
+manifests/modules/*
