@@ -1,7 +1,6 @@
 var miaou = miaou || {};
 
-(function(mh){
-	
+(function(mh){	
 	
 	$(function(){
 		$('#hist').on('click', '[m]', function(){

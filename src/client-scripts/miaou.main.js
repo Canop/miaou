@@ -109,7 +109,7 @@ miaou.chat = function(){
 			lastMessage = message;
 		});
 	}
-	
+
 	function votesAbstract(message){
 		return voteLevels.map(function(l){
 			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
@@ -300,9 +300,12 @@ miaou.chat = function(){
 		$('<button>').addClass('pingButton').text('ping').click(function(){
 			$('#input').ping(username);
 		}).appendTo(this);
+		$('<button>').addClass('pmButton').text('pm').click(function(){
+			alert('NYI');
+		}).appendTo(this);
 	}
 	function hideUserHoverButtons(){
-		$('.pingButton').remove();
+		$('.pingButton,.pmButton').remove();
 	}
 	
 	$(function(){
