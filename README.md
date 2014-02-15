@@ -44,6 +44,8 @@ Miaou should work on most webkit based browsers in recent Android devices (KitKa
 
 As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Bluebird, Redis, Jade, Passport.js, jQuery, sass/scss, Moment.js, Uglify-js and nginx.
 
+A [vagrant](http://www.vagrantup.com/) configuration is available to help you set up a development environment quickly. See more information at its [documentation](vagrant.md).
+
 ## License
 
 [The MIT License](http://opensource.org/licenses/MIT)
