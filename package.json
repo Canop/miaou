@@ -1,21 +1,29 @@
 {
-    "name": "miaou",
-    "version": "0.1.0",
-    "description": "A node based chat server",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Canop/miaou"
-    },
-    "dependencies": {
-        "express": "~3.4.0",
-        "jade": "~0.35.0",
-        "pg": "~2.8.3",
-        "passport": "~0.1.17",
-        "socket.io": "~0.9.16",
-        "redis": "~0.9.1",
-        "passport-google": "~0.3.0"
-    },
-    "scripts": {
-        "start": "sh start.sh"
-    }
+  "name": "miaou",
+  "version": "0.1.0",
+  "description": "A node based chat server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Canop/miaou"
+  },
+  "dependencies": {
+    "express": "~3.4.0",
+    "jade": "~0.35.0",
+    "pg": "~2.8.3",
+    "passport": "~0.1.17",
+    "socket.io": "~0.9.16",
+    "redis": "~0.9.1",
+    "passport-google": "~0.3.0",
+    "connect": "~2.13.0",
+    "bluebird": "~1.0.4",
+    "session.socket.io": "~0.1.6",
+    "iconv-lite": "~0.2.11",
+    "connect-redis": "~1.4.6",
+    "passport-google-oauth": "~0.1.5",
+    "passport-stackexchange": "~0.1.0",
+    "passport-github": "~0.1.5"
+  },
+  "scripts": {
+    "start": "sh start.sh"
+  }
 }

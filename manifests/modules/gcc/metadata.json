@@ -1,0 +1,25 @@
+{
+  "name": "puppetlabs-gcc",
+  "version": "0.1.0",
+  "source": "git://github.com/puppetlabs/puppetlabs-gcc.git",
+  "author": "puppetlabs",
+  "license": "Apache 2.0",
+  "summary": "module for installing gcc build utils",
+  "description": "module for installing gcc build utils",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-gcc/",
+  "dependencies": [
+
+  ],
+  "types": [
+
+  ],
+  "checksums": {
+    "CHANGELOG": "24b6844c228e6cf2372aed6df1ed5378",
+    "LICENSE": "0e5ccf641e613489e66aa98271dbe798",
+    "Modulefile": "1b2c4449248962cf099d2dd8841fd9bc",
+    "manifests/init.pp": "a9f1f5821033784692ca044e5a06d278",
+    "manifests/params.pp": "952548e3463e7785d4773d180989b339",
+    "tests/init.pp": "d97b158981e1e2b710a0dec5ce8d40d0",
+    "tests/params.pp": "34196cd17ebe3b0665a909625dc384f7"
+  }
+}

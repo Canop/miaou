@@ -1,0 +1,50 @@
+{
+  "name": "puppetlabs-concat",
+  "version": "1.1.0-rc1",
+  "source": "git://github.com/puppetlabs/puppetlabs-concat.git",
+  "author": "Puppetlabs",
+  "license": "Apache 2.0",
+  "summary": "Concat module",
+  "description": "Concat module",
+  "project_page": "http://github.com/puppetlabs/puppetlabs-concat",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 3.0.0"
+    }
+  ],
+  "types": [
+
+  ],
+  "checksums": {
+    "CHANGELOG": "e8e366be83819324f167e4966a872bdc",
+    "Gemfile": "d84cde6589d6c4003f15744d1eb0a2f0",
+    "Gemfile.lock": "39cbdebd1a4a3f3e9870fd28ef4d51ab",
+    "LICENSE": "f5a76685d453424cd63dde1535811cf0",
+    "Modulefile": "974590b1e266245fd03dc100d685e38e",
+    "README.md": "3a7350be9aff722e9aa04d4abefd5f28",
+    "Rakefile": "96b14653a661e66ab8dc54c33c103a9c",
+    "files/concatfragments.rb": "6784c28044a4204efb75fe4eb759816a",
+    "files/concatfragments.sh": "e7aaa4c45316eb97d2d88b57334c4060",
+    "lib/facter/concat_basedir.rb": "ff080677e7f192b9b96911698b0b9b3d",
+    "manifests/fragment.pp": "01bd7ea14eec8a3d95d895dccbb3351a",
+    "manifests/init.pp": "fc4c46156e23b9562c85f136cf16502e",
+    "manifests/setup.pp": "1d4c51a1883f05129e56b869e0201f92",
+    "spec/spec_helper.rb": "0db89c9a486df193c0e40095422e19dc",
+    "spec/spec_helper_system.rb": "048464aba919291ea7a2041e4aad2fdd",
+    "spec/system/basic_spec.rb": "9135d9af6a21f16980ab59b58e91ed9a",
+    "spec/system/concat_spec.rb": "84379caf03862d05c68518eb351b1710",
+    "spec/system/deprecation_warnings_spec.rb": "234e697f7716d21581cdf5f1b4d87ecb",
+    "spec/system/empty_spec.rb": "36f131e28e0ac134a7c8c141814370fa",
+    "spec/system/fragment_source_spec.rb": "7fc98976cf94cd0b395846ecbf7f4889",
+    "spec/system/replace_spec.rb": "8186d0bc3f2bdb5edbb00a77846dc219",
+    "spec/system/symbolic_name_spec.rb": "c3634e28d287c4021859c556256be9fc",
+    "spec/system/warn_spec.rb": "94edec0fdd519d0911a5beb90bd1c90e",
+    "spec/unit/classes/concat_setup_spec.rb": "6d3729833715d65f3c50c2153caed6bc",
+    "spec/unit/defines/concat_fragment_spec.rb": "ced7c3b1b6d7f2e65c6dc066aa8c0527",
+    "spec/unit/defines/concat_spec.rb": "33f09af54a1d9039c5316743f34fc7bc",
+    "spec/unit/facts/concat_basedir_spec.rb": "cf00f5a07948436fa0a84d00fc098539",
+    "tests/fragment.pp": "9adc3d9ba61676066072e1b949a37dbb",
+    "tests/init.pp": "bd3ce7d2ee146744b5dbbaae8a927043"
+  }
+}

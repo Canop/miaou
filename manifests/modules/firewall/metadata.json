@@ -1,0 +1,356 @@
+{
+  "name": "puppetlabs-firewall",
+  "version": "1.0.0",
+  "summary": "Firewall Module",
+  "source": "git://github.com/puppetlabs/puppetlabs-firewall.git",
+  "project_page": "http://forge.puppetlabs.com/puppetlabs/firewall",
+  "author": "puppetlabs",
+  "license": "ASL 2.0",
+  "operatingsystem_support": [
+    "RedHat",
+    "Debian",
+    "Ubuntu",
+    "SuSE",
+    "SLED"
+  ],
+  "puppet_version": [
+    2.7,
+    3.0,
+    3.1,
+    3.2,
+    3.3
+  ],
+  "dependencies": [
+
+  ],
+  "description": "Manages Firewalls such as iptables",
+  "types": [
+    {
+      "name": "firewall",
+      "doc": "This type provides the capability to manage firewall rules within\npuppet.\n\n**Autorequires:**\n\nIf Puppet is managing the iptables or ip6tables chains specified in the\n`chain` or `jump` parameters, the firewall resource will autorequire\nthose firewallchain resources.\n\nIf Puppet is managing the iptables or iptables-persistent packages, and\nthe provider is iptables or ip6tables, the firewall resource will\nautorequire those packages to ensure that any required binaries are\ninstalled.",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "      Manage the state of this rule. The default action is *present*.\n\nValid values are `present`, `absent`. "
+        },
+        {
+          "name": "action",
+          "doc": "This is the action to perform on a match. Can be one of:\n\n* accept - the packet is accepted\n* reject - the packet is rejected with a suitable ICMP response\n* drop - the packet is dropped\n\nIf you specify no value it will simply match the rule but perform no\naction unless you provide a provider specific parameter (such as *jump*).\n\nValid values are `accept`, `reject`, `drop`. "
+        },
+        {
+          "name": "source",
+          "doc": "The source address. For example:\n\n    source => '192.168.2.0/24'\n\nYou can also negate a mask by putting ! in front. For example:\n\n    source => '! 192.168.2.0/24'\n\nThe source can also be an IPv6 address if your provider supports it.\n\n"
+        },
+        {
+          "name": "src_range",
+          "doc": "The source IP range. For example:\n\n    src_range => '192.168.1.1-192.168.1.10'\n\nThe source IP range is must in 'IP1-IP2' format.\n\nValues can match `/^((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)-((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)/`.\n\nRequires features iprange."
+        },
+        {
+          "name": "destination",
+          "doc": "The destination address to match. For example:\n\n    destination => '192.168.1.0/24'\n\nYou can also negate a mask by putting ! in front. For example:\n\n    destination  => '! 192.168.2.0/24'\n\nThe destination can also be an IPv6 address if your provider supports it.\n\n"
+        },
+        {
+          "name": "dst_range",
+          "doc": "The destination IP range. For example:\n\n    dst_range => '192.168.1.1-192.168.1.10'\n\nThe destination IP range is must in 'IP1-IP2' format.\n\nValues can match `/^((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)-((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)/`.\n\nRequires features iprange."
+        },
+        {
+          "name": "sport",
+          "doc": "The source port to match for this filter (if the protocol supports\nports). Will accept a single element or an array.\n\nFor some firewall providers you can pass a range of ports in the format:\n\n    <start_number>-<ending_number>\n\nFor example:\n\n    1-1024\n\nThis would cover ports 1 to 1024.\n\n"
+        },
+        {
+          "name": "dport",
+          "doc": "The destination port to match for this filter (if the protocol supports\nports). Will accept a single element or an array.\n\nFor some firewall providers you can pass a range of ports in the format:\n\n    <start_number>-<ending_number>\n\nFor example:\n\n    1-1024\n\nThis would cover ports 1 to 1024.\n\n"
+        },
+        {
+          "name": "port",
+          "doc": "The destination or source port to match for this filter (if the protocol\nsupports ports). Will accept a single element or an array.\n\nFor some firewall providers you can pass a range of ports in the format:\n\n    <start_number>-<ending_number>\n\nFor example:\n\n    1-1024\n\nThis would cover ports 1 to 1024.\n\n"
+        },
+        {
+          "name": "dst_type",
+          "doc": "The destination address type. For example:\n\n    dst_type => 'LOCAL'\n\nCan be one of:\n\n* UNSPEC - an unspecified address\n* UNICAST - a unicast address\n* LOCAL - a local address\n* BROADCAST - a broadcast address\n* ANYCAST - an anycast packet\n* MULTICAST - a multicast address\n* BLACKHOLE - a blackhole address\n* UNREACHABLE - an unreachable address\n* PROHIBIT - a prohibited address\n* THROW - undocumented\n* NAT - undocumented\n* XRESOLVE - undocumented\n\nValid values are `UNSPEC`, `UNICAST`, `LOCAL`, `BROADCAST`, `ANYCAST`, `MULTICAST`, `BLACKHOLE`, `UNREACHABLE`, `PROHIBIT`, `THROW`, `NAT`, `XRESOLVE`. \n\nRequires features address_type."
+        },
+        {
+          "name": "src_type",
+          "doc": "The source address type. For example:\n\n    src_type => 'LOCAL'\n\nCan be one of:\n\n* UNSPEC - an unspecified address\n* UNICAST - a unicast address\n* LOCAL - a local address\n* BROADCAST - a broadcast address\n* ANYCAST - an anycast packet\n* MULTICAST - a multicast address\n* BLACKHOLE - a blackhole address\n* UNREACHABLE - an unreachable address\n* PROHIBIT - a prohibited address\n* THROW - undocumented\n* NAT - undocumented\n* XRESOLVE - undocumented\n\nValid values are `UNSPEC`, `UNICAST`, `LOCAL`, `BROADCAST`, `ANYCAST`, `MULTICAST`, `BLACKHOLE`, `UNREACHABLE`, `PROHIBIT`, `THROW`, `NAT`, `XRESOLVE`. \n\nRequires features address_type."
+        },
+        {
+          "name": "proto",
+          "doc": "The specific protocol to match for this rule. By default this is\n*tcp*.\n\nValid values are `tcp`, `udp`, `icmp`, `ipv6-icmp`, `esp`, `ah`, `vrrp`, `igmp`, `ipencap`, `ospf`, `gre`, `all`. "
+        },
+        {
+          "name": "tcp_flags",
+          "doc": "      Match when the TCP flags are as specified.\n      Is a string with a list of comma-separated flag names for the mask,\n      then a space, then a comma-separated list of flags that should be set.\n      The flags are: SYN ACK FIN RST URG PSH ALL NONE\n      Note that you specify them in the order that iptables --list-rules\n      would list them to avoid having puppet think you changed the flags.\n      Example: FIN,SYN,RST,ACK SYN matches packets with the SYN bit set and the\nACK,RST and FIN bits cleared.  Such packets are used to request\n               TCP  connection initiation.\n\n\n\nRequires features tcp_flags."
+        },
+        {
+          "name": "chain",
+          "doc": "Name of the chain to use. Can be one of the built-ins:\n\n* INPUT\n* FORWARD\n* OUTPUT\n* PREROUTING\n* POSTROUTING\n\nOr you can provide a user-based chain.\n\nThe default value is 'INPUT'.\n\nValues can match `/^[a-zA-Z0-9\\-_]+$/`.\n\nRequires features iptables."
+        },
+        {
+          "name": "table",
+          "doc": "Table to use. Can be one of:\n\n* nat\n* mangle\n* filter\n* raw\n* rawpost\n\nBy default the setting is 'filter'.\n\nValid values are `nat`, `mangle`, `filter`, `raw`, `rawpost`. \n\nRequires features iptables."
+        },
+        {
+          "name": "jump",
+          "doc": "The value for the iptables --jump parameter. Normal values are:\n\n* QUEUE\n* RETURN\n* DNAT\n* SNAT\n* LOG\n* MASQUERADE\n* REDIRECT\n* MARK\n\nBut any valid chain name is allowed.\n\nFor the values ACCEPT, DROP and REJECT you must use the generic\n'action' parameter. This is to enfore the use of generic parameters where\npossible for maximum cross-platform modelling.\n\nIf you set both 'accept' and 'jump' parameters, you will get an error as\nonly one of the options should be set.\n\n\n\nRequires features iptables."
+        },
+        {
+          "name": "iniface",
+          "doc": "      Input interface to filter on.\n\nValues can match `/^[a-zA-Z0-9\\-\\._\\+]+$/`.\n\nRequires features interface_match."
+        },
+        {
+          "name": "outiface",
+          "doc": "      Output interface to filter on.\n\nValues can match `/^[a-zA-Z0-9\\-\\._\\+]+$/`.\n\nRequires features interface_match."
+        },
+        {
+          "name": "tosource",
+          "doc": "When using jump => \"SNAT\" you can specify the new source address using\nthis parameter.\n\n\n\nRequires features snat."
+        },
+        {
+          "name": "todest",
+          "doc": "When using jump => \"DNAT\" you can specify the new destination address\nusing this paramter.\n\n\n\nRequires features dnat."
+        },
+        {
+          "name": "toports",
+          "doc": "      For DNAT this is the port that will replace the destination port.\n\n\n\nRequires features dnat."
+        },
+        {
+          "name": "random",
+          "doc": "When using a jump value of \"MASQUERADE\", \"DNAT\", \"REDIRECT\", or \"SNAT\"\nthis boolean will enable randomized port mapping.\n\nValid values are `true`, `false`. \n\nRequires features dnat."
+        },
+        {
+          "name": "reject",
+          "doc": "When combined with jump => \"REJECT\" you can specify a different icmp\nresponse to be sent back to the packet sender.\n\n\n\nRequires features reject_type."
+        },
+        {
+          "name": "log_level",
+          "doc": "When combined with jump => \"LOG\" specifies the system log level to log\nto.\n\n\n\nRequires features log_level."
+        },
+        {
+          "name": "log_prefix",
+          "doc": "When combined with jump => \"LOG\" specifies the log prefix to use when\nlogging.\n\n\n\nRequires features log_prefix."
+        },
+        {
+          "name": "icmp",
+          "doc": "When matching ICMP packets, this is the type of ICMP packet to match.\n\nA value of \"any\" is not supported. To achieve this behaviour the\nparameter should simply be omitted or undefined.\n\n\n\nRequires features icmp_match."
+        },
+        {
+          "name": "state",
+          "doc": "Matches a packet based on its state in the firewall stateful inspection\ntable. Values can be:\n\n* INVALID\n* ESTABLISHED\n* NEW\n* RELATED\n\nValid values are `INVALID`, `ESTABLISHED`, `NEW`, `RELATED`. \n\nRequires features state_match."
+        },
+        {
+          "name": "ctstate",
+          "doc": "Matches a packet based on its state in the firewall stateful inspection\ntable, using the conntrack module. Values can be:\n\n* INVALID\n* ESTABLISHED\n* NEW\n* RELATED\n\nValid values are `INVALID`, `ESTABLISHED`, `NEW`, `RELATED`. \n\nRequires features state_match."
+        },
+        {
+          "name": "hop_limit",
+          "doc": "      Hop limiting value for matched packets.\n\nValues can match `/^\\d+$/`.\n\nRequires features hop_limiting."
+        },
+        {
+          "name": "limit",
+          "doc": "Rate limiting value for matched packets. The format is:\nrate/[/second/|/minute|/hour|/day].\n\nExample values are: '50/sec', '40/min', '30/hour', '10/day'.\"\n\n\n\nRequires features rate_limiting."
+        },
+        {
+          "name": "burst",
+          "doc": "      Rate limiting burst value (per second) before limit checks apply.\n\nValues can match `/^\\d+$/`.\n\nRequires features rate_limiting."
+        },
+        {
+          "name": "uid",
+          "doc": "UID or Username owner matching rule.  Accepts a string argument\nonly, as iptables does not accept multiple uid in a single\nstatement.\n\n\n\nRequires features owner."
+        },
+        {
+          "name": "gid",
+          "doc": "GID or Group owner matching rule.  Accepts a string argument\nonly, as iptables does not accept multiple gid in a single\nstatement.\n\n\n\nRequires features owner."
+        },
+        {
+          "name": "set_mark",
+          "doc": "Set the Netfilter mark value associated with the packet.  Accepts either of:\nmark/mask or mark.  These will be converted to hex if they are not already.\n\n\n\nRequires features mark."
+        },
+        {
+          "name": "pkttype",
+          "doc": "      Sets the packet type to match.\n\nValid values are `unicast`, `broadcast`, `multicast`. \n\nRequires features pkttype."
+        },
+        {
+          "name": "isfragment",
+          "doc": "      Set to true to match tcp fragments (requires type to be set to tcp)\n\nValid values are `true`, `false`. \n\nRequires features isfragment."
+        },
+        {
+          "name": "recent",
+          "doc": "Enable the recent module. Takes as an argument one of set, update,\nrcheck or remove. For example:\n\n  # If anyone's appeared on the 'badguy' blacklist within\n  # the last 60 seconds, drop their traffic, and update the timestamp.\n  firewall { '100 Drop badguy traffic':\n    recent   => 'update',\n    rseconds => 60,\n    rsource  => true,\n    rname    => 'badguy',\n    action   => 'DROP',\n    chain    => 'FORWARD',\n  }\n  # No-one should be sending us traffic on eth0 from localhost\n  # Blacklist them\n  firewall { '101 blacklist strange traffic':\n    recent      => 'set',\n    rsource     => true,\n    rname       => 'badguy',\n    destination => '127.0.0.0/8',\n    iniface     => 'eth0',\n    action      => 'DROP',\n    chain       => 'FORWARD',\n  }\n\nValid values are `set`, `update`, `rcheck`, `remove`. \n\nRequires features recent_limiting."
+        },
+        {
+          "name": "rdest",
+          "doc": "Recent module; add the destination IP address to the list.\nMust be boolean true.\n\nValid values are `true`, `false`. \n\nRequires features recent_limiting."
+        },
+        {
+          "name": "rsource",
+          "doc": "Recent module; add the source IP address to the list.\nMust be boolean true.\n\nValid values are `true`, `false`. \n\nRequires features recent_limiting."
+        },
+        {
+          "name": "rname",
+          "doc": "      Recent module; The name of the list. Takes a string argument.\n\n\n\nRequires features recent_limiting."
+        },
+        {
+          "name": "rseconds",
+          "doc": "Recent module; used in conjunction with one of `recent => 'rcheck'` or\n`recent => 'update'`. When used, this will narrow the match to only\nhappen when the address is in the list and was seen within the last given\nnumber of seconds.\n\n\n\nRequires features recent_limiting."
+        },
+        {
+          "name": "reap",
+          "doc": "Recent module; can only be used in conjunction with the `rseconds`\nattribute. When used, this will cause entries older than 'seconds' to be\npurged.  Must be boolean true.\n\n\n\nRequires features recent_limiting."
+        },
+        {
+          "name": "rhitcount",
+          "doc": "Recent module; used in conjunction with `recent => 'update'` or `recent\n=> 'rcheck'. When used, this will narrow the match to only happen when\nthe address is in the list and packets had been received greater than or\nequal to the given value.\n\n\n\nRequires features recent_limiting."
+        },
+        {
+          "name": "rttl",
+          "doc": "Recent module; may only be used in conjunction with one of `recent =>\n'rcheck'` or `recent => 'update'`. When used, this will narrow the match\nto only happen when the address is in the list and the TTL of the current\npacket matches that of the packet which hit the `recent => 'set'` rule.\nThis may be useful if you have problems with people faking their source\naddress in order to DoS you via this module by disallowing others access\nto your site by sending bogus packets to you.  Must be boolean true.\n\nValid values are `true`, `false`. \n\nRequires features recent_limiting."
+        },
+        {
+          "name": "socket",
+          "doc": "If true, matches if an open socket can be found by doing a coket lookup\non the packet.\n\nValid values are `true`, `false`. \n\nRequires features socket."
+        },
+        {
+          "name": "ishasmorefrags",
+          "doc": "      If true, matches if the packet has it's 'more fragments' bit set. ipv6.\n\nValid values are `true`, `false`. \n\nRequires features ishasmorefrags."
+        },
+        {
+          "name": "islastfrag",
+          "doc": "      If true, matches if the packet is the last fragment. ipv6.\n\nValid values are `true`, `false`. \n\nRequires features islastfrag."
+        },
+        {
+          "name": "isfirstfrag",
+          "doc": "If true, matches if the packet is the first fragment.\nSadly cannot be negated. ipv6.\n\nValid values are `true`, `false`. \n\nRequires features isfirstfrag."
+        },
+        {
+          "name": "ipsec_policy",
+          "doc": "\t  \t Sets the ipsec policy type\n\nValid values are `none`, `ipsec`. \n\nRequires features ipsec_policy."
+        },
+        {
+          "name": "ipsec_dir",
+          "doc": "\t  \t Sets the ipsec policy direction\n\nValid values are `in`, `out`. \n\nRequires features ipsec_dir."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "The canonical name of the rule. This name is also used for ordering\nso make sure you prefix the rule with a number:\n\n    000 this runs first\n    999 this runs last\n\nDepending on the provider, the name of the rule can be stored using\nthe comment feature of the underlying firewall subsystem.\n\nValues can match `/^\\d+[[:alpha:][:digit:][:punct:][:space:]]+$/`."
+        },
+        {
+          "name": "line",
+          "doc": "      Read-only property for caching the rule line.\n\n"
+        }
+      ],
+      "providers": [
+        {
+          "name": "ip6tables",
+          "doc": "Ip6tables type provider\n\n* Required binaries: `ip6tables-save`, `ip6tables`.\n* Supported features: `dnat`, `hop_limiting`, `icmp_match`, `interface_match`, `iptables`, `isfirstfrag`, `ishasmorefrags`, `islastfrag`, `log_level`, `log_prefix`, `mark`, `owner`, `pkttype`, `rate_limiting`, `recent_limiting`, `reject_type`, `snat`, `state_match`, `tcp_flags`."
+        },
+        {
+          "name": "iptables",
+          "doc": "Iptables type provider\n\n* Required binaries: `iptables-save`, `iptables`.\n* Default for `kernel` == `linux`.\n* Supported features: `address_type`, `dnat`, `icmp_match`, `interface_match`, `iprange`, `ipsec_dir`, `ipsec_policy`, `iptables`, `isfragment`, `log_level`, `log_prefix`, `mark`, `owner`, `pkttype`, `rate_limiting`, `recent_limiting`, `reject_type`, `snat`, `socket`, `state_match`, `tcp_flags`."
+        }
+      ]
+    },
+    {
+      "name": "firewallchain",
+      "doc": "This type provides the capability to manage rule chains for firewalls.\n\nCurrently this supports only iptables, ip6tables and ebtables on Linux. And\nprovides support for setting the default policy on chains and tables that\nallow it.\n\n**Autorequires:**\nIf Puppet is managing the iptables or iptables-persistent packages, and\nthe provider is iptables_chain, the firewall resource will autorequire\nthose packages to ensure that any required binaries are installed.",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.\n\nValid values are `present`, `absent`. "
+        },
+        {
+          "name": "policy",
+          "doc": "This is the action to when the end of the chain is reached.\nIt can only be set on inbuilt chains (INPUT, FORWARD, OUTPUT,\nPREROUTING, POSTROUTING) and can be one of:\n\n* accept - the packet is accepted\n* drop - the packet is dropped\n* queue - the packet is passed userspace\n* return - the packet is returned to calling (jump) queue\n           or the default of inbuilt chains\n\nValid values are `accept`, `drop`, `queue`, `return`. "
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "The canonical name of the chain.\n\nFor iptables the format must be {chain}:{table}:{protocol}.\n\n"
+        },
+        {
+          "name": "purge",
+          "doc": "      Purge unmanaged firewall rules in this chain\n\nValid values are `false`, `true`. "
+        },
+        {
+          "name": "ignore",
+          "doc": "Regex to perform on firewall rules to exempt unmanaged rules from purging (when enabled).\nThis is matched against the output of `iptables-save`.\n\nThis can be a single regex, or an array of them.\nTo support flags, use the ruby inline flag mechanism.\nMeaning a regex such as\n  /foo/i\ncan be written as\n  '(?i)foo' or '(?i:foo)'\n\nFull example:\nfirewallchain { 'INPUT:filter:IPv4':\n  purge => true,\n  ignore => [\n    '-j fail2ban-ssh', # ignore the fail2ban jump rule\n    '--comment \"[^\"]*(?i:ignore)[^\"]*\"', # ignore any rules with \"ignore\" (case insensitive) in the comment in the rule\n  ],\n}\n\n"
+        }
+      ],
+      "providers": [
+        {
+          "name": "iptables_chain",
+          "doc": "Iptables chain provider\n\n* Required binaries: `ebtables-save`, `ebtables`, `ip6tables-save`, `ip6tables`, `iptables-save`, `iptables`.\n* Default for `kernel` == `linux`.\n* Supported features: `iptables_chain`, `policy`."
+        }
+      ]
+    }
+  ],
+  "checksums": {
+    "CONTRIBUTING.md": "346969b756bc432a2a2fab4307ebb93a",
+    "Changelog": "c5dd3154e7017a9b48e0a61c23681648",
+    "Gemfile": "450446f9b88dab151cab2cdf1690b1a6",
+    "Gemfile.lock": "7f852ff968e33f8b6c08f0e6660e151e",
+    "LICENSE": "ade7f2bb88b5b4f034152822222ec314",
+    "Modulefile": "098d56d405b4e949f3bf431942a4ae73",
+    "README.markdown": "2c2661559368753804318e39bbea9fc5",
+    "Rakefile": "f939a830f3e97bea4ebfa5773af890d2",
+    "lib/facter/ip6tables_version.rb": "091123ad703f1706686bca4398c5b06f",
+    "lib/facter/iptables_persistent_version.rb": "b7a47827cd3d3bb1acbd526a31da3acb",
+    "lib/facter/iptables_version.rb": "facbd760223f236538b731c1d1f6cf8f",
+    "lib/puppet/provider/firewall/ip6tables.rb": "5ad995b85053fba4576aca96e6d0dc9d",
+    "lib/puppet/provider/firewall/iptables.rb": "74c89e3b2032478d8ba793cb75096b07",
+    "lib/puppet/provider/firewall.rb": "32d2f5e5dcc082986b82ef26a119038b",
+    "lib/puppet/provider/firewallchain/iptables_chain.rb": "194bde3d3992a37aa7d76e431d251178",
+    "lib/puppet/type/firewall.rb": "1c37cfa054b0640aa4febfdc76c402c8",
+    "lib/puppet/type/firewallchain.rb": "548676cc7da53598eb24268ebac38a0d",
+    "lib/puppet/util/firewall.rb": "1200b76a24e3d7bc1520e39005e6848e",
+    "lib/puppet/util/ipcidr.rb": "e1160dfd6e73fc5ef2bb8abc291f6fd5",
+    "manifests/init.pp": "ba3e697f00fc3d4e7e5b9c7fdbc6a89d",
+    "manifests/linux/archlinux.pp": "1257fe335ecafa0629b285dc8621cf75",
+    "manifests/linux/debian.pp": "626f0fd23f2f451ca14e2b7f690675fe",
+    "manifests/linux/redhat.pp": "44ce25057ae8d814465260767b39c414",
+    "manifests/linux.pp": "7380519131fa8daae0ef45f9a162aff7",
+    "spec/acceptance/basic_spec.rb": "9c19898ff3922fe12eec3d7276d46543",
+    "spec/acceptance/change_source_spec.rb": "0be26a6f0f3550e8b12049fe6c21ae35",
+    "spec/acceptance/class_spec.rb": "43e3c4d143cb01df17425aff51e6a164",
+    "spec/acceptance/firewall_spec.rb": "de2d52e24052c2d71da2c960b39a6671",
+    "spec/acceptance/firewallchain_spec.rb": "9a7128911aa17cfeed5fa5c8062138d9",
+    "spec/acceptance/ip6_fragment_spec.rb": "3b5e3a751e82f5771ec560174beb5d24",
+    "spec/acceptance/isfragment_spec.rb": "d4e986141f671cc59a05b6fb91a04a9e",
+    "spec/acceptance/nodesets/centos-59-x64.yml": "879c50ab100b927bdbbc130f23baaff7",
+    "spec/acceptance/nodesets/centos-64-x64-fusion.yml": "f5da18ffa623c6a13d9f48521b1bfa39",
+    "spec/acceptance/nodesets/centos-64-x64-pe.yml": "ec075d95760df3d4702abea1ce0a829b",
+    "spec/acceptance/nodesets/centos-64-x64.yml": "092dd2c588a9f87fa1fb12997c0723ef",
+    "spec/acceptance/nodesets/debian-607-x64.yml": "d566bf76f534e2af7c9a4605316d232c",
+    "spec/acceptance/nodesets/debian-70rc1-x64.yml": "31ccca73af7b74e1cc2fb0035c230b2c",
+    "spec/acceptance/nodesets/default.yml": "092dd2c588a9f87fa1fb12997c0723ef",
+    "spec/acceptance/nodesets/fedora-18-x64.yml": "acc126fa764c39a3b1df36e9224a21d9",
+    "spec/acceptance/nodesets/sles-11sp1-x64.yml": "fa0046bd89c1ab4ba9521ad79db234cd",
+    "spec/acceptance/nodesets/ubuntu-server-10044-x64.yml": "dc0da2d2449f66c8fdae16593811504f",
+    "spec/acceptance/nodesets/ubuntu-server-12042-x64.yml": "d30d73e34cd50b043c7d14e305955269",
+    "spec/acceptance/params_spec.rb": "8c2719621c3c352e78417d966f971b9a",
+    "spec/acceptance/purge_spec.rb": "dc9f999d810f5e069c1ca6287aa1b2a2",
+    "spec/acceptance/resource_cmd_spec.rb": "b3d0aa09125e13b0d0bf56d0faa437e2",
+    "spec/acceptance/rules_spec.rb": "4bb277a8121c33ea34fad8e900ba8ba9",
+    "spec/acceptance/socket_spec.rb": "ddb67978e37956f42f56535f6312f0a4",
+    "spec/acceptance/standard_usage_spec.rb": "66d7bae5a3dd4b595c1aa236c1a7b8b0",
+    "spec/fixtures/ip6tables/conversion_hash.rb": "0d88a4226fdf28dd55e30f7e6d4a1cb7",
+    "spec/fixtures/iptables/conversion_hash.rb": "4875f7b75948746063c8be8d8af05fa8",
+    "spec/spec_helper.rb": "faae8467928b93bd251a1a66e1eedbe5",
+    "spec/spec_helper_acceptance.rb": "b456214a7299e8cdc9c3c488cf49f398",
+    "spec/unit/classes/firewall_linux_archlinux_spec.rb": "1c600a9852ec328b14cb15b0630ed5ff",
+    "spec/unit/classes/firewall_linux_debian_spec.rb": "6334936fb16223cf15f637083c67850e",
+    "spec/unit/classes/firewall_linux_redhat_spec.rb": "f41b21caf6948f3ac08f42c1bc59ba1b",
+    "spec/unit/classes/firewall_linux_spec.rb": "b934ab4e0a806f29bfdabd2369e41d0e",
+    "spec/unit/classes/firewall_spec.rb": "65e27f1c85066641d65d52c35c1d46cf",
+    "spec/unit/facter/iptables_persistent_version_spec.rb": "e08c68b6400c51735a3ac1cc4acf2d15",
+    "spec/unit/facter/iptables_spec.rb": "5265be1e6ec652184de8b314ae396d1a",
+    "spec/unit/puppet/provider/iptables_chain_spec.rb": "5b5dbc4cea409f6f40ef3f18e46fa270",
+    "spec/unit/puppet/provider/iptables_spec.rb": "3b922db8c897ed158da202e71105de82",
+    "spec/unit/puppet/type/firewall_spec.rb": "a57dc53289de01f80611292f5367b4ae",
+    "spec/unit/puppet/type/firewallchain_spec.rb": "ea82405b12b9c0069a6b38a48a6a544a",
+    "spec/unit/puppet/util/firewall_spec.rb": "fc2679265def001f3531817c1f34d4b9",
+    "spec/unit/puppet/util/ipcidr_spec.rb": "1a6eeb2dd7c9634fcfb60d8ead6e1d79"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "thomasvandoren-redis",
+  "version": "0.0.9",
+  "source": "UNKNOWN",
+  "author": "Thomas Van Doren",
+  "license": "BSD",
+  "summary": "UNKNOWN",
+  "description": "UNKNOWN",
+  "project_page": "https://github.com/thomasvandoren/puppet-redis",
+  "dependencies": [
+    {
+      "name": "maestrodev/wget"
+    },
+    {
+      "name": "puppetlabs/gcc"
+    }
+  ],
+  "types": [
+
+  ],
+  "checksums": {
+    "CHANGES.md": "a83327f7813eb57b98087a44d7970e8c",
+    "Modulefile": "e7ebaa221e12d5f0cdb2ce2215c49f46",
+    "README.md": "7ff91595e0999d4c8ac943eafaba1069",
+    "Rakefile": "0254db5d3fc38c67a2c160d7296a24f8",
+    "TODO.md": "7f1cda7d7df6113c2ee88a5c8e612870",
+    "files/redis-2.4.13.tar.gz": "f8a160f8a6fe7d7e8ebb4c23ff583d71",
+    "files/redis.conf": "403d36824791900fce32f2fd3635cd23",
+    "manifests/init.pp": "580cb901646eb87bfd1f355ed66a0148",
+    "spec/classes/redis_spec.rb": "6b6ef80011e84c2c34703c2300c2c832",
+    "spec/spec_helper.rb": "3ea886dd135e120afa31e0aab12e85b0",
+    "templates/redis.init.erb": "a4ec03e75fed643eee8d8f8a5407c3ae",
+    "templates/redis_port.conf.erb": "8afbcac62c7471beb7e98936b0f6e1e2",
+    "tests/init.pp": "7df9826add5de77d910d515c7f4f0993"
+  }
+}
