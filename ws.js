@@ -198,7 +198,26 @@ function handleUserInRoom(socket, completeUser, db){
 		.then(function(results){
 			reply(results);
 		}).finally(db.off);
-		
+	}).on('hist', function(search, reply){
+		db.on(room.id)
+		.then(db.messageHistogram)
+		.then(function(hist){
+			return [
+				hist,
+				search.pattern ? this.messageHistogram(room.id, search.pattern, 'english') : null
+			]
+		}).spread(function(hist, shist){
+			if (shist){
+				var ih = 0, ish = 0;
+				for (var ih=0, ish=0; ish<shist.length; ish++) {
+					var sh = shist[ish];
+					while (hist[ih].d<sh.d) ih++;
+					hist[ih].sn = sh.n;
+					hist[ih].sm = sh.m;
+				}
+			}
+			reply(hist);
+		}).finally(db.off);
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		console.log(completeUser.name, "disconnected");
 		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);

@@ -2,7 +2,7 @@ var miaou = miaou || {};
 (function(){
 
 	// converts from the message exchange format (mainly a restricted set of Markdown) to HTML 
-	miaou.mdToHtml = function(md, withGuiFunctions){
+	miaou.mdToHtml = function(md, withGuiFunctions, username){
 		var nums=[];
 		return md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n').map(function(s,l){
 			var m;
@@ -35,6 +35,7 @@ var miaou = miaou || {};
 					.replace(/__(.+?)__/g, "<b>$1</b>")
 					.replace(/_([^_]+)_/g, "<i>$1</i>")
 					.replace(/---(.+?)---/g, "<strike>$1</strike>")
+					.replace(/([^.!?:;]*)(\/me)([^.!?:;]*)/g, '<span class=slashme>$1'+(username||'/me')+'$3</span>')
 					+ c;
 				});
 			}).join('');

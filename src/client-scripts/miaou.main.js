@@ -90,12 +90,14 @@ miaou.chat = function(){
 	}
 
 	function isAtBottom(){
-		var $messages = $('#messages'), lastMessage = $messages.find('.message').last(), pt = parseInt($messages.css('padding-top'));
-		return lastMessage.length &&lastMessage.offset().top+lastMessage.height() < $messages.offset().top+ $messages.height() + pt + 5;
+		var $scroller = $('#messagescroller'), $messages = $('#messages'),
+			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
+		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
 	}
 	var scrollToBottom = function(){
 		setTimeout(function(){ // because it doesn't always work on Firefox without this 
-			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight)
+			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight);
+			miaou.hist.showPage();
 		},10);
 	}
 
@@ -118,7 +120,7 @@ miaou.chat = function(){
 	function showMessages(messages, $div) {
 		$div.empty();
 		messages.forEach(function(m){
-			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content));
+			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content, false, m.authorname));
 			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
 				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment((m.created+timeOffset)*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
 			).appendTo($div)
@@ -199,7 +201,7 @@ miaou.chat = function(){
 		}
 		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
 			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
-			$content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true)).appendTo($md);
+			$content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true, message.authorname)).appendTo($md);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -227,6 +229,7 @@ miaou.chat = function(){
 			}
 			$user.height(h).css('line-height',h+'px');
 			if (wasAtBottom) scrollToBottom();
+			else miaou.hist.showPage();
 		}
 		resize();
 		$content.find('img').load(resize);
@@ -291,18 +294,19 @@ miaou.chat = function(){
 		($('.messagemenu, .editButton, .replyButton', this).length ? hideMessageMenus : showMessageMenus).call(this);
 	}
 	
-	function showUserPingButton(){
+	function showUserHoverButtons(){
 		var username = $(this).data('user').name;
+		if (username===me.name) return;
 		$('<button>').addClass('pingButton').text('ping').click(function(){
 			$('#input').ping(username);
 		}).appendTo(this);
 	}
-	function hideUserPingButtons(){
+	function hideUserHoverButtons(){
 		$('.pingButton').remove();
 	}
 	
 	$(function(){
-		var socket = io.connect(location.origin);
+		var socket = miaou.socket = io.connect(location.origin);
 
 		function clearPings() {
 			// clear the pings of the current room and ask for the ones of the other rooms
@@ -341,12 +345,13 @@ miaou.chat = function(){
 				var mtop = $message.offset().top;
 				if (mtop<0 || mtop>$messages.height()) $messages.animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
 				setTimeout(function(){ $message.removeClass('goingto'); }, 3000);
+				miaou.hist.showPage();
 			}, 300);
 		}
 
 		// ensures the messages and the messages around it are loaded,
 		//  and then scroll to it and flashes it
-		function focusMessage(messageId){
+		miaou.focusMessage = function(messageId){
 			var $messages = $('#messages .message'), l = $messages.length,
 				beforeId = 0, afterId = 0, mids = new Array($messages.length);
 			for (var i=0; i<l; i++) {
@@ -412,7 +417,7 @@ miaou.chat = function(){
 				socket.emit('enter', room.id, setEnterTime);
 			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
 		}).on('welcome', function(){
-			if (location.hash) focusMessage(+location.hash.slice(1));
+			if (location.hash) miaou.focusMessage(+location.hash.slice(1));
 			else scrollToBottom();
 		}).on('disconnect', function(){
 			console.log('DISCONNECT');
@@ -434,7 +439,7 @@ miaou.chat = function(){
 		}).on('mouseleave', '.reply', function(){
 			$('.target').removeClass('target');
 		}).on('click', '.reply', function(e){
-			focusMessage(+$(this).attr('to'));
+			miaou.focusMessage(+$(this).attr('to'));
 			e.stopPropagation();			
 		}).on('click', 'a', function(e){
 			e.stopPropagation();
@@ -457,6 +462,10 @@ miaou.chat = function(){
 			socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
 		});
 		
+		if ($('#hist').length) {
+			$('#messagescroller').on('scroll', miaou.hist.showPage);
+		}
+		
 		if ($(document.body).hasClass('mobile')) {
 			$('#messages').on('click', '.message', toggleMessageMenus)
 			.on('click', '.user,.profile', miaou.toggleUserProfile);
@@ -469,12 +478,12 @@ miaou.chat = function(){
 			.on('mouseleave', '.user', function(e){
 				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
 			});
-			$('#users').on('mouseenter', '.user', showUserPingButton)
-			.on('mouseleave', '.user', hideUserPingButtons);
+			$('#users').on('mouseenter', '.user', showUserHoverButtons)
+			.on('mouseleave', '.user', hideUserHoverButtons);
 		}
 		
 		$('#notablemessages, #searchresults').on('click', '.message', function(e){
-			focusMessage(+$(this).attr('mid'));
+			miaou.focusMessage(+$(this).attr('mid'));
 			e.stopPropagation();			
 		}).on('click', '.opener', opener).on('click', '.closer', closer);
 
@@ -495,18 +504,22 @@ miaou.chat = function(){
 			$('#previewpanel').hide();
 		});
 		$('#input').on('change keyup', function(){
-			$('#preview').html(miaou.mdToHtml(this.value));
+			$('#preview').html(miaou.mdToHtml(this.value, false, me.name));
 		});
 		
 		$('#searchInput').on('keyup', function(e){
 			if (e.which===27) $(this).val('');
-			if (this.value.trim().length) {
-				socket.emit('search', {pattern:this.value.trim()}, function(results){
+			var pat = this.value.trim();
+			if (pat) {
+				socket.emit('search', {pattern:pat}, function(results){
 					showMessages(results, $('#searchresults'));
 				});
+				miaou.hist.search(pat);
 			} else {
-				$('#searchresults').empty();				
+				$('#searchresults').empty();
+				miaou.hist.clearSearch();
 			}
+			
 		});
 
 		console.log('Miaou!');

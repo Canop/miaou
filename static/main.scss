@@ -8,6 +8,7 @@ $input-height: 80px; // height of input
 $minput-height: 50px; // height of input in mobile interface
 $left-panel-width: 150px;
 $right-panel-width: 320px;
+$hist-width: 200px;
 $profile-bg-color: #fffcc5;
 $notifications-bg-color: #fffa9e;
 body {
@@ -83,12 +84,73 @@ body {
 }
 #center {
 	display:flex;
-	flex-direction: column;
+	flex-direction: row;
 	top:0;
 	left: $left-panel-width;
 	right: $right-panel-width;
 	bottom: 0;
+}
+#vert-center {
+	display:flex;
+	flex-direction: column;
 	background: white;
+	height: 100%;
+	flex-grow: 1;
+	flex-basis: 0;
+}
+#hist {
+	flex-basis: $hist-width;
+	flex-grow: 0;
+	background: rgba($bg-color,.8);
+	display: none;
+	overflow-y: scroll;
+	font-size: 70%;
+	color: #655;
+	.month {
+		position: relative;
+		border-bottom: thin dotted rgba(#655,0.4);
+		.label {
+			position: absolute;
+			height: 100%;
+			left: 1px; top: 0;
+			z-index: 2;
+			opacity: 0.8;
+			pointer-events: none;
+		}
+		.day {
+			position: relative;
+			width: 100%;
+			height: 4px;
+			text-align: right;
+			&[m] {
+				cursor: pointer;
+			}	
+			.bar {
+				position: absolute;
+				right: 0;
+				background-color: #655;
+				opacity: 0.4;
+				height: 100%;
+				&.hit {
+					opacity: 1;
+				}
+			}
+			.bubble {
+				position: absolute;
+				top: 4px;
+				left: 30px;
+				text-align: left;
+				z-index: 3;
+				background: rgba(255,255,255,0.6);
+			}
+			&.vis {
+				background: white;
+			}
+			&.vis:hover, &:hover {
+				background: #d5cba6;
+			}
+		}
+	}
 }
 #messagescroller {
 	width: 100%;
@@ -212,6 +274,7 @@ body.mobile #messagescroller {
 		min-height: 20px;
 		line-height: 18px;
 		padding-top: 1px;
+		padding-left: 2px;
 		&.closed {
 			max-height: 120px;
 		}
@@ -333,6 +396,10 @@ code {
 }
 .indent {
 	margin-left: 15px;
+}
+.slashme {
+	font-style:italic;
+	color: #333;
 }
 .citation {
 	border-left: medium solid #bbb;

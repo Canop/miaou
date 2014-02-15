@@ -12,8 +12,8 @@ html
 			h1 Miaou Help
 			h2 About
 			div
-				p Miaou is an <a target=_blank href=https://github.com/Canop/miaou>open-source</a> multi-room persisted chat server with more emphasy on efficiency and usability than on flashy features and smileys.
-				p For now it's in an early stage of the development. It's very usable but there's no privacy nor authentication and it only works on Chrom(e|ium).
+				p Miaou is an <a target=_blank href=https://github.com/Canop/miaou>open-source</a> multi-room persisted chat server.
+				p Miaou is open : you can create your own rooms, be them public or private.
 			h2 Writing Messages
 			div
 				p You send a message by typing in the text area at the bottom of the screen and then hitting <kbd>⏎</kbd>.
@@ -146,14 +146,19 @@ html
 					li public : Anybody can enter.
 					li private : Users must be granted access by a room owner or admin. If you click the link to a private room, you'll be proposed to request access.
 				p For both types of room, authorization levels can be managed using the <kbd>Authorizations</kbd> button.
+				p If you want to invite in your room a user who's already connected and in another room, the simplest solution is to ping him by typing <code>@hisusername</code>.
+				p If you want to invite somebody's who's not connected or maybe not even a user, simply give him the URL of the room.
+				p When a user wants to enter a private room before he has the right, he's offered the opportunity to request access. Users in the room see the requests and the room admins may accept or deny it.
 			h2 Miaou Development
 			div
 				h3 Technical Stack
 				p Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Bluebird, Jade, Passport.js, jQuery, sass/scss, Redis, Moment.js and nginx.
-				h3 Repository
-				p Miaou is designed to be simple and should remain so. You may easily dive into the code which is shared on GitHub : <a href=https://github.com/Canop/miaou target=_blank>Canop/miaou</a>. If you'd like to help, contact me in the Miaou chat or in the StackOverflow JavaScript room where I often hang out. 
+				h3 Contribute
+				p Miaou has a small source code simply structured and should remain so. You may easily dive into the code which is shared on GitHub : <a href=https://github.com/Canop/miaou target=_blank>Canop/miaou</a>. If you'd like to help, contact me in the Miaou chat or in the StackOverflow JavaScript room where I often hang out. 
+				h3 Plugins
+				p Miaou accepts plugins. Two have been developed and are part of the main repository. If you'd like another plugin, ping me so that we can discuss that. The plugin API is very light but will be extended when the need arises.
 				h3 Use the software on your server
-				p You can, of course, it's open-source for a reason. But you might want to contact me before, to be sure you run something that's stable enough.
+				p You can, of course, it's open-source for a reason. But as I didn't write a lot of install documentation, you might want to contact me before.
 				
 		script.
 			$('h2+div, h2+p, h3+div, h3+p').hide();

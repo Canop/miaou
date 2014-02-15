@@ -17,18 +17,20 @@ html
 				h2 Users
 				div#users
 		div#center
-			div#messagescroller
-				div#messages
-			div#inputpanel
-				textarea#input
-				button.small#send Send
-				button.small#showPreview Preview
-				button.small#cancelEdit(style="display:none") Cancel
-				button.small#help Help
-			div#previewpanel
-				div#preview.rendered
-				button.small#shortcuts Shortcuts
-				button.small#hidePreview Hide
+			div#vert-center
+				div#messagescroller
+					div#messages
+				div#inputpanel
+					textarea#input
+					button.small#send Send
+					button.small#showPreview Preview
+					button.small#cancelEdit(style="display:none") Cancel
+					button.small#help Help
+				div#previewpanel
+					div#preview.rendered
+					button.small#shortcuts Shortcuts
+					button.small#hidePreview Hide
+			div#hist
 		div#right
 			section#roominfo
 				button.small#changeroom Home
@@ -56,7 +58,7 @@ html
 			if (room.private) {
 				$('#roomname').addClass('private').attr('title', 'This room is private');
 			}
-			$('#help').click(function(){ window.open('help#Writing_Messages') });		
+			$('#help').click(function(){ window.open('help') });		
 			$('#changeroom').click(function(){ window.open('rooms') });
 			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
 			$('#me').text(me.name);
@@ -65,6 +67,10 @@ html
 				$(this).addClass('selected');
 				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
 			});
-			$('.tab[page="search"]').click(function(){ $('#searchInput').focus() });
+			$('.tab[page="search"]').click(function(){
+				miaou.hist.open();
+				$('#searchInput').focus();
+			});
+			$('.tab[page="notablemessagespage"]').click(miaou.hist.close);
 			miaou.chat();
 

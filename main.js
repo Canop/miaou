@@ -186,6 +186,8 @@ function defineAppRoutes(){
 				suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || ''),
 				error: error
 			});
+		}).catch(function(err){
+			renderErr(res, err);
 		}).finally(db.off)
 	});
 
@@ -205,6 +207,8 @@ function defineAppRoutes(){
 			res.render('room.jade', { room: JSON.stringify(room), error: "null" });
 		}).catch(db.NoRowError, function(err){
 			res.render('room.jade', { room: "null", error: "null" });
+		}).catch(function(err){
+			renderErr(res, err);
 		}).finally(db.off);
 	});
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
@@ -212,14 +216,14 @@ function defineAppRoutes(){
 		if (!/^.{2,20}$/.test(name)) {
 			return renderErr(res, "invalid room name");
 		}
-		var room = {id:roomId, name: name, private:req.param('private')||false, description:req.param('description')};
+		var room = {id:roomId, name: name, private:req.param('private')||false, listed:req.param('listed')||false, description:req.param('description')};
 		db.on([room, req.user])
 		.spread(db.storeRoom)
 		.then(function(){
 			res.redirect(roomUrl(room));			
 		}).catch(function(err){
 			res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
-		}).finally(db.end);
+		}).finally(db.off);
 	});
 	
 	app.get('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
@@ -244,6 +248,8 @@ function defineAppRoutes(){
 			res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
 		}).catch(db.NoRowError, function(err){
 			renderErr(res, "room not found");
+		}).catch(function(err){
+			renderErr(res, err);
 		}).finally(db.off);
 	});
 	app.post('/auths', ensureAuthenticated, ensureCompleteProfile, function(req, res){
@@ -290,6 +296,8 @@ function defineAppRoutes(){
 		}).spread(function(rooms, pings){
 			rooms.forEach(function(r){ r.path = roomPath(r) });
 			res.render(mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user });
+		}).catch(function(err){
+			renderErr(res, err);
 		}).finally(db.off);
 	});
 
@@ -361,7 +369,6 @@ function defineAppRoutes(){
 function startServer(){
 	app = express();
 	server = http.createServer(app),
-
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
 	app.set("view options", { layout: false });
@@ -373,12 +380,9 @@ function startServer(){
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(app.router);
-
 	defineAppRoutes();
-
 	console.log('Miaou server starting on port', config.port);
 	server.listen(config.port);
-
 	ws.listen(server, sessionStore, cookieParser, db);
 }
 
