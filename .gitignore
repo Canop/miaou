@@ -31,4 +31,4 @@ dump.rdb
 
 # vagrant
 .vagrant/
-manifests/modules/*
+vagrant/manifests/modules/*

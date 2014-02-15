@@ -5,6 +5,7 @@
 var https = require('https');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
+var modulesFolder = 'vagrant/manifests/modules/';
 
 var puppetModules = {
     'apt': {
@@ -44,7 +45,7 @@ var puppetModules = {
 Object.keys(puppetModules).forEach(function(module) {
     var moduleObj = puppetModules[module]
 
-    var file = fs.createWriteStream('manifests/modules/' + moduleObj.folder + '.tar.gz');
+    var file = fs.createWriteStream(modulesFolder + moduleObj.folder + '.tar.gz');
     https.get(moduleObj.url, function(res) {
         res.pipe(file);
         file.on('finish', function() {
@@ -56,13 +57,13 @@ Object.keys(puppetModules).forEach(function(module) {
 
 function uncompress(module) {
     var moduleObj = puppetModules[module];
-    var tar = spawn('tar', ['xf', 'manifests/modules/' + moduleObj.folder + '.tar.gz']);
+    var tar = spawn('tar', ['xf', modulesFolder + moduleObj.folder + '.tar.gz']);
     tar.on('close', function(code) {
         if (code !== 0) {
             throw new Error('Uncompressing the module ' + module + ' went wrong.');
         }
 
-        fs.unlink('manifests/modules/' + moduleObj.folder + '.tar.gz', function(err) {
+        fs.unlink(modulesFolder + moduleObj.folder + '.tar.gz', function(err) {
             if (err) throw err;
             rename(module);
         });
@@ -71,7 +72,7 @@ function uncompress(module) {
 
 function rename(module) {
     var moduleObj = puppetModules[module];
-    fs.rename(moduleObj.folder, 'manifests/modules/' + module, function() {
+    fs.rename(moduleObj.folder, modulesFolder + module, function() {
         console.log('The ' + module + ' module is correctly installed.');
     });
 }
