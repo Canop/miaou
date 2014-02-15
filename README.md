@@ -41,7 +41,7 @@ Miaou works on Chrome, Firefox and Safari. It doesn't on Internet Explorer.
 
 Miaou should work on most webkit based browsers in recent Android devices (KitKat might be a requirement).
 
-# Technical stack
+# Development
 
 As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Bluebird, Redis, Jade, Passport.js, jQuery, sass/scss, Moment.js, Uglify-js and nginx.
 
