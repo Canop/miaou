@@ -49,7 +49,8 @@ function roomUrl(room){
 		}, github: {
 			strategyConstructor: require('passport-github').Strategy
 		}, reddit: {
-			strategyConstructor: require('passport-reddit').Strategy			
+			strategyConstructor: require('passport-reddit').Strategy,
+			scope: 'identity'
 		}
 	};
 	var oauthConfigs = config.oauth2;
