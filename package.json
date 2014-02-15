@@ -13,7 +13,8 @@
         "passport": "~0.1.17",
         "socket.io": "~0.9.16",
         "redis": "~0.9.1",
-        "passport-google": "~0.3.0"
+        "passport-google": "~0.3.0",
+        "passport-reddit": "~0.2.4"
     },
     "scripts": {
         "start": "sh start.sh"
