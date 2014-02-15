@@ -19,4 +19,12 @@ Once the machine is up, simply run:
 
     vagrant ssh
 
-Go to `/vagrant/`, and you'll see the `miaou` files. Run `node main.js` to launch the server. Open your browser at `http://localhost:8204/` and start hacking!
+Go to `/vagrant/`, and you'll see the `miaou` files.
+
+Change the `config.json` file to your liking. Here is the postgresql configuration for the user that vagrant creates:
+
+- Database name: `miaou`
+- Database user: `miaou_user`
+- Database password: `password`
+
+Run `node main.js` to launch the server. Open your browser at `http://localhost:8204/` and start hacking!
