@@ -8,7 +8,7 @@ If you don't know vagrant, please go to its [documentation](http://www.vagrantup
 
 TL;DR:
 
-    ./vagrant-deps
+    ./vagrant/vagrant-deps
     vagrant up
 
 For now, it's only been tested on OSX/Linux.
