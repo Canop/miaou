@@ -27,8 +27,8 @@ NoRowError.prototype = Object.create(Error.prototype);
 // Private fields are included in the returned object
 proto.getCompleteUserFromOAuthProfile = function(profile){
 	console.dir(profile);
-	var oauthid = profile.id || profile.user_id, // id for google and github, user_id for stackexchange
-		displayName = profile.displayName || profile.display_name, // displayName for google and github, display_name for stackexchange
+	var oauthid = profile.id || profile.user_id, // id for google, github and reddit, user_id for stackexchange
+		displayName = profile.displayName || profile.display_name || profile.name, // displayName for google and github, display_name for stackexchange, name for reddit
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
 	var con = this, resolver = Promise.defer(),
@@ -426,7 +426,7 @@ proto.off = function(){
 proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	this.client.query(sql, args, function(err, res){
-		logQuery(sql, args);
+		//~ logQuery(sql, args);
 		if (err) {
 			resolver.reject(err);
 		} else if (res.rows.length) {

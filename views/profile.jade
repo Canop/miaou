@@ -38,19 +38,19 @@ html
 															input(type=(field.type||'text'),name=field.name)
 											if ep.creationDescription
 												p !{ep.creationDescription}
-						if error
-							p#err.error= error
+						p#err.error= error
 					div.dialog_buttons
 						button#submit Save
-						button#close Close
+						button#close Go On
 		
 		script.
-			var externalProfileInfos = !{JSON.stringify(externalProfileInfos)};
+			var externalProfileInfos = !{JSON.stringify(externalProfileInfos)},
+				valid = !{JSON.stringify(valid)};
 			$('#name').focus().keyup(function(){
 				if (!this.validity.valid){ // not compatible with IE, that's fine 
 					$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');
 					$('#submit').prop('disabled', true);
-				} else if (/wisely/i.test(this.value)) {
+				} else if (/w+[_-]*[iy]+[_-]*s+[_-]*e+[_-]*l+[_-]*[iy]+/i.test(this.value)) {
 					$('#err').text('More wisely, less "wisely", please.');
 					$('#submit').prop('disabled', true);
 				} else {
@@ -59,6 +59,8 @@ html
 				}
 			});
 			$('#close').click(function(){ location = 'rooms'; return false; });
+			
+			if (!valid) $('#close').hide();
 			
 			$('.sectionOpener + section').hide();
 			$('.sectionOpener').click(function(){

@@ -132,7 +132,7 @@ function defineAppRoutes(){
 		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
 			return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
 		});
-		var error;
+		var error = '';
 		db.on(externalProfileInfos)
 		.map(function(epi){
 			return this.getPlayerPluginInfo(epi.name, req.user.id);
@@ -181,10 +181,12 @@ function defineAppRoutes(){
 			externalProfileInfos.forEach(function(epi){
 				if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
 			});
+			var hasValidName = loginutil.isValidUsername(req.user.name);
 			res.render('profile.jade', {
 				user: req.user,
 				externalProfileInfos: externalProfileInfos,
-				suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || ''),
+				valid : hasValidName,
+				suggestedName:  hasValidName ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || ''),
 				error: error
 			});
 		}).catch(function(err){
