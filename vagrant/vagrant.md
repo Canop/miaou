@@ -10,7 +10,7 @@ TL;DR:
 
     vagrant up
 
-For now, it's only been tested on OSX/Linux.
+For now, it's only been tested on OSX/Linux, but should work on Windows as well.
 
 Once the machine is up, simply run:
 
