@@ -158,14 +158,14 @@ html
 				h3 Plugins
 				p Miaou accepts plugins. Two have been developed and are part of the main repository. If you'd like another plugin, ping me so that we can discuss that. The plugin API is very light but will be extended when the need arises.
 				h3 Use the software on your server
-				p You can, of course, it's open-source for a reason. But as I didn't write a lot of install documentation, you might want to contact me before.
+				p You can, of course, it's open-source for a reason. Miaou also provides a <a href="https://github.com/Canop/miaou/blob/master/vagrant/vagrant.md">vagrant configuration</a> to help you quickly set up a development environment. It is based on puppet, so you can as well reuse it.
 				
 		script.
 			$('h2+div, h2+p, h3+div, h3+p').hide();
 			$('h2, h3').click(function(){
 				$(this).toggleClass('open').next('div, p').toggle();
 			}).each(function(){
-				var hash = '#'+this.innerText.replace(/\W/g,'_');
+				var hash = '#' + $(this).text().replace(/\W/g, '_');
 				if (hash===location.hash) {
 					$(this).parents().prev('h2').add(this).click();
 				}
