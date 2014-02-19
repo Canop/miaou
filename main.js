@@ -48,6 +48,9 @@ function roomUrl(room){
 			strategyConstructor: require('passport-stackexchange').Strategy
 		}, github: {
 			strategyConstructor: require('passport-github').Strategy
+		}, reddit: {
+			strategyConstructor: require('passport-reddit').Strategy,
+			scope: 'identity'
 		}
 	};
 	var oauthConfigs = config.oauth2;
@@ -129,7 +132,7 @@ function defineAppRoutes(){
 		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
 			return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
 		});
-		var error;
+		var error = '';
 		db.on(externalProfileInfos)
 		.map(function(epi){
 			return this.getPlayerPluginInfo(epi.name, req.user.id);
@@ -178,10 +181,12 @@ function defineAppRoutes(){
 			externalProfileInfos.forEach(function(epi){
 				if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
 			});
+			var hasValidName = loginutil.isValidUsername(req.user.name);
 			res.render('profile.jade', {
 				user: req.user,
 				externalProfileInfos: externalProfileInfos,
-				suggestedName: loginutil.isValidUsername(req.user.name) ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || ''),
+				valid : hasValidName,
+				suggestedName:  hasValidName ? req.user.name : loginutil.suggestUsername(req.user.oauthdisplayname || ''),
 				error: error
 			});
 		}).catch(function(err){
@@ -191,7 +196,7 @@ function defineAppRoutes(){
 
 	for (var key in oauth2Strategies){
 		var s = oauth2Strategies[key];
-		app.get('/auth/'+key, passport.authenticate(key, {scope:s.scope}));
+		app.get('/auth/'+key, passport.authenticate(key, {scope:s.scope, state:'Ohio', duration:'permanent'}));
 		app.get('/auth/'+key+'/callback', passport.authenticate(key, { failureRedirect: '/login' }), function(req, res) { res.redirect(url()) });		
 	};
 

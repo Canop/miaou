@@ -199,6 +199,7 @@ function handleUserInRoom(socket, completeUser, db){
 			reply(results);
 		}).finally(db.off);
 	}).on('hist', function(search, reply){
+		if (!room) return reply([]);
 		db.on(room.id)
 		.then(db.messageHistogram)
 		.then(function(hist){

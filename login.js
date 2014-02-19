@@ -111,7 +111,7 @@ var toUrlDecoration = exports.toUrlDecoration = function(roomName){
 }
 
 exports.isValidUsername = function(username){
-	return username && /^\w[\w_\-\d]{2,19}$/.test(username);
+	return !!(username && /^\w[\w_\-\d]{2,19}$/.test(username));
 }
 
 exports.test = function(){
