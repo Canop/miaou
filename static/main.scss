@@ -307,6 +307,9 @@ body.mobile #messagescroller {
 body.mobile .message .user {
 	width: 75px;
 }
+.rendered {
+	text-align: left;
+}
 .message.edited .content:before {
 	font-family: "fontello";
 	content: "\e80c";
