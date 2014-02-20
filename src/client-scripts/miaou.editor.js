@@ -50,6 +50,7 @@ $.fn.editFor = function(socket){
 			$('#preview').html('');
 			if (!$(document.body).hasClass('mobile')) $input.focus();
 		}
+		$input.removeClass('edition');
 	}
 	
 	function toggleLines(s,r,insert){
@@ -150,7 +151,7 @@ $.fn.editMessage = function(message){
 		this.cancelEdit();
 		return;
 	}
-	this.data('edited-message-id', message.id);
+	this.data('edited-message-id', message.id).addClass('edition');
 	this.val(message.content).focus();
 	var input = this[0];
 	input.selectionStart = input.selectionEnd = input.value.length;
@@ -161,6 +162,6 @@ $.fn.cancelEdit = function(){
 	if ($('#cancelEdit').is(':visible')) {
 		this.val('');
 		$('#cancelEdit').hide();
-		this.data('edited-message-id', null);
+		this.data('edited-message-id', null).removeClass('edition');
 	}
 };
