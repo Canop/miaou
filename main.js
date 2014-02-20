@@ -215,15 +215,18 @@ function defineAppRoutes(){
 		}).finally(db.off);
 	});
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
-		var roomId = +req.param('id'), name = req.param('name').trim();
+		var roomId = +req.param('id'), name = req.param('name').trim(), room;
 		if (!/^.{2,20}$/.test(name)) {
 			return renderErr(res, "invalid room name");
 		}
-		var room = {id:roomId, name: name, private:req.param('private')||false, listed:req.param('listed')||false, description:req.param('description')};
-		db.on([room, req.user])
-		.spread(db.storeRoom)
+		db.on([roomId, req.user.id, 'admin'])
+		.spread(db.checkAuthLevel)
+		.then(function(auth){
+			room = {id:roomId, name: name, private:req.param('private')||false, listed:req.param('listed')||false, description:req.param('description')};
+			return [room, req.user, auth];
+		}).spread(db.storeRoom)
 		.then(function(){
-			res.redirect(roomUrl(room));			
+			res.redirect(roomUrl(room));	
 		}).catch(function(err){
 			res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
 		}).finally(db.off);

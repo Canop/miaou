@@ -70,14 +70,20 @@ proto.listRecentUsers = function(roomId, N){
 
 ///////////////////////////////////////////// #rooms
 
-proto.storeRoom = function(r, author) {
+proto.storeRoom = function(r, author, authlevel) {
 	var now = ~~(Date.now()/1000);
 	if (r.id) {
-		return this.queryRow(
-			"update room set name=$1, private=$2, listed=$3, description=$4 where id=$5"+
-			" and exists(select auth from room_auth where player=$6 and room=$5 and auth>='admin')",
-			[r.name, r.private, r.listed, r.description||'', r.id, author.id]
-		);
+		if (authlevel==="own") {
+			return this.queryRow(
+				"update room set name=$1, private=$2, listed=$3, description=$4 where id=$5",
+				[r.name, r.private, r.listed, r.description||'', r.id]
+			);
+		} else { // implied : "admin"
+			return this.queryRow(
+				"update room set name=$1, listed=$2, description=$3 where id=$4",
+				[r.name, r.listed, r.description||'', r.id]
+			);			
+		}
 	}
 	return this.queryRow(
 		'insert into room (name, private, listed, description) values ($1, $2, $3, $4) returning id',
