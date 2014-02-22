@@ -7,6 +7,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell do |shell|
     # --force is used to prevent errors when provisioning an existing machine
     shell.inline = "mkdir -p /etc/puppet/modules;
+                    puppet module install puppetlabs/stdlib --force;
+                    puppet module install ripienaar/concat --force;
+                    puppet module install maestrodev/wget --force;
+                    puppet module install puppetlabs/gcc --force;
                     puppet module install puppetlabs/apt --force;
                     puppet module install puppetlabs/postgresql --force;
                     puppet module install thomasvandoren/redis --force"
