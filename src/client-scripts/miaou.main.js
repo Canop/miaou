@@ -247,8 +247,8 @@ miaou.chat = function(){
 	}
 	// put the user at the top of the list
 	function topUserList(user) {
-		$user(user).remove();
-		$('<span class=user/>').text(user.name).data('user',user).prependTo('#users');
+		var $u = $user(user);
+		($u.length ? $u :$('<span class=user/>').text(user.name).data('user',user)).prependTo('#users');
 	}
 	function showEntry(user){
 		topUserList(user);
@@ -311,6 +311,7 @@ miaou.chat = function(){
 		$('.pingButton,.pmButton').remove();
 	}
 	
+	
 	$(function(){
 		var socket = miaou.socket = io.connect(location.origin);
 
@@ -325,8 +326,7 @@ miaou.chat = function(){
 					pings.forEach(function(p){
 						$md.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
 							window.open(p.room);
-							var $notif = $(this).closest('.notification');
-							if ($notif.find('.openroom').length==1) $notif.remove();
+							if ($md.find('.openroom').length==1) $md.remove();
 							else $(this).remove();
 						}))
 					});
@@ -426,6 +426,18 @@ miaou.chat = function(){
 			if (location.hash) miaou.focusMessage(+location.hash.slice(1));
 			else scrollToBottom();
 			showEntry(me);
+		}).on('invitation', function(invit){
+			$('<div>').html(
+				'You have been invited by <span class=user>'+invit.byname+'</span> in a private lounge.'
+			).addClass('notification').append(
+				$('<button>').addClass('openroom').text('Enter room').click(function(){
+					window.open(invit.room);
+					$(this).closest('.notification').remove();
+				})
+			).append(
+				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
+			).appendTo('#messages');
+			scrollToBottom();
 		}).on('disconnect', function(){
 			console.log('DISCONNECT');
 		}).on('enter', showEntry).on('leave', showLeave).on('error', showError);

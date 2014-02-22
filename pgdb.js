@@ -113,15 +113,15 @@ proto.getOrCreatePmRoom = function(userA, userB) {
 	{
 		if (err) return resolver.reject(err);
 		if (res.rows.length) return resolver.resolve(res.rows[0]);		
-		var titleBase = userA.id + ' & ' + userB.id, i=0, // TODO prettier room name ?
-			description = 'A private room for '+userA.name+' and '+userB.name;
+		var baseName = userA.name.slice(0,20) + ' & ' + userB.name.slice(0,20), i=0, 
+			description = 'A private lounge for '+userA.name+' and '+userB.name;
 		(function tryName(){
-			var name = i++ ? titleBase+ ' - ' + i : titleBase;
+			var name = i++ ? baseName + ' - ' + i : baseName;
 			con.client.query("select id from room where name=$1", [name], function(err, res){
 				if (err) return resolver.reject(err);
 				if (res.rows.length) return tryName();
 				var room = {name:name, description:description, private:true, listed:false};
-				con.createRoom(room,[userA,userB]).then(function(){ resolver.resolve(room) });
+				con.createRoom(room, [userA,userB]).then(function(){ resolver.resolve(room) });
 			});			
 		})();
 	});

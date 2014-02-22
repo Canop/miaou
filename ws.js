@@ -62,6 +62,28 @@ function emitMessagesAfter(socket, roomId, userId, fromId, untilId, nbMessages){
 	return resolver.promise.bind(this);
 }
 
+
+// filters the passed clients sockets to return those whose publicUser
+//  is the passed one. This function returns a promise as the search is asynchronous.
+// Note : this looks horribly heavy just to find if a user is in a room
+function userClients(clients, userIdOrName) {
+	if (clients.length===0) return [];
+	var found = [], n = 0, resolver = Promise.defer();
+	console.log('+++start looking for ' + userIdOrName + ' among ' + clients.length + ' sockets');
+	clients.forEach(function(s){
+		n++;
+		s.get('publicUser', function(err, u){
+			if (err) console.log('missing user on socket', err);
+			console.log(u.name, u.id===userIdOrName || u.name===userIdOrName);
+			if (u.id===userIdOrName || u.name===userIdOrName) found.push(s);
+			if (--n===0) resolver.resolve(found);
+			console.log(n, 'go on');
+		});
+	});
+	console.log('n:',n);
+	return resolver.promise.bind(this);
+}
+
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
 // Implementation details :
 //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
@@ -220,21 +242,30 @@ function handleUserInRoom(socket, completeUser, db){
 			reply(hist);
 		}).finally(db.off);
 	}).on('pm', function(otherUserId, reply){
-		var room, otherUser
+		var lounge, otherUser, message;
 		db.on(otherUserId)
 		.then(db.getUserById)
 		.then(function(user){
 			otherUser = user;
 			return this.getOrCreatePmRoom(completeUser, otherUser)
 		}).then(function(r){
-			room = r;
+			lounge = r;
 			var content = otherUser.name+' has been invited to join this private room.',
-				m = { content:content, author:publicUser.id, authorname:publicUser.name, room:room.id, created:~~(Date.now()/1000) };
+				m = { content:content, author:publicUser.id, authorname:publicUser.name, room:lounge.id, created:~~(Date.now()/1000) };
 			return this.storeMessage(m);
 		}).then(function(m){
-			return this.storePing(room.id, otherUserId, m.id)
+			message = m;
+			return userClients.call(this, io.sockets.clients(room.id), otherUserId);
+		}).then(function(sockets){
+			if (sockets.length) {
+				sockets.forEach(function(s){
+					s.emit('invitation', {room:lounge.id, byname:publicUser.name, message:message.id});
+				});
+			} else {
+				return this.storePing(lounge.id, otherUserId, message.id);
+			}
 		}).then(function(){
-			reply(room.id)
+			reply(lounge.id)
 		}).catch(function(err){ console.log('ERR in PM :', err) })	
 		.finally(db.off);
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
