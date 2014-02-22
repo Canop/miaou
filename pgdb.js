@@ -71,30 +71,61 @@ proto.listRecentUsers = function(roomId, N){
 ///////////////////////////////////////////// #rooms
 
 proto.storeRoom = function(r, author, authlevel) {
-	var now = ~~(Date.now()/1000);
-	if (r.id) {
-		if (authlevel==="own") {
-			return this.queryRow(
-				"update room set name=$1, private=$2, listed=$3, description=$4 where id=$5",
-				[r.name, r.private, r.listed, r.description||'', r.id]
-			);
-		} else { // implied : "admin"
-			return this.queryRow(
-				"update room set name=$1, listed=$2, description=$3 where id=$4",
-				[r.name, r.listed, r.description||'', r.id]
-			);			
-		}
+	if (!r.id) return this.createRoom(r, [author]);
+	if (authlevel==="own") {
+		return this.queryRow(
+			"update room set name=$1, private=$2, listed=$3, description=$4 where id=$5",
+			[r.name, r.private, r.listed, r.description||'', r.id]
+		);
+	} else { // implied : "admin"
+		return this.queryRow(
+			"update room set name=$1, listed=$2, description=$3 where id=$4",
+			[r.name, r.listed, r.description||'', r.id]
+		);			
 	}
+	}
+
+proto.createRoom = function(r, owners){
 	return this.queryRow(
 		'insert into room (name, private, listed, description) values ($1, $2, $3, $4) returning id',
 		[r.name, r.private, r.listed, r.description||'']
 	).then(function(row){
 		r.id = row.id;
+		return owners;
+	}).map(function(user){
 		return this.queryRow(
 			'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
-			[r.id, author.id, 'own', now]
+			[r.id, user.id, 'own', now()]
 		);
-	});		
+	})
+}
+
+// obtains a "PM" room : a room initially made for a private discussion between two users
+proto.getOrCreatePmRoom = function(userA, userB) {
+	var con = this, resolver = Promise.defer();
+	this.client.query(
+		"select * from room r, room_auth aa, room_auth ab"+
+		" where r.private is true and r.listed is false"+
+		" and aa.room=r.id and aa.player=$1 and aa.auth>='admin'"+
+		" and ab.room=r.id and ab.player=$2 and ab.auth>='admin'"+
+		" and not exists(select * from room_auth where room=r.id and player!=$1 and player!=$2)",
+		[userA.id, userB.id], function(err, res)
+	{
+		if (err) return resolver.reject(err);
+		if (res.rows.length) return resolver.resolve(res.rows[0]);		
+		var titleBase = userA.id + ' & ' + userB.id, i=0, // TODO prettier room name ?
+			description = 'A private room for '+userA.name+' and '+userB.name;
+		(function tryName(){
+			var name = i++ ? titleBase+ ' - ' + i : titleBase;
+			con.client.query("select id from room where name=$1", [name], function(err, res){
+				if (err) return resolver.reject(err);
+				if (res.rows.length) return tryName();
+				var room = {name:name, description:description, private:true, listed:false};
+				con.createRoom(room,[userA,userB]).then(function(){ resolver.resolve(room) });
+			});			
+		})();
+	});
+	return resolver.promise.bind(this);
 }
 
 // returns an existing room found by its id
@@ -159,7 +190,7 @@ proto.deleteAccessRequests = function(roomId, userId){
 proto.insertAccessRequest = function(roomId, userId){
 	return this.queryRow(
 		'insert into access_request (room, player, requested) values ($1, $2, $3) returning *',
-		[roomId, userId, ~~(Date.now()/1000)]
+		[roomId, userId, now()]
 	);
 }
 
@@ -176,13 +207,13 @@ proto.listOpenAccessRequests = function(roomId, userId){
 // do actions on user rights
 // userId : id of the user doing the action
 proto.changeRights = function(actions, userId, room){
-	var con = this, now= ~~(Date.now()/1000);
+	var con = this;
 	return Promise.map(actions, function(a){
 		var sql, args;
 		switch (a.cmd) {
 		case "insert_auth": // we can assume there's no existing auth
 			sql = "insert into room_auth (room, player, auth, granter, granted) values ($1, $2, $3, $4, $5)";
-			args = [room.id, a.user, a.auth, userId, now];
+			args = [room.id, a.user, a.auth, userId, now()];
 			break;
 		case "delete_ar":
 			sql = "delete from access_request where room=$1 and player=$2";
@@ -307,15 +338,17 @@ proto.updateGetMessage = function(messageId, expr, userId){
 	});
 }
 
-
 //////////////////////////////////////////////// #pings
+
+proto.storePing = function(roomId, userId, messageId){
+	return this.queryRow("insert into ping(room, player, message, created) values ($1,$2,$3,$4)", [roomId, userId, messageId, now()]);
+}
 
 // pings must be a sanitized array of usernames
 proto.storePings = function(roomId, users, messageId){
-	var now = ~~(Date.now()/1000);
 	return this.queryRows(
 		"insert into ping (room, player, message, created) select " +
-		roomId + ", id, " + messageId + ", " + now +
+		roomId + ", id, " + messageId + ", " + now() +
 		" from player where name in (" + users.map(function(n){ return "'"+n+"'" }).join(',') + ")"
 	);
 }
@@ -375,6 +408,10 @@ proto.deletePlayerPluginInfo = function(plugin, userId) {
 
 //////////////////////////////////////////////// #global API
 
+function now(){
+	return ~~(Date.now()/1000);
+}
+
 function logQuery(sql, args) { // used in debug
 	console.log(sql.replace(/\$(\d+)/g, function(_,i){ var s=args[i-1]; return typeof s==="string" ? "'"+s+"'" : s }));
 }
@@ -426,6 +463,7 @@ proto.off = function(){
 		console.log('not a connection!'); // if this happens, there's probably a leaked connection
 	}
 }
+
 
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
 //  apart if noErrorOnNoRow

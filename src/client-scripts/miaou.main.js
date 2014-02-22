@@ -109,7 +109,7 @@ miaou.chat = function(){
 			lastMessage = message;
 		});
 	}
-	
+
 	function votesAbstract(message){
 		return voteLevels.map(function(l){
 			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
@@ -295,14 +295,21 @@ miaou.chat = function(){
 	}
 	
 	function showUserHoverButtons(){
-		var username = $(this).data('user').name;
-		if (username===me.name) return;
+		var user = $(this).data('user');
+		if (user.name===me.name) return;
 		$('<button>').addClass('pingButton').text('ping').click(function(){
-			$('#input').ping(username);
+			$('#input').ping(user.name);
+		}).appendTo(this);
+		$('<button>').addClass('pmButton').text('pm').click(function(){
+			var win = window.open();
+			miaou.socket.emit('pm', user.id, function(roomId){
+				win.location = roomId;
+				//win.focus();
+			});			
 		}).appendTo(this);
 	}
 	function hideUserHoverButtons(){
-		$('.pingButton').remove();
+		$('.pingButton,.pmButton').remove();
 	}
 	
 	$(function(){
