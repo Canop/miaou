@@ -45,7 +45,6 @@ miaou.chat = function(){
 	var nbUnseenMessages = 0, nbUnseenPings = 0,
 		MAX_AGE_FOR_EDIT = 5000, // seconds (should be coherent with server settings) 
 		DISRUPTION_THRESHOLD = 60*60, // seconds
-		users = [],
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}],
 		timeOffset, lastReceivedPing = 0, enterTime, // both in seconds since epoch, server time
 		me = window['me'], room = window['room']; 
@@ -233,7 +232,7 @@ miaou.chat = function(){
 		}
 		resize();
 		$content.find('img').load(resize);
-		addToUserList({id: message.author, name: message.authorname});
+		topUserList({id: message.author, name: message.authorname});
 		
 		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
@@ -242,21 +241,21 @@ miaou.chat = function(){
 		if (wasAtBottom && message.id==$('#messages .message').last().attr('mid')) scrollToBottom();
 	}
 	
-	function updateUserList(user, keep){
-		for (var i=0; i<users.length; i++) {
-			if (users[i].name===user.name) {
-				users.splice(i,1);
-				break;
-			}
-		}
-		if (keep) users.push(user);
-		var $users = $('#users').empty();
-		users.forEach(function(u){
-			$('<span class=user/>').text(u.name).data('user',u).prependTo($users);
-		});
+	
+	function $user(user){
+		return $('#users .user').filter(function(){ return $(this).data('user').id===user.id });
 	}
-	function addToUserList(user){
-		updateUserList(user, true);
+	// put the user at the top of the list
+	function topUserList(user) {
+		$user(user).remove();
+		$('<span class=user/>').text(user.name).data('user',user).prependTo('#users');
+	}
+	function showEntry(user){
+		topUserList(user);
+		$user(user).addClass('connected');
+	}
+	function showLeave(user){
+		$user(user).removeClass('connected');		
 	}
 	
 	function opener(e){
@@ -426,9 +425,10 @@ miaou.chat = function(){
 		}).on('welcome', function(){
 			if (location.hash) miaou.focusMessage(+location.hash.slice(1));
 			else scrollToBottom();
+			showEntry(me);
 		}).on('disconnect', function(){
 			console.log('DISCONNECT');
-		}).on('enter', addToUserList).on('leave', updateUserList).on('error', showError);
+		}).on('enter', showEntry).on('leave', showLeave).on('error', showError);
 		
 		
 		$('#messages').on('click', '.message .content img', function(e){
