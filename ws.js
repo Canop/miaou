@@ -219,6 +219,24 @@ function handleUserInRoom(socket, completeUser, db){
 			}
 			reply(hist);
 		}).finally(db.off);
+	}).on('pm', function(otherUserId, reply){
+		var room, otherUser
+		db.on(otherUserId)
+		.then(db.getUserById)
+		.then(function(user){
+			otherUser = user;
+			return this.getOrCreatePmRoom(completeUser, otherUser)
+		}).then(function(r){
+			room = r;
+			var content = otherUser.name+' has been invited to join this private room.',
+				m = { content:content, author:publicUser.id, authorname:publicUser.name, room:room.id, created:~~(Date.now()/1000) };
+			return this.storeMessage(m);
+		}).then(function(m){
+			return this.storePing(room.id, otherUserId, m.id)
+		}).then(function(){
+			reply(room.id)
+		}).catch(function(err){ console.log('ERR in PM :', err) })	
+		.finally(db.off);
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		console.log(completeUser.name, "disconnected");
 		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);
