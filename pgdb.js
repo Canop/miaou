@@ -100,8 +100,8 @@ proto.createRoom = function(r, owners){
 	})
 }
 
-// obtains a "PM" room : a room initially made for a private discussion between two users
-proto.getOrCreatePmRoom = function(userA, userB) {
+// obtains a lounge : a room initially made for a private discussion between two users
+proto.getLounge = function(userA, userB) {
 	var con = this, resolver = Promise.defer();
 	this.client.query(
 		"select * from room r, room_auth aa, room_auth ab"+

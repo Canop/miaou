@@ -247,7 +247,7 @@ function handleUserInRoom(socket, completeUser, db){
 		.then(db.getUserById)
 		.then(function(user){
 			otherUser = user;
-			return this.getOrCreatePmRoom(completeUser, otherUser)
+			return this.getLounge(completeUser, otherUser)
 		}).then(function(r){
 			lounge = r;
 			var content = otherUser.name+' has been invited to join this private room.',
