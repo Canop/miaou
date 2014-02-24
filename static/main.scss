@@ -512,6 +512,15 @@ body.mobile #inputpanel button {
 	flex-grow: 0;
 	display: none;
 }
+#uploadpanel {
+	background: $bg-color;
+	width:100%;
+	height: $input-height + 8px;
+	flex-grow: 0;
+	display: none;
+	padding: 10px;
+	text-align: center;
+}
 h1 {
 	color: #655;
 	font-size: 140%;

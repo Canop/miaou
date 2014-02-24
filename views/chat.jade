@@ -25,7 +25,18 @@ html
 					button.small#send Send
 					button.small#showPreview Preview
 					button.small#cancelEdit(style="display:none") Cancel
-					button.small#help Help
+					button.small#uploadOpen Upload
+					button.small#help Help			
+				div#uploadpanel
+					div#uploadcontrols
+						| Select an image to send to imgur
+						br
+						br
+						input(type="file",id="file")
+						button#uploadSend Send
+						button#cancelUpload Cancel
+					div#uploadwait(style="display:none")
+						img(src="static/ajax-loader-brown.gif")
 				div#previewpanel
 					div#preview.rendered
 					button.small#shortcuts Shortcuts
@@ -58,7 +69,7 @@ html
 			if (room.private) {
 				$('#roomname').addClass('private').attr('title', 'This room is private');
 			}
-			$('#help').click(function(){ window.open('help') });		
+			$('#help').click(function(){ window.open('help') });
 			$('#changeroom').click(function(){ window.open('rooms') });
 			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
 			$('#me').text(me.name);
@@ -72,5 +83,13 @@ html
 				$('#searchInput').focus();
 			});
 			$('.tab[page="notablemessagespage"]').click(miaou.hist.close);
+			$('#uploadOpen').click(function(){
+				$('#uploadpanel').show();
+				$('#inputpanel').hide();
+			});
+			$('#cancelUpload').click(function(){
+				$('#uploadpanel').hide();
+				$('#inputpanel').show();
+			});
 			miaou.chat();
 

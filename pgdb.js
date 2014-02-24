@@ -344,7 +344,7 @@ proto.storePing = function(roomId, userId, messageId){
 	return this.queryRow("insert into ping(room, player, message, created) values ($1,$2,$3,$4)", [roomId, userId, messageId, now()]);
 }
 
-// pings must be a sanitized array of usernames
+// users must be a sanitized array of usernames
 proto.storePings = function(roomId, users, messageId){
 	return this.queryRows(
 		"insert into ping (room, player, message, created) select " +

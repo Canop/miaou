@@ -22,8 +22,9 @@
     "passport-google-oauth": "~0.1.5",
     "passport-stackexchange": "~0.1.0",
     "passport-github": "~0.1.5",
-	"passport-reddit": "~0.2.4"
- },
+    "passport-reddit": "~0.2.4",
+    "busboy": "^0.2.1"
+  },
   "scripts": {
     "start": "sh start.sh"
   }

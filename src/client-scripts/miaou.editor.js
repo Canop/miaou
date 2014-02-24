@@ -31,6 +31,19 @@ $.fn.selectLines = function(){
 	})
 }
 
+// insert some string at the end of current selection and ensures it's a whole line
+$.fn.insertLine = function(s){
+	return this.each(function(){
+		var e = this.selectionEnd, v = this.value;
+		if (e>0 && v[e-2]!='\n') s = '\n'+s;
+		if (e<v.length && v[e]!='\n') s += '\n';
+		this.value = v.slice(0,e)+s+v.slice(e);
+		this.selectionStart += s.length;
+		this.selectionEnd = this.selectionStart;
+		this.focus();
+	});
+}
+
 // sets the textarea as an editor emitting on the provided socket
 $.fn.editFor = function(socket){
 	var $input = this;
@@ -165,3 +178,41 @@ $.fn.cancelEdit = function(){
 		this.data('edited-message-id', null).removeClass('edition');
 	}
 };
+
+$(function(){
+	
+	$('#uploadSend').click(function(){		
+		var file = document.getElementById('file').files[0];
+		console.log('Mime:', file.type);
+		if (!file || !/^image\//.test(file.type)) {
+			alert('not a valid image');
+			return;
+		}
+		var fd = new FormData();
+		fd.append("file", file);
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", "upload");
+		function finish(){
+			$('#uploadcontrols').show();
+			$('#uploadwait').hide();
+			$('#uploadpanel').hide();
+			$('#inputpanel').show();			
+		}
+		xhr.onload = function() {
+			var ans = JSON.parse(xhr.responseText);
+			console.log(ans);
+			finish();
+			if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
+			else alert("Hu? didn't exactly work, I think...");
+		}
+		xhr.onerror = function(e){
+			console.log(e);
+			alert("Something didn't work as expected :(");
+			finish();
+		}
+		$('#uploadcontrols').hide();
+		$('#uploadwait').show();			
+		xhr.send(fd);
+	});
+	
+});
