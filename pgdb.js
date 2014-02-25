@@ -363,7 +363,7 @@ proto.fetchUserPings = function(userId) {
 
 // returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
 proto.fetchUserPingRooms = function(userId, after) {
-	return this.queryRows("select room, max(name) as roomname, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after]);
+	return this.queryRows("select room, max(name) as roomname, min(created) as first, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after]);
 }
 
 //////////////////////////////////////////////// #votes

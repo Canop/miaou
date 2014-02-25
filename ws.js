@@ -122,6 +122,10 @@ function handleUserInRoom(socket, completeUser, db){
 	}).on('enter', function(roomId, ack){
 		var now = ~~(Date.now()/1000);
 		if (ack) ack(now);
+		if (room && roomId==room.id){
+			console.log('WARN : user already in room'); // how does that happen ?
+			return;
+		}
 		db.on([roomId, publicUser.id])
 		.spread(db.fetchRoomAndUserAuth)
 		.then(function(r){

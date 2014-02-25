@@ -190,11 +190,13 @@ body.mobile #prefs {
 		overflow: hidden;
 		line-height: 18px;
 		font-style: italic;
+		color: #444;
 		&:hover {
 			background: $profile-bg-color;
 		}
 		&.connected {
 			font-style: normal;
+			color: black;
 		}
 	}
 }

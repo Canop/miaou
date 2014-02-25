@@ -42,12 +42,13 @@ miaou.toggleUserProfile = function(){
 
 miaou.chat = function(){
 	
-	var nbUnseenMessages = 0, nbUnseenPings = 0,
+	var nbUnseenMessages = 0, oldestUnseenPing = 0, lastReceivedPing = 0,
 		MAX_AGE_FOR_EDIT = 5000, // seconds (should be coherent with server settings) 
 		DISRUPTION_THRESHOLD = 60*60, // seconds
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}],
-		timeOffset, lastReceivedPing = 0, enterTime, // both in seconds since epoch, server time
-		me = window['me'], room = window['room']; 
+		timeOffset, enterTime, // both in seconds since epoch, server time
+		me = window['me'], room = window['room'],
+		pingRegex = new RegExp('@'+me.name+'(\\b|$)');
 	
 	function setEnterTime(serverTime){
 		enterTime = serverTime;
@@ -82,10 +83,6 @@ miaou.chat = function(){
 
 	function getMessages() {
 		return $('#messages .message').map(function(){ return $(this).data('message') }).get();
-	}
-
-	function pingRegex(name) {
-		return new RegExp('@'+name+'(\\b|$)')
 	}
 
 	function isAtBottom(){
@@ -184,7 +181,7 @@ miaou.chat = function(){
 		if (checkAuth('admin')) {
 			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
 			if (!vis()) {
-				document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;				
+				document.title = (oldestUnseenPing?'*':'') + ++nbUnseenMessages + ' - ' + room.name;				
 			}
 		}
 		if (wab) scrollToBottom();
@@ -319,7 +316,10 @@ miaou.chat = function(){
 			// clear the pings of the current room and ask for the ones of the other rooms
 			socket.emit('clear_pings', lastReceivedPing, function(pings){
 				if (pings.length) {
-					pings.forEach(function(p){ lastReceivedPing = Math.max(lastReceivedPing, p.last) });
+					pings.forEach(function(p){
+						oldestUnseenPing = Math.min(oldestUnseenPing, p.first);
+						lastReceivedPing = Math.max(lastReceivedPing, p.last);
+					});
 					var h = "You've been pinged in room";
 					if (pings.length>1) h += 's';
 					var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
@@ -339,7 +339,11 @@ miaou.chat = function(){
 		vis(function(){
 			if (vis()) {
 				clearPings();
-				nbUnseenMessages = 0; nbUnseenPings = 0;
+				nbUnseenMessages = 0;
+				if (oldestUnseenPing) {
+					miaou.focusMessage(oldestUnseenPing);
+					oldestUnseenPing = 0;
+				}
 				document.title = room.name;
 			}
 		});
@@ -392,16 +396,16 @@ miaou.chat = function(){
 			addMessage(message);
 			updateNotableMessages(message);
 			if (message.created>enterTime) {
-				var visible = vis(), ping = pingRegex(me.name).test(message.content);
+				var visible = vis(), ping = pingRegex.test(message.content);
 				if (ping) {
 					if (visible) {
 						clearPings();
 					} else {
 						miaou.notify(room, message.authorname, message.content);
-						nbUnseenPings++;
+						if (!oldestUnseenPing) oldestUnseenPing = message.id;
 					}
 				}
-				if (!visible) document.title = (nbUnseenPings?'*':'') + ++nbUnseenMessages + ' - ' + room.name;
+				if (!visible) document.title = (oldestUnseenPing?'*':'') + ++nbUnseenMessages + ' - ' + room.name;
 			}
 		}).on('room', function(r){
 			if (room.id!==r.id) {
