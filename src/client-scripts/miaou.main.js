@@ -40,10 +40,15 @@ miaou.toggleUserProfile = function(){
 	miaou[$('.profile').length ? 'hideUserProfile' : 'showUserProfile'].call(this);
 }
 
+miaou.getMessages = function(){
+	return $('#messages .message').map(function(){ return $(this).data('message') }).get();
+}
+
+var MAX_AGE_FOR_EDIT = 5000; // seconds (should be coherent with server settings)
+
 miaou.chat = function(){
 	
 	var nbUnseenMessages = 0, oldestUnseenPing = 0, lastReceivedPing = 0,
-		MAX_AGE_FOR_EDIT = 5000, // seconds (should be coherent with server settings) 
 		DISRUPTION_THRESHOLD = 60*60, // seconds
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}],
 		timeOffset, enterTime, // both in seconds since epoch, server time
@@ -79,10 +84,6 @@ miaou.chat = function(){
 			return m.format("D MMMM HH:mm");
 		}
 		return m.format("D MMMM YYYY HH:mm");
-	}
-
-	function getMessages() {
-		return $('#messages .message').map(function(){ return $(this).data('message') }).get();
 	}
 
 	function isAtBottom(){
@@ -188,7 +189,7 @@ miaou.chat = function(){
 	}
 
 	function addMessage(message){
-		var messages = getMessages(), insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
+		var messages = miaou.getMessages(), insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
 		var wasAtBottom = isAtBottom();
 		if (messages.length===0 || message.id<messages[0].id) {
 			insertionIndex = -1;
@@ -481,12 +482,12 @@ miaou.chat = function(){
 			var $this = $(this), mid = +$this.data('mid'), olderPresent = 0;
 			$this.remove();
 			$('.hasOlder[mid='+mid+']').removeClass('hasOlder');
-			getMessages().forEach(function(m){ if (m.id<mid) olderPresent=m.id });
+			miaou.getMessages().forEach(function(m){ if (m.id<mid) olderPresent=m.id });
 			socket.emit('get_older', {before:mid, olderPresent:olderPresent});
 		}).on('click', '.newerLoader', function(){
 			var $this = $(this), mid = +$this.data('mid'), newerPresent = 0;
 			$this.remove();
-			getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
+			miaou.getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
 			$('.hasOlder[mid='+mid+']').removeClass('hasNewer');
 			socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
 		});

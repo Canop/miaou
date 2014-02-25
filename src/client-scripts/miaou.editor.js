@@ -112,6 +112,27 @@ $.fn.editFor = function(socket){
 				$input.replaceSelection(function(s){ return s+'\n' });
 				return false;
 			}
+		} else if (e.which==38) { // up arrow
+			if (!$input.data('edited-message-id')) {
+				for (var messages=miaou.getMessages(), i=messages.length; i-->0;) {
+					if (messages[i].author == me.id) {
+						if (Date.now()/1000-messages[i].created < MAX_AGE_FOR_EDIT) {
+							$input.editMessage(messages[i]);
+							return false;
+						}
+						break;
+					}
+				}
+			}
+		} else if (e.which==40) { // down arrow
+			var mid = +$input.data('edited-message-id');
+			if (mid) {
+				var editedMessage = miaou.getMessages().filter(function(m){ return m.id===mid })[0];
+				if (editedMessage && editedMessage.content == $input.val()) {
+					$input.cancelEdit();
+					return false;
+				}
+			}
 		} else if (e.which==27) { // esc
 			$input.cancelEdit();
 		} else if (e.which==13) { // enter
@@ -169,12 +190,14 @@ $.fn.editMessage = function(message){
 	var input = this[0];
 	input.selectionStart = input.selectionEnd = input.value.length;
 	$('#cancelEdit').show();
+	$('#help').hide();
 }
 
 $.fn.cancelEdit = function(){
 	if ($('#cancelEdit').is(':visible')) {
 		this.val('');
 		$('#cancelEdit').hide();
+		$('#help').show();
 		this.data('edited-message-id', null).removeClass('edition');
 	}
 };
@@ -192,10 +215,8 @@ $(function(){
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", "upload");
 		function finish(){
-			$('#uploadcontrols').show();
-			$('#uploadwait').hide();
-			$('#uploadpanel').hide();
-			$('#inputpanel').show();			
+			$('#uploadcontrols,#inputpanel').show();
+			$('#uploadwait,#uploadpanel').hide();
 		}
 		xhr.onload = function() {
 			var ans = JSON.parse(xhr.responseText);
