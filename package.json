@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "express": "~3.4.0",
-    "jade": "~0.35.0",
     "pg": "~2.8.3",
     "passport": "~0.1.17",
     "socket.io": "~0.9.16",
@@ -23,7 +22,8 @@
     "passport-stackexchange": "~0.1.0",
     "passport-github": "~0.1.5",
     "passport-reddit": "~0.2.4",
-    "busboy": "^0.2.1"
+    "busboy": "^0.2.1",
+    "jade": "^1.1.5"
   },
   "scripts": {
     "start": "sh start.sh"

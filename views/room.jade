@@ -1,4 +1,4 @@
-doctype 5
+doctype html
 html
 	head
 		title Miaou - Room Edition
@@ -22,10 +22,10 @@ html
 							label.label Name
 							input#name(type="text", name="name", value=suggestedName, pattern=".{2,20}")
 							span.label Privacy
-							input#private(name="private", id="private", type="checkbox")
+							input#private(name="private", type="checkbox")
 							label.cblabel(for="private") private room
 							span.label Listings
-							input#listed(name="listed", id="listed", type="checkbox")
+							input#listed(name="listed", type="checkbox")
 							label.cblabel(for="listed") listed room 
 							label.label Description
 								span.small Markdown allowed
