@@ -450,6 +450,12 @@ miaou.chat = function(){
 		$('#messages').on('click', '.message .content img', function(e){
 			window.open(this.src);
 			e.stopPropagation();
+		}).on('click', '.message .content a[href]', function(){
+			var parts = this.href.match(/^([^?#]+)[^\/]*#(.*)$/);
+			if (parts.length===3 && parts[1]===location.origin+location.pathname && +parts[2]==parts[2]) {
+				miaou.focusMessage(+parts[2]);
+				return false;
+			}
 		}).on('click', '.opener', opener).on('click', '.closer', closer)
 		.on('click', '.editButton', function(){
 			$('#input').editMessage($(this).closest('.message').data('message'));
