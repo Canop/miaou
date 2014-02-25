@@ -220,7 +220,7 @@ function defineAppRoutes(){
 	});
 	app.post('/room', ensureAuthenticated, ensureCompleteProfile, function(req, res){		
 		var roomId = +req.param('id'), name = req.param('name').trim(), room;
-		if (!/^.{2,20}$/.test(name)) {
+		if (!/^.{2,50}$/.test(name)) {
 			return renderErr(res, "invalid room name");
 		}
 		db.on([roomId, req.user.id, 'admin'])

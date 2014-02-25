@@ -20,7 +20,7 @@ html
 						div.form
 							input#id(type="hidden", name="id")
 							label.label Name
-							input#name(type="text", name="name", value=suggestedName, pattern=".{2,20}")
+							input#name(type="text", name="name", value=suggestedName, pattern=".{2,50}")
 							span.label Privacy
 							input#private(name="private", type="checkbox")
 							label.cblabel(for="private") private room
@@ -54,7 +54,7 @@ html
 			$('form')[0].action = location;
 			$('#name').focus().keyup(function(){
 				if (!this.validity.valid){
-					$('#err').text('Please type a ' + (this.value.length>20 ? 'shorter' : 'prettier') + ' name');
+					$('#err').text('Please type a ' + (this.value.length>50 ? 'shorter' : 'prettier') + ' name');
 					$('#submit').prop('disabled', true);
 				} else {
 					$('#err').text('');
