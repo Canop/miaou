@@ -323,7 +323,6 @@ function defineAppRoutes(){
 	});
 	
 	app.get('/publicProfile', function(req,res){
-		console.log('GET ','/publicProfile');
 		res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 		var userId = +req.param('user'), roomId = +req.param('room');
 		var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
@@ -375,14 +374,13 @@ function defineAppRoutes(){
 	
 	app.post('/upload', function (req, res) { // TODO delegate implementation to a specific js module
 		if (!config.imgur || !config.imgur.clientID) {
+			console.log('To activate the imgur service, register your application at imgur.com and set the imgur.clientID property in the config.json file.');
 			return res.send({error:"upload service not available"}); // todo : don't show upload button in this case
 		}
 		var busboy = new Busboy({ headers: req.headers }), files=[];
 		busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
 			var chunks = [];
-			console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding);
 			file.on('data', function(chunk) {
-				console.log('File [' + fieldname + '] got ' + chunk.length + ' bytes');
 				chunks.push(chunk);				
 				// todo : abort if sum of chunk.lengths is too big (and tell the client he's fat)
 			});
@@ -390,16 +388,13 @@ function defineAppRoutes(){
 				files.push({name:fieldname, bytes:Buffer.concat(chunks)});
 			});
 		});
-		busboy.on('field', function(fieldname, val, valTruncated, keyTruncated) {
-			console.log('Field [' + fieldname + ']: value: ' + inspect(val));
-		});
 		busboy.on('finish', function() {
 			console.log('Done parsing form');
 			if (files.length==0) {
 				return res.send({error:'found nothing in form'});
 			}
 			// for now, we handle only the first file, we'll see later if we want to upload galleries
-			console.log('Trying to send image to imgur :', files[0].name);
+			console.log('Trying to send image of '+ files[0].bytes.length +' bytes to imgur :', files[0].name);
 			var options = {
 				url: 'https://api.imgur.com/3/upload',
 				headers: { Authorization: 'Client-ID ' + config.imgur.clientID }

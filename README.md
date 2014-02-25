@@ -30,6 +30,8 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * Long messages appear reduced at first
 * Mobile Touch devices optimized interface
 * Plugins enabling the verification the chat user is linked to external profiles
+* private messaging
+* image upload (using imgur API)
 
 # Compatibility
 

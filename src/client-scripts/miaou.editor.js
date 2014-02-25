@@ -183,7 +183,6 @@ $(function(){
 	
 	$('#uploadSend').click(function(){		
 		var file = document.getElementById('file').files[0];
-		console.log('Mime:', file.type);
 		if (!file || !/^image\//.test(file.type)) {
 			alert('not a valid image');
 			return;

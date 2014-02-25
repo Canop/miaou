@@ -95,7 +95,7 @@ function handleUserInRoom(socket, completeUser, db){
 	}
 	var room, lastMessageTime,
 		publicUser = {id:completeUser.id, name:completeUser.name};
-	console.log('starting handling new socket for', completeUser.name);
+	//~ console.log('starting handling new socket for', completeUser.name);
 	socket.set('publicUser', publicUser);
 
 	socket.on('request', function(roomId){
@@ -120,7 +120,6 @@ function handleUserInRoom(socket, completeUser, db){
 		}).then(ack)
 		.finally(db.off);
 	}).on('enter', function(roomId, ack){
-		console.log(publicUser.name, 'enters', roomId);
 		var now = ~~(Date.now()/1000);
 		if (ack) ack(now);
 		db.on([roomId, publicUser.id])
@@ -128,6 +127,7 @@ function handleUserInRoom(socket, completeUser, db){
 		.then(function(r){
 			if (r.private && !r.auth) throw new Error('Unauthorized user');
 			room = r;
+			console.log(publicUser.name, 'enters room', room.id, ':', room.name);
 			socket.emit('room', room).join(room.id);
 			var nbSent = 0, oldestSent, resolver = Promise.defer();
 			return emitMessagesBefore.call(this, socket, room.id, publicUser.id, null, null, nbMessagesAtLoad)
@@ -269,8 +269,12 @@ function handleUserInRoom(socket, completeUser, db){
 		}).catch(function(err){ console.log('ERR in PM :', err) })	
 		.finally(db.off);
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
-		console.log(completeUser.name, "disconnected");
-		if (room) socket.broadcast.to(room.id).emit('leave', publicUser);
+		if (room) {
+			console.log(completeUser.name, "leaves room", room.id, ':', room.name);
+			socket.broadcast.to(room.id).emit('leave', publicUser);
+		} else {
+			console.log(completeUser.name, "disconnected before entering a room");
+		}
 		popon(socketWaitingApproval, function(o){ return o.socket===socket });
 	});
 	
