@@ -295,7 +295,7 @@ miaou.chat = function(){
 		var user = $(this).data('user');
 		if (user.name===me.name) return;
 		$('<button>').addClass('pingButton').text('ping').click(function(){
-			$('#input').ping(user.name);
+			miaou.editor.ping(user.name);
 		}).appendTo(this);
 		$('<button>').addClass('pmButton').text('pm').click(function(){
 			var win = window.open();
@@ -459,9 +459,9 @@ miaou.chat = function(){
 			}
 		}).on('click', '.opener', opener).on('click', '.closer', closer)
 		.on('click', '.editButton', function(){
-			$('#input').editMessage($(this).closest('.message').data('message'));
+			miaou.editor.editMessage($(this).closest('.message').data('message'));
 		}).on('click', '.replyButton', function(){
-			$('#input').replyToMessage($(this).closest('.message').data('message'));
+			miaou.editor.replyToMessage($(this).closest('.message').data('message'));
 		}).on('mouseenter', '.reply', function(e){
 			var mid = $(this).attr('to');
 			$('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');
@@ -517,7 +517,7 @@ miaou.chat = function(){
 			e.stopPropagation();			
 		}).on('click', '.opener', opener).on('click', '.closer', closer);
 
-		$('#input').editFor(socket);
+		miaou.editor.init(socket);
 		if (checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });
 		else $('#editroom').hide();
 		$('#auths').click(function(){ location = 'auths?id='+room.id });			
@@ -549,7 +549,6 @@ miaou.chat = function(){
 				$('#searchresults').empty();
 				miaou.hist.clearSearch();
 			}
-			
 		});
 
 		console.log('Miaou!');

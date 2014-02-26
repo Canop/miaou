@@ -175,7 +175,8 @@ function handleUserInRoom(socket, completeUser, db){
 			return emitMessagesAfter.call(this, socket, room.id, publicUser.id, data.after, data.newerPresent, nbMessagesPerPage)
 		}).finally(db.off);
 	}).on('message', function(message){
-		if (!room) {
+		if (!room) { // todo check this is useful and a complete enough solution 
+			console.log('no room. Asking client');
 			socket.emit('get_room', message);
 			return;
 		}
