@@ -1,7 +1,4 @@
 // Handles the message editor
-// Be careful that the $(textarea).edit* function isn't really a proper
-//  plugin : all the code assumes it will always be called on the same element.
-
 miaou.editor = (function(){
 	
 	var $input, input, socket, stash, editedMessage;
