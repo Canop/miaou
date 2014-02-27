@@ -1,7 +1,7 @@
 var miaou = miaou || {};
 
 miaou.eventIsOver = function(event, o) {
-	if ((!o) || o==null) return false;
+	if (!o.length) return false;
 	var pos = o.offset(), ex = event.pageX, ey = event.pageY;
 	return (
 		ex>=pos.left
@@ -13,26 +13,29 @@ miaou.eventIsOver = function(event, o) {
 // used in chat.jade, chat.mob.jade and auths.jade
 miaou.showUserProfile = function(){
 	miaou.hideUserProfile();
-	var $user = $(this), $message = $user.closest('.message,.notification,.userLine'),
-		up = ($message.length ? $message : $user).position(),
-		uh = $user.height(), uw = $user.width(),
-		$scroller = $user.closest('#messagescroller,#authspage,#left'), ss = $scroller.scrollTop(), sh = $scroller.height(),
-		$container = $user.closest('#messages,#authspage,body').first(), ch = $container.height();
-	var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
-	if (up.top-ss<sh/2) css.top = up.top+1;
-	else css.bottom = ch-up.top-uh-3;
-	css.left = up.left + uw;
-	if (!$message.hasClass('message')) {
-		css.left += 10; css.bottom -= 12; // :-(
-	}
-	$p.css(css).appendTo($container);
-	$user.addClass('profiled');
-	var userId, data;
-	if ((data = $user.data('user') || (data = $message.data('user')))) userId = data.id;
-	else userId = $message.data('message').author;
-	$p.load('publicProfile?user='+userId+'&room='+room.id);
+	miaou.profileTimer = setTimeout((function(){
+		var $user = $(this), $message = $user.closest('.message,.notification,.userLine'),
+			up = ($message.length ? $message : $user).position(),
+			uh = $user.height(), uw = $user.width(),
+			$scroller = $user.closest('#messagescroller,#authspage,#left'), ss = $scroller.scrollTop(), sh = $scroller.height(),
+			$container = $user.closest('#messages,#authspage,body').first(), ch = $container.height();
+		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
+		if (up.top-ss<sh/2) css.top = up.top+1;
+		else css.bottom = ch-up.top-uh-3;
+		css.left = up.left + uw;
+		if (!$message.hasClass('message')) {
+			css.left += 10; css.bottom -= 12; // :-(
+		}
+		$p.css(css).appendTo($container);
+		$user.addClass('profiled');
+		var userId, data;
+		if ((data = $user.data('user') || (data = $message.data('user')))) userId = data.id;
+		else userId = $message.data('message').author;
+		$p.load('publicProfile?user='+userId+'&room='+room.id);
+	}).bind(this), miaou.DELAY_BEFORE_PROFILE_POPUP);
 }
 miaou.hideUserProfile = function(){
+	clearTimeout(miaou.profileTimer);
 	$('.profile').remove();
 	$('.user').removeClass('profiled');
 }
@@ -44,7 +47,8 @@ miaou.getMessages = function(){
 	return $('#messages .message').map(function(){ return $(this).data('message') }).get();
 }
 
-var MAX_AGE_FOR_EDIT = 5000; // seconds (should be coherent with server settings)
+miaou.MAX_AGE_FOR_EDIT = 5000; // seconds (should be coherent with server settings)
+miaou.DELAY_BEFORE_PROFILE_POPUP = 300; // ms
 
 miaou.chat = function(){
 	
@@ -270,7 +274,7 @@ miaou.chat = function(){
 		var $message = $(this), message = $message.data('message'), infos = [],
 		created = message.created+timeOffset, m = moment(created*1000);
 		if (message.author===me.id) {
-			if (Date.now()/1000 - created < MAX_AGE_FOR_EDIT) $('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
+			if (Date.now()/1000 - created < miaou.MAX_AGE_FOR_EDIT) $('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
 			else infos.push('too old for edition');
 		} else {
 			$('<button>').addClass('replyButton').text('reply').appendTo($message.find('.user'));

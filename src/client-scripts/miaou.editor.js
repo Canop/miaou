@@ -78,7 +78,7 @@ miaou.editor = (function(){
 					if (!editedMessage) {
 						for (var messages=miaou.getMessages(), i=messages.length; i-->0;) {
 							if (messages[i].author == me.id) {
-								if (Date.now()/1000-messages[i].created < MAX_AGE_FOR_EDIT) {
+								if (Date.now()/1000-messages[i].created < miaou.MAX_AGE_FOR_EDIT) {
 									stash = input.value;
 									miaou.editor.editMessage(messages[i]);
 									return false;

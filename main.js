@@ -4,7 +4,6 @@ var fs = require("fs"),
 	express = require('express'),
 	passport = require('passport'),
 	jade = require('jade'),
-	socketio = require('socket.io'),
 	util = require('util'),
 	config = require('./config.json'),
 	db = require('./pgdb.js'),
@@ -20,7 +19,7 @@ var fs = require("fs"),
 	oauth2Strategies = {},
 	sessionStore = new RedisStore({}),
 	mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i,
-	app, io, server;
+	app, server;
 
 passport.serializeUser(function(user, done) {
 	done(null, user.id);
