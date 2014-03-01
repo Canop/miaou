@@ -35,8 +35,82 @@ body {
 		}
 	}
 	&.home {
+		overflow-y: scroll;
+		background: darken( $bg-color, 5% ) ;
 		a {
 			color: black;
+		}
+		#hometop {
+			background: $bg-color ;
+			box-shadow: 0 0 10px black;
+			padding: 3px;
+		}
+		#homenotifs {
+		}
+		#hometabs,#hometabshadows {
+			.tab {
+				height: 30px;
+				position: absolute;
+				width: 140px;
+				background: $bg-color ;
+				&:nth-child(2) {
+					margin-left:180px;
+				}
+				&:nth-child(3) {
+					margin-left:360px;
+				}
+				&:nth-child(4) {
+					margin-left:540px;
+				}
+				text-align: center;
+				padding: 8px;				
+			}
+		
+		}
+		#hometabs {
+			height: 30px;
+			.tab {
+				z-index: 2;
+				cursor: pointer;
+				&.selected {
+					z-index: 4;
+					cursor: inherit;
+				}
+				text-align: center;
+				padding: 8px;				
+			}
+		}
+		#hometabshadows {
+			margin-top: -30px;
+			.tab {
+				z-index: 1;
+				padding: 8px;				
+				box-shadow: 0 0 5px black;
+				&.selected {
+					box-shadow: 0 0 10px black;
+				}
+			}
+		}
+		#homemain {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			margin-top: 26px;
+			position: absolute;
+			left:0; right:0;
+			z-index: 3;
+			background: $bg-color ;
+			box-shadow: 0 0 10px black;
+			padding: 15px;
+			#homemaincontent {
+				width: 70%;
+				max-width: 1000px;
+				min-width: 800px;			
+			}
+			h3 {
+				margin-left: 8px;
+				margin-bottom: 5px;
+			}
 		}
 		#logo {
 			margin-top: 6px;
@@ -75,12 +149,14 @@ body {
 #left {
 	top:0; left:0; bottom:0;
 	width: $left-panel-width;
+	background: darken( $bg-color, 3% ) ;
 	overflow-y: auto;
 }
 #right {
 	top:0; right:0; bottom:0;
 	width: $right-panel-width;
 	overflow-y: auto;
+	background: darken( $bg-color, 3% ) ;
 }
 #center {
 	display:flex;
@@ -89,6 +165,8 @@ body {
 	left: $left-panel-width;
 	right: $right-panel-width;
 	bottom: 0;
+	box-shadow: 0 0 7px black;
+	z-index: 2;
 }
 #vert-center {
 	display:flex;
@@ -178,9 +256,9 @@ section {
 		margin-bottom: 8px;
 	}
 }
-body.mobile #prefs {
-}
+
 #users {
+	padding-top: 2px;
 	.user {
 		position: relative;
 		cursor: pointer;
@@ -269,7 +347,7 @@ body.mobile #messagescroller {
 		align-items: center;
 		align-content: center;
 		width: 120px;
-		padding: 1px;
+		padding: 1px 3px;
 		color: #555;
 		text-overflow: ellipsis;
 		overflow: hidden;
@@ -875,7 +953,7 @@ div.radios {
 }
 #changeroom, #editroom, #auths {
 	float: right;
-	margin: 2px;
+	margin: 1px 3px;
 }
 body.mobile #changeroom, body.mobile #editroom{
 	float: inherit;
@@ -901,10 +979,10 @@ div.MP {
 	width: 50%;
 	padding: 2px;
 	display: table-cell;
+	vertical-align: top;
 }
-.CL {
-}
-.CR {
+.CC {
+	padding: 2px;
 }
 
 #response {

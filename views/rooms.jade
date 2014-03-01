@@ -10,7 +10,7 @@ html
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
 
-		div#logo
+		section#hometop
 			div.MP
 				img(src="static/Miaou-300-f.png")
 				p.links
@@ -22,7 +22,7 @@ html
 					a(href="room") Create a room
 					| -
 					a(href="help#About",target=help) Help
-		div#notifs
+		section#homenotifs
 			div.MP
 				h2 Notifications
 				if pings.length==1
@@ -37,46 +37,147 @@ html
 								a(href=ping.room)= ping.roomname
 				else
 					p None
-		div.MP
-			div.table
-				div.CL
-					h2 Public Rooms
-					table.list#publicRooms
-				div.CR
-					h2(title="Those are the private rooms whose access has been granted to you") Accessible Private Rooms
-					table.list#privateAccessibleRooms
-					h2(title="Those are important private rooms. You may request an access") Main Private Rooms
-					table.list#otherPrivateRooms
+		#hometabs.MP
+			span.tab.selected Your Main Rooms
+			span.tab Public Rooms
+			span.tab  Private Rooms
+			span.tab  Dialog Rooms
+		#hometabshadows.MP
+			span.tab.selected 
+			span.tab 
+			span.tab 
+			span.tab 
+			
+		section#homemain
+			div#homemaincontent
+				div.table
+					div.CL
+						h2 Public Rooms
+						table.list#publicRooms
+					div.CR
+						h2(title="Those are the private rooms whose access has been granted to you") Accessible Private Rooms
+						table.list#privateAccessibleRooms
+						h2(title="Those are important private rooms. You may request an access") Main Private Rooms
+						table.list#otherPrivateRooms
 		script.
-			var loginRoom = localStorage['login.room'];
+			var rooms = !{JSON.stringify(rooms)},
+				loginRoom = localStorage['login.room'];
 			if (loginRoom) {
 				delete localStorage['login.room'];
 				location = loginRoom;
 			}
 			delete localStorage['room'];
 			
-			!{JSON.stringify(rooms)}.forEach(function(r){
-				var $tr = $('<tr>').append(
-					$('<td>').addClass(r.private?'private':'public').append($('<a>').attr('href',r.path).text(r.name))
-				).append(
-					$('<td>').addClass('rendered').html(miaou.mdToHtml(r.description))
-				);
-				var title;
-				switch(r.auth) {
-				case 'read':
-					title = 'You can only read in this room';
-				case 'read':
-					title = 'You can read and write in this room';
-				case 'admin':
-					title = "You're an administrator of this room : you can change its name and description, give or revoke writing rights, and give admin rights.";
-				case 'own':
-					title = "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights.";
+			var authDescriptions = {
+				read: 'You can only read in this room',
+				write: 'You can read and write in this room',
+				admin: "You're an administrator of this room : you can change its name and description, give or revoke writing rights, and give admin rights.",
+				own: "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights."
+			}
+			function table(rooms,alt){
+				if (rooms.length) {
+					var $t = $('<table>').addClass('list');
+					rooms.forEach(function(r){
+						var $tr = $('<tr>').append(
+							$('<td>').addClass(r.private?'private':'public').append($('<a>').attr('href',r.path).text(r.name))
+						).append(
+							$('<td>').addClass('rendered').html(miaou.mdToHtml(r.description))
+						).appendTo($t);
+						if (r.auth && !r.dialog) $tr.append($('<td>').addClass('role').text(r.auth).attr('title', authDescriptions[r.auth]));
+					});
+					return $t;
+				} else {
+					return $('<p>').text(alt);
 				}
-				if (r.auth) $tr.append($('<td>').addClass('role').text(r.auth).attr('title', title));
-				$tr.appendTo(r.private ? (r.auth ? '#privateAccessibleRooms' : '#otherPrivateRooms') : '#publicRooms');
-			});
-			$('h2','.CL,.CR').filter(function(){ return !$(this).next('.list').find('tr').length }).hide();
+			}			
 			
+			console.log(
+				rooms.filter(function(r){
+						return !r.private && r.lastmessage
+				})
+			);
+			
+			function selectTab(i) {
+				$('.tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
+				var $container = $('#homemaincontent > .table').empty();
+				switch(i){
+				case 0:
+					$container.append(
+						$('<div>').addClass('CL').append(
+							$('<h3>').text('Your Public Rooms')
+						).append(
+							table(
+								rooms.filter(function(r){
+									return !r.private && (r.lastmessage || r.auth)
+								}),
+								"You didn't participate in any public room for now."
+							)
+						)
+					).append($('<div>').addClass('CR').append(
+							$('<h3>').text('Your Private Rooms')
+						).append(
+							table(
+								rooms.filter(function(r){
+									return r.private && r.auth && !r.dialog
+								}),
+								"You have access to no private room for now."
+							)
+						)
+					);
+					break;
+				case 1:
+					$container.append(
+						$('<div>').addClass('CC').append(
+							$('<h3>').text('Main Public Rooms')
+						).append(
+							table(
+								rooms.filter(function(r){
+									return !r.private
+								}).sort(function(a,b){ return b.messagecount-a.messagecount }),
+								"There doesn't seem to be any public room on this server."
+							)
+						)
+					);
+					break;
+				case 2:
+					$container.append(
+						$('<div>').addClass('CC').append(
+							$('<h3>').text('Main Private Rooms')
+						).append(
+							table(
+								rooms.filter(function(r){
+									return r.private && !r.dialog
+								}).sort(function(a,b){ return b.messagecount-a.messagecount }),
+								"There doesn't seem to be any listed private room on this server."
+							)
+						)
+					);
+					break;
+				case 3:
+					$container.append(
+						$('<div>').addClass('CC').append(
+							$('<h3>').text('Rooms for Two')
+						).append(
+							table(
+								rooms.filter(function(r){
+									return r.dialog
+								}).sort(function(a,b){ return b.lastmessage-a.lastmessage }),
+								"Dialog rooms are created by sending a Private Message to another user. You have none for now."
+							)
+						)
+					);
+					break;
+				}
+			}
+			selectTab(0);
+			if (!$('#homemaincontent tr').length) selectTab(1);
+			$('.tab').click(function(){
+				selectTab($(this).index());
+			});
+			
+			console.log(rooms);
+			
+
 			$('#logout').click(function(){
 				delete localStorage['successfulLoginLastTime'];
 				setTimeout(function(){ location = 'logout' }, 100);

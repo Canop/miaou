@@ -225,7 +225,7 @@ function defineAppRoutes(){
 		db.on([roomId, req.user.id, 'admin'])
 		.spread(db.checkAuthLevel)
 		.then(function(auth){
-			room = {id:roomId, name: name, private:req.param('private')||false, listed:req.param('listed')||false, description:req.param('description')};
+			room = {id:roomId, name: name, private:req.param('private')||false, listed:req.param('listed')||false, dialog:false, description:req.param('description')};
 			return [room, req.user, auth];
 		}).spread(db.storeRoom)
 		.then(function(){

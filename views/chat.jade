@@ -69,6 +69,9 @@ html
 			if (room.private) {
 				$('#roomname').addClass('private').attr('title', 'This room is private');
 			}
+			if (room.dialog) {
+				$('#auths,#editroom').hide();
+			}
 			$('#help').click(function(){ window.open('help') });
 			$('#changeroom').click(function(){ window.open('rooms') });
 			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });

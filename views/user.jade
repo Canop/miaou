@@ -9,20 +9,30 @@ html
 	body.home
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
-		div#logo
+
+		section#hometop
 			div.MP
 				a(href="..")
 					img(src="../static/Miaou-300-f.png")
-		div.MP
-			p
-				i.user= user.name+' '
-				case rooms.length
-					when 0
-						| didn't post in Miaou yet
-					when 1
-						| might be found in this room :
-					default
-						| can usually be found in these rooms :
+
+		section
+			div.MP
+				br
+				h2= user.name
+
+		section#homemain
+			div#homemaincontent
+				p
+					span.user= user.name + ' '
+					case rooms.length
+						when 0
+							| didn't post in any publicly listed room
+						when 1
+							| might be found in this room :
+						default
+							| can usually be found in these rooms :
+					br
+					br
 				table.list#recentRooms
 				div.dialog_buttons#buttons
 					button(onclick="location='..'") Miaou Home

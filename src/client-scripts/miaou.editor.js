@@ -24,6 +24,7 @@ miaou.editor = (function(){
 				m.id = editedMessage.id;
 				editedMessage = null;
 				$('#cancelEdit').hide();
+				$('#help').show();
 				if (stash) $input.val(stash);
 			}
 			stash = null;
