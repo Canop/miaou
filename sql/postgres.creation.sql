@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+CREATE TABLE db_version (
+	component varchar(30) primary key,
+	version integer NOT NULL
+);
+>>>>>>> master
 
 CREATE TABLE room (
     id serial primary key,
