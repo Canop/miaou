@@ -1,3 +1,8 @@
+CREATE TABLE db_version (
+	component varchar(30) primary key,
+	version integer NOT NULL
+);
+
 CREATE TABLE room (
     id serial primary key,
     name varchar(50) UNIQUE NOT NULL,
