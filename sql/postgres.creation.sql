@@ -1,3 +1,4 @@
+
 CREATE TABLE room (
     id serial primary key,
     name varchar(50) UNIQUE NOT NULL,

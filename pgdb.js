@@ -9,6 +9,7 @@
 // 
 
 var pg = require('pg').native,
+	fs = require('fs'),
 	Promise = require("bluebird"),
 	pool;
 
@@ -393,7 +394,6 @@ proto.removeVote = function(roomId, userId, messageId, level) {
 	});
 }
 
-
 //////////////////////////////////////////////// #plugin
 
 proto.storePlayerPluginInfo = function(plugin, userId, info) {
@@ -408,6 +408,40 @@ proto.deletePlayerPluginInfo = function(plugin, userId) {
 	return this.queryRow("delete from plugin_player_info where plugin=$1 and player=$2", [plugin, userId], true);
 }
 
+//////////////////////////////////////////////// #patches & versions
+
+proto.getComponentVersion = function(component){
+	return this.queryRow("select version from db_version where component=$1", [component], true)
+	.then(function(row){
+		return row ? row.version : 0;
+	});
+}
+
+var ensureDbUptodate = proto.ensureDbUptodate = function(component, patchDirectory){
+	var con = this;
+	return this.getComponentVersion().then(function(version){
+		var patches = fs.readdirSync(patchDirectory).map(function(name){
+			var m = name.match(/^(\d+)-.*.sql$/);
+			return m ? { name:name,	num:+m[1] } : null;
+		}).filter(function(p){ return p && p.num>version }).sort(function(a,b){ return a.num-b.num });
+		console.log('Component ' + component + ' : patches to apply : ' + patches.length);
+
+		function applyAnUpdate(){
+			var patch = patches.shift();
+			if (patch) {
+				
+			} else {
+				return con.queryRow("delete from db_version where where component=$1", [component])
+				.then(function(){
+					return con.queryRow("insert into db_version (component,version) values($1,$2)", [component,version])
+				});
+			} 
+		}
+
+	});
+}
+
+
 //////////////////////////////////////////////// #global API
 
 function now(){
@@ -419,7 +453,6 @@ function logQuery(sql, args) { // used in debug
 }
 
 // must be called before any call to connect
-// todo return a promise
 exports.init = function(dbConfig, cb){
 	var conString = dbConfig.url;
 	pg.defaults.parseInt8 = true;
@@ -431,13 +464,18 @@ exports.init = function(dbConfig, cb){
 		done();
 		console.log('Connection to PostgreSQL database successful');
 		pool = pg.pools.all[JSON.stringify(conString)];
-		cb();
+		on(['core',__dirname+'/sql/patches'])
+		.spread(ensureDbUptodate)
+		.finally(function(){
+			this.off()
+			cb();
+		});
 	})
 }
 
 // returns a promise bound to a connection, available to issue queries
 //  The connection must be released using off
-exports.on = function(val){
+var on = exports.on = function(val){
 	var con = new Con(), resolver = Promise.defer();
 	pool.connect(function(err, client, done){
 		if (err) {
@@ -453,7 +491,7 @@ exports.on = function(val){
 
 // releases the connection which returns to the pool
 // It's ok to call this function more than once
-proto.off = function(){
+var off = proto.off = function(){
 	if (this instanceof Con) {
 		if (this.done) {
 			this.done();
