@@ -417,7 +417,7 @@ proto.getComponentVersion = function(component){
 	});
 }
 
-var ensureDbUptodate = proto.ensureDbUptodate = function(component, patchDirectory){
+proto.ensureDbUptodate = function(component, patchDirectory){
 	var con = this;
 	return this.getComponentVersion().then(function(version){
 		var patches = fs.readdirSync(patchDirectory).map(function(name){
@@ -425,32 +425,29 @@ var ensureDbUptodate = proto.ensureDbUptodate = function(component, patchDirecto
 			return m ? { name:name,	num:+m[1] } : null;
 		}).filter(function(p){ return p && p.num>version }).sort(function(a,b){ return a.num-b.num });
 		console.log('Component ' + component + ' : patches to apply : ' + patches.length);
-
-		function applyAnUpdate(){
-			var patch = patches.shift();
-			if (patch) {
+		var patch, statements, currentlyAppliedVersion;
+		return (function step(){
+			if (!patch) {
+				patch = patches.shift();
+				if (!patch) {
+					return con.queryRows("delete from db_version where component=$1", [component])
+					.then(function(){
+						return con.queryRow("insert into db_version (component,version) values($1,$2)", [component,currentlyAppliedVersion])
+					});
+				}
 				console.log('Patch to apply : ' + patch.name);
-				statements = fs.readFileSync(patchDirectory+'/'+patch.name).toString();
-				.replace(/#[^\n]*\n/g,' ').split(';');
-				return executeAStatement();
-			} else {
-				return con.queryRow("delete from db_version where where component=$1", [component])
-				.then(function(){
-					return con.queryRow("insert into db_version (component,version) values($1,$2)", [component,version])
-				});
-			} 
-		}
-		
-		var statements;
-		function executeAStatement(){
-			var statement = statements.shift();
-			if (statement) {
-				
-			} else {
-				return 'done';
+				currentlyAppliedVersion = patch.num;
+				statements = fs.readFileSync(patchDirectory+'/'+patch.name).toString()
+				.replace(/(#[^\n]*)?\n/g,' ').split(';').filter(function(s){ return s.trim() });
 			}
-		}
-
+			var statement = statements.shift();
+			if (!statement) {
+				patch = null;
+				return step();
+			}
+			console.log('Next statement :',statement);
+			return con.queryRows(statement).then(step);
+		})();
 	});
 }
 
@@ -477,12 +474,17 @@ exports.init = function(dbConfig, cb){
 		done();
 		console.log('Connection to PostgreSQL database successful');
 		pool = pg.pools.all[JSON.stringify(conString)];
-		on(['core',__dirname+'/sql/patches'])
-		.spread(ensureDbUptodate)
-		.finally(function(){
-			this.off()
-			cb();
-		});
+		on()
+		.then(proto.begin)
+		.then(function(){
+			return this.ensureDbUptodate('core',__dirname+'/sql/patches')
+		})
+		.then(proto.commit)
+		.catch(function(err){
+			console.log('An error prevented DB upgrade : ', err);
+			return this.rollback();
+		}).finally(proto.off)
+		.then(cb);
 	})
 }
 
@@ -504,7 +506,7 @@ var on = exports.on = function(val){
 
 // releases the connection which returns to the pool
 // It's ok to call this function more than once
-var off = proto.off = function(){
+proto.off = function(){
 	if (this instanceof Con) {
 		if (this.done) {
 			this.done();
@@ -547,6 +549,10 @@ proto.queryRows = function(sql, args){
 	});
 	return resolver.promise.bind(this);
 }
+
+;['begin','rollback','commit'].forEach(function(s){
+	proto[s] = function(){ console.log(s); return this.queryRows(s) }
+});
 
 for (var fname in proto) {
 	if (proto.hasOwnProperty(fname) && typeof proto[fname] === "function") {
