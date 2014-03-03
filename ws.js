@@ -33,7 +33,6 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted) {
 // emits messages before (not including) beforeId
 //  If beforeId is 0, then we look for the last messages of the room
 // This function must be called on a Con object
-// TODO with promises, this function starts to be painful. I should probably refactor it away
 function emitMessagesBefore(socket, roomId, userId, beforeId, untilId, nbMessages){
 	var nbSent = 0, oldestSent, resolver = Promise.defer();
 	this.queryMessagesBefore(roomId, userId, nbMessages, beforeId, untilId).on('row', function(message){
@@ -62,14 +61,12 @@ function emitMessagesAfter(socket, roomId, userId, fromId, untilId, nbMessages){
 	return resolver.promise.bind(this);
 }
 
-
 // filters the passed clients sockets to return those whose publicUser
 //  is the passed one. This function returns a promise as the search is asynchronous.
 // Note : this looks horribly heavy just to find if a user is in a room
 function userClients(clients, userIdOrName) {
 	if (clients.length===0) return [];
 	var found = [], n = 0, resolver = Promise.defer();
-	console.log('+++start looking for ' + userIdOrName + ' among ' + clients.length + ' sockets');
 	clients.forEach(function(s){
 		n++;
 		s.get('publicUser', function(err, u){
@@ -77,10 +74,8 @@ function userClients(clients, userIdOrName) {
 			console.log(u.name, u.id===userIdOrName || u.name===userIdOrName);
 			if (u.id===userIdOrName || u.name===userIdOrName) found.push(s);
 			if (--n===0) resolver.resolve(found);
-			console.log(n, 'go on');
 		});
 	});
-	console.log('n:',n);
 	return resolver.promise.bind(this);
 }
 
@@ -95,7 +90,6 @@ function handleUserInRoom(socket, completeUser, db){
 	}
 	var room, lastMessageTime,
 		publicUser = {id:completeUser.id, name:completeUser.name};
-	//~ console.log('starting handling new socket for', completeUser.name);
 	socket.set('publicUser', publicUser);
 
 	socket.on('request', function(roomId){

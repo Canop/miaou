@@ -121,5 +121,3 @@ exports.test = function(){
 		console.log(s, 'suggested user name:', suggestUsername(s), 'room name in url:', toUrlDecoration(s));
 	});
 }
-
-

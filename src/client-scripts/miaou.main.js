@@ -133,6 +133,8 @@ miaou.chat = function(){
 	}
 	
 	function updateNotableMessages(message){
+		var $page = $('#notablemessagespage'), isPageHidden = !$page.hasClass('selected');
+		if (isPageHidden) $page.addClass('selected'); // so that the height computation of messages is possible 
 		var yetPresent = false, notableMessages = $('#notablemessages .message').map(function(){
 			var msg = $(this).data('message');
 			if (message && msg.id===message.id) {
@@ -146,6 +148,7 @@ miaou.chat = function(){
 			return b.score-a.score + (a.created-b.created)/1e7
 		}).slice(0,12)
 		showMessages(notableMessages, $('#notablemessages'));
+		if (isPageHidden) $page.removeClass('selected');
 	}
 	
 	function updateOlderAndNewerLoaders(){

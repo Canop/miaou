@@ -182,11 +182,12 @@ miaou.editor = (function(){
 		},
 		// cancels edition
 		cancelEdit: function(){
-			if ($('#cancelEdit').is(':visible')) {
+			if (editedMessage) {
 				input.value = stash||'';
 				$('#cancelEdit').hide();
 				$('#help').show();
-				$input.data('edited-message-id', null).removeClass('edition');
+				editedMessage = null;
+				$input.removeClass('edition').focus();
 			}
 		}
 	}

@@ -1,3 +1,5 @@
+// histogram and search functions
+
 var miaou = miaou || {};
 
 (function(mh){	
