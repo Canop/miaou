@@ -429,13 +429,26 @@ var ensureDbUptodate = proto.ensureDbUptodate = function(component, patchDirecto
 		function applyAnUpdate(){
 			var patch = patches.shift();
 			if (patch) {
-				
+				console.log('Patch to apply : ' + patch.name);
+				statements = fs.readFileSync(patchDirectory+'/'+patch.name).toString();
+				.replace(/#[^\n]*\n/g,' ').split(';');
+				return executeAStatement();
 			} else {
 				return con.queryRow("delete from db_version where where component=$1", [component])
 				.then(function(){
 					return con.queryRow("insert into db_version (component,version) values($1,$2)", [component,version])
 				});
 			} 
+		}
+		
+		var statements;
+		function executeAStatement(){
+			var statement = statements.shift();
+			if (statement) {
+				
+			} else {
+				return 'done';
+			}
 		}
 
 	});
