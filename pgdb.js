@@ -419,12 +419,14 @@ proto.getComponentVersion = function(component){
 
 proto.ensureDbUptodate = function(component, patchDirectory){
 	var con = this;
-	return this.getComponentVersion().then(function(version){
+	return this.getComponentVersion(component).then(function(version){
+		console.log('Component ' + component + ' : current version : ' + version);
 		var patches = fs.readdirSync(patchDirectory).map(function(name){
 			var m = name.match(/^(\d+)-.*.sql$/);
 			return m ? { name:name,	num:+m[1] } : null;
 		}).filter(function(p){ return p && p.num>version }).sort(function(a,b){ return a.num-b.num });
 		console.log('Component ' + component + ' : patches to apply : ' + patches.length);
+		if (!patches.length) return;
 		var patch, statements, currentlyAppliedVersion;
 		return (function step(){
 			if (!patch) {
