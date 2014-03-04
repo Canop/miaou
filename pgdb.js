@@ -7,9 +7,21 @@
 //      if (!user.bot) return this.ping(uid)    // `this` is the connection
 //  }).finally(db.off);                         // releases the connection which is returned to the pool
 // 
+//  It's also possible to do transactions :
+//
+//  db.on(someArg)
+//  .then(db.begin)
+//  .then(db.doThing)
+//  .then(db.doOtherThing)
+//  .then(db.commit)
+//  .catch(function(err){
+//	    alert(err);
+//      this.rollback();
+//   }).finally(db.off);
 
 var pg = require('pg').native,
 	Promise = require("bluebird"),
+	fs = Promise.promisifyAll(require("fs")),
 	pool;
 
 Promise.longStackTraces(); // this will be removed in production in the future
@@ -163,7 +175,7 @@ proto.listRecentUserRooms = function(userId){
 	return this.queryRows(
 		"select m.id, m.number, m.last_created, r.name, r.description, r.private, r.listed, r.dialog"+
 		" from ("+
-    		"select m.room as id, count(*) number, max(created) last_created"+
+			"select m.room as id, count(*) number, max(created) last_created"+
 			" from message m"+
 			" where author=$1"+
 			" group by room "+
@@ -187,7 +199,7 @@ proto.listRoomAuths = function(roomId){
 }
 
 proto.deleteAccessRequests = function(roomId, userId){
-	return this.queryRows('delete from access_request where room=$1 and player=$2', [roomId, userId])
+	return this.execute('delete from access_request where room=$1 and player=$2', [roomId, userId])
 }
 proto.insertAccessRequest = function(roomId, userId){
 	return this.queryRow(
@@ -348,7 +360,7 @@ proto.storePing = function(roomId, userId, messageId){
 
 // users must be a sanitized array of usernames
 proto.storePings = function(roomId, users, messageId){
-	return this.queryRows(
+	return this.execute(
 		"insert into ping (room, player, message, created) select " +
 		roomId + ", id, " + messageId + ", " + now() +
 		" from player where name in (" + users.map(function(n){ return "'"+n+"'" }).join(',') + ")"
@@ -356,7 +368,7 @@ proto.storePings = function(roomId, users, messageId){
 }
 
 proto.deletePings = function(roomId, userId){
-	return this.queryRows("delete from ping where room=$1 and player=$2", [roomId, userId]);
+	return this.execute("delete from ping where room=$1 and player=$2", [roomId, userId]);
 }
 
 proto.fetchUserPings = function(userId) {
@@ -393,7 +405,6 @@ proto.removeVote = function(roomId, userId, messageId, level) {
 	});
 }
 
-
 //////////////////////////////////////////////// #plugin
 
 proto.storePlayerPluginInfo = function(plugin, userId, info) {
@@ -408,6 +419,67 @@ proto.deletePlayerPluginInfo = function(plugin, userId) {
 	return this.queryRow("delete from plugin_player_info where plugin=$1 and player=$2", [plugin, userId], true);
 }
 
+//////////////////////////////////////////////// #patches & versions
+
+proto.getComponentVersion = function(component){
+	return this.queryRow("select version from db_version where component=$1", [component], true)
+	.then(function(row){
+		return row ? row.version : 0;
+	});
+}
+
+// applies the not yet applied patches for a component. This is automatically called
+//  for the core of miaou but it may also be called by plugins (including for
+//  initial installation of the plugin)
+exports.upgrade = function(component, patchDirectory, cb){
+	var startVersion, endVersion;
+	on(component)
+	.then(proto.getComponentVersion)
+	.then(function(version){
+		console.log('Component '+component+' : current version='+version);
+		startVersion = version;
+	}).then(function(){
+		return fs.readdirAsync(patchDirectory)
+	}).then(function(names){
+		return names.map(function(name){
+			var m = name.match(/^(\d+)-(.*).sql$/);
+			return m ? { name:m[2],	num:+m[1], filename:name } : null;
+		}).filter(function(p){ return p && p.num>startVersion })
+		.sort(function(a,b){ return a.num-b.num });
+	}).then(function(patches){
+		if (!patches.length) return console.log('Component '+component+' is up to date.');
+		endVersion = patches[patches.length-1].num;
+		console.log('Component '+component+' must be upgraded from version '+startVersion+' to '+endVersion);			
+		return Promise.cast(patches).bind(this)
+		.then(proto.begin)
+		.reduce(function(_, patch){
+			console.log('Applying patch '+patch.num+' : '+patch.name);
+			return Promise.cast(patchDirectory+'/'+patch.filename).bind(this)
+			.then(fs.readFileAsync.bind(fs))
+			.then(function(buffer){
+				return buffer.toString().replace(/(#[^\n]*)?\n/g,' ').split(';')
+				.map(function(s){ return s.trim() }).filter(function(s){ return s });
+			}).map(function(statement){
+				console.log(' Next statement :', statement);
+				return this.execute(statement)
+			});
+		}, 'see https://github.com/petkaantonov/bluebird/issues/70')
+		.then(function(){
+			return this.execute("delete from db_version where component=$1", [component])
+		}).then(function(){
+			return this.execute("insert into db_version (component,version) values($1,$2)", [component, endVersion])
+		}).then(proto.commit)
+		.then(function(){
+			console.log('Component '+component+' successfully upgraded to version '+endVersion)
+		}).catch(function(err){
+			console.log('An error prevented DB upgrade : ', err);
+			console.log('All changes are rollbacked');
+			return this.rollback();
+		})
+	}).finally(proto.off)
+	.then(cb)
+}
+
 //////////////////////////////////////////////// #global API
 
 function now(){
@@ -419,25 +491,21 @@ function logQuery(sql, args) { // used in debug
 }
 
 // must be called before any call to connect
-// todo return a promise
 exports.init = function(dbConfig, cb){
 	var conString = dbConfig.url;
 	pg.defaults.parseInt8 = true;
 	pg.connect(conString, function(err, client, done){
-		if (err) {
-			console.log('Connection to PostgreSQL database failed');
-			return;
-		}
+		if (err) return console.log('Connection to PostgreSQL database failed');
 		done();
 		console.log('Connection to PostgreSQL database successful');
 		pool = pg.pools.all[JSON.stringify(conString)];
-		cb();
+		exports.upgrade('core', __dirname+'/sql/patches', cb);
 	})
 }
 
 // returns a promise bound to a connection, available to issue queries
 //  The connection must be released using off
-exports.on = function(val){
+var on = exports.on = function(val){
 	var con = new Con(), resolver = Promise.defer();
 	pool.connect(function(err, client, done){
 		if (err) {
@@ -466,7 +534,6 @@ proto.off = function(){
 	}
 }
 
-
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
 //  apart if noErrorOnNoRow
 proto.queryRow = function(sql, args, noErrorOnNoRow){
@@ -487,7 +554,7 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 	return resolver.promise.bind(this);
 }
 
-proto.queryRows = function(sql, args){
+proto.queryRows = proto.execute = function(sql, args){
 	var resolver = Promise.defer();
 	this.client.query(sql, args, function(err, res){
 		//~ logQuery(sql, args);
@@ -496,6 +563,10 @@ proto.queryRows = function(sql, args){
 	});
 	return resolver.promise.bind(this);
 }
+
+;['begin','rollback','commit'].forEach(function(s){
+	proto[s] = function(arg){ return this.execute(s).then(function(){ return arg }) }
+});
 
 for (var fname in proto) {
 	if (proto.hasOwnProperty(fname) && typeof proto[fname] === "function") {
