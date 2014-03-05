@@ -91,7 +91,7 @@ html
 					});
 					return $t;
 				} else {
-					return $('<p>').text(alt);
+					return $('<p>').html(alt);
 				}
 			}			
 			
@@ -124,7 +124,8 @@ html
 								rooms.filter(function(r){
 									return r.private && r.auth && !r.dialog
 								}),
-								"You have access to no private room for now."
+								"You have access to no private room for now.<br>"+
+								"To enter a private room, click on its link (<a href=# onclick='selectTab(2)'>see them</a>) and request an access"
 							)
 						)
 					);
