@@ -65,7 +65,7 @@ miaou.chat = function(){
 	}
 	
 	function permalink(message){
-		return location.pathname + location.search + '#' + message.id;
+		return location.href.match(/^[^&#]*/) + '#' + message.id;
 	}
 	
 	// returns true if the user's authorization level in room is at least the passed one
@@ -459,10 +459,30 @@ miaou.chat = function(){
 			window.open(this.src);
 			e.stopPropagation();
 		}).on('click', '.message .content a[href]', function(){
-			var parts = this.href.match(/^([^?#]+)[^\/]*#(.*)$/);
-			if (parts.length===3 && parts[1]===location.origin+location.pathname && +parts[2]==parts[2]) {
-				miaou.focusMessage(+parts[2]);
-				return false;
+			var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
+			if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
+				// it's an url towards a room or message on this server
+				if (room.id===+parts[2]) {
+					// it's an url for the same room
+					if (parts[4]) {
+						// it's an url for a message
+						miaou.focusMessage(+parts[4]);
+					} else {
+						// it's just an url to our room. Let's... err... scroll to bottom ?
+						scrollToBottom();
+					}
+					return false;
+				} else {
+					// it's an url for another room or for a message in another room, let's go to the right tab if it's already open
+					//  or open it if not
+					this.target = 'room_'+parts[2];
+					var h = parts[1]+parts[2];
+					if (parts[3].indexOf('=')===-1) h += parts[3].slice('&')[0];
+					h += h.indexOf('?')===-1 ? '?' : '&';
+					h += 't='+Date.now();
+					if (parts[4]) h += '#'+parts[4];
+					this.href = h;
+				}
 			}
 		}).on('click', '.opener', opener).on('click', '.closer', closer)
 		.on('click', '.editButton', function(){

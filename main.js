@@ -116,6 +116,7 @@ function defineAppRoutes(){
 		db.on([+req.params[0], req.user.id])
 		.spread(db.fetchRoomAndUserAuth)
 		.then(function(room){
+			room.path = roomPath(room);
 			req.session.room = room;
 			if (room.private && !checkAuthAtLeast(room.auth, 'write')) {
 				return res.render('request.jade', { room:room });
