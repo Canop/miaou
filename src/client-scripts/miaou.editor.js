@@ -1,4 +1,6 @@
 // Handles the message editor
+
+var miaou = miaou || {};
 miaou.editor = (function(){
 	
 	var $input, input, socket, stash, editedMessage;
@@ -76,7 +78,9 @@ miaou.editor = (function(){
 						return false;
 					}
 				} else if (e.which==38) { // up arrow
-					if (!editedMessage) {
+					var firstLineEnd = this.value.indexOf('\n'),
+						isInFirstLine = firstLineEnd===-1 || firstLineEnd>=input.selectionStart;
+					if (isInFirstLine && !editedMessage) {
 						for (var messages=miaou.getMessages(), i=messages.length; i-->0;) {
 							if (messages[i].author == me.id) {
 								if (Date.now()/1000-messages[i].created < miaou.MAX_AGE_FOR_EDIT) {
@@ -89,7 +93,9 @@ miaou.editor = (function(){
 						}
 					}
 				} else if (e.which==40) { // down arrow
-					if (editedMessage && editedMessage.content == $input.val()) {
+					var lastLineStart = this.value.lastIndexOf('\n'),
+						isInLastLine = lastLineStart===-1 || lastLineStart<input.selectionStart;
+					if (isInLastLine && editedMessage && editedMessage.content == $input.val()) {
 						miaou.editor.cancelEdit();
 						$input.val(stash);
 						stash = null;
