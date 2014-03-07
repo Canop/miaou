@@ -926,6 +926,18 @@ div.radios {
 .message.target, .message.me.target,.message.goingto, .message.me.goingto {
 	background: #d5cba6;
 }
+.message {
+	transition: background-color 2s;
+	&.flash {
+		&:nth-child(odd) {
+			background: rgba(255, 215, 0, 0.6);
+		}
+		&:nth-child(even) {
+			background: rgba(215, 255, 0, 0.6);
+		}
+		transition: background-color 2s;	
+	}
+}
 
 .list {
 	width: 100%;

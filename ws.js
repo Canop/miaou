@@ -36,7 +36,7 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted) {
 function emitMessagesBefore(socket, roomId, userId, beforeId, untilId, nbMessages){
 	var nbSent = 0, oldestSent, resolver = Promise.defer();
 	this.queryMessagesBefore(roomId, userId, nbMessages, beforeId, untilId).on('row', function(message){
-		socket.emit('message', message);
+		socket.emit('message', lighten(message));
 		nbSent++;
 		if (!(message.id>oldestSent)) oldestSent = message.id;
 	}).on('end', function(){
@@ -51,7 +51,7 @@ function emitMessagesBefore(socket, roomId, userId, beforeId, untilId, nbMessage
 function emitMessagesAfter(socket, roomId, userId, fromId, untilId, nbMessages){
 	var nbSent = 0, youngestSent, resolver = Promise.defer();
 	this.queryMessagesAfter(roomId, userId, nbMessages, fromId, untilId).on('row', function(message){
-		socket.emit('message', message);
+		socket.emit('message', lighten(message));
 		nbSent++;
 		if (!(message.id<youngestSent)) youngestSent = message.id;	
 	}).on('end', function(){
@@ -77,6 +77,18 @@ function userClients(clients, userIdOrName) {
 		});
 	});
 	return resolver.promise.bind(this);
+}
+
+// removes all useless properties from an object
+// A typical not lighted message is like this :
+//  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801,"changed":null,"pin":0,"star":0,"up":0,"down":0,"vote":null,"score":0}
+// lighted :
+//  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801}
+function lighten(obj) {
+	for (var k in obj) {
+		if (!obj[k]) delete obj[k];
+	}
+	return obj;
 }
 
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
@@ -136,7 +148,7 @@ function handleUserInRoom(socket, completeUser, db){
 			});
 			return this.getNotableMessages(room.id, now-maxAgeForNotableMessages);
 		}).then(function(messages){
-			messages.forEach(function(m){ socket.emit('notable_message', m) });
+			messages.forEach(function(m){ socket.emit('notable_message', lighten(m)) });
 			socket.emit('welcome');
 			io.sockets.clients(room.id).forEach(function(s){
 				s.get('publicUser', function(err, u){
@@ -171,7 +183,7 @@ function handleUserInRoom(socket, completeUser, db){
 	}).on('message', function(message){
 		if (!room) { // todo check this is useful and a complete enough solution 
 			console.log('no room. Asking client');
-			socket.emit('get_room', message);
+			socket.emit('get_room', lighten(message));
 			return;
 		}
 		var now = Date.now(), seconds = ~~(now/1000), content = message.content;
@@ -195,7 +207,7 @@ function handleUserInRoom(socket, completeUser, db){
 					m.authorname = publicUser.name;
 					m.vote = '?';
 				}
-				io.sockets.in(room.id).emit('message', m);
+				io.sockets.in(room.id).emit('message', lighten(m));
 				var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
 				if (pings) return this.storePings(room.id, pings.map(function(s){ return s.slice(1) }), m.id);
 			}).finally(db.off)
@@ -208,7 +220,7 @@ function handleUserInRoom(socket, completeUser, db){
 			socket.emit('message', updatedMessage);
 			var clone = {};
 			for (var key in updatedMessage) {
-				clone[key] = key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
+				if (updatedMessage[key]) clone[key] = key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
 			}
 			socket.broadcast.to(room.id).emit('message', clone);	
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })		
@@ -282,7 +294,8 @@ function handleUserInRoom(socket, completeUser, db){
 
 exports.listen = function(server, sessionStore, cookieParser, db){
 	io = socketio.listen(server);
-	io.set('log level', 1);
+	io.set('log level', 2);
+	io.set('transports', [ 'websocket', 'xhr-polling', 'jsonp-polling' ]);
 	
 	var sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
 	sessionSockets.on('connection', function (err, socket, session) {
@@ -291,6 +304,7 @@ exports.listen = function(server, sessionStore, cookieParser, db){
 			socket.emit('error', err.toString());
 			socket.disconnect();
 		}
+				
 		if (! (session && session.passport && session.passport.user && session.room)) return die ('invalid session');
 		var userId = session.passport.user;
 		if (!userId) return die('no authenticated user in session');

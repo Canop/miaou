@@ -145,9 +145,16 @@ miaou.chat = function(){
 		}).get();
 		if (!yetPresent && message) notableMessages.push(message);
 		notableMessages = notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){
-			return b.score-a.score + (a.created-b.created)/1e7
+			return b.score-a.score + (b.created-a.created)/7000
 		}).slice(0,12)
 		showMessages(notableMessages, $('#notablemessages'));
+		$('#notablemessages .message').each(function(){
+			var $m = $(this), m = $m.data('message'), age = (Date.now()/1000 - m.created), maxAge = 3*24*60*60;
+			if (age<maxAge) {
+				$m.addClass('flash');
+				setTimeout(function(){ $m.removeClass('flash') }, Math.floor((maxAge-age)*4000/maxAge));
+			}
+		});
 		if (isPageHidden) $page.removeClass('selected');
 	}
 	
@@ -315,7 +322,6 @@ miaou.chat = function(){
 	function hideUserHoverButtons(){
 		$('.pingButton,.pmButton').remove();
 	}
-	
 	
 	$(function(){
 		var socket = miaou.socket = io.connect(location.origin);
