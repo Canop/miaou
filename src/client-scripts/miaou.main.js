@@ -143,13 +143,16 @@ miaou.chat = function(){
 			}
 			return msg;
 		}).get();
+		if (!yetPresent && !message.score) return; // nothing to do
 		if (!yetPresent && message) notableMessages.push(message);
 		notableMessages = notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){
 			return b.score-a.score + (b.created-a.created)/7000
 		}).slice(0,12)
 		showMessages(notableMessages, $('#notablemessages'));
-		$('#notablemessages .message').each(function(){
-			var $m = $(this), m = $m.data('message'), age = (Date.now()/1000 - m.created), maxAge = 3*24*60*60;
+		var maxAge = 10*24*60*60, $notableMessages = $('#notablemessages .message');
+		if ($notableMessages.length>2) maxAge = Math.max(maxAge/5, Math.min(maxAge, $notableMessages.eq(2).data('message').created));
+		$notableMessages.each(function(){
+			var $m = $(this), m = $m.data('message'), age = (Date.now()/1000 - m.created);
 			if (age<maxAge) {
 				$m.addClass('flash');
 				setTimeout(function(){ $m.removeClass('flash') }, Math.floor((maxAge-age)*4000/maxAge));
