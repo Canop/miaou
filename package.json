@@ -23,7 +23,8 @@
     "passport-github": "~0.1.5",
     "passport-reddit": "~0.2.4",
     "busboy": "^0.2.1",
-    "jade": "^1.1.5"
+    "jade": "^1.1.5",
+    "request": "~2.34.0"
   },
   "scripts": {
     "start": "sh start.sh"
