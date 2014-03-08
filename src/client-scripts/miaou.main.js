@@ -132,6 +132,18 @@ miaou.chat = function(){
 		});
 	}
 	
+	function flashRecentNotableMessages(){
+		var maxAge = 10*24*60*60, $notableMessages = $('#notablemessages .message');
+		if ($notableMessages.length>2) maxAge = Math.max(maxAge/5, Math.min(maxAge, $notableMessages.eq(2).data('message').created));
+		$notableMessages.each(function(){
+			var $m = $(this), m = $m.data('message'), age = (Date.now()/1000 - m.created);
+			if (age<maxAge) {
+				$m.addClass('flash');
+				setTimeout(function(){ $m.removeClass('flash') }, Math.floor((maxAge-age)*4000/maxAge));
+			}
+		});
+		miaou.lastNotableMessagesChangeNotFlashed = false;
+	}
 	function updateNotableMessages(message){
 		var $page = $('#notablemessagespage'), isPageHidden = !$page.hasClass('selected');
 		if (isPageHidden) $page.addClass('selected'); // so that the height computation of messages is possible 
@@ -149,16 +161,9 @@ miaou.chat = function(){
 			return b.score-a.score + (b.created-a.created)/7000
 		}).slice(0,12)
 		showMessages(notableMessages, $('#notablemessages'));
-		var maxAge = 10*24*60*60, $notableMessages = $('#notablemessages .message');
-		if ($notableMessages.length>2) maxAge = Math.max(maxAge/5, Math.min(maxAge, $notableMessages.eq(2).data('message').created));
-		$notableMessages.each(function(){
-			var $m = $(this), m = $m.data('message'), age = (Date.now()/1000 - m.created);
-			if (age<maxAge) {
-				$m.addClass('flash');
-				setTimeout(function(){ $m.removeClass('flash') }, Math.floor((maxAge-age)*4000/maxAge));
-			}
-		});
+		miaou.lastNotableMessagesChangeNotFlashed = true;
 		if (isPageHidden) $page.removeClass('selected');
+		else if (vis()) flashRecentNotableMessages();
 	}
 	
 	function updateOlderAndNewerLoaders(){
@@ -362,6 +367,7 @@ miaou.chat = function(){
 					oldestUnseenPing = 0;
 				}
 				document.title = room.name;
+				if (miaou.lastNotableMessagesChangeNotFlashed) flashRecentNotableMessages();
 			}
 		});
 		
