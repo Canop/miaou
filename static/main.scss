@@ -736,6 +736,9 @@ body.mobile .dialog.intro {
 		float:left;
 		padding:4px 2px;
 		width: calc( 100% - 155px );
+		&.unlabeled {
+			width: calc( 100% - 25px );
+		}
 		margin: 4px 2px 15px 10px;
 	}
 	.small {

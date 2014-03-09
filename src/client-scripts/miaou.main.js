@@ -44,7 +44,7 @@ miaou.toggleUserProfile = function(){
 }
 
 miaou.getMessages = function(){
-	return $('#messages .message').map(function(){ return $(this).data('message') }).get();
+	return $('#messages > .message').map(function(){ return $(this).data('message') }).get();
 }
 
 miaou.MAX_AGE_FOR_EDIT = 5000; // seconds (should be coherent with server settings)
@@ -104,7 +104,7 @@ miaou.chat = function(){
 
 	function showMessageFlowDisruptions(){
 		var lastMessage;
-		$('#messages .message').removeClass('disrupt').each(function(){
+		$('#messages > .message').removeClass('disrupt').each(function(){
 			var $this = $(this), message = $this.data('message');
 			if (lastMessage && message.created-lastMessage.created > DISRUPTION_THRESHOLD) $this.addClass('disrupt')
 			lastMessage = message;
@@ -168,20 +168,20 @@ miaou.chat = function(){
 	
 	function updateOlderAndNewerLoaders(){
 		$('.olderLoader, .newerLoader').remove();
-		$('#messages .message.hasOlder').each(function(){
+		$('#messages > .message.hasOlder').each(function(){
 			$('<div>').addClass('olderLoader').data('mid', this.getAttribute('mid')).text("load older messages").insertBefore(this);
 		});
-		$('#messages .message.hasNewer').each(function(){
+		$('#messages > .message.hasNewer').each(function(){
 			$('<div>').addClass('newerLoader').data('mid', this.getAttribute('mid')).text("load newer messages").insertAfter(this);
 		});		
 	}
 	
 	function showHasOlderThan(messageId){
-		$('#messages .message[mid='+messageId+']').addClass('hasOlder');
+		$('#messages > .message[mid='+messageId+']').addClass('hasOlder');
 		updateOlderAndNewerLoaders();
 	}
 	function showHasNewerThan(messageId){
-		$('#messages .message[mid='+messageId+']').addClass('hasNewer');
+		$('#messages > .message[mid='+messageId+']').addClass('hasNewer');
 		updateOlderAndNewerLoaders();
 	}
 	
@@ -195,6 +195,7 @@ miaou.chat = function(){
 	}
 	
 	function showRequestAccess(ar){
+		console.log(ar);
 		var h, wab = isAtBottom();
 		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room.";
 		else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right.";
@@ -206,6 +207,13 @@ miaou.chat = function(){
 			if (!vis()) {
 				document.title = (oldestUnseenPing?'*':'') + ++nbUnseenMessages + ' - ' + room.name;				
 			}
+		}
+		if (ar.request_message) {
+			$('<div>').addClass('message').append(
+				$('<div>').addClass('user').text(ar.user.name)
+			).append(
+				$('<div>').addClass('content').append(miaou.mdToHtml(ar.request_message))
+			).appendTo($md);
 		}
 		if (wab) scrollToBottom();
 	}
@@ -231,9 +239,9 @@ miaou.chat = function(){
 				if (message.vote==='?') {
 					message.vote = messages[insertionIndex].vote;
 				}
-				$('#messages .message').eq(insertionIndex).replaceWith($md);
+				$('#messages > .message').eq(insertionIndex).replaceWith($md);
 			} else {
-				$('#messages .message').eq(insertionIndex).after($md);				
+				$('#messages > .message').eq(insertionIndex).after($md);				
 			}
 		} else {
 			$md.prependTo('#messages');
@@ -258,7 +266,7 @@ miaou.chat = function(){
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		showMessageFlowDisruptions();
 		updateOlderAndNewerLoaders();
-		if (wasAtBottom && message.id==$('#messages .message').last().attr('mid')) scrollToBottom();
+		if (wasAtBottom && message.id==$('#messages > .message').last().attr('mid')) scrollToBottom();
 	}
 	
 	
@@ -385,7 +393,7 @@ miaou.chat = function(){
 		// ensures the messages and the messages around it are loaded,
 		//  and then scroll to it and flashes it
 		miaou.focusMessage = function(messageId){
-			var $messages = $('#messages .message'), l = $messages.length,
+			var $messages = $('#messages > .message'), l = $messages.length,
 				beforeId = 0, afterId = 0, mids = new Array($messages.length);
 			for (var i=0; i<l; i++) {
 				mids[i] = +$messages.eq(i).attr('mid');
@@ -506,7 +514,7 @@ miaou.chat = function(){
 			miaou.editor.replyToMessage($(this).closest('.message').data('message'));
 		}).on('mouseenter', '.reply', function(e){
 			var mid = $(this).attr('to');
-			$('#messages .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');
+			$('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');
 			e.stopPropagation();
 		}).on('mouseleave', '.reply', function(){
 			$('.target').removeClass('target');

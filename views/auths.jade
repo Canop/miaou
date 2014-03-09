@@ -58,6 +58,14 @@ html
 										label(for="g"+i) Grant Access
 										input(type="radio", _name=name, id="d"+i, value="deny")
 										label(for="d"+i) Deny Access
+								tr.userLine
+									td
+										span.user= r.name+' '
+										| says
+									td.rendered(colspan="2")= r.request_message
+								tr.userLine.denyMessageTr(style="display:none")
+									td(colspan="3")
+										input(type="text",style="width:100%",name="deny_message_"+r.player,placeholder="optional message")
 					else
 						p none currently
 					h2 Recent Users With No Authorization
@@ -117,3 +125,13 @@ html
 				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
 			});
 			$('#backToRoom').click(function(){ location = room.path; return false });
+			$('input[type=radio]').click(function(){
+				var $row = $(this).closest('tr').nextAll('.denyMessageTr').first();
+				if (this.value=='deny') $row.show().find('input').focus();
+				else $row.hide();
+			})
+			$('td.rendered').each(function(){
+				var h = this.innerHTML;
+				if (h) this.innerHTML = miaou.mdToHtml(h);
+				else $(this).closest('tr').hide()
+			})

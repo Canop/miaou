@@ -95,7 +95,7 @@ proto.storeRoom = function(r, author, authlevel) {
 			[r.name, r.listed, r.description||'', r.id]
 		);			
 	}
-	}
+}
 
 proto.createRoom = function(r, owners){
 	return this.queryRow(
@@ -188,6 +188,27 @@ proto.listRecentUserRooms = function(userId){
 
 ///////////////////////////////////////////// #auths
 
+proto.deleteAccessRequests = function(roomId, userId){
+	return this.execute('delete from access_request where room=$1 and player=$2', [roomId, userId])
+}
+
+proto.insertAccessRequest = function(roomId, userId, message){
+	return this.queryRow(
+		'insert into access_request (room, player, requested, request_message) values ($1, $2, $3, $4) returning *',
+		[roomId, userId, now(), message]
+	);
+}
+
+// userId : optionnal
+proto.listOpenAccessRequests = function(roomId, userId){
+	var sql = "select player,name,requested, request_message from player p,access_request r where r.player=p.id and room=$1", args = [roomId];		
+	if (userId) {
+		sql += " and player=?";
+		args.push(userId);
+	}
+	return this.queryRows(sql, args);
+}
+
 // lists the authorizations a user has
 proto.listUserAuths = function(userId){
 	return this.queryRows("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId]);
@@ -196,26 +217,6 @@ proto.listUserAuths = function(userId){
 // lists the authorizations of the room
 proto.listRoomAuths = function(roomId){
 	return this.queryRows("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId]);
-}
-
-proto.deleteAccessRequests = function(roomId, userId){
-	return this.execute('delete from access_request where room=$1 and player=$2', [roomId, userId])
-}
-proto.insertAccessRequest = function(roomId, userId){
-	return this.queryRow(
-		'insert into access_request (room, player, requested) values ($1, $2, $3) returning *',
-		[roomId, userId, now()]
-	);
-}
-
-// userId : optionnal
-proto.listOpenAccessRequests = function(roomId, userId){
-	var sql = "select player,name,requested from player p,access_request r where r.player=p.id and room=$1", args = [roomId];		
-	if (userId) {
-		sql += " and player=?";
-		args.push(userId);
-	}
-	return this.queryRows(sql, args);
 }
 
 // do actions on user rights
@@ -232,6 +233,10 @@ proto.changeRights = function(actions, userId, room){
 		case "delete_ar":
 			sql = "delete from access_request where room=$1 and player=$2";
 			args = [room.id, a.user];
+			break;
+		case "deny_ar":
+			sql = "update access_request set denied=$1, deny_message=$2 where room=$3 and player=$4";
+			args = [now(), a.message.slice(0,200), room.id, a.user];
 			break;
 		case "update_auth":
 			// the exists part is used to check the user doing the change has at least as much auth than the modified user

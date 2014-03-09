@@ -22,11 +22,11 @@ function popon(arr, filter, act){
 }
 
 // granted : true if it's an approval, false in other cases
-exports.emitAccessRequestAnswer = function(roomId, userId, granted) {
+exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
 	popon(socketWaitingApproval, function(o){
 		return o.userId===userId && o.roomId===roomId
 	}, function(o){
-		o.socket.emit('request_outcome', granted)
+		o.socket.emit('request_outcome', {granted:granted, message:message})
 	});
 }
 
@@ -104,17 +104,18 @@ function handleUserInRoom(socket, completeUser, db){
 		publicUser = {id:completeUser.id, name:completeUser.name};
 	socket.set('publicUser', publicUser);
 
-	socket.on('request', function(roomId){
+	socket.on('request', function(request){
+		var roomId = request.room;
 		console.log(publicUser.name + ' requests access to room ' + roomId);
 		db.on()
 		.then(function(){ return this.deleteAccessRequests(roomId, publicUser.id) })
-		.then(function(){ return this.insertAccessRequest(roomId, publicUser.id) })
+		.then(function(){ return this.insertAccessRequest(roomId, publicUser.id, request.message.slice(0,200)) })
 		.then(function(ar){
 			ar.user = publicUser;
 			socket.broadcast.to(roomId).emit('request', ar);
 			socketWaitingApproval.push({
 				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
-			});			
+			});
 		}).catch(function(err){ console.log(err) }) // well...
 		.finally(db.off);
 	}).on('clear_pings', function(lastPingTime, ack){ // tells that pings in the room have been seen, and ask if there are pings in other rooms

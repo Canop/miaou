@@ -59,7 +59,10 @@ CREATE TABLE room_auth (
 CREATE TABLE access_request (
 	room integer references room(id),
 	player integer references player(id),
-	requested integer NOT NULL
+	requested integer NOT NULL,
+	request_message varchar(200),
+	deny_message varchar(200),
+	denied integer
 );
 create index access_request_idx on access_request (room, requested);
 

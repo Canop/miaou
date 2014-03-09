@@ -14,6 +14,9 @@ html
 				h2= room.name
 				p This room is private.
 				p In order to enter, you must be authorized by a room admin. The best is to request an access using the button below.
+				P If you want, you may type a few words for the admin :
+				p
+					input(type="text").unlabeled#request_speech
 				p#response
 			div.dialog_buttons#buttons
 				button#cancel Go Home 
@@ -26,18 +29,21 @@ html
 				$(this).hide();
 				var socket = io.connect(location.origin);
 				socket.on('connect', function(){
-					socket.emit('request', room.id);
+					socket.emit('request', {room:room.id, message:$('#request_speech').val() });
+					$('#request_speech').replaceWith($('<div>').addClass('rendered').html(miaou.mdToHtml($('#request_speech').val())));
 					$('#cancel').hide();
 					$('#response').text("Your request is visible to the admins of the room. Don't close this window : You'll automaticaly enter the room as soon as one of them accepts it.");
 				}).on('request_denied', function(data){
 					$('#response').text('refused');				
 				}).on('request_accepted', function(data){
 					$('#response').text('accepted');
-				}).on('request_outcome', function(accepted){
-					if (accepted) {
+				}).on('request_outcome', function(outcome){
+					if (outcome.accepted) {
 						location = room.id;
 					} else {
-						$('#response').css('color','red').text("You have been denied access to the room.");
+						var t = "You have been denied access to the room";
+						if (outcome.message) t += '\nwith this message:\n'+outcome.message;
+						$('#response').css('color','red').text(t);
 					}
 				});
 			});
