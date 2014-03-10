@@ -201,12 +201,19 @@ proto.insertAccessRequest = function(roomId, userId, message){
 
 // userId : optionnal
 proto.listOpenAccessRequests = function(roomId, userId){
-	var sql = "select player,name,requested, request_message from player p,access_request r where r.player=p.id and room=$1", args = [roomId];		
+	var sql = "select player,name,requested,request_message from player p,access_request r where r.denied is null and r.player=p.id and room=$1", args = [roomId];		
 	if (userId) {
 		sql += " and player=?";
 		args.push(userId);
 	}
 	return this.queryRows(sql, args);
+}
+
+proto.getLastAccessRequest = function(roomId, userId){
+	return this.queryRow(
+		"select player,requested,request_message,denied,deny_message from access_request where room=$1 and player=$2 order by denied desc limit 1",
+		[roomId, userId], true
+	);
 }
 
 // lists the authorizations a user has

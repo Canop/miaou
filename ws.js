@@ -140,7 +140,6 @@ function handleUserInRoom(socket, completeUser, db){
 			room = r;
 			console.log(publicUser.name, 'enters room', room.id, ':', room.name);
 			socket.emit('room', room).join(room.id);
-			var nbSent = 0, oldestSent, resolver = Promise.defer();
 			return emitMessagesBefore.call(this, socket, room.id, publicUser.id, null, null, nbMessagesAtLoad)
 		}).then(function(){
 			socket.broadcast.to(room.id).emit('enter', publicUser);
@@ -184,8 +183,7 @@ function handleUserInRoom(socket, completeUser, db){
 	}).on('message', function(message){
 		if (!room) { // todo check this is useful and a complete enough solution 
 			console.log('no room. Asking client');
-			socket.emit('get_room', lighten(message));
-			return;
+			return socket.emit('get_room', lighten(message));
 		}
 		var now = Date.now(), seconds = ~~(now/1000), content = message.content;
 		if (content.length>maxContentLength) {
@@ -289,7 +287,7 @@ function handleUserInRoom(socket, completeUser, db){
 		}
 		popon(socketWaitingApproval, function(o){ return o.socket===socket });
 	});
-	
+
 	socket.emit('ready');
 }
 
@@ -297,7 +295,7 @@ exports.listen = function(server, sessionStore, cookieParser, db){
 	io = socketio.listen(server);
 	io.set('log level', 2);
 	io.set('transports', [ 'websocket', 'xhr-polling', 'jsonp-polling' ]);
-	
+
 	var sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
 	sessionSockets.on('connection', function (err, socket, session) {
 		function die(err){
@@ -305,7 +303,6 @@ exports.listen = function(server, sessionStore, cookieParser, db){
 			socket.emit('error', err.toString());
 			socket.disconnect();
 		}
-				
 		if (! (session && session.passport && session.passport.user && session.room)) return die ('invalid session');
 		var userId = session.passport.user;
 		if (!userId) return die('no authenticated user in session');

@@ -34,7 +34,7 @@ exports.appGetAuths = function(req, res, db){
 			if (!authorizedUsers[u.id]) unauthorizedUsers.push(u);
 		});
 		res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
-	}).catch(db.NoRowError, function(err){
+	}).catch(db.NoRowError, function(){
 		utils.renderErr(res, "room not found");
 	}).catch(function(err){
 		utils.renderErr(res, err);
@@ -50,14 +50,14 @@ exports.appPostAuths = function(req, res, db){
 		room = r;
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);
 		if (!exports.checkAtLeast(room.auth, 'admin')) {
-			return renderErr(res, "Admin auth is required");
+			return utils.renderErr(res, "Admin auth is required");
 		}
 		var m, actions = [];
+		console.dir(req.body);
 		for (var key in req.body){
 			if (m = key.match(/^answer_request_(\d+)$/)) {
 				var accepted = req.body[key]==='grant', modifiedUserId = +m[1],
-					denyMessage = req.body['deny_message_'+modifiedUserId];
-				console.log('denyMessage:',denyMessage);
+					denyMessage = req.body['deny_message_'+m[1]];
 				if (accepted) {
 					actions.push({cmd:'insert_auth', auth:'write', user:modifiedUserId});
 					actions.push({cmd:'delete_ar', user:modifiedUserId});
@@ -76,7 +76,7 @@ exports.appPostAuths = function(req, res, db){
 		return this.changeRights(actions, req.user.id, r);
 	}).then(function(){
 		res.redirect(utils.roomUrl(room));
-	}).catch(db.NoRowError, function(err){
+	}).catch(db.NoRowError, function(){
 		utils.renderErr(res, "room not found");
 	}).catch(function(err){
 		utils.renderErr(res, err);

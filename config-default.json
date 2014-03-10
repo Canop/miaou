@@ -23,5 +23,7 @@
 			"clientID": "your client ID",
 			"clientSecret": "your client secret"
 		}
+	}, "imgur": {
+		"clientID": "someID - remove the imgur object if you don't want to use this feature"
 	}
 }

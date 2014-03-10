@@ -496,15 +496,16 @@ miaou.chat = function(){
 					}
 					return false;
 				} else {
-					// it's an url for another room or for a message in another room, let's go to the right tab if it's already open
-					//  or open it if not
+					// it's an url for another room or for a message in another room, let's go to the right tab
+					//  if it's already open, or open it if not
 					this.target = 'room_'+parts[2];
 					var h = parts[1]+parts[2];
-					if (parts[3].indexOf('=')===-1) h += parts[3].slice('&')[0];
+					if (parts[3] && parts[3].indexOf('=')===-1) h += parts[3].slice('&')[0];
 					h += h.indexOf('?')===-1 ? '?' : '&';
 					h += 't='+Date.now();
 					if (parts[4]) h += '#'+parts[4];
 					this.href = h;
+					console.log(this); // yep, I feel unsecure...
 				}
 			}
 		}).on('click', '.opener', opener).on('click', '.closer', closer)
