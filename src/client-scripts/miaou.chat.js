@@ -9,7 +9,6 @@ miaou.chat = {
 };
 
 (function(chat){
-
 	var levels = ['read', 'write', 'admin', 'own'];
 
 	function $user(user){
@@ -86,4 +85,3 @@ miaou.chat = {
 		});
 	}	
 })(miaou.chat);
-

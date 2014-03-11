@@ -4,9 +4,14 @@
 var miaou = miaou || {};
 
 (function(md){
-	
 	var chat = miaou.chat,
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
+
+	function votesAbstract(message){
+		return voteLevels.map(function(l){
+			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
+		}).join('');
+	}
 
 	function formatMoment(m) {
 		var now = new Date();
@@ -19,16 +24,27 @@ var miaou = miaou || {};
 		}
 		return m.format("D MMMM YYYY HH:mm");
 	}
+
 	function isAtBottom(){
 		var $scroller = $('#messagescroller'), $messages = $('#messages'),
 			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
 		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
 	}
-	function votesAbstract(message){
-		return voteLevels.map(function(l){
-			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
-		}).join('');
+	md.scrollToBottom = function(){
+		setTimeout(function(){ // because it doesn't always work on Firefox without this 
+			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight);
+			miaou.hist.showPage();
+		},10);
 	}
+
+	md.getMessages = function(){
+		return $('#messages > .message').map(function(){ return $(this).data('message') }).get();
+	}
+
+	md.permalink = function(message){
+		return location.href.match(/^[^&#]*/) + '#' + message.id;
+	}
+
 	// used for notable messages and search results
 	md.showMessages = function(messages, $div) {
 		$div.empty();
@@ -43,7 +59,7 @@ var miaou = miaou || {};
 			}
 		});
 	}
-	
+
 	md.flashRecentNotableMessages = function(){
 		var maxAge = 10*24*60*60, $notableMessages = $('#notablemessages .message');
 		if ($notableMessages.length>2) maxAge = Math.max(maxAge/5, Math.min(maxAge, $notableMessages.eq(2).data('message').created));
@@ -56,6 +72,7 @@ var miaou = miaou || {};
 		});
 		miaou.lastNotableMessagesChangeNotFlashed = false;
 	}
+
 	md.updateNotableMessages = function(message){
 		var $page = $('#notablemessagespage'), isPageHidden = !$page.hasClass('selected');
 		if (isPageHidden) $page.addClass('selected'); // so that the height computation of messages is possible 
@@ -77,7 +94,7 @@ var miaou = miaou || {};
 		if (isPageHidden) $page.removeClass('selected');
 		else if (vis()) md.flashRecentNotableMessages();
 	}
-	
+
 	md.updateOlderAndNewerLoaders = function(){
 		$('.olderLoader, .newerLoader').remove();
 		$('#messages > .message.hasOlder').each(function(){
@@ -87,7 +104,7 @@ var miaou = miaou || {};
 			$('<div>').addClass('newerLoader').data('mid', this.getAttribute('mid')).text("load newer messages").insertAfter(this);
 		});		
 	}
-	
+
 	md.showHasOlderThan = function(messageId){
 		$('#messages > .message[mid='+messageId+']').addClass('hasOlder');
 		md.updateOlderAndNewerLoaders();
@@ -96,7 +113,7 @@ var miaou = miaou || {};
 		$('#messages > .message[mid='+messageId+']').addClass('hasNewer');
 		md.updateOlderAndNewerLoaders();
 	}
-	
+
 	md.showError = function(error){
 		$('<div>').addClass('error').append(
 			$('<div>').addClass('user error').text("Miaou Server")
@@ -105,7 +122,7 @@ var miaou = miaou || {};
 		).appendTo('#messages');
 		md.scrollToBottom();
 	}
-	
+
 	md.showRequestAccess = function(ar){
 		var h, wab = isAtBottom();
 		if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room.";
@@ -172,25 +189,11 @@ var miaou = miaou || {};
 		resize();
 		$content.find('img').load(resize);
 		chat.topUserList({id: message.author, name: message.authorname});
-		
 		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		md.showMessageFlowDisruptions();
 		md.updateOlderAndNewerLoaders();
 		if (wasAtBottom && message.id==$('#messages > .message').last().attr('mid')) md.scrollToBottom();
-	}
-
-	md.scrollToBottom = function(){
-		setTimeout(function(){ // because it doesn't always work on Firefox without this 
-			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight);
-			miaou.hist.showPage();
-		},10);
-	}
-	md.getMessages = function(){
-		return $('#messages > .message').map(function(){ return $(this).data('message') }).get();
-	}
-	md.permalink = function(message){
-		return location.href.match(/^[^&#]*/) + '#' + message.id;
 	}
 
 	md.showMessageFlowDisruptions = function(){
@@ -210,7 +213,7 @@ var miaou = miaou || {};
 		$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');
 		e.stopPropagation();			
 	}
-	
+
 	md.showMessageMenus = function(){
 		md.hideMessageMenus();
 		var $message = $(this), message = $message.data('message'), infos = [],
@@ -287,5 +290,4 @@ var miaou = miaou || {};
 			md.goToMessageDiv(messageId);
 		});
 	}
-
 })(miaou.md = {});

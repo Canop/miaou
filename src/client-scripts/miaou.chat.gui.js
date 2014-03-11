@@ -1,7 +1,6 @@
 var miaou = miaou || {};
 
 miaou.bindChatGui = function(){
-	
 	var chat = miaou.chat,
 		md = miaou.md,
 		editor = miaou.editor;
@@ -36,7 +35,8 @@ miaou.bindChatGui = function(){
 				console.log(this); // yep, I feel unsecure...
 			}
 		}
-	}).on('click', '.opener', md.opener).on('click', '.closer', md.closer)
+	}).on('click', '.opener', md.opener)
+	.on('click', '.closer', md.closer)
 	.on('click', '.editButton', function(){
 		editor.editMessage($(this).closest('.message').data('message'));
 	}).on('click', '.replyButton', function(){
