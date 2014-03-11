@@ -3,7 +3,7 @@
 var miaou = miaou || {};
 miaou.editor = (function(){
 	
-	var $input, input, socket, stash, editedMessage;
+	var $input, input, stash, editedMessage;
 
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
@@ -30,7 +30,7 @@ miaou.editor = (function(){
 				if (stash) $input.val(stash);
 			}
 			stash = null;
-			socket.emit('message', m);
+			miaou.socket.emit('message', m);
 			$('#preview').html('');
 			if (!$(document.body).hasClass('mobile')) $input.focus();
 		}
@@ -39,8 +39,7 @@ miaou.editor = (function(){
 	
 	return {
 		// prepare #input to emit on the provided socket
-		init: function(s){
-			socket = s;
+		init: function(){
 			$input = $('#input');
 			input = $input[0];
 			$input.on('keydown', function(e){
@@ -81,9 +80,9 @@ miaou.editor = (function(){
 					var firstLineEnd = this.value.indexOf('\n'),
 						isInFirstLine = firstLineEnd===-1 || firstLineEnd>=input.selectionStart;
 					if (isInFirstLine && !editedMessage) {
-						for (var messages=miaou.getMessages(), i=messages.length; i-->0;) {
+						for (var messages=miaou.md.getMessages(), i=messages.length; i-->0;) {
 							if (messages[i].author == me.id) {
-								if (Date.now()/1000-messages[i].created < miaou.MAX_AGE_FOR_EDIT) {
+								if (Date.now()/1000-messages[i].created < miaou.chat.MAX_AGE_FOR_EDIT) {
 									stash = input.value;
 									miaou.editor.editMessage(messages[i]);
 									return false;

@@ -1,0 +1,133 @@
+var miaou = miaou || {};
+
+miaou.bindChatGui = function(){
+	
+	var chat = miaou.chat,
+		md = miaou.md,
+		editor = miaou.editor;
+	
+	$('#messages').on('click', '.message .content img', function(e){
+		window.open(this.src);
+		e.stopPropagation();
+	}).on('click', '.message .content a[href]', function(){
+		var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
+		if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
+			// it's an url towards a room or message on this server
+			if (room.id===+parts[2]) {
+				// it's an url for the same room
+				if (parts[4]) {
+					// it's an url for a message
+					md.focusMessage(+parts[4]);
+				} else {
+					// it's just an url to our room. Let's... err... scroll to bottom ?
+					md.scrollToBottom();
+				}
+				return false;
+			} else {
+				// it's an url for another room or for a message in another room, let's go to the right tab
+				//  if it's already open, or open it if not
+				this.target = 'room_'+parts[2];
+				var h = parts[1]+parts[2];
+				if (parts[3] && parts[3].indexOf('=')===-1) h += parts[3].slice('&')[0];
+				h += h.indexOf('?')===-1 ? '?' : '&';
+				h += 't='+Date.now();
+				if (parts[4]) h += '#'+parts[4];
+				this.href = h;
+				console.log(this); // yep, I feel unsecure...
+			}
+		}
+	}).on('click', '.opener', md.opener).on('click', '.closer', md.closer)
+	.on('click', '.editButton', function(){
+		editor.editMessage($(this).closest('.message').data('message'));
+	}).on('click', '.replyButton', function(){
+		editor.replyToMessage($(this).closest('.message').data('message'));
+	}).on('mouseenter', '.reply', function(e){
+		var mid = $(this).attr('to');
+		$('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');
+		e.stopPropagation();
+	}).on('mouseleave', '.reply', function(){
+		$('.target').removeClass('target');
+	}).on('click', '.reply', function(e){
+		md.focusMessage(+$(this).attr('to'));
+		e.stopPropagation();			
+	}).on('click', 'a', function(e){
+		e.stopPropagation();
+	}).on('click', '.vote', function(){
+		var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
+		if (message.vote) miaou.socket.emit('vote', {action:'remove',  message:message.id, level:message.vote});
+		if (message.vote!=vote) miaou.socket.emit('vote', {action:'add',  message:message.id, level:vote});
+		return false;
+	}).on('click', '.olderLoader', function(){
+		var $this = $(this), mid = +$this.data('mid'), olderPresent = 0;
+		$this.remove();
+		$('.hasOlder[mid='+mid+']').removeClass('hasOlder');
+		md.getMessages().forEach(function(m){ if (m.id<mid) olderPresent=m.id });
+		miaou.socket.emit('get_older', {before:mid, olderPresent:olderPresent});
+	}).on('click', '.newerLoader', function(){
+		var $this = $(this), mid = +$this.data('mid'), newerPresent = 0;
+		$this.remove();
+		md.getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
+		$('.hasOlder[mid='+mid+']').removeClass('hasNewer');
+		miaou.socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
+	});
+	
+	if ($('#hist').length) {
+		$('#messagescroller').on('scroll', miaou.hist.showPage);
+	}
+	
+	if ($(document.body).hasClass('mobile')) {
+		$('#messages').on('click', '.message', md.toggleMessageMenus)
+		.on('click', '.user,.profile', miaou.userProfile.toggle);
+		$(window).resize(md.scrollToBottom);
+	} else {
+		$('#messages,#users')
+		.on('mouseenter', '.message', md.showMessageMenus).on('mouseleave', '.message', md.hideMessageMenus)
+		.on('mouseenter', '.user', miaou.userProfile.show);
+		$(document.body).on('mouseleave', '.profile', miaou.userProfile.hide)
+		.on('mouseleave', '.user', function(e){
+			if (!miaou.eventIsOver(e, $('.profile'))) miaou.userProfile.hide();
+		});
+		$('#users').on('mouseenter', '.user', md.showUserHoverButtons)
+		.on('mouseleave', '.user', md.hideUserHoverButtons);
+	}
+	
+	$('#notablemessages, #searchresults').on('click', '.message', function(e){
+		md.focusMessage(+$(this).attr('mid'));
+		e.stopPropagation();			
+	}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
+
+	if (chat.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });
+	else $('#editroom').hide();
+	$('#auths').click(function(){ location = 'auths?id='+room.id });			
+			
+	$('#showPreview').click(function(){
+		$(this).hide();
+		$('#input').focus();
+		$('#previewpanel').show();
+		md.scrollToBottom();
+	});
+	$('#hidePreview').click(function(){
+		$('#input').focus();
+		$('#showPreview').show();
+		$('#previewpanel').hide();
+	});
+	$('#input').on('change keyup', function(){
+		$('#preview').html(miaou.mdToHtml(this.value, false, me.name));
+	});
+	
+	$('#searchInput').on('keyup', function(e){
+		if (e.which===27) $(this).val('');
+		var pat = this.value.trim();
+		if (pat) {
+			miaou.socket.emit('search', {pattern:pat}, function(results){
+				md.showMessages(results, $('#searchresults'));
+			});
+			miaou.hist.search(pat);
+		} else {
+			$('#searchresults').empty();
+			miaou.hist.clearSearch();
+		}
+	});
+	
+	editor.init();
+}
