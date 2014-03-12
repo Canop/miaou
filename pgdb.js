@@ -22,6 +22,8 @@
 var pg = require('pg').native,
 	Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
+	MAX_AGE_FOR_EDIT = (require('./config.json').maxAgeForEdition || 5000)+10, // +10 : additionnal delay to not issue an error if the browser was just at the max time
+	MAX_AGE_FOR_TOTAL_DELETION = 2*60,
 	pool;
 
 Promise.longStackTraces(); // this will be removed in production in the future
@@ -342,11 +344,15 @@ proto.getMessage = function(messageId, userId){
 // else stores a message and sets its id
 proto.storeMessage = function(m){
 	if (m.id && m.changed) {
-		// TODO : check the message isn't too old for edition
 		return this.queryRow(
-			'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5 returning *',
+			'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5 and created>'+(now()-MAX_AGE_FOR_EDIT)+' returning *',
 			[m.content, m.changed, m.id, m.room, m.author]
-		);
+		).then(function(m){
+			if (!m.content.length && m.created>now()-MAX_AGE_FOR_TOTAL_DELETION) return this.queryRow(
+				"delete from message where id=$1", [m.id]
+			).then(function(){ return m });
+			return m;
+		});
 	}
 	return this.queryRow(
 		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',

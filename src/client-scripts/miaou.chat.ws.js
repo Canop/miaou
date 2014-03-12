@@ -17,10 +17,9 @@ miaou.startChatWS = function(){
 		socket.emit('enter', room.id, setEnterTime);
 		socket.emit('message', unhandledMessage);
 	}).on('message', function(message){
-		//~ console.log('received:', message);
 		md.addMessage(message);
 		md.updateNotableMessages(message);
-		if (message.created>chat.enterTime) {
+		if (message.created>chat.enterTime && message.content) {
 			var visible = vis(), ping = pingRegex.test(message.content);
 			if (ping) {
 				if (visible) {

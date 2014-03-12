@@ -185,7 +185,7 @@ function handleUserInRoom(socket, completeUser, db){
 			console.log('no room. Asking client');
 			return socket.emit('get_room', lighten(message));
 		}
-		var now = Date.now(), seconds = ~~(now/1000), content = message.content;
+		var now = Date.now(), seconds = ~~(now/1000), content = message.content.trim();
 		if (content.length>maxContentLength) {
 			error('Message too big, consider posting a link instead');
 		} else if (now-lastMessageTime<minDelayBetweenMessages) {
@@ -207,8 +207,10 @@ function handleUserInRoom(socket, completeUser, db){
 					m.vote = '?';
 				}
 				io.sockets.in(room.id).emit('message', lighten(m));
-				var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
-				if (pings) return this.storePings(room.id, pings.map(function(s){ return s.slice(1) }), m.id);
+				if (m.content){
+					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
+					if (pings) return this.storePings(room.id, pings.map(function(s){ return s.slice(1) }), m.id);
+				}
 			}).finally(db.off)
 		}
 	}).on('vote', function(vote){

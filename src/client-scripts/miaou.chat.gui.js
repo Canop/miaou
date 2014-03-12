@@ -39,6 +39,8 @@ miaou.bindChatGui = function(){
 	.on('click', '.closer', md.closer)
 	.on('click', '.editButton', function(){
 		editor.editMessage($(this).closest('.message').data('message'));
+	}).on('click', '.deleteButton', function(){
+		miaou.socket.emit('message', {id:$(this).closest('.message').data('message').id, content:''});
 	}).on('click', '.replyButton', function(){
 		editor.replyToMessage($(this).closest('.message').data('message'));
 	}).on('mouseenter', '.reply', function(e){

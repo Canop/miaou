@@ -49,6 +49,7 @@ var miaou = miaou || {};
 	md.showMessages = function(messages, $div) {
 		$div.empty();
 		messages.forEach(function(m){
+			if (!m.content) return;
 			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content, false, m.authorname));
 			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
 				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment((m.created+chat.timeOffset)*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
@@ -156,12 +157,14 @@ var miaou = miaou || {};
 		}
 		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
 			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
-			$content = $('<div>').addClass('content').append(miaou.mdToHtml(message.content, true, message.authorname)).appendTo($md);
+			hc = message.content ? miaou.mdToHtml(message.content, true, message.authorname) : '',
+			$content = $('<div>').addClass('content').append(hc).appendTo($md);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
 		}
-		if (message.changed) $md.addClass('edited');
+		if (!message.content) $md.addClass('deleted');
+		else if (message.changed) $md.addClass('edited');
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
 				if (message.vote==='?') {
@@ -219,8 +222,14 @@ var miaou = miaou || {};
 		var $message = $(this), message = $message.data('message'), infos = [],
 		created = message.created+chat.timeOffset, m = moment(created*1000);
 		if (message.author===me.id) {
-			if (Date.now()/1000 - created < miaou.chat.MAX_AGE_FOR_EDIT) $('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
-			else infos.push('too old for edition');
+			if (Date.now()/1000 - created < miaou.chat.MAX_AGE_FOR_EDIT) {
+				if (message.content) {
+					$('<button>').addClass('deleteButton').text('delete').appendTo($message.find('.user'));
+					$('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
+				}
+			} else {
+				infos.push('too old for edition');
+			}
 		} else {
 			$('<button>').addClass('replyButton').text('reply').appendTo($message.find('.user'));
 		}
@@ -234,10 +243,10 @@ var miaou = miaou || {};
 		).appendTo(this);
 	}
 	md.hideMessageMenus = function(){
-		$('.messagemenu, .editButton, .replyButton').remove();
+		$('.messagemenu, .editButton, .replyButton, .deleteButton').remove();
 	}
 	md.toggleMessageMenus = function(){
-		($('.messagemenu, .editButton, .replyButton', this).length ? md.hideMessageMenus : md.showMessageMenus).call(this);
+		($('.messagemenu, .editButton, .replyButton, .deleteButton', this).length ? md.hideMessageMenus : md.showMessageMenus).call(this);
 	}
 
 	md.showUserHoverButtons = function(){
