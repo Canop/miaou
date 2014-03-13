@@ -38,8 +38,10 @@ miaou.bindChatGui = function(){
 	}).on('click', '.opener', md.opener)
 	.on('click', '.closer', md.closer)
 	.on('click', '.editButton', function(){
+		miaou.userProfile.hide();
 		editor.editMessage($(this).closest('.message').data('message'));
 	}).on('click', '.deleteButton', function(){
+		miaou.userProfile.hide();
 		var message = $(this).closest('.message').data('message');
 		var $content = $('<div>').append(
 			$('<p>').text('Do you want to delete this paragraph ?')
