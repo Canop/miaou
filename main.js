@@ -1,12 +1,12 @@
-var fs = require("fs"),
+var config = require('./config.json'),
+	fs = require("fs"),
 	http = require('http'),
 	express = require('express'),
 	passport = require('passport'),
-	config = require('./config.json'),
-	login = require('./login.js'),
-	db = require('./pgdb.js'),
-	utils = require('./utils.js'),
-	ws = require('./ws.js'),
+	login = require('./libs/login.js'),
+	db = require('./libs/db.js'),
+	utils = require('./libs/app-utils.js').configure(config),
+	ws = require('./libs/ws.js').configure(config),
 	cookieParser = express.cookieParser(config.secret),
 	RedisStore = require('connect-redis')(express),
 	sessionStore = new RedisStore({}),
@@ -62,12 +62,12 @@ passport.deserializeUser(function(id, done) {
 
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
-	var auths = require('./auths.js'),
-		rooms = require('./rooms.js'),
-		upload = require('./upload.js'),
-		profile = require('./profile.js'),
-		chat = require('./chat.js'),
-		help = require('./help.js');
+	var auths = require('./libs/auths.js'),
+		rooms = require('./libs/rooms.js'),
+		upload = require('./libs/upload.js').configure(config),
+		profile = require('./libs/profile.js').configure(config),
+		chat = require('./libs/chat.js'),
+		help = require('./libs/help.js');
 	function ensureAuthenticated(req, res, next) {
 		if (req.isAuthenticated()) return next();
 		var roomId = req.params[0];

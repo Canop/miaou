@@ -1,7 +1,12 @@
-var config = require('./config.json'),
+var config,
 	request = require('request'),
 	Busboy = require('busboy');
 	
+exports.configure = function(conf){
+	config = conf;
+	return this;
+}
+
 exports.appPostUpload = function(req, res){
 	if (!config.imgur || !config.imgur.clientID) {
 		console.log('To activate the imgur service, register your application at imgur.com and set the imgur.clientID property in the config.json file.');

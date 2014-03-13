@@ -1,5 +1,4 @@
-var config = require('./config.json'),
-	utils = require('./utils.js'),
+var utils = require('./app-utils.js'),
 	oauth2Strategies;
 	
 exports.setOauth2Strategies = function(strategies){

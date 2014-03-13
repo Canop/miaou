@@ -1,6 +1,11 @@
-var config = require('./config.json'),
+var config,
 	naming = require('./naming.js'),
 	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i;
+
+exports.configure = function(conf){
+	config = conf;
+	return this;
+}
 
 exports.url = function(pathname){ // todo cleaner way in express not supposing absolute paths ?
 	return config.server+(pathname||'/');

@@ -22,7 +22,8 @@
 var pg = require('pg').native,
 	Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
-	MAX_AGE_FOR_EDIT = (require('./config.json').maxAgeForEdition || 5000)+10, // +10 : additionnal delay to not issue an error if the browser was just at the max time
+	path = require("path"),
+	MAX_AGE_FOR_EDIT = 5000+10, // +10 : additionnal delay to not issue an error if the browser was just at the max time
 	MAX_AGE_FOR_TOTAL_DELETION = 2*60,
 	pool;
 
@@ -40,7 +41,6 @@ NoRowError.prototype = Object.create(Error.prototype);
 // fetches a user found by the OAuth profile, creates it if it doesn't exist
 // Private fields are included in the returned object
 proto.getCompleteUserFromOAuthProfile = function(profile){
-	console.dir(profile);
 	var oauthid = profile.id || profile.user_id, // id for google, github and reddit, user_id for stackexchange
 		displayName = profile.displayName || profile.display_name || profile.name, // displayName for google and github, display_name for stackexchange, name for reddit
 		provider = profile.provider;
@@ -54,6 +54,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 		} else if (result.rows.length) {
 			resolver.resolve(result.rows[0]);
 		} else {
+			console.dir(profile);
 			resolver.resolve(con.queryRow(
 				'insert into player (oauthid, oauthprovider, email, oauthdisplayname) values ($1, $2, $3, $4) returning '+returnedCols,
 				[oauthid, provider, email, displayName]
@@ -450,6 +451,7 @@ proto.getComponentVersion = function(component){
 //  for the core of miaou but it may also be called by plugins (including for
 //  initial installation of the plugin)
 exports.upgrade = function(component, patchDirectory, cb){
+	patchDirectory = path.resolve(__dirname, '..', patchDirectory); // because we're in ./libs
 	var startVersion, endVersion;
 	on(component)
 	.then(proto.getComponentVersion)
@@ -517,7 +519,7 @@ exports.init = function(dbConfig, cb){
 		done();
 		console.log('Connection to PostgreSQL database successful');
 		pool = pg.pools.all[JSON.stringify(conString)];
-		exports.upgrade('core', __dirname+'/sql/patches', cb);
+		exports.upgrade('core', 'sql/patches', cb);
 	})
 }
 

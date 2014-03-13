@@ -2,7 +2,7 @@
 
 var levels = ['read', 'write', 'admin', 'own'],
 	naming = require('./naming.js'),
-	utils = require('./utils.js'),
+	utils = require('./app-utils.js'),
 	ws = require('./ws.js');
 
 exports.checkAtLeast = function(auth, neededAuth) {

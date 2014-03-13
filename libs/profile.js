@@ -1,7 +1,12 @@
-var config = require('./config.json'),
-	plugins = (config.plugins||[]).map(require),
+var path = require('path.js'),
 	naming = require('./naming.js'),
-	utils = require('./utils.js');
+	utils = require('./app-utils.js'),
+	plugins;
+
+exports.configure = function(conf){
+	plugins = (conf.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) })
+	return this;
+}
 
 // Checks that the profile is complete enough to be used for the chat
 //  (a valid name is needed). If not, the user is redirected to the profile

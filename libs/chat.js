@@ -1,5 +1,5 @@
 var auths = require('./auths.js'),
-	utils = require('./utils.js');
+	utils = require('./app-utils.js');
 
 exports.appGet = function(req, res, db){
 	db.on([+req.params[0], req.user.id])

@@ -1,6 +1,5 @@
-var config = require('./config.json'),
-	auths = require('./auths.js'),
-	utils = require('./utils.js');
+var auths = require('./auths.js'),
+	utils = require('./app-utils.js');
 
 exports.appGetRoom = function(req, res, db){
 	db.on([+req.param('id'), +req.user.id])
