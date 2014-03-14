@@ -104,6 +104,7 @@ function defineAppRoutes(){
 function startServer(){
 	app = express();
 	server = http.createServer(app);
+	app.use(express.compress());
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
 	app.set("view options", { layout: false });
