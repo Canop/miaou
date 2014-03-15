@@ -96,12 +96,6 @@ html
 				}
 			}			
 			
-			console.log(
-				rooms.filter(function(r){
-						return !r.private && r.lastmessage
-				})
-			);
-			
 			function selectTab(i) {
 				$('.tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
 				var $container = $('#homemaincontent > .table').empty();
@@ -179,13 +173,8 @@ html
 			if (!$('#homemaincontent tr').length) selectTab(1);
 			$('.tab').click(function(){
 				selectTab($(this).index());
-			});
-			
-			console.log(rooms);
-			
-
+			});			
 			$('#logout').click(function(){
 				delete localStorage['successfulLoginLastTime'];
 				setTimeout(function(){ location = 'logout' }, 100);
 			});
-
