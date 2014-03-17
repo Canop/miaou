@@ -73,7 +73,7 @@ miaou.chat = {
 						md.focusMessage(chat.oldestUnseenPing);
 						chat.oldestUnseenPing = 0;
 					}
-					document.title = room.name;
+					miaou.updateTab(0, 0);
 					if (miaou.lastNotableMessagesChangeNotFlashed) md.flashRecentNotableMessages();
 				}
 			});

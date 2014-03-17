@@ -47,7 +47,7 @@ var miaou = miaou || {};
 						if (!chat.oldestUnseenPing) chat.oldestUnseenPing = message.id;
 					}
 				}
-				if (!visible) document.title = (chat.oldestUnseenPing?'*':'') + ++chat.nbUnseenMessages + ' - ' + room.name;
+				if (!visible) miaou.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
 			}
 		}).on('room', function(r){
 			if (room.id!==r.id) {
@@ -56,7 +56,7 @@ var miaou = miaou || {};
 			room = r;
 			localStorage['successfulLoginLastTime'] = "yes";
 			localStorage['room'] = room.id;
-			document.title = room.name;
+			miaou.updateTab(0, 0);
 			$('#roomname').text(room.name);
 			$('#roomdescription').html(miaou.mdToHtml(room.description));
 		}).on('notable_message', md.updateNotableMessages)

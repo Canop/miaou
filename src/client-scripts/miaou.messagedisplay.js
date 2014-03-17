@@ -133,9 +133,7 @@ var miaou = miaou || {};
 		$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
 		if (chat.checkAuth('admin')) {
 			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
-			if (!vis()) {
-				document.title = (chat.oldestUnseenPing?'*':'') + ++chat.nbUnseenMessages + ' - ' + room.name;				
-			}
+			if (!vis()) miaou.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
 		}
 		if (ar.request_message) {
 			$('<div>').addClass('message').append(

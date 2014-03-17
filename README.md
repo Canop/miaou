@@ -41,7 +41,7 @@ Miaou works on Chrome, Firefox and Safari. It doesn't on Internet Explorer.
 
 ## Mobile devices
 
-Miaou should work on most webkit based browsers in recent Android devices (KitKat might be a requirement).
+Miaou should work on most webkit based browsers in recent Android devices.
 
 # Development
 

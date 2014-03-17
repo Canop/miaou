@@ -148,5 +148,19 @@ miaou.bindChatGui = function(){
 		}
 	});
 	
+	miaou.updateTab = function(hasPing, nbUnseenMessages){
+		var title = room.name;
+		if (nbUnseenMessages) title = nbUnseenMessages+'-'+title;
+		if (hasPing) title = '*'+title;
+		document.title = title;
+		var e = document.getElementById('favicon');
+		if (e) {
+			var icon = 'static/M-32';
+			if (hasPing) icon += '-ping';
+			else if (nbUnseenMessages) icon += '-new';
+			e.href = icon+'.png';
+		}
+	}
+	
 	editor.init();
 }
