@@ -9,6 +9,7 @@ CREATE TABLE room (
     private boolean NOT NULL default false,
     listed boolean NOT NULL default true,
     dialog boolean NOT NULL default false,
+    lang varchar(2) NOT NULL default 'en',
     description text NOT NULL
 );
 

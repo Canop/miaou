@@ -1,5 +1,11 @@
 var auths = require('./auths.js'),
-	utils = require('./app-utils.js');
+	utils = require('./app-utils.js'),
+	langs;
+	
+exports.configure = function(conf){
+	langs = require('./langs.js').configure(conf);
+	return this;
+}
 
 exports.appGetRoom = function(req, res, db){
 	db.on([+req.param('id'), +req.user.id])
@@ -8,9 +14,9 @@ exports.appGetRoom = function(req, res, db){
 		if (!auths.checkAtLeast(room.auth, 'admin')) {
 			return utils.renderErr(res, "Admin level is required to manage the room");
 		}
-		res.render('room.jade', { room: JSON.stringify(room), error: "null" });
+		res.render('room.jade', { room:JSON.stringify(room), error:"null", langs:langs.legal });
 	}).catch(db.NoRowError, function(){
-		res.render('room.jade', { room: "null", error: "null" });
+		res.render('room.jade', { room:"null", error:"null" });
 	}).catch(function(err){
 		utils.renderErr(res, err);
 	}).finally(db.off);
@@ -24,7 +30,7 @@ exports.appPostRoom = function(req, res, db){
 	db.on([roomId, req.user.id, 'admin'])
 	.spread(db.checkAuthLevel)
 	.then(function(auth){
-		room = {id:roomId, name: name, private:req.param('private')||false, listed:req.param('listed')||false, dialog:false, description:req.param('description')};
+		room = {id:roomId, name:name, private:req.param('private')||false, listed:req.param('listed')||false, dialog:false, description:req.param('description')};
 		return [room, req.user, auth];
 	}).spread(db.storeRoom)
 	.then(function(){

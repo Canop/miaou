@@ -63,7 +63,7 @@ passport.deserializeUser(function(id, done) {
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	var auths = require('./libs/auths.js'),
-		rooms = require('./libs/rooms.js'),
+		rooms = require('./libs/rooms.js').configure(config),
 		upload = require('./libs/upload.js').configure(config),
 		profile = require('./libs/profile.js').configure(config),
 		chat = require('./libs/chat.js'),

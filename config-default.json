@@ -12,7 +12,8 @@
 	},
 	"plugins": [
 		"./plugins/mountyhall/plugin.js"
-	],"oauth2": {
+	],
+	"oauth2": {
 		"google": {
 			"clientID": "your client ID, see https://code.google.com/apis/console/",
 			"clientSecret": "your client secret"
@@ -23,7 +24,9 @@
 			"clientID": "your client ID",
 			"clientSecret": "your client secret"
 		}
-	}, "imgur": {
+	},
+	"imgur": {
 		"clientID": "someID - remove the imgur object if you don't want to use this feature"
-	}
+	},
+	"langs": ["en", "fr"]
 }
