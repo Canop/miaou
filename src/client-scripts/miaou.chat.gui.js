@@ -138,9 +138,7 @@ miaou.bindChatGui = function(){
 		if (e.which===27) $(this).val('');
 		var pat = this.value.trim();
 		if (pat) {
-			miaou.socket.emit('search', {pattern:pat}, function(results){
-				md.showMessages(results, $('#searchresults'));
-			});
+			miaou.socket.emit('search', {pattern:pat});
 			miaou.hist.search(pat);
 		} else {
 			$('#searchresults').empty();

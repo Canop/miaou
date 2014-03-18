@@ -254,11 +254,7 @@ var miaou = miaou || {};
 			miaou.editor.ping(user.name);
 		}).appendTo(this);
 		$('<button>').addClass('pmButton').text('pm').click(function(){
-			var win = window.open();
-			miaou.socket.emit('pm', user.id, function(roomId){
-				win.location = roomId;
-				//win.focus();
-			});			
+			miaou.socket.emit('pm', user.id);			
 		}).appendTo(this);
 	}
 	md.hideUserHoverButtons = function(){
@@ -293,8 +289,6 @@ var miaou = miaou || {};
 			if (mids[i]>messageId) afterId=mids[i];
 			else break;
 		}
-		miaou.socket.emit('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId }, function(){
-			md.goToMessageDiv(messageId);
-		});
+		miaou.socket.emit('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId });
 	}
 })(miaou.md = {});

@@ -124,17 +124,18 @@ function handleUserInRoom(socket, completeUser, db){
 			});
 		}).catch(function(err){ console.log(err) }) // well...
 		.finally(db.off);
-	}).on('clear_pings', function(lastPingTime, ack){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
+	}).on('clear_pings', function(lastPingTime){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
 		if (!room) return console.log('No room in clear_pings');
 		db.on([room.id, publicUser.id])
 		.spread(db.deletePings)
 		.then(function(){
 			return this.fetchUserPingRooms(publicUser.id, lastPingTime);
-		}).then(ack)
-		.finally(db.off);
-	}).on('enter', function(roomId, ack){
+		}).then(function(pings){
+			socket.emit('pings', pings);
+		}).finally(db.off);
+	}).on('enter', function(roomId){
 		var now = ~~(Date.now()/1000);
-		if (ack) ack(now);
+		socket.emit('set_enter_time', now);
 		if (room && roomId==room.id){
 			console.log('WARN : user already in room'); // how does that happen ?
 			return;
@@ -168,14 +169,15 @@ function handleUserInRoom(socket, completeUser, db){
 		}).catch(function(err){
 			error(err.toString());
 		}).finally(db.off)
-	}).on('get_around', function(data, ack){ 
+	}).on('get_around', function(data){ 
 		db.on()
 		.then(function(){
 			return emitMessagesBefore.call(this, socket, room.id, publicUser.id, data.target, data.olderPresent, nbMessagesBeforeTarget)
 		}).then(function(){
 			return emitMessagesAfter.call(this, socket, room.id, publicUser.id, data.target, data.newerPresent, nbMessagesAfterTarget)
-		}).then(ack)
-		.finally(db.off);
+		}).then(function(){
+			socket.emit('go_to', data.target);
+		}).finally(db.off);
 	}).on('get_older', function(data){
 		db.on()
 		.then(function(){
@@ -232,13 +234,13 @@ function handleUserInRoom(socket, completeUser, db){
 			socket.broadcast.to(room.id).emit('message', clone);	
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })		
 		.finally(db.off);
-	}).on('search', function(search, reply){
+	}).on('search', function(search){
 		db.on([room.id, search.pattern, 'english', 20])
 		.spread(db.search)
 		.then(function(results){
-			reply(results);
+			socket.emit('found', {results:results, search:search});
 		}).finally(db.off);
-	}).on('hist', function(search, reply){
+	}).on('hist', function(search){
 		if (!room) return reply([]);
 		db.on(room.id)
 		.then(db.messageHistogram)
@@ -257,9 +259,9 @@ function handleUserInRoom(socket, completeUser, db){
 					hist[ih].sm = sh.m;
 				}
 			}
-			reply(hist);
+			socket.emit('hist', {search:search, hist:hist});
 		}).finally(db.off);
-	}).on('pm', function(otherUserId, reply){
+	}).on('pm', function(otherUserId){
 		var lounge, otherUser, message;
 		db.on(otherUserId)
 		.then(db.getUserById)
@@ -283,7 +285,7 @@ function handleUserInRoom(socket, completeUser, db){
 				return this.storePing(lounge.id, otherUserId, message.id);
 			}
 		}).then(function(){
-			reply(lounge.id)
+			socket.emit('pm_room', lounge.id)
 		}).catch(function(err){ console.log('ERR in PM :', err) })	
 		.finally(db.off);
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?

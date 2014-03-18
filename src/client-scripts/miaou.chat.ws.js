@@ -29,9 +29,10 @@ var miaou = miaou || {};
 
 		socket.on('ready', function(){			
 			info.state = 'ready';
-			socket.emit('enter', room.id, setEnterTime);
-		}).on('get_room', function(unhandledMessage){
-			socket.emit('enter', room.id, setEnterTime);
+			socket.emit('enter', room.id);
+		}).on('set_enter_time', setEnterTime)
+		.on('get_room', function(unhandledMessage){
+			socket.emit('enter', room.id);
 			socket.emit('message', unhandledMessage);
 		}).on('message', function(message){
 			info.nbmessages++;
@@ -66,7 +67,7 @@ var miaou = miaou || {};
 		.on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
 			setTimeout(function(){
-				socket.emit('enter', room.id, setEnterTime);
+				socket.emit('enter', room.id);
 			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
 		}).on('welcome', function(){
 			info.state = 'connected';
@@ -85,7 +86,24 @@ var miaou = miaou || {};
 				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
 			).appendTo('#messages');
 			md.scrollToBottom();
-		}).on('disconnect', function(){
+		})
+		.on('pm_room', function(roomId){
+			var win = window.open();
+			win.location = roomId;
+		})
+		.on('go_to', function(messageId){
+			setTimeout(function(){ md.goToMessageDiv(messageId) }, 200);
+		})
+		.on('found', function(res){
+			if (res.search.pattern!=$('#searchInput').val().trim()) {
+				console.log('received results of another search', $('#searchInput').val().trim(), res);
+				return;
+			}
+			md.showMessages(res.results, $('#searchresults'));
+		})
+		.on('hist', miaou.hist.show)
+		.on('pings', chat.pings)
+		.on('disconnect', function(){
 			console.log('DISCONNECT');
 		}).on('enter', chat.showEntry).on('leave', chat.showLeave).on('error', md.showError);	
 		
