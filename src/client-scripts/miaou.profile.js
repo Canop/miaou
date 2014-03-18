@@ -43,6 +43,6 @@ miaou.userProfile = {
 		$('.user').removeClass('profiled');
 	},
 	toggle: function(){
-		miaou[$('.profile').length ? 'hideUserProfile' : 'showUserProfile'].call(this);
+		miaou.userProfile[$('.profile').length ? 'hide' : 'show'].call(this);
 	}
 }

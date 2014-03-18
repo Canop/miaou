@@ -475,10 +475,11 @@ body.mobile .messagemenu .vote {
 }
 #notablemessages, #searchresults {
 	.message {
-		border-bottom: thin dotted #aaa;
+		border-bottom: thin dashed #aaa;
 	}
 	.message {
 		cursor: pointer;
+		padding: 3px;
 	}
 	.content {
 		opacity: 0.8;
