@@ -8,21 +8,10 @@ var miaou = miaou || {};
 			md = miaou.md;
 		
 		info = { state:'connecting', start:Date.now(), transports:transports, nbmessages:0 };
-		
 		var	socket = miaou.socket = io.connect(location.origin, {transports:transports});
 		console.log('Connecting with transports', transports);
 
-		//~ var timer = setTimeout(function(){
-			//~ if (!transports) {
-				//~ md.showError('Standard connection failed. Now trying with XHR-pulling...');
-				//~ con(['xhr-pulling']);
-			//~ } else {
-				//~ md.showError("Connection failed. Are you sure you're connected to a network ? Is your computer ON ?");
-			//~ }
-		//~ }, 4000);
-
 		function setEnterTime(serverTime){
-			clearTimeout(timer);
 			chat.enterTime = serverTime;
 			chat.timeOffset = Date.now()/1000 - serverTime;
 		}
@@ -106,7 +95,6 @@ var miaou = miaou || {};
 		.on('disconnect', function(){
 			console.log('DISCONNECT');
 		}).on('enter', chat.showEntry).on('leave', chat.showLeave).on('error', md.showError);	
-		
 	}
 
 	miaou.startChatWS = function(){

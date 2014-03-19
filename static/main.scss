@@ -476,6 +476,9 @@ body.mobile .messagemenu .vote {
 #notablemessages, #searchresults {
 	.message {
 		border-bottom: thin dashed #aaa;
+		&:hover {
+			background: lighten($bg-color, 19%);
+		}
 	}
 	.message {
 		cursor: pointer;

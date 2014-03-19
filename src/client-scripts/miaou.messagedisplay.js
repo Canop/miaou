@@ -75,8 +75,6 @@ var miaou = miaou || {};
 	}
 
 	md.updateNotableMessages = function(message){
-		var $page = $('#notablemessagespage'), isPageHidden = !$page.hasClass('selected');
-		if (isPageHidden) $page.addClass('selected'); // so that the height computation of messages is possible 
 		var yetPresent = false, notableMessages = $('#notablemessages .message').map(function(){
 			var msg = $(this).data('message');
 			if (message && msg.id===message.id) {
@@ -86,6 +84,8 @@ var miaou = miaou || {};
 			return msg;
 		}).get();
 		if (!yetPresent && !message.score) return; // nothing to do
+		var $page = $('#notablemessagespage'), isPageHidden = !$page.hasClass('selected');
+		if (isPageHidden) $page.addClass('selected'); // so that the height computation of messages is possible 
 		if (!yetPresent && message) notableMessages.push(message);
 		notableMessages = notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){
 			return b.score-a.score + (b.created-a.created)/7000

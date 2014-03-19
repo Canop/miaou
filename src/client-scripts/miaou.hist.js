@@ -8,7 +8,7 @@ var miaou = miaou || {};
 	
 	$(function(){
 		$('#hist').on('click', '[m]', function(){
-			miaou.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
+			miaou.md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
 		}).on('mouseenter', '[m]', function(){
 			var sn = +$(this).attr('sn'), d = +$(this).attr('d'),
 				h = moment(d*24*60*60*1000).format('DD MMM');
