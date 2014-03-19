@@ -12,14 +12,14 @@ var miaou = miaou || {};
 		var	socket = miaou.socket = io.connect(location.origin, {transports:transports});
 		console.log('Connecting with transports', transports);
 
-		var timer = setTimeout(function(){
-			if (!transports) {
-				md.showError('Standard connection failed. Now trying with XHR-pulling...');
-				con(['xhr-pulling']);
-			} else {
-				md.showError("Connection failed. Are you sure you're connected to a network ? Is your computer ON ?");
-			}
-		}, 4000);
+		//~ var timer = setTimeout(function(){
+			//~ if (!transports) {
+				//~ md.showError('Standard connection failed. Now trying with XHR-pulling...');
+				//~ con(['xhr-pulling']);
+			//~ } else {
+				//~ md.showError("Connection failed. Are you sure you're connected to a network ? Is your computer ON ?");
+			//~ }
+		//~ }, 4000);
 
 		function setEnterTime(serverTime){
 			clearTimeout(timer);

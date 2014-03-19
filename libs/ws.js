@@ -191,7 +191,7 @@ function handleUserInRoom(socket, completeUser, db){
 			console.log('no room. Asking client');
 			return socket.emit('get_room', lighten(message));
 		}
-		var now = Date.now(), seconds = ~~(now/1000), content = message.content.trim();
+		var now = Date.now(), seconds = ~~(now/1000), content = message.content.replace(/\s+$/,'');
 		if (content.length>maxContentLength) {
 			error('Message too big, consider posting a link instead');
 		} else if (now-lastMessageTime<minDelayBetweenMessages) {
