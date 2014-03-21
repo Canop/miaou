@@ -120,9 +120,9 @@ html
 				$('input[type=reset]').click(function(){ $('#submit_bar input').prop('disabled', true) });
 			}
 			$('#authspage')
-			.on('mouseenter', '.user', miaou.showUserProfile).on('mouseleave', '.profile', miaou.hideUserProfile)
+			.on('mouseenter', '.user', miaou.userProfile.show).on('mouseleave', '.profile', miaou.userProfile.hide)
 			.on('mouseleave', '.user', function(e){
-				if (!miaou.eventIsOver(e, $('.profile'))) miaou.hideUserProfile();
+				if (!miaou.eventIsOver(e, $('.profile'))) miaou.userProfile.hide();
 			});
 			$('#backToRoom').click(function(){ location = room.path; return false });
 			$('input[type=radio]').click(function(){

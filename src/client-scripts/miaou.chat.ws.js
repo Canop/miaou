@@ -75,22 +75,19 @@ var miaou = miaou || {};
 				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
 			).appendTo('#messages');
 			md.scrollToBottom();
-		})
-		.on('pm_room', function(roomId){
-			var win = window.open();
-			win.location = roomId;
-		})
-		.on('go_to', function(messageId){
+		}).on('pm_room', function(roomId){
+			miaou.pmwin.location = roomId;
+		}).on('go_to', function(messageId){
+			// this would hopefully get cleaned
+			console.log('go_to', messageId);
 			setTimeout(function(){ md.goToMessageDiv(messageId) }, 200);
-		})
-		.on('found', function(res){
+		}).on('found', function(res){
 			if (res.search.pattern!=$('#searchInput').val().trim()) {
 				console.log('received results of another search', $('#searchInput').val().trim(), res);
 				return;
 			}
 			md.showMessages(res.results, $('#searchresults'));
-		})
-		.on('hist', miaou.hist.show)
+		}).on('hist', miaou.hist.show)
 		.on('pings', chat.pings)
 		.on('disconnect', function(){
 			console.log('DISCONNECT');

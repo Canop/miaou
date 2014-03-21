@@ -254,6 +254,7 @@ var miaou = miaou || {};
 			miaou.editor.ping(user.name);
 		}).appendTo(this);
 		$('<button>').addClass('pmButton').text('pm').click(function(){
+			miaou.pmwin = window.open(); // not so clean...
 			miaou.socket.emit('pm', user.id);			
 		}).appendTo(this);
 	}
