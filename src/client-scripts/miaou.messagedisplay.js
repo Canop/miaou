@@ -292,4 +292,21 @@ var miaou = miaou || {};
 		}
 		miaou.socket.emit('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId });
 	}
+	
+	// replaces one line of a message
+	md.box = function(args){
+		var $from = $('<div>'+miaou.mdToHtml(args.from)+'</div>'),
+			$a = $from.find('a[href]'),
+			$m = $('#messages .message[mid='+args.mid+']'),
+			wab = isAtBottom(),
+			box;
+		box = '<div class=box'
+		if ($a.length) box += ' href="'+$a.attr('href')+'"';
+		box += '>'+args.to+'</div>';
+		$m.find('.content').html(function(_,h){
+			return h.replace($from.html(), box)
+		});
+		if (wab) md.scrollToBottom();
+	}
+	
 })(miaou.md = {});

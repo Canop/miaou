@@ -56,7 +56,7 @@ Shoe.prototype.pluginTransformAndSend = function(m, sendFun){
 	plugins.forEach(function(plugin){
 		plugin.onSendMessage(this, m, sendFun);
 	}, this);
-	sendFun(m);
+	sendFun('message', m);
 }
 
 // using a filtering function, picks some elements, removes them from the array, 
@@ -86,8 +86,8 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
 function emitMessagesBefore(shoe, beforeId, untilId, nbMessages){
 	var nbSent = 0, oldestSent, resolver = Promise.defer();
 	this.queryMessagesBefore(shoe.room.id, shoe.publicUser.id, nbMessages, beforeId, untilId).on('row', function(message){
-		shoe.pluginTransformAndSend(message, function(m){
-			shoe.emit('message', m);
+		shoe.pluginTransformAndSend(message, function(v,m){
+			shoe.emit(v, m);
 		});
 		nbSent++;
 		if (!(message.id>oldestSent)) oldestSent = message.id;
@@ -103,8 +103,8 @@ function emitMessagesBefore(shoe, beforeId, untilId, nbMessages){
 function emitMessagesAfter(shoe, fromId, untilId, nbMessages){
 	var nbSent = 0, youngestSent, resolver = Promise.defer();
 	this.queryMessagesAfter(shoe.room.id, shoe.publicUser.id, nbMessages, fromId, untilId).on('row', function(message){
-		shoe.pluginTransformAndSend(message, function(m){
-			shoe.emit('message', m);
+		shoe.pluginTransformAndSend(message, function(v,m){
+			shoe.emit(v, m);
 		});
 		nbSent++;
 		if (!(message.id<youngestSent)) youngestSent = message.id;	
@@ -247,8 +247,8 @@ function handleUserInRoom(socket, completeUser){
 					m.authorname = u.name;
 					m.vote = '?';
 				}
-				shoe.pluginTransformAndSend(m, function(m){
-					io.sockets.in(roomId).emit('message', lighten(m));
+				shoe.pluginTransformAndSend(m, function(v,m){
+					io.sockets.in(roomId).emit(v, lighten(m));
 				});
 				if (m.content){
 					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);

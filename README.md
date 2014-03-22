@@ -25,7 +25,7 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * Permanent message links
 * In place links (no new window, no passive extracts)
 * Authorization levels and administration
-* OAuth2 authentication (Google, StackExchange, GitHub)
+* OAuth2 authentication (Google, StackExchange, GitHub, Reddit)
 * Global unique user names to prevent impersonation
 * Initially reduced long messages
 * Mobile touch devices optimized interface

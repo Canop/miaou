@@ -362,6 +362,21 @@ body.mobile #messagescroller {
 		&.closed {
 			max-height: 112px;
 		}
+		.box {
+			background: white;
+			margin: 2px;
+			border: thin solid #ddd;
+			h1 {
+				margin: 10px;
+				font-size: 120%;
+			}
+			p {
+				min-height: 130px;
+			}
+			&[href] {
+				cursor: pointer;
+			}
+		}
 	}
 	&.me {
 		background-color: #fdf6e5;
