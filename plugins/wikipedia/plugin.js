@@ -20,7 +20,13 @@ exports.onSendMessage = function(shoe, m, send){
 				$box.append($('h1'));
 				$box.append($('<hr style="clear:both">'));
 				$box.append($('table img, img.thumbimage').first().attr('align','left').removeAttr('height').removeAttr('width').css('margin','5px'));
-				$box.append($('p').first());
+				$('p').each(function(){
+					var $this = $(this);
+					if (!$this.closest('div[class*="infobox"]').length){
+						$box.append($this);
+						return false;
+					}
+				});
 				$box.find('a[href]').attr('href', function(_,u){
 					return url.resolve(line, u)
 				}).attr('target','_blank');
