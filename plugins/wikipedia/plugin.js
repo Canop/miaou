@@ -2,7 +2,8 @@
 
 var request = require('request'),
 	url = require('url'),
-	$$ = require('cheerio');
+	$$ = require('cheerio'),
+	cache = require('../../libs/cache.js')(500);
 
 // intercepts links to wikipedia and sends boxed abstracts.
 // It directly fetches the page because I don't find anything usable
@@ -12,6 +13,15 @@ exports.onSendMessage = function(shoe, m, send){
 		return /^\s*https?:\/\/\w{2}\.wikipedia\.org\/[^ ]*\s*$/.test(line)
 	}).forEach(function(line){
 		line = line.trim();
+		var box = cache.get(line);
+		console.log('wikipedia box');
+		if (box) {
+			console.log(' found in cache');
+			return setTimeout(function(){
+				send('box', box);
+			},0);
+		}
+		console.log(' not in cache');
 		request(line, function(error, res, body){
 			if (!error && res.statusCode===200) {
 				var	$ = $$.load(body),
@@ -33,7 +43,9 @@ exports.onSendMessage = function(shoe, m, send){
 				$box.find('img').attr('src', function(_,u){
 					return url.resolve(line, u)
 				}).attr('target','_blank');
-				send('box', {mid:m.id, from:line, to:$box.html() });
+				box = {mid:m.id, from:line, to:$box.html() };
+				cache.set(line, box);
+				send('box', box);
 			} else {
 				console.log("request failed", error, res.statusCode);
 			}
