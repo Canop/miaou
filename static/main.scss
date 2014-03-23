@@ -360,7 +360,7 @@ body.mobile #messagescroller {
 		padding-top: 1px;
 		padding-left: 2px;
 		&.closed {
-			max-height: 112px;
+			max-height: 132px;
 		}
 		.box {
 			background: white;
@@ -370,8 +370,11 @@ body.mobile #messagescroller {
 				margin: 10px;
 				font-size: 120%;
 			}
+			img {
+				max-width: 40%;
+			}
 			p {
-				min-height: 130px;
+				min-height: 128px;
 			}
 			&[href] {
 				cursor: pointer;

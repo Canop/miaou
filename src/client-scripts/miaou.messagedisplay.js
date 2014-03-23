@@ -144,6 +144,26 @@ var miaou = miaou || {};
 		}
 		if (wab) md.scrollToBottom();
 	}
+	
+	// checks immediately and potentially after image loading that
+	//  the message div isn't greater than authorized
+	function resize($md, wasAtBottom){
+		var $content = $md.find('.content');
+		var resize = function(){
+			var h = $content.height();
+			if ($content.height()>158) {
+				$md.find('.opener').remove();
+				$content.addClass("closed");
+				h = $content.height()
+				$md.append('<div class=opener>');
+			}
+			$md.find('.user').height(h).css('line-height',h+'px');
+			if (wasAtBottom) md.scrollToBottom();
+			//else miaou.hist.showPage(); ?
+		}
+		resize();
+		$content.find('img').load(resize);
+	}
 
 	md.addMessage = function(message){
 		var messages = md.getMessages(), insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
@@ -154,9 +174,9 @@ var miaou = miaou || {};
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
 		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
-			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
-			hc = message.content ? miaou.mdToHtml(message.content, true, message.authorname) : '',
-			$content = $('<div>').addClass('content').append(hc).appendTo($md);
+			hc = message.content ? miaou.mdToHtml(message.content, true, message.authorname) : '';
+		$('<div>').addClass('user').text(message.authorname).appendTo($md);
+		$('<div>').addClass('content').append(hc).appendTo($md);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -175,20 +195,7 @@ var miaou = miaou || {};
 		} else {
 			$md.prependTo('#messages');
 		}
-		var resize = function(){
-			var h = $content.height();
-			if ($content.height()>138) {
-				$md.find('.opener').remove();
-				$content.addClass("closed");
-				h = $content.height()
-				$md.append('<div class=opener>');
-			}
-			$user.height(h).css('line-height',h+'px');
-			if (wasAtBottom) md.scrollToBottom();
-			else miaou.hist.showPage();
-		}
-		resize();
-		$content.find('img').load(resize);
+		resize($md, wasAtBottom);
 		chat.topUserList({id: message.author, name: message.authorname});
 		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
@@ -207,7 +214,9 @@ var miaou = miaou || {};
 	}
 
 	md.opener = function(e){
+		var wab = isAtBottom();
 		$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
+		if (wab) md.scrollToBottom();
 		e.stopPropagation();
 	}
 	md.closer = function(e){
@@ -306,7 +315,7 @@ var miaou = miaou || {};
 		$m.find('.content').html(function(_,h){
 			return h.replace($from.html(), box)
 		});
-		if (wab) md.scrollToBottom();
+		resize($m, wab);
 	}
 	
 })(miaou.md = {});

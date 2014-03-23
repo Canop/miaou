@@ -19,7 +19,7 @@ exports.onSendMessage = function(shoe, m, send){
 				$box.append('<img style="margin:3px;max-height:40px" src=http://en.wikipedia.org/favicon.ico align=left>');
 				$box.append($('h1'));
 				$box.append($('<hr style="clear:both">'));
-				$box.append($('table img').first().attr('align','left').removeAttr('height').removeAttr('width').css('margin','5px'));
+				$box.append($('table img, img.thumbimage').first().attr('align','left').removeAttr('height').removeAttr('width').css('margin','5px'));
 				$box.append($('p').first());
 				$box.find('a[href]').attr('href', function(_,u){
 					return url.resolve(line, u)
