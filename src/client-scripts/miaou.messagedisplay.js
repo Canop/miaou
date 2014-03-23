@@ -173,10 +173,8 @@ var miaou = miaou || {};
 		} else {
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
-		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
-			hc = message.content ? miaou.mdToHtml(message.content, true, message.authorname) : '';
+		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id);
 		$('<div>').addClass('user').text(message.authorname).appendTo($md);
-		$('<div>').addClass('content').append(hc).appendTo($md);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -188,12 +186,21 @@ var miaou = miaou || {};
 				if (message.vote==='?') {
 					message.vote = messages[insertionIndex].vote;
 				}
+				if (message.content===messages[insertionIndex].content) {
+					// we take the old message content, so as not to lose the possible replacements (e.g. boxing)
+					$md.append($('#messages > .message[mid='+message.id+'] .content'));
+				}
 				$('#messages > .message').eq(insertionIndex).replaceWith($md);
 			} else {
 				$('#messages > .message').eq(insertionIndex).after($md);				
 			}
 		} else {
 			$md.prependTo('#messages');
+		}
+		if (!$md.find('.content').length) {
+			$('<div>').addClass('content').append(
+				message.content ? miaou.mdToHtml(message.content, true, message.authorname) : ''
+			).appendTo($md);
 		}
 		resize($md, wasAtBottom);
 		chat.topUserList({id: message.author, name: message.authorname});
