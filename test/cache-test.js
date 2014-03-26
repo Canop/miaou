@@ -2,7 +2,7 @@ var buster = require("buster"),
 	cache = require('../libs/cache.js');
 
 buster.testCase("cache", {
-    "set/get, overflow": function () {
+    "set/get/del, overflow": function () {
 		var c = cache(3)
 		buster.assert.equals(c.size(), 0);
 		c.set('0', 'zero')
@@ -19,5 +19,13 @@ buster.testCase("cache", {
 		buster.assert.equals(c.pick('b'), undefined);
 		buster.assert.equals(c.pick('a'), 'a');
 		buster.assert.equals(c.size(), 3);
+		c.del('a'); // -> keys : onetoomany, d
+		c.del('nothere');
+		buster.assert.equals(c.size(), 2);
+		buster.assert.equals(c.pick('onetoomany'), null);
+		buster.assert.equals(c.pick('a'), undefined);
+		buster.assert.equals(c.pick('d'), 'd');
+		c.empty();
+		buster.assert.equals(c.size(), 0);
     }
 });

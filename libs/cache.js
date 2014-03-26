@@ -1,4 +1,6 @@
-// a simple cache, optimized for big numbers of keys (all operations are O(1))
+// a simple in memory cache throwing the least recently accessed entry when
+//  the maximal number of entries is reached.
+// All set/get operations are O(1) and synchronous.
 //
 // Keys are strings. Values are what you want (null allowed).
 //
@@ -14,12 +16,13 @@
 //                    key, returns undefined.
 //  pick(key)       : same as get without accessing the pair (and thus not
 //                    preventing a removal from the cache.
+//  del(key)        : removes the pair (key,value). Returns the value.
 //  size()          : returns the number of cached keys, in [0, capacity].
 //  content()       : returns all pairs (key,value), from the oldest to the
 //                    last recently accessed
 
-module.exports = function(cap){
-	var n = 0, capacity = cap||100,
+module.exports = function(capacity){
+	var n = 0, cap = capacity||100,
 		first = null, last = null,
 		map = {};
 	return {
@@ -29,14 +32,14 @@ module.exports = function(cap){
 				c.v = v;
 				return;
 			}
-			if (n>=capacity) {
+			if (n>=cap) {
 				delete map[first.k];
 				first = first.n;
 				first.p = null;
 			} else {
 				n++;
 			}
-			var c = {k:k, v:v, p:last};
+			c = {k:k, v:v, p:last};
 			if (last) last.n = c;
 			else first = c;
 			last = c;
@@ -47,17 +50,28 @@ module.exports = function(cap){
 			if (!c) return;
 			if (c!=last) {
 				if (c.p) c.p.n = c.n;
-				else first = c.n 
+				else first = c.n;
 				c.n.p = c.p;
 				last.n = c;
 				c.p = last;
 				last = c;
-			}			
+			}
 			return c.v;
 		},
 		pick: function(k){
 			var c = map[k];
 			return c ? c.v : undefined;
+		},
+		del: function(k){
+			var c = map[k];
+			if (!c) return;
+			if (c.p) c.p.n = c.n;
+			else first = c.n;
+			if (c.n) c.n.p = c.p;
+			else last = c.p;
+			n--;
+			delete map[k];
+			return c.v;
 		},
 		size: function(){
 			return n;
@@ -69,6 +83,12 @@ module.exports = function(cap){
 				c = c.n;
 			}
 			return a;
+		},
+		empty: function(){
+			first = null;
+			last = null;
+			map = {};
+			n = 0;
 		}
 	}
 }

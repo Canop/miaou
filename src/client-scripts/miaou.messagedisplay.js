@@ -314,13 +314,9 @@ var miaou = miaou || {};
 		var $from = $('<div>'+miaou.mdToHtml(args.from)+'</div>'),
 			$a = $from.find('a[href]'),
 			$m = $('#messages .message[mid='+args.mid+']'),
-			wab = isAtBottom(),
-			box;
-		box = '<div class=box'
-		if ($a.length) box += ' href="'+$a.attr('href')+'"';
-		box += '>'+args.to+'</div>';
+			wab = isAtBottom();
 		$m.find('.content').html(function(_,h){
-			return h.replace($from.html(), box)
+			return h.replace($from.html(), '<div class=box>'+args.to+'</div>')
 		});
 		resize($m, wab);
 	}

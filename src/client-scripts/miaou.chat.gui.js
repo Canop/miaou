@@ -71,8 +71,6 @@ miaou.bindChatGui = function(){
 		e.stopPropagation();			
 	}).on('click', 'a', function(e){
 		e.stopPropagation();
-	}).on('click', '.box[href]', function(){
-		window.open($(this).attr('href'));
 	}).on('click', '.vote', function(){
 		var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
 		if (message.vote) miaou.socket.emit('vote', {action:'remove',  message:message.id, level:message.vote});
