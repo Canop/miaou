@@ -12,19 +12,22 @@ function cake(newTask){
 	if (!task) return;
 	currentTask = task;
 	var box = cache.get(task.line);
-	if (box) {
+	if (box !== undefined) {
 		console.log('wikipedia box', task.line, 'found in cache');
 		return setTimeout(function(){
 			currentTask = null;
-			task.send('box', {mid:task.mid, from:task.line, to:box});		
+			if (box) task.send('box', {mid:task.mid, from:task.line, to:box});
 			cake();
 		}, 0);
 	}
 	request(task.line, function(error, res, body){
+		console.log('wikipedia box', task.line, 'fetched');
 		currentTask = null;
 		setTimeout(cake, 0);
-		if (error || res.statusCode!==200) return;
-		console.log('wikipedia box', task.line, 'fetched');
+		if (error || res.statusCode!==200) {
+			cache.set(task.line, null);
+			return;
+		}
 		var	$ = $$.load(body),
 			$box = $('<div></div>');
 		$box.append(
