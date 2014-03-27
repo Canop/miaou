@@ -312,7 +312,6 @@ var miaou = miaou || {};
 	// replaces one line of a message
 	md.box = function(args){
 		var $from = $('<div>'+miaou.mdToHtml(args.from)+'</div>'),
-			$a = $from.find('a[href]'),
 			$m = $('#messages .message[mid='+args.mid+']'),
 			wab = isAtBottom();
 		$m.find('.content').html(function(_,h){

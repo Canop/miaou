@@ -1,8 +1,9 @@
 var request = require('request'),
 	url = require('url'),
 	$$ = require('cheerio'),
-	cache = require('../../libs/cache.js')(500),
+	cache = require('bounded-cache')(200),
 	Deque = require("double-ended-queue"),
+	TTL = 30*60*1000,
 	tasks = new Deque(100), currentTask;
 
 function cake(newTask){
@@ -25,7 +26,7 @@ function cake(newTask){
 		currentTask = null;
 		setTimeout(cake, 0);
 		if (error || res.statusCode!==200) {
-			cache.set(task.line, null);
+			cache.set(task.line, null, TTL);
 			return;
 		}
 		var	$ = $$.load(body),
@@ -55,7 +56,7 @@ function cake(newTask){
 			return url.resolve(task.line, u)
 		});
 		box = $box.html();
-		cache.set(task.line, box);
+		cache.set(task.line, box, TTL);
 		task.send('box', {mid:task.mid, from:task.line, to:box});
 	});
 }

@@ -27,7 +27,8 @@
     "request": "~2.34.0",
     "cheerio": "^0.13.1",
     "buster": "^0.7.10",
-    "double-ended-queue": "^2.0.0-0"
+    "double-ended-queue": "^2.0.0-0",
+    "bounded-cache": "0.0.0"
   },
   "scripts": {
     "start": "sh start.sh"
