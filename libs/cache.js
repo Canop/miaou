@@ -1,6 +1,6 @@
-// a simple in memory cache throwing the least recently accessed entry when
-//  the maximal number of entries is reached.
-// All set/get operations are O(1) and synchronous.
+// a simple in memory cache forgetting the least recently accessed entry
+//  when the maximal number of entries is reached.
+// All operations are O(1) and synchronous.
 //
 // Keys are strings. Values are what you want (null allowed).
 //
@@ -19,7 +19,8 @@
 //  del(key)        : removes the pair (key,value). Returns the value.
 //  size()          : returns the number of cached keys, in [0, capacity].
 //  content()       : returns all pairs (key,value), from the oldest to the
-//                    last recently accessed
+//                    last recently accessed. This operation is only here
+//                    for test purposes.
 
 module.exports = function(capacity){
 	var n = 0, cap = capacity||100,

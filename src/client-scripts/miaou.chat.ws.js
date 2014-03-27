@@ -71,7 +71,7 @@ var miaou = miaou || {};
 			chat.showEntry(me);
 		})
 		.on('invitation', function(invit){
-			$('<div>').html(
+			var $md = $('<div>').html(
 				'You have been invited by <span class=user>'+invit.byname+'</span> in a private lounge.'
 			).addClass('notification').append(
 				$('<button>').addClass('openroom').text('Enter room').click(function(){
