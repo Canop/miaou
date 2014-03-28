@@ -373,8 +373,12 @@ body.mobile #messagescroller {
 			img {
 				max-width: 40%;
 			}
-			p {
-				min-height: 128px;
+			.mainimg {
+				margin: 5px;
+				margin-right: 10px;
+				float: left;
+			}
+			.txt {
 			}
 			&[href] {
 				cursor: pointer;

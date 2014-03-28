@@ -30,23 +30,30 @@ function cake(newTask){
 			return;
 		}
 		var	$ = $$.load(body),
-			$box = $('<div></div>');
+			$box = $('<div/>'),
+			$abstract = $('<div/>').addClass('abstract'),
+			$txt = $('<div/>').addClass('txt');
 		$box.append(
 			$('<a>').attr('href',task.line).css('text-decoration','none')
 			.append('<img style="margin:3px;max-height:40px" src=http://en.wikipedia.org/favicon.ico align=left>')
 			.append($('h1'))
 		);
 		$box.append($('<hr style="clear:both">'));
-		$box.append(
+		$box.append($abstract);
+		$abstract.append(
 			$('table img, img.thumbimage').filter(function(){
 				return !$(this).closest('.metadata').length
-			}).first().attr('align','left').removeAttr('height').removeAttr('width').css('margin','5px')
+			}).first().addClass('mainimg').removeAttr('height').removeAttr('width')
 		);
+		$abstract.append($txt);
 		$('p').each(function(){
 			var $this = $(this);
 			if (!$this.closest('div[class*="infobox"],table').length){
-				$box.append($this);
-				return false;
+				for(;;) {
+					$txt.append($this.clone());
+					$this = $this.next();
+					if (!$this.length || $this[0].name !== 'p') return false; 
+				}
 			}
 		});
 		$box.find('a[href]').attr('href', function(_,u){
@@ -55,6 +62,7 @@ function cake(newTask){
 		$box.find('img').attr('src', function(_,u){
 			return url.resolve(task.line, u)
 		});
+		$box.append('<div style="clear:both"/>');
 		box = $box.html();
 		cache.set(task.line, box, TTL);
 		task.send('box', {mid:task.mid, from:task.line, to:box});
