@@ -6,8 +6,7 @@ var request = require('request'),
 	TTL = 30*60*1000,
 	tasks = new Deque(100), currentTask;
 
-function cake(newTask){
-	if (newTask) tasks.push(newTask);
+function dequeue(){
 	if (currentTask) return;
 	var task = tasks.shift();
 	if (!task) return;
@@ -18,13 +17,13 @@ function cake(newTask){
 		return setTimeout(function(){
 			currentTask = null;
 			if (box) task.send('box', {mid:task.mid, from:task.line, to:box});
-			cake();
+			dequeue();
 		}, 0);
 	}
 	request(task.line, function(error, res, body){
 		console.log('wikipedia box', task.line, 'fetched');
 		currentTask = null;
-		setTimeout(cake, 0);
+		setTimeout(dequeue, 0);
 		if (error || res.statusCode!==200) {
 			cache.set(task.line, null, TTL);
 			return;
@@ -77,6 +76,7 @@ exports.onSendMessage = function(shoe, m, send){
 	m.content.split('\n').filter(function(line){
 		return /^\s*https?:\/\/\w{2}\.wikipedia\.org\/[^ ]*\s*$/.test(line)
 	}).forEach(function(line){
-		cake({line:line.trim(), mid:m.id, send:send});
+		tasks.push({line:line.trim(), mid:m.id, send:send});
+		dequeue();
 	});
 }
