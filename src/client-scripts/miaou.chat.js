@@ -17,26 +17,28 @@ miaou.chat = {
 	
 	chat.clearPings = function() {
 		// clear the pings of the current room and ask for the ones of the other rooms
-		miaou.socket.emit('clear_pings', miaou.chat.lastReceivedPing, function(pings){
-			if (pings.length) {
-				pings.forEach(function(p){
-					miaou.chat.oldestUnseenPing = Math.min(miaou.chat.oldestUnseenPing, p.first);
-					miaou.chat.lastReceivedPing = Math.max(miaou.chat.lastReceivedPing, p.last);
-				});
-				var h = "You've been pinged in room";
-				if (pings.length>1) h += 's';
-				var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
-				pings.forEach(function(p){
-					$md.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
-						window.open(p.room);
-						if ($md.find('.openroom').length==1) $md.remove();
-						else $(this).remove();
-					}))
-				});
-				$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
-				md.scrollToBottom();
-			}
-		});
+		miaou.socket.emit('clear_pings', miaou.chat.lastReceivedPing);
+	}
+	
+	chat.pings = function(pings){
+		if (pings.length) {
+			pings.forEach(function(p){
+				miaou.chat.oldestUnseenPing = Math.min(miaou.chat.oldestUnseenPing, p.first);
+				miaou.chat.lastReceivedPing = Math.max(miaou.chat.lastReceivedPing, p.last);
+			});
+			var h = "You've been pinged in room";
+			if (pings.length>1) h += 's';
+			var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
+			pings.forEach(function(p){
+				$md.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
+					window.open(p.room);
+					if ($md.find('.openroom').length==1) $md.remove();
+					else $(this).remove();
+				}))
+			});
+			$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
+			miaou.md.scrollToBottom();
+		}		
 	}
 	
 	// put the user at the top of the list

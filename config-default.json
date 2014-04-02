@@ -11,6 +11,7 @@
 		"url": "postgres://database_user:database_pwd@localhost/miaou"
 	},
 	"plugins": [
+		"./plugins/wikipedia/plugin.js",
 		"./plugins/mountyhall/plugin.js"
 	],
 	"oauth2": {

@@ -5,6 +5,7 @@ var config = require('./config.json'),
 	passport = require('passport'),
 	login = require('./libs/login.js'),
 	db = require('./libs/db.js'),
+	naming = require('./libs/naming.js'),
 	utils = require('./libs/app-utils.js').configure(config),
 	ws = require('./libs/ws.js').configure(config),
 	cookieParser = express.cookieParser(config.secret),
@@ -73,10 +74,14 @@ function defineAppRoutes(){
 		var roomId = req.params[0];
 		res.redirect(utils.url(roomId ? '/login?room=' + roomId : '/login'));
 	}
+	function ensureCompleteProfile(req, res, next) {
+		if (naming.isValidUsername(req.user.name)) return next();
+		res.redirect(utils.url('/profile'));
+	}
 	function map(verb, path, fun, noNeedForCompleteProfile, noNeedForLogin){
 		var args = [path];
 		if (!noNeedForLogin) args.push(ensureAuthenticated);
-		if (!noNeedForCompleteProfile) args.push(ensureAuthenticated);
+		if (!noNeedForCompleteProfile) args.push(ensureCompleteProfile);
 		args.push(fun.length<=2 ? fun : function(req, res){ fun(req, res, db) });
 		app[verb].apply(app, args);
 	}

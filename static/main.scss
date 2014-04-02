@@ -360,7 +360,29 @@ body.mobile #messagescroller {
 		padding-top: 1px;
 		padding-left: 2px;
 		&.closed {
-			max-height: 112px;
+			max-height: 132px;
+		}
+		.box {
+			background: white;
+			margin: 2px;
+			border: thin solid #ddd;
+			h1 {
+				margin: 10px;
+				font-size: 120%;
+			}
+			img {
+				max-width: 40%;
+			}
+			.mainimg {
+				margin: 5px;
+				margin-right: 10px;
+				float: left;
+			}
+			.txt {
+			}
+			&[href] {
+				cursor: pointer;
+			}
 		}
 	}
 	&.me {
@@ -476,6 +498,9 @@ body.mobile .messagemenu .vote {
 #notablemessages, #searchresults {
 	.message {
 		border-bottom: thin dashed #aaa;
+		&:hover {
+			background: lighten($bg-color, 19%);
+		}
 	}
 	.message {
 		cursor: pointer;

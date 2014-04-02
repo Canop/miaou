@@ -8,7 +8,8 @@ miaou.bindChatGui = function(){
 	$('#messages').on('click', '.message .content img', function(e){
 		window.open(this.src);
 		e.stopPropagation();
-	}).on('click', '.message .content a[href]', function(){
+	})
+	.on('click', '.message .content a[href]', function(){
 		var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
 		if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
 			// it's an url towards a room or message on this server
@@ -35,12 +36,14 @@ miaou.bindChatGui = function(){
 				console.log(this); // yep, I feel unsecure...
 			}
 		}
-	}).on('click', '.opener', md.opener)
+	})
+	.on('click', '.opener', md.opener)
 	.on('click', '.closer', md.closer)
 	.on('click', '.editButton', function(){
 		miaou.userProfile.hide();
 		editor.editMessage($(this).closest('.message').data('message'));
-	}).on('click', '.deleteButton', function(){
+	})
+	.on('click', '.deleteButton', function(){
 		miaou.userProfile.hide();
 		var message = $(this).closest('.message').data('message');
 		var $content = $('<div>').append(
@@ -58,31 +61,39 @@ miaou.bindChatGui = function(){
 				Delete: function(){ miaou.socket.emit('message', {id:message.id, content:''}) }
 			}
 		});
-	}).on('click', '.replyButton', function(){
+	})
+	.on('click', '.replyButton', function(){
 		editor.replyToMessage($(this).closest('.message').data('message'));
-	}).on('mouseenter', '.reply', function(e){
+	})
+	.on('mouseenter', '.reply', function(e){
 		var mid = $(this).attr('to');
 		$('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');
 		e.stopPropagation();
-	}).on('mouseleave', '.reply', function(){
+	})
+	.on('mouseleave', '.reply', function(){
 		$('.target').removeClass('target');
-	}).on('click', '.reply', function(e){
+	})
+	.on('click', '.reply', function(e){
 		md.focusMessage(+$(this).attr('to'));
 		e.stopPropagation();			
-	}).on('click', 'a', function(e){
+	})
+	.on('click', 'a', function(e){
 		e.stopPropagation();
-	}).on('click', '.vote', function(){
+	})
+	.on('click', '.vote', function(){
 		var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
 		if (message.vote) miaou.socket.emit('vote', {action:'remove',  message:message.id, level:message.vote});
 		if (message.vote!=vote) miaou.socket.emit('vote', {action:'add',  message:message.id, level:vote});
 		return false;
-	}).on('click', '.olderLoader', function(){
+	})
+	.on('click', '.olderLoader', function(){
 		var $this = $(this), mid = +$this.data('mid'), olderPresent = 0;
 		$this.remove();
 		$('.hasOlder[mid='+mid+']').removeClass('hasOlder');
 		md.getMessages().forEach(function(m){ if (m.id<mid) olderPresent=m.id });
 		miaou.socket.emit('get_older', {before:mid, olderPresent:olderPresent});
-	}).on('click', '.newerLoader', function(){
+	})
+	.on('click', '.newerLoader', function(){
 		var $this = $(this), mid = +$this.data('mid'), newerPresent = 0;
 		$this.remove();
 		md.getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
@@ -138,9 +149,7 @@ miaou.bindChatGui = function(){
 		if (e.which===27) $(this).val('');
 		var pat = this.value.trim();
 		if (pat) {
-			miaou.socket.emit('search', {pattern:pat}, function(results){
-				md.showMessages(results, $('#searchresults'));
-			});
+			miaou.socket.emit('search', {pattern:pat});
 			miaou.hist.search(pat);
 		} else {
 			$('#searchresults').empty();
