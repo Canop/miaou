@@ -165,7 +165,7 @@ proto.listAccessibleRooms = function(userId){
 // lists the rooms that should make it to the front page :
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
-		"select r.id, name, description, private, listed, dialog, auth,"+
+		"select r.id, name, description, private, listed, dialog, lang, auth,"+
 		" (select count (*) from message m where m.room = r.id) as messageCount,"+
 		" (select max (id) from message m where m.room = r.id and m.author=$1) as lastmessage"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  

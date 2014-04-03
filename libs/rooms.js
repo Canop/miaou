@@ -55,7 +55,7 @@ exports.appGetRooms = function(req, res, db){
 		]
 	}).spread(function(rooms, pings){
 		rooms.forEach(function(r){ r.path = utils.roomPath(r) });
-		res.render(utils.mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user });
+		res.render(utils.mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user, langs:langs.legal });
 	}).catch(function(err){
 		utils.renderErr(res, err);
 	}).finally(db.off);
