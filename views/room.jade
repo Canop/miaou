@@ -11,41 +11,67 @@ html
 				padding: 2px;
 				background: #F0EAD6;
 			}
-	body
-		form(method="post")
-			div#centerer
-				div.dialog.centered
-					div.dialog_title Room Creation
-					div.dialog_content
-						div.form
-							input#id(type="hidden", name="id")
-							label.label Name
-							input#name(type="text", name="name", value=suggestedName, pattern=".{2,50}")
-							span.label Privacy
-							input#private(name="private", type="checkbox")
-							label.cblabel(for="private") private room
-							span.label Listings
-							input#listed(name="listed", type="checkbox")
-							label.cblabel(for="listed") listed room 
-							label.label Description
-								span.small Markdown allowed
-							textarea#description(name="description")
-							label.label.small Description Preview
-							div.rendered.input#roomdescription
-						p#err.error
+	body.home
+		section#hometop
+			div.thinMP
+				a(href='.')
+					img(src="static/Miaou-300-f.png")
+		section#homenotifs
+			div.thinMP
+				h2 Room Edition
+		section#homemain
+			div.thinMP
+				form(method="post")
+					input#id(type="hidden", name="id")
+					table.form
+						tr
+							th Name
+							td
+								input#name(type="text", name="name", value=suggestedName, pattern=".{2,50}")
+						tr
+							th Privacy
+							td
+								select#private(name="private")
+									option(value="on") Private Room
+									option(value="off") Public Room
+						tr
+							th Listings
+							td
+								select#listed(name="listed")
+									option(value="on") Listed Room
+									option(value="off") Discrete Room
+						tr
+							th Language
+							td
+								select#lang(name="lang")
+						tr
+							th Description
+							td
+								textarea#description(name="description")
+						tr
+							td Description Preview
+							td
+								div.rendered.input#roomdescription
+					p#err.error
 					div.dialog_buttons
 						input#cancel(type='button', value='Cancel')
 						input(type='submit', value='Save')#submit
 		
 		script.
+			var langs = !{langs};
+			for (var key in langs) {
+				var lang = langs[key];
+				$('#lang').append($('<option>').attr('value', key).text(lang.name));
+			}
 			var room = !{room}, error=!{error};
 			if (room) {
 				$('.dialog_title').text('Room Edition');
 				$('#name').val(room.name);
 				$('#description').val(room.description);
-				if (room.private) $('#private').prop('checked', true);
-				if (room.listed) $('#listed').prop('checked', true);
+				$('#private').val(room.private ? 'on' : 'off');
+				$('#listed').val(room.listed ? 'on' : 'off');
 				if (room.auth!=='own') $('#private').prop('disabled', true);
+				$('#lang').val(room.lang || langs[0].key);
 				$('#id').val(room.id);
 			}
 			if (error) {

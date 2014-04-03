@@ -89,21 +89,21 @@ proto.storeRoom = function(r, author, authlevel) {
 	if (!r.id) return this.createRoom(r, [author]);
 	if (authlevel==="own") {
 		return this.queryRow(
-			"update room set name=$1, private=$2, listed=$3, dialog=$4, description=$5 where id=$6",
-			[r.name, r.private, r.listed, r.dialog, r.description||'', r.id]
+			"update room set name=$1, private=$2, listed=$3, dialog=$4, description=$5, lang=$6 where id=$7",
+			[r.name, r.private, r.listed, r.dialog, r.description||'', r.lang, r.id]
 		);
 	} else { // implied : "admin"
 		return this.queryRow(
-			"update room set name=$1, listed=$2, description=$3 where id=$4",
-			[r.name, r.listed, r.description||'', r.id]
+			"update room set name=$1, listed=$2, description=$3, lang=$4 where id=$5",
+			[r.name, r.listed, r.description||'', r.lang, r.id]
 		);			
 	}
 }
 
 proto.createRoom = function(r, owners){
 	return this.queryRow(
-		'insert into room (name, private, listed, dialog, description) values ($1, $2, $3, $4, $5) returning id',
-		[r.name, r.private, r.listed, r.dialog, r.description||'']
+		'insert into room (name, private, listed, dialog, description, lang) values ($1, $2, $3, $4, $5, $6) returning id',
+		[r.name, r.private, r.listed, r.dialog, r.description||'', r.lang||'en']
 	).then(function(row){
 		r.id = row.id;
 		return owners;
@@ -135,7 +135,7 @@ proto.getLounge = function(userA, userB) {
 			con.client.query("select id from room where name=$1", [name], function(err, res){
 				if (err) return resolver.reject(err);
 				if (res.rows.length) return tryName();
-				var room = {name:name, description:description, private:true, listed:false, dialog:true};
+				var room = {name:name, description:description, private:true, listed:false, dialog:true, lang:'en'};
 				con.createRoom(room, [userA,userB]).then(function(){ resolver.resolve(room) });
 			});			
 		})();
@@ -145,19 +145,19 @@ proto.getLounge = function(userA, userB) {
 
 // returns an existing room found by its id
 proto.fetchRoom = function(id){
-	return this.queryRow('select id, name, description, private, listed, dialog from room where id=$1', [id]);
+	return this.queryRow('select id, name, description, private, listed, dialog, lang from room where id=$1', [id]);
 }
 
 // returns an existing room found by its id and the user's auth level
 proto.fetchRoomAndUserAuth = function(roomId, userId){
 	if (!roomId) throw new NoRowError();
-	return this.queryRow('select id, name, description, private, listed, dialog, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId]);
+	return this.queryRow('select id, name, description, private, listed, dialog, lang, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2', [userId, roomId]);
 }
 
 // lists the rooms a user can access, either public or whose access was explicitely granted
 proto.listAccessibleRooms = function(userId){
 	return this.queryRows(
-		"select id, name, description, private, dialog, listed, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+
+		"select id, name, description, private, dialog, listed, lang, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+
 		" where private is false or auth is not null order by auth desc nulls last, name", [userId]
 	);
 }
@@ -176,7 +176,7 @@ proto.listFrontPageRooms = function(userId){
 
 proto.listRecentUserRooms = function(userId){
 	return this.queryRows(
-		"select m.id, m.number, m.last_created, r.name, r.description, r.private, r.listed, r.dialog"+
+		"select m.id, m.number, m.last_created, r.name, r.description, r.private, r.listed, r.dialog, r.lang"+
 		" from ("+
 			"select m.room as id, count(*) number, max(created) last_created"+
 			" from message m"+

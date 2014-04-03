@@ -14,7 +14,7 @@ exports.appGetRoom = function(req, res, db){
 		if (!auths.checkAtLeast(room.auth, 'admin')) {
 			return utils.renderErr(res, "Admin level is required to manage the room");
 		}
-		res.render('room.jade', { room:JSON.stringify(room), error:"null", langs:langs.legal });
+		res.render('room.jade', { room:JSON.stringify(room), error:"null", langs:JSON.stringify(langs.legal) });
 	}).catch(db.NoRowError, function(){
 		res.render('room.jade', { room:"null", error:"null" });
 	}).catch(function(err){
@@ -30,7 +30,13 @@ exports.appPostRoom = function(req, res, db){
 	db.on([roomId, req.user.id, 'admin'])
 	.spread(db.checkAuthLevel)
 	.then(function(auth){
-		room = {id:roomId, name:name, private:req.param('private')||false, listed:req.param('listed')||false, dialog:false, description:req.param('description')};
+		room = {
+			id:roomId, name:name, dialog:false,
+			private:req.param('private')==="on",
+			listed:req.param('listed')==="on",
+			description:req.param('description'),
+			lang:req.param('lang')
+		};
 		return [room, req.user, auth];
 	}).spread(db.storeRoom)
 	.then(function(){

@@ -64,8 +64,7 @@ body {
 				}
 				text-align: center;
 				padding: 8px;				
-			}
-		
+			}		
 		}
 		#hometabs {
 			height: 30px;
@@ -92,7 +91,9 @@ body {
 			display: flex;
 			flex-direction: row;
 			justify-content: center;
-			margin-top: 26px;
+			&.hastabs {
+				margin-top: 26px;
+			}
 			position: absolute;
 			left:0; right:0;
 			z-index: 3;
@@ -103,6 +104,11 @@ body {
 				width: 70%;
 				max-width: 1000px;
 				min-width: 800px;			
+			}
+			#thinmaincontent {
+				width: 70%;
+				max-width: 600px;
+				min-width: 500px;			
 			}
 			h3 {
 				margin-left: 8px;
@@ -756,6 +762,22 @@ body.mobile .dialog.intro {
 		border-color: red;
 	}
 }
+table.form {
+	width: 100%;
+	input, textarea {
+		width: 100%;
+	}
+	textarea {
+		height: 80px;
+	}
+	th, td {
+		padding: 4px;
+	}
+	th, td:first-child {
+		text-align: right;
+		width: 110px;
+	}
+}
 .dialog_content {
 	padding: 7px;
 	p, h2, .form, .label {
@@ -1026,6 +1048,12 @@ div.MP {
 	width: 70%;
 	max-width: 1000px;
 	min-width: 800px;
+	margin: auto;
+}
+div.thinMP {
+	width: 70%;
+	max-width: 600px;
+	min-width: 500px;
 	margin: auto;
 }
 
