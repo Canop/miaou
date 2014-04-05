@@ -8,15 +8,15 @@ var config,
 	io, db,
 	maxAgeForNotableMessages = 60*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
-	plugins,
+	plugins, onSendMessagePlugins, onNewMessagePlugins,
 	socketWaitingApproval = [];
 
 exports.configure = function(config){
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
-	plugins = (config.plugins||[])
-		.map(function(n){ return require(path.resolve(__dirname, '..', n)) })
-		.filter(function(p){ return p.onSendMessage });
+	plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
+	onSendMessagePlugins = plugins.filter(function(p){ return p.onSendMessage });
+	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });	
 	return this;
 }
 
@@ -53,7 +53,7 @@ Shoe.prototype.emitToRoom = function(key, m){
 	io.sockets.in(this.room.id).emit(key, lighten(m));
 }
 Shoe.prototype.pluginTransformAndSend = function(m, sendFun){
-	plugins.forEach(function(plugin){
+	onSendMessagePlugins.forEach(function(plugin){
 		plugin.onSendMessage(this, m, sendFun);
 	}, this);
 	sendFun('message', m);
