@@ -16,7 +16,7 @@ exports.appGetRoom = function(req, res, db){
 		}
 		res.render('room.jade', { room:JSON.stringify(room), error:"null", langs:JSON.stringify(langs.legal) });
 	}).catch(db.NoRowError, function(){
-		res.render('room.jade', { room:"null", error:"null" });
+		res.render('room.jade', { room:"null", error:"null", langs:JSON.stringify(langs.legal) });
 	}).catch(function(err){
 		utils.renderErr(res, err);
 	}).finally(db.off);
