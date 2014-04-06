@@ -331,24 +331,32 @@ proto.messageHistogram = function(roomId, pattern, lang) {
 		) : this.queryRows("select count(*) n, min(id) m, floor(created/86400) d from message where room=$1 group by d order by d", [roomId]);
 }
 
-// fetches one message. Votes of the passed user are included
+// fetches one message. Votes of the passed user are included if user is provided
 proto.getMessage = function(messageId, userId){
-	return this.queryRow(
-		'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
-		' left join message_vote on message.id=message and message_vote.player=$2'+
-		' inner join player on author=player.id'+
-		' where message.id=$1', [messageId, userId]
-	);
+	if (userId) {
+		return this.queryRow(
+			'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
+			' left join message_vote on message.id=message and message_vote.player=$2'+
+			' inner join player on author=player.id'+
+			' where message.id=$1', [messageId, userId]
+		)
+	} else {
+		return this.queryRow(
+			'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, score from message'+
+			' inner join player on author=player.id'+
+			' where message.id=$1', [messageId]
+		)
+	}
 }
 
 // if id is set, updates the message if the author & room matches
 // else stores a message and sets its id
-proto.storeMessage = function(m){
+proto.storeMessage = function(m, checkAgeIfEdit){
 	if (m.id && m.changed) {
-		return this.queryRow(
-			'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5 and created>'+(now()-MAX_AGE_FOR_EDIT)+' returning *',
-			[m.content, m.changed, m.id, m.room, m.author]
-		).then(function(m){
+		var sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
+		if (checkAgeIfEdit) sql += ' and created>'+(now()-MAX_AGE_FOR_EDIT);
+		sql += ' returning *';
+		return this.queryRow(sql, [m.content, m.changed, m.id, m.room, m.author]).then(function(m){
 			if (!m.content.length && m.created>now()-MAX_AGE_FOR_TOTAL_DELETION) return this.queryRow(
 				"delete from message where id=$1", [m.id]
 			).then(function(){ return m });
@@ -559,7 +567,7 @@ proto.off = function(){
 proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	this.client.query(sql, args, function(err, res){
-		//~ logQuery(sql, args);
+		logQuery(sql, args);
 		if (err) {
 			resolver.reject(err);
 		} else if (res.rows.length) {

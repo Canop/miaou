@@ -5,7 +5,8 @@ miaou.chat = {
 	DELAY_BEFORE_PROFILE_POPUP: 300, // ms
 	DISRUPTION_THRESHOLD: 60*60, // seconds
 	nbUnseenMessages: 0, oldestUnseenPing: 0, lastReceivedPing: 0,
-	timeOffset: 0, enterTime: 0 // both in seconds since epoch, server time
+	timeOffset: 0, enterTime: 0, // both in seconds since epoch, server time
+	plugins: [] // some might be unactive
 };
 
 (function(chat){
@@ -84,6 +85,13 @@ miaou.chat = {
 			}, 3*60*1000);
 			miaou.startChatWS();
 			miaou.bindChatGui();
+			md.registerRenderer(function(message){
+				return message.content ? miaou.mdToHtml(message.content, true, message.authorname) : ''
+			});
+			pluginsToStart.forEach(function(name){
+				chat.plugins[name].start();
+				console.log("Plugin " + name + " started");
+			});
 		});
 	}	
 })(miaou.chat);

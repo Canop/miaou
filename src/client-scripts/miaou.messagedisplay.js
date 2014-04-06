@@ -5,7 +5,12 @@ var miaou = miaou || {};
 
 (function(md){
 	var chat = miaou.chat,
+		renderers = [],
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
+
+	md.registerRenderer = function(fun){
+		renderers.unshift(fun);
+	}
 
 	function votesAbstract(message){
 		return voteLevels.map(function(l){
@@ -198,9 +203,11 @@ var miaou = miaou || {};
 			$md.prependTo('#messages');
 		}
 		if (!$md.find('.content').length) {
-			$('<div>').addClass('content').append(
-				message.content ? miaou.mdToHtml(message.content, true, message.authorname) : ''
-			).appendTo($md);
+			var renderedContent = '';
+			for (var i=0; i<renderers.length; i++){
+				if (renderedContent = renderers[i](message)) break;
+			};
+			$('<div>').addClass('content').append(renderedContent).appendTo($md);
 		}
 		resize($md, wasAtBottom);
 		chat.topUserList({id: message.author, name: message.authorname});

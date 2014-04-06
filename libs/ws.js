@@ -8,7 +8,7 @@ var config,
 	io, db,
 	maxAgeForNotableMessages = 60*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
-	plugins, onSendMessagePlugins, onNewMessagePlugins,
+	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins,
 	socketWaitingApproval = [];
 
 exports.configure = function(config){
@@ -17,6 +17,7 @@ exports.configure = function(config){
 	plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
 	onSendMessagePlugins = plugins.filter(function(p){ return p.onSendMessage });
 	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });	
+	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });	
 	return this;
 }
 
@@ -40,6 +41,7 @@ function Shoe(socket, completeUser){
 	this.publicUser = {id:completeUser.id, name:completeUser.name};
 	this.room;
 	this.lastMessageTime;
+	this.db = db; // to be used by plugins or called modules
 	socket.set('publicUser', this.publicUser);	
 }
 Shoe.prototype.error = function(err){
@@ -195,9 +197,9 @@ function handleUserInRoom(socket, completeUser){
 			});
 			return this.deletePings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
-			error('Room not found');
+			shoe.error('Room not found');
 		}).catch(function(err){
-			error(err.toString());
+			shoe.error(err.toString());
 		}).finally(db.off)
 	}).on('get_around', function(data){
 		db.on()
@@ -238,10 +240,13 @@ function handleUserInRoom(socket, completeUser){
 				m.id = message.id;
 				m.changed = seconds;
 			} else {
-				m.created = seconds;				
+				m.created = seconds;
+				onNewMessagePlugins.forEach(function(plugin){
+					plugin.onNewMessage(shoe, m);
+				}, this);
 			}
-			db.on(m)
-			.then(db.storeMessage)
+			db.on([m, true])
+			.spread(db.storeMessage)
 			.then(function(m){
 				if (m.changed) {
 					m.authorname = u.name;
@@ -331,6 +336,10 @@ function handleUserInRoom(socket, completeUser){
 			console.log(shoe.completeUser.name, "disconnected before entering a room");
 		}
 		popon(socketWaitingApproval, function(o){ return o.socket===socket });
+	});
+	
+	onNewShoePlugins.forEach(function(plugin){
+		plugin.onNewShoe(shoe);
 	});
 
 	socket.emit('ready');

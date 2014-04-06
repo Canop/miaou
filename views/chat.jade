@@ -62,7 +62,8 @@ html
 
 		script.
 			var me = !{user},
-				room = !{room};
+				room = !{room},
+				pluginsToStart = !{pluginsToStart};
 			if (room) window.name = 'room_'+room.id;			
 			else location = 'rooms';
 			if (room.private) {

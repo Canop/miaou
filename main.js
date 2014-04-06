@@ -67,7 +67,7 @@ function defineAppRoutes(){
 		rooms = require('./libs/rooms.js').configure(config),
 		upload = require('./libs/upload.js').configure(config),
 		profile = require('./libs/profile.js').configure(config),
-		chat = require('./libs/chat.js'),
+		chat = require('./libs/chat.js').configure(config),
 		help = require('./libs/help.js');
 	function ensureAuthenticated(req, res, next) {
 		if (req.isAuthenticated()) return next();

@@ -419,21 +419,19 @@ body.mobile #messagescroller {
 		background-color: #fdf6e5;
 	}
 }
-.message, .user {
-	button {
-		position: absolute;
-		z-index: 3;
-		right: 15px;
-		top: calc(50% - 8px);
-		text-align:center;
-		padding: 0 8px;
-		margin: 0 3px 0 0;
-		border-radius: 3px;
-		box-shadow: 1px 1px 2px #999;		
-		font-size: 80%;
-		&.pmButton, &.deleteButton { // dirty 
-			right: 60px;
-		}
+.message > button, .user > button {
+	position: absolute;
+	z-index: 3;
+	right: 15px;
+	top: calc(50% - 8px);
+	text-align:center;
+	padding: 0 8px;
+	margin: 0 3px 0 0;
+	border-radius: 3px;
+	box-shadow: 1px 1px 2px #999;		
+	font-size: 80%;
+	&.pmButton, &.deleteButton { // dirty 
+		right: 60px;
 	}
 }
 #messages .message, #messages .error {
