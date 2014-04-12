@@ -63,7 +63,6 @@ exports.onNewShoe = function(shoe){
 			game.players[0].id = shoe.publicUser.id;
 			game.status = 'running';
 			m.changed = ~~(Date.now()/1000);
-			console.log(m);
 			storeInMess(m, game);
 			return this.storeMessage(m, true);
 		}).then(function(m){
@@ -72,7 +71,6 @@ exports.onNewShoe = function(shoe){
 			//~ console.log('ludo error', e);
 		}).finally(shoe.db.off);
 	}).on('ludo.move', function(arg){
-		console.log('received move', arg);
 		dbGetGame(shoe, arg.mid).spread(function(m, game){
 			var gametype = gametypes[game.type],
 				move = gametype.decodeMove(arg.move);
