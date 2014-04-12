@@ -85,8 +85,8 @@ miaou.chat = {
 			}, 3*60*1000);
 			miaou.startChatWS();
 			miaou.bindChatGui();
-			md.registerRenderer(function(message){
-				return message.content ? miaou.mdToHtml(message.content, true, message.authorname) : ''
+			md.registerRenderer(function($c, message){
+				$c.append(message.content ? miaou.mdToHtml(message.content, true, message.authorname) : '')
 			});
 			pluginsToStart.forEach(function(name){
 				chat.plugins[name].start();

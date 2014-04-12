@@ -6,8 +6,8 @@
 		miaou.socket.emit('ludo.'+verb, o);
 	}
 
-	function renderAsk(m, game){
-		var $p = $('<div>').addClass('game-proposal');
+	function renderAsk($c, m, game){
+		var $p = $('<div>').addClass('game-proposal').appendTo($c);
 		if (game.players[0].name===me.name) {
 			$p.append("<i>"+game.players[1].name+"</i> wants to play a game of "+game.type+" with you. ");
 			$('<button/>').text('Accept').click(function(){ send(m, game, "accept") }).appendTo($p);
@@ -16,25 +16,38 @@
 		} else {
 			$p.append("<i>"+game.players[1].name+"</i> proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");			
 		}
-		return $p;
+		return true;
 	}
 	
-	function renderMessage(m, game){
-		console.log(game);
-		if (game.status === "ask") return renderAsk(m, game);
-		else return "hop";
+	function renderMessage($c, m, game){
+		if (game.status === "ask") renderAsk($c, m, game);
+		else miaou.games[game.type].render($c, m, game);
 	}
 	
 	miaou.chat.plugins.ludogene = {
 		start: function(){
-			miaou.md.registerRenderer(function(m){
+			miaou.md.registerRenderer(function($c, m){
+				if (!m.content) return;
 				var match = m.content.match(/^!!game @\S{3,} (.*)$/);
 				if (!match) return;
-				try {
-					return renderMessage(m, JSON.parse(match[1]));
-				} catch(e) {
-					console.log("Error in game rendering", e);
+				//~ try {
+					renderMessage($c, m, JSON.parse(match[1]));
+					return true;
+				//~ } catch(e) {
+					//~ console.log("Error in game rendering", e);
+				//~ }
+			});
+			miaou.socket.on('ludo.move', function(arg){
+				var $message = $('#messages .message[mid='+arg.mid+']');
+				if (!$message.length) {
+					console.log('message not visible');
+					return;
 				}
+				var m = $message.data('message'),
+					match = m.content.match(/^!!game @\S{3,} (.*)$/);
+				if (!match) return;
+				var game = JSON.parse(match[1]);
+				miaou.games[game.type].move($message.find('.content'), m, game, arg.move);
 			});
 		}
 	}

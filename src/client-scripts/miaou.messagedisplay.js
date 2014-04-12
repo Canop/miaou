@@ -203,11 +203,10 @@ var miaou = miaou || {};
 			$md.prependTo('#messages');
 		}
 		if (!$md.find('.content').length) {
-			var renderedContent = '';
+			var $c = $('<div>').addClass('content').appendTo($md);
 			for (var i=0; i<renderers.length; i++){
-				if (renderedContent = renderers[i](message)) break;
+				if (renderers[i]($c, message)) break;
 			};
-			$('<div>').addClass('content').append(renderedContent).appendTo($md);
 		}
 		resize($md, wasAtBottom);
 		chat.topUserList({id: message.author, name: message.authorname});

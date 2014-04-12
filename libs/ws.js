@@ -245,8 +245,8 @@ function handleUserInRoom(socket, completeUser){
 					plugin.onNewMessage(shoe, m);
 				}, this);
 			}
-			db.on([m, true])
-			.spread(db.storeMessage)
+			db.on(m)
+			.then(db.storeMessage)
 			.then(function(m){
 				if (m.changed) {
 					m.authorname = u.name;
