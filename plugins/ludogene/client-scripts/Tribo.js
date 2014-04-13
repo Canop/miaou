@@ -24,29 +24,18 @@ var Tribo = {
 	isValid: function(g, move){
 		return move.p === g.current && Tribo.canPlay(g, move.x, move.y, move.p);
 	},
-	//~ // would playing in (x,y) produce a new line (assuming the move is valid) ?
-	//~ doLines: function(g, x, y, p) {
-		//~ var c = g.cells;
-		//~ if (x>0 && c[x-1][y]===p) {
-			//~ if (x>1 && c[x-2][y]===p) return true;
-			//~ else if (x<9 && c[x+1][y]===p) return true;
-		//~ } else if (x<8 && c[x+1][y]===p && c[x+2][y]===p) return true;
-		//~ if (y>0 && c[x][y-1]===p) {
-			//~ if (y>1 && c[x][y-2]===p) return true;
-			//~ else if (y<9 && c[x][y+1]===p) return true;
-		//~ } else if (y<8 && c[x][y+1]===p && c[x][y+2]===p) return true;
-		//~ return false;
-	//~ },
 	getLines: function(g, x, y, p) {
 		var c = g.cells, lines = [];
 		if (x>0 && c[x-1][y]===p) {
-			if ( x>1 && c[x-2][y]===p && (x<3||c[x-3]!==p) && (x===9||c[x+1][y]!==p) ) lines.push({x:x-2, y:y, d:'h'});
-			else if ( x<9 && c[x+1][y]===p && (x===8||c[x+2][y]!==p) ) lines.push({x:x-1, y:y, d:'h'});
-		} else if (x<8 && c[x+1][y]===p && c[x+2][y]===p && (x==7 || x[x+3][y]!==p) ) lines.push({x:x, y:y, d:'h'});
+			if ( x>1 && c[x-2][y]===p) {
+				if ( (x<3||c[x-3][y]!==p) && (x===9||c[x+1][y]!==p) ) lines.push({x:x-2, y:y, d:'h'});
+			} else if ( x<9 && c[x+1][y]===p && (x===8||c[x+2][y]!==p) ) lines.push({x:x-1, y:y, d:'h'});
+		} else if ( x<8 && c[x+1][y]===p && c[x+2][y]===p && (x==7||c[x+3][y]!==p) ) lines.push({x:x, y:y, d:'h'});
 		if (y>0 && c[x][y-1]===p) {
-			if (y>1 && c[x][y-2]===p && (y===2||c[x][y-3]!==p) && (y===9||c[x][y+1]!==p ) lines.push({x:x, y:y-2, d:'v'});
-			else if (y<9 && c[x][y+1]===p zzzz) lines.push({x:x, y:y-1, d:'v'});
-		} else if (y<8 && c[x][y+1]===p && c[x][y+2]===p yyyy) lines.push({x:x, y:y, d:'v'});
+			if (y>1 && c[x][y-2]===p) {
+				if ( (y<3||c[x][y-3]!==p) && (y===9||c[x][y+1]!==p) ) lines.push({x:x, y:y-2, d:'v'});
+			} else if (y<9 && c[x][y+1]===p && (y===8||c[x][y+2]!==p) ) lines.push({x:x, y:y-1, d:'v'});
+		} else if ( y<8 && c[x][y+1]===p && c[x][y+2]===p && (y===7||c[x][y+3]!==p) ) lines.push({x:x, y:y, d:'v'});
 		return lines.length ? lines : null;
 	},
 	encodeMove: function(move){
@@ -64,17 +53,20 @@ var Tribo = {
 	restore: function(g){
 		if (!g.moves) g.moves = "";
 		g.current = 0;
+		g.scores = [0,0];
 		g.cells = Array.apply(0,Array(10)).map(function(){
 			return Array.apply(0,Array(10)).map([].indexOf,[])
 		});
 		for (var i=0; i<g.moves.length; i++) {
 			Tribo.apply(g, Tribo.decodeMove(g.moves[i]));
 		}
+		if (g.scores[0]+g.scores[1]===100) g.status = "finished";
 	},
 	// apply a move to a game
 	apply: function(g, move){
 		move.lines = Tribo.getLines(g, move.x, move.y, move.p);
 		g.cells[move.x][move.y] = move.p;
+		g.scores[move.p]++;
 		if (!move.lines) g.current = (g.current+1)%2;
 	}
 }

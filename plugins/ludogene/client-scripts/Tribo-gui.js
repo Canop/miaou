@@ -12,7 +12,7 @@
 		this.g = g; // game
 		this.s = s; // snap thing
 		this.u = -1;
-		this.colors = ['yellow', 'purple'];
+		this.colors = ['SandyBrown', 'AntiqueWhite'], //['yellow', 'purple']; 'Lavender' BurlyWood AntiqueWhite
 		this.grads = this.colors.map(function(c){ return s.gradient("r(0.3,0.3,1)"+c+"-(0,0,0)") });
 		g.players.forEach(function(p,i){ if (p.id===me.id) this.u=i }, this);
 		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg)
@@ -23,14 +23,14 @@
 		panel.holes = [];
 		for (var i=0; i<T; i++) {
 			panel.holes[i] = [];
-			for (var j=0; j<T; j++) {
-			//	panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
-			}
+			//~ for (var j=0; j<T; j++) {
+				//~ panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
+			//~ }
 		}
 	}
 	
 	Panel.prototype.drawBoard = function(){
-		var panel = this, s = this.s, holeColor = Snap.hsb(.5, .4, .7), cells = this.g.cells;
+		var panel = this, s = this.s, cells = this.g.cells;
 		for (var i=0; i<T; i++) {
 			for (var j=0; j<T; j++) {
 				(function(i,j){
@@ -71,6 +71,33 @@
 		}
 	}
 	
+	Panel.prototype.buildScores = function(){
+		var panel = this, s = panel.s;
+		panel.names = panel.g.players.map(function(player, i){
+			return s.text(20, 28*(i+1), player.name).attr({
+				fill: panel.colors[i],
+				fontWeight: 'bold'
+			})
+		});
+		panel.scores = panel.g.players.map(function(player, i){
+			return s.text(XB-15, 28*(i+1), '0').attr({
+				fill: panel.colors[i],
+				fontWeight: 'bold', textAnchor: 'end'
+			})
+		});
+	}
+
+	Panel.prototype.drawScores = function(){
+		// Q : what's the proper way to do this using snapsvg ?
+		this.scores[0].node.innerHTML = (this.g.scores[0]);
+		this.scores[1].node.innerHTML = (this.g.scores[1]);
+		if (this.currentPlayerMark) this.currentPlayerMark.remove();
+		if (this.g.current >= 0) {
+			this.currentPlayerMark = this.s.text(5, 28*this.g.current+28, "►").attr({
+				fill: this.colors[this.g.current], fontWeight: 'bold'
+			})
+		}
+	}
 
 	if (!miaou.games) miaou.games = {};
 	miaou.games.Tribo = {
@@ -79,15 +106,18 @@
 			$c.empty().css('background', bg).closest('.message').removeClass('edited');
 			$s = $('<svg id='+id+'></svg>').width(W).height(H).appendTo($c);
 			Tribo.restore(g);
-			var s = Snap('#'+id), // <- there's probably something cleaner, I don't know snapsvg well enoug
+			var s = Snap('#'+id), // <- there's probably something cleaner, I don't know snapsvg well enough
 				p = new Panel(m, g, s);
 			$c.data('tribo-panel', p);
 			p.buildBoard();
 			p.drawBoard();
+			p.buildScores();
+			p.drawScores();
 		}, move: function($c, m, game, move){
 			var panel = $c.data('tribo-panel');
 			Tribo.apply(panel.g, move);
 			panel.drawBoard();
+			panel.drawScores();
 		}
 	}
 })();
