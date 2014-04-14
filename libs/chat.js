@@ -1,6 +1,7 @@
 var fs = require('fs'),
 	fs = require('fs'),
 	path = require('path'),
+	auths = require('./auths.js'),
 	utils = require('./app-utils.js'),
 	clientSidePluginNames;
 

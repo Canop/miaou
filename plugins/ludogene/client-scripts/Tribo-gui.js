@@ -7,7 +7,6 @@
 		CS = 20, // size of a cell in pixels
 		XB = (W - T*CS), YB = (H - T*CS)/2,
 		BR = CS/2-2, // radius of a board dot
-		NB_ZONES_MAX = T * T / 8,
 		bg = Snap.hsb(.5, .4, .5);
 	
 	function Panel(m, g, s){
@@ -22,11 +21,8 @@
 	}
 
 	Panel.prototype.buildBoard = function(){
-		var panel = this, s = this.s;
-		panel.holes = [];
-		for (var i=0; i<T; i++) {
-			panel.holes[i] = [];
-		}
+		this.holes = [];
+		for (var i=0; i<T; i++) this.holes[i] = [];
 	}
 	
 	Panel.prototype.lineMark = function(line, p){
@@ -138,13 +134,13 @@
 		}, move: function($c, m, _, move){
 			var panel = $c.data('tribo-panel');
 			m.locked = true;
-			Tribo.apply(panel.g, move);
 			panel.g.moves += Tribo.encodeMove(move);
+			Tribo.apply(panel.g, move);
 			panel.drawBoard();
 			panel.drawScores();
 			if (move.lines) {
 				move.lines.forEach(function(line){
-					var lm = panel.lineMark(line).animate({fillOpacity:0}, 6000, mina.linear, function(){
+					var lm = panel.lineMark(line, move.p).animate({fillOpacity:0}, 6000, mina.linear, function(){
 						lm.remove();
 					});
 				});

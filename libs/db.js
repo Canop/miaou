@@ -567,7 +567,7 @@ proto.off = function(){
 proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	this.client.query(sql, args, function(err, res){
-		logQuery(sql, args);
+		//~ logQuery(sql, args);
 		if (err) {
 			resolver.reject(err);
 		} else if (res.rows.length) {
