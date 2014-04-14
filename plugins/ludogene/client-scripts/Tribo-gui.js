@@ -1,4 +1,7 @@
 (function(){
+
+	if (typeof Snap === 'undefined') return; // this file is part of the big minified file imported in all miaou pages, even the ones not importing snap-svg
+	
 	var W = 400, H = 220, // size of the whole drawed area
 		T = 10, // size of the board in cells (not expected to change)
 		CS = 20, // size of a cell in pixels
@@ -30,7 +33,8 @@
 	}
 	
 	Panel.prototype.drawBoard = function(){
-		var panel = this, s = this.s, cells = this.g.cells;
+		var panel = this, s = this.s, cells = this.g.cells,
+			userIsCurrentPlayer = panel.g.current!==-1 && panel.u===panel.g.current;
 		for (var i=0; i<T; i++) {
 			for (var j=0; j<T; j++) {
 				(function(i,j){
@@ -39,26 +43,26 @@
 						c = panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
 					if (cell===-1) {
 						c.attr({fill: panel.holeGrad});	
-						if (panel.u === panel.g.current) {
+						var zone = panel.g.cellZone[i][j];
+						if (zone && zone.owner!==undefined) {
+							c = s.group(c, s.circle(XB+i*CS+(CS+1)/2, YB+j*CS+(CS+1)/2, BR/2).attr({fill: panel.grads[zone.owner]}));
+						}
+						if (userIsCurrentPlayer) {
 							if (Tribo.canPlay(panel.g, i, j, panel.u)) {
-								// TODO show differently from a filled cell
 								// TODO point lines of 3
-								c.attr({cursor:'pointer'})
-								.hover(function(){
-									c.attr({fill: panel.colors[panel.u]});
-								},function(){
-									c.attr({fill: panel.holeGrad});						
-								}).click(function(){
+								c.attr({cursor:'pointer'}).hover(
+									function(){ c.attr({fill: panel.colors[panel.u]}) },
+									function(){	c.attr({fill: panel.holeGrad}) }
+								).click(function(){
 									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
 								});
 							} else {
 								// TODO show why cell isn't playable in a bubble
 								// TODO red cross
-								c.hover(function(){
-									c.attr({fill: 'red'});
-								},function(){
-									c.attr({fill: panel.holeGrad});						
-								}).click(function(){
+								c.hover(
+									function(){ c.attr({fill: 'red'}) },
+									function(){	c.attr({fill: panel.holeGrad}) }
+								).click(function(){
 									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
 								});
 							}
@@ -94,8 +98,12 @@
 		if (this.currentPlayerMark) this.currentPlayerMark.remove();
 		if (this.g.current >= 0) {
 			this.currentPlayerMark = this.s.text(5, 28*this.g.current+28, "►").attr({
-				fill: this.colors[this.g.current], fontWeight: 'bold'
+				fill: this.grads[this.g.current], fontWeight: 'bold'
 			})
+		} else {
+			this.currentPlayerMark = this.s.text(2, 28*(this.g.scores[1]>this.g.scores[0])+28, "♛").attr({
+				fill: "Goldenrod", fontWeight: 'bold', fontSize: "140%"
+			})			
 		}
 	}
 
@@ -113,11 +121,14 @@
 			p.drawBoard();
 			p.buildScores();
 			p.drawScores();
-		}, move: function($c, m, game, move){
+		}, move: function($c, m, _, move){
 			var panel = $c.data('tribo-panel');
 			Tribo.apply(panel.g, move);
 			panel.drawBoard();
+			console.log(panel.g);
 			panel.drawScores();
+			// TODO show new lines made by the move
 		}
 	}
+
 })();

@@ -365,7 +365,7 @@ exports.listen = function(server, sessionStore, cookieParser, _db){
 		.then(db.getUserById)
 		.then(function(completeUser){
 			handleUserInRoom(socket, completeUser);
-		}).catch(function(err){ die(err) })
+		}).catch(die)
 		.finally(db.off);
 	});
 }
