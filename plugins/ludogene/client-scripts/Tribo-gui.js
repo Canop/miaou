@@ -15,10 +15,10 @@
 		this.g = g; // game
 		this.s = s; // snap thing
 		this.u = -1;
-		this.colors = ['SandyBrown', 'AntiqueWhite'], //['yellow', 'purple']; 'Lavender' BurlyWood AntiqueWhite
+		this.colors = ['SandyBrown', 'AntiqueWhite'], 
 		this.grads = this.colors.map(function(c){ return s.gradient("r(0.3,0.3,1)"+c+"-(0,0,0)") });
 		g.players.forEach(function(p,i){ if (p.id===me.id) this.u=i }, this);
-		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg)
+		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg);
 	}
 
 	Panel.prototype.buildBoard = function(){
@@ -26,11 +26,17 @@
 		panel.holes = [];
 		for (var i=0; i<T; i++) {
 			panel.holes[i] = [];
-			//~ for (var j=0; j<T; j++) {
-				//~ panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
-			//~ }
 		}
 	}
+	
+	Panel.prototype.lineMark = function(line, p){
+		return this.s.rect(
+			XB+line.x*CS, YB+line.y*CS,
+			line.d==='v' ? CS : CS*3,
+			line.d==='h' ? CS : CS*3,
+			CS/2, CS/2
+		).attr({fill:this.colors[p], fillOpacity:0.6}).prependTo(this.s);
+	}	
 	
 	Panel.prototype.drawBoard = function(){
 		var panel = this, s = this.s, cells = this.g.cells,
@@ -38,7 +44,7 @@
 		for (var i=0; i<T; i++) {
 			for (var j=0; j<T; j++) {
 				(function(i,j){
-					if (panel.holes[i][j]) panel.holes[i][j].remove(); // it seems you can't change attributes of elements using snapsvg 
+					if (panel.holes[i][j]) panel.holes[i][j].remove();
 					var cell = cells[i][j],
 						c = panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
 					if (cell===-1) {
@@ -49,10 +55,17 @@
 						}
 						if (userIsCurrentPlayer) {
 							if (Tribo.canPlay(panel.g, i, j, panel.u)) {
+								var lines = Tribo.getLines(panel.g, i, j, panel.u) || [], lineMarks;
 								// TODO point lines of 3
 								c.attr({cursor:'pointer'}).hover(
-									function(){ c.attr({fill: panel.colors[panel.u]}) },
-									function(){	c.attr({fill: panel.holeGrad}) }
+									function(){
+										c.attr({fill: panel.colors[panel.u]});
+										lineMarks = lines.map(function(line){ return panel.lineMark(line, panel.u) });
+									},
+									function(){
+										c.attr({fill: panel.holeGrad});
+										lineMarks.forEach(function(line){ line.remove() });
+									}
 								).click(function(){
 									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
 								});
@@ -117,17 +130,25 @@
 			var s = Snap('#'+id), // <- there's probably something cleaner, I don't know snapsvg well enough
 				p = new Panel(m, g, s);
 			$c.data('tribo-panel', p);
+			if (g.status !== "ask") m.locked = true;
 			p.buildBoard();
 			p.drawBoard();
 			p.buildScores();
 			p.drawScores();
 		}, move: function($c, m, _, move){
 			var panel = $c.data('tribo-panel');
+			m.locked = true;
 			Tribo.apply(panel.g, move);
+			panel.g.moves += Tribo.encodeMove(move);
 			panel.drawBoard();
-			console.log(panel.g);
 			panel.drawScores();
-			// TODO show new lines made by the move
+			if (move.lines) {
+				move.lines.forEach(function(line){
+					var lm = panel.lineMark(line).animate({fillOpacity:0}, 6000, mina.linear, function(){
+						lm.remove();
+					});
+				});
+			}
 		}
 	}
 

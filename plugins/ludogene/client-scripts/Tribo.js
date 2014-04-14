@@ -62,6 +62,7 @@ var Tribo = (function(){
 		},
 		// (re)builds the state of the game from the moves (checks absolutely nothing)
 		restore: function(g){
+			console.log('Tribo.restore');
 			g.cells = matrix(10, -1);
 			if (g.moves) {
 				var moves = [].map.call(g.moves, Tribo.decodeMove), lastMove = moves[moves.length-1];
@@ -79,7 +80,6 @@ var Tribo = (function(){
 		apply: function(g, move){
 			move.lines = Tribo.getLines(g, move.x, move.y, move.p);
 			g.cells[move.x][move.y] = move.p;
-			g.scores[move.p]++;
 			if (!move.lines) g.current = +!g.current;
 			Tribo.computeZonesAndScores(g);
 		},
@@ -90,11 +90,12 @@ var Tribo = (function(){
 				zones = g.zones = [],
 				seen = matrix(10, -1);
 			g.cellZone = matrix(10, null); // holds a pointer to the zone containing the cell
-			g.scores = [0, 0];
-			if (!g.moves.length) {
+			if (nbmoves<7) {
 				g.hasMixZone = true;
+				g.scores = [nbmoves+1>>1, nbmoves>>1];
 				return;
 			}
+			g.scores = [0, 0];
 			g.hasMixZone = false;
 			function actz(x, y, zone){
 				if (c[x][y] !== -1) {

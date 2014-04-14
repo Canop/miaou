@@ -242,13 +242,15 @@ var miaou = miaou || {};
 		var $message = $(this), message = $message.data('message'), infos = [],
 		created = message.created+chat.timeOffset, m = moment(created*1000);
 		if (message.author===me.id) {
-			if (Date.now()/1000 - created < miaou.chat.MAX_AGE_FOR_EDIT) {
-				if (message.content) {
-					$('<button>').addClass('deleteButton').text('delete').appendTo($message.find('.user'));
-					$('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
+			if (!message.locked) {
+				if (Date.now()/1000 - created < miaou.chat.MAX_AGE_FOR_EDIT) {
+					if (message.content) {
+						$('<button>').addClass('deleteButton').text('delete').appendTo($message.find('.user'));
+						$('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
+					}
+				} else {
+					infos.push('too old for edition');
 				}
-			} else {
-				infos.push('too old for edition');
 			}
 		} else {
 			$('<button>').addClass('replyButton').text('reply').appendTo($message.find('.user'));
