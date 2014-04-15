@@ -62,7 +62,6 @@ var Tribo = (function(){
 		},
 		// (re)builds the state of the game from the moves (checks absolutely nothing)
 		restore: function(g){
-			console.log('Tribo.restore');
 			g.cells = matrix(10, -1);
 			if (g.moves) {
 				var moves = [].map.call(g.moves, Tribo.decodeMove), lastMove = moves[moves.length-1];

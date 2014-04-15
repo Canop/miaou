@@ -30,16 +30,7 @@ var miaou = miaou || {};
 			md.addMessage(message);
 			md.updateNotableMessages(message);
 			if (message.created>chat.enterTime && message.content) {
-				var visible = vis(), ping = pingRegex.test(message.content);
-				if (ping) {
-					if (visible) {
-						chat.clearPings();
-					} else {
-						miaou.notify(room, message.authorname, message.content);
-						if (!chat.oldestUnseenPing) chat.oldestUnseenPing = message.id;
-					}
-				}
-				if (!visible) miaou.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
+				miaou.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
 			}
 		})
 		.on('room', function(r){

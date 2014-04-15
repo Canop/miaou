@@ -3,28 +3,32 @@
 //  !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
 
+var cache = require('bounded-cache')(200);
+
 var gametypes = {
 	Tribo: require('./client-scripts/Tribo.js')
-}
+};
 
 // returns a bound promise opening a connection to the db
 //  and returning both the message and the game whose id is passed
 // The caller **must** end the promise chain with off
-// TODO use a game cache
 function dbGetGame(shoe, mid){
 	return shoe.db.on(mid).then(function(){
-		return this.getMessage(mid)
-	}).then(function(m){
-		var g = JSON.parse(m.content.split(' ')[2]);
-		m.room = shoe.room.id; // db.getMessage doesn't provide the room, we must set it before saving
-		gametypes[g.type].restore(g);
-		return [m, g];
+		var data = cache.get(mid);
+		return cache.get(mid) || this.getMessage(mid).then(function(m){
+			var g = JSON.parse(m.content.split(' ')[2]);
+			m.room = shoe.room.id; // db.getMessage doesn't provide the room, we must set it before saving
+			gametypes[g.type].restore(g);
+			data = [m, g];
+			cache.set(mid, data);
+			return data;
+		});
 	});
 }
 
 function storeInMess(m, game){
 	m.content = "!!game @"+game.players[0].name+" "+JSON.stringify({
-		type:game.type, current:game.current, status:game.status, moves:game.moves, players:game.players
+		type:game.type, status:game.status, moves:game.moves, players:game.players
 	});
 	delete m.changed;
 }

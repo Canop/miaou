@@ -47,7 +47,7 @@ miaou.bindChatGui = function(){
 		miaou.userProfile.hide();
 		var message = $(this).closest('.message').data('message');
 		var $content = $('<div>').append(
-			$('<p>').text('Do you want to delete this paragraph ?')
+			$('<p>').text('Do you want to delete this message ?')
 		).append(
 			$('<p>').addClass('rendered').html(miaou.mdToHtml(message.content||''))
 		).append(
@@ -156,6 +156,20 @@ miaou.bindChatGui = function(){
 			miaou.hist.clearSearch();
 		}
 	});
+	
+	// called in case of new message (or a new important event related to a message)
+	miaou.touch = function(mid, ping, from, text){
+		var visible = vis();
+		if (ping) {
+			if (visible) {
+				chat.clearPings();
+			} else {
+				miaou.notify(room, from, text);
+				if (!chat.oldestUnseenPing) chat.oldestUnseenPing = mid;
+			}
+		}
+		if (!visible) miaou.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
+	}
 	
 	miaou.updateTab = function(hasPing, nbUnseenMessages){
 		var title = room.name;
