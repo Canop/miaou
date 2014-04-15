@@ -18,17 +18,17 @@
 		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg);
 		if (availableWidth>400) {
 			this.layout = "row";
-			this.W = 400; // width of the whole drawed area
+			this.W = Math.min(700, 400+.3*(availableWidth-400)); // width of the whole drawed area
 			this.H = 215; // height of the whole drawed area
 			this.XB = (this.W - T*CS); // X of the board
 			this.RS = this.XB - 15; // right of the scores
 			this.YB = (this.H - T*CS)/2;
-			this.XS = 20;
+			this.XS = Math.max(20, this.XB-170);
 		} else {
 			// column layout's reason d'etre is the mobile version of miaou
 			this.layout = "column";
 			this.W = T*CS;
-			this.W += Math.min(10, availableWidth-this.W);
+			this.W += Math.max(4, (availableWidth-this.W)/2);
 			this.H = 280;
 			this.XB = (this.W - T*CS);
 			this.RS = this.W - 15;
