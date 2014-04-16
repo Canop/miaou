@@ -79,7 +79,7 @@ var Tribo = (function(){
 		apply: function(g, move){
 			move.lines = Tribo.getLines(g, move.x, move.y, move.p);
 			g.cells[move.x][move.y] = move.p;
-			if (!move.lines) g.current = +!g.current;
+			g.current = (g.current+!move.lines)%2;
 			Tribo.computeZonesAndScores(g);
 		},
 		//

@@ -23,7 +23,7 @@
 			this.XB = (this.W - T*CS); // X of the board
 			this.RS = this.XB - 15; // right of the scores
 			this.YB = (this.H - T*CS)/2;
-			this.XS = Math.max(20, this.XB-170);
+			this.XS = Math.max(20, this.XB-194);
 		} else {
 			// column layout's reason d'etre is the mobile version of miaou
 			this.layout = "column";
@@ -69,7 +69,6 @@
 						if (userIsCurrentPlayer) {
 							if (Tribo.canPlay(panel.g, i, j, panel.u)) {
 								var lines = Tribo.getLines(panel.g, i, j, panel.u) || [], lineMarks;
-								// TODO point lines of 3
 								c.attr({cursor:'pointer'}).hover(
 									function(){
 										c.attr({fill: panel.colors[panel.u]});
@@ -83,8 +82,6 @@
 									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
 								});
 							} else {
-								// TODO show why cell isn't playable in a bubble
-								// TODO red cross
 								c.hover(
 									function(){ c.attr({fill: 'red'}) },
 									function(){	c.attr({fill: panel.holeGrad}) }
@@ -104,7 +101,8 @@
 	Panel.prototype.buildScores = function(){
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
-			return s.text(XS, 28*(i+1), player.name).attr({
+			var name = player.name;
+			return s.text(XS, 28*(i+1), name.length>21 ? name.slice(0,18)+'…' : name).attr({
 				fill: panel.colors[i],
 				fontWeight: 'bold'
 			})
@@ -118,8 +116,7 @@
 	}
 
 	Panel.prototype.drawScores = function(){
-		// Q : what's the proper way to do this using snapsvg ?
-		this.scores[0].node.innerHTML = (this.g.scores[0]);
+		this.scores[0].node.innerHTML = (this.g.scores[0]); // Q : what's the proper way to do this using snapsvg ?
 		this.scores[1].node.innerHTML = (this.g.scores[1]);
 		if (this.currentPlayerMark) this.currentPlayerMark.remove();
 		if (this.g.current >= 0) {
@@ -164,6 +161,19 @@
 					});
 				});
 			}
+		},
+		fillHelp: function($div){
+			$div.css({
+				background:'#2a4646', color: '#ece4cb', opacity:0.95
+			}).append(
+				$('<div>Tribo</div>').css({
+					textAlign:'center', fontSize:'120%', fontWeight:'bold', margin:'4px'
+				})
+			).append($('<p>').html(
+				'Try to fill or reserve the biggest part of the board.<br>'+
+				'When you make a vertical or horizontal line of exactly 3 coins, you play again.<br>'+
+				'To start a new game, just type <i>!!game&nbsp;@somename</i>'
+			));
 		}
 	}
 

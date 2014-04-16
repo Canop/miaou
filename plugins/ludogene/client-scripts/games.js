@@ -16,12 +16,27 @@
 		} else {
 			$p.append("<i>"+game.players[1].name+"</i> proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");			
 		}
-		return true;
 	}
 	
 	function renderMessage($c, m, game){
-		if (game.status === "ask") renderAsk($c, m, game);
-		else miaou.games[game.type].render($c, m, game);
+		var $helpDiv;
+		if (game.status === "ask") return renderAsk($c, m, game);
+		miaou.games[game.type].render($c, m, game);
+		$c.css('position', 'relative'); // <- fixme : find a less hacky solution than changing $c
+		$('<div>?</div>').css({
+			position:'absolute', top:0, left:0, height:'20px', width:'20px', borderRadius:'0 0 10px 0',
+			paddingTop:'0px', paddingLeft:'7px', color:'white', fontWeight:'bold',
+			background:'black', opacity:0.15, cursor:'pointer', zIndex:3
+		}).appendTo($c).hover(
+			function(){
+				$helpDiv = $('<div/>').css({
+					position:'absolute', top:0, left:0, height:'120px', right:'10px', borderRadius:'0 0 10px 0', zIndex:2					
+				}).appendTo($c.width()>300 ? $c : $c.closest('.message'));
+				miaou.games[game.type].fillHelp($helpDiv);
+			}, function(){
+				$helpDiv.remove();
+			}
+		);
 	}
 	
 	miaou.chat.plugins.ludogene = {
@@ -30,12 +45,8 @@
 				if (!m.content) return;
 				var match = m.content.match(/^!!game @\S{3,} (.*)$/);
 				if (!match) return;
-				//~ try {
-					renderMessage($c, m, JSON.parse(match[1]));
-					return true;
-				//~ } catch(e) {
-					//~ console.log("Error in game rendering", e);
-				//~ }
+				renderMessage($c, m, JSON.parse(match[1]));
+				return true;
 			});
 			miaou.socket.on('ludo.move', function(arg){
 				var $message = $('#messages .message[mid='+arg.mid+']');
