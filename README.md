@@ -51,6 +51,6 @@ A [vagrant](http://www.vagrantup.com/) configuration is available to help you se
 
 ## License
 
-[The MIT License](http://opensource.org/licenses/MIT)
+Most of Miaou follows the [MIT License](http://opensource.org/licenses/MIT). Exceptions are specified [here](license.md).
 
 Copyright (c) 2014 Denys Séguret <[http://dystroy.org/](http://dystroy.org/)>

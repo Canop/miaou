@@ -41,6 +41,6 @@ I only precise here the licenses which otherwise wouldn't be easily found.
 
 ### Tribo and Flore games
 
-	Author: Denys Seguret
-	Those games are my invention (registered at the French INPI). Any use of the ludogene plugin or of parts of it, or of the concept of those games, need my specific and written authorization.
+   Author: Denys Seguret
+   Those games are my invention (registered at the French INPI). Any use of the ludogene plugin or of parts of it, or of the concept of those games, need my specific and written authorization.
 
