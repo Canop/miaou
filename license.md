@@ -2,14 +2,14 @@
 
 ## Core Miaou
 
-	[The MIT License](http://opensource.org/licenses/MIT)
-	Copyright (c) 2014 Denys Séguret <[http://dystroy.org/](http://dystroy.org/)>
+   [The MIT License](http://opensource.org/licenses/MIT)
+   Copyright (c) 2014 Denys Séguret <[http://dystroy.org/](http://dystroy.org/)>
 
 ## Other stuff
 
-All included components are free. Most of them are included with source and reference to licence.
+   All included components are free. Most of them are included with source and reference to licence.
 
-I only precise here the licenses which otherwise wouldn't be easily found.
+   I only precise here the licenses which otherwise wouldn't be easily found.
 
 
 ### Font Awesome
