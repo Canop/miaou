@@ -2,7 +2,7 @@
 
 var levels = ['read', 'write', 'admin', 'own'],
 	naming = require('./naming.js'),
-	utils = require('./app-utils.js'),
+	server = require('./server.js'),
 	ws = require('./ws.js');
 
 exports.checkAtLeast = function(auth, neededAuth) {
@@ -18,7 +18,7 @@ exports.appGetAuths = function(req, res, db){
 	db.on([+req.param('id'), +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
-		room.path = utils.roomPath(room);
+		room.path = server.roomPath(room);
 		return [
 			this.listRoomAuths(room.id),
 			this.listOpenAccessRequests(room.id),
@@ -35,9 +35,9 @@ exports.appGetAuths = function(req, res, db){
 		});
 		res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
 	}).catch(db.NoRowError, function(){
-		utils.renderErr(res, "room not found");
+		server.renderErr(res, "room not found");
 	}).catch(function(err){
-		utils.renderErr(res, err);
+		server.renderErr(res, err);
 	}).finally(db.off);
 }
 
@@ -50,7 +50,7 @@ exports.appPostAuths = function(req, res, db){
 		room = r;
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);
 		if (!exports.checkAtLeast(room.auth, 'admin')) {
-			return utils.renderErr(res, "Admin auth is required");
+			return server.renderErr(res, "Admin auth is required");
 		}
 		var m, actions = [];
 		console.dir(req.body);
@@ -75,10 +75,10 @@ exports.appPostAuths = function(req, res, db){
 		}
 		return this.changeRights(actions, req.user.id, r);
 	}).then(function(){
-		res.redirect(utils.roomUrl(room));
+		res.redirect(server.roomUrl(room));
 	}).catch(db.NoRowError, function(){
-		utils.renderErr(res, "room not found");
+		server.renderErr(res, "room not found");
 	}).catch(function(err){
-		utils.renderErr(res, err);
+		server.renderErr(res, err);
 	}).finally(db.off);
 }

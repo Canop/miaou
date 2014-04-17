@@ -229,9 +229,9 @@ function handleUserInRoom(socket, completeUser){
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
 			seconds = ~~(now/1000), content = message.content.replace(/\s+$/,'');
 		if (content.length>maxContentLength) {
-			error('Message too big, consider posting a link instead');
+			shoe.error('Message too big, consider posting a link instead');
 		} else if (now-shoe.lastMessageTime<minDelayBetweenMessages) {
-			error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
+			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
 		} else {
 			shoe.lastMessageTime = now;
 			var u = shoe.publicUser,

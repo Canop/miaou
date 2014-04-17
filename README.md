@@ -30,6 +30,7 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * Initially reduced long messages
 * Mobile touch devices optimized interface
 * Plugins enabling the verification the chat user is linked to external profiles
+* A plugin enabling embedded real time multi-player games (today featuring the Tribo game)
 * private messaging
 * image upload (using imgur API)
 
@@ -37,7 +38,7 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 
 ## Desktop
 
-Miaou works on Chrome, Firefox and Safari. It doesn't on Internet Explorer.
+Miaou works on Chrome, Firefox and Safari.
 
 ## Mobile devices
 
@@ -45,7 +46,7 @@ Miaou should work on most webkit based browsers in recent Android devices.
 
 # Development
 
-As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Bluebird, Redis, Jade, Passport.js, jQuery, sass/scss, Moment.js, Uglify-js and nginx.
+As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Bluebird, Redis, Jade, Passport.js, jQuery, sass/scss, Moment.js, Snap.svg, Uglify-js and nginx.
 
 A [vagrant](http://www.vagrantup.com/) configuration is available to help you set up a development environment quickly. See more information at its [documentation](vagrant/vagrant.md).
 

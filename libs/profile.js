@@ -1,6 +1,6 @@
 var path = require('path.js'),
 	naming = require('./naming.js'),
-	utils = require('./app-utils.js'),
+	server = require('./server.js'),
 	plugins;
 
 exports.configure = function(conf){
@@ -13,7 +13,7 @@ exports.configure = function(conf){
 //  page until he makes his profile complete.
 exports.ensureComplete = function(req, res, next) {
 	if (naming.isValidUsername(req.user.name)) return next();
-	res.redirect(utils.url('/profile'));
+	res.redirect(server.url('/profile'));
 }
 
 // handles get and post '/profile' requests
@@ -79,7 +79,7 @@ exports.appAllProfile = function(req, res, db){
 			error: error
 		});
 	}).catch(function(err){
-		utils.renderErr(res, err);
+		server.renderErr(res, err);
 	}).finally(db.off)
 }
 
@@ -90,7 +90,7 @@ exports.appGetPublicProfile = function(req, res, db){
 	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
 		return { name:p.name, ep:p.externalProfile }
 	});			
-	if (!userId || !roomId) return utils.renderErr(res, 'room and user must be provided');
+	if (!userId || !roomId) return server.renderErr(res, 'room and user must be provided');
 	var user, auth;
 	db.on(userId)
 	.then(db.getUserById)
@@ -113,7 +113,7 @@ exports.appGetPublicProfile = function(req, res, db){
 		externalProfileInfos = externalProfileInfos.filter(function(epi){ return epi.html });
 		res.render('publicProfile.jade', {user:user, auth:auth, externalProfileInfos:externalProfileInfos});
 	}).catch(function(err){
-		utils.renderErr(res, err)
+		server.renderErr(res, err)
 	}).finally(db.off);
 }
 
@@ -125,11 +125,11 @@ exports.appGetUser = function(req, res, db){
 			this.listRecentUserRooms(uid)
 		]
 	}).spread(function(user, rooms){
-		rooms.forEach(function(r){ r.path = '../'+utils.roomPath(r) });
+		rooms.forEach(function(r){ r.path = '../'+server.roomPath(r) });
 		res.render('user.jade', {user:user, rooms:rooms});
 	}).catch(db.NoRowError, function(){
-		utils.renderErr(res, "User not found", '../');
+		server.renderErr(res, "User not found", '../');
 	}).catch(function(err){
-		utils.renderErr(res, err, '../');
+		server.renderErr(res, err, '../');
 	}).finally(db.off);
 }

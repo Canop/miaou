@@ -1,5 +1,5 @@
 var auths = require('./auths.js'),
-	utils = require('./app-utils.js'),
+	server = require('./server.js'),
 	langs;
 	
 exports.configure = function(conf){
@@ -12,20 +12,20 @@ exports.appGetRoom = function(req, res, db){
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
 		if (!auths.checkAtLeast(room.auth, 'admin')) {
-			return utils.renderErr(res, "Admin level is required to manage the room");
+			return server.renderErr(res, "Admin level is required to manage the room");
 		}
 		res.render('room.jade', { room:JSON.stringify(room), error:"null", langs:JSON.stringify(langs.legal) });
 	}).catch(db.NoRowError, function(){
 		res.render('room.jade', { room:"null", error:"null", langs:JSON.stringify(langs.legal) });
 	}).catch(function(err){
-		utils.renderErr(res, err);
+		server.renderErr(res, err);
 	}).finally(db.off);
 }
 
 exports.appPostRoom = function(req, res, db){
 	var roomId = +req.param('id'), name = req.param('name').trim(), room;
 	if (!/^.{2,50}$/.test(name)) {
-		return utils.renderErr(res, "invalid room name");
+		return server.renderErr(res, "invalid room name");
 	}
 	db.on([roomId, req.user.id, 'admin'])
 	.spread(db.checkAuthLevel)
@@ -40,7 +40,7 @@ exports.appPostRoom = function(req, res, db){
 		return [room, req.user, auth];
 	}).spread(db.storeRoom)
 	.then(function(){
-		res.redirect(utils.roomUrl(room));	
+		res.redirect(server.roomUrl(room));	
 	}).catch(function(err){
 		res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
 	}).finally(db.off);
@@ -54,9 +54,9 @@ exports.appGetRooms = function(req, res, db){
 			this.fetchUserPingRooms(uid, 0)
 		]
 	}).spread(function(rooms, pings){
-		rooms.forEach(function(r){ r.path = utils.roomPath(r) });
-		res.render(utils.mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user, langs:langs.legal });
+		rooms.forEach(function(r){ r.path = server.roomPath(r) });
+		res.render(server.mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user, langs:langs.legal });
 	}).catch(function(err){
-		utils.renderErr(res, err);
+		server.renderErr(res, err);
 	}).finally(db.off);
 }

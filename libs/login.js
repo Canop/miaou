@@ -1,4 +1,4 @@
-var utils = require('./app-utils.js'),
+var server = require('./server.js'),
 	oauth2Strategies;
 	
 exports.setOauth2Strategies = function(strategies){
@@ -12,5 +12,5 @@ exports.appGetLogin = function(req, res){
 exports.appGetLogout = function(req, res){
 	if (req.user) console.log('User ' + req.user.id + ' log out');
 	req.logout();
-	res.redirect(utils.url());
+	res.redirect(server.url());
 }
