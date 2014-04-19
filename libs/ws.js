@@ -9,15 +9,20 @@ var config,
 	maxAgeForNotableMessages = 60*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins,
-	socketWaitingApproval = [];
+	socketWaitingApproval = [], commands = {};
 
 exports.configure = function(config){
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
 	plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
 	onSendMessagePlugins = plugins.filter(function(p){ return p.onSendMessage });
-	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });	
-	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });	
+	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });
+	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });
+	plugins.forEach(function(plugin){
+		if (plugin.registerCommands) plugin.registerCommands(function(name, fun){
+			commands[name] = fun;
+		});
+	});
 	return this;
 }
 
@@ -44,9 +49,9 @@ function Shoe(socket, completeUser){
 	this.db = db; // to be used by plugins or called modules
 	socket.set('publicUser', this.publicUser);	
 }
-Shoe.prototype.error = function(err){
+Shoe.prototype.error = function(err, messageContent){
 	console.log('ERR', err, 'for user', this.completeUser.name, 'in room', (this.room||{}).name);
-	this.socket.emit('error', err.toString());
+	this.socket.emit('error', {txt:err.toString(), mc:messageContent});
 }
 Shoe.prototype.emit = function(key, m){
 	this.socket.emit(key, lighten(m));
@@ -127,7 +132,6 @@ function userClients(clients, userIdOrName) {
 		n++;
 		s.get('publicUser', function(err, u){
 			if (err) console.log('missing user on socket', err);
-			console.log(u.name, u.id===userIdOrName || u.name===userIdOrName);
 			if (u.id===userIdOrName || u.name===userIdOrName) found.push(s);
 			if (--n===0) resolver.resolve(found);
 		});
@@ -199,7 +203,7 @@ function handleUserInRoom(socket, completeUser){
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
 		}).catch(function(err){
-			shoe.error(err.toString());
+			shoe.error(err);
 		}).finally(db.off)
 	}).on('get_around', function(data){
 		db.on()
@@ -229,27 +233,33 @@ function handleUserInRoom(socket, completeUser){
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
 			seconds = ~~(now/1000), content = message.content.replace(/\s+$/,'');
 		if (content.length>maxContentLength) {
-			shoe.error('Message too big, consider posting a link instead');
+			shoe.error('Message too big, consider posting a link instead', content);
 		} else if (now-shoe.lastMessageTime<minDelayBetweenMessages) {
-			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)");
+			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)", content);
 		} else {
 			shoe.lastMessageTime = now;
 			var u = shoe.publicUser,
-				m = { content: content, author: u.id, authorname: u.name, room: shoe.room.id};
+				m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id};
 			if (message.id) {
 				m.id = message.id;
 				m.changed = seconds;
 			} else {
 				m.created = seconds;
-				onNewMessagePlugins.forEach(function(plugin){
-					plugin.onNewMessage(shoe, m);
-				}, this);
+			}
+			try {
+				var cmdMatch = m.content.match(/^!!(\w+)/);
+				if (cmdMatch) {
+					var cmd = cmdMatch[1] ;
+					if (commands[cmd]) commands[cmd](cmd, shoe, m);
+					else throw ('Command "' + cmd + '" not found');
+				}
+			} catch (e) {
+				return shoe.error(e, content);
 			}
 			db.on(m)
 			.then(db.storeMessage)
 			.then(function(m){
 				if (m.changed) {
-					m.authorname = u.name;
 					m.vote = '?';
 				}
 				shoe.pluginTransformAndSend(m, function(v,m){

@@ -13,6 +13,5 @@ exports.configure = function(conf){
 		lang.name = lang.pgname[0].toUpperCase() + lang.pgname.slice(1);
 		if (!conf.langs || ~conf.langs.indexOf(key)) exports.legal[key] = lang;
 	}
-	console.log('Legal langs:', exports.legal);
 	return this;
 }

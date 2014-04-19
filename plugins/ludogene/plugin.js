@@ -2,7 +2,7 @@
 // A valid game (even before accept) is always stored like this :
 //  !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
-
+// TODO really prevent deletion/edition of games
 var cache = require('bounded-cache')(200);
 
 var gametypes = {
@@ -33,31 +33,21 @@ function storeInMess(m, game){
 	delete m.changed;
 }
 
-// A message like this starts a game :
-//  !!game @someone
-//  @someone#1234 !!game
-//  @someone !!game
-//  !!game @someone
-// In the future a third token to specify the game type will be allowed.
-// There will probably be also commands, for example "stats"
-exports.onNewMessage = function(shoe, m){
-	var match = m.content.match(/^(\s*@\w[\w_\-\d]{2,}#?\d*)?\s*!!game\s*(@\w[\w_\-\d]{2,})?\s*$/);
-	if (match){
-		var ping = match[1]||match[2];
-		if (!ping) {
-			m.content = "Bad syntax for the game plugin : Use `!!game @yourOpponent`\nor reply to a message and add `!!game`";
-			return;
-		}
-		var gametype = "Tribo", // there's only one type of game for now
-			game = {
-				players: [
-					{name:ping.trim().split('#')[0].slice(1)}, // id will be resolved later
-					{id:m.author, name:m.authorname}
-				],
-				type: gametype,
-				status:'ask'
-			};
-		storeInMess(m, game);
+function onCommand(cmd, shoe, m){
+	var match = m.content.match(/^!!(\w+)\s+@(\w[\w_\-\d]{2,})\s*$/);
+	if (match) {
+		if (match[2]===shoe.publicUser.name) throw "You can't play against yourself";
+		storeInMess(m, {
+			players: [
+				{name:match[2]}, // id will be resolved later
+				{id:m.author, name:m.authorname}
+			],
+			type: cmd==='game' ? 'Tribo' : cmd[0].toUpperCase()+cmd.slice(1),
+			status:'ask'
+		});
+	} else {
+		// this also covers the case of somebody trying to input a game
+		throw 'Bad syntax. Use `!!'+cmd+' @yourOpponent`';
 	}
 }
 
@@ -71,8 +61,6 @@ exports.onNewShoe = function(shoe){
 			return this.storeMessage(m, true);
 		}).then(function(m){
 			shoe.emitToRoom('message', m);
-		//~ }).catch(function(e){
-			//~ console.log('ludo error', e);
 		}).finally(shoe.db.off);
 	}).on('ludo.move', function(arg){
 		dbGetGame(shoe, arg.mid).spread(function(m, game){
@@ -88,8 +76,11 @@ exports.onNewShoe = function(shoe){
 			} else {
 				console.log('ludo : illegal move');
 			}
-		//~ }).catch(function(e){
-			//~ console.log('ludo error', e);
 		}).finally(shoe.db.off);
 	});
+}
+
+exports.registerCommands = function(cb){
+	cb('game', onCommand);
+	for (var key in gametypes) cb(key.toLowerCase(), onCommand);
 }

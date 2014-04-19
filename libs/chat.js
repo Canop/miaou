@@ -11,7 +11,6 @@ exports.configure = function(config){
 	}).map(function(p) {
 		return p.split('/').slice(-2,-1)[0]
 	});
-	console.log("client side plugin names : ", clientSidePluginNames);
 	return this;
 }
 

@@ -121,11 +121,14 @@ var miaou = miaou || {};
 	}
 
 	md.showError = function(error){
+		console.log('ERROR', error);
+		if (typeof error === 'string') error = {txt:error};
 		$('<div>').addClass('error').append(
 			$('<div>').addClass('user error').text("Miaou")
 		).append(
-			$('<div>').addClass('content').text(typeof error === "string" ? error : "an error occured - connexion might be damaged")
+			$('<div>').addClass('content').text(error.txt || "an error occured - connexion might be damaged")
 		).appendTo('#messages');
+		if (error.mc && !$('#input').val()) !$('#input').val(error.mc);
 		md.scrollToBottom();
 	}
 

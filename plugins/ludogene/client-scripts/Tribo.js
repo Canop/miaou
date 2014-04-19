@@ -2,7 +2,7 @@
 // This file is imported both server-side and client-side
 // A move is, today, encoded in one character
 //
-// Disclaimer : You should probably not try to learn anything from this code :
+// Disclaimer : You should probably not try to learn anything from Tribo's code :
 // - I wrote Tribo first in C (PalmOS) a loooong time ago then ported it to J2ME,
 //    then to standard Java, then to Android, then to Go, then to JavaScript,
 //    and never really stopped to rethink it...
@@ -19,7 +19,7 @@ var Tribo = (function(){
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y, p) {
 			var c = g.cells;
-			if (c[x][y] != -1)  return false
+			if (c[x][y] != -1)  return false;
 			if ((x > 0 && c[x-1][y] == p) ||
 				(x < 9 && c[x+1][y] == p) ||
 				(y > 0 && c[x][y-1] == p) ||
@@ -28,7 +28,7 @@ var Tribo = (function(){
 				(x < 9 && y > 0 && c[x+1][y-1] == p) ||
 				(x > 0 && y < 9 && c[x-1][y+1] == p) ||
 				(x < 9 && y < 9 && c[x+1][y+1] == p)) {
-				return true
+				return true;
 			}
 			return g.moves.length < 2;
 		},
@@ -50,7 +50,7 @@ var Tribo = (function(){
 			return lines.length ? lines : null;
 		},
 		encodeMove: function(move){
-			return String.fromCharCode(move.y*10+move.x + (move.p*100) + 40)
+			return String.fromCharCode(move.y*10+move.x + (move.p*100) + 40);
 		},
 		decodeMove: function(char){
 			var code = char.charCodeAt(0)-40, player = 0;
@@ -58,7 +58,7 @@ var Tribo = (function(){
 				player = 1;
 				code -= 100;
 			}
-			return {p:player, x:code%10, y:Math.floor(code/10)}
+			return {p:player, x:code%10, y:Math.floor(code/10)};
 		},
 		// (re)builds the state of the game from the moves (checks absolutely nothing)
 		restore: function(g){
@@ -84,18 +84,17 @@ var Tribo = (function(){
 		},
 		//
 		computeZonesAndScores: function(g){
-			var nbmoves = g.moves.length,
-				c = g.cells,
-				zones = g.zones = [],
-				seen = matrix(10, -1);
+			var nbmoves = g.moves.length;
 			g.cellZone = matrix(10, null); // holds a pointer to the zone containing the cell
 			if (nbmoves<7) {
-				g.hasMixZone = true;
 				g.scores = [nbmoves+1>>1, nbmoves>>1];
 				return;
 			}
+			var c = g.cells,
+				zones = g.zones = [],
+				seen = matrix(10, -1),
+				hasMixZone = false;
 			g.scores = [0, 0];
-			g.hasMixZone = false;
 			function actz(x, y, zone){
 				if (c[x][y] !== -1) {
 					zone.access[c[x][y]] = true;
@@ -122,18 +121,18 @@ var Tribo = (function(){
 							zones.push(zone);
 							actz(x, y, zone);
 							if (zone.access[0] && zone.access[1]) {
-								g.hasMixZone = true;
+								hasMixZone = true;
 							} else {
 								zone.owner = zone.access[1]*1;
 								g.scores[zone.owner] += zone.size;
-							}						
-						}						
+							}
+						}
 					} else {
 						g.scores[p]++;
 					}
 				}
 			}
-			if (!g.hasMixZone) {
+			if (!hasMixZone) {
 				g.status = "finished";
 				g.current = -1;
 			}

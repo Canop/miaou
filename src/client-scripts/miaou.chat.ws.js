@@ -78,8 +78,6 @@ var miaou = miaou || {};
 			miaou.pmwin.location = roomId;
 		})
 		.on('go_to', function(messageId){
-			// this would hopefully get cleaned
-			console.log('go_to', messageId);
 			setTimeout(function(){ md.goToMessageDiv(messageId) }, 200);
 		})
 		.on('found', function(res){

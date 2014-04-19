@@ -351,12 +351,15 @@ proto.getMessage = function(messageId, userId){
 
 // if id is set, updates the message if the author & room matches
 // else stores a message and sets its id
+// TODO add check we're not removing or changing a command ? 
 proto.storeMessage = function(m, dontCheckAge){
 	if (m.id) {
-		var sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
+		var savedAuthorname = m.authorname;
+			sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
 		if (!dontCheckAge) sql += ' and created>'+(now()-MAX_AGE_FOR_EDIT);
 		sql += ' returning *';
 		return this.queryRow(sql, [m.content, m.changed, m.id, m.room, m.author]).then(function(m){
+			m.authorname = savedAuthorname;
 			if (!m.content.length && m.created>now()-MAX_AGE_FOR_TOTAL_DELETION) return this.queryRow(
 				"delete from message where id=$1", [m.id]
 			).then(function(){ return m });

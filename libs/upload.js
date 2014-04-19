@@ -23,7 +23,6 @@ exports.appPostUpload = function(req, res){
 			files.push({name:fieldname, bytes:Buffer.concat(chunks)});
 		});
 	}).on('finish', function() {
-		console.log('Done parsing form');
 		if (!files.length) {
 			return res.send({error:'found nothing in form'});
 		}
@@ -34,7 +33,6 @@ exports.appPostUpload = function(req, res){
 			headers: { Authorization: 'Client-ID ' + config.imgur.clientID }
 		};
 		var r = request.post(options, function(err, req, body){
-			console.log('imgur answered : ', err, body);
 			if (err) return res.send({error:'Error while uploading to imgur'});
 			var data = JSON.parse(body).data;
 			if (data && data.error) return res.send({error:"Imgur answerd : "+data.error});

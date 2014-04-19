@@ -33,7 +33,6 @@ miaou.bindChatGui = function(){
 				h += 't='+Date.now();
 				if (parts[4]) h += '#'+parts[4];
 				this.href = h;
-				console.log(this); // yep, I feel unsecure...
 			}
 		}
 	})
