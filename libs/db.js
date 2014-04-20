@@ -83,6 +83,13 @@ proto.listRecentUsers = function(roomId, N){
 	);
 }
 
+proto.usersStartingWith = function(str, roomId){
+	return this.queryRows(
+		"select name, (select max(created) from message where p.id=author and room=$1) lp from player p where name ilike $2 order by lp",
+		[roomId, str+'%']
+	);
+}
+
 ///////////////////////////////////////////// #rooms
 
 proto.storeRoom = function(r, author, authlevel) {

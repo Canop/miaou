@@ -338,6 +338,14 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('pm_room', lounge.id)
 		}).catch(function(err){ console.log('ERR in PM :', err) })	
 		.finally(db.off);
+	}).on('autocompleteping', function(namestart){
+		db.on()
+		.then(function(){
+			return this.usersStartingWith(namestart, shoe.room.id);
+		}).then(function(list){
+			if (list.length) socket.emit('autocompleteping', list.map(function(item){ return item.name }));
+		}).catch(function(err){ console.log('ERR in PM :', err) })	
+		.finally(db.off);
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		if (shoe.room) {
 			console.log(shoe.completeUser.name, "leaves room", shoe.room.id, ':', shoe.room.name);

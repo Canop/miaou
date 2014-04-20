@@ -3,7 +3,7 @@
 var miaou = miaou || {};
 miaou.editor = (function(){
 	
-	var $input, input, stash, editedMessage;
+	var $input, input, stash, editedMessage, $pingmatcher;
 
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
@@ -35,6 +35,12 @@ miaou.editor = (function(){
 			if (!$(document.body).hasClass('mobile')) $input.focus();
 		}
 		$input.removeClass('edition');
+	}
+	
+	// returns the currently autocompletable typed name, if any
+	function getacname(){
+		var m = input.value.slice(0, this.selectionEnd).match(/(^|\W)@(\w\S*)$/);
+		return m ? m[2].toLowerCase() : null;
 	}
 	
 	return {
@@ -105,7 +111,22 @@ miaou.editor = (function(){
 				} else if (e.which==13) { // enter
 					sendInput();
 					return false;
+				} else if (e.which==9) { // tab
+					if ($pingmatcher && $pingmatcher.length) {
+						miaou.editor.ping($pingmatcher.find('span').removeClass('selected').eq(
+							($pingmatcher.find('.selected').index()+1) % $pingmatcher.find('span').length
+						).addClass('selected').text());
+						return false;
+					}
 				}
+			}).on('keyup', function(e){
+				if (e.which===9) return false;
+				if ($pingmatcher) {
+					$pingmatcher.remove();
+					$pingmatcher = null;
+				}
+				var acname = getacname();
+				if (acname) miaou.socket.emit('autocompleteping', acname);
 			}).focus();
 			
 			$('#send').on('click', sendInput);
@@ -144,16 +165,19 @@ miaou.editor = (function(){
 		},
 		// adds or remove a ping to that username
 		ping: function(username){
-			var val = input.value;
-			var r = new RegExp('\s?@'+username+'\\s*$');
-			if (r.test(val)) {
+			var val = input.value, s = input.selectionStart, e = input.selectionEnd;
+			var acname = getacname();
+			if (acname) {
+				input.value = val.slice(0, e-acname.length) + username + val.slice(e);
+				input.selectionStart = input.selectionEnd = e + username.length - acname.length;
+			} else if (new RegExp('\s?@'+username+'\\s*$').test(val)) {
 				input.value = val.replace(r, '');
 			} else {
-				var insert = ' @'+username+' ', s = input.selectionStart, e = input.selectionEnd;
+				var insert = ' @'+username+' ';
 				input.value = val.slice(0,e)+insert+val.slice(e);
 				if (e==s) input.selectionStart += insert.length;
 				input.selectionEnd = e + insert.length;
-			}	
+			}
 			input.focus();		
 		}, 
 		// toggle reply to an existing message
@@ -194,6 +218,20 @@ miaou.editor = (function(){
 				editedMessage = null;
 				$input.removeClass('edition').focus();
 			}
+		},
+		// receives list of pings
+		proposepings: function(names){
+			var acname = getacname();
+			if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
+			$pingmatcher = $('<div id=pingmatcher/>').prependTo('#inputpanel');
+			names.forEach(function(name){
+				$('<span>').text(name).appendTo($pingmatcher).click(function(){
+					miaou.editor.ping(name);
+					$pingmatcher.remove();
+					$pingmatcher = null;
+				});
+			});
+			
 		}
 	}
 })();

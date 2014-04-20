@@ -87,6 +87,7 @@ var miaou = miaou || {};
 			}
 			md.showMessages(res.results, $('#searchresults'));
 		})
+		.on('autocompleteping', miaou.editor.proposepings)
 		.on('hist', miaou.hist.show)
 		.on('pings', chat.pings)
 		.on('disconnect', function(){

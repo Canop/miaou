@@ -590,10 +590,27 @@ code {
 	border-bottom: 1px dotted #999;
 }
 #inputpanel {
+	position: relative;
 	background: $bg-color;
 	width:100%;
 	flex-basis:  $input-height + 10px;
 	flex-grow: 0;
+}
+#pingmatcher {
+	position: absolute;
+	top: -12px;
+	left: 0;
+	z-index:500;
+	span {
+		background: white;
+		margin: 4px;
+		padding: 2px;
+		border: thin solid #333;
+		cursor: pointer;
+		&.selected {
+			font-weight: bold;
+		}
+	}
 }
 body.mobile #inputpanel {
 	display: block;
