@@ -3,7 +3,7 @@
 var miaou = miaou || {};
 miaou.editor = (function(){
 	
-	var $input, input, stash, editedMessage, $pingmatcher;
+	var $input, input, stash, editedMessage, $pingmatcher, savedValue;
 
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
@@ -107,15 +107,20 @@ miaou.editor = (function(){
 						return false;
 					}
 				} else if (e.which==27) { // esc
-					miaou.editor.cancelEdit();
+					if ($pingmatcher && $pingmatcher.length && input.value!=savedValue) {
+						input.value = savedValue;
+						var acname = getacname();
+						if (acname) miaou.socket.emit('autocompleteping', acname);
+					} else {
+						miaou.editor.cancelEdit();
+					}
 				} else if (e.which==13) { // enter
 					sendInput();
 					return false;
 				} else if (e.which==9) { // tab
 					if ($pingmatcher && $pingmatcher.length) {
-						miaou.editor.ping($pingmatcher.find('span').removeClass('selected').eq(
-							($pingmatcher.find('.selected').index()+1) % $pingmatcher.find('span').length
-						).addClass('selected').text());
+						var index = ($pingmatcher.find('.selected').index()+1) % $pingmatcher.find('span').length;
+						miaou.editor.ping($pingmatcher.find('span').removeClass('selected').eq(index).addClass('selected').text());
 						return false;
 					}
 				}
@@ -222,7 +227,9 @@ miaou.editor = (function(){
 		// receives list of pings
 		proposepings: function(names){
 			var acname = getacname();
+			savedValue = input.value;
 			if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
+			if ($pingmatcher) $pingmatcher.remove();
 			$pingmatcher = $('<div id=pingmatcher/>').prependTo('#inputpanel');
 			names.forEach(function(name){
 				$('<span>').text(name).appendTo($pingmatcher).click(function(){

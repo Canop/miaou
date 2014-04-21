@@ -341,7 +341,7 @@ function handleUserInRoom(socket, completeUser){
 	}).on('autocompleteping', function(namestart){
 		db.on()
 		.then(function(){
-			return this.usersStartingWith(namestart, shoe.room.id);
+			return this.usersStartingWith(namestart, shoe.room.id, 10);
 		}).then(function(list){
 			if (list.length) socket.emit('autocompleteping', list.map(function(item){ return item.name }));
 		}).catch(function(err){ console.log('ERR in PM :', err) })	
