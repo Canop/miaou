@@ -68,6 +68,22 @@ function dequeue(){
 	});
 }
 
+function onCommand(cmd, shoe, m){
+	var lines = m.content.split('\n');
+	var searched = lines[0].slice('!!wiki'.length).trim();
+	if (searched) {
+		lines[0] = 'http://en.wikipedia.org/wiki/'+encodeURIComponent(searched);
+		m.content = lines.join('\n');
+	} else {
+		throw 'Bad syntax. Use `!!'+cmd+' what you want to search on wikipedia`';
+	}
+}
+
+
+exports.registerCommands = function(cb){
+	cb('wiki', onCommand);
+}
+
 // intercepts links to wikipedia and sends boxed abstracts.
 // It directly fetches the page because I don't find anything usable
 //  for representation using the Wikipedia API.
