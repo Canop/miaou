@@ -30,31 +30,36 @@ function dequeue(){
 		}
 		var	$ = $$.load(body),
 			$box = $('<div/>'),
-			$abstract = $('<div/>').addClass('abstract'),
-			$txt = $('<div/>').addClass('txt');
+			$abstract = $('<div/>').addClass('abstract');
 		$box.append(
-			$('<a>').attr('href',task.line).css('text-decoration','none')
+			$('<a>').attr('href',task.line).css('text-decoration','none').attr('title',"Click here to jump to the whole article")
 			.append('<img style="margin:3px;max-height:40px" src=http://en.wikipedia.org/favicon.ico align=left>')
 			.append($('h1'))
 		);
 		$box.append($('<hr style="clear:both">'));
 		$box.append($abstract);
-		$abstract.append(
-			$('table img, img.thumbimage').filter(function(){
-				return !$(this).closest('.metadata').length
-			}).first().addClass('mainimg').removeAttr('height').removeAttr('width')
-		);
-		$abstract.append($txt);
-		$('p').each(function(){
-			var $this = $(this);
-			if (!$this.closest('div[class*="infobox"],table').length){
-				for(;;) {
-					$txt.append($this.clone());
-					$this = $this.next();
-					if (!$this.length || $this[0].name !== 'p') return false; 
+		var wholeHTML = $('#mw-content-text').html();
+		if (wholeHTML.length>10 && wholeHTML.length<15000) {
+			$abstract.html(wholeHTML);
+		} else {
+			var $txt = $('<div/>').addClass('txt');
+			$abstract.append(
+				$('table img, img.thumbimage').filter(function(){
+					return !$(this).closest('.metadata').length
+				}).first().addClass('mainimg').removeAttr('height').removeAttr('width')
+			);
+			$abstract.append($txt);
+			$('p').each(function(){
+				var $this = $(this);
+				if (!$this.closest('div[class*="infobox"],table').length){
+					for(;;) {
+						$txt.append($this.clone());
+						$this = $this.next();
+						if (!$this.length || $this[0].name !== 'p') return false; 
+					}
 				}
-			}
-		});
+			});
+		}
 		$box.find('a[href]').attr('href', function(_,u){
 			return url.resolve(task.line, u)
 		}).attr('target','_blank');
@@ -79,9 +84,8 @@ function onCommand(cmd, shoe, m){
 	}
 }
 
-
 exports.registerCommands = function(cb){
-	cb('wiki', onCommand);
+	cb('wiki', onCommand, "displays the relevant Wikipedia page (English site)");
 }
 
 // intercepts links to wikipedia and sends boxed abstracts.

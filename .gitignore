@@ -24,6 +24,7 @@ static/.sass-cache
 main.css
 miaou.concat.js
 miaou.min.js
+miaou.min.js.map
 
 # execution byproducts
 *.log

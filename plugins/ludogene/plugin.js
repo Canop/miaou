@@ -81,6 +81,6 @@ exports.onNewShoe = function(shoe){
 }
 
 exports.registerCommands = function(cb){
-	cb('game', onCommand);
-	for (var key in gametypes) cb(key.toLowerCase(), onCommand);
+	cb('game', onCommand, "propose a random game. Type `!!game @somebody`");
+	for (var key in gametypes) cb(key.toLowerCase(), onCommand, "propose a game of "+key+". Type `!!"+key+" @somebody`");
 }

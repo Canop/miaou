@@ -19,8 +19,8 @@ exports.configure = function(config){
 	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });
 	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });
 	plugins.forEach(function(plugin){
-		if (plugin.registerCommands) plugin.registerCommands(function(name, fun){
-			commands[name] = fun;
+		if (plugin.registerCommands) plugin.registerCommands(function(name, fun, help){
+			commands[name] = {fun:fun, help:help};
 		});
 	});
 	return this;
@@ -250,7 +250,7 @@ function handleUserInRoom(socket, completeUser){
 				var cmdMatch = m.content.match(/^!!(\w+)/);
 				if (cmdMatch) {
 					var cmd = cmdMatch[1] ;
-					if (commands[cmd]) commands[cmd](cmd, shoe, m);
+					if (commands[cmd]) commands[cmd].fun(cmd, shoe, m);
 					else throw ('Command "' + cmd + '" not found');
 				}
 			} catch (e) {

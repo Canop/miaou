@@ -17,7 +17,7 @@
 			$p.append("<i>"+game.players[1].name+"</i> proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");			
 		}
 	}
-	
+
 	function renderMessage($c, m, game){
 		var $helpDiv;
 		if (game.status === "ask") return renderAsk($c, m, game);
