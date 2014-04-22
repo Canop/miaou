@@ -9,7 +9,8 @@ var config,
 	maxAgeForNotableMessages = 60*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins,
-	socketWaitingApproval = [], commands = {};
+	socketWaitingApproval = [],
+	commands = require('./commands.js');
 
 exports.configure = function(config){
 	maxContentLength = config.maxMessageContentSize || 500;
@@ -18,11 +19,7 @@ exports.configure = function(config){
 	onSendMessagePlugins = plugins.filter(function(p){ return p.onSendMessage });
 	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });
 	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });
-	plugins.forEach(function(plugin){
-		if (plugin.registerCommands) plugin.registerCommands(function(name, fun, help){
-			commands[name] = {fun:fun, help:help};
-		});
-	});
+	commands.configure(config);
 	return this;
 }
 
@@ -247,12 +244,7 @@ function handleUserInRoom(socket, completeUser){
 				m.created = seconds;
 			}
 			try {
-				var cmdMatch = m.content.match(/^!!(\w+)/);
-				if (cmdMatch) {
-					var cmd = cmdMatch[1] ;
-					if (commands[cmd]) commands[cmd].fun(cmd, shoe, m);
-					else throw ('Command "' + cmd + '" not found');
-				}
+				commands.onMessage(shoe, m);
 			} catch (e) {
 				return shoe.error(e, content);
 			}

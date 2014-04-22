@@ -68,7 +68,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 // Only public fields are returned
 // Private fields are included in the returned object
 proto.getUserById = function(id){
-	return this.queryRow('select id, name, oauthdisplayname, email from player where id=$1', [id]);
+	return this.queryRow('select id, name, oauthdisplayname, email, bot from player where id=$1', [id]);
 }
 
 // right now it only updates the name, I'll enrich it if the need arises
@@ -79,15 +79,26 @@ proto.updateUser = function(user){
 proto.listRecentUsers = function(roomId, N){
 	return this.queryRows(
 		"select message.author as id, min(player.name) as name, max(message.created) as mc from message join player on player.id=message.author"+
-		" where message.room=$1 group by message.author order by mc desc limit $2", [roomId, N]
+		" where message.room=$1 and bot is false group by message.author order by mc desc limit $2", [roomId, N]
 	);
 }
 
 proto.usersStartingWith = function(str, roomId, limit){
 	return this.queryRows(
-		"select name, (select max(created) from message where p.id=author and room=$1) lp from player p where name ilike $2 order by lp limit $3",
+		"select name, (select max(created) from message where p.id=author and room=$1) lp from player p where name ilike $2 and bot is false order by lp limit $3",
 		[roomId, str+'%', limit]
 	);
+}
+
+// returns a bot, creates it if necessary
+proto.getBot = function(botname){
+	return this.queryRow(
+		'select id, name, bot from player where name=$1 and bot is true', [botname], true
+	).then(function(player){
+		return player || this.queryRow(
+			'insert into player (name, bot) values ($1, true) returning id, name, bot',	[botname]
+		)	
+	})
 }
 
 ///////////////////////////////////////////// #rooms

@@ -19,7 +19,8 @@ CREATE TABLE player (
 	email varchar(150),
 	oauthprovider varchar(50),
 	oauthid varchar(150),
-	oauthdisplayname varchar(255)
+	oauthdisplayname varchar(255),
+	bot boolean NOT NULL default false
 );
 
 CREATE TABLE message (
