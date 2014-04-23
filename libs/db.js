@@ -298,7 +298,7 @@ proto.checkAuthLevel = function(roomId, userId, minimalLevel){
 // see calls of this function to see how the additional arguments are used 
 proto.queryMessages = function(roomId, userId, N, chronoOrder){
 	var args = [roomId, userId, N],
-		sql = 'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
+		sql = 'select message.id, author, player.name as authorname, player.bot, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 		' left join message_vote on message.id=message and message_vote.player=$2'+
 		' inner join player on author=player.id where room=$1';
 	for (var i=0, j=4; arguments[j+1]; i++) {
@@ -325,7 +325,7 @@ proto.queryMessagesAfter = function(roomId, userId, N, messageId, before){
 
 proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
-		'select message.id, author, player.name as authorname, content, created, pin, star, up, down, score from message'+
+		'select message.id, author, player.name as authorname, player.bot, content, created, pin, star, up, down, score from message'+
 		' inner join player on author=player.id where room=$1 and created>$2 and score>4'+
 		' order by score desc limit 12', [roomId, createdAfter]
 	);
@@ -353,14 +353,14 @@ proto.messageHistogram = function(roomId, pattern, lang) {
 proto.getMessage = function(messageId, userId){
 	if (userId) {
 		return this.queryRow(
-			'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
+			'select message.id, author, player.name as authorname, player.bot, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 			' left join message_vote on message.id=message and message_vote.player=$2'+
 			' inner join player on author=player.id'+
 			' where message.id=$1', [messageId, userId]
 		)
 	} else {
 		return this.queryRow(
-			'select message.id, author, player.name as authorname, content, message.created as created, message.changed, pin, star, up, down, score from message'+
+			'select message.id, author, player.name as authorname, player.bot, content, message.created as created, message.changed, pin, star, up, down, score from message'+
 			' inner join player on author=player.id'+
 			' where message.id=$1', [messageId]
 		)

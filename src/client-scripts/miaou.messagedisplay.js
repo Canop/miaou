@@ -182,7 +182,9 @@ var miaou = miaou || {};
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
 		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id);
-		$('<div>').addClass('user').text(message.authorname).appendTo($md);
+		var $user = $('<div>').addClass('user').text(message.authorname).appendTo($md);
+		if (message.bot) $user.addClass('bot');
+		else chat.topUserList({id: message.author, name: message.authorname});
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -212,7 +214,6 @@ var miaou = miaou || {};
 			};
 		}
 		resize($md, wasAtBottom);
-		chat.topUserList({id: message.author, name: message.authorname});
 		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		md.showMessageFlowDisruptions();

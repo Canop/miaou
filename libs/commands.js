@@ -21,7 +21,9 @@ exports.configure = function(config){
 				message.author = b.id;
 				return this.storeMessage(message); 
 			}).then(function(m){
-				shoe.emitToRoom('message', message);
+				m.bot = true;
+				shoe.emitToRoom('message', m);
+				console.log('EM', m);
 			}).finally(shoe.db.off)
 		}, 10);
 	}};
