@@ -30,7 +30,7 @@ miaou.editor = (function(){
 				if (stash) $input.val(stash);
 			}
 			stash = null;
-			miaou.socket.emit('message', m);
+			miaou.chat.sendMessage(m);
 			$('#preview').html('');
 			if (!$(document.body).hasClass('mobile')) $input.focus();
 		}

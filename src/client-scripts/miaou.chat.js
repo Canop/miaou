@@ -93,5 +93,44 @@ miaou.chat = {
 				console.log("Plugin " + name + " started");
 			});
 		});
-	}	
+	}
+	
+	
+	var listeners = {};
+
+	// Registers for an event ("incoming_message", "sending_message")
+	// Callback is called with message as argument, and can change this message
+	// Returning false prevents the operation
+	chat.on = function(type, fun){
+		if (!listeners[type]) listeners[type] = [];
+		listeners[type].push(fun);
+		return chat;
+	}
+	// removes a function from listeners
+	chat.off = function(type, fun){
+		if (!listeners[type]) return;
+		listeners[type] = listeners[type].filter(function(f){ return f!==fun });
+		return chat;
+	}
+	chat.trigger = function(type, message, context){
+		if (!listeners[type]) return;
+		for (var i=0; i<listeners[type].length; i++) {
+			var r = listeners[type][i](message, context);
+			if (r===false) return false;
+		}
+		return chat;
+	}
+	
+	// Sends a message. Examples :
+	//  - sending a new message : miaou.chat.sendMessage("hello");
+	//  - sending a new message : miaou.chat.sendMessage({content:"hello"});
+	//  - editing a message :     miaou.chat.sendMessage({id:33, content:"Hello"});
+	// You can optionnally pass a second argument (context) which will be forwarded
+	//   to event listeners
+	chat.sendMessage = function(m, context){
+		if (typeof m === "string") m = {content:m};
+		var r = chat.trigger("sending_message", m, context);
+		if (r!==false) miaou.socket.emit('message', m);
+	}
+
 })(miaou.chat);

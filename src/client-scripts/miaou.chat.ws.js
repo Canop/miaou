@@ -26,6 +26,7 @@ var miaou = miaou || {};
 			socket.emit('message', unhandledMessage);
 		})
 		.on('message', function(message){
+			if (chat.trigger('incoming_message', message) === false) return;
 			info.nbmessages++;
 			md.addMessage(message);
 			md.updateNotableMessages(message);

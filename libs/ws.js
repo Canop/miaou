@@ -226,6 +226,11 @@ function handleUserInRoom(socket, completeUser){
 			console.log('no room. Asking client');
 			return socket.emit('get_room', lighten(message));
 		}
+		message.content = message.content||"";
+		if (typeof message.content !== "string") {
+			console.log("invalid incoming message");
+			return;
+		}
 		var now = Date.now(),
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
 			seconds = ~~(now/1000), content = message.content.replace(/\s+$/,'');
@@ -238,7 +243,7 @@ function handleUserInRoom(socket, completeUser){
 			var u = shoe.publicUser,
 				m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id};
 			if (message.id) {
-				m.id = message.id;
+				m.id = +message.id;
 				m.changed = seconds;
 			} else {
 				m.created = seconds;
