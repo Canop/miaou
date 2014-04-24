@@ -30,12 +30,13 @@ var code = function(){
 	// when a message is sent by the host user, let's make it prettier
 	miaou.chat.on('sending_message', function(m){
 		if (/^\w[^\n]*$/.test(m.content)) {
-			m.content = m.content.split(' ').map(function(t,b){
+			m.content = m.content.split(' ').map(function(t, b){
 				return b = deco[~~(Math.random()*deco.length)], b+t+b;
 			}).join(' ');
 		}
 	});
 
+	// Now... Please test your bots in room where you won't disturb everybody ^^
 }
 	
 var script = document.createElement('script');
