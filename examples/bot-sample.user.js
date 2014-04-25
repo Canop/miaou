@@ -18,8 +18,11 @@ var code = function(){
 	miaou.chat.on('incoming_message', function(m){
 		if (!(m.created > miaou.chat.enterTime)) return; // we only handle new messages
 		if (IAmPingedRegex.test(m.content)) {
-			// we've been pinged, let's pong
-			miaou.chat.sendMessage("@"+m.authorname+" pong!");
+			// we've been pinged, let's pong, maybe
+			var delay = 7000*Math.random();
+			if (delay < 4000) setTimeout(function(){
+				miaou.chat.sendMessage("@"+m.authorname+"#"+m.id+" "+(~m.content.indexOf("pong") ? "ping" : "pong!"));
+			}, delay);
 		} else if (/^echo [^\n]+$/.test(m.content)) {
 			// somebody wants us to repeat, let's do it
 			miaou.chat.sendMessage(m.authorname + " says\n> " + m.content.slice("echo ".length));
@@ -29,7 +32,7 @@ var code = function(){
 	var deco = ['','*','**','---','`',' '];
 	// when a message is sent by the host user, let's make it prettier
 	miaou.chat.on('sending_message', function(m){
-		if (/^\w[^\n]*$/.test(m.content)) {
+		if (/^\w[^\n`*]*$/.test(m.content)) {
 			m.content = m.content.split(' ').map(function(t, b){
 				return b = deco[~~(Math.random()*deco.length)], b+t+b;
 			}).join(' ');

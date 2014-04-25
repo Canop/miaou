@@ -33,6 +33,8 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * A plugin enabling embedded real time multi-player games (today featuring the Tribo game)
 * private messaging
 * image upload (using imgur API)
+* client side bot API (see example as userscript)
+* server side bot API
 
 # Compatibility
 
