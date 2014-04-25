@@ -29,7 +29,7 @@ var code = function(){
 		}
 	});
 
-	var deco = ['','*','**','---','`',' '];
+	var deco = ['','*','**','***','---','`',' '];
 	// when a message is sent by the host user, let's make it prettier
 	miaou.chat.on('sending_message', function(m){
 		if (/^\w[^\n`*\/]*$/.test(m.content)) {
