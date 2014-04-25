@@ -1,6 +1,6 @@
 # Miaou
 
-A chat server with authentication, persistent and searchable history, markdown formatting, private rooms, stars and votes, and a few other features.
+A chat server with authentication, persistent and searchable history, markdown formatting, private rooms, stars and votes, and many other features.
 
 You can see it in action or use it on http://dystroy.org/miaou.
 
@@ -19,7 +19,7 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * Message preview
 * Image boxing
 * Pings, optional desktop notification and loud pings
-* Cross-rooms pings 
+* Cross-rooms pings, ping autocompletion
 * Message replying
 * Message edition
 * Permanent message links
@@ -34,7 +34,7 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * private messaging
 * image upload (using imgur API)
 * client side bot API (see example as userscript)
-* server side bot API
+* server side bot API, pluggable commands framework
 
 # Compatibility
 
