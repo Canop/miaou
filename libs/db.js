@@ -380,12 +380,14 @@ proto.storeMessage = function(m, dontCheckAge){
 			m.authorname = savedAuthorname;
 			if (m.content.length || m.created<now()-MAX_AGE_FOR_TOTAL_DELETION) return m;
 			return this.queryRow(
-				"delete from ping where message=$1", [m.id]
+				"delete from ping where message=$1", [m.id], true
 			).then(function(){
 				return this.queryRow(
 					"delete from message where id=$1", [m.id]
 				)
-			}).then(function(){ return m });
+			}).then(function(){ 
+				return m
+			});
 		});
 	}
 	return this.queryRow(

@@ -6,7 +6,8 @@
 var cache = require('bounded-cache')(200);
 
 var gametypes = {
-	Tribo: require('./client-scripts/Tribo.js')
+	Tribo: require('./client-scripts/Tribo.js'),
+	Flore: require('./client-scripts/Flore.js')
 };
 
 // returns a bound promise opening a connection to the db
@@ -27,9 +28,9 @@ function dbGetGame(shoe, mid){
 }
 
 function storeInMess(m, game){
-	m.content = "!!game @"+game.players[0].name+" "+JSON.stringify({
-		type:game.type, status:game.status, moves:game.moves, players:game.players
-	});
+	var saved = {type:game.type, status:game.status, players:game.players};
+	gametypes[game.type].store(game, saved);
+	m.content = "!!game @"+game.players[0].name+" "+JSON.stringify(saved);
 	delete m.changed;
 }
 
@@ -74,7 +75,7 @@ exports.onNewShoe = function(shoe){
 				m.changed = ~~(Date.now()/1000);
 				return this.storeMessage(m, true);
 			} else {
-				console.log('ludo : illegal move');
+				console.log('ludo : illegal move', move);
 			}
 		}).finally(shoe.db.off);
 	});

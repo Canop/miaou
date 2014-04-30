@@ -85,9 +85,7 @@
 								c.hover(
 									function(){ c.attr({fill: 'red'}) },
 									function(){	c.attr({fill: panel.holeGrad}) }
-								).click(function(){
-									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
-								});
+								);
 							}
 						}
 					} else {
@@ -140,7 +138,7 @@
 				s = Snap('#'+id), // <- there's probably something cleaner when you have the element, I don't know snapsvg well enough
 				p = new Panel(m, g, s, $c.width());
 			$s.width(p.W).height(p.H);
-			$c.data('tribo-panel', p);
+			$c.data('ludo-panel', p);
 			if (g.status !== "ask") m.locked = true;
 			p.buildBoard();
 			p.drawBoard();
@@ -148,7 +146,7 @@
 			p.drawScores();
 		},
 		move: function($c, m, _, move){
-			var panel = $c.data('tribo-panel');
+			var panel = $c.data('ludo-panel');
 			m.locked = true;
 			panel.g.moves += Tribo.encodeMove(move);
 			Tribo.apply(panel.g, move);
@@ -172,7 +170,7 @@
 			).append($('<p>').html(
 				'Try to fill or reserve the biggest part of the board.<br>'+
 				'When you make a vertical or horizontal line of exactly 3 coins, you play again.<br>'+
-				'To start a new game, just type <i>!!game&nbsp;@somename</i>'
+				'To start a new game, just type <i>!!tribo&nbsp;@somename</i>'
 			));
 		}
 	}

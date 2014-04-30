@@ -33,9 +33,12 @@ exports.appPostUpload = function(req, res){
 			headers: { Authorization: 'Client-ID ' + config.imgur.clientID }
 		};
 		var r = request.post(options, function(err, req, body){
-			if (err) return res.send({error:'Error while uploading to imgur'});
+			if (err) {
+				console.log('Error while uploading to imgur', err);
+				return res.send({error:'Error while uploading to imgur'});
+			}
 			var data = JSON.parse(body).data;
-			if (data && data.error) return res.send({error:"Imgur answerd : "+data.error});
+			if (data && data.error) return res.send({error:"Imgur answered : "+data.error});
 			if (!data || !data.id) return res.send({error:"Miaou didn't understand imgur's answer"});
 			res.send({image:data});
 		})

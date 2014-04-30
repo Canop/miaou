@@ -60,6 +60,10 @@ var Tribo = (function(){
 			}
 			return {p:player, x:code%10, y:Math.floor(code/10)};
 		},
+		// adds to the passed object what will be needed for restoration (the moves)
+		store: function(g, obj){
+			obj.moves = g.moves;
+		},
 		// (re)builds the state of the game from the moves (checks absolutely nothing)
 		restore: function(g){
 			g.cells = matrix(10, -1);

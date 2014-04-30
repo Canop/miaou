@@ -227,7 +227,7 @@ function handleUserInRoom(socket, completeUser){
 			return socket.emit('get_room', lighten(message));
 		}
 		message.content = message.content||"";
-		if (typeof message.content !== "string") {
+		if (typeof message.content !== "string" || !(message.id||message.content)) {
 			console.log("invalid incoming message");
 			return;
 		}
