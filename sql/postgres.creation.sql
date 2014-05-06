@@ -2,6 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
+insert into db_version (component, version) values('core', 3);
 
 CREATE TABLE room (
 	id serial primary key,
