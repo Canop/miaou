@@ -2,7 +2,7 @@
 
 var miaou = miaou || {};
 miaou.editor = (function(){
-	
+
 	var $input, input, stash, editedMessage, $pingmatcher, savedValue;
 
 	function toggleLines(s,r,insert){
@@ -36,13 +36,13 @@ miaou.editor = (function(){
 		}
 		$input.removeClass('edition');
 	}
-	
+
 	// returns the currently autocompletable typed name, if any
 	function getacname(){
-		var m = input.value.slice(0, this.selectionEnd).match(/(^|\W)@(\w\S*)$/);
+		var m = input.value.slice(0, input.selectionEnd).match(/(^|\W)@(\w\S*)$/);
 		return m ? m[2].toLowerCase() : null;
 	}
-	
+
 	return {
 		// prepare #input to emit on the provided socket
 		init: function(){
@@ -58,7 +58,7 @@ miaou.editor = (function(){
 						} else if (~val.slice(sp, ep).indexOf('\n')) {
 							$input.selectLines().replaceSelection(toggleLinesCode);
 						} else {
-							$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });					
+							$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
 						}
 						return false;
 						case 81: // Q : toggle citation
@@ -133,12 +133,12 @@ miaou.editor = (function(){
 				var acname = getacname();
 				if (acname) miaou.socket.emit('autocompleteping', acname);
 			}).focus();
-			
+
 			$('#send').on('click', sendInput);
-					
+
 			$('#cancelEdit').on('click', miaou.editor.cancelEdit);
-			
-			$('#uploadSend').click(function(){		
+
+			$('#uploadSend').click(function(){
 				var file = document.getElementById('file').files[0];
 				if (!file || !/^image\//.test(file.type)) {
 					alert('not a valid image');
@@ -164,7 +164,7 @@ miaou.editor = (function(){
 					finish();
 				}
 				$('#uploadcontrols').hide();
-				$('#uploadwait').show();			
+				$('#uploadwait').show();
 				xhr.send(fd);
 			});
 		},
@@ -183,8 +183,8 @@ miaou.editor = (function(){
 				if (e==s) input.selectionStart += insert.length;
 				input.selectionEnd = e + insert.length;
 			}
-			input.focus();		
-		}, 
+			input.focus();
+		},
 		// toggle reply to an existing message
 		replyToMessage: function(message){
 			var txt = input.value, r = /@(\w[\w_\-\d]{2,})#(\d+)/, m = txt.match(r),
@@ -238,7 +238,7 @@ miaou.editor = (function(){
 					$pingmatcher = null;
 				});
 			});
-			
+
 		}
 	}
 })();
