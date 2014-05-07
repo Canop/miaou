@@ -44,7 +44,7 @@ function Shoe(socket, completeUser){
 	this.room;
 	this.lastMessageTime;
 	this.db = db; // to be used by plugins or called modules
-	socket.set('publicUser', this.publicUser);	
+	socket.set('publicUser', this.publicUser);
 }
 Shoe.prototype.error = function(err, messageContent){
 	console.log('ERR', err, 'for user', this.completeUser.name, 'in room', (this.room||{}).name);
@@ -63,7 +63,7 @@ Shoe.prototype.pluginTransformAndSend = function(m, sendFun){
 	sendFun('message', m);
 }
 
-// using a filtering function, picks some elements, removes them from the array, 
+// using a filtering function, picks some elements, removes them from the array,
 //  executes a callback on each of them
 // todo find a clearer name
 function popon(arr, filter, act){
@@ -111,7 +111,7 @@ function emitMessagesAfter(shoe, fromId, untilId, nbMessages){
 			shoe.emit(v, m);
 		});
 		nbSent++;
-		if (!(message.id<youngestSent)) youngestSent = message.id;	
+		if (!(message.id<youngestSent)) youngestSent = message.id;
 	}).on('end', function(){
 		if (nbSent===nbMessages) shoe.emit('has_newer', youngestSent);
 		resolver.resolve();
@@ -142,7 +142,7 @@ function userClients(clients, userIdOrName) {
 //     different rooms and there's a reconnect
 function handleUserInRoom(socket, completeUser){
 	var shoe = new Shoe(socket, completeUser);
-	
+
 	socket.on('request', function(request){
 		var roomId = request.room, publicUser = shoe.publicUser;
 		console.log(publicUser.name + ' requests access to room ' + roomId);
@@ -202,6 +202,14 @@ function handleUserInRoom(socket, completeUser){
 		}).catch(function(err){
 			shoe.error(err);
 		}).finally(db.off)
+	}).on('get_message', function(mid){
+		db.on(+mid)
+		.then(db.getMessage)
+		.then(function(m){
+				shoe.pluginTransformAndSend(m, function(v,m){
+					shoe.emit(v, lighten(m));
+				});
+		}).finally(db.off);
 	}).on('get_around', function(data){
 		db.on()
 		.then(function(){
@@ -222,7 +230,7 @@ function handleUserInRoom(socket, completeUser){
 			return emitMessagesAfter.call(this, shoe, data.after, data.newerPresent, nbMessagesPerPage)
 		}).finally(db.off);
 	}).on('message', function(message){
-		if (!shoe.room) { // todo check this is useful and a complete enough solution 
+		if (!shoe.room) { // todo check this is useful and a complete enough solution
 			console.log('no room. Asking client');
 			return socket.emit('get_room', lighten(message));
 		}
@@ -278,8 +286,8 @@ function handleUserInRoom(socket, completeUser){
 			for (var key in updatedMessage) {
 				if (updatedMessage[key]) clone[key] = key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
 			}
-			socket.broadcast.to(shoe.room.id).emit('message', clone);	
-		}).catch(function(err){ console.log('ERR in vote handling:', err) })		
+			socket.broadcast.to(shoe.room.id).emit('message', clone);
+		}).catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);
 	}).on('search', function(search){
 		db.on([shoe.room.id, search.pattern, 'english', 20])
@@ -333,7 +341,7 @@ function handleUserInRoom(socket, completeUser){
 			}
 		}).then(function(){
 			socket.emit('pm_room', lounge.id)
-		}).catch(function(err){ console.log('ERR in PM :', err) })	
+		}).catch(function(err){ console.log('ERR in PM :', err) })
 		.finally(db.off);
 	}).on('autocompleteping', function(namestart){
 		db.on()
@@ -341,7 +349,7 @@ function handleUserInRoom(socket, completeUser){
 			return this.usersStartingWith(namestart, shoe.room.id, 10);
 		}).then(function(list){
 			if (list.length) socket.emit('autocompleteping', list.map(function(item){ return item.name }));
-		}).catch(function(err){ console.log('ERR in PM :', err) })	
+		}).catch(function(err){ console.log('ERR in PM :', err) })
 		.finally(db.off);
 	}).on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		if (shoe.room) {
@@ -352,7 +360,7 @@ function handleUserInRoom(socket, completeUser){
 		}
 		popon(socketWaitingApproval, function(o){ return o.socket===socket });
 	});
-	
+
 	onNewShoePlugins.forEach(function(plugin){
 		plugin.onNewShoe(shoe);
 	});

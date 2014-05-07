@@ -85,6 +85,11 @@ miaou.bindChatGui = function(){
 		if (message.vote!=vote) miaou.socket.emit('vote', {action:'add',  message:message.id, level:vote});
 		return false;
 	})
+	.on('click', '.makemwin', function(){
+		var $e = $(this), message = $e.closest('.message').data('message');
+		miaou.win.add(message);
+		return false;
+	})	
 	.on('click', '.olderLoader', function(){
 		var $this = $(this), mid = +$this.data('mid'), olderPresent = 0;
 		$this.remove();

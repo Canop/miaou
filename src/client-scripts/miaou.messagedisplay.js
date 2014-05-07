@@ -208,10 +208,7 @@ var miaou = miaou || {};
 			$md.prependTo('#messages');
 		}
 		if (!$md.find('.content').length) {
-			var $c = $('<div>').addClass('content').appendTo($md);
-			for (var i=0; i<renderers.length; i++){
-				if (renderers[i]($c, message)) break;
-			};
+			md.render($('<div>').addClass('content').appendTo($md), message);
 		}
 		resize($md, wasAtBottom);
 		var votesHtml = votesAbstract(message);
@@ -219,6 +216,12 @@ var miaou = miaou || {};
 		md.showMessageFlowDisruptions();
 		md.updateOlderAndNewerLoaders();
 		if (wasAtBottom && message.id==$('#messages > .message').last().attr('mid')) md.scrollToBottom();
+	}
+
+	md.render = function($content, message){
+		for (var i=0; i<renderers.length; i++){
+			if (renderers[i]($content, message)) break;
+		};		
 	}
 
 	md.showMessageFlowDisruptions = function(){
@@ -263,6 +266,7 @@ var miaou = miaou || {};
 		$('<div>').addClass('messagemenu').html(
 			infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
 			'<a class=link target=_blank href="'+miaou.md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ' + 
+			'<a class=makemwin title="float">&#xe81d;</a> ' + 
 			voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(chat.checkAuth('admin')?0:1).map(function(l){
 				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 			}).join('')
@@ -324,7 +328,7 @@ var miaou = miaou || {};
 	// replaces one line of a message
 	md.box = function(args){
 		var $from = $('<div>'+miaou.mdToHtml(args.from)+'</div>'),
-			$m = $('#messages .message[mid='+args.mid+']'),
+			$m = $('.message[mid='+args.mid+']'),
 			wab = isAtBottom();
 		$m.find('.content').html(function(_,h){
 			return h.replace($from.html(), '<div class=box>'+args.to+'</div>')

@@ -3,19 +3,20 @@
 (function(){
 
 	if (typeof Snap === 'undefined') return; // this file is part of the big minified file imported in all miaou pages, even the ones not importing snap-svg
-	
+
 	var T = 7, // FIXME duplication with Flore.js
 		NO_CELL = -2,
 		CS = 28, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
-		bg = Snap.hsb(.2, .7, .3);
+		bg = Snap.hsb(.2, .7, .3),
+		boardCount = 0;
 
 	function Panel(m, g, s, availableWidth){
 		this.m = m;
 		this.g = g; // game
 		this.s = s; // snap thing
 		this.u = -1; // user index in the game
-		this.colors = ['FloralWhite', 'LightPink'], 
+		this.colors = ['FloralWhite', 'LightPink'],
 		this.grads = this.colors.map(function(c){ return s.gradient("r(0.3,0.3,1)"+c+"-(0,0,0)") });
 		g.players.forEach(function(p,i){ if (p.id===me.id) this.u=i }, this);
 		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg);
@@ -44,7 +45,7 @@
 		this.holes = [];
 		for (var i=0; i<T; i++) this.holes[i] = [];
 	}
-	
+
 	Panel.prototype.lineMark = function(line, p){
 		return this.s.rect(
 			this.XB+line.x*CS, this.YB+line.y*CS,
@@ -52,8 +53,8 @@
 			line.d==='h' ? CS : CS*3,
 			CS/2, CS/2
 		).attr({fill:this.colors[p], fillOpacity:0.6}).prependTo(this.s);
-	}	
-	
+	}
+
 	Panel.prototype.drawBoard = function(){
 		var panel = this, s = this.s, cells = this.g.cells, XB = this.XB, YB = this.YB,
 			userIsCurrentPlayer = panel.g.current!==-1 && panel.u===panel.g.current;
@@ -65,7 +66,7 @@
 					var cell = cells[i][j],
 						c = panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
 					if (cell===-1) {
-						c.attr({fill: panel.holeGrad});	
+						c.attr({fill: panel.holeGrad});
 						if (userIsCurrentPlayer) {
 							if (Flore.canPlay(panel.g, i, j)) {
 								c.attr({cursor:'pointer'}).hover(
@@ -94,7 +95,7 @@
 			}
 		}
 	}
-	
+
 	Panel.prototype.buildScores = function(){
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
@@ -130,10 +131,9 @@
 	if (!miaou.games) miaou.games = {};
 	miaou.games.Flore = {
 		render: function($c, m, g){
-			console.log(m, g);
 			Flore.restore(g);
 			$c.empty().css('background', bg).closest('.message').removeClass('edited');
-			var id = 'ludo_'+m.id
+			var id = 'flore_board_'+ boardCount++,
 				$s = $('<svg id='+id+'></svg>').appendTo($c),
 				s = Snap('#'+id), // <- there's probably something cleaner when you have the element, I don't know snapsvg well enough
 				p = new Panel(m, g, s, $c.width());

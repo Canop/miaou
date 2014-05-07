@@ -14,7 +14,7 @@
 		} else if (game.players[1].name===me.name) {
 			$p.append("You proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");
 		} else {
-			$p.append("<i>"+game.players[1].name+"</i> proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");			
+			$p.append("<i>"+game.players[1].name+"</i> proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");
 		}
 	}
 
@@ -30,7 +30,7 @@
 		}).appendTo($c).hover(
 			function(){
 				$helpDiv = $('<div/>').css({
-					position:'absolute', top:0, left:0, height:'120px', right:'10px', borderRadius:'0 0 10px 0', zIndex:2					
+					position:'absolute', top:0, left:0, height:'120px', right:'10px', borderRadius:'0 0 10px 0', zIndex:2
 				}).appendTo($c.width()>300 ? $c : $c.closest('.message'));
 				miaou.games[game.type].fillHelp($helpDiv);
 			}, function(){
@@ -38,7 +38,7 @@
 			}
 		);
 	}
-	
+
 	miaou.chat.plugins.ludogene = {
 		start: function(){
 			miaou.md.registerRenderer(function($c, m){
@@ -49,23 +49,20 @@
 				return true;
 			});
 			miaou.socket.on('ludo.move', function(arg){
-				var $message = $('#messages .message[mid='+arg.mid+']');
-				if (!$message.length) {
-					console.log('message not visible');
-					return;
-				}
-				var m = $message.data('message'),
-					match = m.content.match(/^!!game @\S{3,} (.*)$/);
-				if (!match) return;
-				var game = JSON.parse(match[1]);
-				var playername = game.players[arg.move.p].name;
-				miaou.touch(m.id, game.players[+!arg.move.p].id===me.id, playername, playername + ' made a move in your Tribo game');
-				miaou.games[game.type].move($message.find('.content'), m, game, arg.move);
+				$('.message[mid='+arg.mid+']').each(function(i){
+					var $message = $(this),
+						m = $message.data('message'),
+						match = m.content.match(/^!!game @\S{3,} (.*)$/);
+					if (!match) return;
+					var game = JSON.parse(match[1]);
+					var playername = game.players[arg.move.p].name;
+					if (!i){ // we don't want to multi-ping if the game is displayed in more than one place
+						miaou.touch(m.id, game.players[+!arg.move.p].id===me.id, playername, playername + ' made a move in your Tribo game');
+					}
+					miaou.games[game.type].move($message.find('.content'), m, game, arg.move);
+				});
 			});
 		}
 	}
 
 })();
-
-
-

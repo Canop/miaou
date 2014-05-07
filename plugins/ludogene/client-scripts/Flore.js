@@ -31,10 +31,8 @@ var Flore = (function(){
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y) {
 			return !!(x%S+y%S && g.cells[x][y]===NO_PLAYER);
-			//~ console.log('canPlay(',x, y,'):',!!(x%S+y%S && g.cells[x][y]===NO_PLAYER)); 
 		},
 		isValid: function(g, move){
-			console.log('isValid?', move);
 			return !!(move.p===g.current && move.x%S+move.y%S && g.cells[move.x][move.y]===NO_PLAYER);
 		},
 		addAround: function(g, x, y, d){
@@ -52,8 +50,6 @@ var Flore = (function(){
 			}								
 		},
 		apply: function(g, move){
-			console.log('Flore apply', move);
-			console.log('Flore apply', g);
 			var x = move.x, y = move.y;
 			g.cells[x][y] = move.p;
 			move.deaths = [];
@@ -109,7 +105,6 @@ var Flore = (function(){
 		// (re)builds the state of the game
 		// In case of a new game, initializes a random board
 		restore: function(g){
-			console.log('Flore restore');
 			g.flowersAround = [];
 			if (!g.cells) {
 				g.current = 0;
@@ -137,7 +132,6 @@ var Flore = (function(){
 				for (var i=0; i<T; i++) {
 					for (var j=0; j<T; j++) {
 						if (g.cells[i][j]>=0) {
-							console.log('addAround', i, j, 1);
 							Flore.addAround(g, i, j, 1);
 						}
 					}

@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'fontello';
-	src: url('fontello.woff?4b0a57ed') format('woff');
+	src: url('fontello.woff?ba6432c7') format('woff');
 }
 $bg-color: #F0EAD6;
 $mtab-height: 39px;   // height of the top tabs in mobile interface
@@ -499,7 +499,8 @@ body.mobile .message .user {
 			color: black;
 		}
 	}
-	.link {
+	.link, .makemwin {
+		cursor: pointer;
 		font-family: "fontello";
 		color: #336;
 		margin: 0 4px;
@@ -603,7 +604,7 @@ code {
 	position: absolute;
 	top: -12px;
 	left: 0;
-	z-index:500;
+	z-index:5;
 	span {
 		background: white;
 		margin: 4px;
@@ -719,7 +720,7 @@ pre {
 }
 .mask {
 	position: fixed;
-	z-index:10;
+	z-index:20;
 	left:0;
 	top:0;
 	right:0;
@@ -1334,4 +1335,50 @@ div.externalProfile {
 #searchInput {
 	width: calc(100% - 12px);
 	margin: 4px;
+}
+
+
+// see miaou.win.js
+.mwincontainer {
+	z-index: 10;
+	position: fixed;
+	&.bottom {
+		height: 30px;
+		left: 20px;
+		right: 0;
+		bottom: 0;
+	}
+	&.left {
+		width: 150px;
+		left:0;
+		bottom: 30px;
+		top:0;
+	}
+}
+#mwin {
+	position: fixed;
+	left: 50%;
+	top: 15%;
+	width: 600px;
+	margin-left: -300px;
+	z-index: 12;
+	padding: 20px;
+	border-radius: 5px;
+	background: transparentize( darken( $bg-color, 15% ), .15);
+	.content {
+		background: white;
+		padding: 2px;
+		overflow-y: auto;
+	}
+	.remover {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 20px;
+		text-align: center;
+		height: 20px;
+		z-index: 13;
+		cursor: pointer;
+		padding: 3px;
+	}
 }

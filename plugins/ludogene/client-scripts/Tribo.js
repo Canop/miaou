@@ -1,12 +1,6 @@
 // Tribo game logic
 // This file is imported both server-side and client-side
-// A move is, today, encoded in one character
-//
-// Disclaimer : You should probably not try to learn anything from Tribo's code :
-// - I wrote Tribo first in C (PalmOS) a loooong time ago then ported it to J2ME,
-//    then to standard Java, then to Android, then to Go, then to JavaScript,
-//    and never really stopped to rethink it...
-// - I don't know snap-svg
+// A move is encoded in one character
 
 var Tribo = (function(){
 	
