@@ -66,6 +66,9 @@
 		&:hover {
 			opacity: 1;
 		}
+		&.new {
+			border: 5px solid yellow;			
+		}
 	}
 }
 #mwin {

@@ -49,16 +49,15 @@
 				return true;
 			});
 			miaou.socket.on('ludo.move', function(arg){
-				$('.message[mid='+arg.mid+']').each(function(i){
+				$('.mwintab[mid='+arg.mid+']').addClass('new');
+				$('.message[mid='+arg.mid+']').each(function(){
 					var $message = $(this),
 						m = $message.data('message'),
 						match = m.content.match(/^!!game @\S{3,} (.*)$/);
 					if (!match) return;
 					var game = JSON.parse(match[1]);
 					var playername = game.players[arg.move.p].name;
-					if (!i){ // we don't want to multi-ping if the game is displayed in more than one place
-						miaou.touch(m.id, game.players[+!arg.move.p].id===me.id, playername, playername + ' made a move in your Tribo game');
-					}
+					miaou.touch(m.id, game.players[+!arg.move.p].id===me.id, playername, playername + ' made a move in your Tribo game');
 					miaou.games[game.type].move($message.find('.content'), m, game, arg.move);
 				});
 			});

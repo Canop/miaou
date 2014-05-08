@@ -24,6 +24,8 @@ var miaou = miaou || {};
 					$mwin.find('.content').empty().css('max-height', $(window).height()*.7), // sadly didn't find a pure css solution
 					message
 				);
+			} else {
+				$('.mwintab[mid='+message.id+']').addClass('new');
 			}
 		});
 	});
@@ -48,8 +50,8 @@ var miaou = miaou || {};
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
 			});
 			$mc.html('loading...')
+			miaou.socket.emit('get_message', message.id);
 		}
-		miaou.socket.emit('get_message', message.id);
 	}
 
 })(miaou.win = {});
