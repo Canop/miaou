@@ -1,6 +1,6 @@
 var miaou = miaou || {};
 
-// converts from the message exchange format (mainly a restricted set of Markdown) to HTML 
+// converts from the message exchange format (mainly a restricted set of Markdown) to HTML
 miaou.mdToHtml = function(md, withGuiFunctions, username){
 	var nums=[];
 	return md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n').map(function(s,l){
@@ -22,18 +22,13 @@ miaou.mdToHtml = function(md, withGuiFunctions, username){
 			if (i%2) return '<code>'+t+'</code>';
 			return t.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>,]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
 			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\(\)\[\]]+)/ig, '$1<a target=_blank href="$2">$2</a>')
-			.replace(/^\*([^\*]+)\*$/g, "<i>$1</i>")
-			.replace(/^\*\*(.+?)\*\*$/g, "<b>$1</b>")
-			.replace(/^__(.+?)__$/g, "<b>$1</b>")
-			.replace(/^_([^_]+)_$/g, "<i>$1</i>")
-			.replace(/^---(.+?)---$/g, "<strike>$1</strike>")
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
 				return a
-				+ b.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-				.replace(/\*([^\*]+)\*/g, "<i>$1</i>")
-				.replace(/__(.+?)__/g, "<b>$1</b>")
-				.replace(/_([^_]+)_/g, "<i>$1</i>")
-				.replace(/---(.+?)---/g, "<strike>$1</strike>")
+				+ b.replace(/(^|\W)\*\*(.+?)\*\*(\W|$)/g, "$1<b>$2</b>$3")
+				.replace(/(^|\W)\*([^\*]+)\*(\W|$)/g, "$1<i>$2</i>$3")
+				.replace(/(^|\W)__(.+?)__(\W|$)/g, "$1<b>$2</b>$3")
+				.replace(/(^|\W)_([^_]+)_(\W|$)/g, "$1<i>$2</i>$3")
+				.replace(/(^|\W)---(.+?)---(\W|$)/g, "$1<strike>$2</strike>$3")
 				.replace(/([^.!?:;]*)(\/me)([^.!?:;]*)/g, '<span class=slashme>$1'+(username||'/me')+'$3</span>')
 				+ c;
 			});

@@ -45,19 +45,23 @@
 > Now a citation over 4 lines with some **bold** and some *italic*, a blank line :
 >
 > an URL : http://dystroy.org
-> and a markdown style link : [dystroy](http://dystroy.org)	
+> and a markdown style link : [dystroy](http://dystroy.org)
 
 * a list item
 * followed by ---**many** _other ones_--- __another__ _one_
 
+## Tricky ones :
+http://this.link/shouldnt_be_styled/index.xml
+[This link has a **tricky** href](http://dystroy.org/miaou/help#Ping_and_reply)
+
+
 ## Image :
 On the next line : ` http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg `
- http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg 
+ http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg
 
 *This sentence is in italic and the end is **in bold too***
 **Now the reverse : all in bold and the last word in *italic***
 
-[This link has a **tricky** href](http://dystroy.org/miaou/help#Ping_and_reply)
 
 ## Code :
 A line with `**inlined** _code_` and an equation : `y = 2*x`
@@ -76,7 +80,10 @@ A code block :
 ##### Cinq
 If you need more title levels in a chat comment... There might be a problem.
 
+# Not (yet?) supported :
 
+## style parts including links :
+*the first part should maybe be in italic including [the link](http://dystroy.org/miaou/help#Ping)*, but it's not.
 
 </textarea>
 <input type=checkbox id=showcode><label for=showcode>Show HTML</label>
