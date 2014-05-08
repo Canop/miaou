@@ -29,21 +29,27 @@ var miaou = miaou || {};
 	});
 
 
-	// side in "left", "top", etc.
 	// with no side, it goes to the middle
 	win.add = function(message, side){
 		$('#mwin,.mwintab[mid='+message.id+']').remove();
 		if (side) {
-
+			var line = (message.content||message.authorname).split("\n")[0],
+				tokens = line.split(/\s+/),
+				title = tokens[0], i=1;
+			while (i<tokens.length && title.length+tokens[i].length<20) title += ' '+tokens[i++];
+			$('.mwincontainer.'+side).append(
+				$('<div/>').addClass('mwintab').html(miaou.mdToHtml(title)).attr('mid',message.id).click(function(){ win.add(message) })
+			)
 		} else {
 			var $mc = $('<div/>').addClass('content');
 			var $mwin = $('<div id=mwin/>').attr('mid',message.id).addClass('message').append($mc).appendTo(document.body);
 			$mwin.append($('<div class=remover/>').text('X').click(function(){ $mwin.remove() }));
+			sides.forEach(function(side){
+				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
+			});
 			$mc.html('loading...')
 		}
 		miaou.socket.emit('get_message', message.id);
 	}
-
-
 
 })(miaou.win = {});

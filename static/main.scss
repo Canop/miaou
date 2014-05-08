@@ -11,6 +11,8 @@ $right-panel-width: 320px;
 $hist-width: 200px;
 $profile-bg-color: #fffcc5;
 $notifications-bg-color: #fffa9e;
+
+
 body {
 	background: $bg-color;
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
@@ -449,13 +451,13 @@ body.mobile .message .user {
 .rendered {
 	text-align: left;
 }
-.message.edited .content:before {
+.message.edited .content::before {
 	font-family: "fontello";
 	content: "\e80c";
 	color: #666;
 	margin-right: 4px;
 }
-.message.deleted .content:before {
+.message.deleted .content::before {
 	font-family: "fontello";
 	content: "\e80d  deleted";
 	color: #666;
@@ -563,7 +565,7 @@ code {
 	padding-left: 0;
 	display: inline-block;
 }
-.citation:before {
+.citation::before {
 	content: ".";
 	opacity: 0;
 }
@@ -571,10 +573,10 @@ code {
 	margin: 0 5px;
 	font-weight: 700;
 }
-.olli:after {
+.olli::after {
 	content: ".";
 }
-.ulli:before {
+.ulli::before {
 	content: "• ";
 }
 .h1 {
@@ -742,7 +744,7 @@ span.warning {
 	position: absolute;
 	top:0;left:0;right:0;bottom:0;
 	margin: 20px;
-	&:before {
+	&::before {
 		content: '';
 		display: inline-block;
 		height: 100%; 
@@ -1120,7 +1122,7 @@ div.thinMP {
 	font-family: "fontello";
 }
 
-.private:before {
+.private::before {
 	font-family: "fontello";
 	content:"\e814";
 	margin-right: 3px;
@@ -1234,7 +1236,7 @@ div.thinMP {
 		width: 39%;
 		left: 0;
 		border-radius: 0 0 10px 0;
-		&.closed:before {
+		&.closed::before {
 			z-index: 2;
 			position: absolute;
 			top: -2px; left: 5px;
@@ -1242,7 +1244,7 @@ div.thinMP {
 			opacity: 0.12;
 			font-size: 35px;
 		}
-		&.open:before {
+		&.open::before {
 			z-index: 2;
 			position: absolute;
 			top: -2px; left: 5px;
@@ -1255,7 +1257,7 @@ div.thinMP {
 		width: 53%;
 		right: 0;
 		border-radius: 0 0 0 10px;
-		&.closed:before {
+		&.closed::before {
 			z-index: 2;
 			position: absolute;
 			top: -2px; right: 5px;
@@ -1263,7 +1265,7 @@ div.thinMP {
 			opacity: 0.12;
 			font-size: 35px;
 		}
-		&.open:before {
+		&.open::before {
 			z-index: 2;
 			position: absolute;
 			top: -2px; right: 5px;
@@ -1338,47 +1340,4 @@ div.externalProfile {
 }
 
 
-// see miaou.win.js
-.mwincontainer {
-	z-index: 10;
-	position: fixed;
-	&.bottom {
-		height: 30px;
-		left: 20px;
-		right: 0;
-		bottom: 0;
-	}
-	&.left {
-		width: 150px;
-		left:0;
-		bottom: 30px;
-		top:0;
-	}
-}
-#mwin {
-	position: fixed;
-	left: 50%;
-	top: 15%;
-	width: 600px;
-	margin-left: -300px;
-	z-index: 12;
-	padding: 20px;
-	border-radius: 5px;
-	background: transparentize( darken( $bg-color, 15% ), .15);
-	.content {
-		background: white;
-		padding: 2px;
-		overflow-y: auto;
-	}
-	.remover {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 20px;
-		text-align: center;
-		height: 20px;
-		z-index: 13;
-		cursor: pointer;
-		padding: 3px;
-	}
-}
+@import "mwin";
