@@ -3,17 +3,20 @@
 // A move is encoded in one character
 
 var Tribo = (function(){
-	
+
 	// returns a square matrix filled with the provided value
-	function matrix(s, v, c){
-		return (c=Array.apply(0,Array(s))).map(function(){ return c.map(function(){ return v }) });
+	function matrix(s, v){
+		var row = [], m = [];
+		for (var i=0; i<s; i++) row[i] = v;
+		for (var i=0; i<s; i++) m[i] = i ? row.slice() : row;
+		return m;
 	}
-	
+
 	return {
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y, p) {
 			var c = g.cells;
-			if (c[x][y] != -1)  return false;
+			if (c[x][y] !== -1)  return false;
 			if ((x > 0 && c[x-1][y] == p) ||
 				(x < 9 && c[x+1][y] == p) ||
 				(y > 0 && c[x][y-1] == p) ||
