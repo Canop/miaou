@@ -68,8 +68,8 @@ exports.onNewShoe = function(shoe){
 			var gametype = gametypes[game.type],
 				move = gametype.decodeMove(arg.move);
 			if (gametype.isValid(game, move)) {
-				gametype.apply(game, move);
 				game.moves += arg.move;
+				gametype.apply(game, move);
 				shoe.emitToRoom('ludo.move', {mid:m.id, move:move});
 				storeInMess(m, game);
 				m.changed = ~~(Date.now()/1000);

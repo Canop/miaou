@@ -63,7 +63,7 @@
 						c = panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
 					if (cell===-1) {
 						c.attr({fill: panel.holeGrad});
-						var zone = panel.g.cellZone[i][j];
+						var zone = panel.g.cellZone ? panel.g.cellZone[i][j] : null;
 						if (zone && zone.owner!==undefined) {
 							c = s.group(c, s.circle(XB+i*CS+(CS+1)/2, YB+j*CS+(CS+1)/2, BR/2).attr({fill: panel.grads[zone.owner]}));
 						}
@@ -85,7 +85,7 @@
 							} else {
 								c.hover(
 									function(){ c.attr({fill: 'red'}) },
-									function(){	c.attr({fill: panel.holeGrad}) }
+									function(){ c.attr({fill: panel.holeGrad}) }
 								);
 							}
 						}

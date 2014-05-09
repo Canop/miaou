@@ -17,17 +17,15 @@ var Tribo = (function(){
 		canPlay: function(g, x, y, p) {
 			var c = g.cells;
 			if (c[x][y] !== -1)  return false;
-			if ((x > 0 && c[x-1][y] == p) ||
+			return g.moves.length < 2 ||
+				((x > 0 && c[x-1][y] == p) ||
 				(x < 9 && c[x+1][y] == p) ||
 				(y > 0 && c[x][y-1] == p) ||
 				(y < 9 && c[x][y+1] == p) ||
 				(x > 0 && y > 0 && c[x-1][y-1] == p) ||
 				(x < 9 && y > 0 && c[x+1][y-1] == p) ||
 				(x > 0 && y < 9 && c[x-1][y+1] == p) ||
-				(x < 9 && y < 9 && c[x+1][y+1] == p)) {
-				return true;
-			}
-			return g.moves.length < 2;
+				(x < 9 && y < 9 && c[x+1][y+1] == p));
 		},
 		isValid: function(g, move){
 			return move.p === g.current && Tribo.canPlay(g, move.x, move.y, move.p);
@@ -55,7 +53,7 @@ var Tribo = (function(){
 				player = 1;
 				code -= 100;
 			}
-			return {p:player, x:code%10, y:Math.floor(code/10)};
+			return {p:player, x:code%10, y:code/10|0};
 		},
 		// adds to the passed object what will be needed for restoration (the moves)
 		store: function(g, obj){
@@ -86,11 +84,11 @@ var Tribo = (function(){
 		//
 		computeZonesAndScores: function(g){
 			var nbmoves = g.moves.length;
-			g.cellZone = matrix(10, null); // holds a pointer to the zone containing the cell
 			if (nbmoves<7) {
 				g.scores = [nbmoves+1>>1, nbmoves>>1];
 				return;
 			}
+			g.cellZone = matrix(10, null); // holds a pointer to the zone containing the cell
 			var c = g.cells,
 				zones = g.zones = [],
 				seen = matrix(10, -1),
