@@ -24,12 +24,12 @@ miaou.mdToHtml = function(md, withGuiFunctions, username){
 			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\(\)\[\]]+)/ig, '$1<a target=_blank href="$2">$2</a>')
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
 				return a
-				+ b.replace(/(^|\W)\*\*(.+?)\*\*(\W|$)/g, "$1<b>$2</b>$3")
-				.replace(/(^|\W)\*([^\*]+)\*(\W|$)/g, "$1<i>$2</i>$3")
-				.replace(/(^|\W)__(.+?)__(\W|$)/g, "$1<b>$2</b>$3")
-				.replace(/(^|\W)_([^_]+)_(\W|$)/g, "$1<i>$2</i>$3")
-				.replace(/(^|\W)---(.+?)---(\W|$)/g, "$1<strike>$2</strike>$3")
-				.replace(/([^.!?:;]*)(\/me)([^.!?:;]*)/g, '<span class=slashme>$1'+(username||'/me')+'$3</span>')
+				+ b.replace(/(^|\W)\*\*(.+?)\*\*([^\w\/]|$)/g, "$1<b>$2</b>$3")
+				.replace(/(^|[^\w\/])\*([^\*]+)\*([^\w\/]|$)/g, "$1<i>$2</i>$3")
+				.replace(/(^|[^\w\/])__(.+?)__([^\w\/]|$)/g, "$1<b>$2</b>$3")
+				.replace(/(^|[^\w\/])_([^_]+)_([^\w\/]|$)/g, "$1<i>$2</i>$3")
+				.replace(/(^|[^\w\/])---(.+?)---([^\w\/]|$)/g, "$1<strike>$2</strike>$3")
+				.replace(/(^|[^.!?:;]* )(\/me)([^.!?:;]*)/g, '<span class=slashme>$1'+(username||'/me')+'$3</span>')
 				+ c;
 			});
 		}).join('');
