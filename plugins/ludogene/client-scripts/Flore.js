@@ -2,7 +2,7 @@
 
 var Flore = (function(){
 
-	var T = 7, S = T-1,
+	var T = 8, S = T-1,
 		GOAL = 10,
 		DEAD_WHITE = -4,
 		DEAD_BLACK = -3,
@@ -10,7 +10,7 @@ var Flore = (function(){
 		NO_PLAYER = -1,
 		WHITE = 0,
 		BLACK = 1;
-		
+
 	return {
 
 		encodeMove: function(move){
@@ -26,7 +26,7 @@ var Flore = (function(){
 		},
 		// returns the flowers which would be killed by a move at some position
 		kills: function(g, i, j){
-			
+
 		},
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y) {
@@ -47,7 +47,7 @@ var Flore = (function(){
 				if (y>0) g.flowersAround[x+1][y-1]+=d;
 				g.flowersAround[x+1][y]+=d;
 				if (y<T-1) g.flowersAround[x+1][y+1]+=d;
-			}								
+			}
 		},
 		apply: function(g, move){
 			var x = move.x, y = move.y;
@@ -119,7 +119,7 @@ var Flore = (function(){
 						g.flowersAround[i][j] = 0;
 					}
 				}
-				for (var i=Math.random()*4+3|0; i-->0;) {
+				for (var i=Math.random()*2+2|0; i-->0;) {
 					g.cells[1+Math.random()*(S-1)|0][1+Math.random()*(S-1)|0] = NO_CELL
 				}
 			} else {
@@ -140,7 +140,7 @@ var Flore = (function(){
 			}
 		}
 	}
-		
+
 })();
 
 if (typeof module !== 'undefined') {

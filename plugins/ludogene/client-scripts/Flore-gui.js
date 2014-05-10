@@ -4,9 +4,9 @@
 
 	if (typeof Snap === 'undefined') return; // this file is part of the big minified file imported in all miaou pages, even the ones not importing snap-svg
 
-	var T = 7, // FIXME duplication with Flore.js
+	var T = 8, // FIXME duplication with Flore.js
 		NO_CELL = -2,
-		CS = 28, // size of a cell in pixels
+		CS = 24, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
 		bg = Snap.hsb(.2, .7, .3),
 		boardCount = 0;
