@@ -4,12 +4,8 @@ var Flore = (function(){
 
 	var T = 7, S = T-1,
 		GOAL = 10,
-		DEAD_WHITE = -4,
-		DEAD_BLACK = -3,
 		NO_CELL = -2,
-		NO_PLAYER = -1,
-		WHITE = 0,
-		BLACK = 1;
+		NO_PLAYER = -1;
 		
 	return {
 
@@ -25,9 +21,9 @@ var Flore = (function(){
 			return {p:player, x:code%T, y:Math.floor(code/T)};
 		},
 		// returns the flowers which would be killed by a move at some position
-		kills: function(g, i, j){
-			
-		},
+		//~ kills: function(g, i, j){
+			//~ 
+		//~ },
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y) {
 			return !!(x%S+y%S && g.cells[x][y]===NO_PLAYER);
