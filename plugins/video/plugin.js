@@ -52,7 +52,7 @@ exports.onNewShoe = function(shoe){
 		})
 	}).on('video.msg', function(arg){ // pass the message to the other video chatter
 		getVD(shoe, arg.mid).spread(function(vd, index){
-			vd.shoes[+!index].emit('video.msg', arg.msg);
+			vd.shoes[+!index].emit('video.msg', arg);
 		});
 	});
 }
