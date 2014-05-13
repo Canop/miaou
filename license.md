@@ -7,10 +7,7 @@
 
 ## Other stuff
 
-   All included components are free. Most of them are included with source and reference to licence.
-
    I only precise here the licenses which otherwise wouldn't be easily found.
-
 
 ### Font Awesome
 

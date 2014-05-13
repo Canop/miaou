@@ -1,7 +1,7 @@
 // we keep in memory an object, the video descriptor (how original), holding
 //  - both usernames
 //  - both shoes
-//  - both accept ("on")
+//  - both accept ("on") - deprecated
 
 var Promise = require("bluebird"),
 	cache = require('bounded-cache')(200);
@@ -44,13 +44,13 @@ function onCommand(cmd, shoe, m){
 }
 
 exports.onNewShoe = function(shoe){
-	shoe.socket.on('video.ping', function(arg){ // sets the shoe that will be used to communicate with this user
+	shoe.socket/*.on('video.ping', function(arg){ // sets the shoe that will be used to communicate with this user
 		getVD(shoe, arg.mid);
 	}).on('video.onoff', function(arg){ // arg.onoff must be a boolean
 		getVD(shoe, arg.mid).spread(function(vd, index){
 			vd.on[index] = arg.onoff;
 		})
-	}).on('video.msg', function(arg){ // pass the message to the other video chatter
+	})*/.on('video.msg', function(arg){ // pass the message to the other video chatter
 		getVD(shoe, arg.mid).spread(function(vd, index){
 			vd.shoes[+!index].emit('video.msg', arg);
 		});
