@@ -30,7 +30,7 @@ var miaou = miaou || {};
 		return m.format("D MMMM YYYY HH:mm");
 	}
 
-	function isAtBottom(){
+	var isAtBottom = md.isAtBottom = function(){
 		var $scroller = $('#messagescroller'), $messages = $('#messages'),
 			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
 		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;

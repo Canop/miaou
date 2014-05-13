@@ -8,11 +8,12 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 
 # Features
 
-* Muti-room
 * Public and Private rooms
+* Video Chat
 * Persisted
 * Searchable
 * graphical view of chat's history
+* pluggable architecture
 * Votes
 * Pin and star
 * Markdown formatting, with keyboard shortcuts
@@ -48,7 +49,7 @@ Miaou should work on most webkit based browsers in recent Android devices.
 
 # Development
 
-As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, express, Bluebird, Redis, Jade, Passport.js, jQuery, sass/scss, Moment.js, Snap.svg, Uglify-js and nginx.
+As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Jade, Passport.js, jQuery, sass/scss, Moment.js, Snap.svg, Uglify-js and nginx.
 
 A [vagrant](http://www.vagrantup.com/) configuration is available to help you set up a development environment quickly. See more information at its [documentation](vagrant/vagrant.md).
 
