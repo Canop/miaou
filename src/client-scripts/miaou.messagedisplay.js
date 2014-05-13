@@ -256,7 +256,7 @@ var miaou = miaou || {};
 						$('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
 					}
 				} else {
-					infos.push('too old for edition');
+					infos.push('too old to edit');
 				}
 			}
 		} else {
