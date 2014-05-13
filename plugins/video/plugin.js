@@ -1,7 +1,6 @@
 // we keep in memory an object, the video descriptor (how original), holding
 //  - both usernames
 //  - both shoes
-//  - both accept ("on") - deprecated
 
 var Promise = require("bluebird"),
 	cache = require('bounded-cache')(200);
@@ -11,15 +10,14 @@ function makeVD(shoe, message) {
 	if (!match) throw  'Bad syntax. Use `!!video @somebody`';
 	var vd = {
 		usernames:[message.authorname, match[1]],
-		shoes:[null, null],
-		on: [false, false]
+		shoes:[null, null]
 	};
 	if (vd.usernames[0]===vd.usernames[1]) throw "You can't have a video chat with yourself (sorry)";
 	cache.set(message.id, vd);
 	return vd;
 }
 
-// returns a promise of an array
+// returns a promise of an array containing
 //  - the video descriptor
 //  - the index of the current user in vd.players (-1, 0 or 1)
 // Sets a missing shoe whenever possible
@@ -44,13 +42,7 @@ function onCommand(cmd, shoe, m){
 }
 
 exports.onNewShoe = function(shoe){
-	shoe.socket/*.on('video.ping', function(arg){ // sets the shoe that will be used to communicate with this user
-		getVD(shoe, arg.mid);
-	}).on('video.onoff', function(arg){ // arg.onoff must be a boolean
-		getVD(shoe, arg.mid).spread(function(vd, index){
-			vd.on[index] = arg.onoff;
-		})
-	})*/.on('video.msg', function(arg){ // pass the message to the other video chatter
+	shoe.socket.on('video.msg', function(arg){ // pass the message to the other video chatter
 		getVD(shoe, arg.mid).spread(function(vd, index){
 			vd.shoes[+!index].emit('video.msg', arg);
 		});

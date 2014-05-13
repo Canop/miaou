@@ -26,7 +26,7 @@
 		this.accept = [false, false]; // accept : user clicked the Start button and didn't click Stop
 		if (usernames[0]===me.name) this.index = 0;
 		else if (usernames[1]===me.name) this.index = 1;
-		this.ready[this.index] = true;
+		if (~this.index) this.ready[this.index] = true;
 	}
 	VD.prototype.render = function($c){ // renders the VD in a message, called only once
 		$c.css('background','#F0EAD6');
