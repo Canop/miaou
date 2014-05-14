@@ -17,7 +17,8 @@
 	]};
 	  
 	// The video descriptor, one per displayed miaou !!video message
-	function VD(mid, usernames){
+	function VD(mid, usernames, audio){
+		this.audio = audio;
 		this.mid = mid;
 		this.usernames = usernames;
 		this.index = -1;
@@ -90,7 +91,10 @@
 	}
 	VD.prototype.on = function(){
 		var vd = this;
-		getUserMedia({audio:true, video:true}, function(stream){
+		var opts = {audio: true, video: true};
+		if (this.audio) opts.video = false;
+		
+		getUserMedia(opts, function(stream){
 			vd.localStream = stream;
 			vd.localVideo.src = window.URL.createObjectURL(stream);
 			vd.localVideo.play();
@@ -205,11 +209,17 @@
 		start: function(){
 			miaou.md.registerRenderer(function($c, m){
 				if (!m.content) return;
-				var match = m.content.match(/^!!video\s*@(\w[\w_\-\d]{2,})/);
-				if (!match) return;				
+				var videoMatch = m.content.match(/^!!video\s*@(\w[\w_\-\d]{2,})/);
+				var audioMatch = m.content.match(/^!!audio\s*@(\w[\w_\-\d]{2,})/);
+				if (!videoMatch && !audioMatch) return;				
 				var vd = $c.data('video');
 				if (!vd) {
-					vd = new VD(m.id, [m.authorname, match[1]]);
+					if (audioMatch) {
+						vd = new VD(m.id, [m.authorname, match[1]], true);
+					}
+					if (videoMatch) {
+						vd = new VD(m.id, [m.authorname, match[1]], false);
+					}
 					$c.data('video', vd);
 				}
 				vd.render($c);
