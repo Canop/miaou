@@ -5,11 +5,14 @@ var miaou = miaou || {};
 
 (function(md){
 	var chat = miaou.chat,
-		renderers = [],
+		renderers = [], unrenderers = [],
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
 
 	md.registerRenderer = function(fun){
 		renderers.unshift(fun);
+	}
+	md.registerUnrenderer = function(fun){
+		unrenderers.unshift(fun);
 	}
 
 	function votesAbstract(message){
@@ -221,6 +224,11 @@ var miaou = miaou || {};
 	md.render = function($content, message){
 		for (var i=0; i<renderers.length; i++){
 			if (renderers[i]($content, message)) break;
+		};		
+	}
+	md.unrender = function($content, message){
+		for (var i=0; i<unrenderers.length; i++){
+			if (unrenderers[i]($content, message)) break;
 		};		
 	}
 

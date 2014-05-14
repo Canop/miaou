@@ -21,7 +21,7 @@ var miaou = miaou || {};
 			if ($mwin.length) {
 				$mwin.data('message', message);
 				miaou.md.render(
-					$mwin.find('.content').empty().css('max-height', $(window).height()*.7), // sadly didn't find a pure css solution
+					$mwin.find('.content').empty().css('max-height', $(window).height()*.85), // sadly didn't find a pure css solution
 					message
 				);
 			} else {
@@ -30,10 +30,19 @@ var miaou = miaou || {};
 		});
 	});
 
+	// called for the big central mwin only
+	function closeMWin(){
+		var $mwin = $('#mwin');
+		if ($mwin.length) {
+			miaou.md.unrender($mwin.find('.content'), $mwin.data('message'));
+			$mwin.remove();
+		}
+	}
 
 	// with no side, it goes to the middle
 	win.add = function(message, side){
-		$('#mwin,.mwintab[mid='+message.id+']').remove();
+		closeMWin();
+		$('.mwintab[mid='+message.id+']').remove();
 		if (side) {
 			var line = (message.content||message.authorname).split("\n")[0],
 				tokens = line.split(/\s+/),
@@ -44,8 +53,8 @@ var miaou = miaou || {};
 			)
 		} else {
 			var $mc = $('<div/>').addClass('content');
-			var $mwin = $('<div id=mwin/>').attr('mid',message.id).addClass('message').append($mc).appendTo(document.body);
-			$mwin.append($('<div class=remover/>').text('X').click(function(){ $mwin.remove() }));
+			$mwin = $('<div id=mwin/>').attr('mid',message.id).addClass('message').append($mc).appendTo(document.body);
+			$mwin.append($('<div class=remover/>').text('X').click(closeMWin));
 			sides.forEach(function(side){
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
 			});

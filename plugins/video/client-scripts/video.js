@@ -206,20 +206,50 @@
 			miaou.md.registerRenderer(function($c, m){
 				if (!m.content) return;
 				var match = m.content.match(/^!!video\s*@(\w[\w_\-\d]{2,})/);
-				if (!match) return;				
+				if (!match) return;
 				var vd = $c.data('video');
 				if (!vd) {
-					vd = new VD(m.id, [m.authorname, match[1]]);
+					if ($c.closest('#mwin').length) {
+						// if we're inside a mwin, we'll try to get the content from the
+						//  standard message representation
+						var $normalMC = $('#messages .message[mid='+m.id+'] .content');
+						if ($normalMC.length) {
+							$c.append($normalMC.contents());
+							vd = $normalMC.data('video');
+							$normalMC.data('video', null);
+							$normalMC.text(m.content);
+							$c.data('video', vd).find('video').each(function(){ this.play() });
+							return true;
+						}
+					}
+					if (!vd) vd = new VD(m.id, [m.authorname, match[1]]);
 					$c.data('video', vd);
 				}
 				vd.render($c);
 				return true;
 			});
+			miaou.md.registerUnrenderer(function($c, m){
+				if (!m.content) return;
+				var match = m.content.match(/^!!video\s*@(\w[\w_\-\d]{2,})/);
+				if (!match) return;
+				var vd = $c.data('video');
+				if ($c.closest('#mwin').length) {
+					var $normalMC = $('#messages .message[mid='+m.id+'] .content');
+					if ($normalMC.length && vd) {
+						// returning to normal message
+						$normalMC.append($c.contents());
+						$normalMC.data('video', vd).find('video').each(function(){ this.play() });
+						return true;
+					}
+				}
+				if (vd) vd.off();
+			});
 			miaou.socket.on('video.msg', function(arg){
 				console.log('IN video.msg <-', arg);
-				var vd = $('.message[mid='+arg.mid+'] .content').eq(0).data('video');
-				if (!vd) return console.log('No VD !');
-				vd.receiveMsg(arg.msg);
+				$('.message[mid='+arg.mid+'] .content').each(function(){
+					var vd = $(this).data('video');
+					if (vd) vd.receiveMsg(arg.msg);
+				});
 			});
 		}
 	}
