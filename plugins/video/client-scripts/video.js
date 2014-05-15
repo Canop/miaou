@@ -109,6 +109,7 @@
 	}
 	VD.prototype.cut = function(){
 		this.started = false;
+		if (this.localStream) this.localStream.stop();
 		if (this.pc) {
 			this.pc.close();
 			this.pc = null;
