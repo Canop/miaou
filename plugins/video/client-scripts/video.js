@@ -65,9 +65,12 @@
 			$('<button/>').text('Start').click(this.on.bind(this)).appendTo(this.$controls);			
 		}
 		if (this.accept[0] && this.accept[1]) {
-			this.$cams.show();
-			if (this.medias.video) this.$status.hide();
-			else this.$status.text("Audio chat now running");
+			if (this.medias.video) {
+				this.$status.hide();
+				this.$cams.show();
+			} else {
+				this.$status.text("Audio chat now running");
+			}
 		} else {
 			this.$status.text(
 				this.usernames[+!this.index]+
