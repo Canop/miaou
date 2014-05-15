@@ -6,13 +6,13 @@ var Promise = require("bluebird"),
 	cache = require('bounded-cache')(200);
 
 function makeVD(shoe, message) {
-	var match = message.content.match(/^!!video\s*@(\w[\w_\-\d]{2,})/);
-	if (!match) throw  'Bad syntax. Use `!!video @somebody`';
+	var match = message.content.match(/^!!\w+\s*@(\w[\w_\-\d]{2,})/);
+	if (!match) throw  'Bad syntax. Use `!!video @somebody` or `!!audio @somebody`';
 	var vd = {
 		usernames:[message.authorname, match[1]],
 		shoes:[null, null]
 	};
-	if (vd.usernames[0]===vd.usernames[1]) throw "You can't have a video chat with yourself (sorry)";
+	if (vd.usernames[0]===vd.usernames[1]) throw "You can't have a video or audio chat with yourself (sorry)";
 	cache.set(message.id, vd);
 	return vd;
 }
@@ -44,11 +44,13 @@ function onCommand(cmd, shoe, m){
 exports.onNewShoe = function(shoe){
 	shoe.socket.on('video.msg', function(arg){ // pass the message to the other video chatter
 		getVD(shoe, arg.mid).spread(function(vd, index){
-			vd.shoes[+!index].emit('video.msg', arg);
+			var otherShoe = vd.shoes[+!index];
+			if (otherShoe) otherShoe.emit('video.msg', arg);
 		});
 	});
 }
 
 exports.registerCommands = function(cb){
-	cb('video', onCommand, "open a video chat. Type `!!video @somebody`");
+	cb('video', onCommand, "open a video+audio chat. Type `!!video @somebody`");
+	cb('audio', onCommand, "open a audio chat. Type `!!audio @somebody`");
 }

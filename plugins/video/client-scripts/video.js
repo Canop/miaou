@@ -3,7 +3,6 @@
 	"use strict";
 	
 	// FIXME ensure there's only one VD running at most
-	// FIXME allows the opening in a mwin
 	
 	// I'll make this configurable as soon as somebody asks for it
 	var pc_config = webrtcDetectedBrowser === 'firefox' ?
@@ -15,9 +14,11 @@
 		{'DtlsSrtpKeyAgreement': true},
 		{'RtpDataChannels': true}
 	]};
-	  
+
 	// The video descriptor, one per displayed miaou !!video message
-	function VD(mid, usernames){
+	// medias : something like {video:true, audio:true}
+	function VD(mid, usernames, medias){
+		this.medias = medias;
 		this.mid = mid;
 		this.usernames = usernames;
 		this.index = -1;
@@ -31,11 +32,11 @@
 	VD.prototype.render = function($c){ // renders the VD in a message, called only once
 		$c.css('background','#F0EAD6');
 		if (this.index===-1) {
-			$c.text(this.usernames[0] + " proposed a video chat to " + this.usernames[1]);
+			$c.text(this.usernames[0] + " proposed a video/audio chat to " + this.usernames[1]);
 			return;
 		}
 		this.$controls = $('<div>').addClass('video-controls').append(
-			$('<i>').text('Video chat with @'+this.usernames[+!this.index])
+			$('<i>').text((this.medias.video ? 'Video' : 'Audio') + ' chat with @'+this.usernames[+!this.index])
 		).appendTo($c);
 		this.$status = $('<div>').addClass('video-status').appendTo($c);
 		this.localVideo = $('<video autoplay muted>').addClass('local').css({
@@ -65,7 +66,8 @@
 		}
 		if (this.accept[0] && this.accept[1]) {
 			this.$cams.show();
-			this.$status.text("Both have accepted").hide();
+			if (this.medias.video) this.$status.hide();
+			else this.$status.text("Audio chat now running");
 		} else {
 			this.$status.text(
 				this.usernames[+!this.index]+
@@ -90,7 +92,7 @@
 	}
 	VD.prototype.on = function(){
 		var vd = this;
-		getUserMedia({audio:true, video:true}, function(stream){
+		getUserMedia(this.medias, function(stream){
 			vd.localStream = stream;
 			vd.localVideo.src = window.URL.createObjectURL(stream);
 			vd.localVideo.play();
@@ -117,9 +119,7 @@
 		this.sendMsg('off');
 	}
 	VD.prototype.tryStart = function(){
-		console.log('tryStart 1', !this.started, !!this.localStream);
 		if (this.started || !this.localStream) return;
-		console.log('tryStart 2');
 		var vd = this;
 		try {
 			this.pc = new RTCPeerConnection(pc_config, pc_constraints);
@@ -150,8 +150,6 @@
 			return;
 		}
 		this.pc.addStream(this.localStream);
-		console.log('tryStart 3');
-		console.log(this.index===0, this.ready[1], this.accept[0], this.accept[1], '=>', this.index===0 && this.ready[1] && this.accept[0] && this.accept[1]);
 		if (this.accept[0] && this.accept[1]) {
 			this.started = true;
 			if (this.index===0) {
@@ -205,7 +203,7 @@
 		start: function(){
 			miaou.md.registerRenderer(function($c, m){
 				if (!m.content) return;
-				var match = m.content.match(/^!!video\s*@(\w[\w_\-\d]{2,})/);
+				var match = m.content.match(/^!!(video|audio)\s*@(\w[\w_\-\d]{2,})/);
 				if (!match) return;
 				var vd = $c.data('video');
 				if (!vd) {
@@ -222,7 +220,11 @@
 							return true;
 						}
 					}
-					if (!vd) vd = new VD(m.id, [m.authorname, match[1]]);
+					if (!vd) {
+						console.log('Command :', match[1]);
+						var medias = {audio:true, video:match[1]==='video'};
+						vd = new VD(m.id, [m.authorname, match[2]], medias);
+					}
 					$c.data('video', vd);
 				}
 				vd.render($c);
@@ -230,7 +232,7 @@
 			});
 			miaou.md.registerUnrenderer(function($c, m){
 				if (!m.content) return;
-				var match = m.content.match(/^!!video\s*@(\w[\w_\-\d]{2,})/);
+				var match = m.content.match(/^!!(video|audio)\s*@(\w[\w_\-\d]{2,})/);
 				if (!match) return;
 				var vd = $c.data('video');
 				if ($c.closest('#mwin').length) {
