@@ -255,21 +255,12 @@ var miaou = miaou || {};
 	md.showMessageMenus = function(){
 		md.hideMessageMenus();
 		var $message = $(this), message = $message.data('message'), infos = [],
-		created = message.created+chat.timeOffset, m = moment(created*1000);
-		if (message.author===me.id) {
-			if (!message.locked) {
-				if (Date.now()/1000 - created < miaou.chat.MAX_AGE_FOR_EDIT) {
-					if (message.content) {
-						$('<button>').addClass('deleteButton').text('delete').appendTo($message.find('.user'));
-						$('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
-					}
-				} else {
-					infos.push('too old to edit');
-				}
-			}
-		} else {
-			$('<button>').addClass('replyButton').text('reply').appendTo($message.find('.user'));
-		}
+			created = message.created+chat.timeOffset, m = moment(created*1000);
+		miaou.ms.updateStatus(message);
+		if (message.status.deletable) $('<button>').addClass('deleteButton').text('delete').appendTo($message.find('.user'));
+		if (message.status.editable) $('<button>').addClass('editButton').text('edit').appendTo($message.find('.user'));
+		if (message.status.answerable) $('<button>').addClass('replyButton').text('reply').appendTo($message.find('.user'));
+		if (message.old && !message.editable) infos.push('too old to edit');
 		infos.push(formatMoment(m));
 		$('<div>').addClass('messagemenu').html(
 			infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +

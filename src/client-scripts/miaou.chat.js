@@ -95,7 +95,6 @@ miaou.chat = {
 		});
 	}
 	
-	
 	var listeners = {};
 
 	// Registers for an event ("incoming_message", "sending_message")

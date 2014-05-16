@@ -14,7 +14,7 @@ exports.configure = function(config){
 	});
 	commands['help'] = {fun:function(cmd, shoe, m){
 		setTimeout(function(){
-			var message = {content:helpmess, authorname:botname, room:shoe.room.id, created:~~(Date.now()/1000)};
+			var message = {content:helpmess, authorname:botname, room:shoe.room.id, created:Date.now()/1000|0};
 			shoe.db.on().then(function(){
 				return bot || this.getBot(botname).then(function(b){ bot = b; return b })
 			}).then(function(b){
@@ -29,11 +29,13 @@ exports.configure = function(config){
 	}};
 }
 
+// may return a promise
+// called with context being a db connection
 exports.onMessage = function(shoe, m){
 	var cmdMatch = m.content.match(/^!!(\w+)/);
 	if (cmdMatch) {
 		var cmd = cmdMatch[1] ;
-		if (commands[cmd]) commands[cmd].fun(cmd, shoe, m);
+		if (commands[cmd]) return commands[cmd].fun.call(this, cmd, shoe, m);
 		else throw ('Command "' + cmd + '" not found');
 	}
 }

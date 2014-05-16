@@ -538,7 +538,7 @@ exports.upgrade = function(component, patchDirectory, cb){
 //////////////////////////////////////////////// #global API
 
 function now(){
-	return ~~(Date.now()/1000);
+	return Date.now()/1000|0;
 }
 
 function logQuery(sql, args) { // used in debug

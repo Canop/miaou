@@ -13,14 +13,14 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * Persisted
 * Searchable
 * graphical view of chat's history
-* pluggable architecture
-* Votes
-* Pin and star
 * Markdown formatting, with keyboard shortcuts
 * Message preview
 * Image boxing
 * Pings, optional desktop notification and loud pings
 * Cross-rooms pings, ping autocompletion
+* pluggable architecture
+* Votes
+* Pin and star
 * Message replying
 * Message edition
 * Permanent message links

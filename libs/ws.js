@@ -167,7 +167,7 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('pings', pings);
 		}).finally(db.off);
 	}).on('enter', function(roomId){
-		var now = ~~(Date.now()/1000);
+		var now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now);
 		if (shoe.room && roomId==shoe.room.id){
 			console.log('WARN : user already in room'); // how does that happen ?
@@ -241,7 +241,7 @@ function handleUserInRoom(socket, completeUser){
 		}
 		var now = Date.now(),
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
-			seconds = ~~(now/1000), content = message.content.replace(/\s+$/,'');
+			seconds = now/1000|0, content = message.content.replace(/\s+$/,'');
 		if (content.length>maxContentLength) {
 			shoe.error('Message too big, consider posting a link instead', content);
 		} else if (now-shoe.lastMessageTime<minDelayBetweenMessages) {
@@ -256,13 +256,9 @@ function handleUserInRoom(socket, completeUser){
 			} else {
 				m.created = seconds;
 			}
-			try {
-				commands.onMessage(shoe, m);
-			} catch (e) {
-				return shoe.error(e, content);
-			}
-			db.on(m)
-			.then(db.storeMessage)
+			db.on([shoe, m])
+			.spread(commands.onMessage)
+			.then(function(){ return this.storeMessage(m) })
 			.then(function(m){
 				if (m.changed) {
 					m.vote = '?';
@@ -274,6 +270,8 @@ function handleUserInRoom(socket, completeUser){
 					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
 					if (pings) return this.storePings(roomId, pings.map(function(s){ return s.slice(1) }), m.id);
 				}
+			}).catch(function(e) {
+				shoe.error(e, m.content);
 			}).finally(db.off)
 		}
 	}).on('vote', function(vote){
@@ -326,7 +324,7 @@ function handleUserInRoom(socket, completeUser){
 		}).then(function(r){
 			lounge = r;
 			var content = otherUser.name+' has been invited to join this private room.',
-				m = { content:content, author:shoe.publicUser.id, authorname:shoe.publicUser.name, room:lounge.id, created:~~(Date.now()/1000) };
+				m = { content:content, author:shoe.publicUser.id, authorname:shoe.publicUser.name, room:lounge.id, created:Date.now()/1000|0 };
 			return this.storeMessage(m);
 		}).then(function(m){
 			message = m;
