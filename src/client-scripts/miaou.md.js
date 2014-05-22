@@ -48,6 +48,10 @@ var miaou = miaou || {};
 	md.getMessages = function(){
 		return $('#messages > .message').map(function(){ return $(this).data('message') }).get();
 	}
+	md.getMessage = function(mid){
+		var $message = $('#messages > .message[mid='+mid+']');
+		if ($message.length) return $message.eq(0).data('message');
+	}
 
 	md.permalink = function(message){
 		return location.href.match(/^[^&#]*/) + '#' + message.id;
@@ -196,10 +200,11 @@ var miaou = miaou || {};
 		else if (message.changed) $md.addClass('edited');
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
+				var oldMessage = messages[insertionIndex];
 				if (message.vote==='?') {
-					message.vote = messages[insertionIndex].vote;
+					message.vote = oldMessage.vote;
 				}
-				if (message.content===messages[insertionIndex].content) {
+				if (message.content===oldMessage.content && message.authorname===oldMessage.authorname) {
 					// we take the old message content, so as not to lose the possible replacements (e.g. boxing)
 					$md.append($('#messages > .message[mid='+message.id+'] .content'));
 				}

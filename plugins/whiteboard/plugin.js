@@ -1,4 +1,4 @@
-var cache = require('bounded-cache')(100); // not necessarely the last version, we don't care
+var cache = require('bounded-cache')(100); // not necessarily the last version, we don't care
 
 var r = /^\s*!!whiteboard(\s|$)/;
 

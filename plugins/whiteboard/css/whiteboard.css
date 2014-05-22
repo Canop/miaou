@@ -1,0 +1,9 @@
+#messages .message.whiteboard .user::before {
+	font-family: "fontello";
+	content: "\e824";
+	position: absolute;
+	z-index: 2;
+	color: #aaa;
+	right: 8px;
+	top: 1px;
+}}
