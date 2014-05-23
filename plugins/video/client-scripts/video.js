@@ -225,7 +225,6 @@
 						}
 					}
 					if (!vd) {
-						console.log('Command :', match[1]);
 						var medias = {audio:true, video:match[1]==='video'};
 						vd = new VD(m.id, [m.authorname, match[2]], medias);
 					}

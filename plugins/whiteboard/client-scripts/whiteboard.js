@@ -13,7 +13,6 @@
 				}
 			});
 			miaou.md.registerRenderer(function($c, m){
-				console.log(r.test(m.content), m);
 				if (r.test(m.content)) {
 					$c.append(miaou.mdToHtml(m.content.replace(r,''), true, m.authorname));
 					$c.closest('#messages .message').addClass('whiteboard');
@@ -24,9 +23,7 @@
 			miaou.chat.on('sending_message', function(m){
 				if (m.id) {
 					var oldMessage = miaou.md.getMessage(m.id);
-					console.log('oldMessage:',oldMessage);
 					if (oldMessage && oldMessage.whiteboard && oldMessage.author!==me.id) {
-						console.log('WB');
 						// to avoid an error, let's silently restore the !!whiteboard if it's missing
 						m.content = m.content.replace(/^(\s*!!\w*\s*)?/,'!!whiteboard ');
 					}
