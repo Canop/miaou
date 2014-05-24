@@ -1,10 +1,10 @@
 var request = require('request'),
 	url = require('url'),
 	$$ = require('cheerio'),
-	cache = require('bounded-cache')(200),
+	cache = require('bounded-cache')(300),
 	Deque = require("double-ended-queue"),
 	TTL = 30*60*1000,
-	tasks = new Deque(100), currentTask;
+	tasks = new Deque(200), currentTask;
 
 function dequeue(){
 	if (currentTask) return;
@@ -85,7 +85,7 @@ function onCommand(cmd, shoe, m){
 }
 
 exports.registerCommands = function(cb){
-	cb('wiki', onCommand, "displays the relevant Wikipedia page (English site)");
+	cb('wiki', onCommand, "displays the relevant Wikipedia page (English site). Example : `!!wiki Neil Armstrong`");
 }
 
 // intercepts links to wikipedia and sends boxed abstracts.

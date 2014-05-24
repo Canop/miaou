@@ -205,10 +205,14 @@
 
 	miaou.chat.plugins.video = {
 		start: function(){
-			miaou.md.registerRenderer(function($c, m){
-				if (!m.content) return;
+			miaou.md.registerRenderer(function($c, m, oldMessage){
+				if (!m.content || oldMessage) return;
 				var match = m.content.match(/^!!(video|audio)\s*@(\w[\w_\-\d]{2,})/);
 				if (!match) return;
+				if (!$c.closest('#mwin,#messages').length) {
+					$c.text(match[1]);
+					return true;
+				}
 				var vd = $c.data('video');
 				if (!vd) {
 					if ($c.closest('#mwin').length) {

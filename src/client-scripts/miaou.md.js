@@ -84,10 +84,11 @@ var miaou = miaou || {};
 		$div.empty();
 		messages.forEach(function(m){
 			if (!m.content) return;
-			var $content = $('<div>').addClass('content').html(miaou.mdToHtml(m.content, false, m.authorname));
+			var $content = $('<div>').addClass('content');
 			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
 				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment((m.created+chat.timeOffset)*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
-			).appendTo($div)
+			).appendTo($div);
+			md.render($content, m);
 			if ($content.height()>80) {
 				$content.addClass("closed");
 				$md.append('<div class=opener>');
@@ -202,16 +203,20 @@ var miaou = miaou || {};
 		$content.find('img').load(resize);
 	}
 
+	// inserts or updates a message in the main #messages div
 	md.addMessage = function(message){
-		var messages = md.getMessages(), insertionIndex = messages.length; // -1 : insert at begining, i>=0 : insert after i
-		var wasAtBottom = isAtBottom();
+		var messages = md.getMessages(), oldMessage,
+			insertionIndex = messages.length, // -1 : insert at begining, i>=0 : insert after i
+			wasAtBottom = isAtBottom(),
+			$md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
+			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
+			$mc,
+			votesHtml = votesAbstract(message);
 		if (messages.length===0 || message.id<messages[0].id) {
 			insertionIndex = -1;
 		} else {
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
-		var $md = $('<div>').addClass('message').data('message', message).attr('mid', message.id);
-		var $user = $('<div>').addClass('user').text(message.authorname).appendTo($md);
 		if (message.bot) $user.addClass('bot');
 		else chat.topUserList({id: message.author, name: message.authorname});
 		if (message.authorname===me.name) {
@@ -222,13 +227,13 @@ var miaou = miaou || {};
 		else if (message.changed) $md.addClass('edited');
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
-				var oldMessage = messages[insertionIndex];
-				if (message.vote==='?') {
+				oldMessage = messages[insertionIndex];
+				if (message.vote === '?') {
 					message.vote = oldMessage.vote;
 				}
-				if (message.content===oldMessage.content && message.authorname===oldMessage.authorname) {
+				if (message.content===oldMessage.content) {
 					// we take the old message content, so as not to lose the possible replacements (e.g. boxing)
-					$md.append($('#messages > .message[mid='+message.id+'] .content'));
+					$mc = $('#messages > .message[mid='+message.id+'] .content');
 				}
 				$('#messages > .message').eq(insertionIndex).replaceWith($md);
 			} else {
@@ -237,12 +242,11 @@ var miaou = miaou || {};
 		} else {
 			$md.prependTo('#messages');
 		}
-		if (!$md.find('.content').length) {
-			md.render($('<div>').addClass('content').appendTo($md), message);
-		}
-		resize($md, wasAtBottom);
-		var votesHtml = votesAbstract(message);
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
+		if (!$mc) $mc = $('<div>').addClass('content');
+		$mc.appendTo($md);
+		md.render($mc, message, oldMessage);
+		resize($md, wasAtBottom);
 		md.showMessageFlowDisruptions();
 		md.updateOlderAndNewerLoaders();
 		if (wasAtBottom && message.id==$('#messages > .message').last().attr('mid')) md.scrollToBottom();

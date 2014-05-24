@@ -17,11 +17,18 @@
 			$p.append("<i>"+game.players[1].name+"</i> proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");
 		}
 	}
+	
+	// renders the message when it's in small or side containers
+	function renderAbstract($c, m, game){
+		if (game.status === "ask") {
+			$c.text(game.type + ' not yet started');
+			return;
+		}
+		miaou.games[game.type].render($c, m, game, true);
+	}
 
-	function renderMessage($c, m, game){
+	function renderHelp($c, game) {
 		var $helpDiv;
-		if (game.status === "ask") return renderAsk($c, m, game);
-		miaou.games[game.type].render($c, m, game);
 		$c.css('position', 'relative'); // <- fixme : find a less hacky solution than changing $c
 		$('<div>?</div>').css({
 			position:'absolute', top:0, left:0, height:'20px', width:'20px', borderRadius:'0 0 10px 0',
@@ -37,6 +44,13 @@
 				$helpDiv.remove();
 			}
 		);
+	}
+
+	function renderMessage($c, m, game){
+		if (!$c.closest('#messages,#mwin').length) return renderAbstract($c, m, game);
+		if (game.status === "ask") return renderAsk($c, m, game);
+		miaou.games[game.type].render($c, m, game);
+		renderHelp($c, game);
 	}
 
 	miaou.chat.plugins.ludogene = {

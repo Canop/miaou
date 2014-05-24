@@ -1,4 +1,5 @@
 // This is a temporary implementation for the Flore GUI
+// Hopefully I'll have a prettier rendering
 
 (function(){
 
@@ -11,7 +12,7 @@
 		bg = Snap.hsb(.2, .7, .3),
 		boardCount = 0;
 
-	function Panel(m, g, s, availableWidth){
+	function Panel(m, g, s, availableWidth, abstract){
 		this.m = m;
 		this.g = g; // game
 		this.s = s; // snap thing
@@ -20,7 +21,16 @@
 		this.grads = this.colors.map(function(c){ return s.gradient("r(0.3,0.3,1)"+c+"-(0,0,0)") });
 		g.players.forEach(function(p,i){ if (p.id===me.id) this.u=i }, this);
 		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg);
-		if (availableWidth>400) {
+		if (abstract) {
+			this.layout = "row";
+			this.W = availableWidth;
+			this.H = 45;
+			this.XB = 0;
+			this.RS = this.W - 15; // right of the scores
+			this.YB = (this.H - T*CS)/2;
+			this.XS = 20;
+			this.LHS = 20;
+		} else if (availableWidth>400) {
 			this.layout = "row";
 			this.W = Math.min(700, 400+.3*(availableWidth-400)); // width of the whole drawed area
 			this.H = 215; // height of the whole drawed area
@@ -28,6 +38,7 @@
 			this.RS = this.XB - 15; // right of the scores
 			this.YB = (this.H - T*CS)/2;
 			this.XS = Math.max(20, this.XB-194);
+			this.LHS = 28; // height of a score line
 		} else {
 			// column layout's reason d'etre is the mobile version of miaou
 			this.layout = "column";
@@ -38,10 +49,13 @@
 			this.RS = this.W - 15;
 			this.YB = 70;
 			this.XS = this.XB+15;
+			this.LHS = 28; // height of a score line
 		}
+		this.abstract = abstract;
 	}
 
 	Panel.prototype.buildBoard = function(){
+		if (this.abstract) return;
 		this.holes = [];
 		for (var i=0; i<T; i++) this.holes[i] = [];
 	}
@@ -56,6 +70,7 @@
 	}
 
 	Panel.prototype.drawBoard = function(){
+		if (this.abstract) return;
 		var panel = this, s = this.s, cells = this.g.cells, XB = this.XB, YB = this.YB,
 			userIsCurrentPlayer = panel.g.current!==-1 && panel.u===panel.g.current;
 		for (var i=0; i<T; i++) {
@@ -99,14 +114,13 @@
 	Panel.prototype.buildScores = function(){
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
-			var name = player.name;
-			return s.text(XS, 28*(i+1), name.length>21 ? name.slice(0,18)+'…' : name).attr({
-				fill: panel.colors[i],
-				fontWeight: 'bold'
-			})
+			var name = player.name,
+				attr = { fill:panel.colors[i] };
+			if (!panel.abstract) attr.fontWeight = 'bold';
+			return s.text(XS, panel.LHS*(i+1), name.length>21 ? name.slice(0,18)+'…' : name).attr(attr);
 		});
 		panel.scores = panel.g.players.map(function(player, i){
-			return s.text(RS, 28*(i+1), '0').attr({
+			return s.text(RS, panel.LHS*(i+1), '0').attr({
 				fill: panel.colors[i],
 				fontWeight: 'bold', textAnchor: 'end'
 			})
@@ -114,15 +128,15 @@
 	}
 
 	Panel.prototype.drawScores = function(){
-		this.scores[0].node.innerHTML = (this.g.scores[0]);
+		this.scores[0].node.innerHTML = (this.g.scores[0]); // Q : what's the proper way to do this using snapsvg ?
 		this.scores[1].node.innerHTML = (this.g.scores[1]);
 		if (this.currentPlayerMark) this.currentPlayerMark.remove();
 		if (this.g.current >= 0) {
-			this.currentPlayerMark = this.s.text(this.XS-15, 28*this.g.current+28, "►").attr({
+			this.currentPlayerMark = this.s.text(this.XS-15, this.LHS*(this.g.current+1), "►").attr({
 				fill: this.grads[this.g.current], fontWeight: 'bold'
 			})
 		} else {
-			this.currentPlayerMark = this.s.text(this.XS-18, 28*(this.g.scores[1]>this.g.scores[0])+28, "♛").attr({
+			this.currentPlayerMark = this.s.text(this.XS-18, this.LHS*((this.g.scores[1]>this.g.scores[0])+1), "♛").attr({
 				fill: "Goldenrod", fontWeight: 'bold', fontSize: "140%"
 			})
 		}
@@ -130,13 +144,13 @@
 
 	if (!miaou.games) miaou.games = {};
 	miaou.games.Flore = {
-		render: function($c, m, g){
+		render: function($c, m, g, abstract){
 			Flore.restore(g);
 			$c.empty().css('background', bg).closest('.message').removeClass('edited');
 			var id = 'flore_board_'+ boardCount++,
 				$s = $('<svg id='+id+'></svg>').appendTo($c),
 				s = Snap('#'+id), // <- there's probably something cleaner when you have the element, I don't know snapsvg well enough
-				p = new Panel(m, g, s, $c.width());
+				p = new Panel(m, g, s, $c.width(), abstract);
 			$s.width(p.W).height(p.H);
 			$c.data('ludo-panel', p);
 			if (g.status !== "ask") m.locked = true;
@@ -152,13 +166,6 @@
 			Flore.apply(panel.g, move);
 			panel.drawBoard();
 			panel.drawScores();
-			if (move.lines) {
-				move.lines.forEach(function(line){
-					var lm = panel.lineMark(line, move.p).animate({fillOpacity:0}, 6000, mina.linear, function(){
-						lm.remove();
-					});
-				});
-			}
 		},
 		fillHelp: function($div){
 			$div.css({

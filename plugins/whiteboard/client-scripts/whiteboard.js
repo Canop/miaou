@@ -14,6 +14,7 @@
 			});
 			miaou.md.registerRenderer(function($c, m){
 				if (r.test(m.content)) {
+					$c.empty();
 					$c.append(miaou.mdToHtml(m.content.replace(r,''), true, m.authorname));
 					$c.closest('#messages .message').addClass('whiteboard');
 					m.whiteboard = true;

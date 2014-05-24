@@ -84,12 +84,12 @@ miaou.chat = {
 			}, 3*60*1000);
 			miaou.startChatWS();
 			miaou.bindChatGui();
-			md.registerRenderer(function($c, message){
-				$c.append(message.content ? miaou.mdToHtml(message.content, true, message.authorname) : '')
+			md.registerRenderer(function($c, message, oldMessage){
+				if (oldMessage && message.content===oldMessage.content && $c.text().length) return; // mainly to avoid removing boxed content
+				$c.append(message.content ? miaou.mdToHtml(message.content, !!$c.closest('#messages').length, message.authorname) : '')
 			});
 			pluginsToStart.forEach(function(name){
 				chat.plugins[name].start();
-				console.log("Plugin " + name + " started");
 			});
 		});
 	}
