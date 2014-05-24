@@ -1,7 +1,7 @@
 (function(){
 
-	// TODO don't let the !!whiteboard be edited away
-	// TODO hook also message sending to ensure there's still the !!whiteboard text (store here the id of the wb messages ?)
+	// TODO keep whiteboard icon on vote/pin
+	// TODO hide "!!whiteboard" in notables messages
 
 	var r = /^\s*!!whiteboard(\s|$)/;
 

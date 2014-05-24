@@ -66,7 +66,6 @@ miaou.chat = {
 
 	chat.start = function(){		
 		var md = miaou.md;
-				
 		$(function(){
 			vis(function(){
 				if (vis()) {

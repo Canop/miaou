@@ -8,11 +8,33 @@ var miaou = miaou || {};
 		renderers = [], unrenderers = [],
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
 
-	md.registerRenderer = function(fun){
-		renderers.unshift(fun);
+	// registers a function which will be called when a message needs rendering
+	// Unless a renderer returns true, the other renderers will be called and
+	//  the last one will be the default, markdown based, renderer. If a renderer
+	//  has nothing specific to do, it should do nothing and return undefined.
+	// Passed arguments are
+	//  - $c : the div in which to render the message
+	//  - the message
+	//  - the previous version of the message if it's a replacement
+	// If it's a re-rendering (message was edited, or voted, etc.) the $c div
+	//  may be already rendered.
+	// $c is already added to the dom, which means it's possible to test the
+	//  parents if the rendering depends on it
+	md.registerRenderer = function(fun, postrendering){
+		renderers[postrendering?'push':'unshift'](fun);
 	}
 	md.registerUnrenderer = function(fun){
 		unrenderers.unshift(fun);
+	}
+	md.render = function($content, message, oldMessage){
+		for (var i=0; i<renderers.length; i++){
+			if (renderers[i]($content, message, oldMessage)) break;
+		};
+	}
+	md.unrender = function($content, message){
+		for (var i=0; i<unrenderers.length; i++){
+			if (unrenderers[i]($content, message)) break;
+		};
 	}
 
 	function votesAbstract(message){
@@ -226,16 +248,6 @@ var miaou = miaou || {};
 		if (wasAtBottom && message.id==$('#messages > .message').last().attr('mid')) md.scrollToBottom();
 	}
 
-	md.render = function($content, message){
-		for (var i=0; i<renderers.length; i++){
-			if (renderers[i]($content, message)) break;
-		};		
-	}
-	md.unrender = function($content, message){
-		for (var i=0; i<unrenderers.length; i++){
-			if (unrenderers[i]($content, message)) break;
-		};		
-	}
 
 	md.showMessageFlowDisruptions = function(){
 		var lastMessage;
