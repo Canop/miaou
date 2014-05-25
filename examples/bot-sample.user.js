@@ -1,19 +1,27 @@
 // ==UserScript==
-// @namespace		http://dystroy.org/miaou
-// @name            MiaouBotSample
-// @author          dystroy
-// @version         0.1
-// @run-at          document-end
-// @match			http://127.0.0.1:8204/* 
-// @match			http://localhost:8204/* 
-// @match			http://dystroy.org/miaou/* 
+// @namespace        http://dystroy.org/miaou
+// @name             MiaouBotSample
+// @author           dystroy
+// @version          0.1
+// @run-at           document-end
+// @match            http://127.0.0.1:8204/* 
+// @match            http://localhost:8204/* 
+// @match            http://dystroy.org/miaou/* 
 // ==/UserScript==
+
+// This sample bot lives in your browser using your account. It does 3 things :
+//  - it sometimes pongs when you're pinged
+//  - if echoes any text in a message starting with "echo "
+//  - it prettifies the short messages you send
+//
+// This bot isn't meant for direct use but as a basis and doc for your own bots.
+// Now... Please test your bots in a room where you wouldn't disturb other users.
 
 var code = function(){
 	
 	if (!miaou || !miaou.chat) return;
 
-	var IAmPingedRegex = new RegExp('@'+me.name+'(\\b|$)');
+	var IAmPingedRegex = new RegExp('@'+me.name+'(\\s|$)');
 	// when a message comes in, let's handle it
 	miaou.chat.on('incoming_message', function(m){
 		if (!(m.created > miaou.chat.enterTime)) return; // we only handle new messages
@@ -32,14 +40,13 @@ var code = function(){
 	var deco = ['','*','**','***','---','`'];
 	// when a message is sent by the host user, let's make it prettier
 	miaou.chat.on('sending_message', function(m){
-		if (/^\w[^\n`*\/]*$/.test(m.content)) {
+		if (/^\w[^@\n`*\/]*$/.test(m.content)) { // be careful : not everything "should" be prettyfied
 			m.content = m.content.split(' ').map(function(t, b){
-				return b = deco[~~(Math.random()*deco.length)], b+t+b;
+				return b = deco[Math.random()*deco.length|0], b+t+b;
 			}).join(' ');
 		}
 	});
 
-	// Now... Please test your bots in room where you won't disturb everybody ^^
 }
 	
 var script = document.createElement('script');

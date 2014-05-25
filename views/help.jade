@@ -48,6 +48,7 @@ html
 					pre http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg
 					p is rendered as
 					div.message-content(style="width:500px"): a(href="http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg",target="_blank"): img(src="http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg")
+					p If the image you want to display isn't available on internet but is on your computer, hit the <kbd>Upload</kbd> button. You'll then be presented a file selection dialog. The chosen image will be uploaded to imgur and inserted in your message.
 				h3 Code
 				div
 					p Code can be inlined in the text :
@@ -71,21 +72,16 @@ html
 					p You don't have to manually put the backtick quotes or the tabulations : you may also use <kbd>ctrl</kbd><kbd>K</kbd>.
 				h3 Ping and reply
 				div
-					p You can alert somebody who's in the chat by typing an arobase followed by his/her username in a message, as in
+					p You can alert another user by typing an arobase followed by his/her username in a message, as in
 					pre Hello @dystroy !
-					p If the user checked the "Be notified on ping" checkbox, he'll see a silent desktop notification.
+					p If the user checked the "Be notified on ping" checkbox, he'll see a silent notification.
 					p By hovering the name of a user in the list at the left, you reveal a <i>ping</i> button which inserts the related ping in the message area.
+					p If you choose to type the name instead of using the button, it's autocompleted. Hit the <kbd>tab</kbd> and <kbd>esc</kbd> keys to navigate through proposals. Users having been seen recently in the room are listed first but you can also ping somebody who never came to the room, (s)he will get an invitation to join it.
 					p By hovering the message of another user, you reveal a reply button. Replying inserts a specific type of ping, including a link to that message.
-				h3 Editing
-				div
-					p
-						| To edit one of your recent messages, simply hover it to reveal the <i>edit</i> button, change it, and then resubmit it. It will appear with the
-						span.vote &#xe80c;
-						| icon to everybody.
 				h3 Sand Box
 				div
 					p The message formatting syntax allows other possibilities, like alternate syntaxes for bold and italic, bullet or numbered lists, (small) titles. You can see then and practice in the <a href="static/test_format.html" target="_blank">sand box</a>.
-				h3 All Shortcuts
+				h3 Keyboard Shortcuts
 				div
 					table.indent
 						tr
@@ -117,30 +113,61 @@ html
 							td extends the selection to whole lines
 						tr
 							td <kbd>↑</kbd>
-							td lets you edit your previous message, if it's not too old
+							td lets you edit your previous message, if it's not too old. Use <kbd>↓</kbd> to get back
+						tr
+							td <kbd>tab</kbd>
+							td navigates through autocompletion proposals
+						tr
+							td <kbd>esc</kbd>
+							td gets you out of an autocompletion proposal, or out of a message editing
 					p Most often, the effect of a shorctut is reversed by redoing it. 
-			h2 Votes
+			h2 Actions on messages
 			div
+				p By hovering a message you reveal its date and a few buttons buttons allowing various actions.
+				h3 Votes
+				div
+					p
+						| There are 4 vote buttons :
+						span.vote &#xe813;
+						span.vote &#xe800;
+						span.vote &#xe808;
+						span.vote &#xe813;
+					p Those buttons let you express an appreciation or ensure the visibility of important messages.
+					table.indent
+						tr
+							td.vote &#xe801;
+							td Downvoting means that you disagree with or don't appreciate the message.
+						tr
+							td.vote &#xe800;
+							td Upvoting lets you show your appreciation or your agreement.
+						tr
+							td.vote &#xe808;
+							td Starring a message gives it some visibility.
+						tr
+							td.vote &#xe813;
+							td Pinning a message ensure its visibility in a much greater way than a star. Only room admins can do that.
+				h3 Permanent links
 				p
-					| By hovering a message you reveal a menu with the following buttons :
-					span.vote &#xe813;
-					span.vote &#xe800;
-					span.vote &#xe808;
-					span.vote &#xe813;
-				p Those buttons let you express an appreciation or ensure the visibility of important messages.
-				table.indent
-					tr
-						td.vote &#xe801;
-						td Downvoting means that you disagree with or don't appreciate the message.
-					tr
-						td.vote &#xe800;
-						td Upvoting lets you show your appreciation or your agreement.
-					tr
-						td.vote &#xe808;
-						td Starring a message gives it some visibility.
-					tr
-						td.vote &#xe813;
-						td Pinning a message ensure its visibility in a much greater way than a star. Only room admins can do that.
+					| By right-clicking the
+					span.vote &#xe815;
+					| button, you can copy a permanent link to the message.
+				h3 Floating messages
+				p
+					| The
+					span.vote &#xe81d;
+					| button lets you float a message in a window over the rest of the interface. Such a floating message isn't scrolled away when there's more messages coming in the chat, which is especially convenient for video or game messages. A floating message can be reduced to one of the four sides of the chat window. If the message is edited or changed, the reduced tab will take a yellow or red border.
+				h3 Editing
+				div
+					p
+						| To edit one of your recent messages, simply hover it to reveal the <kbd>edit</kbd> button, change it, and then resubmit it. It will appear with the
+						span.vote &#xe80c;
+						| icon to everybody.
+					p Instead of going for the button, you can also use the <kbd>↑</kbd> arrow key to edit your last message.
+					p
+						| Messages marked with
+						span.vote &#xe824;
+						| icon can be edited by anybody. Those messages are "white boards" and are created by starting a message with
+						code !!whiteboard
 			h2 Rooms
 			div
 				p Any user can create a new room, by clicking the relevant link on the home page. By creating a room you become his owner. You can then nominate admins or even owners.
@@ -153,6 +180,37 @@ html
 				p If you want to invite in your room a user who's already connected and in another room, the simplest solution is to ping him by typing <code>@hisusername</code>.
 				p If you want to invite somebody's who's not connected or maybe not even a user, simply give him the URL of the room.
 				p When a user wants to enter a private room before he has the right, he's offered the opportunity to request access. Users in the room see the requests and the room admins may accept or deny it.
+				h3 Private Messaging and Dialog Rooms
+				div
+					p When you hover the name of a user in the left column of the window, you see a <kbd>PM</kbd> button. This button lets you enter a special room created for you and the other user and in which you can discuss privately.
+					p You'll be able to get back to this room later, either by using the same <kbd>PM</kbd> button or by looking in the <i>Dialog Rooms</i> tab of Miaou's home page.
+			h2 Video/Audio
+			div
+				p You may launch a video chat with another connected user. Simply type
+				p
+					code !!video @somebody
+				p Note that both the command (<code>video</code>) and the user name (<code>somebody</code>) are autocompleted as you type (hit <kbd>tab</kbd> to navigate through proposals).
+				p If you don't want to see or being seen, you may launch a simple audio chat using
+				p
+					code !!audio @somebody
+				p In both case, no plugin is needed in the browser, it also works on most mobile phones.
+				p Some enterprise proxies block streaming. In that case you'll only see a black rectangle instead of the other chatter.
+			h2 Commands
+			div
+				p
+					| Some commands can be issued by typing their name after <code>!!</code>. They have various effects. To get the complete list, type
+					code !!help
+				p Here are some examples of commands :
+				h3 !!wiki
+				div
+					p adds to your message an abstract of a <i>en.wikipedia.org page</i>. For example :
+					p
+						code !!wiki Albert Einstein
+					p Note that you may also directly insert in a message a link to a wikipedia page (in the language of your choice).
+				h3 !!whiteboard
+				p This lets you make a message that anybody can edit.
+				h3 !!tribo
+				p <code>!!tribo @someuser</code> lets you start a game of Tribo. Just try it.
 			h2 Miaou Development
 			div
 				h3 Technical Stack
@@ -160,7 +218,9 @@ html
 				h3 Contribute
 				p Miaou has a small source code simply structured and should remain so. You may easily dive into the code which is shared on GitHub : <a href=https://github.com/Canop/miaou target=_blank>Canop/miaou</a>. If you'd like to help, contact me in the Miaou chat or in the StackOverflow JavaScript room where I often hang out. 
 				h3 Plugins
-				p Miaou accepts plugins. Two have been developed and are part of the main repository. If you'd like another plugin, ping me so that we can discuss that. The plugin API is very light but will be extended when the need arises.
+				p Miaou accepts server-side plugins. If you want to contribute a new feature, it probably should be done as a plugin, especially if it doesn't feel like a core feature.
+				h3 Bots
+				p Miaou is bot-friendly. Some bots live as plugins but there's also a client side API making it easy to write a userscript living in your browser. Here's an <a href=https://github.com/Canop/miaou/blob/master/examples/bot-sample.user.js>example</a>.
 				h3 Use the software on your server
 				p You can, of course, it's open-source for a reason. Miaou also provides a <a href="https://github.com/Canop/miaou/blob/master/vagrant/vagrant.md">vagrant configuration</a> to help you quickly set up a development environment. It is based on puppet, so you can as well reuse it.
 				

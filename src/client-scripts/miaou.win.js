@@ -1,10 +1,5 @@
 // Support for message windows, that is dockable floating dialogs that
 //   can display a message
-// Defined selectors :
-//   .mwincontainer
-//   .left, .bottom
-//   .mwintab
-//   #mwin
 
 var miaou = miaou || {};
 
