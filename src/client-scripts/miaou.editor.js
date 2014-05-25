@@ -49,7 +49,10 @@ miaou.editor = (function(){
 	}
 	
 	function tryautocomplete(){
-		if ($autocompleter) $autocompleter.remove();
+		if ($autocompleter) {
+			$autocompleter.remove();
+			$autocompleter = null;
+		}
 		var acname = getacname();
 		if (acname) return miaou.socket.emit('autocompleteping', acname);
 		var accmd = getaccmd();
