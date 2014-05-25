@@ -1,10 +1,11 @@
 // generic textarea functions
 
-// replace the selected part by what is returned by cb
-$.fn.replaceSelection = function(cb){
+// replace the selected part by rep, or what is returned by rep if it's a function
+$.fn.replaceSelection = function(rep){
 	return this.each(function(){		
 		var v = this.value, s = this.selectionStart, e = this.selectionEnd;
-		var toReplace = v.slice(s,e), replacement = cb.call(this, toReplace, v, s, e);
+		var toReplace = v.slice(s,e),
+			replacement = typeof rep === "function" ? rep.call(this, toReplace, v, s, e) : rep;
 		this.value = v.slice(0, s) + replacement + v.slice(e);
 		this.selectionEnd = e + replacement.length - toReplace.length;
 		this.selectionStart = e-s ? s : this.selectionEnd;

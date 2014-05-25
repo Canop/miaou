@@ -21,6 +21,9 @@ var miaou = miaou || {};
 			socket.emit('enter', room.id);
 		})
 		.on('set_enter_time', setEnterTime)
+		.on('server_commands', function(commands){
+			for (var key in commands) chat.commands[key] = commands[key];
+		})
 		.on('get_room', function(unhandledMessage){
 			socket.emit('enter', room.id);
 			socket.emit('message', unhandledMessage);

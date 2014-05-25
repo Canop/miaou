@@ -189,6 +189,7 @@ function handleUserInRoom(socket, completeUser){
 			return this.getNotableMessages(shoe.room.id, now-maxAgeForNotableMessages);
 		}).then(function(messages){
 			messages.forEach(function(m){ socket.emit('notable_message', lighten(m)) });
+			socket.emit('server_commands', commands.commandDescriptions);
 			socket.emit('welcome');
 			io.sockets.clients(shoe.room.id).forEach(function(s){
 				s.get('publicUser', function(err, u){

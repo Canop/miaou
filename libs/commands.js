@@ -3,12 +3,15 @@ var path = require('path'),
 	bot, botname = "miaou.help",
 	commands = {};
 
+exports.commandDescriptions = {}
+
 exports.configure = function(config){
 	var plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) }),
 		helpmess = 'For a detailed help on Miaou, see the [help page]('+server.url('/help')+')\nCommands :';
 	plugins.forEach(function(plugin){
 		if (plugin.registerCommands) plugin.registerCommands(function(name, fun, help){
 			commands[name] = {fun:fun, help:help};
+			exports.commandDescriptions[name] = help;
 			helpmess += '\n* `' + name + '` : ' + help;
 		});
 	});
@@ -27,6 +30,7 @@ exports.configure = function(config){
 			}).finally(shoe.db.off)
 		}, 10);
 	}};
+	exports.commandDescriptions['help'] = 'Help';
 }
 
 // may return a promise

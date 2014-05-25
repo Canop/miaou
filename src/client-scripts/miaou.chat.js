@@ -6,7 +6,8 @@ miaou.chat = {
 	DISRUPTION_THRESHOLD: 60*60, // seconds
 	nbUnseenMessages: 0, oldestUnseenPing: 0, lastReceivedPing: 0,
 	timeOffset: 0, enterTime: 0, // both in seconds since epoch, server time
-	plugins: [] // some might be unactive
+	plugins: [], // some might be unactive
+	commands: {} // all known commands issued with !! (value=description)
 };
 
 (function(chat){

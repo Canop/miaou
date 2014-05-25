@@ -3,7 +3,7 @@
 var miaou = miaou || {};
 miaou.editor = (function(){
 
-	var $input, input, stash, editedMessage, $pingmatcher, savedValue;
+	var $input, input, stash, editedMessage, savedValue, $autocompleter;
 
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
@@ -41,6 +41,31 @@ miaou.editor = (function(){
 	function getacname(){
 		var m = input.value.slice(0, input.selectionEnd).match(/(^|\W)@(\w\S*)$/);
 		return m ? m[2].toLowerCase() : null;
+	}
+	// returns the currently autocompletable typed command, if any
+	function getaccmd(){
+		var m = input.value.slice(0, input.selectionEnd).match(/(^|\W)!!(\w+)$/);
+		return m ? m[2].toLowerCase() : null;
+	}
+	
+	function tryautocomplete(){
+		if ($autocompleter) $autocompleter.remove();
+		var acname = getacname();
+		if (acname) return miaou.socket.emit('autocompleteping', acname);
+		var accmd = getaccmd();
+		if (accmd) {
+			savedValue = input.value;
+			$autocompleter = $('<div id=autocompleter/>').prependTo('#inputpanel');
+			Object.keys(miaou.chat.commands).filter(function(n){
+				return !n.indexOf(accmd)
+			}).forEach(function(name){
+				$('<span>').text(name).appendTo($autocompleter).click(function(){
+					$input.replaceSelection(name.slice(accmd.length));
+					$autocompleter.remove();
+					$autocompleter = null;
+				});
+			});
+		}
 	}
 
 	return {
@@ -107,10 +132,9 @@ miaou.editor = (function(){
 						return false;
 					}
 				} else if (e.which==27) { // esc
-					if ($pingmatcher && $pingmatcher.length && input.value!=savedValue) {
+					if ($autocompleter && $autocompleter.length && input.value!=savedValue) {
 						input.value = savedValue;
-						var acname = getacname();
-						if (acname) miaou.socket.emit('autocompleteping', acname);
+						tryautocomplete();
 					} else {
 						miaou.editor.cancelEdit();
 					}
@@ -118,20 +142,23 @@ miaou.editor = (function(){
 					sendInput();
 					return false;
 				} else if (e.which==9) { // tab
-					if ($pingmatcher && $pingmatcher.length) {
-						var index = ($pingmatcher.find('.selected').index()+1) % $pingmatcher.find('span').length;
-						miaou.editor.ping($pingmatcher.find('span').removeClass('selected').eq(index).addClass('selected').text());
+					if ($autocompleter && $autocompleter.length) {
+						var index = ($autocompleter.find('.selected').index()+1) % $autocompleter.find('span').length,
+							name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected').text(),
+							accmd = getaccmd();
+						if (accmd) {
+							input.selectionStart = input.selectionEnd - accmd.length;
+							$input.replaceSelection(name);
+							input.selectionStart = input.selectionEnd;
+						} else {
+							miaou.editor.ping(name);
+						}
 						return false;
 					}
 				}
 			}).on('keyup', function(e){
 				if (e.which===9) return false;
-				if ($pingmatcher) {
-					$pingmatcher.remove();
-					$pingmatcher = null;
-				}
-				var acname = getacname();
-				if (acname) miaou.socket.emit('autocompleteping', acname);
+				tryautocomplete();
 			}).focus();
 
 			$('#send').on('click', sendInput);
@@ -229,13 +256,13 @@ miaou.editor = (function(){
 			var acname = getacname();
 			savedValue = input.value;
 			if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
-			if ($pingmatcher) $pingmatcher.remove();
-			$pingmatcher = $('<div id=pingmatcher/>').prependTo('#inputpanel');
+			if ($autocompleter) $autocompleter.remove();
+			$autocompleter = $('<div id=autocompleter/>').prependTo('#inputpanel');
 			names.forEach(function(name){
-				$('<span>').text(name).appendTo($pingmatcher).click(function(){
+				$('<span>').text(name).appendTo($autocompleter).click(function(){
 					miaou.editor.ping(name);
-					$pingmatcher.remove();
-					$pingmatcher = null;
+					$autocompleter.remove();
+					$autocompleter = null;
 				});
 			});
 
