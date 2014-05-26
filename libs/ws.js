@@ -289,6 +289,7 @@ function handleUserInRoom(socket, completeUser){
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);
 	}).on('search', function(search){
+		if (!shoe.room) return;
 		db.on([shoe.room.id, search.pattern, 'english', 20])
 		.spread(db.search)
 		.then(function(results){
