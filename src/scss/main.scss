@@ -435,7 +435,8 @@ body.mobile #messagescroller {
 	margin: 0 3px 0 0;
 	border-radius: 3px;
 	box-shadow: 1px 1px 2px #999;		
-	font-size: 80%;
+	font-size: 10px;
+	line-height: 14px;
 	&.pmButton, &.deleteButton { // dirty 
 		right: 60px;
 	}
@@ -1040,7 +1041,7 @@ div.radios {
 	background: #d5cba6;
 }
 .message {
-	transition: background-color 2s;
+	transition: background-color 1s;
 	&.flash {
 		&:nth-child(odd) {
 			background: rgba(255, 215, 0, 0.6);
@@ -1048,7 +1049,10 @@ div.radios {
 		&:nth-child(even) {
 			background: rgba(215, 255, 0, 0.6);
 		}
-		transition: background-color 2s;	
+		transition: background-color 1s;	
+	}
+	a, a:visited {
+		color: Sienna ;
 	}
 }
 
