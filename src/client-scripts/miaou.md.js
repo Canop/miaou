@@ -156,7 +156,7 @@ var miaou = miaou || {};
 		$('<div>').addClass('error').append(
 			$('<div>').addClass('user error').text("Miaou")
 		).append(
-			$('<div>').addClass('content').text(error.txt || "an error occured - connexion might be damaged")
+			$('<div>').addClass('content').text(error.txt || "an error occured - connection might be damaged")
 		).appendTo('#messages');
 		if (error.mc && !$('#input').val()) !$('#input').val(error.mc);
 		md.scrollToBottom();
