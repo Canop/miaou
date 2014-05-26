@@ -139,6 +139,9 @@ miaou.editor = (function(){
 						input.value = savedValue;
 						tryautocomplete();
 					} else {
+						if (/^\s*@\w[\w_\-\d]{2,}(#\d+)?\s*$/.test(input.value)) {
+							input.value = '';
+						}
 						miaou.editor.cancelEdit();
 					}
 				} else if (e.which==13) { // enter
