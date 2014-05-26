@@ -298,6 +298,7 @@ section {
 		line-height: 18px;
 		font-style: italic;
 		color: #444;
+		font-size: 13px;
 		&:hover {
 			background: $profile-bg-color;
 		}
@@ -531,6 +532,8 @@ body.mobile .messagemenu .vote {
 }
 #notablemessages, #searchresults {
 	.message {
+		font-size: 13px;
+		padding-left: 6px;
 		border-bottom: thin dashed #aaa;
 		&:hover {
 			background: lighten($bg-color, 19%);
@@ -1073,9 +1076,13 @@ div.radios {
 #roomButtons {
 	text-align: center;
 }
-#changeroom, #editroom, #auths {
+#changeroom, #editroom{
 	float: right;
 	margin: 1px 3px;
+}
+#auths {
+	float: right;
+	margin: 1px 10px;
 }
 body.mobile #changeroom, body.mobile #editroom{
 	float: inherit;
