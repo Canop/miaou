@@ -24,10 +24,10 @@ miaou.userProfile = {
 				$container = $user.closest('#messages,#authspage,body').first(), ch = $container.height();
 			var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
 			if (up.top-ss<sh/2) css.top = up.top+1;
-			else css.bottom = ch-up.top-uh-3;
-			css.left = up.left + uw;
+			else css.bottom = ch-up.top-uh-4;
+			css.left = up.left + uw + 4;
 			if (!$message.hasClass('message')) {
-				css.left += 10; css.bottom -= 12; // :-(
+				css.left += 6; css.bottom -= 7; css.top += 10; // :-(
 			}
 			$p.css(css).appendTo($container);
 			$user.addClass('profiled');
