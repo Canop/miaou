@@ -3,7 +3,7 @@
 var miaou = miaou || {};
 miaou.editor = (function(){
 
-	var $input, input, stash, editedMessage, savedValue, $autocompleter;
+	var $input, input, stash, editedMessage, savedValue, $autocompleter, editwzin;
 
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
@@ -24,17 +24,16 @@ miaou.editor = (function(){
 			var m = {content: txt};
 			if (editedMessage) {
 				m.id = editedMessage.id;
-				editedMessage = null;
 				$('#cancelEdit').hide();
 				$('#help').show();
 				if (stash) $input.val(stash);
+				miaou.editor.cancelEdit();
 			}
 			stash = null;
 			miaou.chat.sendMessage(m);
 			$('#preview').html('');
 			if (!$(document.body).hasClass('mobile')) $input.focus();
 		}
-		$input.removeClass('edition');
 	}
 
 	// returns the currently autocompletable typed name, if any
@@ -118,7 +117,7 @@ miaou.editor = (function(){
 							if (messages[i].author == me.id) {
 								if (Date.now()/1000-messages[i].created < miaou.chat.MAX_AGE_FOR_EDIT) {
 									stash = input.value;
-									miaou.editor.editMessage(messages[i]);
+									miaou.editor.editMessage($('#messages .message[mid='+messages[i].id+']'));
 									return false;
 								}
 								break;
@@ -236,16 +235,19 @@ miaou.editor = (function(){
 			input.focus();
 		},
 		// toggle edition of an existing message
-		editMessage: function(message){
-			if (editedMessage && editedMessage.id===message.id){
+		editMessage: function($message){
+			var message = $message.data('message');
+			if (editedMessage){
+				var edmid = editedMessage.id;
 				this.cancelEdit();
-				return;
+				if (edmid===message.id) return;
 			}
 			editedMessage = message;
-			$input.addClass('edition').val(message.content).focus();
+			$input.val(message.content).focus();
 			input.selectionStart = input.selectionEnd = input.value.length;
 			$('#cancelEdit').show();
 			$('#help').hide();
+			editwzin = wzin($message, $('#input'), { fill:"rgba(136,45,23,0.15)", scrollables:'#messagescroller' });
 		},
 		// cancels edition
 		cancelEdit: function(){
@@ -254,7 +256,9 @@ miaou.editor = (function(){
 				$('#cancelEdit').hide();
 				$('#help').show();
 				editedMessage = null;
-				$input.removeClass('edition').focus();
+				$input.focus();
+				editwzin.remove();
+				editwzin = null;
 			}
 		},
 		// receives list of pings

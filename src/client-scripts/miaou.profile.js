@@ -27,7 +27,7 @@ miaou.userProfile = {
 			else css.bottom = ch-up.top-uh-4;
 			css.left = up.left + uw + 4;
 			if (!$message.hasClass('message')) {
-				css.left += 6; css.bottom -= 7; css.top += 10; // :-(
+				css.left += 6; css.bottom -= 7; //css.top += 10; // :-(
 			}
 			$p.css(css).appendTo($container);
 			$user.addClass('profiled');

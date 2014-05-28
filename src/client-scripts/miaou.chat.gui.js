@@ -3,7 +3,8 @@ var miaou = miaou || {};
 miaou.bindChatGui = function(){
 	var chat = miaou.chat,
 		md = miaou.md,
-		editor = miaou.editor;
+		editor = miaou.editor,
+		replyWzin;
 	
 	$('#messages').on('click', '.message .content img', function(e){
 		window.open(this.src);
@@ -40,7 +41,7 @@ miaou.bindChatGui = function(){
 	.on('click', '.closer', md.closer)
 	.on('click', '.editButton', function(){
 		miaou.userProfile.hide();
-		editor.editMessage($(this).closest('.message').data('message'));
+		editor.editMessage($(this).closest('.message'));
 	})
 	.on('click', '.deleteButton', function(){
 		miaou.userProfile.hide();
@@ -66,11 +67,18 @@ miaou.bindChatGui = function(){
 	})
 	.on('mouseenter', '.reply', function(e){
 		var mid = $(this).attr('to');
-		$('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).addClass('target');
+		var $target = $('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).eq(0);
+		if ($target.length) {
+			if (replyWzin) replyWzin.remove();
+			replyWzin = wzin($(this).closest('.message'), $target, { zIndex:60, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' });
+		}
 		e.stopPropagation();
 	})
 	.on('mouseleave', '.reply', function(){
-		$('.target').removeClass('target');
+		if (replyWzin) {
+			replyWzin.remove();
+			replyWzin = null;
+		}
 	})
 	.on('click', '.reply', function(e){
 		md.focusMessage(+$(this).attr('to'));

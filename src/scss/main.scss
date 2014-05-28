@@ -638,12 +638,6 @@ $input-buttons-width: 74px;
 	margin-left: 2px;
 	resize: none; 
 	float: left;
-	&.edition {
-		background: radial-gradient(circle at 100% 50%, transparent 20%, rgba(160,160,160,.3) 21%, rgba(160,160,160,.3) 34%, transparent 35%, transparent),
-			radial-gradient(circle at 0% 50%, transparent 20%, rgba(160,160,160,.3) 21%, rgba(160,160,160,.3) 34%, transparent 35%, transparent) 0 -50px;
-		background-color: white;
-		background-size: 15px 20px;
-	}
 }
 body.mobile #input {
 	height: $minput-height;
@@ -1039,11 +1033,10 @@ div.radios {
 	}
 }
 
-.message.target, .message.me.target,.message.goingto, .message.me.goingto {
+.message.goingto, .message.me.goingto {
 	background: #d5cba6;
 }
 .message {
-	transition: background-color 1s;
 	&.flash {
 		&:nth-child(odd) {
 			background: rgba(255, 215, 0, 0.6);
