@@ -3,13 +3,12 @@ var miaou = miaou || {};
 (function(){
 	var pingRegex, info;
 
-	function con(transports){
+	function con(){
 		var chat = miaou.chat,
 			md = miaou.md;
 		
-		info = { state:'connecting', start:Date.now(), transports:transports, nbmessages:0 };
-		var	socket = miaou.socket = io.connect(location.origin, {transports:transports});
-		console.log('Connecting with transports', transports);
+		info = { state:'connecting', start:Date.now(), nbmessages:0 };
+		var	socket = miaou.socket = io.connect(location.origin);
 
 		function setEnterTime(serverTime){
 			chat.enterTime = serverTime;

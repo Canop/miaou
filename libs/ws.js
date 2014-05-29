@@ -44,7 +44,7 @@ function Shoe(socket, completeUser){
 	this.room;
 	this.lastMessageTime;
 	this.db = db; // to be used by plugins or called modules
-	socket.set('publicUser', this.publicUser);
+	socket['publicUser'] = this.publicUser;
 }
 Shoe.prototype.error = function(err, messageContent){
 	console.log('ERR', err, 'for user', this.completeUser.name, 'in room', (this.room||{}).name);
@@ -123,17 +123,12 @@ function emitMessagesAfter(shoe, fromId, untilId, nbMessages){
 //  is the passed one. This function returns a promise as the search is asynchronous.
 // Note : this looks horribly heavy just to find if a user is in a room
 function userClients(clients, userIdOrName) {
-	if (clients.length===0) return [];
-	var found = [], n = 0, resolver = Promise.defer();
-	clients.forEach(function(s){
-		n++;
-		s.get('publicUser', function(err, u){
-			if (err) console.log('missing user on socket', err);
-			if (u.id===userIdOrName || u.name===userIdOrName) found.push(s);
-			if (--n===0) resolver.resolve(found);
-		});
+	console.log('in userClients');
+	return clients.filter(function(s){
+		var user = s['publicUser'];
+		console.log('U:',user);
+		return u.id===userIdOrName || u.name===userIdOrName;
 	});
-	return resolver.promise.bind(this);
 }
 
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
@@ -191,11 +186,11 @@ function handleUserInRoom(socket, completeUser){
 			messages.forEach(function(m){ socket.emit('notable_message', lighten(m)) });
 			socket.emit('server_commands', commands.commandDescriptions);
 			socket.emit('welcome');
+			console.log('before io.sockets.clients(shoe.room.id).forEach');
 			io.sockets.clients(shoe.room.id).forEach(function(s){
-				s.get('publicUser', function(err, u){
-					if (err) console.log('missing user on socket', err);
-					else socket.emit('enter', u);
-				});
+				var user = s['publicUser'];
+				if (!user) console.log('missing user on socket');
+				else socket.emit('enter', user);
 			});
 			return this.deletePings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
@@ -330,8 +325,8 @@ function handleUserInRoom(socket, completeUser){
 			return this.storeMessage(m);
 		}).then(function(m){
 			message = m;
-			return userClients.call(this, io.sockets.clients(shoe.room.id), otherUserId);
-		}).then(function(sockets){
+			console.log('before sockets = userClients');
+			sockets = userClients(io.sockets.clients(shoe.room.id), otherUserId);
 			if (sockets.length) {
 				sockets.forEach(function(s){
 					s.emit('invitation', {room:lounge.id, byname:shoe.publicUser.name, message:message.id});
@@ -359,6 +354,8 @@ function handleUserInRoom(socket, completeUser){
 			console.log(shoe.completeUser.name, "disconnected before entering a room");
 		}
 		popon(socketWaitingApproval, function(o){ return o.socket===socket });
+	}).on('error', function(e){
+		console.log('socket.io error:', e);
 	});
 
 	onNewShoePlugins.forEach(function(plugin){
@@ -370,10 +367,7 @@ function handleUserInRoom(socket, completeUser){
 
 exports.listen = function(server, sessionStore, cookieParser, _db){
 	db = _db;
-	io = socketio.listen(server);
-	io.set('log level', 2);
-	io.set('transports', [ 'websocket', 'xhr-polling', 'jsonp-polling' ]);
-
+	io = socketio(server);
 	var sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
 	sessionSockets.on('connection', function (err, socket, session) {
 		function die(err){
