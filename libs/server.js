@@ -67,7 +67,8 @@ function defineAppRoutes(config){
 		upload = require('./upload.js').configure(config),
 		profile = require('./profile.js').configure(config),
 		chat = require('./chat.js').configure(config),
-		help = require('./help.js');
+		help = require('./help.js'),
+		intro = require('./intro.js');
 	function ensureAuthenticated(req, res, next) {
 		if (req.isAuthenticated()) return next();
 		var roomId = req.params[0];
@@ -101,6 +102,7 @@ function defineAppRoutes(config){
 	map('get', '/publicProfile', profile.appGetPublicProfile, true, true);
 	map('get', /^\/user\/(\d+)$/, profile.appGetUser, true, true);
 	map('get', '/help', help.appGetHelp, true, true);
+	map('get', '/intro', intro.appGetIntro, true, true);
 	map('post', '/upload', upload.appPostUpload, true);
 }
 

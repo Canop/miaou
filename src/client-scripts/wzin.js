@@ -60,7 +60,7 @@ var wzin = (function(){
 		var path = "M "+p1.left+' '+p1.top+
 			" C "+(p1.left-100)+' '+p1.top+ ', '+(p2.left-100)+' '+(p2.top+h2)+ ', '+p2.left+' '+Math.max(p2.top+h2, p1.top+h1);
 		if (p1.top+h1<p2.top+3) path += " L "+p2.left+' '+p2.top+
-			" C "+(p2.left-40)+' '+(p2.top+5+h2/5)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/5)+ ', '+p1.left+' '+(p1.top+h1);
+			" C "+(p2.left-40)+' '+(p2.top+3+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-3-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
 		this.thing = this.snap.path(path).attr({fill:this.fill});
 	}
 	
