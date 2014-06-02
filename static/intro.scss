@@ -1,0 +1,229 @@
+$miaou-bg: #F0EAD6;
+$odd-bg: #047; // #2F4F4F;// #87CEFA; //#B0C4DE; //#E0FFFF;
+$odd-fg: #ddf; //#115;
+$even-bg: #303444; //#8B4513; // #F5DEB3; // #FFDEAD; // #87CEFA; // #E0FFFF; //
+$even-fg: white;
+
+html, body {
+	font-family: Helvetica, arial, freesans, clean, sans-serif;
+	margin:0;
+	padding:0;
+	overflow-x: hidden;
+	background: $miaou-bg;
+}
+
+@media (max-height: 500px) {
+	body {
+		font-size: 9px;
+	}
+}
+@media (min-height: 500px) and (max-height: 800px) {
+	body {
+		font-size: 14px;
+	}
+}
+@media (min-height: 800px) {
+	body {
+		font-size: 16px;
+	}
+}
+
+@media (min-height: 580px) {
+	.txt a {
+		background : rgba(0,0,0,0.18);
+		&::before {
+			border-bottom: 2px solid gold;
+		}
+	}
+}
+
+#minimiaou {
+	z-index: 3;
+	position: fixed;
+	top: 4px; left: 2px;
+	cursor: pointer;
+}
+
+#github {
+	position: fixed;
+	top: 0;
+	right: 0;
+	border: 0;
+	z-index: 5;
+	cursor: pointer;
+}
+
+#intro-supertop {
+	background: $miaou-bg;
+	box-shadow: 0 0 10px black;
+	padding: 10px;
+	z-index: 4;
+	top: 0; left: 0; right: 0;
+	position: absolute;	
+}
+
+#intro-top {
+	background: $miaou-bg;
+	box-shadow: 0 0 10px black;
+	z-index: 2;
+	position: fixed;
+	top: 0; left: 0; right: 0;
+	padding: 2px;
+	height: 38px;
+}
+
+section {
+	display: block;
+	padding: 0;
+	margin: 0;
+	position: relative;
+	&:nth-child(odd) {
+		background: $odd-bg;
+		color: $odd-fg;
+	}
+	&:nth-child(even) {
+		background: $even-bg; // #bada55;//lighten( $intro-bg, 6% );
+		color: $even-fg;
+	}
+	&#first-page .container {
+		top: 202px;
+		.content .txt {
+			//justify-content: space-around;
+			line-height: 32px;
+		}
+	}
+	.container {
+		position: absolute;
+		top: 40px;
+		right: 5px;
+		bottom: 5px;
+		left: 5px;
+		display: flex;
+		flex-direction: column;
+		align-content: stretch;
+		h2 {
+			height: 20px;
+			padding: 3px;
+			text-align: center;
+		}
+		.content {
+			display: flex;
+			flex-grow : 1;
+			margin: 6px;
+			.txt, .pic {
+				align-items: stretch;
+			}
+			.txt {
+				flex: 0 1 45%;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				padding: 10px;
+				&:first-child {
+					align-items: flex-end;
+					p {
+						text-align: right;
+					}
+				}
+				&:last-child {
+					align-items: flex-start;
+				}
+				a {
+					margin: 1px;
+					padding : 0 3px;
+					font-size: 115%;
+					cursor: pointer;
+					display: inline-block;
+					position: relative;
+					&::before {
+						padding : 0 3px;
+						display: inline-block;
+						position: absolute;
+						top: 0; left: 0;
+						content: attr(data-hover);
+						overflow: hidden;
+						color: white;
+						max-width: 0;
+						opacity: 0;
+						transition: max-width 0.5s, opacity 0.1s;
+						white-space: nowrap;
+					}
+					&:hover::before, &:focus::before {
+						max-width: 100%;
+						opacity: 1;
+					}
+				}
+			}
+			.pic {
+				flex: 3 0px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: space-around;
+				&:first-child {
+					align-items: flex-end;
+				}
+				&:last-child {
+					align-items: flex-start;
+				}
+				img {
+					max-width: 90%;
+					max-height: 90%;
+				}
+			}
+		}
+	}
+}
+.nav {
+	z-index: 2;
+	position: absolute;
+	width: 50;
+	right: 10px;
+	bottom: 20px;
+	font-size: 30px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	div {
+		background: white;
+		cursor: pointer;
+		color: #222;
+		opacity: 0.35;
+		height: 40px;
+		width: 40px;
+		border-radius: 20px;
+		margin: 3px;
+		text-align: center;
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+}
+
+div.MP {
+	width: 300px;
+	margin: auto;
+	padding: 0;
+	text-align: center;
+}
+div.button.enter {
+	width: 150px;
+	margin: auto;
+	text-align: center;
+	margin-top: 6px;
+}
+.button {
+	background-color: #E3DAC9;
+	padding: 4px 8px;
+	border: 1px solid #999;
+	margin: 1px 4px;
+	border-radius: 2px;
+	box-shadow: 1px 1px 3px #999;
+    outline: none;
+    cursor: pointer;
+    transition: all 100ms ease;
+}
+.button:hover, .button:focus {
+    border-color: #666;
+    color: black;
+}

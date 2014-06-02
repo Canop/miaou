@@ -32,7 +32,7 @@ miaou.userProfile = {
 			$p.css(css).appendTo($container);
 			$user.addClass('profiled');
 			var userId, data;
-			if ((data = $user.data('user') || (data = $message.data('user')))) userId = data.id;
+			if ( (data = $user.data('user')) || (data = $message.data('user')) || (data = $user.closest('.notification').data('user')) ) userId = data.id;
 			else userId = $message.data('message').author;
 			$p.load('publicProfile?user='+userId+'&room='+room.id);
 		}).bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
