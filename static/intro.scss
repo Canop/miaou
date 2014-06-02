@@ -78,11 +78,11 @@ section {
 	margin: 0;
 	position: relative;
 	&:nth-child(odd) {
-		background: $odd-bg;
+		background: linear-gradient( lighten($odd-bg, 15%), $odd-bg );
 		color: $odd-fg;
 	}
 	&:nth-child(even) {
-		background: $even-bg; // #bada55;//lighten( $intro-bg, 6% );
+		background: linear-gradient( lighten($even-bg, 28%), darken($even-bg, 6%) );
 		color: $even-fg;
 	}
 	&#first-page .container {
