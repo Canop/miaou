@@ -54,7 +54,7 @@ html, body {
 }
 
 #intro-supertop {
-	background: $miaou-bg;
+	background: linear-gradient( darken($miaou-bg, 12%), $miaou-bg );
 	box-shadow: 0 0 10px black;
 	padding: 10px;
 	z-index: 4;

@@ -154,14 +154,14 @@ body {
 #left {
 	top:0; left:0; bottom:0;
 	width: $left-panel-width;
-	background: darken( $bg-color, 3% ) ;
+	background: linear-gradient( $bg-color, darken($bg-color, 10%) );
 	overflow-y: auto;
 }
 #right {
 	top:0; right:0; bottom:0;
 	width: $right-panel-width;
 	overflow-y: auto;
-	background: darken( $bg-color, 3% ) ;
+	background: linear-gradient( $bg-color, darken($bg-color, 10%) );
 }
 #center {
 	display:flex;
@@ -1048,6 +1048,28 @@ div.radios {
 	}
 	a, a:visited {
 		color: Sienna ;
+	}
+	.user {
+		.decorations {
+			position: absolute;
+			z-index: 2;
+			color: #777;
+			right: 0;
+			top: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			.decoration {
+				font-family: "fontello";
+				margin: 2px;
+				flex: 0 0 15px;
+				&.clickable {
+					color: #222;
+					cursor: pointer;
+				}
+			}
+		}
 	}
 }
 

@@ -16,7 +16,9 @@
 				if (r.test(m.content)) {
 					$c.empty();
 					$c.append(miaou.mdToHtml(m.content.replace(r,''), true, m.authorname));
-					$c.closest('#messages .message').addClass('whiteboard');
+					$c.closest('#messages .message').find('.user .decorations').prepend(
+						$('<div>&#xe824;</div>').addClass('decoration')
+					);
 					m.whiteboard = true;
 					return true;
 				}

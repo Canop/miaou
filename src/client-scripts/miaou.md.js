@@ -210,6 +210,7 @@ var miaou = miaou || {};
 			wasAtBottom = isAtBottom(),
 			$md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
 			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
+			$decorations = $('<div>').addClass('decorations').appendTo($user),
 			$mc,
 			votesHtml = votesAbstract(message);
 		if (messages.length===0 || message.id<messages[0].id) {
@@ -223,17 +224,23 @@ var miaou = miaou || {};
 			$md.addClass('me');
 			$('.error').remove();
 		}
-		if (!message.content) $md.addClass('deleted');
-		else if (message.changed) $md.addClass('edited');
+		if (!message.content) {
+			$md.addClass('deleted');
+		} else if (message.changed) {
+			//$md.addClass('edited');
+			$('<div>&#xe80c;</div>').addClass('decoration').appendTo($decorations);
+		}
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
 				oldMessage = messages[insertionIndex];
 				if (message.vote === '?') {
 					message.vote = oldMessage.vote;
 				}
-				if (message.content===oldMessage.content) {
+				if (message.content === oldMessage.content) {
 					// we take the old message content, so as not to lose the possible replacements (e.g. boxing)
 					$mc = $('#messages > .message[mid='+message.id+'] .content');
+				} else if (message.changed !== oldMessage.changed) {
+					message.previous = oldMessage;
 				}
 				$('#messages > .message').eq(insertionIndex).replaceWith($md);
 			} else {
