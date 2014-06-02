@@ -56,11 +56,14 @@ var wzin = (function(){
 		}
 		this.$svg.offset(ps).width(100+Math.abs(p1.left-p2.left)).height(H);
 		p1.left -= ps.left; p1.top -= ps.top; 
-		p2.left -= ps.left; p2.top -= ps.top; 
+		p2.left -= ps.left; p2.top -= ps.top;
 		var path = "M "+p1.left+' '+p1.top+
 			" C "+(p1.left-100)+' '+p1.top+ ', '+(p2.left-100)+' '+(p2.top+h2)+ ', '+p2.left+' '+Math.max(p2.top+h2, p1.top+h1);
-		if (p1.top+h1<p2.top+3) path += " L "+p2.left+' '+p2.top+
-			" C "+(p2.left-40)+' '+(p2.top+3+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-3-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
+		if (p1.top+h1<p2.top-10) {
+			path += " L "+p2.left+' '+p2.top+" C "+(p2.left-40)+' '+(p2.top)+ ', '+(p1.left-40)+' '+(p1.top+h1)+ ', '+p1.left+' '+(p1.top+h1);
+		} else if (p1.top+h1<p2.top+3) {
+			path += " L "+p2.left+' '+p2.top+" C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
+		}
 		this.thing = this.snap.path(path).attr({fill:this.fill});
 	}
 	
