@@ -2,6 +2,8 @@
 
 A chat server with authentication, persistent and searchable history, markdown formatting, private rooms, stars and votes, and many other features.
 
+**[Introduction/Gallery](http://dystroy.org/miaou/intro)**
+
 You can see it in action or use it on http://dystroy.org/miaou.
 
 To discuss the code and feature of Miaou, please come to [the dedicated room](http://dystroy.org/miaou/1?Miaou).

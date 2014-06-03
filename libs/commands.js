@@ -26,7 +26,6 @@ exports.configure = function(config){
 			}).then(function(m){
 				m.bot = true;
 				shoe.emitToRoom('message', m);
-				console.log('EM', m);
 			}).finally(shoe.db.off)
 		}, 10);
 	}};

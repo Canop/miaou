@@ -4,7 +4,9 @@ var config,
 	maxContentLength,
 	minDelayBetweenMessages,
 	socketio = require('socket.io'),
-	SessionSockets = require('session.socket.io'),
+	connect = require('connect'),
+	cookie = require('express/node_modules/cookie'),
+	parseSignedCookie = connect.utils.parseSignedCookie,
 	io, db,
 	maxAgeForNotableMessages = 60*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
@@ -12,7 +14,8 @@ var config,
 	socketWaitingApproval = [],
 	commands = require('./commands.js');
 
-exports.configure = function(config){
+exports.configure = function(_config){
+	config = _config;
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
 	plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
@@ -123,10 +126,8 @@ function emitMessagesAfter(shoe, fromId, untilId, nbMessages){
 //  is the passed one. This function returns a promise as the search is asynchronous.
 // Note : this looks horribly heavy just to find if a user is in a room
 function userClients(clients, userIdOrName) {
-	console.log('in userClients');
 	return clients.filter(function(s){
 		var user = s['publicUser'];
-		console.log('U:',user);
 		return u.id===userIdOrName || u.name===userIdOrName;
 	});
 }
@@ -186,7 +187,6 @@ function handleUserInRoom(socket, completeUser){
 			messages.forEach(function(m){ socket.emit('notable_message', lighten(m)) });
 			socket.emit('server_commands', commands.commandDescriptions);
 			socket.emit('welcome');
-			console.log('before io.sockets.clients(shoe.room.id).forEach');
 			io.sockets.clients(shoe.room.id).forEach(function(s){
 				var user = s['publicUser'];
 				if (!user) console.log('missing user on socket');
@@ -325,7 +325,6 @@ function handleUserInRoom(socket, completeUser){
 			return this.storeMessage(m);
 		}).then(function(m){
 			message = m;
-			console.log('before sockets = userClients');
 			sockets = userClients(io.sockets.clients(shoe.room.id), otherUserId);
 			if (sockets.length) {
 				sockets.forEach(function(s){
@@ -365,29 +364,32 @@ function handleUserInRoom(socket, completeUser){
 	socket.emit('ready');
 }
 
-exports.listen = function(server, sessionStore, cookieParser, _db){
+exports.listen = function(server, sessionStore, cookieParser /* not used */, _db){
 	db = _db;
 	io = socketio(server);
-	var sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
-	sessionSockets.on('connection', function (err, socket, session) {
+
+	io.use(function(socket, next){
+		socket.cookie = cookie.parse(socket.request.headers.cookie);
+		var sessionId = parseSignedCookie(socket.cookie['connect.sid'], config.secret);
+		sessionStore.get(sessionId, function(err, session){
+			socket.session = session;
+			if (!err && !session) err = new Error('session not found');
+			if (err) console.log('ERR in socket authentication :', err);
+			next(err);
+		});
+	});
+	io.on('connect', function(socket){
 		function die(err){
-			console.log('ERR', err);
+			console.log('ERR in socket handling', err);
 			socket.emit('error', err.toString());
 			socket.disconnect();
 		}
-		if (! (session && session.passport && session.passport.user && session.room)) {
-			console.log('invalid session at (re)connection');
-			if (!session) {
-				console.log('no session');
-			} else {
-				console.log('session.room=', session.room);
-				if (!session.passport) console.log('no session.passport');
-				else console.log('session.passport.user=', session.passport.user);
-			}
-			return die ('invalid session');	
-		}
+		var session = socket.session;
+		if (!session) return die('no session in socket - internal bug');
+		var room = session.room;
+		if (!room) return die("no room in socket's session");
 		var userId = session.passport.user;
-		if (!userId) return die('no authenticated user in session');
+		if (!userId) return die("no authenticated user in socket's session");
 		db.on(userId)
 		.then(db.getUserById)
 		.then(function(completeUser){

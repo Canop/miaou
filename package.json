@@ -27,7 +27,6 @@
     "pg": "~2.8.3",
     "redis": "~0.9.1",
     "request": "~2.34.0",
-    "session.socket.io": "~0.1.6",
     "socket.io": "^0.9.17"
   },
   "scripts": {
