@@ -121,9 +121,9 @@ section {
 				padding: 10px;
 				&:first-child {
 					align-items: flex-end;
-					p {
-						text-align: right;
-					}
+				}
+				p {
+					max-width: 500px;
 				}
 				&:last-child {
 					align-items: flex-start;

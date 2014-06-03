@@ -104,7 +104,7 @@ exports.suggestUsername = function(completeName){
 }
 
 exports.toUrlDecoration = function(roomName){
-	return removeDiacritics(roomName)
+	return removeDiacritics(roomName||'')
 		.replace(/[^\w_\-\d\s]/g,'')
 		.replace(/\s+/g, '_');
 }

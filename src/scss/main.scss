@@ -1053,7 +1053,7 @@ div.radios {
 		.decorations {
 			position: absolute;
 			z-index: 2;
-			color: #777;
+			color: #aaa;
 			right: 0;
 			top: 0;
 			display: flex;
@@ -1065,7 +1065,7 @@ div.radios {
 				margin: 2px;
 				flex: 0 0 15px;
 				&.clickable {
-					color: #222;
+					color: #444;
 					cursor: pointer;
 				}
 			}

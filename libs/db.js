@@ -264,7 +264,7 @@ proto.changeRights = function(actions, userId, room){
 			break;
 		case "deny_ar":
 			sql = "update access_request set denied=$1, deny_message=$2 where room=$3 and player=$4";
-			args = [now(), a.message.slice(0,200), room.id, a.user];
+			args = [now(), (a.message||'').slice(0,200), room.id, a.user];
 			break;
 		case "update_auth":
 			// the exists part is used to check the user doing the change has at least as much auth than the modified user

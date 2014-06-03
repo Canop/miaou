@@ -143,7 +143,7 @@ function handleUserInRoom(socket, completeUser){
 		console.log(publicUser.name + ' requests access to room ' + roomId);
 		db.on()
 		.then(function(){ return this.deleteAccessRequests(roomId, publicUser.id) })
-		.then(function(){ return this.insertAccessRequest(roomId, publicUser.id, request.message.slice(0,200)) })
+		.then(function(){ return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0,200)) })
 		.then(function(ar){
 			ar.user = publicUser;
 			socket.broadcast.to(roomId).emit('request', ar);
@@ -375,7 +375,17 @@ exports.listen = function(server, sessionStore, cookieParser, _db){
 			socket.emit('error', err.toString());
 			socket.disconnect();
 		}
-		if (! (session && session.passport && session.passport.user && session.room)) return die ('invalid session');
+		if (! (session && session.passport && session.passport.user && session.room)) {
+			console.log('invalid session at (re)connection');
+			if (!session) {
+				console.log('no session');
+			} else {
+				console.log('session.room=', session.room);
+				if (!session.passport) console.log('no session.passport');
+				else console.log('session.passport.user=', session.passport.user);
+			}
+			return die ('invalid session');	
+		}
 		var userId = session.passport.user;
 		if (!userId) return die('no authenticated user in session');
 		db.on(userId)
