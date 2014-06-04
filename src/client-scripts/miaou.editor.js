@@ -69,6 +69,12 @@ miaou.editor = (function(){
 			});
 		}
 	}
+	
+	function insertLink(){
+		$input.replaceSelection(function(s){
+			return '['+s+']('+$('#newlinkhref').val()+')';
+		});
+	}
 
 	return {
 		// prepare #input to emit on the provided socket
@@ -91,8 +97,23 @@ miaou.editor = (function(){
 						case 81: // Q : toggle citation
 						$input.selectLines().replaceSelection(toggleLinesCitation);
 						return false;
-						case 76: // L : select whole line(s)
-						$input.selectLines();
+						case 76: // L : make link
+						miaou.dialog({
+							title: 'Insert Hyperlink',
+							content: 'URL : <input id=newlinkhref style="width:82%">',
+							buttons: {
+								Cancel: null,
+								Insert: insertLink
+							}
+						});
+						$('#newlinkhref').focus().on('keyup', function(e){
+							switch (e.which){
+							case 13: // enter
+								insertLink();
+							case 27: // esc
+								miaou.dialog.closeAll();
+							}
+						});
 						return false;
 						case 66: // B : toggle bold
 						$input.replaceSelection(function(s){ return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2, -2) : '**'+s+'**' });
