@@ -111,6 +111,9 @@ miaou.bindChatGui = function(){
 		md.getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
 		$('.hasOlder[mid='+mid+']').removeClass('hasNewer');
 		miaou.socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
+	})
+	.on('click', '.pen', function(){
+		miaou.mh.show($(this).closest('.message').data('message'));
 	});
 	
 	if ($('#hist').length) {

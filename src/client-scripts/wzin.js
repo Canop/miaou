@@ -3,13 +3,10 @@
 //  icon and the replied to message.
 
 var wzin = (function(){
-
-	var nextNumId = 1;
 	
 	function Wzin(e1, e2, opts) {
 		this.e1 = e1;
 		this.e2 = e2;
-		this.id = 'wzin_'+nextNumId++;
 		this.fill = opts.fill||"black";
 		this.zIndex = opts.zIndex||1;
 		this.bindings = [];
@@ -42,22 +39,27 @@ var wzin = (function(){
 		} else {
 			e1 = this.e2; e2 = this.e1;
 		}
+
+		this.savedBg = [this.e1.css('background'), this.e2.css('background')];
+		$().add(e1).add(e2).css({background:this.fill});
+
 		var p1 = e1.offset(), h1 = e1.outerHeight(),
 			p2 = e2.offset(), h2 = e2.outerHeight(),
 			H = Math.max(p2.top+h2, p1.top+h1) - p1.top,	
 			ps = {
 				top: p1.top,
 				left: Math.min(p1.left, p2.left)-100
-			};
-		if (!this.$svg) {
-			this.$svg = $('<svg id='+this.id+'></svg>').css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none'}).appendTo(document.body);
-			this.snap = Snap('#'+this.id);
-			this.savedBg = [this.e1.css('background'), this.e2.css('background')];
-			$().add(e1).add(e2).css({background:this.fill});
-		} else if (this.thing) {
-			this.thing.remove();
-		}
-		this.$svg.offset(ps).width(100+Math.abs(p1.left-p2.left)).height(H);
+			},
+			W = 100+Math.abs(p1.left-p2.left);
+
+		if (this.svg) this.svg.remove();
+		var svgns = "http://www.w3.org/2000/svg";
+		var svg = this.svg = document.createElementNS(svgns, "svg");
+				
+		var $svg = $(svg);
+		$svg.css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none'});
+		$svg.offset(ps).width(W).height(H);
+
 		p1.left -= ps.left; p1.top -= ps.top; 
 		p2.left -= ps.left; p2.top -= ps.top;
 		var path = "M "+p1.left+' '+p1.top+
@@ -67,7 +69,13 @@ var wzin = (function(){
 		} else if (p1.top+h1<p2.top+3) {
 			path += " L "+p2.left+' '+p2.top+" C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
 		}
-		this.thing = this.snap.path(path).attr({fill:this.fill});
+		
+		var svgpath = document.createElementNS (svgns, "path");
+		svgpath.setAttributeNS (null, 'd', path);
+		svgpath.setAttributeNS (null, 'fill', this.fill);
+		svg.appendChild (svgpath);
+		
+		document.body.appendChild(svg);
 	}
 	
 	return function(e1, e2, opts){

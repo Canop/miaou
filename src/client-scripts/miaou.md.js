@@ -43,7 +43,7 @@ var miaou = miaou || {};
 		}).join('');
 	}
 
-	function formatMoment(m) {
+	function formatMoment(m){
 		var now = new Date();
 		if (now/1000-m.unix()<15*60) return m.fromNow();
 		if (now.getFullYear()===m.year()) {
@@ -53,6 +53,11 @@ var miaou = miaou || {};
 			return m.format("D MMMM HH:mm");
 		}
 		return m.format("D MMMM YYYY HH:mm");
+	}
+	
+	// time : timestamp as provided in message.created or message.changed
+	md.formatTime = function(t){
+		return formatMoment(moment((t+chat.timeOffset)*1000));
 	}
 
 	var isAtBottom = md.isAtBottom = function(){
@@ -224,12 +229,6 @@ var miaou = miaou || {};
 			$md.addClass('me');
 			$('.error').remove();
 		}
-		if (!message.content) {
-			$md.addClass('deleted');
-		} else if (message.changed) {
-			//$md.addClass('edited');
-			$('<div>&#xe80c;</div>').addClass('decoration').appendTo($decorations);
-		}
 		if (~insertionIndex) {
 			if (messages[insertionIndex].id===message.id) {
 				oldMessage = messages[insertionIndex];
@@ -248,6 +247,12 @@ var miaou = miaou || {};
 			}
 		} else {
 			$md.prependTo('#messages');
+		}
+		if (!message.content) {
+			$md.addClass('deleted');
+		} else if (message.changed) {
+			var $pen = $('<div>&#xe80c;</div>').addClass('decoration pen').appendTo($decorations);
+			if (message.previous) $pen.addClass('clickable').attr('title', 'Click for message history');
 		}
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		if (!$mc) $mc = $('<div>').addClass('content');
