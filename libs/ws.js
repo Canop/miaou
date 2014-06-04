@@ -370,6 +370,9 @@ exports.listen = function(server, sessionStore, cookieParser /* not used */, _db
 
 	io.use(function(socket, next){
 		socket.cookie = cookie.parse(socket.request.headers.cookie);
+		if (!socket.cookie || !socket.cookie['connect.sid']) {
+			return next(new Error('no cookie'));
+		}
 		var sessionId = parseSignedCookie(socket.cookie['connect.sid'], config.secret);
 		sessionStore.get(sessionId, function(err, session){
 			socket.session = session;
