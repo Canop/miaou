@@ -21,7 +21,7 @@ var wzin = (function(){
 	}
 
 	Wzin.prototype.remove = function(){
-		this.$svg.remove();
+		this.svg.remove();
 		while (this.bindings.length) {
 			var args = this.bindings.shift();
 			args[0].off(args[1], args[2]);
