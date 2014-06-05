@@ -33,6 +33,7 @@ html, body {
 		background : rgba(0,0,0,0.18);
 		&::before {
 			border-bottom: 2px solid gold;
+			background : rgba(0,0,0,0.15);
 		}
 	}
 }
