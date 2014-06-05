@@ -65,6 +65,14 @@ Shoe.prototype.pluginTransformAndSend = function(m, sendFun){
 	}, this);
 	sendFun('message', m);
 }
+Shoe.prototype.roomSockets = function() {
+	var clients = io.sockets.adapter.rooms[this.room.id],
+		sockets = [];
+	for (var clientId in clients) {
+		sockets.push(io.sockets.connected[clientId]);
+	}
+	return sockets;
+}
 
 // using a filtering function, picks some elements, removes them from the array,
 //  executes a callback on each of them
@@ -122,16 +130,6 @@ function emitMessagesAfter(shoe, fromId, untilId, nbMessages){
 	return resolver.promise.bind(this);
 }
 
-// filters the passed clients sockets to return those whose publicUser
-//  is the passed one. This function returns a promise as the search is asynchronous.
-// Note : this looks horribly heavy just to find if a user is in a room
-function userClients(clients, userIdOrName) {
-	return clients.filter(function(s){
-		var user = s['publicUser'];
-		return u.id===userIdOrName || u.name===userIdOrName;
-	});
-}
-
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
 // Implementation details :
 //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
@@ -162,7 +160,7 @@ function handleUserInRoom(socket, completeUser){
 		}).then(function(pings){
 			socket.emit('pings', pings);
 		}).finally(db.off);
-	}).on('enter', function(roomId){
+	}).on('enter', function(roomId){			
 		var now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now);
 		if (shoe.room && roomId==shoe.room.id){
@@ -187,8 +185,8 @@ function handleUserInRoom(socket, completeUser){
 			messages.forEach(function(m){ socket.emit('notable_message', lighten(m)) });
 			socket.emit('server_commands', commands.commandDescriptions);
 			socket.emit('welcome');
-			io.sockets.clients(shoe.room.id).forEach(function(s){
-				var user = s['publicUser'];
+			shoe.roomSockets().forEach(function(s){
+				var user = s.publicUser;
 				if (!user) console.log('missing user on socket');
 				else socket.emit('enter', user);
 			});
@@ -325,11 +323,14 @@ function handleUserInRoom(socket, completeUser){
 			return this.storeMessage(m);
 		}).then(function(m){
 			message = m;
-			sockets = userClients(io.sockets.clients(shoe.room.id), otherUserId);
+			sockets = shoe.roomSockets();
 			if (sockets.length) {
-				sockets.forEach(function(s){
-					s.emit('invitation', {room:lounge.id, byname:shoe.publicUser.name, message:message.id});
-				});
+				for (var i=0; i<sockets.length; i++) {
+					var user = sockets[i].publicUser;
+					if (user && user.id==otherUserId) {
+						sockets[i].emit('invitation', {room:lounge.id, byname:shoe.publicUser.name, message:message.id});
+					}
+				}
 			} else {
 				return this.storePing(lounge.id, otherUserId, message.id);
 			}
