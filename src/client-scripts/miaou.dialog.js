@@ -2,7 +2,7 @@ var miaou = miaou || {};
 (function(){
 	
 	var dialogs = [];
-	
+		
 	// opens a dialog
 	// Properties of the options object :
 	//  title (optional)
@@ -40,4 +40,3 @@ var miaou = miaou || {};
 	}
 	
 })();
-

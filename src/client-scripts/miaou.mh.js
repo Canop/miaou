@@ -20,7 +20,10 @@ var miaou = miaou || {};
 			current = current.previous;
 		}
 		if (current.changed) {
-			$('<span>').addClass('mtime').text("Original version of the message is unknown").prependTo($content);
+			$('<span>').addClass('mtime').text(
+				"Message creation : " + miaou.md.formatTime(current.created) + ". " +
+				"Original content is unknown."
+			).prependTo($content);
 		}
 		miaou.dialog({
 			title: "Message History",
