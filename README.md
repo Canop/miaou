@@ -1,6 +1,6 @@
 # Miaou
 
-A chat server with authentication, persistent and searchable history, markdown formatting, private rooms, stars and votes, and many other features.
+A chat server with authentication, persistent and searchable history, markdown formatting, video, private rooms, stars and votes, and many other features.
 
 **[Introduction/Gallery](http://dystroy.org/miaou/intro)**
 
@@ -38,16 +38,6 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 * image upload (using imgur API)
 * client side bot API (see example as userscript)
 * server side bot API, pluggable commands framework
-
-# Compatibility
-
-## Desktop
-
-Miaou works on Chrome, Firefox and Safari.
-
-## Mobile devices
-
-Miaou should work on most webkit based browsers in recent Android devices.
 
 # Development
 

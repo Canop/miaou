@@ -33,7 +33,7 @@ html
 						p Citations and code are also well displayed.
 						p Standard keyboard shortcuts are available so you don't <i>have</i> to type stars or even remember the markdown syntax.
 						p Links to images are replaced with clickable thumbnails.
-						p The Upload button lets you insert images directly from your disk&nbqp;: they're stored at imgur.
+						p The Upload button lets you insert images directly from your disk&nbsp;: they're stored at imgur.
 						p You may notice on the screenshot that
 							ul
 								li messages are editable
@@ -82,7 +82,7 @@ html
 						p Anybody can create a public or private room.
 				div.content
 					div.txt
-						p The creator of a room is its first owner, ans as owner he can give owner or administrator roles to other users.
+						p The creator of a room is its first owner, and as owner he can give owner or administrator roles to other users.
 						p By hovering the name of a user you reveal a <i>dialog</i> button. Click it to enter a private persistent room that both of you will own.
 						p When somebody wants to enter a room, users in the room are notified and may see any external profile information before the decide to grant access.
 						p Each room has its own Authorization Management page.
@@ -95,7 +95,7 @@ html
 					div.pic
 						img(src="static/gallery/search-promise.png")
 					div.txt
-						p Click the <i>Search</i> tab&nbqp;: an history of the room appears.
+						p Click the <i>Search</i> tab&nbsp;: an history of the room appears.
 						p Type a word and a smart full text search is performed.
 						p You can jump to search hits by clicking the messages or the histogram.
 						p As no message is ever trashed because of its age, you can bookmark or distribute "permalinks".
@@ -108,7 +108,7 @@ html
 						p You <i>ping</i> a user by typing his username after a <kbd>@</kbd>. He'll get a desktop notification (if he allowed them) even if he's in another room (remember : identifiants are server-wide and permanent).
 						p If a pinged user isn't currently logged, he'll see the notification when login next time.
 						p Replying to a message automatically pings its author.
-						p Usernames in pings are autocompleted, so you don't usually type them&nbqp;: just one or two letters and then <kbd>tab</kbd>.
+						p Usernames in pings are autocompleted, so you don't usually type them&nbsp;: just one or two letters and then <kbd>tab</kbd>.
 					div.pic
 						img(src="static/gallery/cross-room-ping.png")
 		section
@@ -154,23 +154,38 @@ html
 					else if (w/nw < h/nh) i.height = nh*w/nw;
 				});
 			}
+			
+			
+			var scrolltimer;
+			function stopAutoscroll(){
+				clearTimeout(scrolltimer);
+				setTimeout(function(){
+					clearTimeout(scrolltimer);
+				},20);
+			}
+
 			function start(){
 				$win.scrollTop(0);
+				stopAutoscroll()
 			}
 			function up(){
 				var H = $win.height();
 				$win.scrollTop(Math.round($win.scrollTop()/H-1)*H);
+				stopAutoscroll()
 			}
 			function down(){
 				var H = $win.height();
 				$win.scrollTop(Math.round($win.scrollTop()/H+1)*H);
+				stopAutoscroll()
 			}
 			function end(){
 				$win.scrollTop($(document).height());
+				stopAutoscroll()
 			}
 			size();
 			$(window).load(size);
 			
+
 			$win.resize(size).keydown(function(e){
 				switch (e.which) {
 				case 33: // page up
@@ -193,8 +208,23 @@ html
 				if (i) {
 					$('<a>').text(title).attr('data-hover', title).click(function(){
 						$win.scrollTop($sections.eq(i).offset().top);
+						clearTimeout(scrolltimer);
 					}).appendTo($firstText);
 				}
+			});
+
+			var lastAutoscrollTime;
+			$(window).on('scroll mousewheel DOMMouseScroll', function(){
+				clearTimeout(scrolltimer);
+				if (lastAutoscrollTime+500 > Date.now()) return;
+				scrolltimer = setTimeout(function(){
+					stopAutoscroll();
+					lastAutoscrollTime = Date.now();
+					var dest = Math.round($win.scrollTop()/$win.height());
+					$(document.body).animate({
+						scrollTop: dest*$win.height()
+					}, 'slow');
+				}, 800);
 			});
 		
 			$('.enter').click(function(){
