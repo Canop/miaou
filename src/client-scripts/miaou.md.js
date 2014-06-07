@@ -264,7 +264,6 @@ var miaou = miaou || {};
 		if (wasAtBottom && message.id==$('#messages > .message').last().attr('mid')) md.scrollToBottom();
 	}
 
-
 	md.showMessageFlowDisruptions = function(){
 		var lastMessage;
 		$('#messages > .message').removeClass('disrupt').each(function(){

@@ -22,25 +22,38 @@ miaou.chat = {
 		miaou.socket.emit('clear_pings', miaou.chat.lastReceivedPing);
 	}
 	
-	chat.pings = function(pings){
+	// pings : an array whose elements contains 
+	//   room : id of the room
+	//   roomname
+	function makeCrossRoomPingsNotificationMessage(pings){
+		var h = "You've been pinged in room";
+		if (pings.length>1) h += 's';
+		var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
+		pings.forEach(function(p){
+			$md.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
+				window.open(p.room);
+				if ($md.find('.openroom').length==1) $md.remove();
+				else $(this).remove();
+			}))
+		});
+		$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
+		miaou.md.scrollToBottom();
+	}
+	
+	chat.pings = function(pings){ // this is used for old pings, made when user wasn't connected
 		if (pings.length) {
 			pings.forEach(function(p){
 				miaou.chat.oldestUnseenPing = Math.min(miaou.chat.oldestUnseenPing, p.first);
 				miaou.chat.lastReceivedPing = Math.max(miaou.chat.lastReceivedPing, p.last);
 			});
-			var h = "You've been pinged in room";
-			if (pings.length>1) h += 's';
-			var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
-			pings.forEach(function(p){
-				$md.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
-					window.open(p.room);
-					if ($md.find('.openroom').length==1) $md.remove();
-					else $(this).remove();
-				}))
-			});
-			$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
-			miaou.md.scrollToBottom();
+			makeCrossRoomPingsNotificationMessage(pings);
 		}		
+	}
+	chat.ping = function(p){ // this is used for instant cross-room pings
+		console.log('fast cross-room ping : ', p);
+		makeCrossRoomPingsNotificationMessage([{room:p.r.id, roomname:p.r.name}]);
+		miaou.notify(p.r, p.m.authorname, p.m.content);
+		miaou.touch(0, true);
 	}
 	
 	// put the user at the top of the list

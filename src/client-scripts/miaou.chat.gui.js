@@ -180,7 +180,7 @@ miaou.bindChatGui = function(){
 				chat.clearPings();
 			} else {
 				miaou.notify(room, from, text);
-				if (!chat.oldestUnseenPing) chat.oldestUnseenPing = mid;
+				if (mid && !chat.oldestUnseenPing) chat.oldestUnseenPing = mid;
 			}
 		}
 		if (!visible) miaou.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);

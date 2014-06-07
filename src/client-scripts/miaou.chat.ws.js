@@ -93,6 +93,7 @@ var miaou = miaou || {};
 		.on('autocompleteping', miaou.editor.proposepings)
 		.on('hist', miaou.hist.show)
 		.on('pings', chat.pings)
+		.on('ping', chat.ping)
 		.on('disconnect', function(){
 			console.log('DISCONNECT');
 		})

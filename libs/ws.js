@@ -73,6 +73,27 @@ Shoe.prototype.roomSockets = function() {
 	}
 	return sockets;
 }
+// returns the socket of the passed user if he's in the same room
+Shoe.prototype.userSocket = function(userIdOrName) {
+	var clients = io.sockets.adapter.rooms[this.room.id],
+		sockets = [];
+	for (var clientId in clients) {
+		var socket = io.sockets.connected[clientId];
+		if (socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
+			return socket;
+		}		
+	}
+}
+
+// returns the first found socket of the passed user
+function anyUserSocket(userIdOrName) {
+	for (var clientId in io.sockets.connected) {
+		var socket = io.sockets.connected[clientId];
+		if (socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
+			return socket;
+		}
+	}
+}
 
 // using a filtering function, picks some elements, removes them from the array,
 //  executes a callback on each of them
@@ -262,7 +283,20 @@ function handleUserInRoom(socket, completeUser){
 				});
 				if (m.content){
 					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
-					if (pings) return this.storePings(roomId, pings.map(function(s){ return s.slice(1) }), m.id);
+					if (pings) {
+						pings = pings.map(function(s){ return s.slice(1) });
+						var remainingpings = [];
+						pings.forEach(function(username){
+							console.log('ping ', username);
+							console.log('socket in the room :', !!shoe.userSocket(username));
+							console.log('socket elsewhere :', !!anyUserSocket(username));
+							if (shoe.userSocket(username)) return;
+							var socket = anyUserSocket(username);
+							if (socket) socket.emit('ping', {r:shoe.room, m:m});
+							else remainingpings.push(username);
+						});
+						if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
+					}
 				}
 			}).catch(function(e) {
 				shoe.error(e, m.content);
