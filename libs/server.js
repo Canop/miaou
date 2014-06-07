@@ -122,6 +122,7 @@ function startServer(config){
 	app.use(express.session({ store: sessionStore }));
 	app.use(passport.initialize());
 	app.use(passport.session());
+	app.use(require('./anti-csrf.js'));
 	app.use(app.router);
 	defineAppRoutes(config);
 	console.log('Miaou server starting on port', config.port);

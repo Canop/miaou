@@ -12,5 +12,6 @@ exports.appGetLogin = function(req, res){
 exports.appGetLogout = function(req, res){
 	if (req.user) console.log('User ' + req.user.id + ' log out');
 	req.logout();
+	req.session.secret = null;
 	res.redirect(server.url());
 }

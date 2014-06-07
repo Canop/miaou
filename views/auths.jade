@@ -15,7 +15,8 @@ html
 		- authLevels = ['read', 'write', 'admin', 'own']
 		- rol = authLevels.indexOf(room.auth)
 		form(method="post")
-			input(type="hidden",name="room",value=room.id)
+			input(type="hidden", name="room", value=room.id)
+			input(type="hidden", name="secret", value=secret)
 			div.MP#authspage
 				h1
 					a(href="rooms") Miaou
