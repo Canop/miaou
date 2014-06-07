@@ -11,9 +11,12 @@ module.exports = function(req, res, next){
 	var session = req.session;
 	if (!session.secret) session.secret = (Math.random()*Math.pow(36,5)|0).toString(36);
 	if (req.method==='POST') {
-		var url = req.protocol + '://' + req.get('host') + req.originalUrl;
-		if (req.param('secret')!==session.secret || url!=req.headers.referer) {
-			console.log('Anti-csrf rejects this form. Session :', url, session);
+		var refererHost = (req.headers.referer||'').match(/^https?:\/\/([^\/\:]+)/)[1];
+		if (req.param('secret')!==session.secret || refererHost!=req.host) {
+			console.log('Anti-csrf rejects this form');
+			console.log('req.host:', req.host);
+			console.log('referer:', req.headers.referer);
+			console.log('Session:', session);
 			res.send(403, "There was a security problem, this request can't be processed.");
 			return;
 		}
