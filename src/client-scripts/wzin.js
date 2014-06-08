@@ -40,9 +40,12 @@ var wzin = (function(){
 			e1 = this.e2; e2 = this.e1;
 		}
 
-		this.savedBg = [this.e1.css('background'), this.e2.css('background')];
-		$().add(e1).add(e2).css({background:this.fill});
-
+		if (this.svg) {
+			this.svg.remove();
+		} else {
+			this.savedBg = [this.e1.css('background'), this.e2.css('background')];
+			$().add(e1).add(e2).css({background:this.fill});
+		}
 		var p1 = e1.offset(), h1 = e1.outerHeight(),
 			p2 = e2.offset(), h2 = e2.outerHeight(),
 			H = Math.max(p2.top+h2, p1.top+h1) - p1.top,	
@@ -52,7 +55,6 @@ var wzin = (function(){
 			},
 			W = 100+Math.abs(p1.left-p2.left);
 
-		if (this.svg) this.svg.remove();
 		var svgns = "http://www.w3.org/2000/svg";
 		var svg = this.svg = document.createElementNS(svgns, "svg");
 				
