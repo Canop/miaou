@@ -3,6 +3,7 @@ html
 	head
 		title Miaou
 		link(rel="icon",type="image/png",href="static/M-32.png")
+		meta(name="viewport",content="initial-scale=1,maximum-scale=1")
 		link(rel='stylesheet', href='static/intro.css')
 		script(src="static/jquery-2.0.3.min.js")
 	body
@@ -142,9 +143,10 @@ html
 						p If you want to keep a feature in your browser, there's a client-side API and you'll find an example of userscript in the GitHub repositiory.
 		
 		script.
-			var $win = $(window);
+			var $win = $(window),
+				mobile = $win.width()<600;
 			$('#minimiaou').click(function(){
-				document.location = document.location.href.split('#')[0];
+				$win.scrollTop(0);
 			});
 			function size(){
 				$('section').height($win.height());
@@ -154,7 +156,6 @@ html
 					else if (w/nw < h/nh) i.height = nh*w/nw;
 				});
 			}
-			
 			
 			var scrolltimer;
 			function stopAutoscroll(){
@@ -182,8 +183,6 @@ html
 				$win.scrollTop($(document).height());
 				stopAutoscroll()
 			}
-			size();
-			$(window).load(size);
 			
 
 			$win.resize(size).keydown(function(e){
@@ -212,21 +211,25 @@ html
 					}).appendTo($firstText);
 				}
 			});
-
-			var lastAutoscrollTime;
-			$(window).on('scroll mousewheel DOMMouseScroll', function(){
-				clearTimeout(scrolltimer);
-				if (lastAutoscrollTime+500 > Date.now()) return;
-				scrolltimer = setTimeout(function(){
-					stopAutoscroll();
-					lastAutoscrollTime = Date.now();
-					var dest = Math.round($win.scrollTop()/$win.height());
-					$(document.body).animate({
-						scrollTop: dest*$win.height()
-					}, 'slow');
-				}, 800);
-			});
 		
 			$('.enter').click(function(){
 				document.location = 'http://dystroy.org/miaou/';
 			});
+
+			if (!mobile) {
+				size();
+				$win.load(size);
+				var lastAutoscrollTime;
+				$(window).on('scroll mousewheel DOMMouseScroll', function(){
+					clearTimeout(scrolltimer);
+					if (lastAutoscrollTime+500 > Date.now()) return;
+					scrolltimer = setTimeout(function(){
+						stopAutoscroll();
+						lastAutoscrollTime = Date.now();
+						var dest = Math.round($win.scrollTop()/$win.height());
+						$(document.body).animate({
+							scrollTop: dest*$win.height()
+						}, 'slow');
+					}, 800);
+				});
+			}
