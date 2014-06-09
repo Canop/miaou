@@ -425,11 +425,35 @@ body.mobile #messagescroller {
 		background-color: #fdf6e5;
 	}
 }
-.message > button, .user > button {
+.decorations {
+	position: absolute;
+	z-index: 3;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+	.decoration {
+		font-family: "fontello";
+		margin: 2px;
+		flex: 0 0 15px;
+		cursor: default;
+		color: #aaa;
+		&.clickable {
+			color: #444;
+			cursor: pointer;
+		}
+	}
+}
+.user > button {
 	position: absolute;
 	z-index: 3;
 	right: 15px;
 	top: calc(50% - 8px);
+}
+.user > button, .decorations > button {
 	text-align:center;
 	padding: 0 8px;
 	margin: 0 3px 0 0;
@@ -437,10 +461,12 @@ body.mobile #messagescroller {
 	box-shadow: 1px 1px 2px #999;		
 	font-size: 10px;
 	line-height: 14px;
-	&.pmButton, &.deleteButton { // dirty 
+	&.pmButton { // dirty 
 		right: 60px;
 	}
 }
+
+
 #messages .message, #messages .error {
 	display: flex;
 	.content {
@@ -618,6 +644,7 @@ code {
 		margin: 4px;
 		padding: 2px;
 		border: thin solid #333;
+		white-space: nowrap;
 		cursor: pointer;
 		&.selected {
 			font-weight: bold;
@@ -1048,29 +1075,6 @@ div.radios {
 	}
 	a, a:visited {
 		color: Sienna ;
-	}
-	.user {
-		.decorations {
-			position: absolute;
-			z-index: 2;
-			color: #aaa;
-			right: 0;
-			top: 0;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-			.decoration {
-				font-family: "fontello";
-				margin: 2px;
-				flex: 0 0 15px;
-				cursor: default;
-				&.clickable {
-					color: #444;
-					cursor: pointer;
-				}
-			}
-		}
 	}
 }
 
