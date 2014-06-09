@@ -21,9 +21,13 @@ $.fn.selectLines = function(){
 			this.selectionStart = Math.max(0, s+1);
 		}
 		if (this.selectionStart===this.selectionEnd) this.selectionEnd++;
-		if (this.selectionEnd<this.value.length && this.value[this.selectionEnd-1]!='\n') {
-			s = this.value.indexOf('\n', this.selectionEnd-1);
-			this.selectionEnd = s===-1 ? this.value.length : s;
+		if (this.selectionEnd<this.value.length) {
+			if (this.value[this.selectionEnd-1]==='\n') {
+				if (this.selectionEnd>this.selectionStart) this.selectionEnd--;
+			} else {
+				s = this.value.indexOf('\n', this.selectionEnd-1);
+				this.selectionEnd = s===-1 ? this.value.length : s;				
+			}
 		}
 		this.focus();
 	})

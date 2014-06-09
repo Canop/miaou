@@ -87,8 +87,9 @@ miaou.editor = (function(){
 					switch(e.which){
 						case 75: // K : toggle code
 						if (sp===ep) {
-							this.value = toggleLinesCode(this.value);
-						} else if (~val.slice(sp, ep).indexOf('\n')) {
+							$input.selectLines().replaceSelection(toggleLinesCode);
+							this.selectionStart = this.selectionEnd;
+						} else if (~val.slice(sp, ep+1).indexOf('\n')) {
 							$input.selectLines().replaceSelection(toggleLinesCode);
 						} else {
 							$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
@@ -96,6 +97,7 @@ miaou.editor = (function(){
 						return false;
 						case 81: // Q : toggle citation
 						$input.selectLines().replaceSelection(toggleLinesCitation);
+						if (sp===ep) this.selectionStart = this.selectionEnd;
 						return false;
 						case 76: // L : make link
 						miaou.dialog({

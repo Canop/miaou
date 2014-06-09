@@ -99,7 +99,7 @@ var miaou = miaou || {};
 		})
 		.on('enter', chat.showEntry)
 		.on('leave', chat.showLeave)
-		.on('error', md.showError);	
+		.on('miaou.error', md.showError);	
 	}
 
 	miaou.startChatWS = function(){

@@ -69,6 +69,7 @@ miaou.bindChatGui = function(){
 		var mid = $(this).attr('to');
 		var $target = $('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).eq(0);
 		if ($target.length) {
+			$target.removeClass('flash');
 			if (replyWzin) replyWzin.remove();
 			replyWzin = wzin($(this).closest('.message'), $target, { zIndex:60, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' });
 		}

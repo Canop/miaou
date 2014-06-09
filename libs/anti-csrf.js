@@ -29,7 +29,6 @@ module.exports = function(options){
 			}
 		}
 		res.locals.secret = session.secret;
-		console.log(res.locals);
 		next();
 	}
 }

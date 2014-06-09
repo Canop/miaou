@@ -419,7 +419,7 @@ exports.listen = function(server, sessionStore, cookieParser /* not used */, _db
 	io.on('connect', function(socket){
 		function die(err){
 			console.log('ERR in socket handling', err);
-			socket.emit('error', err.toString());
+			socket.emit('miaou.error', err.toString());
 			socket.disconnect();
 		}
 		var session = socket.session;
