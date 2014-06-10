@@ -747,17 +747,6 @@ pre {
 	margin-top: 2px;
 	padding-left: 2px;
 }
-.mask {
-	position: fixed;
-	z-index:20;
-	left:0;
-	top:0;
-	right:0;
-	bottom:0;
-	background: white;
-	opacity: 0.7;
-	display: none;
-}
 
 .error, #messages .user.error {
 	color: red;
@@ -783,39 +772,7 @@ span.warning {
 	vertical-align: middle;
 	min-width:500px;
 }
-.dialog {
-	&.intro { // intro dialog, displayed below the big Miaou logo
-		position:fixed;
-		right: 30%;
-		left: 30%;	
-	}
-	&.centered {
-		min-width:500px;
-	}
-	&.small {
-		position: relative;
-		margin: auto;
-		margin-top: 150px;
-		width: 500px;
-	}
-	z-index: 30;
-	box-shadow: 0px 6px 10px #666;
-	border-radius: 5px;
-	padding: 0;
-	background: white;
-	.rendered {
-		background: lighten( $bg-color, 10% ) ;
-		box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
-		max-height: 180px;
-		overflow-y: auto;
-	}
-	&[error] {
-		background-color:#C33;
-	}
-	a {
-		text-decoration: underline;
-	}
-}
+
 body.mobile .dialog.intro { 
 	right: 3%;
 	left: 3%;
@@ -1375,3 +1332,4 @@ div.externalProfile {
 
 @import "mwin";
 @import "history";
+@import "dialog";
