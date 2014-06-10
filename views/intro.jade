@@ -3,6 +3,7 @@ html
 	head
 		title Miaou
 		link(rel="icon",type="image/png",href="static/M-32.png")
+		link(href="http://fonts.googleapis.com/css?family=Crimson+Text",rel="stylesheet",type="text/css")
 		meta(name="viewport",content="initial-scale=1,maximum-scale=1")
 		link(rel='stylesheet', href='static/intro.css')
 		script(src="static/jquery-2.0.3.min.js")
@@ -18,7 +19,7 @@ html
 			div.enter.button Enter Miaou
 		section#first-page
 			div.container
-				h2 An open-source chat with the features you expect and a few other ones
+				h1 An open-source chat with the features you expect and a few other ones
 				div.content
 					div.pic
 						img(src="static/gallery/reply.png")
@@ -114,7 +115,7 @@ html
 						img(src="static/gallery/cross-room-ping.png")
 		section
 			div.container
-				h2 Notable Messages
+				h2 Upvotes & Pins
 				div.content
 					div.txt
 						p When a message is important and should be seen, you can star it, or if you're a room administrator you can pin it. Those actions send it to the <i>Notable Messages</i> section on the right of the screen.
@@ -143,8 +144,7 @@ html
 						p If you want to keep a feature in your browser, there's a client-side API and you'll find an example of userscript in the GitHub repositiory.
 		
 		script.
-			var $win = $(window),
-				mobile = $win.width()<600;
+			var $win = $(window);
 			$('#minimiaou').click(function(){
 				$win.scrollTop(0);
 			});
@@ -183,16 +183,7 @@ html
 				$win.scrollTop($(document).height());
 				stopAutoscroll()
 			}
-			
 
-			$win.resize(size).keydown(function(e){
-				switch (e.which) {
-				case 33: // page up
-					return up(), false;
-				case 34: // page down
-					return down(), false;
-				}
-			});
 			
 			var $sections = $('section'),
 				$firstText = $sections.first().find('.txt');
@@ -215,8 +206,16 @@ html
 			$('.enter').click(function(){
 				document.location = 'http://dystroy.org/miaou/';
 			});
-
-			if (!mobile) {
+			
+			if ($('.nav:visible').length) {
+				$win.resize(size).keydown(function(e){
+					switch (e.which) {
+					case 33: // page up
+						return up(), false;
+					case 34: // page down
+						return down(), false;
+					}
+				});
 				size();
 				$win.load(size);
 				var lastAutoscrollTime;
@@ -233,3 +232,4 @@ html
 					}, 800);
 				});
 			}
+			

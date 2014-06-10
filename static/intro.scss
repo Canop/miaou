@@ -1,23 +1,30 @@
 $miaou-bg: #F0EAD6;
-$odd-bg: #047; // #2F4F4F;// #87CEFA; //#B0C4DE; //#E0FFFF;
-$odd-fg: #ddf; //#115;
-$even-bg: #303444; //#8B4513; // #F5DEB3; // #FFDEAD; // #87CEFA; // #E0FFFF; //
-$even-fg: white;
+$odd-bg:  white; // #F0F8FF; // #047; // #2F4F4F;// #87CEFA; //#B0C4DE; //#E0FFFF;
+$odd-fg: black; //#ddf; //#115;
+$even-bg: #ddd; // #FFFFF0; //#FFFFF0; //#303444; //#8B4513; // #F5DEB3; // #FFDEAD; // #87CEFA; // #E0FFFF; //
+$even-fg: black; // white;
 
 html, body {
-	font-family: Helvetica, arial, freesans, clean, sans-serif;
+	font-family: 'Crimson Text', serif;
 	margin:0;
 	padding:0;
 	overflow-x: hidden;
 	background: $miaou-bg;
 }
 
-
 @media screen and (max-width: 35.5em) /* ≥ 568px */ { // mobile layout
 	
+	body {
+		font-size: 14px;
+	}
+	h1 {
+		font-size: 1.5em;
+		margin: 1em 1em;
+		text-align: center;
+	}
 	h2 {
-		font-size: 1.2em;
-		margin: 0.5em 3em;
+		font-size: 1.5em;
+		margin: 1em 1em;
 		text-align: center;
 	}
 	.nav {
@@ -38,12 +45,32 @@ html, body {
 			max-height: 60%;
 		}
 	}
+	.txt {
+		a {
+			display: block;
+		}
+	}
 }
 
 @media screen and (min-width: 35.5em) /* ≥ 568px */ { // desktop layout
-
+	
+	body {
+		font-size: 18px;
+	}
+	h1 {
+		font-size: 2em;
+		margin: 0.5em 1em;
+		text-align: center;
+	}
 	h2 {
-		height: 20px;
+		font-size: 1.6em;
+		text-align: center;
+	}
+	p {
+		max-width: 450px;
+	}
+	section {
+		position: relative;
 	}
 	.nav {
 		z-index: 2;
@@ -56,17 +83,17 @@ html, body {
 		flex-direction: column;
 		align-items: center;
 		div {
-			background: white;
+			background: $miaou-bg;
 			cursor: pointer;
 			color: #222;
-			opacity: 0.35;
+			opacity: 0.55;
 			height: 40px;
 			width: 40px;
 			border-radius: 20px;
 			margin: 3px;
 			text-align: center;
 			&:hover {
-				opacity: 0.8;
+				opacity: 1;
 			}
 		}
 	}
@@ -83,6 +110,18 @@ html, body {
 			flex-direction: row;
 			display: flex;
 			flex-grow : 1;
+		}
+		.content {
+			margin: 6px;
+			.txt {
+				padding: 10px;
+				&:first-child {
+					align-items: flex-end;
+				}
+				&:last-child {
+					align-items: flex-start;
+				}
+			}
 		}
 	}
 
@@ -109,6 +148,31 @@ html, body {
 		flex-direction: column;
 		justify-content: center;
 		padding: 10px;
+		a {
+			margin: 1px;
+			padding : 0 3px;
+			font-size: 115%;
+			cursor: pointer;
+			display: inline-block;
+			position: relative;
+			&::before {
+				padding : 0 3px;
+				display: inline-block;
+				position: absolute;
+				top: 0; left: 0;
+				content: attr(data-hover);
+				overflow: hidden;
+				color: white;
+				max-width: 0;
+				opacity: 0;
+				transition: max-width 0.5s, opacity 0.1s;
+				white-space: nowrap;
+			}
+			&:hover::before, &:focus::before {
+				max-width: 100%;
+				opacity: 1;
+			}
+		}
 	}
 
 	@media (max-height: 500px) {
@@ -174,10 +238,8 @@ html, body {
 }
 
 section {
-	display: block;
 	padding: 0;
 	margin: 0;
-	position: relative;
 	&:nth-child(odd) {
 		background: linear-gradient( lighten($odd-bg, 15%), $odd-bg );
 		color: $odd-fg;
@@ -187,9 +249,8 @@ section {
 		color: $even-fg;
 	}
 	&#first-page .container {
-		top: 202px;
+		top: 220px;
 		.content .txt {
-			//justify-content: space-around;
 			line-height: 32px;
 		}
 	}
@@ -197,49 +258,6 @@ section {
 		h2 {
 			padding: 3px;
 			text-align: center;
-		}
-		.content {
-			margin: 6px;
-			.txt, .pic {
-				align-items: stretch;
-			}
-			.txt {
-				padding: 10px;
-				&:first-child {
-					align-items: flex-end;
-				}
-				p {
-					max-width: 450px;
-				}
-				&:last-child {
-					align-items: flex-start;
-				}
-				a {
-					margin: 1px;
-					padding : 0 3px;
-					font-size: 115%;
-					cursor: pointer;
-					display: inline-block;
-					position: relative;
-					&::before {
-						padding : 0 3px;
-						display: inline-block;
-						position: absolute;
-						top: 0; left: 0;
-						content: attr(data-hover);
-						overflow: hidden;
-						color: white;
-						max-width: 0;
-						opacity: 0;
-						transition: max-width 0.5s, opacity 0.1s;
-						white-space: nowrap;
-					}
-					&:hover::before, &:focus::before {
-						max-width: 100%;
-						opacity: 1;
-					}
-				}
-			}
 		}
 	}
 }
@@ -254,7 +272,7 @@ div.button.enter {
 	width: 150px;
 	margin: auto;
 	text-align: center;
-	margin-top: 6px;
+	margin-top: 2px;
 }
 .button {
 	background-color: #E3DAC9;
