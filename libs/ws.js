@@ -287,9 +287,6 @@ function handleUserInRoom(socket, completeUser){
 						pings = pings.map(function(s){ return s.slice(1) });
 						var remainingpings = [];
 						pings.forEach(function(username){
-							console.log('ping ', username);
-							console.log('socket in the room :', !!shoe.userSocket(username));
-							console.log('socket elsewhere :', !!anyUserSocket(username));
 							if (shoe.userSocket(username)) return;
 							var socket = anyUserSocket(username);
 							if (socket) socket.emit('ping', {r:shoe.room, m:m});
@@ -404,6 +401,9 @@ exports.listen = function(server, sessionStore, cookieParser /* not used */, _db
 	io = socketio(server);
 
 	io.use(function(socket, next){
+		if (!socket.request.headers.cookie) {
+			return next(new Error('no cookie in request header'));			
+		}
 		socket.cookie = cookie.parse(socket.request.headers.cookie);
 		if (!socket.cookie || !socket.cookie['connect.sid']) {
 			return next(new Error('no cookie'));
