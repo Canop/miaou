@@ -3,7 +3,10 @@
 var miaou = miaou || {};
 miaou.editor = (function(){
 
-	var $input, input, stash, editedMessage, savedValue, $autocompleter, editwzin;
+	var $input, input,
+		stash, // save of the unsent message edition, if any
+		editedMessage, // currently edited message, if any (if you cycle through messages, their edited content is saved in a property stash)
+		savedValue, $autocompleter, editwzin;
 
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
@@ -75,6 +78,36 @@ miaou.editor = (function(){
 			return '['+s+']('+$('#newlinkhref').val()+')';
 		});
 	}
+	
+	// mid : undefined or the id of a user's message
+	// dif : +1 or -1
+	function editPreviousOrNext(dif) {
+		var index = -1;
+		var	myMessages = miaou.md.getMessages().filter(function(m){
+			miaou.ms.updateStatus(m);
+			return m.status.editable;
+		});
+		if (editedMessage) {
+			editedMessage.stash = input.value;
+			for (var i=0; i<myMessages.length; i++) {
+				if (editedMessage.id===myMessages[i].id) {
+					index = i;
+					break;
+				}
+			}
+		}
+		var indexBefore = index;
+		if (~index) {
+			index += dif;
+			if (index<0) index = 0;
+			if (index>=myMessages.length) index = -1;
+		} else if (dif<0) {
+			index = myMessages.length-1;
+		}
+		if (indexBefore === index) return;
+		if (~index) miaou.editor.editMessage($('#messages .message[mid='+myMessages[index].id+']'));
+		else miaou.editor.cancelEdit();
+	}
 
 	return {
 		// prepare #input to emit on the provided socket
@@ -135,25 +168,15 @@ miaou.editor = (function(){
 				} else if (e.which==38) { // up arrow
 					var firstLineEnd = this.value.indexOf('\n'),
 						isInFirstLine = firstLineEnd===-1 || firstLineEnd>=input.selectionStart;
-					if (isInFirstLine && !editedMessage) {
-						for (var messages=miaou.md.getMessages(), i=messages.length; i-->0;) {
-							if (messages[i].author == me.id) {
-								if (Date.now()/1000-messages[i].created < miaou.chat.MAX_AGE_FOR_EDIT) {
-									stash = input.value;
-									miaou.editor.editMessage($('#messages .message[mid='+messages[i].id+']'));
-									return false;
-								}
-								break;
-							}
-						}
+					if (isInFirstLine || (editedMessage && input.selectionStart===input.selectionEnd && input.selectionEnd===input.value.length)) {
+						editPreviousOrNext(-1);
+						return false;
 					}
 				} else if (e.which==40) { // down arrow
 					var lastLineStart = this.value.lastIndexOf('\n'),
 						isInLastLine = lastLineStart===-1 || lastLineStart<input.selectionStart;
-					if (isInLastLine && editedMessage && editedMessage.content == $input.val()) {
-						miaou.editor.cancelEdit();
-						$input.val(stash);
-						stash = null;
+					if (isInLastLine && editedMessage) {
+						editPreviousOrNext(+1);
 						return false;
 					}
 				} else if (e.which==27) { // esc
@@ -266,10 +289,11 @@ miaou.editor = (function(){
 				if (edmid===message.id) return;
 			}
 			editedMessage = message;
-			$input.val(message.content).focus();
+			$input.val(message.stash || message.content).focus();
 			input.selectionStart = input.selectionEnd = input.value.length;
 			$('#cancelEdit').show();
 			$('#help').hide();
+			if (editwzin) editwzin.remove();
 			editwzin = wzin($message, $('#input'), { fill:"rgba(136,45,23,0.15)", scrollables:'#messagescroller' });
 		},
 		// cancels edition
