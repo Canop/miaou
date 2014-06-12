@@ -136,7 +136,7 @@
 				fill: this.grads[this.g.current], fontWeight: 'bold'
 			})
 		} else {
-			this.currentPlayerMark = this.s.text(this.XS-18, this.LHS*((this.g.scores[1]>this.g.scores[0])+1), "♛").attr({
+			this.currentPlayerMark = this.s.text(this.XS-18, this.LHS*((this.g.scores[1]>=this.g.scores[0])+1), "♛").attr({
 				fill: "Goldenrod", fontWeight: 'bold', fontSize: "140%"
 			})
 		}
