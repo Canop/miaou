@@ -1,7 +1,7 @@
 // manages desktop notifications
 var miaou = miaou || {};
 (function(){
-	var audio = new Audio('static/119472-ping.wav'),
+	var audio = new Audio('static/119472-ping-loud.wav'),
 		levels = ["none", "silent", "loud"],
 		level = localStorage['notification'];
 	if (!~levels.indexOf(level)) {
