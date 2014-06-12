@@ -85,8 +85,12 @@ html
 			$('.tab[page="search"]').click(function(){
 				miaou.hist.open();
 				$('#searchInput').focus();
+				miaou.md.resizeAll();
 			});
-			$('.tab[page="notablemessagespage"]').click(miaou.hist.close);
+			$('.tab[page="notablemessagespage"]').click(function(){
+				miaou.hist.close();
+				miaou.md.resizeAll();
+			});
 			$('#uploadOpen').click(function(){
 				$('#uploadpanel').show();
 				$('#inputpanel').hide();

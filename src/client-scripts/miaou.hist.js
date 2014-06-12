@@ -79,7 +79,6 @@ var miaou = miaou || {};
 		if (!$('#hist').length) return;
 		var $scroller = $('#messagescroller'), sh = $scroller.height();
 		var $messages = $('#messages > .message').filter(function(){
-			// this assumes #messages sticks to top of window
 			var y = $(this).offset().top;
 			return y<sh && y+$(this).height()>0;
 		});

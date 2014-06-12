@@ -208,10 +208,14 @@ var miaou = miaou || {};
 		$content.find('img').load(resize);
 	}
 	
+	// resizes all messages. This must be called each time a container of
+	//  .message elements change width
+	md.resizeAll = function(){
+		$('.message').each(function(){ resize($(this), false) });
+	}
+	
 	// When the window is resized, all the messages have to be resized too.
-	$(window).on('resize', function() {
-		resize($('#messages'), true);
-	});
+	$(window).on('resize', md.resizeAll);
 
 	// inserts or updates a message in the main #messages div
 	md.addMessage = function(message){
