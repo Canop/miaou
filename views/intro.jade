@@ -157,31 +157,19 @@ html
 				});
 			}
 			
-			var scrolltimer;
-			function stopAutoscroll(){
-				clearTimeout(scrolltimer);
-				setTimeout(function(){
-					clearTimeout(scrolltimer);
-				},20);
-			}
-
 			function start(){
 				$win.scrollTop(0);
-				stopAutoscroll()
 			}
 			function up(){
 				var H = $win.height();
 				$win.scrollTop(Math.round($win.scrollTop()/H-1)*H);
-				stopAutoscroll()
 			}
 			function down(){
 				var H = $win.height();
 				$win.scrollTop(Math.round($win.scrollTop()/H+1)*H);
-				stopAutoscroll()
 			}
 			function end(){
 				$win.scrollTop($(document).height());
-				stopAutoscroll()
 			}
 
 			
@@ -198,7 +186,6 @@ html
 				if (i) {
 					$('<a>').text(title).attr('data-hover', title).click(function(){
 						$win.scrollTop($sections.eq(i).offset().top);
-						clearTimeout(scrolltimer);
 					}).appendTo($firstText);
 				}
 			});
@@ -218,18 +205,5 @@ html
 				});
 				size();
 				$win.load(size);
-				var lastAutoscrollTime;
-				$(window).on('scroll mousewheel DOMMouseScroll', function(){
-					clearTimeout(scrolltimer);
-					if (lastAutoscrollTime+500 > Date.now()) return;
-					scrolltimer = setTimeout(function(){
-						stopAutoscroll();
-						lastAutoscrollTime = Date.now();
-						var dest = Math.round($win.scrollTop()/$win.height());
-						$(document.body).animate({
-							scrollTop: dest*$win.height()
-						}, 'slow');
-					}, 800);
-				});
 			}
 			
