@@ -48,7 +48,7 @@ var miaou = miaou || {};
 		});
 		if (n<0 || n>5000 || maxn==0) return console.log('invalid data', res);
 		logmaxn = Math.log(maxn);
-		$('#hist').empty();
+		$('#hist').empty()[n>30?'removeClass':'addClass']('zoomed');
 		function day(d, n, m, sn, sm){
 			var month = moment(d*24*60*60*1000).format("MMM YYYY");
 			if (month != lastMonth) {

@@ -13,3 +13,62 @@
 		padding: 2px;
 	}
 }
+
+#hist {
+	flex-basis: $hist-width;
+	flex-grow: 0;
+	background: rgba($bg-color,.8);
+	display: none;
+	overflow-y: scroll;
+	font-size: 70%;
+	color: #655;
+	.month {
+		position: relative;
+		border-bottom: thin dotted rgba(#655,0.4);
+		.label {
+			position: absolute;
+			height: 100%;
+			left: 1px; top: 0;
+			z-index: 2;
+			opacity: 0.8;
+			pointer-events: none;
+		}
+		.day {
+			position: relative;
+			width: 100%;
+			height: 4px;
+			text-align: right;
+			&[m] {
+				cursor: pointer;
+			}	
+			.bar {
+				position: absolute;
+				right: 0;
+				background-color: #655;
+				opacity: 0.4;
+				height: 100%;
+				&.hit {
+					opacity: 1;
+				}
+			}
+			.bubble {
+				position: absolute;
+				top: 4px;
+				left: 30px;
+				text-align: left;
+				z-index: 3;
+				background: rgba(255,255,255,0.6);
+			}
+			&.vis {
+				background: white;
+			}
+			&.vis:hover, &:hover {
+				background: #d5cba6;
+			}
+		}
+	}
+}
+#hist.zoomed .month .day {
+	height: 10px;
+}
+	

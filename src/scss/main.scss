@@ -2,7 +2,7 @@
 	font-family: 'fontello';
 	src: url('fontello.woff?7570e8f6') format('woff');
 }
-$bg-color: #F0EAD6;
+$bg-color: #F0EAD6; // or #def
 $mtab-height: 39px;   // height of the top tabs in mobile interface
 $input-height: 80px; // height of input
 $minput-height: 50px; // height of input in mobile interface
@@ -11,7 +11,6 @@ $right-panel-width: 320px;
 $hist-width: 200px;
 $profile-bg-color: #fffcc5;
 $notifications-bg-color: #fffa9e;
-
 
 body {
 	background: $bg-color;
@@ -154,14 +153,16 @@ body {
 #left {
 	top:0; left:0; bottom:0;
 	width: $left-panel-width;
-	background: linear-gradient( $bg-color, darken($bg-color, 10%) );
+//	background: linear-gradient( lighten($bg-color, 10%), darken($bg-color, 7%) );
+	background: linear-gradient( $bg-color, darken($bg-color, 20%) );
 	overflow-y: auto;
 }
 #right {
 	top:0; right:0; bottom:0;
 	width: $right-panel-width;
 	overflow-y: auto;
-	background: linear-gradient( $bg-color, darken($bg-color, 10%) );
+//	background: linear-gradient( lighten($bg-color, 10%), darken($bg-color, 7%) );
+	background: linear-gradient( $bg-color, darken($bg-color, 20%) );
 }
 #center {
 	display:flex;
@@ -181,60 +182,7 @@ body {
 	flex-grow: 1;
 	flex-basis: 0;
 }
-#hist {
-	flex-basis: $hist-width;
-	flex-grow: 0;
-	background: rgba($bg-color,.8);
-	display: none;
-	overflow-y: scroll;
-	font-size: 70%;
-	color: #655;
-	.month {
-		position: relative;
-		border-bottom: thin dotted rgba(#655,0.4);
-		.label {
-			position: absolute;
-			height: 100%;
-			left: 1px; top: 0;
-			z-index: 2;
-			opacity: 0.8;
-			pointer-events: none;
-		}
-		.day {
-			position: relative;
-			width: 100%;
-			height: 4px;
-			text-align: right;
-			&[m] {
-				cursor: pointer;
-			}	
-			.bar {
-				position: absolute;
-				right: 0;
-				background-color: #655;
-				opacity: 0.4;
-				height: 100%;
-				&.hit {
-					opacity: 1;
-				}
-			}
-			.bubble {
-				position: absolute;
-				top: 4px;
-				left: 30px;
-				text-align: left;
-				z-index: 3;
-				background: rgba(255,255,255,0.6);
-			}
-			&.vis {
-				background: white;
-			}
-			&.vis:hover, &:hover {
-				background: #d5cba6;
-			}
-		}
-	}
-}
+
 #messagescroller {
 	width: 100%;
 	overflow-y: scroll;
@@ -465,7 +413,6 @@ body.mobile #messagescroller {
 		right: 60px;
 	}
 }
-
 
 #messages .message, #messages .error {
 	display: flex;
