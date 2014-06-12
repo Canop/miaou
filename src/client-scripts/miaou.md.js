@@ -207,6 +207,11 @@ var miaou = miaou || {};
 		resize();
 		$content.find('img').load(resize);
 	}
+	
+	// When the window is resized, all the messages have to be resized too.
+	$(window).on('resize', function() {
+		resize($('#messages'), true);
+	});
 
 	// inserts or updates a message in the main #messages div
 	md.addMessage = function(message){
