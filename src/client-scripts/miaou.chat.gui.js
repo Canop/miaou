@@ -66,12 +66,13 @@ miaou.bindChatGui = function(){
 		editor.replyToMessage($(this).closest('.message').data('message'));
 	})
 	.on('mouseenter', '.reply', function(e){
-		var mid = $(this).attr('to');
+		var $this = $(this),
+			mid = $this.attr('to');
 		var $target = $('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).eq(0);
 		if ($target.length) {
-			$target.removeClass('flash');
+			$('.goingto').removeClass('goingto');
 			if (replyWzin) replyWzin.remove();
-			replyWzin = wzin($(this).closest('.message'), $target, { zIndex:60, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' });
+			replyWzin = wzin($this.closest('.message'), $target, { zIndex:60, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' });
 		}
 		e.stopPropagation();
 	})
