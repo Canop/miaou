@@ -1,0 +1,37 @@
+body {
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 16px;
+}
+
+a {
+	text-decoration: none;
+	color: #dc3535;
+}
+
+#content {
+	margin-left: 250px;	
+	margin-bottom: 250px;
+	max-width: 950px;
+}
+#content div, #content p, #content pre {
+	margin-left: 20px;
+}
+
+#summary {
+	position: fixed;
+	z-index:2;
+	padding: 0;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 220px;
+	background: #dc3535;
+}
+#github {
+	position: fixed;
+	top: 0;
+	right: 0;
+	border: 0;
+	z-index: 5;
+	cursor: pointer;
+}

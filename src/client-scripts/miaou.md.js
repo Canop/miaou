@@ -194,11 +194,13 @@ var miaou = miaou || {};
 		var $content = $md.find('.content');
 		var resize = function(){
 			var h = $content.height();
+			$md.find('.opener').remove();
 			if ($content.height()>158) {
-				$md.find('.opener').remove();
 				$content.addClass("closed");
 				h = $content.height()
 				$md.append('<div class=opener>');
+			} else {
+				$content.removeClass("closed")
 			}
 			$md.find('.user').height(h).css('line-height',h+'px');
 			if (wasAtBottom) md.scrollToBottom();

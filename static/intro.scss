@@ -162,7 +162,6 @@ html, body {
 				top: 0; left: 0;
 				content: attr(data-hover);
 				overflow: hidden;
-				color: white;
 				max-width: 0;
 				opacity: 0;
 				transition: max-width 0.5s, opacity 0.1s;

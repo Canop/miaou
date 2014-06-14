@@ -102,6 +102,7 @@ function defineAppRoutes(config){
 	map('get', '/publicProfile', profile.appGetPublicProfile, true, true);
 	map('get', /^\/user\/(\d+)$/, profile.appGetUser, true, true);
 	map('get', '/help', help.appGetHelp, true, true);
+	map('get', '/helpus', help.appGetHelpUs, true, true);
 	map('get', '/intro', intro.appGetIntro, true, true);
 	map('post', '/upload', upload.appPostUpload, true);
 }

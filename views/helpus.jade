@@ -1,0 +1,36 @@
+doctype html
+html
+	head
+		title Help Miaou Meow
+		link(href="http://fonts.googleapis.com/css?family=Crimson+Text",rel="stylesheet",type="text/css")
+		link(rel="icon",type="image/png",href="static/M-32.png")
+		link(rel='stylesheet', href='static/helpus.css')
+	body
+		a(href="https://github.com/Canop/miaou",target="github")
+			img#github(src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
+		div#summary
+			img(src="static/adM.png",alt="Help Miaou Meow!")
+		div#content
+			section
+				p Miaou is a chat server built upon node.js, socket.IO, PostgreSQL, WebRTC, and a few other technologies.
+				p If you don't know <b>Miaou</b>, have a look at <b><a target=intro href=http://dystroy.org/miaou/intro>the intro</a></b>.
+				p It's already great but we want to make it better.
+				P So here are a few topics on which help would be appreciated.
+				p If you're willing and able to help, please come discuss in the <a href=http://dystroy.org/miaou/1?Miaou>Miaou room</a>.
+			section
+				h3 Group Video & screen sharing
+				p 2 user video and audio works well enough but there will be some work to make it work for 3 or more users.
+				h3 End-to-End Cryptography
+				p The idea would be to let two users exchange specific messages (probably only in dialog rooms) without letting the server or other tiers see the content. This raises a few technical questions...
+				h3 Cordova wrapping
+				p Today mobile browsers can't keep a reasonnably stable connection or send to the user native notifications. We want to keep our chat simply usable as a web page in a mobile browser, and we don't want to hinder our ability to change the exchange, so it seems the best course for people who want to keep connected to Miaou would be to have a Cordova wrapped site. 
+				h3 Miaou Server Profiling and Performances Analysis
+				p Goal : ensure a gazillion users can chat at the same time.
+				h3 Security Analysis
+				p We want Miaou to let you be reasonnably sure of the identity of who you speak to and of who can read (provided you trust the server). We've already put some effort on that but other audits would be welcome.
+				h3 Prettify all the things
+				p Prettifying the chat page, while needed, isn't easy due to the many constraints, but there are many pages which a designer could easily make much better. For example this one.
+				h3 Better Home Page (list of rooms)
+				p The goal isn't really to make it prettier but rather to make it efficient (no problem with making it prettier though).
+				h3 Other topics
+				p There are many topics already listed in the TODO list but there are also many ones we didn't think about. Discussions are welcome.
