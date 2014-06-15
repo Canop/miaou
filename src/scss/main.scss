@@ -146,6 +146,10 @@ body {
 		}
 	}
 }
+#prefs, #roominfo {
+	margin: 5px;
+}
+
 #left, #right, #center {
 	position: fixed;
 	overflow-x: hidden;
