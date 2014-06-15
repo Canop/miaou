@@ -194,13 +194,12 @@ var miaou = miaou || {};
 		var $content = $md.find('.content');
 		var resize = function(){
 			var h = $content.height();
+			$content.removeClass("closed");
 			$md.find('.opener').remove();
 			if ($content.height()>158) {
 				$content.addClass("closed");
 				h = $content.height()
 				$md.append('<div class=opener>');
-			} else {
-				$content.removeClass("closed")
 			}
 			$md.find('.user').height(h).css('line-height',h+'px');
 			if (wasAtBottom) md.scrollToBottom();
@@ -254,7 +253,7 @@ var miaou = miaou || {};
 				}
 				$('#messages > .message').eq(insertionIndex).replaceWith($md);
 			} else {
-				$('#messages > .message').eq(insertionIndex).after($md);				
+				$('#messages > .message').eq(insertionIndex).after($md);
 			}
 		} else {
 			$md.prependTo('#messages');
