@@ -287,6 +287,8 @@ miaou.editor = (function(){
 				var edmid = editedMessage.id;
 				this.cancelEdit();
 				if (edmid===message.id) return;
+			} else {
+				stash = input.value;
 			}
 			editedMessage = message;
 			$input.val(message.stash || message.content).focus();
