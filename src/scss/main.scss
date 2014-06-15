@@ -89,8 +89,11 @@ body {
 			}
 		}
 		#homemain {
+			display: -webkit-flex;
 			display: flex;
+			-webkit-flex-direction: row;
 			flex-direction: row;
+			-webkit-justify-content: center;
 			justify-content: center;
 			&.hastabs {
 				margin-top: 26px;
@@ -169,7 +172,9 @@ body {
 	background: linear-gradient( $bg-color, darken($bg-color, 20%) );
 }
 #center {
+	display: -webkit-flex;
 	display:flex;
+	-webkit-flex-direction: row;
 	flex-direction: row;
 	top:0;
 	left: $left-panel-width;
@@ -179,18 +184,24 @@ body {
 	z-index: 2;
 }
 #vert-center {
+	display: -webkit-flex;
 	display:flex;
+	-webkit-flex-direction: column;
 	flex-direction: column;
 	background: white;
 	height: 100%;
+	-webkit-flex-grow: 1;
 	flex-grow: 1;
+	-webkit-flex-basis: 0;
 	flex-basis: 0;
 }
 
 #messagescroller {
 	width: 100%;
 	overflow-y: scroll;
+	-webkit-flex-grow: 1;
 	flex-grow: 1;
+	-webkit-flex-basis: 0;
 	flex-basis: 0;
 }
 .table {
@@ -322,9 +333,11 @@ body.mobile #messagescroller {
 
 .message, #messages .error {
 	position: relative;
-    align-items: center;
-    align-content: center;
-    .user {
+	-webkit-align-items: center;
+	align-items: center;
+	-webkit-align-content: center;
+	align-content: center;
+	.user {
 		position: relative;
 		align-items: center;
 		align-content: center;
@@ -383,13 +396,18 @@ body.mobile #messagescroller {
 	right: 0;
 	top: 0;
 	bottom: 0;
+	display: -webkit-flex;
 	display: flex;
+	-webkit-flex-direction: row;
 	flex-direction: row;
+	-webkit-align-items: center;
 	align-items: center;
+	-webkit-justify-content: flex-end;
 	justify-content: flex-end;
 	.decoration {
 		font-family: "fontello";
 		margin: 2px;
+		-webkit-flex 0 0 15px;
 		flex: 0 0 15px;
 		cursor: default;
 		color: #aaa;
@@ -419,6 +437,7 @@ body.mobile #messagescroller {
 }
 
 #messages .message, #messages .error {
+	display: -webkit-flex;
 	display: flex;
 	.content {
 		width: calc(100% - 122px);
@@ -582,7 +601,9 @@ code {
 	position: relative;
 	background: $bg-color;
 	width:100%;
+	-webkit-flex-basis: $input-height + 10px;
 	flex-basis:  $input-height + 10px;
+	-webkit-grow 0;
 	flex-grow: 0;
 }
 #autocompleter,  {
@@ -614,6 +635,7 @@ $input-buttons-width: 74px;
 	height: $input-height;
 	margin-top: 2px;
 	margin-left: 2px;
+	-webkit-resize: none;
 	resize: none; 
 	float: left;
 }
@@ -649,6 +671,7 @@ body.mobile #inputpanel button {
 	background: $bg-color;
 	width:100%;
 	height: $input-height + 8px;
+	-webkit-flex-grow: 0;
 	flex-grow: 0;
 	display: none;
 }
@@ -656,6 +679,7 @@ body.mobile #inputpanel button {
 	background: $bg-color;
 	width:100%;
 	height: $input-height + 8px;
+	-webkit-flex-grow: 0;
 	flex-grow: 0;
 	display: none;
 	padding: 10px;
@@ -839,17 +863,17 @@ button {
 	margin: 1px 4px;
 	border-radius: 2px;
 	box-shadow: 1px 1px 3px #999;
-    outline: none;
-    cursor: pointer;
-    color: #333;
-    transition: all 100ms ease;
-    &.small {
+	outline: none;
+	cursor: pointer;
+	color: #333;
+	transition: all 100ms ease;
+	&.small {
 		font-size: 75%;
-    }
+	}
 }
 button:hover,button:focus {
-    border-color: #666;
-    color: black;
+	border-color: #666;
+	color: black;
 }
 button.small {
 	padding: 2px 4px;
