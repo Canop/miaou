@@ -15,7 +15,9 @@
 }
 
 #hist {
+	-webkit-flex-basis: $hist-widht;
 	flex-basis: $hist-width;
+	-webkit-flex-grow: 0;
 	flex-grow: 0;
 	background: rgba($bg-color,.8);
 	display: none;

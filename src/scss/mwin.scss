@@ -2,6 +2,7 @@
 .mwincontainer {
 	z-index: 10;
 	position: fixed;
+	display: -webkit-flex;
 	display: flex;
 	pointer-events: none;
 	&.left {
@@ -9,7 +10,9 @@
 		left: 0;
 		bottom: 30px;
 		top: 0;
+		-webkit-flex-direction: column-reverse;
 		flex-direction: column-reverse;
+		-webkit-align-items: flex-start;
 		align-items: flex-start;
 		.mwintab {
 			margin-top: 5px;
@@ -21,6 +24,7 @@
 		left: 120px;
 		right: 0;
 		top: 0;
+		-webkit-flex-direction: row;
 		flex-direction: row;
 		.mwintab {
 			margin-left: 5px;
@@ -32,7 +36,9 @@
 		right: 0;
 		bottom: 30px;
 		top: 0;
+		-webkit-flex-direction: column-reverse;
 		flex-direction: column-reverse;
+		-webkit-align-items: flex-end;
 		align-items: flex-end;
 		.mwintab {
 			margin-top: 5px;
@@ -44,6 +50,7 @@
 		left: 20px;
 		right: 0;
 		bottom: 0;
+		-webkit-flex-direction: row;
 		flex-direction: row;
 		.mwintab {
 			margin-left: 5px;
