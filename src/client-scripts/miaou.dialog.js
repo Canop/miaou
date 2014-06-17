@@ -15,7 +15,11 @@ var miaou = miaou || {};
 		$d.append($('<div class=dialog_content/>').append(options.content));
 		var $buttons = $('<div class=dialog_buttons/>').appendTo($d);
 		var close = function(){
-			$d.fadeOut(function(){$d.remove();});
+			$d.fadeOut('fast', function(){$d.remove();});
+			$(window).off('keyup', handleKey);
+		}
+		var handleKey = function(e){
+			if (e.which===27) close();
 		}
 		$.each(options.buttons, function(name, func){
 			$buttons.append($('<button>').html(name).click(function(){
@@ -24,13 +28,14 @@ var miaou = miaou || {};
 		});
 		$d.appendTo(document.body);
 		var $mask = $('<div class=mask>').appendTo(document.body);
-		$d = $d.add($mask).hide().fadeIn();
+		$d = $d.add($mask).hide().fadeIn('fast');
 		var d = {
 			close: close, // removes the dialog
 			hide: function(callback){ $d.fadeOut(callback) }, // just hides it so that it can be reopened (be careful not to let them accumulate)
 			show: function(callback){ $d.fadeIn(callback) }, // shows a previously hidden dialog
 			exists: function() { return !!$d.parent().length } // if false, it won't be possible to show it
 		}
+		$(window).on('keyup', handleKey);
 		dialogs.push(d);
 		return d;
 	}
