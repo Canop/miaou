@@ -1,11 +1,11 @@
 $miaou-bg: #F0EAD6;
-$odd-bg:  white; // #F0F8FF; // #047; // #2F4F4F;// #87CEFA; //#B0C4DE; //#E0FFFF;
-$odd-fg: black; //#ddf; //#115;
-$even-bg: #ddd; // #FFFFF0; //#FFFFF0; //#303444; //#8B4513; // #F5DEB3; // #FFDEAD; // #87CEFA; // #E0FFFF; //
+$odd-bg:  white;
+$odd-fg: black; 
+$even-bg: white; //#FFFACD;
 $even-fg: black; // white;
 
 html, body {
-	font-family: 'Crimson Text', serif;
+	font-family: Tahoma, Geneva, sans-serif;
 	margin:0;
 	padding:0;
 	overflow-x: hidden;
@@ -83,7 +83,7 @@ html, body {
 		flex-direction: column;
 		align-items: center;
 		div {
-			background: $miaou-bg;
+			background: #dc3535;
 			cursor: pointer;
 			color: #222;
 			opacity: 0.55;
@@ -218,8 +218,7 @@ html, body {
 }
 
 #intro-supertop {
-	background: linear-gradient( darken($miaou-bg, 12%), $miaou-bg );
-	box-shadow: 0 0 10px black;
+	background: #dc3535;
 	padding: 10px;
 	z-index: 4;
 	top: 0; left: 0; right: 0;
@@ -227,8 +226,7 @@ html, body {
 }
 
 #intro-top {
-	background: $miaou-bg;
-	box-shadow: 0 0 10px black;
+	background: #dc3535;
 	z-index: 2;
 	position: fixed;
 	top: 0; left: 0; right: 0;
@@ -240,11 +238,11 @@ section {
 	padding: 0;
 	margin: 0;
 	&:nth-child(odd) {
-		background: linear-gradient( lighten($odd-bg, 15%), $odd-bg );
+		background: $odd-bg;
 		color: $odd-fg;
 	}
 	&:nth-child(even) {
-		background: linear-gradient( lighten($even-bg, 28%), darken($even-bg, 6%) );
+		background: $even-bg;
 		color: $even-fg;
 	}
 	&#first-page .container {
@@ -271,13 +269,13 @@ div.button.enter {
 	width: 150px;
 	margin: auto;
 	text-align: center;
-	margin-top: 2px;
+	margin-top: 5px;
 }
 .button {
-	background-color: #E3DAC9;
+	background-color: #ddd;
 	padding: 4px 8px;
 	border: 1px solid #999;
-	margin: 1px 4px;
+	margin: 2px 4px;
 	border-radius: 2px;
 	box-shadow: 1px 1px 3px #999;
     outline: none;
