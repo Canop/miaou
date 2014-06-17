@@ -25,6 +25,7 @@ main.css
 miaou.concat.js
 miaou.min.js
 miaou.min.js.map
+static/intro.css
 
 # execution byproducts
 *.log
