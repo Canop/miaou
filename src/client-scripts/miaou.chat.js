@@ -50,10 +50,8 @@ miaou.chat = {
 		}		
 	}
 	chat.ping = function(p){ // this is used for instant cross-room pings
-		console.log('fast cross-room ping : ', p);
 		makeCrossRoomPingsNotificationMessage([{room:p.r.id, roomname:p.r.name}]);
-		miaou.notify(p.r, p.m.authorname, p.m.content);
-		miaou.touch(0, true);
+		miaou.touch(0, true, p.m.authorname, p.m.content, p.r);
 	}
 	
 	// put the user at the top of the list

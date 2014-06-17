@@ -75,6 +75,7 @@ var miaou = miaou || {};
 			).append(
 				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
 			).appendTo('#messages');
+			miaou.touch(0, true, invit.byname, 'You have been invited in a dialog room.');
 			md.scrollToBottom();
 		})
 		.on('pm_room', function(roomId){

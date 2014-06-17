@@ -65,6 +65,8 @@ miaou.bindChatGui = function(){
 	.on('click', '.replyButton', function(){
 		editor.replyToMessage($(this).closest('.message').data('message'));
 	})
+	.on('mouseenter', '.replyButton,.deleteButton,.editButton', miaou.userProfile.hide)
+	.on('mouseleave', '.replyButton,.deleteButton,.editButton', miaou.userProfile.show)
 	.on('mouseenter', '.reply', function(e){
 		var $this = $(this),
 			mid = $this.attr('to');
@@ -175,13 +177,13 @@ miaou.bindChatGui = function(){
 	});
 	
 	// called in case of new message (or a new important event related to a message)
-	miaou.touch = function(mid, ping, from, text){
+	miaou.touch = function(mid, ping, from, text, r){
 		var visible = vis();
 		if (ping) {
 			if (visible) {
 				chat.clearPings();
 			} else {
-				miaou.notify(room, from, text);
+				miaou.notify(r || room, from, text);
 				if (mid && !chat.oldestUnseenPing) chat.oldestUnseenPing = mid;
 			}
 		}

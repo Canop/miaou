@@ -85,7 +85,7 @@ Shoe.prototype.userSocket = function(userIdOrName) {
 	}
 }
 
-// returns the first found socket of the passed user
+// returns the first found socket of the passed user (may be in another room)
 function anyUserSocket(userIdOrName) {
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
@@ -354,16 +354,11 @@ function handleUserInRoom(socket, completeUser){
 			return this.storeMessage(m);
 		}).then(function(m){
 			message = m;
-			sockets = shoe.roomSockets();
-			if (sockets.length) {
-				for (var i=0; i<sockets.length; i++) {
-					var user = sockets[i].publicUser;
-					if (user && user.id==otherUserId) {
-						sockets[i].emit('invitation', {room:lounge.id, byname:shoe.publicUser.name, message:message.id});
-					}
-				}
+			var socket = shoe.userSocket(otherUserId) || anyUserSocket(otherUserId);
+			if (socket) {
+				socket.emit('invitation', {room:lounge.id, byname:shoe.publicUser.name, message:message.id});
 			} else {
-				return this.storePing(lounge.id, otherUserId, message.id);
+				return this.storePing(lounge.id, otherUserId, message.id);				
 			}
 		}).then(function(){
 			socket.emit('pm_room', lounge.id)
