@@ -9,7 +9,7 @@
 		boardId=1;
 
 	function Panel(m, g, s, availableWidth, abstract){
-		this.m = m;
+		this.m = m; // message
 		this.g = g; // game
 		this.s = s; // snap thing
 		this.u = -1; // user index in the game
@@ -141,6 +141,63 @@
 			})
 		}
 	}
+	
+	Panel.prototype.showMoveLines = function(move) {
+		if (!move.lines) return;
+		move.lines.forEach(function(line){
+			var lm = this.lineMark(line, move.p).animate({fillOpacity:0}, 6000, mina.linear, function(){
+				lm.remove();
+			});
+		}, this);
+	}
+
+	Panel.prototype.addReplayStopButton = function($c){
+		var p = this,
+			playing = false,
+			savedMoves,
+			$button,
+			timer;
+		if (p.g.status !== 'finished') return;
+		function stop(){
+			clearTimeout(timer);
+			playing = false;
+			$button.text('replay');
+			p.g.moves = savedMoves;
+			Tribo.restore(p.g);
+			p.drawScores();
+			p.drawBoard();
+		}
+		function playMove(){
+			if (savedMoves.length===p.g.moves.length) return stop();
+			var cm = savedMoves[p.g.moves.length],
+				move = Tribo.decodeMove(cm);
+			p.g.moves += cm;
+			Tribo.apply(p.g, move);
+			p.drawScores();
+			p.drawBoard();
+			p.showMoveLines(move);
+			timer = setTimeout(playMove, 600);
+		}
+		$button = $('<button>').addClass('small').text('replay')
+		.css({position:"absolute", top:this.LHS*2.7, left:this.XS}).appendTo($c)
+		.click(function(){
+			if (!playing) {
+				playing = true;
+				savedMoves = p.g.moves;
+				$(this).text('stop replay');
+				p.g.moves = "";
+				p.g.zones = [];
+				p.g.cellZone = null;
+				Tribo.restore(p.g);
+				p.s.clear();
+				p.buildBoard();
+				p.buildScores();
+				playMove();
+			} else {
+				stop();
+			}
+		});
+	}
 
 	if (!miaou.games) miaou.games = {};
 	miaou.games.Tribo = {
@@ -158,6 +215,9 @@
 			p.drawBoard();
 			p.buildScores();
 			p.drawScores();
+			if (!abstract) {
+				p.addReplayStopButton($c);
+			}
 		},
 		move: function($c, m, _, move){
 			var panel = $c.data('ludo-panel');
@@ -166,12 +226,9 @@
 			Tribo.apply(panel.g, move);
 			panel.drawBoard();
 			panel.drawScores();
-			if (!panel.abstract && move.lines) {
-				move.lines.forEach(function(line){
-					var lm = panel.lineMark(line, move.p).animate({fillOpacity:0}, 6000, mina.linear, function(){
-						lm.remove();
-					});
-				});
+			if (!panel.abstract) {
+				panel.showMoveLines(move);
+				p.addReplayStopButton($c);
 			}
 		},
 		fillHelp: function($div){
