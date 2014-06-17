@@ -178,7 +178,10 @@
 			p.showMoveLines(move);
 			timer = setTimeout(playMove, 600);
 		}
-		$button = $('<button>').addClass('small').text('replay')
+		$button = $('<button>').addClass('small').css({
+			background:'#2a4646',
+			color:'white'
+		}).text('replay')
 		.css({position:"absolute", top:this.LHS*2.7, left:this.XS}).appendTo($c)
 		.click(function(){
 			if (!playing) {
