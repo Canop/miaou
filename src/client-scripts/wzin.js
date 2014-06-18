@@ -72,10 +72,10 @@ var wzin = (function(){
 			path += " L "+p2.left+' '+p2.top+" C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
 		}
 		
-		var svgpath = document.createElementNS (svgns, "path");
-		svgpath.setAttributeNS (null, 'd', path);
-		svgpath.setAttributeNS (null, 'fill', this.fill);
-		svg.appendChild (svgpath);
+		var svgpath = document.createElementNS(svgns, "path");
+		svgpath.setAttributeNS(null, 'd', path);
+		svgpath.setAttributeNS(null, 'fill', this.fill);
+		svg.appendChild(svgpath);
 		
 		document.body.appendChild(svg);
 	}
