@@ -1,8 +1,22 @@
 h1= user.name
-if auth != 'none'
-	p
-		| Role in this room :
-		i.role= ' '+auth
+div#userinfo
+	if auth != 'none'
+		div
+			span.def role in this room
+			span.val= auth
+	if userinfo.location
+		div
+			span.def location
+			span.val= userinfo.location
+	if userinfo.url
+		div
+			span.def website
+			span.val
+				a(href=userinfo.url)= userinfo.url
+	if userinfo.description
+		div
+			span.def self description
+			span.val= userinfo.description
 each epi in externalProfileInfos
 	h2= epi.name
 	div.externalProfile !{epi.html}

@@ -9,20 +9,17 @@ html
 	body.home
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
-
 		section#hometop
 			div.MP
 				a(href="..")
 					img(src="../static/Miaou-300-f.png")
-
 		section
-			div.MP
-				br
+			div.thinMP
 				h2= user.name
-
 		section#homemain
 			div#homemaincontent
-				p
+				table#userinfo
+				h3
 					span.user= user.name + ' '
 					case rooms.length
 						when 0
@@ -39,7 +36,8 @@ html
 		
 		script.
 			if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent)) $(document.body).addClass('mobile');
-			var user = !{JSON.stringify(user)};
+			var user = !{JSON.stringify(user)},
+				userinfo = !{JSON.stringify(userinfo)};
 			document.title = user.name + ' @ Miaou';
 			!{JSON.stringify(rooms)}.forEach(function(r){
 				$('<tr>').append(
@@ -48,3 +46,32 @@ html
 					$('<td>').addClass('rendered').html(miaou.mdToHtml(r.description))
 				).appendTo('#recentRooms');
 			});
+			
+			if (userinfo.location) {
+				$('#userinfo').append(
+					$('<tr>').append(
+						$('<th>').text('location')
+					).append(
+						$('<td>').text(userinfo.location)
+					)
+				);
+			}
+			if (userinfo.url) {
+				$('#userinfo').append(
+					$('<tr>').append(
+						$('<th>').text('website')
+					).append(
+						$('<td>').append($('<a>').text(userinfo.url).attr('href', userinfo.url))
+					)
+				);
+			}
+			if (userinfo.description) {
+				$('#userinfo').append(
+					$('<tr>').append(
+						$('<th>').text('self description')
+					).append(
+						$('<td>').text(userinfo.description)
+					)
+				);
+			}
+			

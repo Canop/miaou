@@ -5,48 +5,82 @@ html
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="static/jquery-2.0.3.min.js")
-	body
-		form(method="post")
-			input(type="hidden", name="secret", value=secret)
-			div#centerer
-				div.dialog.centered
-					div.dialog_title Profile Edition
-					div.dialog_content
-						p Pick a name by which you will be recognized.
-						p Choose wisely (not &quot;wisely&quot;).
-						div.form
-							label.label Name
-							input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
-						section.externalProfiles
-							h2 External Profiles
-							each ep in externalProfileInfos
-								section.externalProfileForm
-									h3.sectionOpener= ep.name
-									section
-										if ep.html
-											div.externalProfile !{ep.html}
-											div.inputs
-												- var cbid = "remove_"+ep.name
-												input(type="checkbox",name=cbid,id=cbid)
-												label(for=cbid) Remove this profile
-										else
-											table
-												each field in ep.fields
-													tr
-														td
-															label= field.label+' : '
-														td
-															input(type=(field.type||'text'),name=field.name)
-											if ep.creationDescription
-												p !{ep.creationDescription}
-						p#err.error= error
+		script(src="static/miaou.min.js")
+		style.
+			#p {
+				padding: 2px;
+				background: #F0EAD6;
+			}
+	body.home
+		section#hometop
+			div.thinMP
+				a(href='.')
+					img(src="static/Miaou-300-f.png")
+		section#homenotifs
+			div.thinMP
+				h2 Profile Edition
+		section#homemain
+			div.thinMP
+				form(method="post")
+					input(type="hidden", name="secret", value=secret)
+					input#id(type="hidden", name="id")
+					table.form
+						tr
+							th Name
+							td
+								input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
+						tr
+							th A few words
+							td
+								input#description(type="text", name="description", maxlength="250")
+						tr
+							th Prefered Language (if any)
+							td
+								select#lang(name="lang")
+						tr
+							th Location
+							td
+								input#location(type="text", name="location", value="", maxlength="250")
+						tr
+							th Web Site
+							td
+								input#url(type="url", name="url", value="", maxlength="250")
+						tr
+							th External Profiles
+							td
+								each ep in externalProfileInfos
+									section.externalProfileForm
+										h3.sectionOpener= ep.name
+										section
+											if ep.html
+												div.externalProfile !{ep.html}
+												div.inputs
+													- var cbid = "remove_"+ep.name
+													input(type="checkbox",name=cbid,id=cbid)
+													label(for=cbid) Remove this profile
+											else
+												table
+													each field in ep.fields
+														tr
+															td
+																label= field.label+' : '
+															td
+																input(type=(field.type||'text'),name=field.name)
+												if ep.creationDescription
+													p !{ep.creationDescription}
+					p#err.error
 					div.dialog_buttons
 						button#submit Save
 						button#close Go On
-		
 		script.
 			var externalProfileInfos = !{JSON.stringify(externalProfileInfos)},
-				valid = !{JSON.stringify(valid)};
+				valid = !{JSON.stringify(valid)},
+				langs = !{langs},
+				userinfo = !{userinfo};
+			for (var key in langs) {
+				var lang = langs[key];
+				$('#lang').append($('<option>').attr('value', key).text(lang.name));
+			}
 			$('#name').focus().keyup(function(){
 				if (!this.validity.valid){ // not compatible with IE, that's fine 
 					$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');
@@ -59,10 +93,15 @@ html
 					$('#submit').prop('disabled', false);
 				}
 			});
-			$('#close').click(function(){ location = 'rooms'; return false; });
+			console.log(userinfo);
+			$('#description').val(userinfo.description||'');
+			$('#location').val(userinfo.location||'');
+			$('#url').val(userinfo.url||'');
+			$('#lang').val(userinfo.lang);
 			
 			if (!valid) $('#close').hide();
-			
+			$('#close').click(function(){ location = 'rooms'; return false; });
+						
 			$('.sectionOpener + section').hide();
 			$('.sectionOpener').click(function(){
 				$(this).toggleClass('sectionOpener sectionCloser').next('section').toggle();

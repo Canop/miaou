@@ -98,6 +98,7 @@ function defineAppRoutes(config){
 	map('get', '/rooms', rooms.appGetRooms);
 	map('get', '/auths', auths.appGetAuths);
 	map('post', '/auths', auths.appPostAuths);
+	map('all', '/username', profile.appAllUsername, true);
 	map('all', '/profile', profile.appAllProfile, true);
 	map('get', '/publicProfile', profile.appGetPublicProfile, true, true);
 	map('get', /^\/user\/(\d+)$/, profile.appGetUser, true, true);
