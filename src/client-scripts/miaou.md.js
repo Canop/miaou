@@ -233,6 +233,15 @@ var miaou = miaou || {};
 		} else {
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
+		
+		// updates the link (as reply) to upwards messages
+		// To make things simpler, we consider only one link upwards
+		delete message.repliesTo;
+		if (message.content) {
+			var matches = message.content.match(/^@\w[\w_\-\d]{2,}#(\d+)/);
+			if (matches) message.repliesTo = +matches[1];
+		}
+		
 		if (message.bot) $user.addClass('bot');
 		else chat.topUserList({id: message.author, name: message.authorname});
 		if (message.authorname===me.name) {
@@ -377,5 +386,5 @@ var miaou = miaou || {};
 		});
 		resize($m, wab);
 	}
-	
+		
 })(miaou.md = {});

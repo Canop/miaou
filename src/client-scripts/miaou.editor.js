@@ -296,7 +296,9 @@ miaou.editor = (function(){
 			$('#cancelEdit').show();
 			$('#help').hide();
 			if (editwzin) editwzin.remove();
-			editwzin = wzin($message, $('#input'), { fill:"rgba(136,45,23,0.15)", scrollables:'#messagescroller' });
+			editwzin = wzin($message, $('#input'), {
+				zIndex:60, fill:'rgba(208, 120, 16, .3)', scrollables:'#messagescroller', changeElementBackground:true
+			});
 		},
 		// cancels edition
 		cancelEdit: function(){

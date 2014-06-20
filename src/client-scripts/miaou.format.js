@@ -6,7 +6,7 @@ miaou.mdToHtml = function(md, withGuiFunctions, username){
 	return md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n').map(function(s,l){
 		var m;
 		s = s.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-			.replace(/^@(\w[\w_\-\d]{2,})#(\d+)/, withGuiFunctions ? '<span class=reply to=$2>&#xe81a;</span>' : '');
+			.replace(/^@\w[\w_\-\d]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : '');
 		if (m=s.match(/^(?:    |\t)(.*)$/)) {
 			return '<code class=indent>'+m[1]+'</code>';
 		}

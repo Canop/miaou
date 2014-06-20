@@ -70,9 +70,9 @@ miaou.bindChatGui = function(){
 	.on('mouseenter', '.reply', function(e){
 		var $this = $(this),
 			mid = $this.attr('to');
+		miaou.wz.onmouseleave();
 		var $target = $('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).eq(0);
 		if ($target.length) {
-			$('.goingto').removeClass('goingto');
 			if (replyWzin) replyWzin.remove();
 			replyWzin = wzin($this.closest('.message'), $target, { zIndex:60, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' });
 		}
@@ -84,6 +84,8 @@ miaou.bindChatGui = function(){
 			replyWzin = null;
 		}
 	})
+	.on('mouseenter', '.message', miaou.wz.onmouseenter)
+	.on('mouseleave', '.message', miaou.wz.onmouseleave)
 	.on('click', '.reply', function(e){
 		md.focusMessage(+$(this).attr('to'));
 		e.stopPropagation();			
