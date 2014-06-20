@@ -39,7 +39,8 @@ NoRowError.prototype = Object.create(Error.prototype);
 //////////////////////////////////////////////// #users
 
 // fetches a user found by the OAuth profile, creates it if it doesn't exist
-// Private fields are included in the returned object
+// Important private fields are included in the returned object
+//  but not the secondary info (location, description, lang, website)
 proto.getCompleteUserFromOAuthProfile = function(profile){
 	var oauthid = profile.id || profile.user_id, // id for google, github and reddit, user_id for stackexchange
 		displayName = profile.displayName || profile.display_name || profile.name, // displayName for google and github, display_name for stackexchange, name for reddit
@@ -74,6 +75,20 @@ proto.getUserById = function(id){
 // right now it only updates the name, I'll enrich it if the need arises
 proto.updateUser = function(user){
 	return this.queryRow('update player set name=$1 where id=$2', [user.name, user.id]);
+}
+
+// saves the additional optional user info (location, description, lang, website)
+proto.updateUserInfo = function(id, info){
+	return this.queryRow(
+		"update player set description=$1, location=$2, url=$3, lang=$4 where id=$5",
+		[info.description, info.location, info.url, info.lang, id]
+	);
+}
+proto.getUserInfo = function(id){
+	return this.queryRow(
+		"select description, location, url, lang from player where id=$1",
+		[id]
+	);
 }
 
 proto.listRecentUsers = function(roomId, N){

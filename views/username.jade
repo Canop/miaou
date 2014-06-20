@@ -1,0 +1,44 @@
+doctype html
+html
+	head
+		title Miaou - Profile Creation
+		link(rel="icon",type="image/png",href="static/M-32.png")
+		link(rel='stylesheet', href='static/main.css')
+		script(src="static/jquery-2.0.3.min.js")
+	body
+		form(method="post")
+			input(type="hidden", name="secret", value=secret)
+			div#centerer
+				div.dialog.centered
+					div.dialog_title Profile Edition
+					div.dialog_content
+						p Pick a name by which you will be recognized.
+						p Choose wisely (not &quot;wisely&quot;).
+						div.form
+							label.label Name
+							input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
+						p#err.error= error
+					div.dialog_buttons
+						button#submit Save
+						button#gotochat Go to chat
+						button#gotoextendedprofile Add more info to my profile
+		
+		script.
+			var valid = !{JSON.stringify(valid)};
+			$('#name').focus().keyup(function(){
+				if (!this.validity.valid){
+					$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');
+					$('#submit').prop('disabled', true);
+				} else if (/w+[_-]*[iy]+[_-]*s+[_-]*e+[_-]*l+[_-]*[iy]+/i.test(this.value)) {
+					$('#err').text('More wisely, less "wisely", please.');
+					$('#submit').prop('disabled', true);
+				} else {
+					$('#err').text('');
+					$('#submit').prop('disabled', false);
+				}
+			});
+			$('#close').click(function(){ location = 'rooms'; return false; });
+			
+			if (!valid) $('#gotochat, #gotoextendedprofile').hide();
+			$('#gotochat').click(function(){ location = 'rooms'; return false; });
+			$('#gotoextendedprofile').click(function(){ location = 'profile'; return false; });

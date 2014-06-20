@@ -283,31 +283,6 @@ body.mobile #users .user {
 		border-top: thin solid #ccc;
 	}
 }
-.profile {
-	position: absolute;
-	z-index:5;
-	padding: 5px;
-	box-shadow: 2px 2px 2px #999;
-	width: 216px;
-	min-height: 24px;
-	color: black;
-	background: $profile-bg-color;
-	h1 {
-		width: 100%;
-		text-align: center;
-		font-size: 110%;
-	}
-	h2 {
-		font-size: 100%;
-	}
-	p {
-		padding: 0;
-	}
-}
-.user.profiled {
-	box-shadow: 2px 2px 2px #999;
-	background: $profile-bg-color;
-}
 
 body.mobile #messagescroller {
 	position: fixed;
@@ -467,7 +442,7 @@ body.mobile .message .user {
 	background: white;
 	color: black;
 	opacity: 0.85;
-	font-size: 80%;
+	font-size: 90%;
 	color: #555;
 	.txt {
 		color: black;
@@ -498,7 +473,7 @@ body.mobile .messagemenu .vote {
 	right: 1px;
 	color: black;
 	opacity: 0.6;
-	font-size: 70%;
+	font-size: 80%;
 }
 .nminfo {
 	opacity: 0.7;
@@ -1238,41 +1213,7 @@ div.thinMP {
 	}
 }
 
-div.externalProfile {
-	margin: 4px;
-	width: 208px;
-	padding: 0;
-}
-.externalProfiles {
-	text-align: left;
-	margin-left: 8px;
-	section.externalProfileForm {
-		td {
-			text-align: left;
-		}
-		input {
-			float:none;
-			width: 100px;
-			margin: 0;
-			padding: 0;
-		}
-		input[type=checkbox]{
-			width: inherit;
-			margin: 2px 8px 0 0;
-		}
-		div.inputs {
-			padding: 10px 0;
-		}
-	}
-	h2 {
-		margin-left: -10px;
-		margin-bottom: -5px;
-		font-size: 110%;
-	}
-	h3 {
-		font-size: 100%;	
-	}
-}
+
 
 
 #searchInput {
@@ -1284,3 +1225,4 @@ div.externalProfile {
 @import "mwin";
 @import "history";
 @import "dialog";
+@import "profile";

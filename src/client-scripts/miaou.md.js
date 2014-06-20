@@ -336,7 +336,7 @@ var miaou = miaou || {};
 		$('<button>').addClass('pingButton').text('ping').click(function(){
 			miaou.editor.ping(user.name);
 		}).appendTo(this);
-		$('<button>').addClass('pmButton').text('dialog').click(function(){
+		$('<button>').addClass('pmButton').text('pm').click(function(){
 			miaou.pmwin = window.open(); // not so clean...
 			miaou.socket.emit('pm', user.id);			
 		}).appendTo(this);
