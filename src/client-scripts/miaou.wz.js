@@ -12,7 +12,7 @@ var miaou = miaou || {};
 	wz.onmouseenter = function(){
 		var $message = $(this),
 			w,
-			opts = { zIndex:60, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' },
+			opts = { zIndex:40, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller', parent:document.getElementById('messagescroller') },
 			ci = -1, // index of the central message among all
 			cid = $message.data('message').id,
 			$messages = $('#messages .message'),

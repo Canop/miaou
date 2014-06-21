@@ -22,6 +22,7 @@ var wzin = (function(){
 		this.zIndex = opts.zIndex||1;
 		this.bindings = [];
 		if (opts.scrollables) this.bind($(opts.scrollables), 'scroll', Wzin.prototype.update);
+		this.parent = opts.parent || document.body;
 		this.chbg = !!opts.changeElementBackground;
 		this.bind($(window), 'resize', Wzin.prototype.update);
 		this.update();
@@ -78,7 +79,7 @@ var wzin = (function(){
 			path += " L "+p2.left+' '+p2.top+" C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
 		}
 		
-		var svg = this.svg = addsvg("svg", null, document.body);
+		var svg = this.svg = addsvg("svg", null, this.parent);
 		var $svg = $(svg);
 		$svg.css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none'});
 		$svg.offset(ps).width(W).height(H);

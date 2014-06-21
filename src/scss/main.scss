@@ -553,12 +553,13 @@ code {
 .h5 {
 	border-bottom: 1px dotted #999;
 }
+
 #inputpanel {
-	position: relative;
 	background: $bg-color;
 	width:100%;
 	flex-basis:  $input-height + 10px;
 	flex-grow: 0;
+	z-index: 50;
 }
 #autocompleter,  {
 	position: absolute;
