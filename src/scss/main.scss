@@ -901,8 +901,8 @@ div.radios {
 		color: black;
 	}
 }
-#messages .opener {
-	background: rgba(255,255,255,0.3);
+.message .opener {
+	background: rgba( $bg-color , 0.52);
 	&:hover {
 		background: rgba(255,255,255,0.6);
 	}
