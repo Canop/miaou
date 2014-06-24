@@ -10,11 +10,11 @@ miaou.mdToHtml = function(md, withGuiFunctions, username){
 		if (m=s.match(/^(?:    |\t)(.*)$/)) {
 			return '<code class=indent>'+m[1]+'</code>';
 		}
-		if (m=s.match(/^\s*(https?:\/\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/)) {
+		if (m=s.match(/^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/)) {
 			 // exemple : http://mustachify.me/?src=http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg
 			return '<img src="'+m[1]+'.'+m[2]+'">';
 		}
-		if (m=s.match(/^\s*(https?:\/\/[^\s<>?"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/)) {
+		if (m=s.match(/^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/)) {
 			// exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&modified_at=1384796271&ratio_x=03&ratio_y=02&width=900
 			return '<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">';
 		}
