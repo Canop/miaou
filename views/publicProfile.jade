@@ -12,10 +12,10 @@ div#userinfo
 		div
 			span.def website
 			span.val
-				a(href=userinfo.url)= userinfo.url
+				a(href=userinfo.url, target="_blank")= userinfo.url
 	if userinfo.description
 		div
-			span.def self description
+			span.def about me
 			span.val= userinfo.description
 each epi in externalProfileInfos
 	h2= epi.name
