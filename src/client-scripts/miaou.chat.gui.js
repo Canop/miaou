@@ -66,7 +66,7 @@ miaou.bindChatGui = function(){
 		editor.replyToMessage($(this).closest('.message').data('message'));
 	})
 	.on('mouseenter', '.replyButton,.deleteButton,.editButton', miaou.userProfile.hide)
-	.on('mouseleave', '.replyButton,.deleteButton,.editButton', miaou.userProfile.show)
+	.on('mouseleave', '.replyButton,.deleteButton,.editButton', miaou.userProfile.shownow)
 	.on('mouseenter', '.reply', function(e){
 		var $this = $(this),
 			mid = $this.attr('to');
@@ -74,7 +74,7 @@ miaou.bindChatGui = function(){
 		var $target = $('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).eq(0);
 		if ($target.length) {
 			if (replyWzin) replyWzin.remove();
-			replyWzin = wzin($this.closest('.message'), $target, { zIndex:60, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' });
+			replyWzin = wzin($this.closest('.message'), $target, { zIndex:5, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' });
 		}
 		e.stopPropagation();
 	})
