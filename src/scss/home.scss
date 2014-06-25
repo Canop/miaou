@@ -1,0 +1,110 @@
+body.home {
+	overflow-y: scroll;
+	background: darken( $bg-color, 5% ) ;
+	a {
+		color: black;
+	}
+	#hometop {
+		background: $bg-color ;
+		box-shadow: 0 0 10px black;
+		padding: 3px;
+	}
+	#homenotifs {
+	}
+	#hometabs,#hometabshadows {
+		.tab {
+			height: 30px;
+			position: absolute;
+			width: 140px;
+			background: $bg-color ;
+			&:nth-child(2) {
+				margin-left:180px;
+			}
+			&:nth-child(3) {
+				margin-left:360px;
+			}
+			&:nth-child(4) {
+				margin-left:540px;
+			}
+			text-align: center;
+			padding: 8px;				
+		}		
+	}
+	#hometabs {
+		height: 30px;
+		.tab {
+			z-index: 2;
+			cursor: pointer;
+			&.selected {
+				z-index: 4;
+				cursor: inherit;
+			}
+		}
+	}
+	#hometabshadows {
+		margin-top: -30px;
+		.tab {
+			z-index: 1;
+			box-shadow: 0 0 5px black;
+			&.selected {
+				box-shadow: 0 0 10px black;
+			}
+		}
+	}
+	#homemain {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		&.hastabs {
+			margin-top: 26px;
+		}
+		position: absolute;
+		left:0; right:0;
+		z-index: 3;
+		background: $bg-color ;
+		box-shadow: 0 0 10px black;
+		padding: 15px;
+		#homemaincontent {
+			width: 70%;
+			max-width: 1000px;
+			min-width: 800px;			
+		}
+		#thinmaincontent {
+			width: 70%;
+			max-width: 600px;
+			min-width: 500px;			
+		}
+		h3 {
+			margin-left: 8px;
+			margin-bottom: 5px;
+		}
+	}
+	#logo {
+		margin-top: 6px;
+	}
+	p.links {
+		margin-top: 5px;
+		.username {
+			margin: 0 5px;
+			font-style: italic;
+		}
+		a {
+			white-space:nowrap;
+			margin: 0 5px;
+		}
+	}
+	&.mobile {
+		#logo {
+			margin-top: 6px;
+			text-align: center;
+		}
+		line-height: 25px;
+		padding: 5px;
+		p.links a {
+			margin-right: 15px;
+		}
+		p.links a+a {
+			margin-left: 15px;
+		}
+	}
+}

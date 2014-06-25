@@ -1,0 +1,77 @@
+// mtabs : tabs of the mobile version of the chat
+
+.mtabs {
+	background: none;
+}
+.mtab {
+	background: rgba($bg-color, .9);
+	text-align: center;
+	height: $mtab-height;
+	line-height: $mtab-height;
+	position: fixed;
+	z-index: 3;
+	top: 0;
+	&:first-child {
+		width: 39%;
+		left: 0;
+		border-radius: 0 0 10px 0;
+		&.closed::before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; left: 5px;
+			content: '▼';
+			opacity: 0.12;
+			font-size: 35px;
+		}
+		&.open::before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; left: 5px;
+			content: '▲';
+			opacity: 0.12;
+			font-size: 35px;
+		}
+	}
+	&:last-child {
+		width: 53%;
+		right: 0;
+		border-radius: 0 0 0 10px;
+		&.closed::before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; right: 5px;
+			content: '▼';
+			opacity: 0.12;
+			font-size: 35px;
+		}
+		&.open::before {
+			z-index: 2;
+			position: absolute;
+			top: -2px; right: 5px;
+			content: '▲';
+			opacity: 0.12;
+			font-size: 35px;
+		}
+	}
+}
+.mpage {
+	display: none;
+	width: 48%;
+	position: fixed;
+	z-index: 2;
+	top: 0;	
+	bottom: $minput-height + 20px;
+	overflow-y: auto;
+	padding-top: $mtab-height + 4px;
+	background: rgba($bg-color, .9);
+	&:first-child {
+		width: 39%;
+		left: 0;
+		border-radius: 0 0 10px 0;
+	}
+	&:last-child {
+		width: 53%;
+		right: 0;
+		border-radius: 0 0 0 10px;
+	}
+}

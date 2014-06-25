@@ -35,116 +35,6 @@ body {
 			margin: 13px;
 		}
 	}
-	&.home {
-		overflow-y: scroll;
-		background: darken( $bg-color, 5% ) ;
-		a {
-			color: black;
-		}
-		#hometop {
-			background: $bg-color ;
-			box-shadow: 0 0 10px black;
-			padding: 3px;
-		}
-		#homenotifs {
-		}
-		#hometabs,#hometabshadows {
-			.tab {
-				height: 30px;
-				position: absolute;
-				width: 140px;
-				background: $bg-color ;
-				&:nth-child(2) {
-					margin-left:180px;
-				}
-				&:nth-child(3) {
-					margin-left:360px;
-				}
-				&:nth-child(4) {
-					margin-left:540px;
-				}
-				text-align: center;
-				padding: 8px;				
-			}		
-		}
-		#hometabs {
-			height: 30px;
-			.tab {
-				z-index: 2;
-				cursor: pointer;
-				&.selected {
-					z-index: 4;
-					cursor: inherit;
-				}
-			}
-		}
-		#hometabshadows {
-			margin-top: -30px;
-			.tab {
-				z-index: 1;
-				box-shadow: 0 0 5px black;
-				&.selected {
-					box-shadow: 0 0 10px black;
-				}
-			}
-		}
-		#homemain {
-			display: flex;
-			flex-direction: row;
-			justify-content: center;
-			&.hastabs {
-				margin-top: 26px;
-			}
-			position: absolute;
-			left:0; right:0;
-			z-index: 3;
-			background: $bg-color ;
-			box-shadow: 0 0 10px black;
-			padding: 15px;
-			#homemaincontent {
-				width: 70%;
-				max-width: 1000px;
-				min-width: 800px;			
-			}
-			#thinmaincontent {
-				width: 70%;
-				max-width: 600px;
-				min-width: 500px;			
-			}
-			h3 {
-				margin-left: 8px;
-				margin-bottom: 5px;
-			}
-		}
-		#logo {
-			margin-top: 6px;
-		}
-		p.links {
-			margin-top: 5px;
-			.username {
-				margin: 0 5px;
-				font-style: italic;
-			}
-			a {
-				white-space:nowrap;
-				margin: 0 5px;
-			}
-		}
-		&.mobile {
-			#logo {
-				margin-top: 6px;
-				text-align: center;
-			}
-			line-height: 25px;
-			padding: 5px;
-			p.links a {
-				margin-right: 15px;
-			}
-			p.links a+a {
-				margin-left: 15px;
-			}
-		}
-	}
 }
 #prefs, #roominfo {
 	margin: 5px;
@@ -309,7 +199,7 @@ body.mobile #messagescroller {
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
-		z-index: 2;
+		z-index: 3;
 		&.bot {
 			font-style: italic;
 		}
@@ -354,7 +244,7 @@ body.mobile #messagescroller {
 }
 .decorations {
 	position: absolute;
-	z-index: 3;
+	z-index: 7;
 	right: 0;
 	top: 0;
 	bottom: 0;
@@ -376,7 +266,7 @@ body.mobile #messagescroller {
 }
 .user > button {
 	position: absolute;
-	z-index: 3;
+	z-index: 7;
 	right: 15px;
 	top: calc(50% - 8px);
 }
@@ -555,17 +445,18 @@ code {
 }
 
 #inputpanel {
+	position: relative;
 	background: $bg-color;
 	width:100%;
 	flex-basis:  $input-height + 10px;
 	flex-grow: 0;
-	z-index: 50;
+	z-index: 10;
 }
 #autocompleter,  {
 	position: absolute;
 	top: -12px;
 	left: 0;
-	z-index:5;
+	z-index: 11;
 	span {
 		background: white;
 		margin: 4px;
@@ -1052,7 +943,7 @@ div.thinMP {
 	background-color: $notifications-bg-color;
 	.user {
 		font-style:italic;
-		z-index: 6;
+		z-index: 8;
 		padding: 4px;
 	}
 	button {
@@ -1137,84 +1028,6 @@ div.thinMP {
 		display: block;
 	}
 }
-
-.mtabs {
-	background: none;
-}
-.mtab {
-	background: rgba($bg-color, .9);
-	text-align: center;
-	height: $mtab-height;
-	line-height: $mtab-height;
-	position: fixed;
-	z-index: 3;
-	top: 0;
-	&:first-child {
-		width: 39%;
-		left: 0;
-		border-radius: 0 0 10px 0;
-		&.closed::before {
-			z-index: 2;
-			position: absolute;
-			top: -2px; left: 5px;
-			content: '▼';
-			opacity: 0.12;
-			font-size: 35px;
-		}
-		&.open::before {
-			z-index: 2;
-			position: absolute;
-			top: -2px; left: 5px;
-			content: '▲';
-			opacity: 0.12;
-			font-size: 35px;
-		}
-	}
-	&:last-child {
-		width: 53%;
-		right: 0;
-		border-radius: 0 0 0 10px;
-		&.closed::before {
-			z-index: 2;
-			position: absolute;
-			top: -2px; right: 5px;
-			content: '▼';
-			opacity: 0.12;
-			font-size: 35px;
-		}
-		&.open::before {
-			z-index: 2;
-			position: absolute;
-			top: -2px; right: 5px;
-			content: '▲';
-			opacity: 0.12;
-			font-size: 35px;
-		}
-	}
-}
-.mpage {
-	display: none;
-	width: 48%;
-	position: fixed;
-	z-index: 2;
-	top: 0;	
-	bottom: $minput-height + 20px;
-	overflow-y: auto;
-	padding-top: $mtab-height + 4px;
-	background: rgba($bg-color, .9);
-	&:first-child {
-		width: 39%;
-		left: 0;
-		border-radius: 0 0 10px 0;
-	}
-	&:last-child {
-		width: 53%;
-		right: 0;
-		border-radius: 0 0 0 10px;
-	}
-}
-
-
 
 
 #searchInput {

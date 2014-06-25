@@ -1,6 +1,6 @@
 // see miaou.win.js
 .mwincontainer {
-	z-index: 10;
+	z-index: 20;
 	position: fixed;
 	display: flex;
 	pointer-events: none;
@@ -77,7 +77,7 @@
 	top: 8%;
 	width: 900px;
 	margin-left: -450px;
-	z-index: 12;
+	z-index: 21;
 	padding: 20px;
 	border-radius: 5px;
 	box-shadow: 0 0 5px black;
@@ -94,7 +94,7 @@
 		width: 20px;
 		text-align: center;
 		height: 20px;
-		z-index: 13;
+		z-index: 22;
 		cursor: pointer;
 		padding: 3px;
 		font-weight: bold;
@@ -107,7 +107,7 @@
 		font-family: "fontello";
 		position: absolute;
 		text-align: center;
-		z-index: 13;
+		z-index: 22;
 		cursor: pointer;
 		opacity: 0.7;
 		&.left {

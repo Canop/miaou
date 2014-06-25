@@ -3,6 +3,8 @@
 //  icon and the replied to message.
 
 var wzin = (function(){
+
+	var nextId = 0;
 	
 	function addsvg(tag, attrs, parent){
 		var e = document.createElementNS("http://www.w3.org/2000/svg", tag);
@@ -16,6 +18,7 @@ var wzin = (function(){
 	}
 	
 	function Wzin(e1, e2, opts) {
+		this.id = nextId++;
 		this.e1 = e1;
 		this.e2 = e2;
 		this.fill = opts.fill||"black";
@@ -86,15 +89,15 @@ var wzin = (function(){
 		addsvg("path", {d:path, fill:this.fill}, svg);
 		
 		if (!this.chbg) {
-			var defs = addsvg("defs", null, svg);
-			var grad = addsvg("linearGradient", {id:"wzingrad", x1:"0", y1:"0", x2:"1", y2:"0"}, defs);
+			var gradid = "wzingrad"+this.id,
+				defs = addsvg("defs", null, svg),
+				grad = addsvg("linearGradient", {id:gradid, x1:"0", y1:"0", x2:"1", y2:"0"}, defs);
 			addsvg("stop", {offset:"0%", style:"stop-color:"+this.fill+";stop-opacity:1"}, grad);
 			addsvg("stop", {offset:"7%", style:"stop-color:"+this.fill+";stop-opacity:0.9"}, grad);
 			addsvg("stop", {offset:"20%", style:"stop-color:"+this.fill+";stop-opacity:0.2"}, grad);
 			addsvg("stop", {offset:"100%", style:"stop-color:"+this.fill+";stop-opacity:0"}, grad);
-			
-			addsvg("rect", {x:p1.left, y:p1.top, width:w1, height:h1, fill:"url(#wzingrad)"}, svg);
-			addsvg("rect", {x:p2.left, y:p2.top, width:w2, height:h2, fill:"url(#wzingrad)"}, svg);
+			addsvg("rect", {x:p1.left, y:p1.top, width:w1, height:h1, fill:"url(#"+gradid+")"}, svg);
+			addsvg("rect", {x:p2.left, y:p2.top, width:w2, height:h2, fill:"url(#"+gradid+")"}, svg);
 		}
 	}
 	

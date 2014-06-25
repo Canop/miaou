@@ -10,9 +10,10 @@ var miaou = miaou || {};
 	// The algorithm searches only in normal directions (no replying
 	//  to a future message) and guarantees acyclicity
 	wz.onmouseenter = function(){
-		var $message = $(this),
+		var colors = ['rgba(139, 69, 19, .2)', 'rgba(42, 18, 234, .15)', 'rgba(180, 237, 228, .4)', 'rgba(192, 169, 244, .25)'],
+			opts = { zIndex:5, fill:colors[0], scrollables:'#messagescroller', parent:document.getElementById('messagescroller') },
+			$message = $(this),
 			w,
-			opts = { zIndex:40, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller', parent:document.getElementById('messagescroller') },
 			ci = -1, // index of the central message among all
 			cid = $message.data('message').id,
 			$messages = $('#messages .message'),
@@ -24,14 +25,16 @@ var miaou = miaou || {};
 				ui = i;
 			}
 		}
-		(function down(si){
+		delete opts.fill;
+		(function down(si, colorIndex){
 			for (var i=si+1; i<messages.length; i++) {
 				if (messages[i].repliesTo===messages[si].id){
-					wzins.push(wzin($messages.eq(si), $messages.eq(i), opts));
-					return down(i);
+					wzins.push(wzin($messages.eq(si), $messages.eq(i), $.extend({fill:colors[colorIndex]}, opts)));
+					down(i, colorIndex);
+					colorIndex = (colorIndex+1)%colors.length;
 				}
 			}
-		})(ci);
+		})(ci, 0);
 	}
 
 	wz.onmouseleave = function(){

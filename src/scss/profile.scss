@@ -36,7 +36,7 @@ div.externalProfile {
 
 .profile {
 	position: absolute;
-	z-index:5;
+	z-index:6;
 	padding: 5px;
 	box-shadow: 2px 2px 2px #999;
 	width: 216px;
@@ -59,6 +59,7 @@ div.externalProfile {
 .user.profiled {
 	box-shadow: 2px 2px 2px #999;
 	background: $profile-bg-color;
+	z-index: 6;
 }
 
 #userinfo {
