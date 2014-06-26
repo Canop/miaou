@@ -6,8 +6,8 @@
 var cache = require('bounded-cache')(200);
 
 var gametypes = {
-	Tribo: require('./client-scripts/Tribo.js'),
-	Flore: require('./client-scripts/Flore.js')
+	Tribo: require('./client-scripts/Tribo.js')
+	,Flore: require('./client-scripts/Flore.js')
 };
 
 // returns a bound promise opening a connection to the db
@@ -83,5 +83,6 @@ exports.onNewShoe = function(shoe){
 
 exports.registerCommands = function(cb){
 	//cb('game', onCommand, "propose a random game. Type `!!game @somebody`");
-	for (var key in gametypes) cb(key.toLowerCase(), onCommand, "propose a game of "+key+". Type `!!"+key.toLowerCase()+" @somebody`");
+	//for (var key in gametypes) cb(key.toLowerCase(), onCommand, "propose a game of "+key+". Type `!!"+key.toLowerCase()+" @somebody`");
+	cb('tribo', onCommand, "propose a game of Tribo. Type `!!tribo @somebody`");
 }
