@@ -2,7 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 4);
+insert into db_version (component, version) values('core', 5);
 
 CREATE TABLE room (
 	id serial primary key,
@@ -27,6 +27,7 @@ CREATE TABLE player (
 	url varchar(255),
 	lang varchar(2) NOT NULL default 'en'	
 );
+CREATE UNIQUE INDEX player_lower_name_index on  player (lower(name));
 
 CREATE TABLE message (
 	id bigserial primary key,
