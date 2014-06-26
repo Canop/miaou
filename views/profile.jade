@@ -68,7 +68,7 @@ html
 																input(type=(field.type||'text'),name=field.name)
 												if ep.creationDescription
 													p !{ep.creationDescription}
-					p#err.error
+					p#err.error= error
 					div.dialog_buttons
 						button#submit Save
 						button#close Go On
@@ -93,7 +93,6 @@ html
 					$('#submit').prop('disabled', false);
 				}
 			});
-			console.log(userinfo);
 			$('#description').val(userinfo.description||'');
 			$('#location').val(userinfo.location||'');
 			$('#url').val(userinfo.url||'');
