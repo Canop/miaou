@@ -1,19 +1,30 @@
 var path = require('path.js'),
 	naming = require('./naming.js'),
 	server = require('./server.js'),
+	blacklist = [],
 	langs,
 	plugins;
 
 exports.configure = function(conf){
 	langs = require('./langs.js').configure(conf);
-	plugins = (conf.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) })
+	plugins = (conf.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
+	if (conf.forbiddenUsernames) {
+		blacklist = conf.forbiddenUsernames.map(function(s){ return new RegExp(s,'i') }); 
+	}
 	return this;
+}
+
+function isUsernameForbidden(n){
+	for (var i=0; i<blacklist.length; i++) {
+		if (blacklist[i].test(n)) return true;
+	}
+	return false;
 }
 
 // Checks that the profile is complete enough to be used for the chat
 //  (a valid name is needed). If not, the user is redirected to the 
 //  page where he can set his name.
-exports.ensureComplete = function(req, res, next) {
+exports.ensureComplete = function(req, res, next){
 	if (naming.isValidUsername(req.user.name)) return next();
 	res.redirect(server.url('/username'));
 }
@@ -88,8 +99,12 @@ exports.appAllProfile = function(req, res, db){
 		}
 	}).then(function(){
 		if (req.method==='POST') {
-			var name = req.param('name');
+			var name = req.param('name').trim();
 			if (name === req.user.name || !naming.isValidUsername(name)) return;
+			if (isUsernameForbidden(name)) {
+				error = "Sorry, that username is reserved.";
+				return;
+			}
 			req.user.name = name;
 			return this.updateUser(req.user);
 		}
@@ -104,7 +119,11 @@ exports.appAllProfile = function(req, res, db){
 		}
 	}).catch(function(err){
 		console.log('Err...', err);
-		error = err;
+		if (err.code=='23505') { // PostgreSQL / unique_violation
+			error = "Sorry, this username isn't available."
+		} else {
+			error = err;
+		}
 	}).then(function(){
 		return this.getUserInfo(req.user.id);
 	}).then(function(userinfo){

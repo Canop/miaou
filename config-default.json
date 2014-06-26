@@ -1,5 +1,7 @@
 
-	copy this file under the name "config.json", change it according to your need and remove this help
+	copy this file under the name "config.json", change it according to your need and remove this help.
+	
+	forbiddenUsernames is an optional array of regular expressions
 
 {
 	"server": "http://dystroy.org/miaou",
@@ -29,5 +31,6 @@
 	"imgur": {
 		"clientID": "someID - remove the imgur object if you don't want to use this feature"
 	},
-	"langs": ["en", "fr"]
+	"langs": ["en", "fr"],
+	"forbiddenUsernames": ["miaou","^server"] 
 }
