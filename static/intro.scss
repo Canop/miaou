@@ -1,3 +1,6 @@
+// used in views/intro.jade
+
+$accent: #DC3535;
 $miaou-bg: #F0EAD6;
 $odd-bg:  white;
 $odd-fg: black; 
@@ -5,7 +8,9 @@ $even-bg: white; //#FFFACD;
 $even-fg: black; // white;
 
 html, body {
-	font-family: Tahoma, Geneva, sans-serif;
+	font-family: "Source Sans Pro",sans-serif;
+	font-weight:400;
+	color:rgba(0,0,0,0.75);
 	margin:0;
 	padding:0;
 	overflow-x: hidden;
@@ -13,7 +18,6 @@ html, body {
 }
 
 @media screen and (max-width: 35.5em) /* ≥ 568px */ { // mobile layout
-	
 	body {
 		font-size: 14px;
 	}
@@ -83,7 +87,7 @@ html, body {
 		flex-direction: column;
 		align-items: center;
 		div {
-			background: #dc3535;
+			background: $accent;
 			cursor: pointer;
 			color: #222;
 			opacity: 0.55;
@@ -193,7 +197,7 @@ html, body {
 		.txt a {
 			background : rgba(0,0,0,0.18);
 			&::before {
-				border-bottom: 2px solid #dc3535;
+				border-bottom: 2px solid $accent;
 				background : rgba(0,0,0,0.15);
 			}
 		}
@@ -218,7 +222,7 @@ html, body {
 }
 
 #intro-supertop {
-	background: #dc3535;
+	background: $accent;
 	padding: 10px;
 	z-index: 4;
 	top: 0; left: 0; right: 0;
@@ -226,7 +230,7 @@ html, body {
 }
 
 #intro-top {
-	background: #dc3535;
+	background: $accent;
 	z-index: 2;
 	position: fixed;
 	top: 0; left: 0; right: 0;

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Miaou</title>
+		<meta charset="UTF8"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<link rel="icon" type="image/png" href="M-32.png">
+		<link href='http://fonts.googleapis.com/css?family=Crimson+Text' rel='stylesheet' type='text/css'>
+		<meta name="viewport" content="initial-scale=1,maximum-scale=1">
+		<link rel="stylesheet" href="intro2.css">
+	</head>
+<body>
+<header>
+  <a href="http://dystroy.org/miaou/rooms">
+    <img src="Miaou-300-f.png" class="headerPic"/>
+    <img src="M-32.png" class="navPic"/>
+  </a>
+</header>
+<section id="responsive" class="center">
+  <h1>Responsive, powerful, free chat rooms</h1>
+  <p>An open-source chat with the features you expect and a few other ones.</p>
+  <img class="mockup" src="pub/mockup.png" />
+  <img class="mobile" src="pub/mobile.png" />
+  <p><a class="tryIt" href="http://dystroy.org/miaou/rooms">Enter Miaou now!</a></p>
+</section>
+<section id="services">
+  <div>
+  <h1>Sociability</h1>
+  <ul>
+    <li>
+      <div class="image video"></div>
+      <h2>Video and audio</h2>
+      <p>Start a video or audio chat with any connected user, immediately, even from a mobile device, no plugin is necessary!</p>
+    </li>
+    <li>
+      <div class="image notifications"></div>
+      <h2>Notifications</h2>
+      <p>A reply to any comment or typing a username after a @ will notify them via desktop (if allowed) even if he's switched chat rooms.</p>
+    </li>
+    <li>
+      <div class="image pins"></div>
+      <h2>Upvotes and pins</h2>
+      <p>Show your appreciation for a comment by upvoting it. If you think it's important you can star it, or if you're a room admin, pin it for all to see.</p>
+    </li>
+  </ul>
+  <ul>
+    <li>
+      <div class="image private"></div>
+      <h2>Public/private rooms</h2>
+      <p>Everyone can create new rooms and make them public for all to see or private for only those whom they invite.</p>
+    </li>
+    <li>
+      <div class="image auth"></div>
+      <h2>Extended Authentication</h2>
+      <p>With external profile validation, you can be sure of the identity of users requesting an access to your room.</p>
+    </li>
+    <li>
+      <div class="image search"></div>
+      <h2>Search history</h2>
+      <p>Old messages aren't deleted on Miaou, so all can be found using the Search tab in any room. They can be linked to and all the context is retained.</p>
+    </li>
+  </ul>
+  <div class="arrow">></div>
+  </div>
+</section>
+<section id="markdown">
+  <h1>Rich Text</h1>
+  <img src="gallery/rich-text-edit.png"/>
+  <p>Markdown enables basic format to be created while chatting. And if you made a typo, just hit the <kbd>↑</kbd> key to edit your last message.</p>
+</section>
+<section id="customizable">
+  <h1>Simple, yet completely customizable</h1>
+  <p>Miaou is completely open source and invites users to add to it themselves. Users can add their own scripts, bots, and commands to Miaou and can get help through <a href="http://dystroy.org/miaou/help#About">the API</a> or by asking around.</P>
+  <div class="feature user-script">  
+  </div>
+  <div class="feature api">
+  </div>
+</section>
+<section id="ready">
+  <div class="vert-center">
+    <h1>Ready to be heard?</h1>
+    <p><a class="tryIt" href="http://dystroy.org/miaou/rooms">Start Miaouing!</a></p>
+    <p class="disclaimer">Sign in with an account from any of these websites</p>
+    <ul>
+      <li><img src="http://i.imgur.com/4lmmZEB.png"/></li>
+      <li><img src="http://i.imgur.com/7USxBFm.png"/></li>
+      <li><img src="http://i.imgur.com/KMQUNh8.png"/></li>
+      <li><img src="http://i.imgur.com/qOpAWJn.png"/></li>
+    </ul>
+  </div>
+</section>
+
+<a href="https://github.com/Canop/miaou" target="github"><img id="github" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"/></a>
+<script>
+var html = document.documentElement,
+	services = document.getElementById("services"),
+	lists = services.getElementsByTagName("ul"),
+	arrow = document.getElementsByClassName("arrow")[0],
+	header = document.getElementsByTagName("header")[0];
+
+function scrollTop(v){
+	if (v !== undefined) document.body.scrollTop = html.scrollTop = v;
+	return Math.max(document.body.scrollTop, html.scrollTop, window.scrollY);
+}
+
+// Toggle features and rotate arrow
+arrow.onclick = function(){
+	for(i = 0; i < lists.length; i++) {
+		lists[i].classList.toggle("active");
+	}
+	arrow.classList.toggle("rotated");
+}
+
+// Change header into a nav
+window.onscroll = function(){
+	if (scrollTop() > 80 && !header.classList.contains("nav")) {
+		header.classList.add("nav");
+	} else if(scrollTop() <= 80) {
+		header.classList.remove("nav");
+	}
+}
+
+function chpage(diff){
+	var y = scrollTop(),
+		tops = [].concat(0, [].map.call(document.getElementsByTagName('section'), function(s){
+		return s.offsetTop;
+	}), document.body.scrollHeight);
+	for (var i=0; i<tops.length-1; i++) {
+		if (tops[i]<=y && y<tops[i+1]) {
+			scrollTop(tops[ (y-tops[i]<tops[i+1]-y ? i : i+1) + diff ]);
+			return false;
+		}
+	}
+}
+window.onkeydown = function(e){
+	switch (e.which) {
+	case 33: // page up
+		return chpage(-1), false;
+	case 34: // page down
+		return chpage(+1), false;
+	}
+}
+</script>
+</body>
+</html>
