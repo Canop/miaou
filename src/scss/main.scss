@@ -199,7 +199,7 @@ body.mobile #messagescroller {
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
-		z-index: 3;
+		z-index: 6;
 		&.bot {
 			font-style: italic;
 		}
@@ -830,8 +830,10 @@ div.radios {
 	padding: 3px;
 	border-radius: 2px;
 	background: #ede7d3;
+	opacity: 0.75;
 	&:hover {
 		background: #d5cba6;
+		opacity: 1;
 	}
 }
 
