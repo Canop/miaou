@@ -27,7 +27,7 @@ exports.appGet = function(req, res, db){
 		}
 		res.render(server.mobile(req) ? 'chat.mob.jade' : 'chat.jade', {
 			user:JSON.stringify(req.user),
-			room:JSON.stringify(room),
+			room:room,
 			pluginsToStart:JSON.stringify(clientSidePluginNames)
 		});
 	}).catch(db.NoRowError, function(){

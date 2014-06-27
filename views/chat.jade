@@ -1,5 +1,5 @@
 doctype html
-html
+html(lang=room.lang)
 	head
 		title Miaou
 		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
@@ -22,7 +22,7 @@ html
 				div#messagescroller
 					div#messages
 				div#inputpanel
-					textarea#input
+					textarea#input(lang=room.lang)
 					button.small#send Send
 					button.small#showPreview Preview
 					button.small#cancelEdit(style="display:none") Cancel
@@ -63,7 +63,7 @@ html
 
 		script.
 			var me = !{user},
-				room = !{room},
+				room = !{JSON.stringify(room)},
 				pluginsToStart = !{pluginsToStart};
 			if (room) window.name = 'room_'+room.id;			
 			else location = 'rooms';
