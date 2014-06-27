@@ -231,7 +231,7 @@
 			panel.drawScores();
 			if (!panel.abstract) {
 				panel.showMoveLines(move);
-				p.addReplayStopButton($c);
+				panel.addReplayStopButton($c);
 			}
 		},
 		fillHelp: function($div){
