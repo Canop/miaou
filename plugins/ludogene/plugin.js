@@ -27,11 +27,18 @@ function dbGetGame(shoe, mid){
 	});
 }
 
-function storeInMess(m, game){
-	var saved = {type:game.type, status:game.status, players:game.players};
-	gametypes[game.type].store(game, saved);
+// serializes the game in the message and asynchronously notifies observers
+function storeInMess(m, game, shoe){
+	var saved = {type:game.type, status:game.status, players:game.players},
+		gametype = gametypes[game.type];
+	gametype.store(game, saved);
 	m.content = "!!game @"+game.players[0].name+" "+JSON.stringify(saved);
 	delete m.changed;
+	if (gametype.observers) {
+		gametype.observers.forEach(function(fun){
+			setTimeout(fun, 100, m, game, shoe);
+		});
+	}
 }
 
 function onCommand(cmd, shoe, m){
@@ -45,44 +52,56 @@ function onCommand(cmd, shoe, m){
 			],
 			type: cmd==='game' ? 'Tribo' : cmd[0].toUpperCase()+cmd.slice(1),
 			status:'ask'
-		});
+		}, shoe);
 	} else {
 		// this also covers the case of somebody trying to input a game
 		throw 'Bad syntax. Use `!!'+cmd+' @yourOpponent`';
 	}
 }
 
-exports.onNewShoe = function(shoe){
-	shoe.socket.on('ludo.accept', function(arg){
-		dbGetGame(shoe, arg.mid).spread(function(m, game){
-			game.players[0].id = shoe.publicUser.id;
-			game.status = 'running';
-			m.changed = ~~(Date.now()/1000);
-			storeInMess(m, game);
+exports.accept = function(shoe, arg){
+	dbGetGame(shoe, arg.mid).spread(function(m, game){
+		game.players[0].id = shoe.publicUser.id;
+		game.status = 'running';
+		m.changed = Date.now()/1000|0;
+		storeInMess(m, game, shoe);
+		return this.storeMessage(m, true);
+	}).then(function(m){
+		shoe.emitToRoom('message', m);
+	}).finally(shoe.db.off);
+}
+
+exports.move = function(shoe, arg){
+	dbGetGame(shoe, arg.mid).spread(function(m, game){
+		var gametype = gametypes[game.type],
+			move = gametype.decodeMove(arg.move);
+		if (gametype.isValid(game, move)) {
+			game.moves += arg.move;
+			gametype.apply(game, move);
+			shoe.emitToRoom('ludo.move', {mid:m.id, move:move});
+			storeInMess(m, game ,shoe);
+			m.changed = Date.now()/1000|0;
 			return this.storeMessage(m, true);
-		}).then(function(m){
-			shoe.emitToRoom('message', m);
-		}).finally(shoe.db.off);
-	}).on('ludo.move', function(arg){
-		dbGetGame(shoe, arg.mid).spread(function(m, game){
-			var gametype = gametypes[game.type],
-				move = gametype.decodeMove(arg.move);
-			if (gametype.isValid(game, move)) {
-				game.moves += arg.move;
-				gametype.apply(game, move);
-				shoe.emitToRoom('ludo.move', {mid:m.id, move:move});
-				storeInMess(m, game);
-				m.changed = ~~(Date.now()/1000);
-				return this.storeMessage(m, true);
-			} else {
-				console.log('ludo : illegal move', move);
-			}
-		}).finally(shoe.db.off);
-	});
+		} else {
+			console.log('ludo : illegal move', move);
+		}
+	}).finally(shoe.db.off);
+}
+
+exports.onNewShoe = function(shoe){
+	shoe.socket
+	.on('ludo.accept', function(arg){ exports.accept(shoe, arg) })
+	.on('ludo.move', function(arg){ exports.move(shoe, arg) });
 }
 
 exports.registerCommands = function(cb){
 	//cb('game', onCommand, "propose a random game. Type `!!game @somebody`");
 	//for (var key in gametypes) cb(key.toLowerCase(), onCommand, "propose a game of "+key+". Type `!!"+key.toLowerCase()+" @somebody`");
 	cb('tribo', onCommand, "propose a game of Tribo. Type `!!tribo @somebody`");
+}
+
+exports.registerGameObserver = function(type, cb){
+	var gt = gametypes[type];
+	if (!gt.observers) gt.observers = [];
+	gt.observers.push(cb);
 }

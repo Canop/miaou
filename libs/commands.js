@@ -5,7 +5,7 @@ var path = require('path'),
 
 exports.commandDescriptions = {}
 
-exports.configure = function(config){
+exports.configure = function(config, db){
 	var plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) }),
 		helpmess = 'For a detailed help on Miaou, see the [help page]('+server.url('/help')+')\nCommands :';
 	plugins.forEach(function(plugin){
@@ -15,18 +15,10 @@ exports.configure = function(config){
 			helpmess += '\n* `' + name + '` : ' + help;
 		});
 	});
+	db.on(botname).then(db.getBot).then(function(b){ bot = b }).finally(db.off);
 	commands['help'] = {fun:function(cmd, shoe, m){
 		setTimeout(function(){
-			var message = {content:helpmess, authorname:botname, room:shoe.room.id, created:Date.now()/1000|0};
-			shoe.db.on().then(function(){
-				return bot || this.getBot(botname).then(function(b){ bot = b; return b })
-			}).then(function(b){
-				message.author = b.id;
-				return this.storeMessage(message); 
-			}).then(function(m){
-				m.bot = true;
-				shoe.emitToRoom('message', m);
-			}).finally(shoe.db.off)
+			shoe.botMessage(bot, helpmess);
 		}, 10);
 	}};
 	exports.commandDescriptions['help'] = 'Help';

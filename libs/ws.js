@@ -14,7 +14,7 @@ var config,
 	socketWaitingApproval = [],
 	commands = require('./commands.js');
 
-exports.configure = function(_config){
+exports.configure = function(_config, db){
 	config = _config;
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
@@ -22,7 +22,7 @@ exports.configure = function(_config){
 	onSendMessagePlugins = plugins.filter(function(p){ return p.onSendMessage });
 	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });
 	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });
-	commands.configure(config);
+	commands.configure(config, db);
 	return this;
 }
 
@@ -83,6 +83,18 @@ Shoe.prototype.userSocket = function(userIdOrName) {
 			return socket;
 		}		
 	}
+}
+// to be used by bots, creates a message, store it in db and emit it to the room
+Shoe.prototype.botMessage = function(bot, content){
+	console.log("bot",bot);
+	var shoe = this;
+	this.db.on({content:content, author:bot.id, room:this.room.id, created:Date.now()/1000|0})
+	.then(db.storeMessage)
+	.then(function(m){
+		m.authorname = bot.name;
+		m.bot = true;
+		shoe.emitToRoom('message', m);
+	}).finally(this.db.off);
 }
 
 // returns the first found socket of the passed user (may be in another room)

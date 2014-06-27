@@ -129,7 +129,7 @@ function startServer(config){
 	defineAppRoutes(config);
 	console.log('Miaou server starting on port', config.port);
 	server.listen(config.port);
-	require('./ws.js').configure(config).listen(server, sessionStore, cookieParser, db);
+	require('./ws.js').configure(config, db).listen(server, sessionStore, cookieParser, db);
 }
 
 var url = exports.url = function(pathname){ // todo cleaner way in express not supposing absolute paths ?
@@ -150,10 +150,19 @@ exports.renderErr = function(res, err, base){
 	res.render('error.jade', { base:base||'', error: err.toString() });
 }
 
+function initPlugins(config){
+	(config.plugins||[]).map(function(n){
+		return require(path.resolve(__dirname, '..', n))
+	}).forEach(function(p){
+		if (p.init) p.init(config, db);
+	});
+}
+
 exports.start = function(config){
 	baseURL = config.server;
 	db.init(config.database, function(){
 		configureOauth2Strategies(config);
 		startServer(config);
+		initPlugins(config);
 	});
 }
