@@ -190,6 +190,9 @@ var miaou = miaou || {};
 	
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
+	// OPTM : This function is very costly and maybe called too often/
+	//        It might be interesting too to not interlace reading height
+	//        and dom changes
 	function resize($md, wasAtBottom){
 		var $content = $md.find('.content');
 		var resize = function(){
