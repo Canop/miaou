@@ -46,7 +46,7 @@ html
 			
 		script.
 			var me = !{user},
-				room = !{room},
+				room = !{JSON.stringify(room)},
 				pluginsToStart = !{pluginsToStart};
 			if (!room) {
 				location = 'rooms';
