@@ -100,7 +100,7 @@ proto.listRecentUsers = function(roomId, N){
 
 proto.usersStartingWith = function(str, roomId, limit){
 	return this.queryRows(
-		"select name, (select max(created) from message where p.id=author and room=$1) lp from player p where name ilike $2 and bot is false order by lp limit $3",
+		"select name, (select max(created) from message where p.id=author and room=$1) lp from player p where name ilike $2 order by lp limit $3",
 		[roomId, str+'%', limit]
 	);
 }

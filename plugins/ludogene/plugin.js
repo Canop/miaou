@@ -59,9 +59,9 @@ function onCommand(cmd, shoe, m){
 	}
 }
 
-exports.accept = function(shoe, arg){
+exports.accept = function(shoe, arg, accepter){
 	dbGetGame(shoe, arg.mid).spread(function(m, game){
-		game.players[0].id = shoe.publicUser.id;
+		game.players[0].id = (accepter||shoe.publicUser).id;
 		game.status = 'running';
 		m.changed = Date.now()/1000|0;
 		storeInMess(m, game, shoe);
