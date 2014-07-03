@@ -341,8 +341,8 @@ proto.queryMessagesAfter = function(roomId, userId, N, messageId, before){
 proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
 		'select message.id, author, player.name as authorname, player.bot, content, created, pin, star, up, down, score from message'+
-		' inner join player on author=player.id where room=$1 and created>$2 and score>4'+
-		' order by score desc limit 10', [roomId, createdAfter]
+		' inner join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
+		' order by pin desc, score desc limit 10', [roomId, createdAfter]
 	);
 }
 
@@ -440,18 +440,18 @@ proto.deletePings = function(roomId, userId){
 	return this.execute("delete from ping where room=$1 and player=$2", [roomId, userId]);
 }
 
-proto.fetchUserPings = function(userId) {
+proto.fetchUserPings = function(userId){
 	return this.queryRows("select player, room, name, message from ping, room where player=$1 and room.id=ping.room", [userId]);
 }
 
 // returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
-proto.fetchUserPingRooms = function(userId, after) {
+proto.fetchUserPingRooms = function(userId, after){
 	return this.queryRows("select room, max(name) as roomname, min(created) as first, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after]);
 }
 
 //////////////////////////////////////////////// #votes
 
-proto.addVote = function(roomId, userId, messageId, level) {
+proto.addVote = function(roomId, userId, messageId, level){
 	var sql, args;
 	switch (level) {
 	case 'pin': case 'star': case 'up': case 'down':
@@ -462,16 +462,34 @@ proto.addVote = function(roomId, userId, messageId, level) {
 	default:
 		throw new Error('Unknown vote level');
 	}
-	return this.queryRow(sql, args)
-	.then(function(){
-		return this.updateGetMessage(messageId, level+"="+level+"+1", userId);
+	return this.queryRow(sql, args, true)
+	.then(function(nb){
+		if (nb) return this.updateGetMessage(messageId, level+"="+level+"+"+nb, userId);
 	});
 }
-proto.removeVote = function(roomId, userId, messageId, level) {
-	return this.queryRow("delete from message_vote where message=$1 and player=$2 and vote=$3", [messageId, userId, level])
-	.then(function(){
-		return this.updateGetMessage(messageId, level+"="+level+"-1", userId);
+proto.removeVote = function(roomId, userId, messageId, level){
+	return this.queryRow("delete from message_vote where message=$1 and player=$2 and vote=$3", [messageId, userId, level], true)
+	.then(function(removedOne){
+		if (removedOne)	return this.updateGetMessage(messageId, level+"="+level+"-1", userId);
 	});
+}
+// the administrative unpin removes all pins. Pins of other users are converted to stars (except the message's author).
+proto.unpin = function(roomId, userId, messageId){
+	return this.queryRow(
+		"update message_vote set vote='star' where message=$1 and player!=$2 and vote='pin'" +
+		" and exists(select * from message where id=$1 and room=$3 and author!=player)",
+		[messageId, userId, roomId],
+		true
+	).then(function(nbconversions){
+		return [
+			nbconversions,
+			this.queryRow("delete from message_vote where message=$1 and vote='pin'", [messageId], true)
+		];
+	}).spread(function(nbconversions){
+		var expr = "pin=0";
+		if (nbconversions) expr += ",star=star+"+nbconversions;
+		return this.updateGetMessage(messageId, expr, userId);
+	})
 }
 
 //////////////////////////////////////////////// #plugin
@@ -556,7 +574,7 @@ function now(){
 	return Date.now()/1000|0;
 }
 
-function logQuery(sql, args) { // used in debug
+function logQuery(sql, args){ // used in debug
 	console.log(sql.replace(/\$(\d+)/g, function(_,i){ var s=args[i-1]; return typeof s==="string" ? "'"+s+"'" : s }));
 }
 

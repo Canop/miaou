@@ -39,7 +39,7 @@ var miaou = miaou || {};
 
 	function votesAbstract(message){
 		return voteLevels.map(function(l){
-			return message[l.key] ? '<span class=vote>'+message[l.key]+' '+l.icon+'</span>' : '';
+			return message[l.key] ? '<span class="vote '+l.key+'">'+message[l.key]+' '+l.icon+'</span>' : '';
 		}).join('');
 	}
 
@@ -190,13 +190,11 @@ var miaou = miaou || {};
 	
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
-	// OPTM : This function is very costly and maybe called too often/
-	//        It might be interesting too to not interlace reading height
-	//        and dom changes
 	function resize($md, wasAtBottom){
 		var $content = $md.find('.content');
 		var resize = function(){
 			var h = $content.height();
+			//~ console.log(h, $('.content')[0].clientHeight);
 			$content.removeClass("closed");
 			$md.find('.opener').remove();
 			if ($content.height()>158) {
@@ -213,9 +211,24 @@ var miaou = miaou || {};
 	}
 	
 	// resizes all messages. This must be called each time a container of
-	//  .message elements change width
+	//  .message elements change width.
 	md.resizeAll = function(){
-		$('.message').each(function(){ resize($(this), false) });
+		var	todo = [],
+			wasAtBottom = isAtBottom(),
+			$messages = $('.message').removeClass('closed');
+		$messages.find('.opener').remove();
+		$messages.each(function(){
+			var $md = $(this),
+				$content = $md.find('.content'),
+				h = $content.height();
+			if (h>158) todo.push({$md:$md, $content:$content});
+		});
+		todo.forEach(function(t){
+			t.$md.append('<div class=opener>')
+			var h = t.$content.addClass("closed").height();
+			t.$md.find('.user').height(h).css('line-height',h+'px');
+		});
+		if (wasAtBottom) md.scrollToBottom();
 	}
 	
 	// When the window is resized, all the messages have to be resized too.
@@ -233,6 +246,9 @@ var miaou = miaou || {};
 			votesHtml = votesAbstract(message);
 		if (messages.length===0 || message.id<messages[0].id) {
 			insertionIndex = -1;
+			// the following line because of the possible special case of a
+			//  pin vote being removed by somebody's else 
+			if (message.vote && !message[message.vote]) delete message.vote;
 		} else {
 			while (insertionIndex && messages[--insertionIndex].id>message.id){};
 		}
@@ -317,14 +333,16 @@ var miaou = miaou || {};
 		if (message.status.answerable) $('<button>').addClass('replyButton').text('reply').prependTo($decs);
 		if (message.old && !message.editable) infos.push('too old to edit');
 		infos.push(formatMoment(m));
-		$('<div>').addClass('messagemenu').html(
-			infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
+		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
 			'<a class=link target=_blank href="'+miaou.md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ' + 
 			'<a class=makemwin title="float">&#xe81d;</a> ' + 
 			voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(chat.checkAuth('admin')?0:1).map(function(l){
 				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
-			}).join('')
-		).appendTo(this);
+			}).join('');
+		if (message.pin>(message.vote=="pin") && chat.checkAuth('admin')) {
+			h += ' - <span class=unpin>unpin</span>';
+		}
+		$('<div>').addClass('messagemenu').html(h).appendTo(this);
 	}
 	md.hideMessageMenus = function(){
 		$('.messagemenu, .editButton, .replyButton, .deleteButton').remove();
@@ -384,7 +402,7 @@ var miaou = miaou || {};
 		var $from = $('<div>'+miaou.mdToHtml(args.from)+'</div>'),
 			$m = $('.message[mid='+args.mid+']'),
 			wab = isAtBottom();
-		$m.find('.content').html(function(_,h){
+		$m.find('.content').html(function(_, h){
 			return h.replace($from.html(), '<div class=box>'+args.to+'</div>')
 		});
 		resize($m, wab);

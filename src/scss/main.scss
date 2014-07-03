@@ -346,6 +346,10 @@ body.mobile .message .user {
 			color: black;
 		}
 	}
+	.unpin {
+		cursor: pointer;	
+		margin: 0 4px;
+	}
 	.link, .makemwin {
 		cursor: pointer;
 		font-family: "fontello";

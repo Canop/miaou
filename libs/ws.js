@@ -8,7 +8,7 @@ var config,
 	cookie = require('express/node_modules/cookie'),
 	parseSignedCookie = connect.utils.parseSignedCookie,
 	io, db,
-	maxAgeForNotableMessages = 60*24*60*60, // in seconds
+	maxAgeForNotableMessages = 50*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins,
 	socketWaitingApproval = [],
@@ -161,6 +161,16 @@ function emitMessagesAfter(shoe, fromId, untilId, nbMessages){
 		resolver.resolve();
 	});
 	return resolver.promise.bind(this);
+}
+
+// builds an unpersonnalized message. This avoids requerying the DB for the user
+//  (messages are normally sent with the vote of the user)
+function messageWithoutUserVote(message){
+	var clone = {};
+	for (var key in message) {
+		if (message[key]) clone[key] = key==='vote' ? '?' : message[key]; // a value '?' means for browser "keep the existing value"
+	}
+	return clone;
 }
 
 // handles the socket, whose life should be the same as the presence of the user in a room without reload
@@ -317,13 +327,18 @@ function handleUserInRoom(socket, completeUser){
 		.spread(db[vote.action==='add'?'addVote':'removeVote'])
 		.then(function(updatedMessage){
 			socket.emit('message', updatedMessage);
-			var clone = {};
-			for (var key in updatedMessage) {
-				if (updatedMessage[key]) clone[key] = key==='vote' ? '?' : updatedMessage[key]; // a value '?' means for browser "keep the existing value"
-			}
-			socket.broadcast.to(shoe.room.id).emit('message', clone);
+			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(updatedMessage));
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);
+	}).on('unpin', function(mid){
+		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		db.on([shoe.room.id, shoe.publicUser.id, mid])
+		.spread(db.unpin)
+		.then(function(updatedMessage){
+			socket.emit('message', updatedMessage);
+			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(updatedMessage));
+		}).catch(function(err){ console.log('ERR in vote handling:', err) })
+		.finally(db.off);		
 	}).on('search', function(search){
 		if (!shoe.room) return;
 		db.on([shoe.room.id, search.pattern, 'english', 20])

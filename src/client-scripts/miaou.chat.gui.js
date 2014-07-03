@@ -99,6 +99,20 @@ miaou.bindChatGui = function(){
 		if (message.vote!=vote) miaou.socket.emit('vote', {action:'add',  message:message.id, level:vote});
 		return false;
 	})
+	.on('click', '.unpin', function(){
+		var m = $(this).closest('.message').data('message');
+		miaou.dialog({
+			title: "Unpin message",
+			content: "If you confirm, you'll also remove the pin set by other(s) user(s)",
+			buttons: {
+				Cancel: null,
+				Unpin: function(){
+					miaou.socket.emit('unpin', m.id);
+				}
+			}
+		});
+		return false;
+	})
 	.on('click', '.makemwin', function(){
 		var $e = $(this), message = $e.closest('.message').data('message');
 		miaou.win.add(message);

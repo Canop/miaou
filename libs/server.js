@@ -30,7 +30,7 @@ function configureOauth2Strategies(config){
 			strategyConstructor: require('passport-google-oauth').OAuth2Strategy,
 			scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
 		}, stackexchange: {
-			strategyConstructor: require('passport-stackexchange').Strategy
+			strategyConstructor: require('./passport-stackexchange.js').Strategy
 		}, github: {
 			strategyConstructor: require('passport-github').Strategy
 		}, reddit: {
