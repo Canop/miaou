@@ -1,41 +1,40 @@
 
 var Promise = require("bluebird"),
 	config = require('../../config.json'),
-	request = require('request');
+	requestAsync = Promise.promisify(require('request'));
 	
 exports.name = "StackOverflow";
 
 // returns a promise
 // updates and provides in resolution the pluginPlayerInfos if successful, else throws an error 
 function createSOProfile(user, ppi, vals) {
-	var p = Promise.defer(), num = +vals.so_num;
-	request('http://stackoverflow.com/users/'+num, function(error, res, body){
-		if (!error && res.statusCode===200) {
-			var m, r=/<a[^<>]*href="([^"]+)"[^<>]*>([^<>]+)<\/a>/ig;
-			var found, sm;
-			while (m=r.exec(body)) {
-				if (m[1].indexOf(config.server)==0 && /\bmiaou\b/i.test(m[2])) {
-					if (~m[2].split(/\w/).indexOf(user.name)) {
-						found = m[0];
-						console.log('found with username', found);
-					} else if (m[1]===config.server+"/user/"+user.id) {
-						found = m[0];
-						console.log('found with user id', found);
-					} else {
-						console.log('url towards miaou but no proof', m[0]);
-					}
-					if (found) {
-						ppi.num = vals.so_num;
-						p.resolve(ppi);
-					}
+	var num = +vals.so_num;
+	return requestAsync('http://stackoverflow.com/users/'+num).then(function(res, body) {
+		if (res.statusCode!==200) {
+			throw new Error('Error in querying stackoverflow.com');
+		}
+		
+		var m, r=/<a[^<>]*href="([^"]+)"[^<>]*>([^<>]+)<\/a>/ig;
+		var found, sm;
+		while (m=r.exec(body)) {
+			if (m[1].indexOf(config.server)==0 && /\bmiaou\b/i.test(m[2])) {
+				if (~m[2].split(/\w/).indexOf(user.name)) {
+					found = m[0];
+					console.log('found with username', found);
+				} else if (m[1]===config.server+"/user/"+user.id) {
+					found = m[0];
+					console.log('found with user id', found);
+				} else {
+					console.log('url towards miaou but no proof', m[0]);
+				}
+				if (found) {
+					ppi.num = vals.so_num;
+					return ppi;
 				}
 			}
-			p.reject("Required link wasn't found in profile");
-		} else {
-			p.reject(new Error('Error in querying stackoverflow.com'));
 		}
+		throw new Error("Required link wasn't found in profile");
 	});
-	return p.promise;
 }
 
 // returns the HTML of the profile
