@@ -15,6 +15,7 @@ notes.dev
 sql/postgres.alter.sql
 trav
 graphics/*.png
+plugins/miaou.bot
 
 # compilation byproducts
 .sass-cache
@@ -26,6 +27,7 @@ miaou.concat.js
 miaou.min.js
 miaou.min.js.map
 static/intro.css
+static/intro2.css
 
 # execution byproducts
 *.log
