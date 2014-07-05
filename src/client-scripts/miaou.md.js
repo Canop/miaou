@@ -215,7 +215,8 @@ var miaou = miaou || {};
 	md.resizeAll = function(){
 		var	todo = [],
 			wasAtBottom = isAtBottom(),
-			$messages = $('.message').removeClass('closed');
+			$messages = $('.message');
+		$messages.find('.closed').removeClass('closed');
 		$messages.find('.opener').remove();
 		$messages.each(function(){
 			var $md = $(this),
@@ -225,8 +226,7 @@ var miaou = miaou || {};
 		});
 		todo.forEach(function(t){
 			t.$md.append('<div class=opener>')
-			var h = t.$content.addClass("closed").height();
-			t.$md.find('.user').height(h).css('line-height',h+'px');
+			t.$content.addClass("closed").height();
 		});
 		if (wasAtBottom) md.scrollToBottom();
 	}
