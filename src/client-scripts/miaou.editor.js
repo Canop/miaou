@@ -7,7 +7,7 @@ miaou.editor = (function(){
 		stash, // save of the unsent message edition, if any
 		editedMessage, // currently edited message, if any (if you cycle through messages, their edited content is saved in a property stash)
 		savedValue, $autocompleter, editwzin;
-
+		
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
 		var on = lines.reduce(function(b,l){ return b && r.test(l) }, true);
@@ -108,7 +108,7 @@ miaou.editor = (function(){
 		if (~index) miaou.editor.editMessage($('#messages .message[mid='+myMessages[index].id+']'));
 		else miaou.editor.cancelEdit();
 	}
-
+	
 	return {
 		// prepare #input to emit on the provided socket
 		init: function(){
@@ -166,15 +166,13 @@ miaou.editor = (function(){
 						return false;
 					}
 				} else if (e.which==38) { // up arrow
-					var firstLineEnd = this.value.indexOf('\n'),
-						isInFirstLine = firstLineEnd===-1 || firstLineEnd>=input.selectionStart;
-					if (isInFirstLine || (editedMessage && input.selectionStart===input.selectionEnd && input.selectionEnd===input.value.length)) {
+					var isInFirstLine = $input.taliner().caretOnFirstLine;
+					if (isInFirstLine || (editedMessage && input.selectionStart===input.value.length)) {
 						editPreviousOrNext(-1);
 						return false;
 					}
 				} else if (e.which==40) { // down arrow
-					var lastLineStart = this.value.lastIndexOf('\n'),
-						isInLastLine = lastLineStart===-1 || lastLineStart<input.selectionStart;
+					var isInLastLine = $input.taliner().caretOnLastLine;
 					if (isInLastLine && editedMessage) {
 						editPreviousOrNext(+1);
 						return false;
@@ -208,7 +206,12 @@ miaou.editor = (function(){
 					}
 				}
 			}).on('keyup', function(e){
-				if (e.which===9) return false;
+				if (e.which===9) {
+					return false;
+				//~ } else if (e.which==38) { // up arrow
+					//~ var isInFirstLine = (selectionEndOnKeyDown===input.selectionEnd)
+				//~ } else if (e.which==40) { // down arrow
+				}
 				tryautocomplete();
 			}).focus();
 
