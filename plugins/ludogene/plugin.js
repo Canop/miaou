@@ -36,7 +36,7 @@ function storeInMess(m, game, shoe){
 	delete m.changed;
 	if (gametype.observers) {
 		gametype.observers.forEach(function(fun){
-			setTimeout(fun, 100, m, game, shoe);
+			setTimeout(fun, 30, m, game, shoe);
 		});
 	}
 }

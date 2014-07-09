@@ -20,7 +20,7 @@ var miaou = miaou || {};
 			messages = $messages.map(function(i){ var m = $(this).data('message'); if (m.id===cid) ci = i; return m }).get();
 		while (w=wzins.pop()) w.remove();
 		for (var ui=ci, i=ci; i-->0 && messages[ui].repliesTo;) {
-			if (messages[i].id===messages[ui].repliesTo){
+			if (messages[i].id===messages[ui].repliesTo) {
 				wzins.push(wzin($messages.eq(ui), $messages.eq(i), opts));
 				ui = i;
 			}

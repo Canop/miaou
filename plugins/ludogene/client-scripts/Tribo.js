@@ -84,10 +84,7 @@ var Tribo = (function(){
 		//
 		computeZonesAndScores: function(g){
 			var nbmoves = g.moves.length;
-			if (nbmoves<7) {
-				g.scores = [nbmoves+1>>1, nbmoves>>1];
-				return;
-			}
+			if (nbmoves<7) return g.scores = [nbmoves+1>>1, nbmoves>>1];
 			g.cellZone = matrix(10, null); // holds a pointer to the zone containing the cell
 			var c = g.cells,
 				zones = g.zones = [],
