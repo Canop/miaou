@@ -1,7 +1,7 @@
 // Flore game logic
 
 var Flore = (function(){
-
+	
 	var T = 8, S = T-1,
 		GOAL = 10,
 		NO_CELL = -2,

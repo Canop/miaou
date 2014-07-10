@@ -1,22 +1,19 @@
 (function(){
 
-	if (typeof Snap === 'undefined') return; // this file is part of the big minified file imported in all miaou pages, even the ones not importing snap-svg
-
 	var T = 10, // size of the board in cells (not expected to change)
 		CS = 20, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
-		bg = Snap.hsb(.5, .4, .5),
-		boardId=1;
+		bg = "#4d8080",
+		colors = ['SandyBrown', 'AntiqueWhite'];
 
 	function Panel(m, g, s, availableWidth, abstract){
 		this.m = m; // message
 		this.g = g; // game
-		this.s = s; // snap thing
+		this.s = s; // ùsvg
 		this.u = -1; // user index in the game
-		this.colors = ['SandyBrown', 'AntiqueWhite'],
-		this.grads = this.colors.map(function(c){ return s.gradient("r(0.3,0.3,1)"+c+"-(0,0,0)") });
+		this.grads = colors.map(function(c){ return s.rgrad(0.3, 0.3, 1, c, '#000') });
+		this.holeGrad = s.rgrad(0.3, 0.3, 1, 'rgba(0,0,0,0.5)', bg);
 		g.players.forEach(function(p,i){ if (p.id===me.id) this.u=i }, this);
-		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg);
 		if (abstract) {
 			this.layout = "row";
 			this.W = availableWidth;
@@ -57,12 +54,15 @@
 	}
 
 	Panel.prototype.lineMark = function(line, p){
-		return this.s.rect(
-			this.XB+line.x*CS, this.YB+line.y*CS,
-			line.d==='v' ? CS : CS*3,
-			line.d==='h' ? CS : CS*3,
-			CS/2, CS/2
-		).attr({fill:this.colors[p], fillOpacity:0.6}).prependTo(this.s);
+		var x1 = this.XB+(line.x+0.5)*CS,
+			y1 = this.YB+(line.y+0.5)*CS,
+			x2 = line.d==='v' ? x1 : x1+CS*2,
+			y2 = line.d==='h' ? y1 : y1+CS*2;
+		return ù('<line').prependTo(this.s).attr({
+			x1:x1, y1:y1, x2:x2, y2:y2,
+			stroke:colors[p], strokeOpacity:0.6,
+			strokeWidth:CS, strokeLinecap:'round'
+		});
 	}
 
 	Panel.prototype.drawBoard = function(){
@@ -74,37 +74,37 @@
 				(function(i,j){
 					if (panel.holes[i][j]) panel.holes[i][j].remove();
 					var cell = cells[i][j],
-						c = panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
+						c = panel.holes[i][j] = ù('<circle', s).attr({cx:XB+i*CS+CS/2, cy:YB+j*CS+CS/2, r:BR});
 					if (cell===-1) {
-						c.attr({fill: panel.holeGrad});
+						c.attr('fill', panel.holeGrad);
 						var zone = panel.g.cellZone ? panel.g.cellZone[i][j] : null;
 						if (zone && zone.owner!==undefined) {
-							c = s.group(c, s.circle(XB+i*CS+(CS+1)/2, YB+j*CS+(CS+1)/2, BR/2).attr({fill: panel.grads[zone.owner]}));
+							c = ù('<g', s).append(c);
+							ù('<circle', c).attr({cx:XB+i*CS+(CS+1)/2, cy:YB+j*CS+(CS+1)/2, r:BR/2, fill:panel.grads[zone.owner]});
 						}
 						if (userIsCurrentPlayer) {
 							if (Tribo.canPlay(panel.g, i, j, panel.u)) {
-								var lines = Tribo.getLines(panel.g, i, j, panel.u) || [], lineMarks;
-								c.attr({cursor:'pointer'}).hover(
-									function(){
-										c.attr({fill: panel.colors[panel.u]});
-										lineMarks = lines.map(function(line){ return panel.lineMark(line, panel.u) });
-									},
-									function(){
-										c.attr({fill: panel.holeGrad});
-										lineMarks.forEach(function(line){ line.remove() });
-									}
-								).click(function(){
+								var lines = Tribo.getLines(panel.g, i, j, panel.u) || [],
+									lineMarks;
+								c.on('mouseenter', function(){
+									console.log('enter');
+									c.attr('fill', colors[panel.u]);
+									lineMarks = lines.map(function(line){ return panel.lineMark(line, panel.u) });
+								}).on('mouseleave click', function(){
+									console.log('mouseleave');
+									c.attr('fill', panel.holeGrad);
+									lineMarks.forEach(function(line){ console.log('removing', line); line.remove() });
+								}).on('click', function(){
+									console.log('click');
 									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
-								});
+								}).attr({cursor:'pointer'});
 							} else {
-								c.hover(
-									function(){ c.attr({fill: 'red'}) },
-									function(){ c.attr({fill: panel.holeGrad}) }
-								);
+								c.on('mouseenter', function(){ c.attr('fill', 'red') })
+								.on('mouseleave', function(){ c.attr('fill', panel.holeGrad) });
 							}
 						}
 					} else {
-						c.attr({fill:panel.grads[cell]});
+						c.attr('fill', panel.grads[cell]);
 					}
 				})(i,j);
 			}
@@ -115,37 +115,39 @@
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
 			var name = player.name,
-				attr = { fill:panel.colors[i] };
+				attr = { x:XS, y:panel.LHS*(i+1), fill:colors[i] };
 			if (!panel.abstract) attr.fontWeight = 'bold';
-			return s.text(XS, panel.LHS*(i+1), name.length>21 ? name.slice(0,18)+'…' : name).attr(attr);
+			return ù('<text', s).text(name.length>21 ? name.slice(0,18)+'…' : name).attr(attr);
 		});
 		panel.scores = panel.g.players.map(function(player, i){
-			return s.text(RS, panel.LHS*(i+1), '0').attr({
-				fill: panel.colors[i],
-				fontWeight: 'bold', textAnchor: 'end'
-			})
+			return ù('<text', s).text('0').attr({
+				x:RS, y:panel.LHS*(i+1), fill:colors[i],
+				fontWeight:'bold', textAnchor:'end'
+			});
 		});
 	}
 
 	Panel.prototype.drawScores = function(){
-		this.scores[0].node.innerHTML = (this.g.scores[0]); // Q : what's the proper way to do this using snapsvg ?
-		this.scores[1].node.innerHTML = (this.g.scores[1]);
+		var g = this.g;
+		this.scores.forEach(function(s,i){ s.text(g.scores[i]) });
 		if (this.currentPlayerMark) this.currentPlayerMark.remove();
 		if (this.g.current >= 0) {
-			this.currentPlayerMark = this.s.text(this.XS-15, this.LHS*(this.g.current+1), "►").attr({
-				fill: this.grads[this.g.current], fontWeight: 'bold'
-			})
+			this.currentPlayerMark = ù('<text').text("►").attr({
+				x:this.XS-15, y:this.LHS*(g.current+1),
+				fill:this.grads[g.current], fontWeight:'bold'
+			});
 		} else {
-			this.currentPlayerMark = this.s.text(this.XS-18, this.LHS*((this.g.scores[1]>=this.g.scores[0])+1), "♛").attr({
-				fill: "Goldenrod", fontWeight: 'bold', fontSize: "140%"
-			})
+			this.currentPlayerMark = ù('<text', this.s).text("♛").attr({
+				x:this.XS-18, y:this.LHS*((g.scores[1]>=g.scores[0])+1),
+				fill:"Goldenrod", fontWeight:'bold', fontSize:"140%"
+			});
 		}
 	}
 	
 	Panel.prototype.showMoveLines = function(move) {
 		if (!move.lines) return;
 		move.lines.forEach(function(line){
-			var lm = this.lineMark(line, move.p).animate({fillOpacity:0}, 6000, mina.linear, function(){
+			var lm = this.lineMark(line, move.p).animate({strokeOpacity:0}, 6000, function(){
 				lm.remove();
 			});
 		}, this);
@@ -179,10 +181,9 @@
 			timer = setTimeout(playMove, 600);
 		}
 		$button = $('<button>').addClass('small').css({
-			background:'#2a4646',
-			color:'white'
+			background:'#2a4646', color:'white'
 		}).text('replay')
-		.css({position:"absolute", top:this.LHS*2.7, left:this.XS}).appendTo($c)
+		.css({ position:"absolute", top:this.LHS*2.7, left:this.XS }).appendTo($c)
 		.click(function(){
 			if (!playing) {
 				playing = true;
@@ -192,7 +193,7 @@
 				p.g.zones = [];
 				p.g.cellZone = null;
 				Tribo.restore(p.g);
-				p.s.clear();
+				p.s.empty();
 				p.buildBoard();
 				p.buildScores();
 				playMove();
@@ -207,11 +208,9 @@
 		render: function($c, m, g, abstract){
 			Tribo.restore(g);
 			$c.empty().css('background', bg).closest('.message').removeClass('edited');
-			var id = 'tribo_board_'+ ++boardId
-				$s = $('<svg id='+id+'></svg>').appendTo($c),
-				s = Snap('#'+id), // <- there's probably something cleaner when you have the element, I don't know snapsvg well enough
+			var s = ù('<svg', $c),
 				p = new Panel(m, g, s, $c.width(), abstract);
-			$s.width(p.W).height(p.H);
+			s.width(p.W).height(p.H)
 			$c.data('ludo-panel', p);
 			if (g.status !== "ask") m.locked = true;
 			p.buildBoard();

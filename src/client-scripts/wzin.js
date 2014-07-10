@@ -6,17 +6,6 @@ var wzin = (function(){
 
 	var nextId = 0;
 	
-	function addsvg(tag, attrs, parent){
-		var e = document.createElementNS("http://www.w3.org/2000/svg", tag);
-		if (attrs) {
-			for (var key in attrs) {
-				e.setAttributeNS(null, key, attrs[key]);
-			}
-		}		
-		if (parent) parent.appendChild(e);
-		return e;
-	}
-	
 	function Wzin(e1, e2, opts) {
 		this.id = nextId++;
 		this.e1 = e1;
@@ -82,22 +71,20 @@ var wzin = (function(){
 			path += " L "+p2.left+' '+p2.top+" C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
 		}
 		
-		var svg = this.svg = addsvg("svg", null, this.parent);
-		var $svg = $(svg);
-		$svg.css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none'});
-		$svg.offset(ps).width(W).height(H);
-		addsvg("path", {d:path, fill:this.fill}, svg);
-		
+		var svg = this.svg = ù('<svg', this.parent).css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none'});
+		$(svg.n).offset(ps).width(W).height(H);
+		ù('<path', svg).attr({d:path, fill:this.fill});
 		if (!this.chbg) {
-			var gradid = "wzingrad"+this.id,
-				defs = addsvg("defs", null, svg),
-				grad = addsvg("linearGradient", {id:gradid, x1:"0", y1:"0", x2:"1", y2:"0"}, defs);
-			addsvg("stop", {offset:"0%", style:"stop-color:"+this.fill+";stop-opacity:1"}, grad);
-			addsvg("stop", {offset:"7%", style:"stop-color:"+this.fill+";stop-opacity:0.9"}, grad);
-			addsvg("stop", {offset:"20%", style:"stop-color:"+this.fill+";stop-opacity:0.2"}, grad);
-			addsvg("stop", {offset:"100%", style:"stop-color:"+this.fill+";stop-opacity:0"}, grad);
-			addsvg("rect", {x:p1.left, y:p1.top, width:w1, height:h1, fill:"url(#"+gradid+")"}, svg);
-			addsvg("rect", {x:p2.left, y:p2.top, width:w2, height:h2, fill:"url(#"+gradid+")"}, svg);
+			var grad = svg.define('<linearGradient').attr({
+				x1:0, y1:0, x2:1, y2:0
+			}).stops(
+				{offset:"0%", stopColor:this.fill, stopOpacity:1},
+				{offset:"7%", stopColor:this.fill, stopOpacity:0.9},
+				{offset:"20%", stopColor:this.fill, stopOpacity:0.2},
+				{offset:"100%", stopColor:this.fill, stopOpacity:0}
+			);
+			ù('<rect', svg).attr({x:p1.left, y:p1.top, width:w1, height:h1, fill:grad});
+			ù('<rect', svg).attr({x:p2.left, y:p2.top, width:w2, height:h2, fill:grad});
 		}
 	}
 	
