@@ -185,7 +185,7 @@ body.mobile #messagescroller {
 	padding: $mtab-height 0 0 0;
 }
 
-.message, #messages .error {
+.message, #messages .error, .access_request {
 	position: relative;
     align-items: center;
     align-content: center;

@@ -206,12 +206,7 @@ miaou.editor = (function(){
 					}
 				}
 			}).on('keyup', function(e){
-				if (e.which===9) {
-					return false;
-				//~ } else if (e.which==38) { // up arrow
-					//~ var isInFirstLine = (selectionEndOnKeyDown===input.selectionEnd)
-				//~ } else if (e.which==40) { // down arrow
-				}
+				if (e.which===9) return false;
 				tryautocomplete();
 			}).focus();
 

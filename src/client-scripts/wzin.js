@@ -75,7 +75,7 @@ var wzin = (function(){
 		$(svg.n).offset(ps).width(W).height(H);
 		ù('<path', svg).attr({d:path, fill:this.fill});
 		if (!this.chbg) {
-			var grad = svg.define('<linearGradient').attr({
+			var grad = svg.def('<linearGradient').attr({
 				x1:0, y1:0, x2:1, y2:0
 			}).stops(
 				{offset:"0%", stopColor:this.fill, stopOpacity:1},

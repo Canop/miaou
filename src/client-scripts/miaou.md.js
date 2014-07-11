@@ -179,7 +179,7 @@ var miaou = miaou || {};
 			if (!vis()) miaou.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
 		}
 		if (ar.request_message) {
-			$('<div>').addClass('message').append(
+			$('<div>').addClass('access_request').append(
 				$('<div>').addClass('user').text(ar.user.name)
 			).append(
 				$('<div>').addClass('content').append(miaou.mdToHtml(ar.request_message))

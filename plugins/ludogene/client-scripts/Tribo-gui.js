@@ -87,15 +87,12 @@
 								var lines = Tribo.getLines(panel.g, i, j, panel.u) || [],
 									lineMarks;
 								c.on('mouseenter', function(){
-									console.log('enter');
 									c.attr('fill', colors[panel.u]);
 									lineMarks = lines.map(function(line){ return panel.lineMark(line, panel.u) });
 								}).on('mouseleave click', function(){
-									console.log('mouseleave');
 									c.attr('fill', panel.holeGrad);
 									lineMarks.forEach(function(line){ console.log('removing', line); line.remove() });
 								}).on('click', function(){
-									console.log('click');
 									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
 								}).attr({cursor:'pointer'});
 							} else {
@@ -147,9 +144,7 @@
 	Panel.prototype.showMoveLines = function(move) {
 		if (!move.lines) return;
 		move.lines.forEach(function(line){
-			var lm = this.lineMark(line, move.p).animate({strokeOpacity:0}, 6000, function(){
-				lm.remove();
-			});
+			this.lineMark(line, move.p).animate({strokeOpacity:0}, 6000, ù.remove);
 		}, this);
 	}
 
@@ -210,7 +205,7 @@
 			$c.empty().css('background', bg).closest('.message').removeClass('edited');
 			var s = ù('<svg', $c),
 				p = new Panel(m, g, s, $c.width(), abstract);
-			s.width(p.W).height(p.H)
+			s.width(p.W).height(p.H);
 			$c.data('ludo-panel', p);
 			if (g.status !== "ask") m.locked = true;
 			p.buildBoard();

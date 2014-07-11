@@ -14,8 +14,9 @@ miaou.eventIsOver = function(event, o) {
 
 miaou.userProfile = {
 	shownow: function(){
+		// code in this function is a little messy, partly because it's used in many contexts
 		var $user = $(this).closest('.user'),
-			$message = $user.closest('.message,.notification,.userLine'),
+			$message = $user.closest('.message,.notification,.userLine,.access_request'),
 			up = ($message.length ? $message : $user).position(),
 			uh = $user.height(), uw = $user.width(),
 			$scroller = $user.closest('#messagescroller,#authspage,#left'), ss = $scroller.scrollTop(), sh = $scroller.height(),
@@ -24,8 +25,10 @@ miaou.userProfile = {
 		if (up.top-ss<sh/2) css.top = up.top+1;
 		else css.bottom = ch-up.top-uh-4;
 		css.left = up.left + uw + 4;
-		if (!$message.hasClass('message')) {
-			css.left += 6; css.bottom -= 7; //css.top += 10; // :-(
+		if ($message.hasClass('access_request')) {
+			css.left += 4; css.bottom -= 4;
+		} else if (!$message.hasClass('message')) {
+			css.left += 6; css.bottom -= 7;
 		}
 		$p.css(css).appendTo($container);
 		$user.addClass('profiled');
