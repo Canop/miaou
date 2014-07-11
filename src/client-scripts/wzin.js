@@ -71,8 +71,8 @@ var wzin = (function(){
 			path += " L "+p2.left+' '+p2.top+" C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
 		}
 		
-		var svg = this.svg = ù('<svg', this.parent).css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none'});
-		$(svg.n).offset(ps).width(W).height(H);
+		var svg = this.svg = ù('<svg', this.parent).css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none', width:W, height:H});
+		$(svg.n).offset(ps).css({pointerEvents:'none'}); // strange bug : I can't set pointerEvents to none using ù.css :(
 		ù('<path', svg).attr({d:path, fill:this.fill});
 		if (!this.chbg) {
 			var grad = svg.def('<linearGradient').attr({
