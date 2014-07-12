@@ -49,7 +49,9 @@
 	function renderMessage($c, m, game){
 		if (!$c.closest('#messages,#mwin').length) return renderAbstract($c, m, game);
 		if (game.status === "ask") return renderAsk($c, m, game);
-		miaou.games[game.type].render($c, m, game);
+		var gt = miaou.games[game.type];
+		if (!gt) return $c.text('Game type not available');
+		gt.render($c, m, game);
 		renderHelp($c, game);
 		$c.closest('.message').find('.pen').remove(); // TODO find somethin cleaner, not involving having an element being put then removed
 	}
