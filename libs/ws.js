@@ -10,7 +10,7 @@ var config,
 	io, db,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
-	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins,
+	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
 	socketWaitingApproval = [],
 	commands = require('./commands.js');
 
@@ -22,6 +22,7 @@ exports.configure = function(_config, db){
 	onSendMessagePlugins = plugins.filter(function(p){ return p.onSendMessage });
 	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });
 	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });
+	onChangeMessagePlugins = plugins.filter(function(p){ return p.onChangeMessage });
 	commands.configure(config, db);
 	return this;
 }
@@ -86,7 +87,6 @@ Shoe.prototype.userSocket = function(userIdOrName) {
 }
 // to be used by bots, creates a message, store it in db and emit it to the room
 Shoe.prototype.botMessage = function(bot, content){
-	console.log("bot",bot);
 	var shoe = this;
 	this.db.on({content:content, author:bot.id, room:this.room.id, created:Date.now()/1000|0})
 	.then(db.storeMessage)
@@ -290,6 +290,13 @@ function handleUserInRoom(socket, completeUser){
 			if (message.id) {
 				m.id = +message.id;
 				m.changed = seconds;
+				try {
+					for (var i=0; i<onChangeMessagePlugins.length; i++) {
+						onChangeMessagePlugins[i].onChangeMessage(shoe, m);
+					}
+				} catch(e) {
+					return shoe.error(e, m.content);
+				}
 			} else {
 				m.created = seconds;
 			}

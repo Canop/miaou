@@ -3,7 +3,7 @@
 //  !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
 // TODO really prevent deletion/edition of games
-var cache = require('bounded-cache')(200);
+var cache = require('bounded-cache')(300);
 
 var gametypes = {
 	Tribo: require('./client-scripts/Tribo.js')
@@ -92,6 +92,14 @@ exports.onNewShoe = function(shoe){
 	shoe.socket
 	.on('ludo.accept', function(arg){ exports.accept(shoe, arg) })
 	.on('ludo.move', function(arg){ exports.move(shoe, arg) });
+}
+
+// Checking the message isn't a started game
+// We just check the cache right now, which isn't 100% secure
+exports.onChangeMessage = function(shoe, m){
+	var data = cache.peek(m.id);
+	if (!data) return;
+	if (data[1].moves) throw "A started game can't be rewroten or deleted";
 }
 
 exports.registerCommands = function(cb){
