@@ -35,8 +35,10 @@ function storeInMess(m, game, shoe){
 	m.content = "!!game @"+game.players[0].name+" "+JSON.stringify(saved);
 	delete m.changed;
 	if (gametype.observers) {
+		 // warning : at this point it's still possible the message has no id
+		 // we should provide a way for the observer to be notified after the message has been saved
 		gametype.observers.forEach(function(fun){
-			setTimeout(fun, 30, m, game, shoe);
+			setTimeout(fun, 200, m, game, shoe);
 		});
 	}
 }
