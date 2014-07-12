@@ -128,7 +128,7 @@ var miaou = miaou || {};
 		if (isPageHidden) $page.addClass('selected'); // so that the height computation of messages is possible 
 		if (!yetPresent && message) notableMessages.push(message);
 		notableMessages = notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){
-			return b.score-a.score + (b.created-a.created)/7000
+			return (b.pin||0-a.pin||0) || (b.score-a.score + (b.created-a.created)/7000);
 		}).slice(0,12)
 		md.showMessages(notableMessages, $('#notablemessages'));
 		miaou.lastNotableMessagesChangeNotFlashed = true;
