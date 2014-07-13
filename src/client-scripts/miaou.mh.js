@@ -10,8 +10,8 @@ var miaou = miaou || {};
 			$('<div>').addClass('item').append(
 				$('<span>').addClass('mtime').text(
 					current.changed
-					? ("edition : " + miaou.md.formatTime(current.changed))
-					: ("creation : " + miaou.md.formatTime(current.created))
+					? ("edition : " + miaou.formatTime(current.changed))
+					: ("creation : " + miaou.formatTime(current.created))
 				)
 			).append(
 				$('<div>').append(current.content.split('\n').map(function(t){ return $('<div>').text(t) }))
@@ -21,7 +21,7 @@ var miaou = miaou || {};
 		}
 		if (current.changed) {
 			$('<span>').addClass('mtime').text(
-				"Message creation : " + miaou.md.formatTime(current.created) + ". " +
+				"Message creation : " + miaou.formatTime(current.created) + ". " +
 				"Original content is unknown."
 			).prependTo($content);
 		}

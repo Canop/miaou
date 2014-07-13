@@ -5,7 +5,6 @@ html
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="static/jquery-2.0.3.min.js")
-		script(src="static/moment.min.js")
 		script(src="static/miaou.min.js")
 		style.
 			#submit_bar {
@@ -111,7 +110,7 @@ html
 		script.
 			var auths = !{JSON.stringify(auths)}, room = !{JSON.stringify(room)};
 			$('.date').text(function(_,t){
-				return Date.now()/1000-t<15*60 ? "just now" : moment(t*1000).fromNow();
+				return Date.now()/1000-t<15*60 ? "just now" : miaou.formatRelativeDate(t*1000);
 			});
 			$('input,select').change(function(){ this.name = this.getAttribute('_name') });
 			if (!(room.auth==='own'||room.auth==='admin')) {

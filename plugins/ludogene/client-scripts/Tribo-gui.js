@@ -91,7 +91,7 @@
 									lineMarks = lines.map(function(line){ return panel.lineMark(line, panel.u) });
 								}).on('mouseleave click', function(){
 									c.attr('fill', panel.holeGrad);
-									lineMarks.forEach(function(line){ console.log('removing', line); line.remove() });
+									for (var k=0; lineMarks && k<lineMarks.length; k++) lineMarks[k].remove();
 								}).on('click', function(){
 									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
 								}).attr({cursor:'pointer'});

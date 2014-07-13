@@ -11,7 +11,7 @@ var miaou = miaou || {};
 			miaou.md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
 		}).on('mouseenter', '[m]', function(){
 			var sn = +$(this).attr('sn'), d = +$(this).attr('d'),
-				h = moment(d*24*60*60*1000).format('DD MMM');
+				h = miaou.formatDateDDMMM(new Date(d*24*60*60*1000));
 			if (sn) h += '<br>' + sn + ' match';
 			if (sn>1) h += 'es';
 			$(this).append($('<div>').addClass('bubble').html(h));
@@ -50,7 +50,8 @@ var miaou = miaou || {};
 		logmaxn = Math.log(maxn);
 		$('#hist').empty()[n>30?'removeClass':'addClass']('zoomed');
 		function day(d, n, m, sn, sm){
-			var month = moment(d*24*60*60*1000).format("MMM YYYY");
+			var date = new Date(d*24*60*60*1000),
+				month = miaou.MMM[date.getMonth()]+' '+date.getFullYear();
 			if (month != lastMonth) {
 				$month = $('<div>').addClass('month').append(
 					$('<div>').addClass('label').text(month)

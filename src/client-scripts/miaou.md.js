@@ -7,7 +7,7 @@ var miaou = miaou || {};
 	var chat = miaou.chat,
 		renderers = [], unrenderers = [],
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
-
+	
 	// registers a function which will be called when a message needs rendering
 	// Unless a renderer returns true, the other renderers will be called and
 	//  the last one will be the default, markdown based, renderer. If a renderer
@@ -43,23 +43,6 @@ var miaou = miaou || {};
 		}).join('');
 	}
 
-	function formatMoment(m){
-		var now = new Date();
-		if (now/1000-m.unix()<15*60) return m.fromNow();
-		if (now.getFullYear()===m.year()) {
-			if (now.getMonth()===m.month() && now.getDate()===m.date()) {
-				return m.format("HH:mm");
-			}
-			return m.format("D MMMM HH:mm");
-		}
-		return m.format("D MMMM YYYY HH:mm");
-	}
-	
-	// time : timestamp as provided in message.created or message.changed
-	md.formatTime = function(t){
-		return formatMoment(moment((t+chat.timeOffset)*1000));
-	}
-
 	var isAtBottom = md.isAtBottom = function(){
 		var $scroller = $('#messagescroller'), $messages = $('#messages'),
 			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
@@ -91,7 +74,7 @@ var miaou = miaou || {};
 			if (!m.content) return;
 			var $content = $('<div>').addClass('content');
 			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
-				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + moment((m.created+chat.timeOffset)*1000).format("D MMMM, HH:mm") + ' by ' + m.authorname)
+				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + miaou.formatDate((m.created+chat.timeOffset)*1000) + ' by ' + m.authorname)
 			).appendTo($div);
 			md.render($content, m);
 			if ($content.height()>80) {
@@ -325,14 +308,13 @@ var miaou = miaou || {};
 	md.showMessageMenus = function(){
 		md.hideMessageMenus();
 		var $message = $(this), message = $message.data('message'), infos = [],
-			created = message.created+chat.timeOffset, m = moment(created*1000),
 			$decs = $message.find('.decorations');
 		miaou.ms.updateStatus(message);
 		if (message.status.deletable) $('<button>').addClass('deleteButton').text('delete').prependTo($decs);
 		if (message.status.editable) $('<button>').addClass('editButton').text('edit').prependTo($decs);
 		if (message.status.answerable) $('<button>').addClass('replyButton').text('reply').prependTo($decs);
 		if (message.old && !message.editable) infos.push('too old to edit');
-		infos.push(formatMoment(m));
+		infos.push(miaou.formatRelativeDate((message.created+chat.timeOffset)*1000));
 		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
 			'<a class=link target=_blank href="'+miaou.md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ' + 
 			'<a class=makemwin title="float">&#xe81d;</a> ' + 
