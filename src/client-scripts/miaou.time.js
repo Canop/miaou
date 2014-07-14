@@ -31,5 +31,5 @@ miaou.formatRelativeDate = function(t){ // time in ms
 
 // time : timestamp as provided in message.created or message.changed
 miaou.formatTime = function(t){
-	return miaou.formatDate((t+chat.timeOffset)*1000);
+	return miaou.formatDate((t+miaou.chat.timeOffset)*1000);
 }
