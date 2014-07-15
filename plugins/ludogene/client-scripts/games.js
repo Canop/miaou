@@ -56,23 +56,38 @@
 		$c.closest('.message').find('.pen').remove(); // TODO find somethin cleaner, not involving having an element being put then removed
 	}
 
+	function messageGame(m){
+		if (!m.content) return;
+		var match = m.content.match(/^!!game @\S{3,} (.*)$/);
+		if (!match) return;
+		try {
+			return JSON.parse(match[1]);
+		} catch (e){}
+	}
+
 	miaou.chat.plugins.ludogene = {
 		start: function(){
+			miaou.ms.registerStatusModifier(function(message, status){
+				var g = messageGame(message);
+				if (g && g.moves) {
+					status.editable = false;
+					status.deletable = false;
+				}
+			});
 			miaou.md.registerRenderer(function($c, m){
-				if (!m.content) return;
-				var match = m.content.match(/^!!game @\S{3,} (.*)$/);
-				if (!match) return;
-				renderMessage($c, m, JSON.parse(match[1]));
-				return true;
+				var g = messageGame(m);
+				if (g) {
+					renderMessage($c, m, g);
+					return true;
+				}
 			});
 			miaou.socket.on('ludo.move', function(arg){
 				$('.mwintab[mid='+arg.mid+']').addClass('new');
 				$('.message[mid='+arg.mid+']').each(function(){
 					var $message = $(this),
 						m = $message.data('message'),
-						match = m.content.match(/^!!game @\S{3,} (.*)$/);
-					if (!match) return;
-					var game = JSON.parse(match[1]);
+						game = messageGame(m);
+					if (!game) return;
 					var playername = game.players[arg.move.p].name;
 					miaou.touch(m.id, game.players[+!arg.move.p].id===me.id, playername, playername + ' made a move in your Tribo game');
 					miaou.games[game.type].move($message.find('.content'), m, game, arg.move);
