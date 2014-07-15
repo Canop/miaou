@@ -101,7 +101,7 @@ exports.onNewShoe = function(shoe){
 exports.onChangeMessage = function(shoe, m){
 	var data = cache.peek(m.id);
 	if (!data) return;
-	if (data[1].moves) throw "A started game can't be rewroten or deleted";
+	if (data[1].moves) throw "A started game can't be rewritten or deleted";
 }
 
 exports.registerCommands = function(cb){
