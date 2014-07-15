@@ -4,9 +4,10 @@ var miaou = miaou || {};
 miaou.editor = (function(){
 
 	var $input, input,
+		replyRegex = /@(\w[\w_\-\d\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
 		stash, // save of the unsent message edition, if any
 		editedMessage, // currently edited message, if any (if you cycle through messages, their edited content is saved in a property stash)
-		savedValue, $autocompleter, editwzin;
+		savedValue, $autocompleter, editwzin, replywzin;
 		
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
@@ -32,6 +33,7 @@ miaou.editor = (function(){
 				if (stash) $input.val(stash);
 				miaou.editor.cancelEdit();
 			}
+			miaou.editor.cancelReply();
 			stash = null;
 			miaou.chat.sendMessage(m);
 			$('#preview').html('');
@@ -79,7 +81,6 @@ miaou.editor = (function(){
 		});
 	}
 	
-	// mid : undefined or the id of a user's message
 	// dif : +1 or -1
 	function editPreviousOrNext(dif) {
 		var index = -1;
@@ -108,6 +109,52 @@ miaou.editor = (function(){
 		if (~index) miaou.editor.editMessage($('#messages .message[mid='+myMessages[index].id+']'));
 		else miaou.editor.cancelEdit();
 	}
+
+	function replyPreviousOrNext(dif) {
+		var	messages = miaou.md.getMessages().filter(function(m){
+			return m.author !== me.id && !(editedMessage && m.id>editedMessage.id);
+		}), index = -1, m = input.value.match(replyRegex);
+		if (m) {
+			var mid = +m[2];
+			for (var i=0; i<messages.length; i++) {
+				if (mid===messages[i].id) {
+					index = i;
+					break;
+				}
+			}
+		}
+		console.log('IB:', index);
+		var indexBefore = index;
+		if (~index) {
+			index += dif;
+			if (index>=messages.length) index = -1;
+		} else if (m) {
+			return; // todo what exactly do when the replied message is out of scope (it may not exist)
+		} else {
+			index = messages.length-1;
+		}
+		if (indexBefore === index) return;
+		if (~index) miaou.editor.replyToMessage($('#messages .message[mid='+messages[index].id+']'));
+		else miaou.editor.cancelReply();
+	}
+	
+	// sets or unsets the reply wzin depending on the message
+	// if a $message is passed, it's assumed it matches
+	function updateReplyWzin($message){
+		if (replywzin) {
+			replywzin.remove();
+			replywzin = null;
+		}
+		if (!$message) {
+			var m = input.value.match(replyRegex);
+			if (m) $message = $('#messages .message[mid='+m[2]+']')
+		}
+		if ($message && $message.length) {
+			replywzin = wzin($message, $('#input'), {
+				zIndex:5, fill:'rgba(71, 71, 249, .15)', scrollables:'#messagescroller', parent:document.getElementById('messagescroller')
+			});
+		}
+	}
 	
 	return {
 		// prepare #input to emit on the provided socket
@@ -118,7 +165,7 @@ miaou.editor = (function(){
 				if (e.ctrlKey && !e.shiftKey) {
 					var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;
 					switch(e.which){
-						case 75: // K : toggle code
+					case 75: // ctrl - K : toggle code
 						if (sp===ep) {
 							$input.selectLines().replaceSelection(toggleLinesCode);
 							this.selectionStart = this.selectionEnd;
@@ -128,11 +175,11 @@ miaou.editor = (function(){
 							$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
 						}
 						return false;
-						case 81: // Q : toggle citation
+					case 81: // ctrl - Q : toggle citation
 						$input.selectLines().replaceSelection(toggleLinesCitation);
 						if (sp===ep) this.selectionStart = this.selectionEnd;
 						return false;
-						case 76: // L : make link
+					case 76: // ctrl - L : make link
 						miaou.dialog({
 							title: 'Insert Hyperlink',
 							content: 'URL : <input id=newlinkhref style="width:82%">',
@@ -150,18 +197,26 @@ miaou.editor = (function(){
 							}
 						});
 						return false;
-						case 66: // B : toggle bold
+					case 66: // ctrl - B : toggle bold
 						$input.replaceSelection(function(s){ return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2, -2) : '**'+s+'**' });
 						return false;
-						case 73: // I : toggle italic
+					case 73: // ctrl - I : toggle italic
 						$input.replaceSelection(function(s){ return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*' });
 						return false;
-						case 13: // enter : insert new line
+					case 13: // ctrl - enter : insert new line
 						$input.replaceSelection(function(s){ return s+'\n' });
+						return false;
+					case 38: // ctrl - up arrow
+						console.log('C UP');
+						replyPreviousOrNext(-1);
+						return false;
+					case 40: // ctrl - down arrow
+						console.log('C DOWN');
+						replyPreviousOrNext(+1);
 						return false;
 					}
 				} else if (e.altKey || e.shiftKey) {
-					if (e.which==13) {
+					if (e.which==13) { // alt|shift - return
 						$input.replaceSelection(function(s){ return s+'\n' });
 						return false;
 					}
@@ -181,10 +236,9 @@ miaou.editor = (function(){
 					if ($autocompleter && $autocompleter.length && input.value!=savedValue) {
 						input.value = savedValue;
 						tryautocomplete();
+					} else if (replywzin) {
+						miaou.editor.cancelReply();
 					} else {
-						if (/^\s*@\w[\w_\-\d]{2,}(#\d+)?\s*$/.test(input.value)) {
-							input.value = '';
-						}
 						miaou.editor.cancelEdit();
 					}
 				} else if (e.which==13) { // enter
@@ -206,7 +260,7 @@ miaou.editor = (function(){
 					}
 				}
 			}).on('keyup', function(e){
-				if (e.which===9) return false;
+				if (e.which===9) return false; // tab
 				tryautocomplete();
 			}).focus();
 
@@ -262,11 +316,12 @@ miaou.editor = (function(){
 			input.focus();
 		},
 		// toggle reply to an existing message
-		replyToMessage: function(message){
-			var txt = input.value, r = /@(\w[\w_\-\d]{2,})#(\d+)/, m = txt.match(r),
+		replyToMessage: function($message){
+			var message = $message.data('message'),
+				txt = input.value, m = txt.match(replyRegex),
 				s = input.selectionStart, e = input.selectionEnd, l = txt.length, yetPresent = false;
 			if (m) {
-				input.value = txt = txt.replace(r,'').replace(/^\s/,'');
+				input.value = txt = txt.replace(replyRegex,'').replace(/^\s/,'');
 				yetPresent = m[1]===message.authorname && m[2]==message.id;
 			}
 			if (!yetPresent) {
@@ -277,6 +332,7 @@ miaou.editor = (function(){
 			input.selectionStart = s + dl;
 			input.selectionEnd = e + dl;
 			input.focus();
+			updateReplyWzin($message);
 		},
 		// toggle edition of an existing message
 		editMessage: function($message){
@@ -297,6 +353,15 @@ miaou.editor = (function(){
 			editwzin = wzin($message, $('#input'), {
 				zIndex:5, fill:'rgba(208, 120, 16, .3)', scrollables:'#messagescroller', changeElementBackground:true
 			});
+			updateReplyWzin();
+		},
+		// cancels replying
+		cancelReply: function(){
+			$input.replaceInVal(replyRegex);
+			if (replywzin) {
+				replywzin.remove();
+				replywzin = null;
+			}
 		},
 		// cancels edition
 		cancelEdit: function(){
@@ -308,6 +373,7 @@ miaou.editor = (function(){
 				$input.focus();
 				editwzin.remove();
 				editwzin = null;
+				updateReplyWzin();
 			}
 		},
 		// receives list of pings

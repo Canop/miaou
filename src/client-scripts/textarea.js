@@ -45,3 +45,23 @@ $.fn.insertLine = function(s){
 		this.focus();
 	});
 }
+
+// replaces what matches the regex, keeping the selection, not doing anything if there's no match
+// The second argument can be a string or a function
+$.fn.replaceInVal = function(r, rep){
+	this.each(function(){
+		var nbm = 0, s = this.selectionStart, e = this.selectionEnd;
+		var v = this.value.replace(r, function(m){
+			var n = typeof rep === "function" ? rep(m) : (rep||''),
+				d = n.length - m.length, offset = arguments[arguments.length-2];
+			if (s > offset)	s += d;
+			if (e > offset)	e += d;
+			nbm++;
+			return n;
+		});
+		if (!nbm) return;
+		this.value = v;
+		this.selectionStart = s;
+		this.selectionEnd = e;
+	});
+}

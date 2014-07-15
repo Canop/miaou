@@ -63,7 +63,7 @@ miaou.bindChatGui = function(){
 		});
 	})
 	.on('click', '.replyButton', function(){
-		editor.replyToMessage($(this).closest('.message').data('message'));
+		editor.replyToMessage($(this).closest('.message'));
 	})
 	.on('mouseenter', '.replyButton,.deleteButton,.editButton', miaou.userProfile.hide)
 	.on('mouseleave', '.replyButton,.deleteButton,.editButton', miaou.userProfile.shownow)
