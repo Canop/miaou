@@ -2,7 +2,7 @@
 
 var miaou = miaou || {};
 
-miaou.MMM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Nov','Dec'];
+miaou.MMM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 miaou.formatDateDDMMM = function(date){
 	var d = date.getDate();
