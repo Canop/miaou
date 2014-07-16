@@ -74,7 +74,9 @@ miaou.bindChatGui = function(){
 		var $target = $('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).eq(0);
 		if ($target.length) {
 			if (replyWzin) replyWzin.remove();
-			replyWzin = wzin($this.closest('.message'), $target, { zIndex:5, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller' });
+			replyWzin = wzin($this.closest('.message'), $target, {
+				zIndex:5, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller', parent:document.getElementById('messagescroller')
+			});
 		}
 		e.stopPropagation();
 	})
