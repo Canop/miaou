@@ -129,7 +129,7 @@
 		this.scores.forEach(function(s,i){ s.text(g.scores[i]) });
 		if (this.currentPlayerMark) this.currentPlayerMark.remove();
 		if (this.g.current >= 0) {
-			this.currentPlayerMark = ù('<text').text("►").attr({
+			this.currentPlayerMark = ù('<text', this.s).text("►").attr({
 				x:this.XS-15, y:this.LHS*(g.current+1),
 				fill:this.grads[g.current], fontWeight:'bold'
 			});
