@@ -23,7 +23,7 @@ miaou.editor = (function(){
 
 	function sendInput(){
 		var txt = $input.val().replace(/\s+$/,'');
-		if (txt.length){
+		if (txt.replace(replyRegex,'').length){
 			$input.val('');
 			var m = {content: txt};
 			if (editedMessage) {
@@ -123,13 +123,12 @@ miaou.editor = (function(){
 				}
 			}
 		}
-		console.log('IB:', index);
 		var indexBefore = index;
 		if (~index) {
 			index += dif;
 			if (index>=messages.length) index = -1;
-		} else if (m) {
-			return; // todo what exactly do when the replied message is out of scope (it may not exist)
+		} else if (m || dif>0) {
+			return;
 		} else {
 			index = messages.length-1;
 		}
@@ -141,15 +140,26 @@ miaou.editor = (function(){
 	// sets or unsets the reply wzin depending on the message
 	// if a $message is passed, it's assumed it matches
 	function updateReplyWzin($message){
+		var m, mid;
+		if ($message) { // callers must ensure it's not empty
+			mid = +$message.attr('mid');
+		} else {
+			m = input.value.match(replyRegex);
+			if (m) mid = +m[2];
+		}
 		if (replywzin) {
+			if (mid && (replywzin.e1.attr('mid')==mid || replywzin.e2.attr('mid')==mid)) return;			
 			replywzin.remove();
 			replywzin = null;
 		}
-		if (!$message) {
-			var m = input.value.match(replyRegex);
-			if (m) $message = $('#messages .message[mid='+m[2]+']')
-		}
+		if (!$message && m) $message = $('#messages .message[mid='+m[2]+']');
 		if ($message && $message.length) {
+			var mtop = $message.offset().top, $scroller = $('#messagescroller');
+			if (mtop<0) {
+				$scroller.scrollTop(mtop+$scroller.scrollTop()-25);
+			} else if ($scroller.height()+$scroller.scrollTop()<$scroller[0].scrollHeight) {
+				$scroller.scrollTop(Math.min(mtop+$scroller.scrollTop()-25, $scroller[0].scrollHeight));
+			}			
 			replywzin = wzin($message, $('#input'), {
 				zIndex:5, fill:'rgba(71, 71, 249, .15)', scrollables:'#messagescroller', parent:document.getElementById('messagescroller')
 			});
@@ -207,11 +217,9 @@ miaou.editor = (function(){
 						$input.replaceSelection(function(s){ return s+'\n' });
 						return false;
 					case 38: // ctrl - up arrow
-						console.log('C UP');
 						replyPreviousOrNext(-1);
 						return false;
 					case 40: // ctrl - down arrow
-						console.log('C DOWN');
 						replyPreviousOrNext(+1);
 						return false;
 					}
@@ -237,6 +245,7 @@ miaou.editor = (function(){
 						input.value = savedValue;
 						tryautocomplete();
 					} else if (replywzin) {
+						miaou.md.scrollToBottom();
 						miaou.editor.cancelReply();
 					} else {
 						miaou.editor.cancelEdit();
@@ -262,6 +271,7 @@ miaou.editor = (function(){
 			}).on('keyup', function(e){
 				if (e.which===9) return false; // tab
 				tryautocomplete();
+				updateReplyWzin();
 			}).focus();
 
 			$('#send').on('click', sendInput);
@@ -288,8 +298,7 @@ miaou.editor = (function(){
 					if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
 					else alert("Hu? didn't exactly work, I think...");
 				}
-				xhr.onerror = function(e){
-					console.log(e);
+				xhr.onerror = function(){
 					alert("Something didn't work as expected :(");
 					finish();
 				}
