@@ -58,11 +58,15 @@
 
 	function messageGame(m){
 		if (!m.content) return;
+		if (m.game) return m.game;
 		var match = m.content.match(/^!!game @\S{3,} (.*)$/);
 		if (!match) return;
+		var game;
 		try {
-			return JSON.parse(match[1]);
+			game = JSON.parse(match[1]);
 		} catch (e){}
+		m.game = game;
+		return game;
 	}
 
 	miaou.chat.plugins.ludogene = {
