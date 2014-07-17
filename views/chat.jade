@@ -75,20 +75,24 @@ html(lang=room.lang)
 			$('#changeroom').click(function(){ window.open('rooms') });
 			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
 			$('#me').text(me.name);
-			$('.tab').click(function(){
+			
+			function tab(page){
 				$('.tab').removeClass('selected');
-				$(this).addClass('selected');
-				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
-			});
-			$('.tab[page="search"]').click(function(){
-				miaou.hist.open();
-				$('#searchInput').focus();
+				$('.tab[page='+page+']').addClass('selected');
+				$('.page').removeClass('selected');
+				$('#'+page).addClass('selected');
+				if (page==="search") {
+					miaou.hist.open();
+					$('#searchInput').focus();
+				} else if (page==="notablemessagespage") {
+					miaou.hist.close();	
+				}
 				miaou.md.resizeAll();
+			}
+			$('.tab').click(function(){
+				tab($(this).attr('page'));
 			});
-			$('.tab[page="notablemessagespage"]').click(function(){
-				miaou.hist.close();
-				miaou.md.resizeAll();
-			});
+			
 			$('#uploadOpen').click(function(){
 				$('#uploadpanel').show();
 				$('#inputpanel').hide();
@@ -97,5 +101,12 @@ html(lang=room.lang)
 				$('#uploadpanel').hide();
 				$('#inputpanel').show();
 			});
+			
+			$(window).on('keydown', function(e){
+				if (e.which===70 && e.ctrlKey) {
+					tab("search");
+					return false;
+				}
+			});
+			
 			miaou.chat.start();
-

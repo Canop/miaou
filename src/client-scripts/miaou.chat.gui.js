@@ -183,7 +183,10 @@ miaou.bindChatGui = function(){
 	});
 	
 	$('#searchInput').on('keyup', function(e){
-		if (e.which===27) $(this).val('');
+		if (e.which===27 && typeof tab === "function") { // escape
+			tab("notablemessagespage");
+			return false;
+		}
 		var pat = this.value.trim();
 		if (pat) {
 			miaou.socket.emit('search', {pattern:pat});
