@@ -7,14 +7,17 @@
 	"server": "http://dystroy.org/miaou",
 	"port": 8204,
 	"maxMessageContentSize": 4000,
-	"minDelayBetweenMessages": 1000,
+	"minDelayBetweenMessages": 200,
 	"secret": "a string here",
 	"database": {
 		"url": "postgres://database_user:database_pwd@localhost/miaou"
 	},
 	"plugins": [
+		"./plugins/stackoverflow/plugin.js",
 		"./plugins/wikipedia/plugin.js",
-		"./plugins/mountyhall/plugin.js"
+		"./plugins/mountyhall/plugin.js",
+		"./plugins/video/plugin.js",
+		"./plugins/whiteboard/plugin.js",
 	],
 	"oauth2": {
 		"google": {
