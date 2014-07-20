@@ -25,4 +25,6 @@ cat $ROOT_PATH/plugins/*/client-scripts/*.js >> $STATIC_PATH/miaou.concat.js
 cwd=${PWD}
 trap 'cd "$cwd"' EXIT
 cd $STATIC_PATH
-uglifyjs miaou.concat.js  --screw-ie8 -c --output miaou.min.js --source-map miaou.min.js.map
+uglifyjs miaou.concat.js  --screw-ie8 -c -mt --output miaou.min.js --source-map miaou.min.js.map
+echo gzipped size :
+cat miaou.min.js | gzip -9f | wc -c
