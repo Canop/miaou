@@ -6,11 +6,7 @@ miaou.bindChatGui = function(){
 		editor = miaou.editor,
 		replyWzin;
 	
-	$('#messages').on('click', '.message .content img', function(e){
-		window.open(this.src);
-		e.stopPropagation();
-	})
-	.on('click', '.message .content a[href]', function(){
+	$('#messages, #notablemessages, #searchresults').on('click', '.message .content a[href]', function(e){
 		var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
 		if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
 			// it's an url towards a room or message on this server
@@ -23,7 +19,7 @@ miaou.bindChatGui = function(){
 					// it's just an url to our room. Let's... err... scroll to bottom ?
 					md.scrollToBottom();
 				}
-				return false;
+				e.preventDefault();
 			} else {
 				// it's an url for another room or for a message in another room, let's go to the right tab
 				//  if it's already open, or open it if not
@@ -36,6 +32,12 @@ miaou.bindChatGui = function(){
 				this.href = h;
 			}
 		}
+		e.stopPropagation();
+	});
+	
+	$('#messages').on('click', '.message .content img', function(e){
+		window.open(this.src);
+		e.stopPropagation();
 	})
 	.on('click', '.opener', md.opener)
 	.on('click', '.closer', md.closer)
@@ -91,9 +93,6 @@ miaou.bindChatGui = function(){
 	.on('click', '.reply', function(e){
 		md.focusMessage(+$(this).attr('to'));
 		e.stopPropagation();			
-	})
-	.on('click', 'a', function(e){
-		e.stopPropagation();
 	})
 	.on('click', '.vote', function(){
 		var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
