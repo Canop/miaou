@@ -16,12 +16,18 @@ var miaou = miaou || {};
 	var statusModifiers = [];
 
 	// registers a status modifier. This function can directly change
-	//  message.status where message is the argument they get
+	//   message.status where message is the argument they get
+	// Note that messages without id should never be
+	//   editable, answerable or deletable.
 	ms.registerStatusModifier = function(fun){
 		statusModifiers.push(fun);
 	}
 
 	ms.registerStatusModifier(function(message, status){
+		if (!message.id) {
+			status.answerable = status.deletable = status.editable = false;
+			return;
+		}
 		var created = message.created+miaou.chat.timeOffset;
 		status.answerable = message.author !== me.id;
 		status.old =  Date.now()/1000 - created > miaou.chat.MAX_AGE_FOR_EDIT;

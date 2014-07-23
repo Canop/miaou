@@ -8,7 +8,7 @@ miaou.editor = (function(){
 		stash, // save of the unsent message edition, if any
 		editedMessage, // currently edited message, if any (if you cycle through messages, their edited content is saved in a property stash)
 		savedValue, $autocompleter, editwzin, replywzin;
-		
+
 	function toggleLines(s,r,insert){
 		var lines = s.split('\n');
 		var on = lines.reduce(function(b,l){ return b && r.test(l) }, true);
@@ -112,7 +112,7 @@ miaou.editor = (function(){
 
 	function replyPreviousOrNext(dif) {
 		var	messages = miaou.md.getMessages().filter(function(m){
-			return m.author !== me.id && !(editedMessage && m.id>editedMessage.id);
+			return m.id && m.author !== me.id && !(editedMessage && m.id>editedMessage.id);
 		}), index = -1, m = input.value.match(replyRegex);
 		if (m) {
 			var mid = +m[2];

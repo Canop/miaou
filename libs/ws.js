@@ -67,12 +67,7 @@ Shoe.prototype.pluginTransformAndSend = function(m, sendFun){
 	sendFun('message', m);
 }
 Shoe.prototype.roomSockets = function() {
-	var clients = io.sockets.adapter.rooms[this.room.id],
-		sockets = [];
-	for (var clientId in clients) {
-		sockets.push(io.sockets.connected[clientId]);
-	}
-	return sockets;
+	return roomSockets(this.room.id);
 }
 // returns the socket of the passed user if he's in the same room
 Shoe.prototype.userSocket = function(userIdOrName) {
@@ -95,6 +90,25 @@ Shoe.prototype.botMessage = function(bot, content){
 		m.bot = true;
 		shoe.emitToRoom('message', m);
 	}).finally(this.db.off);
+}
+
+// returns all the sockets of the given roomId
+var roomSockets = exports.roomSockets = function(roomId){
+	var clients = io.sockets.adapter.rooms[roomId],
+		sockets = [];
+	for (var clientId in clients) {
+		sockets.push(io.sockets.connected[clientId]);
+	}
+	return sockets;
+}
+
+var emitToRoom = exports.emitToRoom = function(roomId, key, m){
+	console.log(emitToRoom, roomId, key, m);
+	io.sockets.in(roomId).emit(key, lighten(m));
+}
+
+var roomIds = exports.roomIds = function(){
+	return Object.keys(io.sockets.adapter.rooms).filter(function(n){ return n==+n });
 }
 
 // returns the first found socket of the passed user (may be in another room)

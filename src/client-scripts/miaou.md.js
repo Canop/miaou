@@ -1,5 +1,5 @@
 // md is short for "message display"
-// Here are function related to the display of messages in the chat and to the various message element lists
+// Here are functions related to the display of messages in the chat and to the various message element lists
 
 var miaou = miaou || {};
 
@@ -27,14 +27,14 @@ var miaou = miaou || {};
 		unrenderers.unshift(fun);
 	}
 	md.render = function($content, message, oldMessage){
-		for (var i=0; i<renderers.length; i++){
+		for (var i=0; i<renderers.length; i++) {
 			if (renderers[i]($content, message, oldMessage)) break;
-		};
+		}
 	}
 	md.unrender = function($content, message){
-		for (var i=0; i<unrenderers.length; i++){
+		for (var i=0; i<unrenderers.length; i++) {
 			if (unrenderers[i]($content, message)) break;
-		};
+		}
 	}
 
 	function votesAbstract(message){
@@ -73,9 +73,10 @@ var miaou = miaou || {};
 		messages.forEach(function(m){
 			if (!m.content) return;
 			var $content = $('<div>').addClass('content');
-			var $md = $('<div>').addClass('message').data('message',m).attr('mid',m.id).append($content).append(
+			var $md = $('<div>').addClass('message').data('message',m).append($content).append(
 				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + miaou.formatDate((m.created+chat.timeOffset)*1000) + ' by ' + m.authorname)
 			).appendTo($div);
+			if (m.id) $md.attr('mid',m.id);
 			md.render($content, m);
 			if ($content.height()>80) {
 				$content.addClass("closed");
@@ -98,6 +99,7 @@ var miaou = miaou || {};
 	}
 
 	md.updateNotableMessages = function(message){
+		if (!message.id) return;
 		var yetPresent = false, notableMessages = $('#notablemessages .message').map(function(){
 			var msg = $(this).data('message');
 			if (message && msg.id===message.id) {
@@ -214,36 +216,38 @@ var miaou = miaou || {};
 		if (wasAtBottom) md.scrollToBottom();
 	}
 	
-	// When the window is resized, all the messages have to be resized too.
-	$(window).on('resize', md.resizeAll);
-
 	// inserts or updates a message in the main #messages div
 	md.addMessage = function(message){
 		var messages = md.getMessages(), oldMessage,
 			insertionIndex = messages.length, // -1 : insert at begining, i>=0 : insert after i
 			wasAtBottom = isAtBottom(),
-			$md = $('<div>').addClass('message').data('message', message).attr('mid', message.id),
+			$md = $('<div>').addClass('message').data('message', message),
 			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
 			$decorations = $('<div>').addClass('decorations').appendTo($user),
 			$mc,
 			votesHtml = votesAbstract(message);
-		if (messages.length===0 || message.id<messages[0].id) {
-			insertionIndex = -1;
-			// the following line because of the possible special case of a
-			//  pin vote being removed by somebody's else 
-			if (message.vote && !message[message.vote]) delete message.vote;
+		if (message.id) {
+			$md.attr('mid', message.id)
+			if (messages.length===0 || message.created<messages[0].created) {
+				insertionIndex = -1;
+				// the following line because of the possible special case of a
+				//  pin vote being removed by somebody's else 
+				if (message.vote && !message[message.vote]) delete message.vote;
+			} else {
+				while (insertionIndex && messages[--insertionIndex].created>message.created){};
+			}
 		} else {
-			while (insertionIndex && messages[--insertionIndex].id>message.id){};
+			insertionIndex--;
 		}
 		
 		// updates the link (as reply) to upwards messages
 		// To make things simpler, we consider only one link upwards
 		delete message.repliesTo;
 		if (message.content) {
-			var matches = message.content.match(/^@\w[\w_\-\d]{2,}#(\d+)/);
+			var matches = message.content.match(/^\s*@\w[\w_\-\d]{2,}#(\d+)/);
 			if (matches) message.repliesTo = +matches[1];
 		}
-		
+				
 		if (message.bot) $user.addClass('bot');
 		else chat.topUserList({id: message.author, name: message.authorname});
 		if (message.authorname===me.name) {
@@ -251,7 +255,7 @@ var miaou = miaou || {};
 			$('.error').remove();
 		}
 		if (~insertionIndex) {
-			if (messages[insertionIndex].id===message.id) {
+			if (message.id && messages[insertionIndex].id===message.id) {
 				oldMessage = messages[insertionIndex];
 				if (message.vote === '?') {
 					message.vote = oldMessage.vote;
@@ -275,6 +279,9 @@ var miaou = miaou || {};
 			var $pen = $('<div>&#xe80c;</div>').addClass('decoration pen').appendTo($decorations);
 			if (message.previous) $pen.addClass('clickable').attr('title', 'Click for message history');
 		}
+		if (!message.id) {
+			$('<div>&#xe826;</div>').addClass('decoration snap').appendTo($decorations).attr('title', "Snap message : only sent to people currently in the room, and will disapear if you refresh the page.");
+		}
 		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
 		if (!$mc) $mc = $('<div>').addClass('content');
 		$mc.appendTo($md);
@@ -282,7 +289,8 @@ var miaou = miaou || {};
 		resize($md, wasAtBottom);
 		md.showMessageFlowDisruptions();
 		md.updateOlderAndNewerLoaders();
-		if (wasAtBottom && message.id==$('#messages > .message').last().attr('mid')) md.scrollToBottom();
+		if (wasAtBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) md.scrollToBottom();
+		
 	}
 
 	md.showMessageFlowDisruptions = function(){
