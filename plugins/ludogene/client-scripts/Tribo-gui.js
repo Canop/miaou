@@ -237,7 +237,7 @@
 				})
 			).append($('<p>').html(
 				'Try to fill or reserve the biggest part of the board.<br>'+
-				'When you make a vertical or horizontal line of <i>exactly<i> 3 coins, you play again.<br>'+
+				'When you make a vertical or horizontal line of <i>exactly<i> 3 coins (no more), you play again.<br>'+
 				'To start a new game, just type <i>!!tribo&nbsp;@somename</i>'
 			));
 		}

@@ -196,6 +196,9 @@ miaou.bindChatGui = function(){
 		}
 	});
 	
+	// When the window is resized, all the messages have to be resized too.
+	$(window).on('resize', md.resizeAll);
+	
 	// called in case of new message (or a new important event related to a message)
 	miaou.touch = function(mid, ping, from, text, r){
 		var visible = vis();

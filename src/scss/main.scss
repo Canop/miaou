@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'fontello';
-	src: url('fontello.woff?7570e8f6') format('woff');
+	src: url('fontello.woff?f8c3138f') format('woff');
 }
 $bg-color: #F0EAD6; // or #def
 $mtab-height: 39px;   // height of the top tabs in mobile interface
@@ -23,7 +23,7 @@ body {
 		top: 0;
 		left: 0;
 		right: 0;
-		bottom: 0;	
+		bottom: 0;
 		&.mobile {
 			background: white;
 		}
