@@ -268,11 +268,15 @@ miaou.editor = (function(){
 						return false;
 					}
 				}
-			}).on('keyup', function(e){
+			})
+			.on('keyup', function(e){
 				if (e.which===9) return false; // tab
+			})
+			.on('input', function(){
 				tryautocomplete();
-				updateReplyWzin();
-			}).focus();
+				updateReplyWzin();				
+			})			
+			.focus();
 
 			$('#send').on('click', sendInput);
 
