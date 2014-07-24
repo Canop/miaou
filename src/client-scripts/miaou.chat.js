@@ -89,6 +89,7 @@ miaou.chat = {
 					}
 					miaou.updateTab(0, 0);
 					if (miaou.lastNotableMessagesChangeNotFlashed) md.flashRecentNotableMessages();
+					$('#input').focus();
 				}
 			});
 			setInterval(function(){
