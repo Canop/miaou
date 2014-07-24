@@ -53,7 +53,7 @@
 		if (!gt) return $c.text('Game type not available');
 		gt.render($c, m, game);
 		renderHelp($c, game);
-		$c.closest('.message').find('.pen').remove(); // TODO find somethin cleaner, not involving having an element being put then removed
+		$c.closest('.message').find('.pen').remove(); // TODO find something cleaner, not involving having an element being put then removed
 	}
 
 	function messageGame(m){
@@ -93,8 +93,9 @@
 						game = messageGame(m);
 					if (!game) return;
 					var playername = game.players[arg.move.p].name;
-					miaou.touch(m.id, game.players[+!arg.move.p].id===me.id, playername, playername + ' made a move in your Tribo game');
-					miaou.games[game.type].move($message.find('.content'), m, game, arg.move);
+					if (miaou.games[game.type].move($message.find('.content'), m, game, arg.move)) {
+						miaou.touch(m.id, game.players[+!arg.move.p].id===me.id, playername, playername + ' made a move in your Tribo game');
+					}
 				});
 			});
 		}

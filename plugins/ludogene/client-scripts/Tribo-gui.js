@@ -217,16 +217,24 @@
 			}
 		},
 		move: function($c, m, _, move){
-			var panel = $c.data('ludo-panel');
+			// moves, like messages, can be received more than once
+			// so game implementations must detect that.
+			// move returns true if the player should be notified
+			var panel = $c.data('ludo-panel'),
+				movechar = Tribo.encodeMove(move),
+				newmove = panel.g.moves.slice(-1) !== movechar;
 			m.locked = true;
-			panel.g.moves += Tribo.encodeMove(move);
-			Tribo.apply(panel.g, move);
+			if (newmove) {
+				panel.g.moves += movechar;
+				Tribo.apply(panel.g, move);
+			}
 			panel.drawBoard();
 			panel.drawScores();
 			if (!panel.abstract) {
 				panel.showMoveLines(move);
 				panel.addReplayStopButton($c);
 			}
+			return newmove;
 		},
 		fillHelp: function($div){
 			$div.css({
