@@ -2,7 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 5);
+insert into db_version (component, version) values('core', 6);
 
 CREATE TABLE room (
 	id serial primary key,
@@ -43,6 +43,7 @@ CREATE TABLE message (
 	score integer NOT NULL default 0
 );
 create index message_room_created on message (room, created);
+create index message_author_created_room on message (author, created, room);
 create index message_fts on message using GIN(to_tsvector('english', content));
 create index message_score on message (score);
 CREATE OR REPLACE FUNCTION message_score() RETURNS trigger AS '
