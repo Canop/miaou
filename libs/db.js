@@ -100,7 +100,9 @@ proto.listRecentUsers = function(roomId, N){
 
 proto.usersStartingWith = function(str, roomId, limit){
 	return this.queryRows(
-		"select name, (select max(created) from message where p.id=author and room=$1) lp from player p where name ilike $2 order by lp desc nulls last limit $3",
+		"select name, (select max(created) from message where p.id=author and room=$1) lir," +
+		" (select max(created) from message where p.id=author) l" +
+		" from player p where name ilike $2 order by lir desc nulls last, l desc nulls last limit $3",
 		[roomId, str+'%', limit]
 	);
 }
@@ -195,7 +197,8 @@ proto.listAccessibleRooms = function(userId){
 	);
 }
 
-// lists the rooms that should make it to the front page :
+// lists the rooms that should make it to the front page
+// fixme : this query is to slow
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+
@@ -445,6 +448,7 @@ proto.fetchUserPings = function(userId){
 }
 
 // returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
+// fixme : this query is to slow
 proto.fetchUserPingRooms = function(userId, after){
 	return this.queryRows("select room, max(name) as roomname, min(created) as first, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after]);
 }
@@ -644,8 +648,14 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 
 proto.queryRows = proto.execute = function(sql, args){
 	var resolver = Promise.defer();
+	var start = Date.now();
 	this.client.query(sql, args, function(err, res){
 		//~ logQuery(sql, args);
+		var end = Date.now();
+		if (end-start>20) {
+			console.log("Slow query (" + (end-start) + " ms) :");
+			logQuery(sql, args);
+		}
 		if (err) resolver.reject(err);
 		else resolver.resolve(res.rows);
 	});
