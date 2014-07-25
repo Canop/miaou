@@ -12,11 +12,11 @@ var miaou = miaou || {};
 	wz.onmouseenter = function(){
 		var colors = ['rgba(139, 69, 19, .2)', 'rgba(42, 18, 234, .15)', 'rgba(180, 237, 228, .4)', 'rgba(192, 169, 244, .25)'],
 			opts = { zIndex:5, fill:colors[0], scrollables:'#messagescroller', parent:document.getElementById('messagescroller') },
-			$message = $(this),
-			w,
+			$message = $(this), w,
 			ci = -1, // index of the central message among all
-			cid = $message.data('message').id,
-			$messages = $('#messages .message'),
+			cid = $message.data('message').id;
+		if (!cid) return;
+		var $messages = $('#messages .message'),
 			messages = $messages.map(function(i){ var m = $(this).data('message'); if (m.id===cid) ci = i; return m }).get();
 		while (w=wzins.pop()) w.remove();
 		for (var ui=ci, i=ci; i-->0 && messages[ui].repliesTo;) {
