@@ -219,7 +219,7 @@ var miaou = miaou || {};
 	// inserts or updates a message in the main #messages div
 	md.addMessage = function(message){
 		var messages = md.getMessages(), oldMessage,
-			insertionIndex = messages.length, // -1 : insert at begining, i>=0 : insert after i
+			insertionIndex = messages.length - 1, // -1 : insert at begining, i>=0 : insert after i
 			wasAtBottom = isAtBottom(),
 			$md = $('<div>').addClass('message').data('message', message),
 			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
@@ -227,17 +227,26 @@ var miaou = miaou || {};
 			$mc,
 			votesHtml = votesAbstract(message);
 		if (message.id) {
-			$md.attr('mid', message.id)
-			if (messages.length===0 || message.created<messages[0].created) {
-				insertionIndex = -1;
-				// the following line because of the possible special case of a
-				//  pin vote being removed by somebody's else 
-				if (message.vote && !message[message.vote]) delete message.vote;
-			} else {
-				while (insertionIndex && messages[--insertionIndex].created>message.created){};
+			$md.attr('mid', message.id);
+			for (var i=messages.length; i--;) {
+				if (messages[i].id===message.id) {
+					oldMessage = messages[insertionIndex = i];
+					break;
+				}
+				if (messages[i].created>message.created) break;
 			}
-		} else {
-			insertionIndex--;
+			if (!oldMessage) {
+				if (messages.length===0 || message.id<messages[0].id || message.created<messages[0].created) {
+					insertionIndex = -1;
+					// the following line because of the possible special case of a
+					//  pin vote being removed by somebody's else 
+					if (message.vote && !message[message.vote]) delete message.vote;
+				} else {
+					while ( insertionIndex && (messages[insertionIndex-1].id>message.id || messages[insertionIndex-1].created>message.created) ){
+						insertionIndex--;
+					};
+				}
+			}
 		}
 		
 		// updates the link (as reply) to upwards messages
@@ -255,8 +264,7 @@ var miaou = miaou || {};
 			$('.error').remove();
 		}
 		if (~insertionIndex) {
-			if (message.id && messages[insertionIndex].id===message.id) {
-				oldMessage = messages[insertionIndex];
+			if (oldMessage) {
 				if (message.vote === '?') {
 					message.vote = oldMessage.vote;
 				}
