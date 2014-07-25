@@ -8,29 +8,42 @@ exports.commandDescriptions = {}
 exports.configure = function(config, db){
 	var plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) }),
 		helpmess = 'For a detailed help on Miaou, see the [help page]('+server.url('/help')+')\nCommands :';
-	plugins.forEach(function(plugin){
-		if (plugin.registerCommands) plugin.registerCommands(function(name, fun, help){
-			commands[name] = {fun:fun, help:help};
-			exports.commandDescriptions[name] = help;
-			helpmess += '\n* `' + name + '` : ' + help;
-		});
-	});
+
 	db.on(botname).then(db.getBot).then(function(b){ bot = b }).finally(db.off);
-	commands['help'] = {fun:function(cmd, shoe, m){
+	
+	function registerCommand(name, fun, help){
+		commands[name] = {fun:fun, help:help};
+		exports.commandDescriptions[name] = help;
+		helpmess += '\n* `' + name + '` : ' + help;	
+	}
+	plugins.forEach(function(plugin){
+		if (plugin.registerCommands) plugin.registerCommands(registerCommand);
+	});
+
+	registerCommand('help', function(cmd, shoe, m){
 		setTimeout(function(){
 			shoe.botMessage(bot, helpmess);
 		}, 10);
-	}};
-	exports.commandDescriptions['help'] = 'Help';
+	}, 'gives this help');
+	
+	registerCommand('flake', function(cmd, shoe, m, opts){
+		delete m.id; // to prevent injection 
+		opts.nostore = true;
+		m.content = m.content.replace(/^\s*!!flake\s*/,'');
+	}, "sends a flake, a message that won't be saved, only visible by users currently in room");
 }
 
 // may return a promise
 // called with context being a db connection
 exports.onMessage = function(shoe, m){
-	var cmdMatch = m.content.match(/^!!(\w+)/);
+	var opts = {}, cmdMatch = m.content.match(/^!!(\w+)/);
 	if (cmdMatch) {
 		var cmd = cmdMatch[1] ;
-		if (commands[cmd]) return commands[cmd].fun.call(this, cmd, shoe, m);
+		if (commands[cmd] && commands[cmd].fun) {
+			commands[cmd].fun.call(this, cmd, shoe, m, opts);
+			return opts; // most commands can't be chained
+		}
 		else throw ('Command "' + cmd + '" not found');
 	}
+	return opts;
 }

@@ -32,7 +32,7 @@ exports.configure = function(_config, db){
 //  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801,"changed":null,"pin":0,"star":0,"up":0,"down":0,"vote":null,"score":0}
 // lighted :
 //  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801}
-function lighten(obj) {
+function lighten(obj){
 	for (var k in obj) {
 		if (!obj[k]) delete obj[k];
 	}
@@ -316,15 +316,14 @@ function handleUserInRoom(socket, completeUser){
 			}
 			db.on([shoe, m])
 			.spread(commands.onMessage)
-			.then(function(){ return this.storeMessage(m) })
-			.then(function(m){
-				if (m.changed) {
-					m.vote = '?';
-				}
-				shoe.pluginTransformAndSend(m, function(v,m){
+			.then(function(opts){ 
+				return opts.nostore ? m : this.storeMessage(m)
+			}).then(function(m){
+				if (m.changed) m.vote = '?';
+				shoe.pluginTransformAndSend(m, function(v, m){
 					io.sockets.in(roomId).emit(v, lighten(m));
 				});
-				if (m.content){
+				if (m.content && m.id){
 					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
 					if (pings) {
 						pings = pings.map(function(s){ return s.slice(1) });
@@ -347,8 +346,9 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, shoe.publicUser.id, vote.message, vote.level])
 		.spread(db[vote.action==='add'?'addVote':'removeVote'])
 		.then(function(updatedMessage){
-			socket.emit('message', updatedMessage);
-			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(updatedMessage));
+			var lm = lighten(updatedMessage);
+			socket.emit('message', lm);
+			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);
 	}).on('unpin', function(mid){
@@ -356,8 +356,9 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, shoe.publicUser.id, mid])
 		.spread(db.unpin)
 		.then(function(updatedMessage){
-			socket.emit('message', updatedMessage);
-			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(updatedMessage));
+			var lm = lighten(updatedMessage);
+			socket.emit('message', lm);
+			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);		
 	}).on('search', function(search){
@@ -365,7 +366,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, search.pattern, 'english', 20])
 		.spread(db.search)
 		.then(function(results){
-			socket.emit('found', {results:results, search:search});
+			socket.emit('found', {results:results.map(function(m){ return lighten(m) }), search:search});
 		}).finally(db.off);
 	}).on('hist', function(search){
 		if (!shoe.room) return;
