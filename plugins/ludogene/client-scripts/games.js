@@ -93,8 +93,8 @@
 						game = messageGame(m);
 					if (!game) return;
 					var playername = game.players[arg.move.p].name;
-					if (miaou.games[game.type].move($message.find('.content'), m, game, arg.move)) {
-						miaou.touch(m.id, game.players[+!arg.move.p].id===me.id, playername, playername + ' made a move in your Tribo game');
+					if (miaou.games[game.type].move($message.find('.content'), m, game, arg.move) && game.players[+!arg.move.p].id===me.id) {
+						miaou.touch(m.id, true, playername, playername + ' made a move in your Tribo game');
 					}
 				});
 			});
