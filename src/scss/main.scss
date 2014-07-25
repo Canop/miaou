@@ -7,7 +7,7 @@ $mtab-height: 39px;   // height of the top tabs in mobile interface
 $input-height: 80px; // height of input
 $minput-height: 50px; // height of input in mobile interface
 $left-panel-width: 150px;
-$right-panel-width: 320px;
+$right-panel-width: 330px;
 $hist-width: 200px;
 $profile-bg-color: #fffcc5;
 $notifications-bg-color: #fffa9e;
@@ -324,6 +324,7 @@ body.mobile .message .user {
 	img {
 		max-height: 250px;
 	}
+	font-size: 13px;
 }
 .messagemenu {
 	position: absolute;
@@ -539,7 +540,7 @@ body.mobile #inputpanel button {
 }
 h1 {
 	color: #655;
-	font-size: 140%;
+	font-size: 125%;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	a {
@@ -549,11 +550,11 @@ h1 {
 }
 h2 {
 	color: #655;
-	font-size: 120%;
+	font-size: 115%;
 	margin-top: 2px;
 	padding-top: 2px;
 	margin-bottom: 2px;
-	padding-left: 4px;
+	padding-left: 3px;
 }
 h3 {
 	color: #655;
@@ -889,7 +890,7 @@ div.radios {
 }
 #auths {
 	float: right;
-	margin: 1px 10px;
+	margin: 1px 8px 1px 0;
 }
 body.mobile #changeroom, body.mobile #editroom{
 	float: inherit;
@@ -999,6 +1000,7 @@ div.thinMP {
 	display: table;
 	width: 100%;
 	table-layout: fixed;
+	font-size: 13px;
 	.tab {
 		display: table-cell;
 		text-align: center;
