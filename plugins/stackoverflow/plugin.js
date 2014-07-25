@@ -11,8 +11,7 @@ function createSOProfile(user, ppi, vals) {
 	var p = Promise.defer(), num = +vals.so_num;
 	request('http://stackoverflow.com/users/'+num, function(error, res, body){
 		if (!error && res.statusCode===200) {
-			var m, r=/<a[^<>]*href="([^"]+)"[^<>]*>([^<>]+)<\/a>/ig;
-			var found, sm;
+			var found, sm, m, r=/<a[^<>]*href="([^"]+)"[^<>]*>([^<>]+)<\/a>/ig;
 			while (m=r.exec(body)) {
 				if (m[1].indexOf(config.server)==0 && /\bmiaou\b/i.test(m[2])) {
 					if (~m[2].split(/\w/).indexOf(user.name)) {

@@ -2,7 +2,6 @@
 // A valid game (even before accept) is always stored like this :
 //  !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
-// TODO really prevent deletion/edition of games
 var cache = require('bounded-cache')(300);
 
 var gametypes = {
