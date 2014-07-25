@@ -108,7 +108,7 @@ html
 						).append(
 							table(
 								rooms.filter(function(r){
-									return !r.private && (r.lastmessage || r.auth)
+									return !r.private && (r.lastcreated || r.auth)
 								}),
 								"You didn't participate in any public room for now."
 							)
@@ -162,7 +162,7 @@ html
 							table(
 								rooms.filter(function(r){
 									return r.dialog
-								}).sort(function(a,b){ return b.lastmessage-a.lastmessage }),
+								}).sort(function(a,b){ return b.lastcreated-a.lastcreated }),
 								"Dialog rooms are created by sending a Private Message to another user. You have none for now."
 							)
 						)

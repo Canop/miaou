@@ -198,15 +198,15 @@ proto.listAccessibleRooms = function(userId){
 }
 
 // lists the rooms that should make it to the front page
-// fixme : this query is to slow
+// Note : this query is very heavy (about 50ms for a user in many rooms)
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+
-		" (select count (*) from message m where m.room = r.id) as messageCount,"+
-		" (select max (id) from message m where m.room = r.id and m.author=$1) as lastmessage"+
+		" (select count(*) from message m where m.room = r.id) as messageCount,"+
+		" (select max(created) from message m where m.room = r.id and m.author=$1) as lastcreated"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  
 		" where listed is true or auth is not null"+
-		" order by auth desc nulls last, lastmessage desc, private desc, messageCount desc limit 200", [userId]
+		" order by auth desc nulls last, lastcreated desc, private desc, messageCount desc limit 200", [userId]
 	);
 }
 
@@ -448,9 +448,12 @@ proto.fetchUserPings = function(userId){
 }
 
 // returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
-// fixme : this query is to slow
+// fixme : this query is slow (50ms for no record)
 proto.fetchUserPingRooms = function(userId, after){
-	return this.queryRows("select room, max(name) as roomname, min(created) as first, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room", [userId, after]);
+	return this.queryRows(
+		"select room, max(name) as roomname, min(created) as first, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room",
+		[userId, after]
+	);
 }
 
 //////////////////////////////////////////////// #votes
