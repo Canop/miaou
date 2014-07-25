@@ -33,6 +33,7 @@ miaou.editor = (function(){
 				if (stash) $input.val(stash);
 				miaou.editor.cancelEdit();
 			}
+			if ($autocompleter) $autocompleter.remove();
 			miaou.editor.cancelReply();
 			stash = null;
 			miaou.chat.sendMessage(m);
