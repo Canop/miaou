@@ -30,12 +30,12 @@ miaou.userProfile = {
 		} else if (!$message.hasClass('message')) {
 			css.left += 6; css.bottom -= 7;
 		}
-		$p.css(css).appendTo($container);
-		$user.addClass('profiled');
 		var userId, data;
 		if ( (data = $user.data('user')) || (data = $message.data('user')) || (data = $user.closest('.notification').data('user')) ) userId = data.id;
 		else userId = $message.data('message').author;
 		$p.load('publicProfile?user='+userId+'&room='+room.id);		
+		$p.css(css).appendTo($container);
+		$user.addClass('profiled');
 	},
 	// used in chat.jade, chat.mob.jade and auths.jade
 	show: function(){
