@@ -132,10 +132,12 @@ var miaou = miaou || {};
 	}
 
 	md.showHasOlderThan = function(messageId){
+		console.log("md.showHasOlderThan", messageId);
 		$('#messages > .message[mid='+messageId+']').addClass('hasOlder');
 		md.updateOlderAndNewerLoaders();
 	}
 	md.showHasNewerThan = function(messageId){
+		console.log("md.showHasNewerThan", messageId);
 		$('#messages > .message[mid='+messageId+']').addClass('hasNewer');
 		md.updateOlderAndNewerLoaders();
 	}
@@ -249,10 +251,10 @@ var miaou = miaou || {};
 			}
 		}
 		
-		// updates the link (as reply) to upwards messages
-		// To make things simpler, we consider only one link upwards
 		delete message.repliesTo;
 		if (message.content) {
+			// Updates the link (as reply) to upwards messages
+			// To make things simpler, we consider only one link upwards
 			var matches = message.content.match(/^\s*@\w[\w_\-\d]{2,}#(\d+)/);
 			if (matches) message.repliesTo = +matches[1];
 		}
@@ -298,7 +300,6 @@ var miaou = miaou || {};
 		md.showMessageFlowDisruptions();
 		md.updateOlderAndNewerLoaders();
 		if (wasAtBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) md.scrollToBottom();
-		
 	}
 
 	md.showMessageFlowDisruptions = function(){

@@ -9,7 +9,7 @@ var config,
 	parseSignedCookie = connect.utils.parseSignedCookie,
 	io, db,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
-	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
+	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 6, nbMessagesAfterTarget = 6,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
 	socketWaitingApproval = [],
 	commands = require('./commands.js');
