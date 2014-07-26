@@ -14,6 +14,7 @@ miaou.eventIsOver = function(event, o) {
 
 miaou.userProfile = {
 	shownow: function(){
+		if ($('.dialog').length) return;
 		// code in this function is a little messy, partly because it's used in many contexts
 		var $user = $(this).closest('.user'),
 			$message = $user.closest('.message,.notification,.userLine,.access_request'),
