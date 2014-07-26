@@ -319,7 +319,6 @@ function handleUserInRoom(socket, completeUser){
 			.then(function(opts){ 
 				return opts.nostore ? m : this.storeMessage(m)
 			}).then(function(m){
-				if (!m.content) return;
 				if (m.changed) m.vote = '?';
 				shoe.pluginTransformAndSend(m, function(v, m){
 					io.sockets.in(roomId).emit(v, lighten(m));
