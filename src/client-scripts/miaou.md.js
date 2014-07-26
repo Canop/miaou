@@ -228,6 +228,7 @@ var miaou = miaou || {};
 			$decorations = $('<div>').addClass('decorations').appendTo($user),
 			$mc,
 			votesHtml = votesAbstract(message);
+		
 		if (message.id) {
 			$md.attr('mid', message.id);
 			for (var i=messages.length; i--;) {
@@ -235,7 +236,6 @@ var miaou = miaou || {};
 					oldMessage = messages[insertionIndex = i];
 					break;
 				}
-				if (messages[i].created>message.created) break;
 			}
 			if (!oldMessage) {
 				if (messages.length===0 || message.id<messages[0].id || message.created<messages[0].created) {
@@ -299,7 +299,7 @@ var miaou = miaou || {};
 		resize($md, wasAtBottom);
 		md.showMessageFlowDisruptions();
 		md.updateOlderAndNewerLoaders();
-		if (wasAtBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) md.scrollToBottom();
+		if (wasAtBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) md.scrollToBottom();		
 	}
 
 	md.showMessageFlowDisruptions = function(){

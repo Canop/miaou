@@ -10,6 +10,7 @@ var miaou = miaou || {};
 	//  buttons : map name->(func|null)
 	//  cssClass (optional)
 	miaou.dialog = function(options){
+		miaou.userProfile.hide();
 		var $d = $('<div class=dialog/>').hide().addClass(options.cssClass||'small');
 		$d.append($('<div class=dialog_title/>').text(options.title||''));
 		$d.append($('<div class=dialog_content/>').append(options.content));
