@@ -49,8 +49,6 @@ var miaou = miaou || {};
 		})
 		.on('box', md.box)
 		.on('notable_message', md.updateNotableMessages)
-		.on('has_older', md.showHasOlderThan)
-		.on('has_newer', md.showHasNewerThan)
 		.on('request', md.showRequestAccess)
 		.on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
@@ -95,9 +93,7 @@ var miaou = miaou || {};
 		.on('hist', miaou.hist.show)
 		.on('pings', chat.pings)
 		.on('ping', chat.ping)
-		.on('disconnect', function(){
-			console.log('DISCONNECT');
-		})
+		.on('disconnect', function(){ console.log('DISCONNECT') })
 		.on('enter', chat.showEntry)
 		.on('leave', chat.showLeave)
 		.on('miaou.error', md.showError);	

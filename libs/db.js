@@ -312,33 +312,47 @@ proto.checkAuthLevel = function(roomId, userId, minimalLevel){
 
 //////////////////////////////////////////////// #messages
 
-// returns a query object usable for streaming messages for a specific user (including his votes)
-// see calls of this function to see how the additional arguments are used 
-proto.queryMessages = function(roomId, userId, N, chronoOrder){
-	var args = [roomId, userId, N],
-		sql = 'select message.id, author, player.name as authorname, player.bot, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
+// get a sequence of messages.
+// Exemples :
+//  - querying the last messages of the room :
+//     getMessages(roomId, userId, n, false);
+//  - querying at least n messages whose id is older or equal to A but not including B :
+//     getMessages(roomId, userId, n, false, '<', A, '>', B);
+//  - querying messages after A (including it) :
+//     getMessages(roomId, userId, n, false, '>=', A);
+// The last messages may contain the id of the previous or following messages (the one
+//  that we didn't fetch because of N)
+proto.getMessages = function(roomId, userId, N, asc, c1, s1, c2, s2){
+	var args = [roomId, userId, N], messages,
+		sql = 'select message.id, author, player.name as authorname, player.bot, content, message.created as created, message.changed,'+
+		' pin, star, up, down, vote, score from message'+
 		' left join message_vote on message.id=message and message_vote.player=$2'+
 		' inner join player on author=player.id where room=$1';
-	for (var i=0, j=4; arguments[j+1]; i++) {
-		sql += ' and message.id'+arguments[j]+'$'+(j++-i);
-		args.push(arguments[j++]);
+	if (s1) {
+		sql += ' and message.id'+c1+'$4';
+		args.push(s1);
+		if (s2) {
+			sql += ' and message.id'+c2+'$5';
+			args.push(s2);
+		}
 	}
-	sql += ' order by message.id '+ ( chronoOrder ? 'asc' : 'desc') + ' limit $3';
-	return this.client.query(sql, args);
+	sql += ' order by message.id '+ ( asc ? 'asc' : 'desc') + ' limit $3';
+	return this.queryRows(sql, args).then(function(rows){
+		messages = rows;
+		return rows.length<N ? 0 : this.getNextMessageId(roomId, rows[rows.length-1].id, asc);
+	}).then(function(next){
+		if (next) messages[messages.length-1][asc?'next':'prev']=next.mid;
+		return messages;
+	});
 }
 
-// returns a query with the most recent messages of the room
-// If before is provided, then we look for messages older than this (not included)
-// If until is also provided, we don't want to look farther
-proto.queryMessagesBefore = function(roomId, userId, N, before, until){
-	return this.queryMessages(roomId, userId, N, false, '<', before, '>=', until);
-}
-
-// returns a query with the message messageId (if found)
-//  and the following ones up to N ones and up to the one with id before
-// If before is also provided, we don't want to look farther
-proto.queryMessagesAfter = function(roomId, userId, N, messageId, before){
-	return this.queryMessages(roomId, userId, N, true, '>=', messageId, '<=', before);	
+proto.getNextMessageId = function(roomId, mid, asc){
+	return this.queryRow(
+		asc?
+		"select min(id) mid from message where room=$1 and id>$2":
+		"select max(id) mid from message where room=$1 and id<$2",
+		[roomId, mid], false
+	);
 }
 
 proto.getNotableMessages = function(roomId, createdAfter){
@@ -633,9 +647,17 @@ proto.off = function(){
 //  apart if noErrorOnNoRow
 proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
+	var start = Date.now();
 	this.client.query(sql, args, function(err, res){
 		//~ logQuery(sql, args);
+		var end = Date.now();
+		if (end-start>20) {
+			console.log("Slow query (" + (end-start) + " ms) :");
+			logQuery(sql, args);
+		}
 		if (err) {
+			console.log('Error in query:');
+			logQuery(sql, args);
 			resolver.reject(err);
 		} else if (res.rows.length) {
 			resolver.resolve(res.rows[0]);
@@ -659,8 +681,13 @@ proto.queryRows = proto.execute = function(sql, args){
 			console.log("Slow query (" + (end-start) + " ms) :");
 			logQuery(sql, args);
 		}
-		if (err) resolver.reject(err);
-		else resolver.resolve(res.rows);
+		if (err) {
+			console.log('Error in query:');
+			logQuery(sql, args);
+			resolver.reject(err);
+		} else {
+			resolver.resolve(res.rows);
+		}
 	});
 	return resolver.promise.bind(this);
 }

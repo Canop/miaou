@@ -9,7 +9,7 @@ var config,
 	parseSignedCookie = connect.utils.parseSignedCookie,
 	io, db,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
-	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 6, nbMessagesAfterTarget = 6,
+	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
 	socketWaitingApproval = [],
 	commands = require('./commands.js');
@@ -47,7 +47,7 @@ function Shoe(socket, completeUser){
 	this.publicUser = {id:completeUser.id, name:completeUser.name};
 	this.room;
 	this.lastMessageTime;
-	this.db = db; // to be used by plugins or called modules
+	this.db = db;
 	socket['publicUser'] = this.publicUser;
 }
 Shoe.prototype.error = function(err, messageContent){
@@ -66,6 +66,7 @@ Shoe.prototype.pluginTransformAndSend = function(m, sendFun){
 	}, this);
 	sendFun('message', m);
 }
+
 Shoe.prototype.roomSockets = function() {
 	return roomSockets(this.room.id);
 }
@@ -103,7 +104,6 @@ var roomSockets = exports.roomSockets = function(roomId){
 }
 
 var emitToRoom = exports.emitToRoom = function(roomId, key, m){
-	console.log(emitToRoom, roomId, key, m);
 	io.sockets.in(roomId).emit(key, lighten(m));
 }
 
@@ -142,39 +142,11 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
 	});
 }
 
-// emits messages before (not including) beforeId
-//  If beforeId is 0, then we look for the last messages of the room
-// This function must be called on a Con object
-function emitMessagesBefore(shoe, beforeId, untilId, nbMessages){
-	var nbSent = 0, oldestSent, resolver = Promise.defer();
-	this.queryMessagesBefore(shoe.room.id, shoe.publicUser.id, nbMessages, beforeId, untilId).on('row', function(message){
-		shoe.pluginTransformAndSend(message, function(v,m){
-			shoe.emit(v, m);
-		});
-		nbSent++;
-		if (!(message.id>oldestSent)) oldestSent = message.id;
-	}).on('end', function(){
-		if (nbSent===nbMessages) shoe.emit('has_older', oldestSent);
-		resolver.resolve();
+function emitMessages(shoe, asc, N, c1, s1, c2, s2){
+	return this.getMessages(shoe.room.id, shoe.publicUser.id, N, asc, c1, s1, c2, s2)
+	.map(function(m){
+		shoe.pluginTransformAndSend(m, function(v,m){ shoe.emit(v, m) });
 	});
-	return resolver.promise.bind(this);
-}
-
-// emits messages after and including untilId
-// This function must be called on a Con object
-function emitMessagesAfter(shoe, fromId, untilId, nbMessages){
-	var nbSent = 0, youngestSent, resolver = Promise.defer();
-	this.queryMessagesAfter(shoe.room.id, shoe.publicUser.id, nbMessages, fromId, untilId).on('row', function(message){
-		shoe.pluginTransformAndSend(message, function(v,m){
-			shoe.emit(v, m);
-		});
-		nbSent++;
-		if (!(message.id<youngestSent)) youngestSent = message.id;
-	}).on('end', function(){
-		if (nbSent===nbMessages) shoe.emit('has_newer', youngestSent);
-		resolver.resolve();
-	});
-	return resolver.promise.bind(this);
 }
 
 // builds an unpersonnalized message. This avoids requerying the DB for the user
@@ -231,7 +203,7 @@ function handleUserInRoom(socket, completeUser){
 			shoe.room = r;
 			console.log(shoe.publicUser.name, 'enters room', shoe.room.id, ':', shoe.room.name);
 			socket.emit('room', shoe.room).join(shoe.room.id);
-			return emitMessagesBefore.call(this, shoe, null, null, nbMessagesAtLoad)
+			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);
 		}).then(function(){
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
 			socketWaitingApproval.forEach(function(o){
@@ -264,22 +236,16 @@ function handleUserInRoom(socket, completeUser){
 	}).on('get_around', function(data){
 		db.on()
 		.then(function(){
-			return emitMessagesBefore.call(this, shoe, data.target, data.olderPresent, nbMessagesBeforeTarget)
+			return emitMessages.call(this, shoe, false, nbMessagesBeforeTarget+1, '<=', data.target)
 		}).then(function(){
-			return emitMessagesAfter.call(this, shoe, data.target, data.newerPresent, nbMessagesAfterTarget)
+			return emitMessages.call(this, shoe, true, nbMessagesAfterTarget, '>', data.target)
 		}).then(function(){
 			socket.emit('go_to', data.target);
 		}).finally(db.off);
-	}).on('get_older', function(data){
-		db.on()
-		.then(function(){
-			return emitMessagesBefore.call(this, shoe, data.before, data.olderPresent, nbMessagesPerPage)
-		}).finally(db.off);
-	}).on('get_newer', function(data){
-		db.on()
-		.then(function(){
-			return emitMessagesAfter.call(this, shoe, data.after, data.newerPresent, nbMessagesPerPage)
-		}).finally(db.off);
+	}).on('get_older', function(cmd){
+		db.on([shoe, false, nbMessagesPerPage, '<=', cmd.from, '>', cmd.until]).spread(emitMessages).finally(db.off);
+	}).on('get_newer', function(cmd){
+		db.on([shoe, true, nbMessagesPerPage, '>=', cmd.from, '<', cmd.until]).spread(emitMessages).finally(db.off);
 	}).on('message', function(message){
 		if (!shoe.room) { // todo check this is useful and a complete enough solution
 			console.log('no room. Asking client');

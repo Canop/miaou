@@ -120,27 +120,7 @@ var miaou = miaou || {};
 		if (isPageHidden) $page.removeClass('selected');
 		else if (vis()) md.flashRecentNotableMessages();
 	}
-
-	md.updateOlderAndNewerLoaders = function(){
-		$('.olderLoader, .newerLoader').remove();
-		$('#messages > .message.hasOlder').each(function(){
-			$('<div>').addClass('olderLoader').data('mid', this.getAttribute('mid')).text("load older messages").insertBefore(this);
-		});
-		$('#messages > .message.hasNewer').each(function(){
-			$('<div>').addClass('newerLoader').data('mid', this.getAttribute('mid')).text("load newer messages").insertAfter(this);
-		});		
-	}
-
-	md.showHasOlderThan = function(messageId){
-		console.log("md.showHasOlderThan", messageId);
-		$('#messages > .message[mid='+messageId+']').addClass('hasOlder');
-		md.updateOlderAndNewerLoaders();
-	}
-	md.showHasNewerThan = function(messageId){
-		console.log("md.showHasNewerThan", messageId);
-		$('#messages > .message[mid='+messageId+']').addClass('hasNewer');
-		md.updateOlderAndNewerLoaders();
-	}
+		
 
 	md.showError = function(error){
 		console.log('ERROR', error);
@@ -218,6 +198,33 @@ var miaou = miaou || {};
 		if (wasAtBottom) md.scrollToBottom();
 	}
 	
+	
+	function updateLoaders(){
+		$('.loader').remove();
+		var idmap = {}, $messages = $('#messages .message'), messages = [], m;
+		for (var i=0; i<$messages.length; i++) {
+			messages.push(m = $messages.eq(i).data('message'));
+			if (m.id) idmap[m.id] = 1;
+		}
+		for (var i=0; i<$messages.length; i++) {
+			m = messages[i];
+			if (m.prev) {
+				if (idmap[m.prev]) {
+					delete m.prev;
+				} else {
+					$('<div>').addClass('olderLoader loader').attr('mid', m.prev).text("load older messages").insertBefore($messages[i]);
+				}
+			}
+			if (m.next) {
+				if (idmap[m.next]) {
+					delete m.next;
+				} else {
+					$('<div>').addClass('newerLoader loader').attr('mid', m.next).text("load newer messages").insertAfter($messages[i]);
+				}
+			}
+		}
+	}
+	
 	// inserts or updates a message in the main #messages div
 	md.addMessage = function(message){
 		var messages = md.getMessages(), oldMessage,
@@ -228,7 +235,6 @@ var miaou = miaou || {};
 			$decorations = $('<div>').addClass('decorations').appendTo($user),
 			$mc,
 			votesHtml = votesAbstract(message);
-		
 		if (message.id) {
 			$md.attr('mid', message.id);
 			for (var i=messages.length; i--;) {
@@ -244,21 +250,19 @@ var miaou = miaou || {};
 					//  pin vote being removed by somebody's else 
 					if (message.vote && !message[message.vote]) delete message.vote;
 				} else {
-					while ( insertionIndex && (messages[insertionIndex-1].id>message.id || messages[insertionIndex-1].created>message.created) ){
+					while ( insertionIndex && (messages[insertionIndex].id>message.id || messages[insertionIndex].created>message.created) ){
 						insertionIndex--;
 					};
 				}
 			}
-		}
-		
+		}		
 		delete message.repliesTo;
 		if (message.content) {
 			// Updates the link (as reply) to upwards messages
 			// To make things simpler, we consider only one link upwards
 			var matches = message.content.match(/^\s*@\w[\w_\-\d]{2,}#(\d+)/);
 			if (matches) message.repliesTo = +matches[1];
-		}
-				
+		}		
 		if (message.bot) $user.addClass('bot');
 		else chat.topUserList({id: message.author, name: message.authorname});
 		if (message.authorname===me.name) {
@@ -296,9 +300,9 @@ var miaou = miaou || {};
 		if (!$mc) $mc = $('<div>').addClass('content');
 		$mc.appendTo($md);
 		md.render($mc, message, oldMessage);
+		updateLoaders();
 		resize($md, wasAtBottom);
 		md.showMessageFlowDisruptions();
-		md.updateOlderAndNewerLoaders();
 		if (wasAtBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) md.scrollToBottom();		
 	}
 

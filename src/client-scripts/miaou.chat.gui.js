@@ -120,18 +120,16 @@ miaou.bindChatGui = function(){
 		return false;
 	})	
 	.on('click', '.olderLoader', function(){
-		var $this = $(this), mid = +$this.data('mid'), olderPresent = 0;
+		var $this = $(this), mid = +$this.attr('mid'), olderPresent = 0;
 		$this.remove();
-		$('.hasOlder[mid='+mid+']').removeClass('hasOlder');
 		md.getMessages().forEach(function(m){ if (m.id<mid) olderPresent=m.id });
-		miaou.socket.emit('get_older', {before:mid, olderPresent:olderPresent});
+		miaou.socket.emit('get_older', {from:mid, until:olderPresent});
 	})
 	.on('click', '.newerLoader', function(){
-		var $this = $(this), mid = +$this.data('mid'), newerPresent = 0;
+		var $this = $(this), mid = +$this.attr('mid'), newerPresent = 0;
 		$this.remove();
 		md.getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
-		$('.hasOlder[mid='+mid+']').removeClass('hasNewer');
-		miaou.socket.emit('get_newer', {after:mid, newerPresent:newerPresent});
+		miaou.socket.emit('get_newer', {from:mid, until:newerPresent});
 	})
 	.on('click', '.pen', function(){
 		miaou.mh.show($(this).closest('.message').data('message'));
