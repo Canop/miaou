@@ -1,5 +1,4 @@
 var config,
-	Promise = require("bluebird"),
 	path = require('path'),
 	maxContentLength,
 	minDelayBetweenMessages,

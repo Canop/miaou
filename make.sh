@@ -9,7 +9,7 @@ SCSS_SRC_PATH="$ROOT_PATH/src/scss"
 
 # builds the css file from the sass one
 rm $STATIC_PATH/main.css
-sass $SCSS_SRC_PATH/main.scss > $STATIC_PATH/main.css 
+sass -t compressed $SCSS_SRC_PATH/main.scss > $STATIC_PATH/main.css 
 
 # concat plugin css
 cat $ROOT_PATH/plugins/*/css/*.css >> $STATIC_PATH/main.css

@@ -6,6 +6,16 @@ var miaou = miaou || {};
 	function con(){
 		var chat = miaou.chat,
 			md = miaou.md;
+
+		function messageIn(message){
+			if (chat.trigger('incoming_message', message) === false) return;
+			info.nbmessages++;
+			md.addMessage(message);
+			md.updateNotableMessages(message);
+			if (message.created>chat.enterTime && message.content) {
+				miaou.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
+			}
+		}
 		
 		info = { state:'connecting', start:Date.now(), nbmessages:0 };
 		var	socket = miaou.socket = io.connect(location.origin);
@@ -27,14 +37,10 @@ var miaou = miaou || {};
 			socket.emit('enter', room.id);
 			socket.emit('message', unhandledMessage);
 		})
-		.on('message', function(message){
-			if (chat.trigger('incoming_message', message) === false) return;
-			info.nbmessages++;
-			md.addMessage(message);
-			md.updateNotableMessages(message);
-			if (message.created>chat.enterTime && message.content) {
-				miaou.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
-			}
+		.on('message', messageIn)
+		.on('messages', function(messages){
+			// todo : don't repeat things in md.addMessage that should not be repeated
+			for (var i=0; i<messages.length; i++) messageIn(messages[i]);
 		})
 		.on('room', function(r){
 			if (room.id!==r.id) {

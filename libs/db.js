@@ -98,6 +98,8 @@ proto.listRecentUsers = function(roomId, N){
 	);
 }
 
+// returns the name to use in ping autocompletion.
+// note : use index message_author_created_room on message (author, created, room)
 proto.usersStartingWith = function(str, roomId, limit){
 	return this.queryRows(
 		"select name, (select max(created) from message where p.id=author and room=$1) lir," +
