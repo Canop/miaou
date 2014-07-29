@@ -2,12 +2,14 @@ var fs = require("fs"),
 	http = require('http'),
 	path = require('path'),
 	express = require('express'),
+	bodyParser = require('body-parser'),
 	passport = require('passport'),
 	login = require('./login.js'),
 	db = require('./db.js'),
 	naming = require('./naming.js'),
 	baseURL,
-	RedisStore = require('connect-redis')(express),
+	session = require('express-session'),
+	RedisStore = require('connect-redis')(session),
 	sessionStore = new RedisStore({}),
 	oauth2Strategies = {},
 	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i,
@@ -110,22 +112,23 @@ function defineAppRoutes(config){
 
 // starts the whole server, both regular http and websocket
 function startServer(config){
-	var cookieParser = express.cookieParser(config.secret);
+	var cookieParser = require('cookie-parser')(config.secret);
 	app = express();
 	server = http.createServer(app);
-	app.use(express.compress());
+	app.use(require('compression')());
 	app.set('views', path.resolve(__dirname, '..', 'views'));
 	app.set('view engine', 'jade');
 	app.set("view options", { layout: false });
 	app.use('/static', express.static(path.resolve(__dirname, '..', 'static')));
-	app.use(express.json());
-	app.use(express.urlencoded());
+	app.use(bodyParser.json());
+	app.use(bodyParser.urlencoded({ extended:false }));
 	app.use(cookieParser);
-	app.use(express.session({ store: sessionStore }));
+	app.use(session({
+		store: sessionStore, secret: config.secret, saveUninitialized: true, resave: true /* todo test resave false */
+	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
-	app.use(require('./anti-csrf.js')({whitelist:['/upload']}));
-	app.use(app.router);
+	app.use(require('./anti-csrf.js')({ whitelist:['/upload'] }));
 	defineAppRoutes(config);
 	console.log('Miaou server starting on port', config.port);
 	server.listen(config.port);

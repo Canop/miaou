@@ -4,8 +4,6 @@ var config,
 	minDelayBetweenMessages,
 	socketio = require('socket.io'),
 	connect = require('connect'),
-	cookie = require('express/node_modules/cookie'),
-	parseSignedCookie = connect.utils.parseSignedCookie,
 	io, db,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
@@ -405,24 +403,25 @@ function handleUserInRoom(socket, completeUser){
 	socket.emit('ready');
 }
 
-exports.listen = function(server, sessionStore, cookieParser /* not used */, _db){
+exports.listen = function(server, sessionStore, cookieParser, _db){
 	db = _db;
 	io = socketio(server);
-
 	io.use(function(socket, next){
-		if (!socket.request.headers.cookie) {
-			return next(new Error('no cookie in request header'));			
-		}
-		socket.cookie = cookie.parse(socket.request.headers.cookie);
-		if (!socket.cookie || !socket.cookie['connect.sid']) {
-			return next(new Error('no cookie'));
-		}
-		var sessionId = parseSignedCookie(socket.cookie['connect.sid'], config.secret);
-		sessionStore.get(sessionId, function(err, session){
-			socket.session = session;
-			if (!err && !session) err = new Error('session not found');
-			if (err) console.log('ERR in socket authentication :', err);
-			next(err);
+		cookieParser(socket.handshake, {}, function(err){
+			if (err) {
+				console.log("error in parsing cookie");
+				return next(err);
+			}
+			if (!socket.handshake.signedCookies) {
+				console.log("no secureCookies|signedCookies found");
+				return next(new Error("no secureCookies found"));
+			}
+			sessionStore.get(socket.handshake.signedCookies["connect.sid"], function(err, session){
+				socket.session = session;
+				if (!err && !session) err = new Error('session not found');
+				if (err) console.log('ERR in socket authentication :', err);
+				next(err);
+			});
 		});
 	});
 	io.on('connect', function(socket){
