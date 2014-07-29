@@ -81,7 +81,8 @@ div.externalProfile {
 		span.val {
 			margin: 3px;
 			padding-left: 3px;
-			display: inline-block;	
+			display: inline-block;
+			word-break: break-all;
 		}
 	}
 }
