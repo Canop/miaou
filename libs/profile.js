@@ -1,4 +1,4 @@
-var path = require('path.js'),
+var path = require('path'),
 	naming = require('./naming.js'),
 	server = require('./server.js'),
 	blacklist = [],

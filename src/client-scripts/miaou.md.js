@@ -336,14 +336,16 @@ var miaou = miaou || {};
 		if (message.status.answerable) $('<button>').addClass('replyButton').text('reply').prependTo($decs);
 		if (message.old && !message.editable) infos.push('too old to edit');
 		infos.push(miaou.formatRelativeDate((message.created+chat.timeOffset)*1000));
-		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ' +
-			'<a class=link target=_blank href="'+miaou.md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ' + 
-			'<a class=makemwin title="float">&#xe81d;</a> ' + 
-			voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(chat.checkAuth('admin')?0:1).map(function(l){
+		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ';
+		if (message.id) {
+			h += '<a class=link target=_blank href="'+miaou.md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ';
+			h += '<a class=makemwin title="float">&#xe81d;</a> ';
+			h += voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(chat.checkAuth('admin')?0:1).map(function(l){
 				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 			}).join('');
-		if (message.pin>(message.vote=="pin") && chat.checkAuth('admin')) {
-			h += ' - <span class=unpin>unpin</span>';
+			if (message.pin>(message.vote=="pin") && chat.checkAuth('admin')) {
+				h += ' - <span class=unpin>unpin</span>';
+			}
 		}
 		$('<div>').addClass('messagemenu').html(h).appendTo(this);
 	}
