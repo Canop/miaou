@@ -45,7 +45,7 @@ var Tribo = (function(){
 			return lines.length ? lines : null;
 		},
 		encodeMove: function(move){
-			return String.fromCharCode(move.y*10+move.x + (move.p*100) + 40);
+			return String.fromCharCode(move.y*10 + move.x + (move.p*100) + 40);
 		},
 		decodeMove: function(char){
 			var code = char.charCodeAt(0)-40, player = 0;
@@ -108,8 +108,8 @@ var Tribo = (function(){
 				if (x>0 && y<9 && seen[x-1][y+1]<nbmoves) actz(x-1, y+1, zone);
 				if (x<9 && y<9 && seen[x+1][y+1]<nbmoves) actz(x+1, y+1, zone);
 			}
-			for (var x=0; x<10; x++){
-				for (var y=0; y<10; y++){
+			for (var x=0; x<10; x++) {
+				for (var y=0; y<10; y++) {
 					var p = c[x][y];
 					if (p===-1) {
 						if (seen[x][y]<nbmoves) {

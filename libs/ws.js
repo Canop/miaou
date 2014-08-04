@@ -140,9 +140,17 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
 }
 
 function emitMessages(shoe, asc, N, c1, s1, c2, s2){
-	return this.getMessages(shoe.room.id, shoe.publicUser.id, N, asc, c1, s1, c2, s2)
-	.map(function(m){
-		shoe.pluginTransformAndSend(m, function(v,m){ shoe.emit(v, m) });
+	function sendFun(v,m){
+		shoe.emit(v, m);
+	}
+	return this.getMessages(shoe.room.id, shoe.publicUser.id, N, asc, c1, s1, c2, s2).then(function(messages){
+		for (var i=0; i<messages.length; i++) {
+			lighten(messages[i]);
+			for (var j=0; j<onSendMessagePlugins.length; j++) {
+				onSendMessagePlugins[j].onSendMessage(this, messages[i], sendFun);
+			}
+		}
+		shoe.emit('messages', messages);
 	});
 }
 

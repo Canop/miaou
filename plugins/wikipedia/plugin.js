@@ -93,6 +93,7 @@ exports.registerCommands = function(cb){
 //  for representation using the Wikipedia API.
 // Requests are queued and only one at a time is done.
 exports.onSendMessage = function(shoe, m, send){
+	if (!m.content || !m.id) return;
 	m.content.split('\n').filter(function(line){
 		return /^\s*https?:\/\/\w{2}\.wikipedia\.org\/[^ ]*\s*$/.test(line)
 	}).forEach(function(line){

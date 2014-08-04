@@ -7,10 +7,6 @@ var miaou = miaou || {};
 		level = localStorage['notification'];
 	if (!~levels.indexOf(level)) {
 		level = localStorage['notification'] = "none";
-		// compatibility with ancient boolean storage, this will disapear
-		if (localStorage['wantNotifs']==="true") {
-			level = localStorage['notification'] = "silent";
-		}
 	}
 	
 	$(function(){
