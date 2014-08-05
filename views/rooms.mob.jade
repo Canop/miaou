@@ -7,70 +7,114 @@ html
 		link(rel='stylesheet', href='static/main.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 		script(src="static/miaou.min.js")
-	body.home.mobile
-		div#logo
-			img(src="static/Miaou-300-f.png")
-			p.links
-				| You're logged as
-				a.username(href="profile")= user.name
-				br
-				a(id="logout",href="#") Log Out
-				| -
-				a(href="room") Create a room
-				| -
-				a(href="help#About",target=help) Help
-		div#notifs
-			h2 Notifications
-			if pings.length==1
-				p
-					| You've been pinged in room&nbsp;
-					a(href=pings[0].room)= pings[0].roomname
-			else if pings.length
-				p You've been pinged in rooms
-				ul 
-					each ping in pings
-						li
-							a(href=ping.room)= ping.roomname
-			else
-				p None
-		h2 Accessible Private Rooms
-		table.list#privateAccessibleRooms
-		h2 Public Rooms
-		table.list#publicRooms
-		h2 Main Private Rooms
-		table.list#otherPrivateRooms
-		script.
-			var loginRoom = localStorage['login.room'];
-			if (loginRoom) {
-				delete localStorage['login.room'];
-				location = loginRoom;
+		style.
+			body.mobile {
+				padding: 0;
+				overflow-x: hidden;
 			}
-			delete localStorage['room'];
-			
-			!{JSON.stringify(rooms)}.forEach(function(r){
-				var $tr = $('<tr>').append(
-					$('<td>').addClass(r.private?'private':'public').append($('<a>').attr('href',r.path).text(r.name))
-				).append(
-					$('<td>').addClass('rendered').html(miaou.mdToHtml(r.description))
-				);
-				var title;
-				switch(r.auth) {
-				case 'read':
-					title = 'You can only read in this room';
-				case 'read':
-					title = 'You can read and write in this room';
-				case 'admin':
-					title = "You're an administrator of this room : you can change its name and description, give or revoke writing rights, and give admin rights.";
-				case 'own':
-					title = "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights.";
-				}
-				if (r.auth) $tr.append($('<td>').addClass('role').text(r.auth).attr('title', title));
-				$tr.appendTo(r.private ? (r.auth ? '#privateAccessibleRooms' : '#otherPrivateRooms') : '#publicRooms');
-			});
-			$('h2','.CL,.CR').filter(function(){ return !$(this).next('.list').find('tr').length }).hide();
-			
-			$('#logout').click(function(){
-				delete localStorage['successfulLoginLastTime'];
-				setTimeout(function(){ location = 'logout' }, 100);
-			});
+			a {
+				color: black;
+			}
+			#mobtop {
+				position: absolute;
+				z-index: 4;
+				width: 100%;
+				top: 0;
+				overflow-x: hidden;
+			}
+			#logo {
+				text-align: center;
+				line-height: 25px;
+				box-shadow: 0 0 10px black;
+			}
+			#logo img {
+				margin-top: 10px;
+				max-height: 70px;
+			}
+			#logo a {
+				margin: 0 10px;
+			}
+			#notifs {
+				width: 100%;
+				background: #F0EAD6 ;
+				box-shadow: inset 0 0 5px black;
+				padding: 3px;
+			}
+			#mobstrip {
+				position: fixed;
+				top: 0;
+				background: #F0EAD6 ;
+				z-index: 3;
+				right: 0;
+				left: 0;
+			}
+			.mobtabs {
+				display: flex;
+				align-items: stretch;
+				width: 100%;
+				background: #F0EAD6 ;
+				box-shadow: 0 0 10px black;
+				padding: 3px;
+			}
+			.mobtabs .tab {
+				padding: 5px;
+				flex-grow: 1;
+				text-align: center;
+				color: #777;
+			}
+			.mobtabs .tab.selected {
+				color: black;
+			}
+			body.mobile #homemaincontent {
+				position: relative;
+				margin-top: 250px;
+			}
+			h3 {
+				text-align: center;
+			}
+	body.mobile
+		div#mobtop
+			div#logo
+				img(src="static/Miaou-300-f.png")
+				p.links
+					| You're logged as
+					a.username(href="profile")= user.name
+					br
+					a(id="logout",href="#") Log Out
+					| -
+					a(href="room") Create a room
+					| -
+					a(href="help#About",target=help) Help
+			div#notifs
+				if pings.length==1
+					p
+						| You've been pinged in room&nbsp;
+						a(href=pings[0].room)= pings[0].roomname
+				else if pings.length
+					p You've been pinged in rooms
+					ul 
+						each ping in pings
+							li
+								a(href=ping.room)= ping.roomname
+				else
+					p No notification
+			div.mobtabs
+				div.tab Your<br>Rooms
+				div.tab Public<br>Rooms
+				div.tab Private<br>Rooms
+				div.tab Dialog<br>Rooms
+		div#mobstrip
+			div.mobtabs
+				div.tab Your<br>Rooms
+				div.tab Public<br>Rooms
+				div.tab Private<br>Rooms
+				div.tab Dialog<br>Rooms
+		div#homemaincontent
+			div.table
+
+		script.
+			var rooms = !{JSON.stringify(rooms)},
+				langs = !{JSON.stringify(langs)},
+				tabletop = 200;
+		script(src="static/rooms.js")
 

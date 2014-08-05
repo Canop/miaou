@@ -30,6 +30,7 @@ exports.appGet = function(req, res, db){
 			room:room,
 			pluginsToStart:JSON.stringify(clientSidePluginNames)
 		});
+		//~ console.dir(req.session);
 	}).catch(db.NoRowError, function(){
 		// not an error as it happens when there's no room id in url
 		res.redirect(server.url('/rooms'));
