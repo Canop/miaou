@@ -85,19 +85,6 @@ var miaou = miaou || {};
 		});
 	}
 
-	md.flashRecentNotableMessages = function(){
-		var maxAge = 10*24*60*60, $notableMessages = $('#notablemessages .message');
-		if ($notableMessages.length>2) maxAge = Math.max(maxAge/5, Math.min(maxAge, $notableMessages.eq(2).data('message').created));
-		$notableMessages.each(function(){
-			var $m = $(this), m = $m.data('message'), age = (Date.now()/1000 - m.created);
-			if (age<maxAge) {
-				$m.addClass('flash');
-				setTimeout(function(){ $m.removeClass('flash') }, Math.floor((maxAge-age)*4000/maxAge));
-			}
-		});
-		miaou.lastNotableMessagesChangeNotFlashed = false;
-	}
-
 	md.updateNotableMessages = function(message){
 		if (!message.id) return;
 		var yetPresent = false, notableMessages = $('#notablemessages .message').map(function(){
@@ -116,11 +103,8 @@ var miaou = miaou || {};
 			return ((b.pin||0)-(a.pin||0)) || (b.score-a.score + (b.created-a.created)/7000);
 		}).slice(0,12)
 		md.showMessages(notableMessages, $('#notablemessages'));
-		miaou.lastNotableMessagesChangeNotFlashed = true;
 		if (isPageHidden) $page.removeClass('selected');
-		else if (vis()) md.flashRecentNotableMessages();
 	}
-		
 
 	md.showError = function(error){
 		console.log('ERROR', error);
@@ -264,7 +248,7 @@ var miaou = miaou || {};
 			if (matches) message.repliesTo = +matches[1];
 		}		
 		if (message.bot) $user.addClass('bot');
-		else chat.topUserList({id: message.author, name: message.authorname});
+		chat.insertInUserList({id:message.author, name:message.authorname}, message.changed||message.created);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();

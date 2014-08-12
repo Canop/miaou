@@ -54,14 +54,28 @@ miaou.chat = {
 		miaou.touch(0, true, p.m.authorname, p.m.content, p.r);
 	}
 	
-	// put the user at the top of the list
-	chat.topUserList = function(user) {
-		var $u = $user(user);
-		($u.length ? $u :$('<span class=user/>').text(user.name).data('user',user)).prependTo('#users');
+	chat.insertInUserList = function(user, time) {
+		var target, $u = $user(user);
+		if (!time) time = Date.now()/1000|0;
+		if ($u.length) {
+			if (time < $u.data('time')) return $u;
+			$u.detach();
+		} else {
+			$u = $('<span class=user/>').text(user.name).data('user',user);
+		}
+		$u.data('time', time);
+		$('#users .user').each(function(){
+			if ($(this).data('time')<time) {
+				target = this;
+				return false;
+			}
+		});
+		if (target) $u.insertBefore(target);
+		else $('#users').append($u);
+		return $u;
 	}
 	chat.showEntry = function(user){
-		chat.topUserList(user);
-		$user(user).addClass('connected');
+		chat.insertInUserList(user).addClass('connected');
 	}
 	chat.showLeave = function(user){
 		$user(user).removeClass('connected');		
@@ -88,7 +102,6 @@ miaou.chat = {
 						chat.oldestUnseenPing = 0;
 					}
 					miaou.updateTab(0, 0);
-					if (miaou.lastNotableMessagesChangeNotFlashed) md.flashRecentNotableMessages();
 					$('#input').focus();
 				}
 			});
