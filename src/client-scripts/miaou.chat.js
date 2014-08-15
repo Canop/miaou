@@ -58,14 +58,14 @@ miaou.chat = {
 		var target, $u = $user(user);
 		if (!time) time = Date.now()/1000|0;
 		if ($u.length) {
-			if (time < $u.data('time')) return $u;
+			if (time <= $u.data('time')) return $u;
 			$u.detach();
 		} else {
 			$u = $('<span class=user/>').text(user.name).data('user',user);
 		}
 		$u.data('time', time);
 		$('#users .user').each(function(){
-			if ($(this).data('time')<time) {
+			if ($(this).data('time')<=time) {
 				target = this;
 				return false;
 			}
@@ -112,6 +112,18 @@ miaou.chat = {
 			miaou.bindChatGui();
 			md.registerRenderer(function($c, message, oldMessage){
 				if (oldMessage && message.content===oldMessage.content && $c.text().length) return; // mainly to avoid removing boxed content
+				if (!message.content) {
+					$c.empty().closest('.message').addClass('deleted');
+					return true;
+				}
+				var delmatch = message.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/);
+				if (delmatch) {
+					var h = '';
+					if (delmatch[1]) h += ' by <a href=user/'+delmatch[1].slice(3)+' target=profile>an admin</a>'; 
+					if (delmatch[2]) h += ' on ' + miaou.formatTime(+delmatch[2].slice(3)); 
+					$c.html(h).closest('.message').addClass('deleted');
+					return true;
+				}
 				$c.empty().append(message.content ? miaou.mdToHtml(message.content, !!$c.closest('#messages').length, message.authorname) : '')
 			});
 			pluginsToStart.forEach(function(name){

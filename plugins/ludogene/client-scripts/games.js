@@ -76,6 +76,7 @@
 				if (g && g.moves) {
 					status.editable = false;
 					status.deletable = false;
+					status.mod_deletable = false;
 				}
 			});
 			miaou.md.registerRenderer(function($c, m){

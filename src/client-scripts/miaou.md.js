@@ -271,9 +271,7 @@ var miaou = miaou || {};
 		} else {
 			$md.prependTo('#messages');
 		}
-		if (!message.content) {
-			$md.addClass('deleted');
-		} else if (message.changed) {
+		if (message.content && message.changed) {
 			var $pen = $('<div>&#xe80c;</div>').addClass('decoration pen').appendTo($decorations);
 			if (message.previous) $pen.addClass('clickable').attr('title', 'Click for message history');
 		}
@@ -315,7 +313,7 @@ var miaou = miaou || {};
 		var $message = $(this), message = $message.data('message'),
 			infos = [], $decs = $message.find('.decorations');
 		miaou.ms.updateStatus(message);
-		if (message.status.deletable) $('<button>').addClass('deleteButton').text('delete').prependTo($decs);
+		if (message.status.deletable || message.status.mod_deletable) $('<button>').addClass('deleteButton').text('delete').prependTo($decs);
 		if (message.status.editable) $('<button>').addClass('editButton').text('edit').prependTo($decs);
 		if (message.status.answerable) $('<button>').addClass('replyButton').text('reply').prependTo($decs);
 		if (message.old && !message.editable) infos.push('too old to edit');

@@ -403,7 +403,6 @@ proto.getMessage = function(messageId, userId){
 
 // if id is set, updates the message if the author & room matches
 // else stores a message and sets its id
-// TODO add check we're not removing or changing a command ? 
 proto.storeMessage = function(m, dontCheckAge){
 	if (m.id) {
 		var savedAuthorname = m.authorname;

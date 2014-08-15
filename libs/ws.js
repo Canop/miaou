@@ -36,6 +36,14 @@ function lighten(obj){
 	return obj;
 }
 
+function clean(m){
+	lighten(m);
+	if (m.content && /^!!deleted /.test(m.content)) {
+		m.content = m.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/)[0];
+	}
+	return m;
+}
+
 // A shoe embeds a socket and is provided to controlers and plugins.
 // It's kept in memory by the closures of the socket event handlers
 function Shoe(socket, completeUser){
@@ -46,16 +54,14 @@ function Shoe(socket, completeUser){
 	this.lastMessageTime;
 	this.db = db;
 	socket['publicUser'] = this.publicUser;
+	this.emit = function(key, m){ socket.emit(key, clean(m)) };
 }
 Shoe.prototype.error = function(err, messageContent){
 	console.log('ERR', err, 'for user', this.completeUser.name, 'in room', (this.room||{}).name);
 	this.socket.emit('miaou.error', {txt:err.toString(), mc:messageContent});
 }
-Shoe.prototype.emit = function(key, m){
-	this.socket.emit(key, lighten(m));
-}
 Shoe.prototype.emitToRoom = function(key, m){
-	io.sockets.in(this.room.id).emit(key, lighten(m));
+	io.sockets.in(this.room.id).emit(key, clean(m));
 }
 Shoe.prototype.pluginTransformAndSend = function(m, sendFun){
 	onSendMessagePlugins.forEach(function(plugin){
@@ -101,7 +107,7 @@ var roomSockets = exports.roomSockets = function(roomId){
 }
 
 var emitToRoom = exports.emitToRoom = function(roomId, key, m){
-	io.sockets.in(roomId).emit(key, lighten(m));
+	io.sockets.in(roomId).emit(key, clean(m));
 }
 
 var roomIds = exports.roomIds = function(){
@@ -139,15 +145,13 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
 	});
 }
 
+
+
 function emitMessages(shoe, asc, N, c1, s1, c2, s2){
-	function sendFun(v,m){
-		shoe.emit(v, m);
-	}
 	return this.getMessages(shoe.room.id, shoe.publicUser.id, N, asc, c1, s1, c2, s2).then(function(messages){
 		for (var i=0; i<messages.length; i++) {
-			lighten(messages[i]);
 			for (var j=0; j<onSendMessagePlugins.length; j++) {
-				onSendMessagePlugins[j].onSendMessage(this, messages[i], sendFun);
+				onSendMessagePlugins[j].onSendMessage(shoe, messages[i], shoe.emit);
 			}
 		}
 		shoe.emit('messages', messages);
@@ -216,7 +220,7 @@ function handleUserInRoom(socket, completeUser){
 			});
 			return this.getNotableMessages(shoe.room.id, now-maxAgeForNotableMessages);
 		}).then(function(messages){
-			messages.forEach(function(m){ socket.emit('notable_message', lighten(m)) });
+			messages.forEach(function(m){ socket.emit('notable_message', clean(m)) });
 			socket.emit('server_commands', commands.commandDescriptions);
 			socket.emit('welcome');
 			shoe.roomSockets().forEach(function(s){
@@ -234,9 +238,9 @@ function handleUserInRoom(socket, completeUser){
 		db.on(+mid)
 		.then(db.getMessage)
 		.then(function(m){
-				shoe.pluginTransformAndSend(m, function(v,m){
-					shoe.emit(v, lighten(m));
-				});
+			shoe.pluginTransformAndSend(m, function(v,m){
+				shoe.emit(v, clean(m));
+			});
 		}).finally(db.off);
 	}).on('get_around', function(data){
 		db.on()
@@ -251,10 +255,25 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe, false, nbMessagesPerPage, '<=', cmd.from, '>', cmd.until]).spread(emitMessages).finally(db.off);
 	}).on('get_newer', function(cmd){
 		db.on([shoe, true, nbMessagesPerPage, '>=', cmd.from, '<', cmd.until]).spread(emitMessages).finally(db.off);
+	}).on('mod_delete', function(ids){
+		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		db.on(ids)
+		.map(db.getMessage)
+		.map(function(m){
+			var now = (Date.now()/1000|0);
+			m.room = shoe.room.id; // to trigger a security exception if user tried to mod_delete a message of another room
+			m.content = "!!deleted by:" + shoe.publicUser.id + ' on:'+ now + ' ' + m.content;
+			return this.storeMessage(m, true)
+		}).map(function(m){
+			io.sockets.in(shoe.room.id).emit('message', clean(m));
+		}).catch(function(err){
+			shoe.error('error in mod_delete');
+			console.log('error in mod_delete', err);
+		}).finally(db.off);		
 	}).on('message', function(message){
 		if (!shoe.room) { // todo check this is useful and a complete enough solution
 			console.log('no room. Asking client');
-			return socket.emit('get_room', lighten(message));
+			return socket.emit('get_room', message);
 		}
 		message.content = message.content||"";
 		if (typeof message.content !== "string" || !(message.id||message.content)) {
@@ -292,7 +311,7 @@ function handleUserInRoom(socket, completeUser){
 			}).then(function(m){
 				if (m.changed) m.vote = '?';
 				shoe.pluginTransformAndSend(m, function(v, m){
-					io.sockets.in(roomId).emit(v, lighten(m));
+					io.sockets.in(roomId).emit(v, clean(m));
 				});
 				if (m.content && m.id){
 					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
@@ -317,7 +336,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, shoe.publicUser.id, vote.message, vote.level])
 		.spread(db[vote.action==='add'?'addVote':'removeVote'])
 		.then(function(updatedMessage){
-			var lm = lighten(updatedMessage);
+			var lm = clean(updatedMessage);
 			socket.emit('message', lm);
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })
@@ -327,7 +346,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, shoe.publicUser.id, mid])
 		.spread(db.unpin)
 		.then(function(updatedMessage){
-			var lm = lighten(updatedMessage);
+			var lm = clean(updatedMessage);
 			socket.emit('message', lm);
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })
@@ -337,7 +356,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, search.pattern, 'english', 20])
 		.spread(db.search)
 		.then(function(results){
-			socket.emit('found', {results:results.map(function(m){ return lighten(m) }), search:search});
+			socket.emit('found', {results:results.map(function(m){ return clean(m) }), search:search});
 		}).finally(db.off);
 	}).on('hist', function(search){
 		if (!shoe.room) return;

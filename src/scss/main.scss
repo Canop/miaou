@@ -265,7 +265,7 @@ body.mobile #messagescroller {
 }
 .user > button, .decorations > button {
 	text-align:center;
-	padding: 0 8px;
+	padding: 0 5px;
 	margin: 0 3px 0 0;
 	border-radius: 3px;
 	box-shadow: 1px 1px 2px #999;		
@@ -295,12 +295,18 @@ body.mobile .message .user {
 	color: #666;
 	margin-right: 4px;
 }
-.message.deleted .content::before {
+
+.message.deleted .content {
 	font-family: "fontello";
-	content: "\e80d  deleted";
 	color: #666;
 	margin-right: 4px;
 	font-size: 80%;
+	a {
+		color: #666;	
+	}
+	&::before {
+		content: "\e80d  deleted";
+	}
 }
 
 .content img, .rendered img {

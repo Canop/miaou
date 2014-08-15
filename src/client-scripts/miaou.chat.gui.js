@@ -48,6 +48,8 @@ miaou.bindChatGui = function(){
 	.on('click', '.deleteButton', function(){
 		miaou.userProfile.hide();
 		var message = $(this).closest('.message').data('message');
+		miaou.ms.updateStatus(message);
+		var ismoddelete = !message.status.deletable && message.status.mod_deletable;
 		var $content = $('<div>').append(
 			$('<p>').text('Do you want to delete this message ?')
 		).append(
@@ -55,12 +57,21 @@ miaou.bindChatGui = function(){
 		).append(
 			$('<p>').text("This can't be undone.")
 		);
+		
+		if (ismoddelete) {
+			$('<p>').addClass('warning')
+			.text("Warning : You're not about to delete one of your recent messages but to use your moderator powers. Don't do that lightly.")
+			.appendTo($content);
+		}
 		miaou.dialog({
 			title: "Last warning before nuke",
 			content: $content,
 			buttons: {
 				Cancel: null,
-				Delete: function(){ miaou.socket.emit('message', {id:message.id, content:''}) }
+				Delete: function(){
+					if (ismoddelete) miaou.socket.emit('mod_delete', [message.id]);
+					else miaou.socket.emit('message', {id:message.id, content:''});
+				}
 			}
 		});
 	})
