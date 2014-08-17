@@ -1,4 +1,5 @@
 var path = require('path'),
+	Promise = require("bluebird"),
 	server = require('./server.js'),
 	bot, botname = "miaou.help",
 	commands = {};
@@ -37,14 +38,11 @@ exports.configure = function(config, db){
 // may return a promise
 // called with context being a db connection
 exports.onMessage = function(shoe, m){
-	var opts = {}, cmdMatch = m.content.match(/^!!(\w+)/);
-	if (cmdMatch) {
-		var cmd = cmdMatch[1] ;
-		if (commands[cmd] && commands[cmd].fun) {
-			commands[cmd].fun.call(this, cmd, shoe, m, opts);
-			return opts; // most commands can't be chained
-		}
-		else throw ('Command "' + cmd + '" not found');
-	}
-	return opts;
+	var cmdMatch = m.content.match(/^!!(\w+)/);
+	if (!cmdMatch) return {};	
+	var opts = {}, cmd = cmdMatch[1] ;
+	if (!commands[cmd] || !commands[cmd].fun) throw 'Command "' + cmd + '" not found';
+	return Promise.resolve(commands[cmd].fun.call(this, cmd, shoe, m, opts)).then(function(){
+		return opts;
+	});
 }

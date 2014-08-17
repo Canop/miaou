@@ -57,7 +57,8 @@ function Shoe(socket, completeUser){
 	this.emit = function(key, m){ socket.emit(key, clean(m)) };
 }
 Shoe.prototype.error = function(err, messageContent){
-	console.log('ERR', err, 'for user', this.completeUser.name, 'in room', (this.room||{}).name);
+	console.log('Error for user', this.completeUser.name, 'in room', (this.room||{}).name);
+	console.log(err.stack || err);
 	this.socket.emit('miaou.error', {txt:err.toString(), mc:messageContent});
 }
 Shoe.prototype.emitToRoom = function(key, m){
