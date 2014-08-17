@@ -355,8 +355,10 @@ function handleUserInRoom(socket, completeUser){
 		if (!shoe.room) return;
 		db.on([shoe.room.id, search.pattern, 'english', 20])
 		.spread(db.search)
+		.filter(function(m){ return !/^!!deleted /.test(m.content) })
+		.map(function(m){ return lighten(m) })
 		.then(function(results){
-			socket.emit('found', {results:results.map(function(m){ return clean(m) }), search:search});
+			socket.emit('found', {results:results, search:search});
 		}).finally(db.off);
 	}).on('hist', function(search){
 		if (!shoe.room) return;

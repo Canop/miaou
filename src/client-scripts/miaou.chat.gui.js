@@ -166,10 +166,21 @@ miaou.bindChatGui = function(){
 		.on('mouseleave', '.user', md.hideUserHoverButtons);
 	}
 	
-	$('#notablemessages, #searchresults').on('click', '.message', function(e){
-		md.focusMessage(+$(this).attr('mid'));
-		e.stopPropagation();			
-	}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
+	(function(){
+		var timer;
+		$('#notablemessages, #searchresults').on('click', '.message', function(e){
+			var $this = $(this);
+			$this.closest('#notablemessages, #searchresults').find('.message.selected').removeClass('selected');
+			md.focusMessage(+$this.addClass('selected').attr('mid'));
+			e.stopPropagation();
+			if ($this.closest('#notablemessages').length) {
+				clearTimeout(timer);
+				timer = setTimeout(function(){ $this.removeClass('selected') }, 2000);
+			} else {
+				$('#searchInput').focus();
+			}
+		}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
+	})();
 
 	if (chat.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });
 	else $('#editroom').hide();
@@ -189,22 +200,7 @@ miaou.bindChatGui = function(){
 	$('#input').on('change keyup', function(){
 		$('#preview').html(miaou.mdToHtml(this.value, false, me.name));
 	});
-	
-	$('#searchInput').on('keyup', function(e){
-		if (e.which===27 && typeof tab === "function") { // escape
-			tab("notablemessagespage");
-			return false;
-		}
-		var pat = this.value.trim();
-		if (pat) {
-			miaou.socket.emit('search', {pattern:pat});
-			miaou.hist.search(pat);
-		} else {
-			$('#searchresults').empty();
-			miaou.hist.clearSearch();
-		}
-	});
-	
+		
 	// When the window is resized, all the messages have to be resized too.
 	$(window).on('resize', md.resizeAll);
 	

@@ -6,6 +6,28 @@ var miaou = miaou || {};
 	
 	var currentPattern; // as the xhr-pulling flavour of socket.io doesn't handle callbacks, we have to store the currently searched pattern
 	
+	// arg : +1 or -1
+	function moveSelect(d){
+		var i, $s = $('#searchresults .message.selected');
+		if ($s.length) {
+			i = $s.removeClass('selected').index() + d;
+		} else {
+			if (d<0) return;
+			i = 0;
+		}
+		var $selected = $('#searchresults .message').eq(i).addClass('selected');
+		if ($selected.length) {
+			miaou.md.focusMessage(+$selected.attr('mid'));
+			var mtop = $selected.offset().top,
+				$scroller = $('#right'), stop = $scroller.offset().top, sst = $scroller.scrollTop();
+			if (mtop<stop+sst) {
+				$scroller.scrollTop(mtop-stop+-25);
+			} else if (mtop+$selected.height()+sst>stop+$scroller.height()) {
+				$scroller.scrollTop(mtop+$selected.height()+sst-$scroller.height()+15);
+			}			
+		}
+	}
+	
 	$(function(){
 		$('#hist').on('click', '[m]', function(){
 			miaou.md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
@@ -18,6 +40,30 @@ var miaou = miaou || {};
 		}).on('mouseleave', '[m]', function(){
 			$('#hist .bubble').remove();
 		});
+
+		$('#searchInput').on('keyup', function(e){
+			if (e.which===27 && typeof tab === "function") { // esc
+				tab("notablemessagespage"); // tab is defined in chat.jade
+				$('#input').focus();
+				return false;
+			}
+			if (e.which==38) { // up arrow
+				moveSelect(-1);
+			} else if (e.which==40) { //down arrow
+				moveSelect(1);
+			}
+			var pat = this.value.trim();
+			if (pat) {
+				if (pat===currentPattern) return;
+				miaou.socket.emit('search', {pattern:pat});
+				mh.search(pat);
+			} else {
+				$('#searchresults').empty();
+				mh.clearSearch();
+			}
+		});
+
+
 	});
 
 	mh.open = function(){
@@ -28,13 +74,14 @@ var miaou = miaou || {};
 	mh.close = function(){
 		$('#hist').hide();
 	}
-	
+
 	mh.search = function(pattern) {
 		if (!$('#hist').length) return;
 		currentPattern = pattern;
 		miaou.socket.emit('hist', {pattern:pattern});
 	}
 	
+	// display search results sent by the server
 	mh.show = function(res){
 		if (res.search.pattern !== currentPattern) {
 			console.log('received histogram of another search', $('#searchInput').val().trim(), res);
@@ -43,6 +90,7 @@ var miaou = miaou || {};
 		var records = res.hist, d = records[0].d, n = records[records.length-1].d - d,
 			$hist = $('#hist'), maxn = 0, logmaxn,
 			$month, lastMonth;
+		$('#searchresults .message.selected').removeClass('selected');
 		records.forEach(function(r){
 			maxn = Math.max(maxn, r.n);
 		});

@@ -318,6 +318,8 @@ body.mobile .message .user {
 #searchresults .content img, #notablemessages .content img, table.list .rendered img {
 	max-height: 70px;
 }
+
+
 #roomdescription {
 	padding: 5px;
 	img {
@@ -385,8 +387,14 @@ body.mobile .messagemenu .vote {
 		padding: 2px 2px 2px 6px;
 		border-bottom: thin dashed #aaa;
 		&:hover {
-			background: lighten($bg-color, 19%);
+			background: lighten($bg-color, 4%);
+			transition: background 0.2s;
 		}
+		&.selected {
+			background: lighten($bg-color, 23%);		
+			transition: background 0.2s;
+		}
+		transition: background 0.6s;
 	}
 	.message {
 		cursor: pointer;
