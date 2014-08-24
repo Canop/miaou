@@ -137,6 +137,18 @@ function popon(arr, filter, act){
 	if (act) matches.forEach(act);
 }
 
+// closes all sockets from a user in a given room
+exports.throwOut = function(userId, roomId, text){
+	var clients = io.sockets.adapter.rooms[roomId];;
+	for (var clientId in clients) {
+		var socket = io.sockets.connected[clientId];
+		if (socket.publicUser && socket.publicUser.id===userId) {
+			if (text) socket.emit('miaou.error', text);
+			socket.disconnect('unauthorized');
+		}
+	}
+}
+
 // granted : true if it's an approval, false in other cases
 exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
 	popon(socketWaitingApproval, function(o){
@@ -145,8 +157,6 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
 		o.socket.emit('request_outcome', {granted:granted, message:message})
 	});
 }
-
-
 
 function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 	return this.getMessages(shoe.room.id, shoe.publicUser.id, N, asc, c1, s1, c2, s2).then(function(messages){
@@ -209,7 +219,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.fetchRoomAndUserAuth)
 		.then(function(r){
-			if (r.private && !r.auth) throw new Error('Unauthorized user');
+			if (r.private && !r.auth) throw new Error('Unauthorized user'); // FIXME don't fill the logs with those errors that can come very fast in case of pulling
 			shoe.room = r;
 			console.log(shoe.publicUser.name, 'enters room', shoe.room.id, ':', shoe.room.name);
 			socket.emit('room', shoe.room).join(shoe.room.id);

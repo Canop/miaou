@@ -102,7 +102,14 @@ var miaou = miaou || {};
 		.on('disconnect', function(){ console.log('DISCONNECT') })
 		.on('enter', chat.showEntry)
 		.on('leave', chat.showLeave)
-		.on('miaou.error', md.showError);	
+		.on('miaou.error', md.showError)
+		.on('error', function(err){
+			// in case of a user having lost his rights, we don't want him to constantly try to connect
+			socket.disconnect();
+			console.log('ERROR', err);
+			md.showError(err);
+			md.showError("A fatal error occurred, you're disconnected from the server (you might try refreshing the page)");
+		});
 	}
 
 	miaou.startChatWS = function(){

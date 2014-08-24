@@ -26,12 +26,12 @@ exports.appGetAuths = function(req, res, db){
 			room
 		];
 	}).spread(function(auths, requests, recentUsers, room) {
-		var authorizedUsers = {}, unauthorizedUsers = [];
-		auths.forEach(function(a){
-			authorizedUsers[a.player] = true;
+		var dontlistasrecent = {}, unauthorizedUsers = [];
+		auths.concat(requests).forEach(function(a){
+			dontlistasrecent[a.player] = true;
 		});
 		recentUsers.forEach(function(u){
-			if (!authorizedUsers[u.id]) unauthorizedUsers.push(u);
+			if (!dontlistasrecent[u.id]) unauthorizedUsers.push(u);
 		});
 		res.render('auths.jade', { room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers });
 	}).catch(db.NoRowError, function(){
@@ -53,7 +53,6 @@ exports.appPostAuths = function(req, res, db){
 			return server.renderErr(res, "Admin auth is required");
 		}
 		var m, actions = [];
-		console.dir(req.body);
 		for (var key in req.body){
 			if (m = key.match(/^answer_request_(\d+)$/)) {
 				var accepted = req.body[key]==='grant', modifiedUserId = +m[1],
@@ -69,8 +68,14 @@ exports.appPostAuths = function(req, res, db){
 				if (req.body[key]!='none') actions.push({cmd:'insert_auth', auth:req.body[key], user:+m[1]});
 			} else if (m = key.match(/^change_auth_(\d+)$/)) {
 				var new_auth = req.body[key], modifiedUserId = +m[1];
-				if (new_auth==='none') actions.push({cmd:'delete_auth', user:modifiedUserId});
-				else actions.push({cmd:'update_auth', user:modifiedUserId, auth:new_auth});
+				if (new_auth==='none') {
+					actions.push({cmd:'delete_auth', user:modifiedUserId});
+					if (r.private) {
+						ws.throwOut(modifiedUserId, r.id, 'Your rights to this room have been revoked');
+					}
+				} else {
+					actions.push({cmd:'update_auth', user:modifiedUserId, auth:new_auth});
+				}
 			}
 		}
 		return this.changeRights(actions, req.user.id, r);

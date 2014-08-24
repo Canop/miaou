@@ -19,9 +19,9 @@ module.exports = function(options){
 		if (!session.secret) session.secret = (Math.random()*Math.pow(36,5)|0).toString(36);
 		if (req.method==='POST' && !whitemap[req.path]) {
 			var refererHost = (req.headers.referer||'').match(/^https?:\/\/([^\/\:]+)/)[1];
-			if (req.param('secret')!==session.secret || refererHost!=req.host) {
+			if (req.param('secret')!==session.secret || refererHost!=req.hostname) {
 				console.log('Anti-csrf rejects this form');
-				console.log('req.host:', req.host);
+				console.log('req.host:', req.hostname);
 				console.log('referer:', req.headers.referer);
 				console.log('Session:', session);
 				res.send(403, "There was a security problem, this request can't be processed.");
