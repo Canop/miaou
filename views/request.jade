@@ -2,6 +2,7 @@ doctype html
 html
 	head
 		title Miaou - Request Room Access
+		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
@@ -9,9 +10,8 @@ html
 		script(src="static/miaou.min.js")
 	body.logo
 		div.dialog.intro
-			div.dialog_title Request Room Access
+			div.dialog_title= room.name
 			div.dialog_content
-				h2= room.name
 				p This room is private.
 				p In order to enter, you must be authorized by a room admin. The best is to request an access using the button below.
 				if lastAccessRequest && lastAccessRequest.deny_message
@@ -27,6 +27,8 @@ html
 				button#request Request Access
 
 		script.
+			if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent)) $(document.body).addClass('mobile');
+
 			var room = !{JSON.stringify(room)};
 			$('.rendered').html(function(_,h){ return miaou.mdToHtml(h) });
 			$('#cancel').click(function(){ location="rooms" });
