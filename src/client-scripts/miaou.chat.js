@@ -11,11 +11,6 @@ miaou.chat = {
 };
 
 (function(chat){
-	var levels = ['read', 'write', 'admin', 'own'];
-
-	function $user(user){
-		return $('#users .user').filter(function(){ return $(this).data('user').id===user.id });
-	}
 	
 	chat.clearPings = function() {
 		// clear the pings of the current room and ask for the ones of the other rooms
@@ -54,41 +49,7 @@ miaou.chat = {
 		miaou.touch(0, true, p.m.authorname, p.m.content, p.r);
 	}
 	
-	chat.insertInUserList = function(user, time) {
-		var target, $u = $user(user);
-		if (!time) time = Date.now()/1000|0;
-		if ($u.length) {
-			if (time <= $u.data('time')) return $u;
-			$u.detach();
-		} else {
-			$u = $('<span class=user/>').text(user.name).data('user',user);
-		}
-		$u.data('time', time);
-		$('#users .user').each(function(){
-			if ($(this).data('time')<=time) {
-				target = this;
-				return false;
-			}
-		});
-		if (target) $u.insertBefore(target);
-		else $('#users').append($u);
-		return $u;
-	}
-	chat.showEntry = function(user){
-		chat.insertInUserList(user).addClass('connected');
-	}
-	chat.showLeave = function(user){
-		$user(user).removeClass('connected');		
-	}
-		
-	// returns true if the user's authorization level in room is at least the passed one
-	chat.checkAuth = function(auth) {
-		for (var i=levels.length; i-->0;) {
-			if (levels[i]===room.auth) return true;
-			if (levels[i]===auth) return false;
-		}
-		return false;
-	}
+
 
 	chat.start = function(){		
 		var md = miaou.md;

@@ -162,8 +162,8 @@ miaou.bindChatGui = function(){
 		.on('mouseleave', '.user', function(e){
 			if (!miaou.eventIsOver(e, $('.profile'))) miaou.userProfile.hide();
 		});
-		$('#users').on('mouseenter', '.user', md.showUserHoverButtons)
-		.on('mouseleave', '.user', md.hideUserHoverButtons);
+		$('#users').on('mouseenter', '.user', miaou.usr.showUserHoverButtons)
+		.on('mouseleave', '.user', miaou.usr.hideUserHoverButtons);
 	}
 	
 	(function(){
@@ -182,7 +182,7 @@ miaou.bindChatGui = function(){
 		}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
 	})();
 
-	if (chat.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });
+	if (miaou.usr.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });
 	else $('#editroom').hide();
 	$('#auths').click(function(){ location = 'auths?id='+room.id });			
 			

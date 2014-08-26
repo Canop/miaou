@@ -245,6 +245,15 @@ body.mobile #messagescroller {
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-end;
+	button {
+		text-align: center;
+		padding: 0 3px;
+		margin: 0 3px 0 0;
+		border-radius: 3px;
+		box-shadow: 1px 1px 2px #999;		
+		font-size: 10px;
+		line-height: 14px;
+	}
 	.decoration {
 		font-family: "fontello";
 		margin: 2px;
@@ -255,24 +264,6 @@ body.mobile #messagescroller {
 			color: #444;
 			cursor: pointer;
 		}
-	}
-}
-.user > button {
-	position: absolute;
-	z-index: 7;
-	right: 15px;
-	top: calc(50% - 8px);
-}
-.user > button, .decorations > button {
-	text-align:center;
-	padding: 0 3px;
-	margin: 0 3px 0 0;
-	border-radius: 3px;
-	box-shadow: 1px 1px 2px #999;		
-	font-size: 10px;
-	line-height: 14px;
-	&.pmButton { // dirty 
-		right: 60px;
 	}
 }
 
@@ -981,6 +972,7 @@ div.thinMP {
 	body.logo {
 		background:$bg-color url(Miaou-300-f.png) center no-repeat;
 		background-position: 50% 1px;
+		background-size: 50%;
 	}
 }
 @media (min-height: 800px) {

@@ -66,7 +66,7 @@ var miaou = miaou || {};
 			info.state = 'connected';
 			if (location.hash) md.focusMessage(+location.hash.slice(1));
 			else md.scrollToBottom();
-			chat.showEntry(me);
+			miaou.usr.showEntry(me);
 		})
 		.on('invitation', function(invit){
 			var $md = $('<div>').html(
@@ -100,8 +100,8 @@ var miaou = miaou || {};
 		.on('pings', chat.pings)
 		.on('ping', chat.ping)
 		.on('disconnect', function(){ console.log('DISCONNECT') })
-		.on('enter', chat.showEntry)
-		.on('leave', chat.showLeave)
+		.on('enter', miaou.usr.showEntry)
+		.on('leave', miaou.usr.showLeave)
 		.on('miaou.error', md.showError)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect

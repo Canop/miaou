@@ -125,7 +125,7 @@ var miaou = miaou || {};
 		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>.";
 		var $md = $('<div>').html(h).addClass('notification').data('user', ar.user).appendTo('#messages');
 		$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
-		if (chat.checkAuth('admin')) {
+		if (miaou.usr.checkAuth('admin')) {
 			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
 			if (!vis()) miaou.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
 		}
@@ -248,7 +248,7 @@ var miaou = miaou || {};
 			if (matches) message.repliesTo = +matches[1];
 		}		
 		if (message.bot) $user.addClass('bot');
-		chat.insertInUserList({id:message.author, name:message.authorname}, message.changed||message.created);
+		miaou.usr.insertInUserList({id:message.author, name:message.authorname}, message.changed||message.created);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -322,10 +322,10 @@ var miaou = miaou || {};
 		if (message.id) {
 			h += '<a class=link target=_blank href="'+miaou.md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ';
 			h += '<a class=makemwin title="float">&#xe81d;</a> ';
-			h += voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(chat.checkAuth('admin')?0:1).map(function(l){
+			h += voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(miaou.usr.checkAuth('admin')?0:1).map(function(l){
 				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 			}).join('');
-			if (message.pin>(message.vote=="pin") && chat.checkAuth('admin')) {
+			if (message.pin>(message.vote=="pin") && miaou.usr.checkAuth('admin')) {
 				h += ' - <span class=unpin>unpin</span>';
 			}
 		}
@@ -336,21 +336,6 @@ var miaou = miaou || {};
 	}
 	md.toggleMessageMenus = function(){
 		($('.messagemenu, .editButton, .replyButton, .deleteButton', this).length ? md.hideMessageMenus : md.showMessageMenus).call(this);
-	}
-
-	md.showUserHoverButtons = function(){
-		var user = $(this).data('user');
-		if (user.name===me.name) return;
-		$('<button>').addClass('pingButton').text('ping').click(function(){
-			miaou.editor.ping(user.name);
-		}).appendTo(this);
-		$('<button>').addClass('pmButton').text('pm').click(function(){
-			miaou.pmwin = window.open(); // not so clean...
-			miaou.socket.emit('pm', user.id);			
-		}).appendTo(this);
-	}
-	md.hideUserHoverButtons = function(){
-		$('.pingButton,.pmButton').remove();
 	}
 
 	md.goToMessageDiv = function(messageId){
