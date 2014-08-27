@@ -1,4 +1,3 @@
-var miaou = miaou || {};
 
 // converts from the message exchange format (mainly a restricted set of Markdown) to HTML
 miaou.mdToHtml = function(md, withGuiFunctions, username){

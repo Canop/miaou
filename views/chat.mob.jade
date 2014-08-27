@@ -3,7 +3,7 @@ html
 	head
 		title Miaou
 		meta(name="viewport",content="initial-scale=1,maximum-scale=1")
-		link(rel="icon",type="image/png",href="static/M-32.png")
+		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet',href='static/main.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 		script(src="static/socket.io.min.js")
@@ -69,5 +69,7 @@ html
 			$('#editProfile').click(function(){
 				location = 'profile';
 			});
-			miaou.chat.start();
-
+			
+			miaou(function(chat){
+				chat.start();
+			});

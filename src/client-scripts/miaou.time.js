@@ -1,7 +1,5 @@
 // simple functions for time displaying
 
-var miaou = miaou || {};
-
 miaou.MMM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 miaou.formatDateDDMMM = function(date){

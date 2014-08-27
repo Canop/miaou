@@ -1,5 +1,4 @@
 // functions related to user profile displaying on hover
-var miaou = miaou || {};
 
 miaou.eventIsOver = function(event, o) {
 	if (!o.length) return false;
@@ -12,8 +11,8 @@ miaou.eventIsOver = function(event, o) {
 	);
 }
 
-miaou.userProfile = {
-	shownow: function(){
+miaou(function(prof){
+	prof.shownow = function(){
 		if ($('.dialog').length) return;
 		// code in this function is a little messy, partly because it's used in many contexts
 		var $user = $(this).closest('.user'),
@@ -37,18 +36,21 @@ miaou.userProfile = {
 		$p.load('publicProfile?user='+userId+'&room='+room.id);		
 		$p.css(css).appendTo($container);
 		$user.addClass('profiled');
-	},
+	};
+	
 	// used in chat.jade, chat.mob.jade and auths.jade
-	show: function(){
-		miaou.userProfile.hide();
-		miaou.profileTimer = setTimeout(miaou.userProfile.shownow.bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
-	},
-	hide: function(){
+	prof.show = function(){
+		prof.hide();
+		miaou.profileTimer = setTimeout(prof.shownow.bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
+	};
+	
+	prof.hide = function(){
 		clearTimeout(miaou.profileTimer);
 		$('.profile').remove();
 		$('.user').removeClass('profiled');
-	},
-	toggle: function(){
-		miaou.userProfile[$('.profile').length ? 'hide' : 'show'].call(this);
-	}
-}
+	};
+	
+	prof.toggle = function(){
+		prof[$('.profile').length ? 'hide' : 'show'].call(this);
+	};
+});

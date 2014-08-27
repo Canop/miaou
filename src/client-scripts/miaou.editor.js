@@ -1,7 +1,6 @@
-// Handles the message editor
+// Handles the message ed
 
-var miaou = miaou || {};
-miaou.editor = (function(){
+miaou(function(ed, chat, md, ms, ws){
 
 	var $input, input,
 		replyRegex = /@(\w[\w_\-\d\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
@@ -31,12 +30,12 @@ miaou.editor = (function(){
 				$('#cancelEdit').hide();
 				$('#help').show();
 				if (stash) $input.val(stash);
-				miaou.editor.cancelEdit();
+				ed.cancelEdit();
 			}
 			if ($autocompleter) $autocompleter.remove();
-			miaou.editor.cancelReply();
+			ed.cancelReply();
 			stash = null;
-			miaou.chat.sendMessage(m);
+			chat.sendMessage(m);
 			$('#preview').html('');
 			if (!$(document.body).hasClass('mobile')) $input.focus();
 		}
@@ -59,12 +58,12 @@ miaou.editor = (function(){
 			$autocompleter = null;
 		}
 		var acname = getacname();
-		if (acname) return miaou.socket.emit('autocompleteping', acname);
+		if (acname) return ws.emit('autocompleteping', acname);
 		var accmd = getaccmd();
 		if (accmd) {
 			savedValue = input.value;
 			$autocompleter = $('<div id=autocompleter/>').prependTo('#inputpanel');
-			Object.keys(miaou.chat.commands).filter(function(n){
+			Object.keys(chat.commands).filter(function(n){
 				return !n.indexOf(accmd)
 			}).forEach(function(name){
 				$('<span>').text(name).appendTo($autocompleter).click(function(){
@@ -85,8 +84,8 @@ miaou.editor = (function(){
 	// dif : +1 or -1
 	function editPreviousOrNext(dif) {
 		var index = -1;
-		var	myMessages = miaou.md.getMessages().filter(function(m){
-			miaou.ms.updateStatus(m);
+		var	myMessages = md.getMessages().filter(function(m){
+			ms.updateStatus(m);
 			return m.status.editable;
 		});
 		if (editedMessage) {
@@ -107,12 +106,12 @@ miaou.editor = (function(){
 			index = myMessages.length-1;
 		}
 		if (indexBefore === index) return;
-		if (~index) miaou.editor.editMessage($('#messages .message[mid='+myMessages[index].id+']'));
-		else miaou.editor.cancelEdit();
+		if (~index) ed.editMessage($('#messages .message[mid='+myMessages[index].id+']'));
+		else ed.cancelEdit();
 	}
 
 	function replyPreviousOrNext(dif) {
-		var	messages = miaou.md.getMessages().filter(function(m){
+		var	messages = md.getMessages().filter(function(m){
 			return m.id && m.author !== me.id && !(editedMessage && m.id>editedMessage.id);
 		}), index = -1, m = input.value.match(replyRegex);
 		if (m) {
@@ -134,8 +133,8 @@ miaou.editor = (function(){
 			index = messages.length-1;
 		}
 		if (indexBefore === index) return;
-		if (~index) miaou.editor.replyToMessage($('#messages .message[mid='+messages[index].id+']'));
-		else miaou.editor.cancelReply();
+		if (~index) ed.replyToMessage($('#messages .message[mid='+messages[index].id+']'));
+		else ed.cancelReply();
 	}
 	
 	// sets or unsets the reply wzin depending on the message
@@ -167,244 +166,247 @@ miaou.editor = (function(){
 		}
 	}
 	
-	return {
-		// prepare #input to emit on the provided socket
-		init: function(){
-			$input = $('#input');
-			input = $input[0];
-			$input.on('keydown', function(e){
-				if (e.ctrlKey && !e.shiftKey) {
-					var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;
-					switch(e.which){
-					case 75: // ctrl - K : toggle code
-						if (sp===ep) {
-							$input.selectLines().replaceSelection(toggleLinesCode);
-							this.selectionStart = this.selectionEnd;
-						} else if (~val.slice(sp, ep+1).indexOf('\n')) {
-							$input.selectLines().replaceSelection(toggleLinesCode);
-						} else {
-							$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
-						}
-						return false;
-					case 81: // ctrl - Q : toggle citation
-						$input.selectLines().replaceSelection(toggleLinesCitation);
-						if (sp===ep) this.selectionStart = this.selectionEnd;
-						return false;
-					case 76: // ctrl - L : make link
-						miaou.dialog({
-							title: 'Insert Hyperlink',
-							content: 'URL : <input id=newlinkhref style="width:82%">',
-							buttons: {
-								Cancel: null,
-								Insert: insertLink
-							}
-						});
-						$('#newlinkhref').focus().on('keyup', function(e){
-							switch (e.which){
-							case 13: // enter
-								insertLink();
-							case 27: // esc
-								miaou.dialog.closeAll();
-							}
-						});
-						return false;
-					case 66: // ctrl - B : toggle bold
-						$input.replaceSelection(function(s){ return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2, -2) : '**'+s+'**' });
-						return false;
-					case 73: // ctrl - I : toggle italic
-						$input.replaceSelection(function(s){ return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*' });
-						return false;
-					case 13: // ctrl - enter : insert new line
-						$input.replaceSelection(function(s){ return s+'\n' });
-						return false;
-					case 38: // ctrl - up arrow
-						replyPreviousOrNext(-1);
-						return false;
-					case 40: // ctrl - down arrow
-						replyPreviousOrNext(+1);
-						return false;
-					}
-				} else if (e.altKey || e.shiftKey) {
-					if (e.which==13) { // alt|shift - return
-						$input.replaceSelection(function(s){ return s+'\n' });
-						return false;
-					}
-				} else if (e.which==38) { // up arrow
-					var isInFirstLine = $input.taliner().caretOnFirstLine;
-					if (isInFirstLine || (editedMessage && input.selectionStart===input.value.length)) {
-						editPreviousOrNext(-1);
-						return false;
-					}
-				} else if (e.which==40) { // down arrow
-					var isInLastLine = $input.taliner().caretOnLastLine;
-					if (isInLastLine && editedMessage) {
-						editPreviousOrNext(+1);
-						return false;
-					}
-				} else if (e.which==27) { // esc
-					if ($autocompleter && $autocompleter.length && input.value!=savedValue) {
-						input.value = savedValue;
-						tryautocomplete();
-					} else if (replywzin) {
-						miaou.md.scrollToBottom();
-						miaou.editor.cancelReply();
+	// prepare #input to emit on the provided socket
+	ed.init = function(){
+		$input = $('#input');
+		input = $input[0];
+		$input.on('keydown', function(e){
+			if (e.ctrlKey && !e.shiftKey) {
+				var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;
+				switch(e.which){
+				case 75: // ctrl - K : toggle code
+					if (sp===ep) {
+						$input.selectLines().replaceSelection(toggleLinesCode);
+						this.selectionStart = this.selectionEnd;
+					} else if (~val.slice(sp, ep+1).indexOf('\n')) {
+						$input.selectLines().replaceSelection(toggleLinesCode);
 					} else {
-						miaou.editor.cancelEdit();
+						$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
 					}
-				} else if (e.which==13) { // enter
-					sendInput();
 					return false;
-				} else if (e.which==9) { // tab
-					if ($autocompleter && $autocompleter.length) {
-						var index = ($autocompleter.find('.selected').index()+1) % $autocompleter.find('span').length,
-							name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected').text(),
-							accmd = getaccmd();
-						if (accmd) {
-							input.selectionStart = input.selectionEnd - accmd.length;
-							$input.replaceSelection(name);
-							input.selectionStart = input.selectionEnd;
-						} else {
-							miaou.editor.ping(name);
+				case 81: // ctrl - Q : toggle citation
+					$input.selectLines().replaceSelection(toggleLinesCitation);
+					if (sp===ep) this.selectionStart = this.selectionEnd;
+					return false;
+				case 76: // ctrl - L : make link
+					miaou.dialog({
+						title: 'Insert Hyperlink',
+						content: 'URL : <input id=newlinkhref style="width:82%">',
+						buttons: {
+							Cancel: null,
+							Insert: insertLink
 						}
-						return false;
+					});
+					$('#newlinkhref').focus().on('keyup', function(e){
+						switch (e.which){
+						case 13: // enter
+							insertLink();
+						case 27: // esc
+							miaou.dialog.closeAll();
+						}
+					});
+					return false;
+				case 66: // ctrl - B : toggle bold
+					$input.replaceSelection(function(s){ return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2, -2) : '**'+s+'**' });
+					return false;
+				case 73: // ctrl - I : toggle italic
+					$input.replaceSelection(function(s){ return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*' });
+					return false;
+				case 13: // ctrl - enter : insert new line
+					$input.replaceSelection(function(s){ return s+'\n' });
+					return false;
+				case 38: // ctrl - up arrow
+					replyPreviousOrNext(-1);
+					return false;
+				case 40: // ctrl - down arrow
+					replyPreviousOrNext(+1);
+					return false;
+				}
+			} else if (e.altKey || e.shiftKey) {
+				if (e.which==13) { // alt|shift - return
+					$input.replaceSelection(function(s){ return s+'\n' });
+					return false;
+				}
+			} else if (e.which==38) { // up arrow
+				var isInFirstLine = $input.taliner().caretOnFirstLine;
+				if (isInFirstLine || (editedMessage && input.selectionStart===input.value.length)) {
+					editPreviousOrNext(-1);
+					return false;
+				}
+			} else if (e.which==40) { // down arrow
+				var isInLastLine = $input.taliner().caretOnLastLine;
+				if (isInLastLine && editedMessage) {
+					editPreviousOrNext(+1);
+					return false;
+				}
+			} else if (e.which==27) { // esc
+				if ($autocompleter && $autocompleter.length && input.value!=savedValue) {
+					input.value = savedValue;
+					tryautocomplete();
+				} else if (replywzin) {
+					md.scrollToBottom();
+					ed.cancelReply();
+				} else {
+					ed.cancelEdit();
+				}
+			} else if (e.which==13) { // enter
+				sendInput();
+				return false;
+			} else if (e.which==9) { // tab
+				if ($autocompleter && $autocompleter.length) {
+					var index = ($autocompleter.find('.selected').index()+1) % $autocompleter.find('span').length,
+						name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected').text(),
+						accmd = getaccmd();
+					if (accmd) {
+						input.selectionStart = input.selectionEnd - accmd.length;
+						$input.replaceSelection(name);
+						input.selectionStart = input.selectionEnd;
+					} else {
+						ed.ping(name);
 					}
+					return false;
 				}
-			})
-			.on('keyup', function(e){
-				if (e.which===9) return false; // tab
-			})
-			.on('input', function(){
-				tryautocomplete();
-				updateReplyWzin();				
-			})			
-			.focus();
+			}
+		})
+		.on('keyup', function(e){
+			if (e.which===9) return false; // tab
+		})
+		.on('input', function(){
+			tryautocomplete();
+			updateReplyWzin();				
+		})			
+		.focus();
 
-			$('#send').on('click', sendInput);
+		$('#send').on('click', sendInput);
 
-			$('#cancelEdit').on('click', miaou.editor.cancelEdit);
+		$('#cancelEdit').on('click', ed.cancelEdit);
 
-			$('#uploadSend').click(function(){
-				var file = document.getElementById('file').files[0];
-				if (!file || !/^image\//.test(file.type)) {
-					alert('not a valid image');
-					return;
-				}
-				var fd = new FormData();
-				fd.append("file", file);
-				var xhr = new XMLHttpRequest();
-				xhr.open("POST", "upload");
-				function finish(){
-					$('#uploadcontrols,#inputpanel').show();
-					$('#uploadwait,#uploadpanel').hide();
-				}
-				xhr.onload = function() {
-					var ans = JSON.parse(xhr.responseText);
-					finish();
-					if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
-					else alert("Hu? didn't exactly work, I think...");
-				}
-				xhr.onerror = function(){
-					alert("Something didn't work as expected :(");
-					finish();
-				}
-				$('#uploadcontrols').hide();
-				$('#uploadwait').show();
-				xhr.send(fd);
-			});
-		},
-		// adds or remove a ping to that username
-		ping: function(username){
-			var val = input.value, s = input.selectionStart, e = input.selectionEnd;
-			var acname = getacname();
-			if (acname) {
-				input.value = val.slice(0, e-acname.length) + username + val.slice(e);
-				input.selectionStart = input.selectionEnd = e + username.length - acname.length;
-			} else if (new RegExp('\s?@'+username+'\\s*$').test(val)) {
-				input.value = val.replace(r, '');
-			} else {
-				var insert = ' @'+username+' ';
-				input.value = val.slice(0,e)+insert+val.slice(e);
-				if (e==s) input.selectionStart += insert.length;
-				input.selectionEnd = e + insert.length;
+		$('#uploadSend').click(function(){
+			var file = document.getElementById('file').files[0];
+			if (!file || !/^image\//.test(file.type)) {
+				alert('not a valid image');
+				return;
 			}
-			input.focus();
-		},
-		// toggle reply to an existing message
-		replyToMessage: function($message){
-			var message = $message.data('message'),
-				txt = input.value, m = txt.match(replyRegex),
-				s = input.selectionStart, e = input.selectionEnd, l = txt.length, yetPresent = false;
-			if (m) {
-				input.value = txt = txt.replace(replyRegex,'').replace(/^\s/,'');
-				yetPresent = m[1]===message.authorname && m[2]==message.id;
+			var fd = new FormData();
+			fd.append("file", file);
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "upload");
+			function finish(){
+				$('#uploadcontrols,#inputpanel').show();
+				$('#uploadwait,#uploadpanel').hide();
 			}
-			if (!yetPresent) {
-				if (!/^\s/.test(txt)) txt = ' '+txt;
-				input.value = '@'+message.authorname+'#'+message.id+txt;
+			xhr.onload = function() {
+				var ans = JSON.parse(xhr.responseText);
+				finish();
+				if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
+				else alert("Hu? didn't exactly work, I think...");
 			}
-			var dl = (input.value.length-l);
-			input.selectionStart = s + dl;
-			input.selectionEnd = e + dl;
-			input.focus();
-			updateReplyWzin($message);
-		},
-		// toggle edition of an existing message
-		editMessage: function($message){
-			var message = $message.data('message');
-			if (editedMessage){
-				var edmid = editedMessage.id;
-				this.cancelEdit();
-				if (edmid===message.id) return;
-			} else {
-				stash = input.value;
+			xhr.onerror = function(){
+				alert("Something didn't work as expected :(");
+				finish();
 			}
-			editedMessage = message;
-			$input.val(message.stash || message.content).focus();
-			input.selectionStart = input.selectionEnd = input.value.length;
-			$('#cancelEdit').show();
-			$('#help').hide();
-			if (editwzin) editwzin.remove();
-			editwzin = wzin($message, $('#input'), {
-				zIndex:5, fill:'rgba(208, 120, 16, .3)', scrollables:'#messagescroller', changeElementBackground:true
-			});
-			updateReplyWzin();
-		},
-		// cancels replying
-		cancelReply: function(){
-			$input.replaceInVal(replyRegex);
-			if (replywzin) {
-				replywzin.remove();
-				replywzin = null;
-			}
-		},
-		// cancels edition
-		cancelEdit: function(){
-			if (editedMessage) {
-				input.value = stash||'';
-				$('#cancelEdit').hide();
-				$('#help').show();
-				editedMessage = null;
-				$input.focus();
-				editwzin.remove();
-				editwzin = null;
-				updateReplyWzin();
-			}
-		},
-		// receives list of pings
-		proposepings: function(names){
-			var acname = getacname();
-			savedValue = input.value;
-			if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
-			if ($autocompleter) $autocompleter.remove();
-			$autocompleter = $('<div id=autocompleter/>').prependTo('#inputpanel');
-			names.forEach(function(name){
-				$('<span>').text(name).appendTo($autocompleter).click(function(){
-					miaou.editor.ping(name);
-					$autocompleter.remove();
-					$autocompleter = null;
-				});
-			});
-
+			$('#uploadcontrols').hide();
+			$('#uploadwait').show();
+			xhr.send(fd);
+		});
+	};
+	
+	// adds or remove a ping to that username
+	ed.ping = function(username){
+		var val = input.value, s = input.selectionStart, e = input.selectionEnd;
+		var acname = getacname();
+		if (acname) {
+			input.value = val.slice(0, e-acname.length) + username + val.slice(e);
+			input.selectionStart = input.selectionEnd = e + username.length - acname.length;
+		} else if (new RegExp('\s?@'+username+'\\s*$').test(val)) {
+			input.value = val.replace(r, '');
+		} else {
+			var insert = ' @'+username+' ';
+			input.value = val.slice(0,e)+insert+val.slice(e);
+			if (e==s) input.selectionStart += insert.length;
+			input.selectionEnd = e + insert.length;
+		}
+		input.focus();
+	};
+	
+	// toggle reply to an existing message
+	ed.replyToMessage = function($message){
+		var message = $message.data('message'),
+			txt = input.value, m = txt.match(replyRegex),
+			s = input.selectionStart, e = input.selectionEnd, l = txt.length, yetPresent = false;
+		if (m) {
+			input.value = txt = txt.replace(replyRegex,'').replace(/^\s/,'');
+			yetPresent = m[1]===message.authorname && m[2]==message.id;
+		}
+		if (!yetPresent) {
+			if (!/^\s/.test(txt)) txt = ' '+txt;
+			input.value = '@'+message.authorname+'#'+message.id+txt;
+		}
+		var dl = (input.value.length-l);
+		input.selectionStart = s + dl;
+		input.selectionEnd = e + dl;
+		input.focus();
+		updateReplyWzin($message);
+	};
+	
+	// toggle edition of an existing message
+	ed.editMessage = function($message){
+		var message = $message.data('message');
+		if (editedMessage){
+			var edmid = editedMessage.id;
+			this.cancelEdit();
+			if (edmid===message.id) return;
+		} else {
+			stash = input.value;
+		}
+		editedMessage = message;
+		$input.val(message.stash || message.content).focus();
+		input.selectionStart = input.selectionEnd = input.value.length;
+		$('#cancelEdit').show();
+		$('#help').hide();
+		if (editwzin) editwzin.remove();
+		editwzin = wzin($message, $('#input'), {
+			zIndex:5, fill:'rgba(208, 120, 16, .3)', scrollables:'#messagescroller', changeElementBackground:true
+		});
+		updateReplyWzin();
+	};
+	
+	// cancels replying
+	ed.cancelReply = function(){
+		$input.replaceInVal(replyRegex);
+		if (replywzin) {
+			replywzin.remove();
+			replywzin = null;
 		}
 	}
-})();
+	
+	// cancels edition
+	ed.cancelEdit = function(){
+		if (editedMessage) {
+			input.value = stash||'';
+			$('#cancelEdit').hide();
+			$('#help').show();
+			editedMessage = null;
+			$input.focus();
+			editwzin.remove();
+			editwzin = null;
+			updateReplyWzin();
+		}
+	}
+	
+	// receives list of pings
+	ed.proposepings = function(names){
+		var acname = getacname();
+		savedValue = input.value;
+		if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
+		if ($autocompleter) $autocompleter.remove();
+		$autocompleter = $('<div id=autocompleter/>').prependTo('#inputpanel');
+		names.forEach(function(name){
+			$('<span>').text(name).appendTo($autocompleter).click(function(){
+				ed.ping(name);
+				$autocompleter.remove();
+				$autocompleter = null;
+			});
+		});
+	}
+});

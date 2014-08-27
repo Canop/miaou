@@ -1,4 +1,4 @@
-(function(){
+miaou(function(games, ws){
 
 	var T = 10, // size of the board in cells (not expected to change)
 		CS = 20, // size of a cell in pixels
@@ -93,7 +93,7 @@
 									c.attr('fill', panel.holeGrad);
 									for (var k=0; lineMarks && k<lineMarks.length; k++) lineMarks[k].remove();
 								}).on('click', function(){
-									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
+									ws.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
 								}).attr({cursor:'pointer'});
 							} else {
 								c.on('mouseenter', function(){ c.attr('fill', 'red') })
@@ -198,8 +198,7 @@
 		});
 	}
 
-	if (!miaou.games) miaou.games = {};
-	miaou.games.Tribo = {
+	games.Tribo = {
 		render: function($c, m, g, abstract){
 			Tribo.restore(g);
 			$c.empty().css('background', bg).closest('.message').removeClass('edited');
@@ -251,4 +250,4 @@
 		}
 	}
 
-})();
+});

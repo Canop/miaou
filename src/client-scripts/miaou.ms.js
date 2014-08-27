@@ -8,8 +8,7 @@
 //  - editable    : boolean
 //  - deletable   : boolean
 
-var miaou = miaou || {};
-(function(ms){
+miaou(function(ms, usr){
 
 	// functions building the status which is needed on some actions
 	//   like menu display
@@ -32,7 +31,7 @@ var miaou = miaou || {};
 		status.answerable = message.author !== me.id;
 		status.old =  Date.now()/1000 - created > miaou.chat.MAX_AGE_FOR_EDIT;
 		status.deletable = status.editable = message.author===me.id && !status.old && message.content;
-		status.mod_deletable = miaou.usr.checkAuth('admin') && message.content;
+		status.mod_deletable = usr.checkAuth('admin') && message.content;
 	});
 
 	ms.updateStatus = function(message){
@@ -41,7 +40,5 @@ var miaou = miaou || {};
 			fun(message, message.status);
 		});
 	}
-	
 
-
-})(miaou.ms = {});
+});

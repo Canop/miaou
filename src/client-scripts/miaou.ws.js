@@ -1,11 +1,15 @@
-var miaou = miaou || {};
+// ws : handles the connection to the server over socket.io (
 
-(function(){
-	var pingRegex, info;
+miaou(function(ws, chat, gui, hist, md, usr, ed){
 
-	function con(){
-		var chat = miaou.chat,
-			md = miaou.md;
+	var pingRegex = new RegExp('@'+me.name+'(\\b|$)'),
+		info;
+
+	ws.init = function(){
+		info = { state:'connecting', start:Date.now(), nbmessages:0 };
+		var	socket = io.connect(location.origin);
+		ws.emit = socket.emit.bind(socket);
+		ws.on = socket.on.bind(socket);
 
 		function messageIn(message){
 			if (chat.trigger('incoming_message', message) === false) return;
@@ -13,12 +17,9 @@ var miaou = miaou || {};
 			md.addMessage(message);
 			md.updateNotableMessages(message);
 			if (message.created>chat.enterTime && message.content) {
-				miaou.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
+				gui.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
 			}
 		}
-		
-		info = { state:'connecting', start:Date.now(), nbmessages:0 };
-		var	socket = miaou.socket = io.connect(location.origin);
 
 		function setEnterTime(serverTime){
 			chat.enterTime = serverTime;
@@ -49,7 +50,7 @@ var miaou = miaou || {};
 			room = r;
 			localStorage['successfulLoginLastTime'] = "yes";
 			localStorage['room'] = room.id;
-			miaou.updateTab(0, 0);
+			gui.updateTab(0, 0);
 			$('#roomname').text(room.name);
 			$('#roomdescription').html(miaou.mdToHtml(room.description));
 		})
@@ -66,7 +67,7 @@ var miaou = miaou || {};
 			info.state = 'connected';
 			if (location.hash) md.focusMessage(+location.hash.slice(1));
 			else md.scrollToBottom();
-			miaou.usr.showEntry(me);
+			usr.showEntry(me);
 		})
 		.on('invitation', function(invit){
 			var $md = $('<div>').html(
@@ -79,7 +80,7 @@ var miaou = miaou || {};
 			).append(
 				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
 			).appendTo('#messages');
-			miaou.touch(0, true, invit.byname, 'You have been invited in a dialog room.');
+			gui.touch(0, true, invit.byname, 'You have been invited in a dialog room.');
 			md.scrollToBottom();
 		})
 		.on('pm_room', function(roomId){
@@ -95,13 +96,13 @@ var miaou = miaou || {};
 			}
 			md.showMessages(res.results, $('#searchresults'));
 		})
-		.on('autocompleteping', miaou.editor.proposepings)
-		.on('hist', miaou.hist.show)
+		.on('autocompleteping', ed.proposepings)
+		.on('hist', hist.show)
 		.on('pings', chat.pings)
 		.on('ping', chat.ping)
 		.on('disconnect', function(){ console.log('DISCONNECT') })
-		.on('enter', miaou.usr.showEntry)
-		.on('leave', miaou.usr.showLeave)
+		.on('enter',usr.showEntry)
+		.on('leave', usr.showLeave)
 		.on('miaou.error', md.showError)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect
@@ -111,9 +112,4 @@ var miaou = miaou || {};
 			md.showError("A fatal error occurred, you're disconnected from the server (you might try refreshing the page)");
 		});
 	}
-
-	miaou.startChatWS = function(){
-		pingRegex = new RegExp('@'+me.name+'(\\b|$)');
-		con();
-	}
-})();
+});

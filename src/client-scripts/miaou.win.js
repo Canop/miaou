@@ -1,35 +1,31 @@
-// Support for message windows, that is dockable floating dialogs that
+// Support for message windows : dockable floating dialogs that
 //   can display a message
 
-var miaou = miaou || {};
-
-(function(win){
+miaou(function(win, chat, md, ws){
 
 	var sides = ['left', 'bottom', 'right', 'top'];
 
-	$(function(){
-		sides.forEach(function(side){
-			$('<div/>').addClass('mwincontainer').addClass(side).appendTo(document.body);
-		});
-		miaou.chat.on('incoming_message', function(message){
-			var $mwin = $('#mwin[mid='+message.id+']');
-			if ($mwin.length) {
-				$mwin.data('message', message);
-				miaou.md.render(
-					$mwin.find('.content').empty().css('max-height', $(window).height()*.85), // sadly didn't find a pure css solution
-					message
-				);
-			} else {
-				$('.mwintab[mid='+message.id+']').addClass('new');
-			}
-		});
+	sides.forEach(function(side){
+		$('<div/>').addClass('mwincontainer').addClass(side).appendTo(document.body);
+	});
+	chat.on('incoming_message', function(message){
+		var $mwin = $('#mwin[mid='+message.id+']');
+		if ($mwin.length) {
+			$mwin.data('message', message);
+			md.render(
+				$mwin.find('.content').empty().css('max-height', $(window).height()*.85), // sadly didn't find a pure css solution
+				message
+			);
+		} else {
+			$('.mwintab[mid='+message.id+']').addClass('new');
+		}
 	});
 
 	// called for the big central mwin only
 	function closeMWin(){
 		var $mwin = $('#mwin');
 		if ($mwin.length) {
-			miaou.md.unrender($mwin.find('.content'), $mwin.data('message'));
+			md.unrender($mwin.find('.content'), $mwin.data('message'));
 			$mwin.remove();
 		}
 	}
@@ -54,8 +50,8 @@ var miaou = miaou || {};
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
 			});
 			$mc.html('loading...')
-			miaou.socket.emit('get_message', message.id);
+			ws.emit('get_message', message.id);
 		}
 	}
 
-})(miaou.win = {});
+});

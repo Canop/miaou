@@ -1,8 +1,6 @@
 // functions related to wzin reply effects
 
-var miaou = miaou || {};
-
-(function(wz){
+miaou(function(wz){
 
 	var wzins = [];
 	
@@ -42,4 +40,4 @@ var miaou = miaou || {};
 		while (w=wzins.pop()) w.remove();
 	}
 
-})(miaou.wz = {});
+});

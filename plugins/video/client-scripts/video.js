@@ -1,4 +1,4 @@
-(function(){
+miaou(function(plugins, chat, md, ws){
 	
 	"use strict";
 	
@@ -51,7 +51,7 @@
 		this.off();
 	}
 	VD.prototype.update = function(){
-		var iab = miaou.md.isAtBottom();
+		var iab = md.isAtBottom();
 		this.$controls.find('button').remove();
 		this.$cams.hide();
 		this.$status.show();
@@ -79,15 +79,15 @@
 			);
 		}
 		if (iab) {
-			miaou.md.scrollToBottom();
-			$('video').load(miaou.md.scrollToBottom);
+			md.scrollToBottom();
+			$('video').load(md.scrollToBottom);
 		}
 	}
 	VD.prototype.send = function(verb, o){
 		o = o || {};
 		o.mid = this.mid;
 		console.log('OUT video.'+verb+' ->', o);
-		miaou.socket.emit('video.'+verb, o);
+		ws.emit('video.'+verb, o);
 	}
 	VD.prototype.sendMsg = function(msg){
 		this.send('msg', {msg:msg});
@@ -203,9 +203,9 @@
 		this.update();
 	}
 
-	miaou.chat.plugins.video = {
+	plugins.video = {
 		start: function(){
-			miaou.md.registerRenderer(function($c, m, oldMessage){
+			md.registerRenderer(function($c, m, oldMessage){
 				if (!m.content || oldMessage) return;
 				var match = m.content.match(/^!!(video|audio)\s*@(\w[\w_\-\d]{2,})/);
 				if (!match) return;
@@ -237,7 +237,7 @@
 				vd.render($c);
 				return true;
 			});
-			miaou.md.registerUnrenderer(function($c, m){
+			md.registerUnrenderer(function($c, m){
 				if (!m.content) return;
 				var match = m.content.match(/^!!(video|audio)\s*@(\w[\w_\-\d]{2,})/);
 				if (!match) return;
@@ -253,7 +253,7 @@
 				}
 				if (vd) vd.off();
 			});
-			miaou.socket.on('video.msg', function(arg){
+			ws.on('video.msg', function(arg){
 				console.log('IN video.msg <-', arg);
 				$('.message[mid='+arg.mid+'] .content').each(function(){
 					var vd = $(this).data('video');
@@ -262,5 +262,4 @@
 			});
 		}
 	}
-
-})();
+});

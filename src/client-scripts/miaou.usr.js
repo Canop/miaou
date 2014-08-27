@@ -1,8 +1,6 @@
 // functions related to users
 
-var miaou = miaou || {};
-
-(function(usr){
+miaou(function(usr, mod, ed, ws){
 
 	var levels = ['read', 'write', 'admin', 'own'];
 
@@ -13,17 +11,19 @@ var miaou = miaou || {};
 	usr.showUserHoverButtons = function(){
 		var user = $(this).data('user');
 		if (user.name===me.name) return;
-		$('.decorations', this)
+		var decs = $('.decorations', this)
 		.append($('<button>').text('ping').click(function(){
-			miaou.editor.ping(user.name);
+			ed.ping(user.name);
 		}))
 		.append($('<button>').text('pm').click(function(){
 			miaou.pmwin = window.open();
-			miaou.socket.emit('pm', user.id);			
-		}))
-		.append($('<button>').text('mod').click(function(){
-			miaou.mod.dialog(user.id);
+			ws.emit('pm', user.id);			
 		}));
+		if (usr.checkAuth('admin')) {			
+			decs.append($('<button>').text('mod').click(function(){
+				mod.dialog(user.id);
+			}));
+		}
 	}
 	
 	usr.hideUserHoverButtons = function(){
@@ -51,6 +51,7 @@ var miaou = miaou || {};
 		else $('#users').append($u);
 		return $u;
 	}
+	
 	usr.showEntry = function(user){
 		usr.insertInUserList(user).addClass('connected');
 	}
@@ -67,4 +68,4 @@ var miaou = miaou || {};
 		return false;
 	}
 		
-})(miaou.usr = {});
+});

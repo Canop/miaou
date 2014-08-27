@@ -1,9 +1,9 @@
-(function(){
+miaou(function(games, chat, gui, md, ms, plugins, ws){
 
 	function send(m, game, verb, o){
 		o = o || {};
 		o.mid = m.id;
-		miaou.socket.emit('ludo.'+verb, o);
+		ws.emit('ludo.'+verb, o);
 	}
 
 	function renderAsk($c, m, game){
@@ -24,7 +24,7 @@
 			$c.text(game.type + ' not yet started');
 			return;
 		}
-		miaou.games[game.type].render($c, m, game, true);
+		games[game.type].render($c, m, game, true);
 	}
 
 	function renderHelp($c, game) {
@@ -39,7 +39,7 @@
 				$helpDiv = $('<div/>').css({
 					position:'absolute', top:0, left:0, height:'120px', right:'10px', borderRadius:'0 0 10px 0', zIndex:2
 				}).appendTo($c.width()>300 ? $c : $c.closest('.message'));
-				miaou.games[game.type].fillHelp($helpDiv);
+				games[game.type].fillHelp($helpDiv);
 			}, function(){
 				$helpDiv.remove();
 			}
@@ -49,7 +49,7 @@
 	function renderMessage($c, m, game){
 		if (!$c.closest('#messages,#mwin').length) return renderAbstract($c, m, game);
 		if (game.status === "ask") return renderAsk($c, m, game);
-		var gt = miaou.games[game.type];
+		var gt = games[game.type];
 		if (!gt) return $c.text('Game type not available');
 		gt.render($c, m, game);
 		renderHelp($c, game);
@@ -69,9 +69,9 @@
 		return game;
 	}
 
-	miaou.chat.plugins.ludogene = {
+	plugins.ludogene = {
 		start: function(){
-			miaou.ms.registerStatusModifier(function(message, status){
+			ms.registerStatusModifier(function(message, status){
 				var g = messageGame(message);
 				if (g && g.moves) {
 					status.editable = false;
@@ -79,14 +79,14 @@
 					status.mod_deletable = false;
 				}
 			});
-			miaou.md.registerRenderer(function($c, m){
+			md.registerRenderer(function($c, m){
 				var g = messageGame(m);
 				if (g) {
 					renderMessage($c, m, g);
 					return true;
 				}
 			});
-			miaou.socket.on('ludo.move', function(arg){
+			ws.on('ludo.move', function(arg){
 				$('.mwintab[mid='+arg.mid+']').addClass('new');
 				$('.message[mid='+arg.mid+']').each(function(){
 					var $message = $(this),
@@ -94,12 +94,11 @@
 						game = messageGame(m);
 					if (!game) return;
 					var playername = game.players[arg.move.p].name;
-					if (miaou.games[game.type].move($message.find('.content'), m, game, arg.move) && game.players[+!arg.move.p].id===me.id) {
-						miaou.touch(m.id, true, playername, playername + ' made a move in your Tribo game');
+					if (games[game.type].move($message.find('.content'), m, game, arg.move) && game.players[+!arg.move.p].id===me.id) {
+						gui.touch(m.id, true, playername, playername + ' made a move in your Tribo game');
 					}
 				});
 			});
 		}
 	}
-
-})();
+});

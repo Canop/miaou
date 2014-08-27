@@ -1,11 +1,8 @@
 // md is short for "message display"
 // Here are functions related to the display of messages in the chat and to the various message element lists
 
-var miaou = miaou || {};
-
-(function(md){
-	var chat = miaou.chat,
-		renderers = [], unrenderers = [],
+miaou(function(md, chat, gui, hist, ms, usr, ws){
+	var renderers = [], unrenderers = [],
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
 	
 	// registers a function which will be called when a message needs rendering
@@ -51,7 +48,7 @@ var miaou = miaou || {};
 	md.scrollToBottom = function(){
 		setTimeout(function(){ // because it doesn't always work on Firefox without this 
 			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight);
-			miaou.hist.showPage();
+			hist.showPage();
 		},10);
 	}
 
@@ -125,9 +122,9 @@ var miaou = miaou || {};
 		else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>.";
 		var $md = $('<div>').html(h).addClass('notification').data('user', ar.user).appendTo('#messages');
 		$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
-		if (miaou.usr.checkAuth('admin')) {
+		if (usr.checkAuth('admin')) {
 			$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($md);
-			if (!vis()) miaou.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
+			if (!vis()) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
 		}
 		if (ar.request_message) {
 			$('<div>').addClass('access_request').append(
@@ -155,7 +152,6 @@ var miaou = miaou || {};
 			}
 			$md.find('.user').height(h).css('line-height',h+'px');
 			if (wasAtBottom) md.scrollToBottom();
-			//else miaou.hist.showPage(); ?
 		}
 		resize();
 		$content.find('img').load(resize);
@@ -248,7 +244,7 @@ var miaou = miaou || {};
 			if (matches) message.repliesTo = +matches[1];
 		}		
 		if (message.bot) $user.addClass('bot');
-		miaou.usr.insertInUserList({id:message.author, name:message.authorname}, message.changed||message.created);
+		usr.insertInUserList({id:message.author, name:message.authorname}, message.changed||message.created);
 		if (message.authorname===me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -312,7 +308,7 @@ var miaou = miaou || {};
 		md.hideMessageMenus();
 		var $message = $(this), message = $message.data('message'),
 			infos = [], $decs = $message.find('.decorations');
-		miaou.ms.updateStatus(message);
+		ms.updateStatus(message);
 		if (message.status.deletable || message.status.mod_deletable) $('<button>').addClass('deleteButton').text('delete').prependTo($decs);
 		if (message.status.editable) $('<button>').addClass('editButton').text('edit').prependTo($decs);
 		if (message.status.answerable) $('<button>').addClass('replyButton').text('reply').prependTo($decs);
@@ -320,12 +316,12 @@ var miaou = miaou || {};
 		infos.push(miaou.formatRelativeDate((message.created+chat.timeOffset)*1000));
 		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ';
 		if (message.id) {
-			h += '<a class=link target=_blank href="'+miaou.md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ';
+			h += '<a class=link target=_blank href="'+md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ';
 			h += '<a class=makemwin title="float">&#xe81d;</a> ';
-			h += voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(miaou.usr.checkAuth('admin')?0:1).map(function(l){
+			h += voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(usr.checkAuth('admin')?0:1).map(function(l){
 				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 			}).join('');
-			if (message.pin>(message.vote=="pin") && miaou.usr.checkAuth('admin')) {
+			if (message.pin>(message.vote=="pin") && usr.checkAuth('admin')) {
 				h += ' - <span class=unpin>unpin</span>';
 			}
 		}
@@ -345,7 +341,7 @@ var miaou = miaou || {};
 			var mtop = $message.offset().top;
 			if (mtop<0 || mtop>$messages.height()) $messages.animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
 			setTimeout(function(){ $message.removeClass('goingto'); }, 3000);
-			miaou.hist.showPage();
+			hist.showPage();
 		}, 300);
 	}
 
@@ -366,7 +362,7 @@ var miaou = miaou || {};
 			if (mids[i]>messageId) afterId=mids[i];
 			else break;
 		}
-		miaou.socket.emit('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId });
+		ws.emit('get_around', { target:messageId, olderPresent:beforeId, newerPresent:afterId });
 	}
 	
 	// replaces one line of a message
@@ -380,4 +376,4 @@ var miaou = miaou || {};
 		resize($m, wab);
 	}
 		
-})(miaou.md = {});
+});

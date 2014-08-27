@@ -1,8 +1,6 @@
 // "mh" : message history
 
-var miaou = miaou || {};
-(function(mh){
-
+miaou(function(mh){
 	mh.show = function(message){
 		var $content = $('<div>').addClass('message-history');
 		var current = message;
@@ -33,5 +31,4 @@ var miaou = miaou || {};
 			}
 		});
 	}
-
-})(miaou.mh = {});
+});

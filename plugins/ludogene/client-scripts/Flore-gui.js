@@ -1,7 +1,7 @@
 // This is a temporary implementation for the Flore GUI
 // Hopefully I'll have a prettier rendering
 
-(function(){
+miaou(function(games, ws){
 
 	if (typeof Snap === 'undefined') return; // this file is part of the big minified file imported in all miaou pages, even the ones not importing snap-svg
 
@@ -92,14 +92,14 @@
 										c.attr({fill: panel.holeGrad});
 									}
 								).click(function(){
-									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
+									ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
 								});
 							} else { // hum... je pense que c'est une branche morte, ça...
 								c.hover(
 									function(){ c.attr({fill: 'red'}) },
 									function(){	c.attr({fill: panel.holeGrad}) }
 								).click(function(){
-									miaou.socket.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
+									ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
 								});
 							}
 						}
@@ -142,8 +142,7 @@
 		}
 	}
 
-	if (!miaou.games) miaou.games = {};
-	miaou.games.Flore = {
+	games.Flore = {
 		render: function($c, m, g, abstract){
 			Flore.restore(g);
 			$c.empty().css('background', bg).closest('.message').removeClass('edited');
@@ -182,4 +181,4 @@
 		}
 	}
 
-})();
+});

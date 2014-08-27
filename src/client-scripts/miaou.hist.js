@@ -1,8 +1,6 @@
 // histogram and search functions
 
-var miaou = miaou || {};
-
-(function(mh){
+miaou(function(hist, md, ws){
 	
 	var currentPattern; // as the xhr-pulling flavour of socket.io doesn't handle callbacks, we have to store the currently searched pattern
 	
@@ -17,7 +15,7 @@ var miaou = miaou || {};
 		}
 		var $selected = $('#searchresults .message').eq(i).addClass('selected');
 		if ($selected.length) {
-			miaou.md.focusMessage(+$selected.attr('mid'));
+			md.focusMessage(+$selected.attr('mid'));
 			var mtop = $selected.offset().top,
 				$scroller = $('#right'), stop = $scroller.offset().top, sst = $scroller.scrollTop();
 			if (mtop<stop+sst) {
@@ -28,61 +26,57 @@ var miaou = miaou || {};
 		}
 	}
 	
-	$(function(){
-		$('#hist').on('click', '[m]', function(){
-			miaou.md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
-		}).on('mouseenter', '[m]', function(){
-			var sn = +$(this).attr('sn'), d = +$(this).attr('d'),
-				h = miaou.formatDateDDMMM(new Date(d*24*60*60*1000));
-			if (sn) h += '<br>' + sn + ' match';
-			if (sn>1) h += 'es';
-			$(this).append($('<div>').addClass('bubble').html(h));
-		}).on('mouseleave', '[m]', function(){
-			$('#hist .bubble').remove();
-		});
-
-		$('#searchInput').on('keyup', function(e){
-			if (e.which===27 && typeof tab === "function") { // esc
-				tab("notablemessagespage"); // tab is defined in chat.jade
-				$('#input').focus();
-				return false;
-			}
-			if (e.which==38) { // up arrow
-				moveSelect(-1);
-			} else if (e.which==40) { //down arrow
-				moveSelect(1);
-			}
-			var pat = this.value.trim();
-			if (pat) {
-				if (pat===currentPattern) return;
-				miaou.socket.emit('search', {pattern:pat});
-				mh.search(pat);
-			} else {
-				$('#searchresults').empty();
-				mh.clearSearch();
-			}
-		});
-
-
+	$('#hist').on('click', '[m]', function(){
+		md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
+	}).on('mouseenter', '[m]', function(){
+		var sn = +$(this).attr('sn'), d = +$(this).attr('d'),
+			h = miaou.formatDateDDMMM(new Date(d*24*60*60*1000));
+		if (sn) h += '<br>' + sn + ' match';
+		if (sn>1) h += 'es';
+		$(this).append($('<div>').addClass('bubble').html(h));
+	}).on('mouseleave', '[m]', function(){
+		$('#hist .bubble').remove();
 	});
 
-	mh.open = function(){
+	$('#searchInput').on('keyup', function(e){
+		if (e.which===27 && typeof tab === "function") { // esc
+			tab("notablemessagespage"); // tab is defined in chat.jade
+			$('#input').focus();
+			return false;
+		}
+		if (e.which==38) { // up arrow
+			moveSelect(-1);
+		} else if (e.which==40) { //down arrow
+			moveSelect(1);
+		}
+		var pat = this.value.trim();
+		if (pat) {
+			if (pat===currentPattern) return;
+			ws.emit('search', {pattern:pat});
+			hist.search(pat);
+		} else {
+			$('#searchresults').empty();
+			$('#hist .bar').removeClass('hit').removeAttr('sm sn');
+		}
+	});
+
+	hist.open = function(){
 		$('#hist').show();
-		miaou.hist.search($('#searchInput').val().trim());
+		hist.search($('#searchInput').val().trim());
 	}
 
-	mh.close = function(){
+	hist.close = function(){
 		$('#hist').hide();
 	}
 
-	mh.search = function(pattern) {
+	hist.search = function(pattern) {
 		if (!$('#hist').length) return;
 		currentPattern = pattern;
-		miaou.socket.emit('hist', {pattern:pattern});
+		ws.emit('hist', {pattern:pattern});
 	}
 	
 	// display search results sent by the server
-	mh.show = function(res){
+	hist.show = function(res){
 		if (res.search.pattern !== currentPattern) {
 			console.log('received histogram of another search', $('#searchInput').val().trim(), res);
 			return;
@@ -117,14 +111,10 @@ var miaou = miaou || {};
 			day(d=r.d, r.n, r.m, r.sn, r.sm);
 		});
 		$('#hist').scrollTop($('#hist')[0].scrollHeight);
-		mh.showPage();
+		hist.showPage();
 	}
 	
-	mh.clearSearch = function(){
-		$('#hist .bar').removeClass('hit').removeAttr('sm sn');
-	}
-
-	mh.showPage = function(){
+	hist.showPage = function(){
 		if (!$('#hist').length) return;
 		var $scroller = $('#messagescroller'), sh = $scroller.height();
 		var $messages = $('#messages > .message').filter(function(){
@@ -139,5 +129,4 @@ var miaou = miaou || {};
 			$this[fd<=d && d<=ld ? 'addClass' : 'removeClass']('vis');
 		});
 	}
-
-})(miaou.hist = {});
+});

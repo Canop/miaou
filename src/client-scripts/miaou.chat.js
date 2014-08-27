@@ -1,20 +1,21 @@
-var miaou = miaou || {};
 
-miaou.chat = {
-	MAX_AGE_FOR_EDIT: 5000, // seconds TODO get it from server
-	DELAY_BEFORE_PROFILE_POPUP: 300, // ms
-	DISRUPTION_THRESHOLD: 60*60, // seconds
-	nbUnseenMessages: 0, oldestUnseenPing: 0, lastReceivedPing: 0,
-	timeOffset: 0, enterTime: 0, // both in seconds since epoch, server time
-	plugins: [], // some might be unactive
-	commands: {} // all known commands issued with !! (value=description)
-};
-
-(function(chat){
+miaou(function(chat, md, ws, gui, plugins, ws){
 	
+	chat.MAX_AGE_FOR_EDIT= 5000; // seconds TODO get it from server
+	chat.DELAY_BEFORE_PROFILE_POPUP= 300; // ms
+	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
+	chat.nbUnseenMessages = 0;
+	chat.oldestUnseenPing = 0;
+	chat.lastReceivedPing = 0;
+	chat.timeOffset = 0;
+	chat.enterTime = 0; // both in seconds since epoch, server time
+	chat.commands = {}; // all known commands issued with !! (value=description)
+
+	var listeners = {};
+
 	chat.clearPings = function() {
 		// clear the pings of the current room and ask for the ones of the other rooms
-		miaou.socket.emit('clear_pings', miaou.chat.lastReceivedPing);
+		ws.emit('clear_pings', chat.lastReceivedPing);
 	}
 	
 	// pings : an array whose elements contains 
@@ -32,68 +33,61 @@ miaou.chat = {
 			}))
 		});
 		$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
-		miaou.md.scrollToBottom();
+		md.scrollToBottom();
 	}
 	
 	chat.pings = function(pings){ // this is used for old pings, made when user wasn't connected
 		if (pings.length) {
 			pings.forEach(function(p){
-				miaou.chat.oldestUnseenPing = Math.min(miaou.chat.oldestUnseenPing, p.first);
-				miaou.chat.lastReceivedPing = Math.max(miaou.chat.lastReceivedPing, p.last);
+				chat.oldestUnseenPing = Math.min(chat.oldestUnseenPing, p.first);
+				chat.lastReceivedPing = Math.max(chat.lastReceivedPing, p.last);
 			});
 			makeCrossRoomPingsNotificationMessage(pings);
 		}		
 	}
 	chat.ping = function(p){ // this is used for instant cross-room pings
 		makeCrossRoomPingsNotificationMessage([{room:p.r.id, roomname:p.r.name}]);
-		miaou.touch(0, true, p.m.authorname, p.m.content, p.r);
+		gui.touch(0, true, p.m.authorname, p.m.content, p.r);
 	}
 	
-
-
 	chat.start = function(){		
-		var md = miaou.md;
-		$(function(){
-			vis(function(){
-				if (vis()) {
-					chat.clearPings();
-					chat.nbUnseenMessages = 0;
-					if (chat.oldestUnseenPing) {
-						md.focusMessage(chat.oldestUnseenPing);
-						chat.oldestUnseenPing = 0;
-					}
-					miaou.updateTab(0, 0);
-					$('#input').focus();
+		vis(function(){
+			if (vis()) {
+				chat.clearPings();
+				chat.nbUnseenMessages = 0;
+				if (chat.oldestUnseenPing) {
+					md.focusMessage(chat.oldestUnseenPing);
+					chat.oldestUnseenPing = 0;
 				}
-			});
-			setInterval(function(){
-				if (vis()) chat.clearPings();
-			}, 3*60*1000);
-			miaou.startChatWS();
-			miaou.bindChatGui();
-			md.registerRenderer(function($c, message, oldMessage){
-				if (oldMessage && message.content===oldMessage.content && $c.text().length) return; // mainly to avoid removing boxed content
-				if (!message.content) {
-					$c.empty().closest('.message').addClass('deleted');
-					return true;
-				}
-				var delmatch = message.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/);
-				if (delmatch) {
-					var h = '';
-					if (delmatch[1]) h += ' by <a href=user/'+delmatch[1].slice(3)+' target=profile>an admin</a>'; 
-					if (delmatch[2]) h += ' on ' + miaou.formatTime(+delmatch[2].slice(3)); 
-					$c.html(h).closest('.message').addClass('deleted');
-					return true;
-				}
-				$c.empty().append(message.content ? miaou.mdToHtml(message.content, !!$c.closest('#messages').length, message.authorname) : '')
-			});
-			pluginsToStart.forEach(function(name){
-				chat.plugins[name].start();
-			});
+				gui.updateTab(0, 0);
+				$('#input').focus();
+			}
 		});
-	}
-	
-	var listeners = {};
+		setInterval(function(){
+			if (vis()) chat.clearPings();
+		}, 3*60*1000);
+		ws.init();
+		gui.init();
+		md.registerRenderer(function($c, message, oldMessage){
+			if (oldMessage && message.content===oldMessage.content && $c.text().length) return; // mainly to avoid removing boxed content
+			if (!message.content) {
+				$c.empty().closest('.message').addClass('deleted');
+				return true;
+			}
+			var delmatch = message.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/);
+			if (delmatch) {
+				var h = '';
+				if (delmatch[1]) h += ' by <a href=user/'+delmatch[1].slice(3)+' target=profile>an admin</a>'; 
+				if (delmatch[2]) h += ' on ' + miaou.formatTime(+delmatch[2].slice(3)); 
+				$c.html(h).closest('.message').addClass('deleted');
+				return true;
+			}
+			$c.empty().append(message.content ? miaou.mdToHtml(message.content, !!$c.closest('#messages').length, message.authorname) : '')
+		});
+		pluginsToStart.forEach(function(name){
+			plugins[name].start();
+		});
+	}	
 
 	// Registers for an event ("incoming_message", "sending_message")
 	// Callback is called with message as argument, and can change this message
@@ -127,7 +121,7 @@ miaou.chat = {
 	chat.sendMessage = function(m, context){
 		if (typeof m === "string") m = {content:m};
 		var r = chat.trigger("sending_message", m, context);
-		if (r!==false) miaou.socket.emit('message', m);
+		if (r!==false) ws.emit('message', m);
 	}
-
-})(miaou.chat);
+	
+});
