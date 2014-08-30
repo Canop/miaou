@@ -7,12 +7,17 @@ html
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 		script(src="static/miaou.min.js")
 		style.
-			.CL, .CR {
+			.C {
 				background: $bg-color;
-				width: 50%;
 				padding: 2px;
 				display: table-cell;
 				vertical-align: top;
+			}
+			.C1 {
+				width: 30%;			
+			}
+			.C2 {
+				width: 40%;			
 			}
 			.CC {
 				padding: 2px;
@@ -53,7 +58,7 @@ html
 							| .
 						default
 							| Your authorization level doesn't make it possible for you to manage rights in this room.
-				div.CL
+				div.C.C1
 					h2 Access Requests
 					if requests.length
 						table.list
@@ -94,7 +99,7 @@ html
 												option(value="none",selected) no access
 					else
 						p none currently
-				div.CR
+				div.C.C1
 					h2 Existing Authorizations
 					table.list
 						each ua in auths
@@ -113,35 +118,58 @@ html
 											option(value="none") no access
 								else
 									td.auth= ua.auth
+				div.C.C2
+					h2 Active Bans
+					table.list
+						each ban in bans
+							tr
+								th
+									span.user=ban.bannedname
+								td									
+									| banned by
+									span.user=' '+ban.bannername+' '
+									| until
+									span= ' '+new Date(ban.expires*1000)
+								td(style="white-space:nowrap")
+									- var name = "unban_"+ban.id+"_"+ban.banned
+									input(type="checkbox",_name=name,id=name)
+									label(for=name) unban
 				p#submit_bar
 					input(type="reset", value="Cancel Changes", disabled)
 					input(type="submit", value="Validate Changes", disabled)
 
 		script.
-			var auths = !{JSON.stringify(auths)}, room = !{JSON.stringify(room)};
-			$('.date').text(function(_,t){
-				return Date.now()/1000-t<15*60 ? "just now" : miaou.formatRelativeDate(t*1000);
+			miaou(function(){
+				var auths = !{JSON.stringify(auths)},
+					bans = !{JSON.stringify(bans)},
+					room = !{JSON.stringify(room)};
+					
+				console.log(bans);
+					
+				$('.date').text(function(_,t){
+					return Date.now()/1000-t<15*60 ? "just now" : miaou.formatRelativeDate(t*1000);
+				});
+				$('input,select').change(function(){ this.name = this.getAttribute('_name') });
+				if (!(room.auth==='own'||room.auth==='admin')) {
+					$('input,select').prop('disabled', true);
+				} else {
+					$('input, select').change(function(){ $('#submit_bar input').prop('disabled', false) })
+					$('input[type=reset]').click(function(){ $('#submit_bar input').prop('disabled', true) });
+				}
+				$('#authspage')
+				.on('mouseenter', '.user', miaou.prof.show).on('mouseleave', '.profile', miaou.prof.hide)
+				.on('mouseleave', '.user', function(e){
+					if (!miaou.eventIsOver(e, $('.profile'))) miaou.prof.hide();
+				});
+				$('#backToRoom').click(function(){ location = room.path; return false });
+				$('input[type=radio]').click(function(){
+					var $row = $(this).closest('tr').nextAll('.denyMessageTr').first();
+					if (this.value=='deny') $row.show().find('input').focus();
+					else $row.hide();
+				})
+				$('td.rendered').each(function(){
+					var h = this.innerHTML;
+					if (h) this.innerHTML = miaou.mdToHtml(h);
+					else $(this).closest('tr').hide()
+				})
 			});
-			$('input,select').change(function(){ this.name = this.getAttribute('_name') });
-			if (!(room.auth==='own'||room.auth==='admin')) {
-				$('input,select').prop('disabled', true);
-			} else {
-				$('input, select').change(function(){ $('#submit_bar input').prop('disabled', false) })
-				$('input[type=reset]').click(function(){ $('#submit_bar input').prop('disabled', true) });
-			}
-			$('#authspage')
-			.on('mouseenter', '.user', miaou.userProfile.show).on('mouseleave', '.profile', miaou.userProfile.hide)
-			.on('mouseleave', '.user', function(e){
-				if (!miaou.eventIsOver(e, $('.profile'))) miaou.userProfile.hide();
-			});
-			$('#backToRoom').click(function(){ location = room.path; return false });
-			$('input[type=radio]').click(function(){
-				var $row = $(this).closest('tr').nextAll('.denyMessageTr').first();
-				if (this.value=='deny') $row.show().find('input').focus();
-				else $row.hide();
-			})
-			$('td.rendered').each(function(){
-				var h = this.innerHTML;
-				if (h) this.innerHTML = miaou.mdToHtml(h);
-				else $(this).closest('tr').hide()
-			})

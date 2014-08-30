@@ -1,5 +1,4 @@
 var fs = require('fs'),
-	fs = require('fs'),
 	path = require('path'),
 	auths = require('./auths.js'),
 	server = require('./server.js'),
@@ -15,12 +14,19 @@ exports.configure = function(config){
 }
 
 exports.appGet = function(req, res, db){
-	db.on([+req.params[0], req.user.id])
-	.spread(db.fetchRoomAndUserAuth)
-	.then(function(room){
+	db.on()
+	.then(function(){
+		var roomId = +req.params[0],
+			userId = req.user.id;
+		return [
+			this.fetchRoomAndUserAuth(roomId, userId),
+			this.getRoomUserActiveBan(roomId, userId)
+		]
+	})
+	.spread(function(room, ban){
 		room.path = server.roomPath(room);
 		req.session.room = room;
-		if (room.private && !auths.checkAtLeast(room.auth, 'write')) {
+		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
 			return this.getLastAccessRequest(room.id, req.user.id).then(function(ar){
 				res.render('request.jade', { room:room, lastAccessRequest:ar });
 			});

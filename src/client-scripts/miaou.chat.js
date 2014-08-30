@@ -22,20 +22,21 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	//   room : id of the room
 	//   roomname
 	function makeCrossRoomPingsNotificationMessage(pings){
-		var h = "You've been pinged in room";
-		if (pings.length>1) h += 's';
-		var $md = $('<div>').html(h).addClass('notification').appendTo('#messages');
-		pings.forEach(function(p){
-			$md.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
-				window.open(p.room);
-				if ($md.find('.openroom').length==1) $md.remove();
-				else $(this).remove();
-			}))
+		md.notificationMessage(function($c, remove){
+			var t = "You've been pinged in room";
+			if (pings.length>1) t += 's';
+			$('<span>').text(t).appendTo($c);
+			pings.forEach(function(p){
+				$c.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
+					window.open(p.room);
+					if ($md.find('.openroom').length==1) remove();
+					else $(this).remove();
+				}))
+			});
+
 		});
-		$md.append($('<button>').addClass('remover').text('X').click(function(){ $md.remove() }));
-		md.scrollToBottom();
 	}
-	
+
 	chat.pings = function(pings){ // this is used for old pings, made when user wasn't connected
 		if (pings.length) {
 			pings.forEach(function(p){
@@ -50,7 +51,7 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 		gui.touch(0, true, p.m.authorname, p.m.content, p.r);
 	}
 	
-	chat.start = function(){		
+	chat.start = function(){
 		vis(function(){
 			if (vis()) {
 				chat.clearPings();

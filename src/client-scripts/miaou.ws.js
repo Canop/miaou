@@ -1,13 +1,12 @@
-// ws : handles the connection to the server over socket.io (
+// ws : handles the connection to the server over socket.io (websocket whenever possible)
 
-miaou(function(ws, chat, gui, hist, md, usr, ed){
-
-	var pingRegex = new RegExp('@'+me.name+'(\\b|$)'),
-		info;
+miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 
 	ws.init = function(){
-		info = { state:'connecting', start:Date.now(), nbmessages:0 };
-		var	socket = io.connect(location.origin);
+		var pingRegex = new RegExp('@'+me.name+'(\\b|$)'),
+			info = { state:'connecting', start:Date.now(), nbmessages:0 },
+			socket = io.connect(location.origin);
+
 		ws.emit = socket.emit.bind(socket);
 		ws.on = socket.on.bind(socket);
 
@@ -26,10 +25,12 @@ miaou(function(ws, chat, gui, hist, md, usr, ed){
 			chat.timeOffset = Date.now()/1000 - serverTime;
 		}
 
-		socket.on('ready', function(){			
+		socket
+		.on('ready', function(){			
 			info.state = 'ready';
 			socket.emit('enter', room.id);
 		})
+		.on('ban', mod.showBan)
 		.on('set_enter_time', setEnterTime)
 		.on('server_commands', function(commands){
 			for (var key in commands) chat.commands[key] = commands[key];

@@ -45,3 +45,16 @@
 		color: #400;
 	}
 }
+
+.ban_dialog {
+	span {
+		margin: 7px;
+		line-height: 25px;
+	}
+	input {
+		margin-left: 2%;
+	}
+	#ban_reason {
+		width: 96%;
+	}
+}

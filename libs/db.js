@@ -268,7 +268,7 @@ proto.listRoomAuths = function(roomId){
 }
 
 // do actions on user rights
-// userId : id of the user doing the action
+// userId : id of the user doing the action (at least an admin of the room)
 proto.changeRights = function(actions, userId, room){
 	var con = this;
 	return Promise.map(actions, function(a){
@@ -296,6 +296,10 @@ proto.changeRights = function(actions, userId, room){
 			sql = "delete from room_auth ma where ma.player=$1 and ma.room=$2 and exists (select * from room_auth ua where ua.player=$3 and ua.room=$4 and ua.auth>=ma.auth)";
 			args = [a.user, room.id, userId, room.id];
 			break;
+		case "unban":
+			sql = "delete from ban where id=$1 and room=$2";
+			args = [a.id, room.id];
+			break;
 		}
 		return con.queryRow(sql, args);
 	});	
@@ -310,6 +314,36 @@ proto.checkAuthLevel = function(roomId, userId, minimalLevel){
 	}).then(function(row){
 		return row.auth;
 	});
+}
+
+proto.getAuthLevel = function(roomId, userId){
+	return this.queryRow(
+		"select auth from room_auth where player=$1 and room=$2",
+		[userId, roomId], true
+	);
+}
+
+//////////////////////////////////////////////// #ban
+
+
+proto.insertBan = function(roomId, bannedId, now, expires, bannerId, reason){
+	return this.queryRow(
+		"insert into ban(banned, room, banner, bandate, expires, reason) values ($1, $2, $3, $4, $5, $6) returning *",
+		[bannedId, roomId, bannerId, now, expires, reason.slice(0,255)]
+	);
+}
+
+proto.listActiveBans = function(roomId){
+	return this.queryRows(
+		"select ban.*, banned.name as bannedname, banner.name as bannername from ban" +
+		" left join player banned on banned.id=banned"+
+		" left join player banner on banner.id=banner"+
+		" where room=$1 and expires>$2 order by banned", [roomId, now()]
+	);
+}
+
+proto.getRoomUserActiveBan = function(roomId, userId){
+	return this.queryRow("select * from ban where room=$1 and banned=$2 and expires>$3 order by expires desc limit 1", [roomId, userId, now()], true);	
 }
 
 //////////////////////////////////////////////// #messages
@@ -353,7 +387,7 @@ proto.getNextMessageId = function(roomId, mid, asc){
 		asc?
 		"select min(id) mid from message where room=$1 and id>$2":
 		"select max(id) mid from message where room=$1 and id<$2",
-		[roomId, mid], false
+		[roomId, mid], true
 	);
 }
 

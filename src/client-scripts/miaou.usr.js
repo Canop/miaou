@@ -21,7 +21,7 @@ miaou(function(usr, mod, ed, ws){
 		}));
 		if (usr.checkAuth('admin')) {			
 			decs.append($('<button>').text('mod').click(function(){
-				mod.dialog(user.id);
+				mod.dialog(user);
 			}));
 		}
 	}
