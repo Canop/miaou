@@ -63,14 +63,5 @@ miaou(function(mod, chat, md, ws){
 			if (ban.reason) $('<p>').text('Reason : '+ban.reason).appendTo($c);
 		});
 	}
-	
-	//~ chat.on('sending_message', function(m){
-		//~ var m = 
-		//~ if (/^!!ban\b/.test(m.content)) {
-			//~ console.log( 'ban mess');
-			//~ 
-			//~ return false;
-		//~ }
-	//~ });
 
 });
