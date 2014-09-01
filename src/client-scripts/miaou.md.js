@@ -55,6 +55,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 	md.getMessages = function(){
 		return $('#messages > .message').map(function(){ return $(this).data('message') }).get();
 	}
+
 	md.getMessage = function(mid){
 		var $message = $('#messages > .message[mid='+mid+']');
 		if ($message.length) return $message.eq(0).data('message');
@@ -189,7 +190,6 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		});
 		if (wasAtBottom) md.scrollToBottom();
 	}
-	
 	
 	function updateLoaders(){
 		$('.loader').remove();
@@ -370,7 +370,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 			if (mids[i]<messageId) beforeId=mids[i];
 			else break;
 		}
-		for (var i=l; i-->0;) {
+		for (var i=l; i--;) {
 			if (mids[i]>messageId) afterId=mids[i];
 			else break;
 		}

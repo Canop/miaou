@@ -99,7 +99,7 @@ Shoe.prototype.botMessage = function(bot, content){
 }
 
 // returns all the sockets of the given roomId
-var roomSockets = exports.roomSockets = function(roomId){
+exports.roomSockets = function roomSockets(roomId){
 	var clients = io.sockets.adapter.rooms[roomId],
 		sockets = [];
 	for (var clientId in clients) {
@@ -108,11 +108,11 @@ var roomSockets = exports.roomSockets = function(roomId){
 	return sockets;
 }
 
-var emitToRoom = exports.emitToRoom = function(roomId, key, m){
+exports.emitToRoom = function emitToRoom(roomId, key, m){
 	io.sockets.in(roomId).emit(key, clean(m));
 }
 
-var roomIds = exports.roomIds = function(){
+exports.roomIds = function roomIds(){
 	return Object.keys(io.sockets.adapter.rooms).filter(function(n){ return n==+n });
 }
 

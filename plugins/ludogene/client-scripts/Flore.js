@@ -6,8 +6,8 @@ var Flore = (function(){
 		GOAL = 10,
 		NO_CELL = -2,
 		NO_PLAYER = -1;
+		
 	return {
-
 		encodeMove: function(move){
 			return String.fromCharCode(move.y*T+move.x + (move.p*100) + 40);
 		},

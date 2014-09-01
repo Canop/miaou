@@ -1,16 +1,5 @@
 // functions related to user profile displaying on hover
 
-miaou.eventIsOver = function(event, o) {
-	if (!o.length) return false;
-	var pos = o.offset(), ex = event.pageX, ey = event.pageY;
-	return (
-		ex>=pos.left
-		&& ex<=pos.left+o.width()
-		&& ey>=pos.top
-		&& ey<pos.top+o.height()
-	);
-}
-
 miaou(function(prof){
 	prof.shownow = function(){
 		if ($('.dialog').length) return;

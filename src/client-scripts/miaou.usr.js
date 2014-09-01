@@ -51,17 +51,17 @@ miaou(function(usr, mod, ed, ws){
 		else $('#users').append($u);
 		return $u;
 	}
-	
+
 	usr.showEntry = function(user){
 		usr.insertInUserList(user).addClass('connected');
 	}
 	usr.showLeave = function(user){
 		$user(user).removeClass('connected');		
 	}
-		
+
 	// returns true if the user's authorization level in room is at least the passed one
 	usr.checkAuth = function(auth) {
-		for (var i=levels.length; i-->0;) {
+		for (var i=levels.length; i--;) {
 			if (levels[i]===room.auth) return true;
 			if (levels[i]===auth) return false;
 		}

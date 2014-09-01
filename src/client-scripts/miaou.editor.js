@@ -1,4 +1,4 @@
-// Handles the message ed
+// Handles the message editor
 
 miaou(function(ed, chat, md, ms, ws){
 
@@ -9,8 +9,8 @@ miaou(function(ed, chat, md, ms, ws){
 		savedValue, $autocompleter, editwzin, replywzin;
 
 	function toggleLines(s,r,insert){
-		var lines = s.split('\n');
-		var on = lines.reduce(function(b,l){ return b && r.test(l) }, true);
+		var lines = s.split('\n'),
+			on = lines.reduce(function(b,l){ return b && r.test(l) }, true);
 		return lines.map(function(l){ return on ? l.replace(r,'') : insert+l }).join('\n');
 	}
 	function toggleLinesCode(s){
@@ -309,12 +309,12 @@ miaou(function(ed, chat, md, ms, ws){
 			$('#uploadwait').show();
 			xhr.send(fd);
 		});
-	};
+	}
 	
 	// adds or remove a ping to that username
 	ed.ping = function(username){
-		var val = input.value, s = input.selectionStart, e = input.selectionEnd;
-		var acname = getacname();
+		var val = input.value, s = input.selectionStart, e = input.selectionEnd,
+			acname = getacname();
 		if (acname) {
 			input.value = val.slice(0, e-acname.length) + username + val.slice(e);
 			input.selectionStart = input.selectionEnd = e + username.length - acname.length;
@@ -327,7 +327,7 @@ miaou(function(ed, chat, md, ms, ws){
 			input.selectionEnd = e + insert.length;
 		}
 		input.focus();
-	};
+	}
 	
 	// toggle reply to an existing message
 	ed.replyToMessage = function($message){
@@ -347,7 +347,7 @@ miaou(function(ed, chat, md, ms, ws){
 		input.selectionEnd = e + dl;
 		input.focus();
 		updateReplyWzin($message);
-	};
+	}
 	
 	// toggle edition of an existing message
 	ed.editMessage = function($message){
@@ -369,7 +369,7 @@ miaou(function(ed, chat, md, ms, ws){
 			zIndex:5, fill:'rgba(208, 120, 16, .3)', scrollables:'#messagescroller', changeElementBackground:true
 		});
 		updateReplyWzin();
-	};
+	}
 	
 	// cancels replying
 	ed.cancelReply = function(){

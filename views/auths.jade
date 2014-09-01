@@ -144,8 +144,6 @@ html
 					bans = !{JSON.stringify(bans)},
 					room = !{JSON.stringify(room)};
 					
-				console.log(bans);
-					
 				$('.date').text(function(_,t){
 					return Date.now()/1000-t<15*60 ? "just now" : miaou.formatRelativeDate(t*1000);
 				});
@@ -159,7 +157,7 @@ html
 				$('#authspage')
 				.on('mouseenter', '.user', miaou.prof.show).on('mouseleave', '.profile', miaou.prof.hide)
 				.on('mouseleave', '.user', function(e){
-					if (!miaou.eventIsOver(e, $('.profile'))) miaou.prof.hide();
+					if (!miaou.gui.eventIsOver(e, $('.profile'))) miaou.prof.hide();
 				});
 				$('#backToRoom').click(function(){ location = room.path; return false });
 				$('input[type=radio]').click(function(){
