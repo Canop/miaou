@@ -135,14 +135,14 @@ function startServer(config){
 	require('./ws.js').configure(config, db).listen(server, sessionStore, cookieParser, db);
 }
 
-exports.url = function url(pathname){ // todo cleaner way in express not supposing absolute paths ?
+var url = exports.url = function(pathname){ // todo cleaner way in express not supposing absolute paths ?
 	return baseURL+(pathname||'/');
 }
 
-exports.roomPath = function roomPath(room){
+var roomPath = exports.roomPath = function(room){
 	return room.id+'?'+naming.toUrlDecoration(room.name);	
 }
-exports.roomUrl = function roomUrl(room){
+var roomUrl = exports.roomUrl = function(room){
 	return exports.url('/'+exports.roomPath(room));
 }
 exports.mobile = function(req){

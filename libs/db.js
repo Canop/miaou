@@ -33,7 +33,7 @@ Promise.longStackTraces(); // this will be removed in production in the future
 function Con(){}
 var proto = Con.prototype;
 
-exports.NoRowError = function NoRowError(){};
+var NoRowError = exports.NoRowError = function(){};
 NoRowError.prototype = Object.create(Error.prototype);
 
 //////////////////////////////////////////////// #users
@@ -649,7 +649,7 @@ exports.init = function(dbConfig, cb){
 
 // returns a promise bound to a connection, available to issue queries
 //  The connection must be released using off
-exports.on = function on(val){
+var on = exports.on = function(val){
 	var con = new Con(), resolver = Promise.defer();
 	pool.connect(function(err, client, done){
 		if (err) {
