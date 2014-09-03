@@ -6,20 +6,23 @@ trap 'cd "$cwd"' EXIT
 cd `dirname $0`
 ROOT_PATH=${PWD}
 STATIC_PATH="$ROOT_PATH/static"
-COMMON_SCRIPTS_SRC_PATH="$ROOT_PATH/src/common-scripts"
-PAGE_SCRIPTS_SRC_PATH="$ROOT_PATH/src/page-scripts"
-SCSS_SRC_PATH="$ROOT_PATH/src/scss"
+COMMON_SCRIPTS_SRC_PATH="$ROOT_PATH/src/main-js"
+PAGE_SCRIPTS_SRC_PATH="$ROOT_PATH/src/page-js"
+MAIN_SCSS_SRC_PATH="$ROOT_PATH/src/main-scss"
+PAGE_SCSS_SRC_PATH="$ROOT_PATH/src/page-scss"
 
 ##################################################################
-# CSS
+# building static/main.css
 ##################################################################
 
 ## builds the css file from the sass one
 rm $STATIC_PATH/main.css
-sass -t compressed $SCSS_SRC_PATH/main.scss > $STATIC_PATH/main.css 
+sass -t compressed $MAIN_SCSS_SRC_PATH/main.scss > $STATIC_PATH/main.css 
 
 ## concat plugin css
 cat $ROOT_PATH/plugins/*/css/*.css >> $STATIC_PATH/main.css
+
+echo main.css gzipped : `cat $STATIC_PATH/main.css | gzip -9f | wc -c` bytes
 
 ##################################################################
 # building static/miaou.min.js
@@ -35,11 +38,21 @@ cat $ROOT_PATH/plugins/*/client-scripts/*.js >> $STATIC_PATH/miaou.concat.js
 # minify the common js using uglify.js
 cd $STATIC_PATH
 uglifyjs miaou.concat.js --screw-ie8 -cmt --reserved "chat,ed,gui,hist,md,mh,mod,ms,prof,usr,win,ws,wz,games,plugins" --output miaou.min.js --source-map miaou.min.js.map
-echo gzipped size :
-cat miaou.min.js | gzip -9f | wc -c
+
+echo miaou.min.js gzipped : `cat miaou.min.js | gzip -9f | wc -c` bytes
 
 ##################################################################
-# building of specific page scripts
+# building specific page css
+##################################################################
+
+cd $PAGE_SCSS_SRC_PATH
+for f in *.scss
+do
+sass -t compressed $f > "$STATIC_PATH/${f%.*}.css"
+done
+
+##################################################################
+# building specific page scripts
 ##################################################################
 cd $PAGE_SCRIPTS_SRC_PATH
 for f in *.js
