@@ -6,14 +6,14 @@ miaou(function(hist, md, ws){
 	
 	// arg : +1 or -1
 	function moveSelect(d){
-		var i, $s = $('#searchresults .message.selected');
+		var i, $s = $('#search-results .message.selected');
 		if ($s.length) {
 			i = $s.removeClass('selected').index() + d;
 		} else {
 			if (d<0) return;
 			i = 0;
 		}
-		var $selected = $('#searchresults .message').eq(i).addClass('selected');
+		var $selected = $('#search-results .message').eq(i).addClass('selected');
 		if ($selected.length) {
 			md.focusMessage(+$selected.attr('mid'));
 			var mtop = $selected.offset().top,
@@ -55,7 +55,7 @@ miaou(function(hist, md, ws){
 			ws.emit('search', {pattern:pat});
 			hist.search(pat);
 		} else {
-			$('#searchresults').empty();
+			$('#search-results').empty();
 			$('#hist .bar').removeClass('hit').removeAttr('sm sn');
 		}
 	});
@@ -84,7 +84,7 @@ miaou(function(hist, md, ws){
 		var records = res.hist, d = records[0].d, n = records[records.length-1].d - d,
 			$hist = $('#hist'), maxn = 0, logmaxn,
 			$month, lastMonth;
-		$('#searchresults .message.selected').removeClass('selected');
+		$('#search-results .message.selected').removeClass('selected');
 		records.forEach(function(r){
 			maxn = Math.max(maxn, r.n);
 		});
@@ -116,7 +116,7 @@ miaou(function(hist, md, ws){
 	
 	hist.showPage = function(){
 		if (!$('#hist').length) return;
-		var $scroller = $('#messagescroller'), sh = $scroller.height();
+		var $scroller = $('#message-scroller'), sh = $scroller.height();
 		var $messages = $('#messages > .message').filter(function(){
 			var y = $(this).offset().top;
 			return y<sh && y+$(this).height()>0;

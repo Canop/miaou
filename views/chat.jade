@@ -17,32 +17,32 @@ html(lang=room.lang)
 				div#users
 		div#center
 			div#vert-center
-				div#messagescroller
+				div#message-scroller
 					div#messages
-				div#inputpanel
+				div#input-panel
 					textarea#input(lang=room.lang)
 					button.small#send Send
 					button.small#showPreview Preview
 					button.small#cancelEdit(style="display:none") Cancel
 					button.small#uploadOpen Upload
 					button.small#help Help			
-				div#uploadpanel
-					div#uploadcontrols
+				div#upload-panel
+					div#upload-controls
 						| Select an image to send to imgur
 						br
 						br
 						input(type="file",id="file")
 						button#uploadSend Send
 						button#cancelUpload Cancel
-					div#uploadwait(style="display:none")
+					div#upload-wait(style="display:none")
 						img(src="static/ajax-loader-brown.gif")
-				div#previewpanel
+				div#preview-panel
 					div#preview.rendered
 					button.small#shortcuts Shortcuts
 					button.small#hidePreview Hide
 			div#hist
 		div#right
-			section#roominfo
+			section#room-info
 				button.small#changeroom rooms
 				button.small#editroom edit
 				h2#roomname
@@ -51,10 +51,10 @@ html(lang=room.lang)
 				span.tab.selected(page="notablemessagespage") Notable Messages
 				span.tab(page="search") Search
 			div.page.selected#notablemessagespage
-				div#notablemessages
+				div#notable-messages
 			div.page#search
 				input#searchInput(autocomplete="off")
-				div#searchresults
+				div#search-results
 					i
 						p Type anything to search it (common English words are ignored)
 						p Hit <code>esc</code> to clear
@@ -94,12 +94,12 @@ html(lang=room.lang)
 			});
 			
 			$('#uploadOpen').click(function(){
-				$('#uploadpanel').show();
-				$('#inputpanel').hide();
+				$('#upload-panel').show();
+				$('#input-panel').hide();
 			});
 			$('#cancelUpload').click(function(){
-				$('#uploadpanel').hide();
-				$('#inputpanel').show();
+				$('#upload-panel').hide();
+				$('#input-panel').show();
 			});
 			
 			$(window).on('keydown', function(e){

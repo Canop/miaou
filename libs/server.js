@@ -115,6 +115,7 @@ function startServer(config){
 	var cookieParser = require('cookie-parser')(config.secret);
 	app = express();
 	server = http.createServer(app);
+	app.disable('x-powered-by');
 	app.use(require('compression')());
 	app.set('views', path.resolve(__dirname, '..', 'views'));
 	app.set('view engine', 'jade');
@@ -129,6 +130,19 @@ function startServer(config){
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(require('./anti-csrf.js')({ whitelist:['/upload'] }));
+	
+	app.use(function(req, res, next) {
+		res.set("X-Frame-Options", "deny");
+		res.set("Content-Security-Policy", "script-src 'self' 'unsafe-inline' http://ajax.googleapis.com");
+		//~ I would like to use stricter script-src directives :
+		//~ res.set("Content-Security-Policy", "script-src 'self' http://ajax.googleapis.com");
+		//~ But that's not so easy.
+		//~ The problem is that part of the inline scripts is jade generated which
+		//~ makes them harder to move out of the HTML. A solution might be to move those variables
+		//~ into non javascript (json) inlined scripts but that's not very clean and a big overhead.
+		return next();
+	});
+	
 	defineAppRoutes(config);
 	console.log('Miaou server starting on port', config.port);
 	server.listen(config.port);

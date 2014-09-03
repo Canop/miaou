@@ -65,7 +65,7 @@ html
 			.mobtabs .tab.selected {
 				color: black;
 			}
-			body.mobile #homemaincontent {
+			body.mobile #home-main-content {
 				position: relative;
 				margin-top: 250px;
 			}
@@ -109,12 +109,12 @@ html
 				div.tab Public<br>Rooms
 				div.tab Private<br>Rooms
 				div.tab Dialog<br>Rooms
-		div#homemaincontent
+		div#home-main-content
 			div.table
 
 		script.
 			var rooms = !{JSON.stringify(rooms)},
 				langs = !{JSON.stringify(langs)},
 				tabletop = 200;
-		script(src="static/rooms.js")
+		script(src="static/rooms.min.js")
 

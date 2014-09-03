@@ -20,7 +20,7 @@ html
 	body.home
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="static/gh_ribbon_right_gray.png",alt="Fork me on GitHub")
-		section#hometop
+		section#home-top
 			div.MP
 				div#langfilter
 					each lang, key in langs
@@ -36,7 +36,7 @@ html
 					a(href="room") Create a room
 					| -
 					a(href="help#About",target=help) Help
-		section#homenotifs
+		section#home-notifs
 			div.MP
 				h2 Notifications
 				if pings.length==1
@@ -51,22 +51,22 @@ html
 								a(href=ping.room)= ping.roomname
 				else
 					p None
-		#hometabs.MP
+		#home-tabs.MP
 			span.tab.selected Your Main Rooms
 			span.tab Public Rooms
 			span.tab Private Rooms
 			span.tab Dialog Rooms
-		#hometabshadows.MP
+		#home-tab-shadows.MP
 			span.tab.selected 
 			span.tab 
 			span.tab 
 			span.tab 
 			
-		section#homemain.hastabs
-			div#homemaincontent
+		section#home-main.hastabs
+			div#home-main-content
 				div.table
 		script.
 			var rooms = !{JSON.stringify(rooms)},
 				langs = !{JSON.stringify(langs)},
 				tabletop = 250;
-		script(src="static/rooms.js")
+		script(src="static/rooms.min.js")

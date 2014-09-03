@@ -1,3 +1,4 @@
+// https://github.com/Canop/taliner.js
 ;$.fn.taliner = function(){
 
 	var $t = this,

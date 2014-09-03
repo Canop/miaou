@@ -32,7 +32,7 @@ function table(rooms,alt){
 
 function selectTab(i) {
 	$('.tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
-	var $container = $('#homemaincontent > .table').empty();
+	var $container = $('#home-main-content > .table').empty();
 	switch(i){
 	case 0:
 		$container.append(
@@ -105,7 +105,7 @@ function selectTab(i) {
 	if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
 }
 selectTab(0);
-if (!$('#homemaincontent tr').length) selectTab(1);
+if (!$('#home-main-content tr').length) selectTab(1);
 $('.tab').click(function(){
 	selectTab($(this).index());
 });			

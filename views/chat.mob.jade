@@ -24,21 +24,21 @@ html
 				section#roomButtons
 					button.small#editroom Edit Room
 					button.small#changeroom Change Room
-				section#roominfo
+				section#room-info
 					div#roomdescription.rendered
 				div.tabs
 					span.tab.selected(page="notablemessagespage") Notable
 					span.tab(page="search") Search
 				div.page.selected#notablemessagespage
-					div#notablemessages
+					div#notable-messages
 				div.page#search
 					input#searchInput
-					div#searchresults
+					div#search-results
 						i
 							p Type anything to search it (common English words are ignored)
-		div#messagescroller
+		div#message-scroller
 			div#messages
-		div#inputpanel
+		div#input-panel
 			textarea#input(autocomplete="off")
 			button.small#send Send
 			

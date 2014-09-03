@@ -13,8 +13,8 @@ var wzin = (function(){
 		this.fill = opts.fill||"black";
 		this.zIndex = opts.zIndex||1;
 		this.bindings = [];
-		if (opts.scrollables) this.bind($(opts.scrollables), 'scroll', Wzin.prototype.update);
-		this.parent = opts.parent || document.body;
+		if (opts.scrollable) this.bind($(opts.scrollable), 'scroll', Wzin.prototype.update);
+		this.parent = opts.parent || opts.scrollable || document.body;
 		this.chbg = !!opts.changeElementBackground;
 		this.bind($(window), 'resize', Wzin.prototype.update);
 		this.update();

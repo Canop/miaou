@@ -12,14 +12,14 @@ html
 				background: #F0EAD6;
 			}
 	body.home
-		section#hometop
+		section#home-top
 			div.thinMP
 				a(href='.')
 					img(src="static/Miaou-300-f.png")
-		section#homenotifs
+		section#home-notifs
 			div.thinMP
 				h2 Room Edition
-		section#homemain
+		section#home-main
 			div.thinMP
 				form(method="post")
 					input(type="hidden", name="secret", value=secret)
@@ -54,7 +54,7 @@ html
 							td
 								div.rendered.input#roomdescription
 					p#err.error
-					div.dialog_buttons
+					div.dialog-buttons
 						input#cancel(type='button', value='Cancel')
 						input(type='submit', value='Save')#submit
 		
@@ -66,7 +66,7 @@ html
 			}
 			var room = !{room}, error=!{error};
 			if (room) {
-				$('.dialog_title').text('Room Edition');
+				$('.dialog-title').text('Room Edition');
 				$('#name').val(room.name);
 				$('#description').val(room.description);
 				$('#private').val(room.private ? 'on' : 'off');

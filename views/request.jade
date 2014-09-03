@@ -10,8 +10,8 @@ html
 		script(src="static/miaou.min.js")
 	body.logo
 		div.dialog.intro
-			div.dialog_title= room.name
-			div.dialog_content
+			div.dialog-title= room.name
+			div.dialog-content
 				if room.private
 					p This room is private. In order to enter, you must be authorized by a room admin and you must not have been banned.
 				else
@@ -25,7 +25,7 @@ html
 					input(type="text").unlabeled#request_speech
 				p#response
 				p.rendered#denyMessage
-			div.dialog_buttons#buttons
+			div.dialog-buttons#buttons
 				button#cancel Go Home 
 				button#request Request Access
 

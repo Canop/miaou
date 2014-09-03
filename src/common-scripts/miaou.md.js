@@ -41,13 +41,13 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 	}
 
 	var isAtBottom = md.isAtBottom = function(){
-		var $scroller = $('#messagescroller'), $messages = $('#messages'),
+		var $scroller = $('#message-scroller'), $messages = $('#messages'),
 			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
 		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
 	}
 	md.scrollToBottom = function(){
 		setTimeout(function(){ // because it doesn't always work on Firefox without this 
-			$('#messagescroller').scrollTop($('#messagescroller')[0].scrollHeight);
+			$('#message-scroller').scrollTop($('#message-scroller')[0].scrollHeight);
 			hist.showPage();
 		},10);
 	}
@@ -85,7 +85,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 
 	md.updateNotableMessages = function(message){
 		if (!message.id) return;
-		var yetPresent = false, notableMessages = $('#notablemessages .message').map(function(){
+		var yetPresent = false, notableMessages = $('#notable-messages .message').map(function(){
 			var msg = $(this).data('message');
 			if (message && msg.id===message.id) {
 				yetPresent = true;
@@ -100,7 +100,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		notableMessages = notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){
 			return ((b.pin||0)-(a.pin||0)) || (b.score-a.score + (b.created-a.created)/7000);
 		}).slice(0,12)
-		md.showMessages(notableMessages, $('#notablemessages'));
+		md.showMessages(notableMessages, $('#notable-messages'));
 		if (isPageHidden) $page.removeClass('selected');
 	}
 
@@ -286,7 +286,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		if (!message.id) {
 			$('<div>&#xe826;</div>').addClass('decoration snap').appendTo($decorations).attr('title', "Flake : only sent to people currently in the room, and will disappear if you refresh the page.");
 		}
-		if (votesHtml.length) $md.append($('<div/>').addClass('messagevotes').html(votesHtml));
+		if (votesHtml.length) $md.append($('<div/>').addClass('message-votes').html(votesHtml));
 		if (!$mc) $mc = $('<div>').addClass('content');
 		$mc.appendTo($md);
 		md.render($mc, message, oldMessage);
@@ -337,17 +337,17 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 				h += ' - <span class=unpin>unpin</span>';
 			}
 		}
-		$('<div>').addClass('messagemenu').html(h).appendTo(this);
+		$('<div>').addClass('message-menu').html(h).appendTo(this);
 	}
 	md.hideMessageMenus = function(){
-		$('.messagemenu, .editButton, .replyButton, .deleteButton').remove();
+		$('.message-menu, .editButton, .replyButton, .deleteButton').remove();
 	}
 	md.toggleMessageMenus = function(){
-		($('.messagemenu, .editButton, .replyButton, .deleteButton', this).length ? md.hideMessageMenus : md.showMessageMenus).call(this);
+		($('.message-menu, .editButton, .replyButton, .deleteButton', this).length ? md.hideMessageMenus : md.showMessageMenus).call(this);
 	}
 
 	md.goToMessageDiv = function(messageId){
-		var $messages = $('#messagescroller'),
+		var $messages = $('#message-scroller'),
 			$message = $('.message', $messages).filter(function(){ return $(this).data('message').id==messageId }).addClass('goingto');
 		setTimeout(function(){
 			var mtop = $message.offset().top;

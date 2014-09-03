@@ -16,7 +16,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, prof, usr, win, ws, wz){
 	gui.init = function(){
 		var replyWzin, timer;
 		
-		$('#messages, #notablemessages, #searchresults').on('click', '.message .content a[href]', function(e){
+		$('#messages, #notable-messages, #search-results').on('click', '.message .content a[href]', function(e){
 			var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
 			if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
 				// it's an url towards a room or message on this server
@@ -98,7 +98,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, prof, usr, win, ws, wz){
 			if ($target.length) {
 				if (replyWzin) replyWzin.remove();
 				replyWzin = wzin($this.closest('.message'), $target, {
-					zIndex:5, fill:'rgba(139, 69, 19, .2)', scrollables:'#messagescroller', parent:document.getElementById('messagescroller')
+					zIndex:5, fill:'rgba(139, 69, 19, .2)', scrollable:'#message-scroller'
 				});
 			}
 			e.stopPropagation();
@@ -157,7 +157,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, prof, usr, win, ws, wz){
 		});
 		
 		if ($('#hist').length) {
-			$('#messagescroller').on('scroll', hist.showPage);
+			$('#message-scroller').on('scroll', hist.showPage);
 		}
 		
 		if ($(document.body).hasClass('mobile')) {
@@ -176,12 +176,12 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, prof, usr, win, ws, wz){
 			.on('mouseleave', '.user', usr.hideUserHoverButtons);
 		}
 		
-		$('#notablemessages, #searchresults').on('click', '.message', function(e){
+		$('#notable-messages, #search-results').on('click', '.message', function(e){
 			var $this = $(this);
-			$this.closest('#notablemessages, #searchresults').find('.message.selected').removeClass('selected');
+			$this.closest('#notable-messages, #search-results').find('.message.selected').removeClass('selected');
 			md.focusMessage(+$this.addClass('selected').attr('mid'));
 			e.stopPropagation();
-			if ($this.closest('#notablemessages').length) {
+			if ($this.closest('#notable-messages').length) {
 				clearTimeout(timer);
 				timer = setTimeout(function(){ $this.removeClass('selected') }, 2000);
 			} else {
@@ -196,13 +196,13 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, prof, usr, win, ws, wz){
 		$('#showPreview').click(function(){
 			$(this).hide();
 			$('#input').focus();
-			$('#previewpanel').show();
+			$('#preview-panel').show();
 			md.scrollToBottom();
 		});
 		$('#hidePreview').click(function(){
 			$('#input').focus();
 			$('#showPreview').show();
-			$('#previewpanel').hide();
+			$('#preview-panel').hide();
 		});
 		$('#input').on('change keyup', function(){
 			$('#preview').html(miaou.mdToHtml(this.value, false, me.name));

@@ -12,14 +12,14 @@ html
 				background: #F0EAD6;
 			}
 	body.home
-		section#hometop
+		section#home-top
 			div.thinMP
 				a(href='.')
 					img(src="static/Miaou-300-f.png")
-		section#homenotifs
+		section#home-notifs
 			div.thinMP
 				h2 Public Profile
-		section#homemain
+		section#home-main
 			div.thinMP
 				form(method="post")
 					input(type="hidden", name="secret", value=secret)
@@ -50,7 +50,7 @@ html
 							td
 								each ep in externalProfileInfos
 									section.externalProfileForm
-										h3.sectionOpener= ep.name
+										h3.section-opener= ep.name
 										section
 											if ep.html
 												div.externalProfile !{ep.html}
@@ -69,7 +69,7 @@ html
 												if ep.creationDescription
 													p !{ep.creationDescription}
 					p#err.error= error
-					div.dialog_buttons
+					div.dialog-buttons
 						button#submit Save
 						button#close Rooms
 		script.
@@ -101,7 +101,7 @@ html
 			if (!valid) $('#close').hide();
 			$('#close').click(function(){ location = 'rooms'; return false; });
 						
-			$('.sectionOpener + section').hide();
-			$('.sectionOpener').click(function(){
-				$(this).toggleClass('sectionOpener sectionCloser').next('section').toggle();
+			$('.section-opener + section').hide();
+			$('.section-opener').click(function(){
+				$(this).toggleClass('section-opener section-closer').next('section').toggle();
 			});

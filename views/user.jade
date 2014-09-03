@@ -31,7 +31,7 @@ html
 	body.home
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="../static/gh_ribbon_right_gray.png",alt="Fork me on GitHub")
-		section#hometop
+		section#home-top
 			div.MP
 				a(href="..")
 					img(src="../static/Miaou-300-f.png")
@@ -39,8 +39,8 @@ html
 		section
 			div.thinMP
 				h2= user.name
-		section#homemain
-			div#homemaincontent
+		section#home-main
+			div#home-main-content
 				table#userinfo
 				h3
 					span.user= user.name + ' '
@@ -54,7 +54,7 @@ html
 					br
 					br
 				table.list#recentRooms
-				div.dialog_buttons#buttons
+				div.dialog-buttons#buttons
 					button(onclick="location='..'") Miaou Home
 		
 		script.

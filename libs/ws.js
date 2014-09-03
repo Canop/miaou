@@ -234,7 +234,6 @@ function handleUserInRoom(socket, completeUser){
 			]
 		})
 		.spread(function(r, ban){
-			console.log(r,ban);
 			if (r.private && !r.auth) throw new Error('Unauthorized user'); // FIXME don't fill the logs with those errors that can come very fast in case of pulling
 			if (ban) throw new Error('Banned user');
 			shoe.room = r;

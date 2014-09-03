@@ -14,10 +14,10 @@ html
 				vertical-align: top;
 			}
 			.C1 {
-				width: 30%;			
+				width: 30%;
 			}
 			.C2 {
-				width: 40%;			
+				width: 40%;
 			}
 			.CC {
 				padding: 2px;
@@ -31,7 +31,7 @@ html
 		form(method="post")
 			input(type="hidden", name="room", value=room.id)
 			input(type="hidden", name="secret", value=secret)
-			div.MP#authspage
+			div.MP#auths-page
 				h1
 					a(href="rooms") Miaou
 					| /
@@ -140,9 +140,7 @@ html
 
 		script.
 			miaou(function(){
-				var auths = !{JSON.stringify(auths)},
-					bans = !{JSON.stringify(bans)},
-					room = !{JSON.stringify(room)};
+				var room = !{JSON.stringify(room)};
 					
 				$('.date').text(function(_,t){
 					return Date.now()/1000-t<15*60 ? "just now" : miaou.formatRelativeDate(t*1000);
@@ -154,7 +152,7 @@ html
 					$('input, select').change(function(){ $('#submit_bar input').prop('disabled', false) })
 					$('input[type=reset]').click(function(){ $('#submit_bar input').prop('disabled', true) });
 				}
-				$('#authspage')
+				$('#auths-page')
 				.on('mouseenter', '.user', miaou.prof.show).on('mouseleave', '.profile', miaou.prof.hide)
 				.on('mouseleave', '.user', function(e){
 					if (!miaou.gui.eventIsOver(e, $('.profile'))) miaou.prof.hide();

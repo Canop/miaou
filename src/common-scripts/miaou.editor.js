@@ -62,7 +62,7 @@ miaou(function(ed, chat, md, ms, ws){
 		var accmd = getaccmd();
 		if (accmd) {
 			savedValue = input.value;
-			$autocompleter = $('<div id=autocompleter/>').prependTo('#inputpanel');
+			$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
 			Object.keys(chat.commands).filter(function(n){
 				return !n.indexOf(accmd)
 			}).forEach(function(name){
@@ -154,14 +154,14 @@ miaou(function(ed, chat, md, ms, ws){
 		}
 		if (!$message && m) $message = $('#messages .message[mid='+m[2]+']');
 		if ($message && $message.length) {
-			var mtop = $message.offset().top, $scroller = $('#messagescroller');
+			var mtop = $message.offset().top, $scroller = $('#message-scroller');
 			if (mtop<0) {
 				$scroller.scrollTop(mtop+$scroller.scrollTop()-25);
 			} else if ($scroller.height()+$scroller.scrollTop()<$scroller[0].scrollHeight) {
 				$scroller.scrollTop(Math.min(mtop+$scroller.scrollTop()-25, $scroller[0].scrollHeight));
 			}			
 			replywzin = wzin($message, $('#input'), {
-				zIndex:5, fill:'rgba(71, 71, 249, .15)', scrollables:'#messagescroller', parent:document.getElementById('messagescroller')
+				zIndex:5, fill:'rgba(71, 71, 249, .15)', scrollable:'#message-scroller'
 			});
 		}
 	}
@@ -292,8 +292,8 @@ miaou(function(ed, chat, md, ms, ws){
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST", "upload");
 			function finish(){
-				$('#uploadcontrols,#inputpanel').show();
-				$('#uploadwait,#uploadpanel').hide();
+				$('#upload-controls,#input-panel').show();
+				$('#upload-wait,#upload-panel').hide();
 			}
 			xhr.onload = function() {
 				var ans = JSON.parse(xhr.responseText);
@@ -305,8 +305,8 @@ miaou(function(ed, chat, md, ms, ws){
 				alert("Something didn't work as expected :(");
 				finish();
 			}
-			$('#uploadcontrols').hide();
-			$('#uploadwait').show();
+			$('#upload-controls').hide();
+			$('#upload-wait').show();
 			xhr.send(fd);
 		});
 	}
@@ -366,7 +366,7 @@ miaou(function(ed, chat, md, ms, ws){
 		$('#help').hide();
 		if (editwzin) editwzin.remove();
 		editwzin = wzin($message, $('#input'), {
-			zIndex:5, fill:'rgba(208, 120, 16, .3)', scrollables:'#messagescroller', changeElementBackground:true
+			zIndex:5, fill:'rgba(208, 120, 16, .3)', scrollable:'#message-scroller', parent:document.body, changeElementBackground:true
 		});
 		updateReplyWzin();
 	}
@@ -400,7 +400,7 @@ miaou(function(ed, chat, md, ms, ws){
 		savedValue = input.value;
 		if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
 		if ($autocompleter) $autocompleter.remove();
-		$autocompleter = $('<div id=autocompleter/>').prependTo('#inputpanel');
+		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
 		names.forEach(function(name){
 			$('<span>').text(name).appendTo($autocompleter).click(function(){
 				ed.ping(name);

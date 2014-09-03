@@ -4,14 +4,14 @@ body.home {
 	a {
 		color: black;
 	}
-	#hometop {
+	#home-top {
 		background: $bg-color ;
 		box-shadow: 0 0 10px black;
 		padding: 3px;
 	}
-	#homenotifs {
+	#home-notifs {
 	}
-	#hometabs,#hometabshadows {
+	#home-tabs,#home-tab-shadows {
 		.tab {
 			height: 30px;
 			position: absolute;
@@ -30,7 +30,7 @@ body.home {
 			padding: 8px;				
 		}		
 	}
-	#hometabs {
+	#home-tabs {
 		height: 30px;
 		.tab {
 			z-index: 2;
@@ -41,7 +41,7 @@ body.home {
 			}
 		}
 	}
-	#hometabshadows {
+	#home-tab-shadows {
 		margin-top: -30px;
 		.tab {
 			z-index: 1;
@@ -51,7 +51,7 @@ body.home {
 			}
 		}
 	}
-	#homemain {
+	#home-main {
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
@@ -64,15 +64,10 @@ body.home {
 		background: $bg-color ;
 		box-shadow: 0 0 10px black;
 		padding: 15px;
-		#homemaincontent {
+		#home-main-content {
 			width: 70%;
 			max-width: 1000px;
 			min-width: 800px;			
-		}
-		#thinmaincontent {
-			width: 70%;
-			max-width: 600px;
-			min-width: 500px;			
 		}
 		h3 {
 			margin-left: 8px;

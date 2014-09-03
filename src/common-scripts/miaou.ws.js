@@ -95,7 +95,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 				console.log('received results of another search', $('#searchInput').val().trim(), res);
 				return;
 			}
-			md.showMessages(res.results, $('#searchresults'));
+			md.showMessages(res.results, $('#search-results'));
 		})
 		.on('autocompleteping', ed.proposepings)
 		.on('hist', hist.show)

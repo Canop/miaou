@@ -11,9 +11,9 @@ miaou(function(){
 	miaou.dialog = function(options){
 		miaou.prof.hide();
 		var $d = $('<div class=dialog/>').hide().addClass(options.cssClass||'small');
-		$d.append($('<div class=dialog_title/>').text(options.title||''));
-		$d.append($('<div class=dialog_content/>').append(options.content));
-		var $buttons = $('<div class=dialog_buttons/>').appendTo($d);
+		$d.append($('<div class=dialog-title/>').text(options.title||''));
+		$d.append($('<div class=dialog-content/>').append(options.content));
+		var $buttons = $('<div class=dialog-buttons/>').appendTo($d);
 		var close = function(){
 			$d.fadeOut('fast', function(){$d.remove();});
 			$(window).off('keyup', handleKey);

@@ -6,12 +6,12 @@ miaou(function(mod, chat, md, ws){
 	durs['d'] = 24 * (durs['h'] = 60 * (durs['m'] = 60));
 
 	mod.dialog = function(user){
-		var $c = $('<div>').addClass('ban_dialog'),
+		var $c = $('<div>').addClass('ban-dialog'),
 			durationtype;
 		$('<span>').text("Duration :").appendTo($c);
 		function radio(idval, text, $r){
 			$c.append('<br>').append(
-				$r = $('<input type=radio>').attr({id:idval, name:'durationtype', value:idval})
+				$r = $('<input type=radio>').attr({id:idval, name:'duration-type', value:idval})
 				.on('change', function(){
 					durationtype = 
 					$c.find('.custom').prop('disabled', !$('#custom').prop('checked'));
@@ -32,15 +32,15 @@ miaou(function(mod, chat, md, ws){
 		.append($('<option>').val('d').text('days'))
 		.prop('disabled', true).appendTo($c);		
 		$('<p>').text("Reason :").appendTo($c);
-		$('<input id=ban_reason>').appendTo($c);
+		$('<input id=ban-reason>').appendTo($c);
 		miaou.dialog({
 			title: "Ban "+user.name,
 			content: $c,
 			buttons:{
 				Cancel:null,
 				Ban:function(){
-					var ban = {banned:user.id, bannedname:user.name, reason:$('#ban_reason').val()},
-						durationtype = $('input[name=durationtype]:checked').val(),
+					var ban = {banned:user.id, bannedname:user.name, reason:$('#ban-reason').val()},
+						durationtype = $('input[name=duration-type]:checked').val(),
 						m = durationtype.match(/^([a-z]+)(\d+)$/);
 					if (m) {
 						ban.nb = m[2];
