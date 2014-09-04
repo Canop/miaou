@@ -15,7 +15,6 @@
 	"plugins": [
 		"./plugins/stackoverflow/plugin.js",
 		"./plugins/wikipedia/plugin.js",
-		"./plugins/mountyhall/plugin.js",
 		"./plugins/video/plugin.js",
 		"./plugins/whiteboard/plugin.js",
 	],

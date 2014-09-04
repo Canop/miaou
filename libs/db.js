@@ -712,7 +712,7 @@ proto.queryRows = proto.execute = function(sql, args){
 	this.client.query(sql, args, function(err, res){
 		//~ logQuery(sql, args);
 		var end = Date.now();
-		if (end-start>20) {
+		if (end-start>40) {
 			console.log("Slow query (" + (end-start) + " ms) :");
 			logQuery(sql, args);
 		}

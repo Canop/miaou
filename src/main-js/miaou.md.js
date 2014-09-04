@@ -45,11 +45,12 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
 		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
 	}
+
 	md.scrollToBottom = function(){
-		setTimeout(function(){ // because it doesn't always work on Firefox without this 
-			$('#message-scroller').scrollTop($('#message-scroller')[0].scrollHeight);
+		setTimeout(function(scroller){ // because it doesn't always work on Firefox without this 
+			$(scroller).scrollTop(scroller.scrollHeight);
 			hist.showPage();
-		},10);
+		}, 10, document.getElementById('message-scroller'));
 	}
 
 	md.getMessages = function(){
