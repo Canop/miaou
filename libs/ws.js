@@ -375,6 +375,7 @@ function handleUserInRoom(socket, completeUser){
 		}
 	})
 	.on('mod_delete', function(ids){
+		if (!shoe.room) return;
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
 		db.on(ids)
 		.map(db.getMessage)
@@ -391,6 +392,7 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);		
 	})
 	.on('pm', function(otherUserId){
+		if (!shoe.room) return;
 		var lounge, otherUser, message;
 		db.on(otherUserId)
 		.then(db.getUserById)
@@ -416,6 +418,7 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	})
 	.on('request', function(request){
+		if (!shoe.room) return;
 		var roomId = request.room, publicUser = shoe.publicUser;
 		console.log(publicUser.name + ' requests access to room ' + roomId);
 		db.on()
@@ -441,6 +444,7 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);
 	})
 	.on('unpin', function(mid){
+		if (!shoe.room) return;
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
 		db.on([shoe.room.id, shoe.publicUser.id, mid])
 		.spread(db.unpin)
@@ -452,6 +456,7 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);		
 	})
 	.on('vote', function(vote){
+		if (!shoe.room) return;
 		if (vote.level=='pin' && !(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
 		db.on([shoe.room.id, shoe.publicUser.id, vote.message, vote.level])
 		.spread(db[vote.action==='add'?'addVote':'removeVote'])
