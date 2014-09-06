@@ -222,7 +222,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, prof, usr, win, ws, wz){
 					if (mid && !chat.oldestUnseenPing) chat.oldestUnseenPing = mid;
 				}
 			}
-			if (!visible) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
+			if (!visible && mid) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
 		}
 
 		gui.updateTab = function(hasPing, nbUnseenMessages){
