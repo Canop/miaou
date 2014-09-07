@@ -418,9 +418,8 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	})
 	.on('request', function(request){
-		if (!shoe.room) return;
 		var roomId = request.room, publicUser = shoe.publicUser;
-		console.log(publicUser.name + ' requests access to room ' + roomId);
+		console.log('REQUEST', publicUser.name + ' requests access to room ' + roomId);
 		db.on()
 		.then(function(){ return this.deleteAccessRequests(roomId, publicUser.id) })
 		.then(function(){ return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0,200)) })
