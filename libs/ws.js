@@ -12,8 +12,9 @@ var config,
 	auths = require('./auths.js'),
 	commands = require('./commands.js');
 
-exports.configure = function(_config, db){
-	config = _config;
+exports.configure = function(miaou){
+	config = miaou.config;
+	db = miaou.db;
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
 	plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
@@ -21,7 +22,7 @@ exports.configure = function(_config, db){
 	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });
 	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });
 	onChangeMessagePlugins = plugins.filter(function(p){ return p.onChangeMessage });
-	commands.configure(config, db);
+	commands.configure(miaou);
 	return this;
 }
 
@@ -57,26 +58,30 @@ function Shoe(socket, completeUser){
 	socket['publicUser'] = this.publicUser;
 	this.emit = function(key, m){ socket.emit(key, clean(m)) };
 }
-Shoe.prototype.error = function(err, messageContent){
+var Shoes = Shoe.prototype;
+
+Shoes.error = function(err, messageContent){
 	console.log('Error for user', this.completeUser.name, 'in room', (this.room||{}).name);
 	console.log(err.stack || err);
 	this.socket.emit('miaou.error', {txt:err.toString(), mc:messageContent});
 }
-Shoe.prototype.emitToRoom = function(key, m){
+Shoes.emitToRoom = function(key, m){
 	io.sockets.in(this.room.id).emit(key, clean(m));
 }
-Shoe.prototype.pluginTransformAndSend = function(m, sendFun){
+Shoes.pluginTransformAndSend = function(m, sendFun){
 	onSendMessagePlugins.forEach(function(plugin){
 		plugin.onSendMessage(this, m, sendFun);
 	}, this);
 	sendFun('message', m);
 }
-
-Shoe.prototype.roomSockets = function() {
+Shoes.io = function(){
+	return io;
+}
+Shoes.roomSockets = function(){
 	return roomSockets(this.room.id);
 }
 // returns the socket of the passed user if he's in the same room
-Shoe.prototype.userSocket = function(userIdOrName) {
+Shoes.userSocket = function(userIdOrName) {
 	var clients = io.sockets.adapter.rooms[this.room.id],
 		sockets = [];
 	for (var clientId in clients) {
@@ -87,7 +92,7 @@ Shoe.prototype.userSocket = function(userIdOrName) {
 	}
 }
 // to be used by bots, creates a message, store it in db and emit it to the room
-Shoe.prototype.botMessage = function(bot, content){
+Shoes.botMessage = function(bot, content){
 	var shoe = this;
 	this.db.on({content:content, author:bot.id, room:this.room.id, created:Date.now()/1000|0})
 	.then(db.storeMessage)
@@ -96,6 +101,24 @@ Shoe.prototype.botMessage = function(bot, content){
 		m.bot = true;
 		shoe.emitToRoom('message', m);
 	}).finally(this.db.off);
+}
+// returns the ids of the rooms to which the user is currently connected
+Shoes.userRooms = function(){
+	var rooms = [],
+		uid = this.publicUser.id;
+		iorooms = io.sockets.adapter.rooms;
+	for (var roomId in iorooms) {
+		if (+roomId!=roomId) continue;
+		var clients = io.sockets.adapter.rooms[roomId];
+		for (var clientId in clients) {
+			var socket = io.sockets.connected[clientId];
+			if (socket.publicUser && socket.publicUser.id===uid) {
+				rooms.push(roomId);
+				break;
+			}
+		}	
+	}
+	return rooms;
 }
 
 // returns all the sockets of the given roomId
@@ -125,6 +148,7 @@ function anyUserSocket(userIdOrName) {
 		}
 	}
 }
+
 
 // using a filtering function, picks some elements, removes them from the array,
 //  executes a callback on each of them
@@ -248,7 +272,7 @@ function handleUserInRoom(socket, completeUser){
 			return this.getNotableMessages(shoe.room.id, now-maxAgeForNotableMessages);
 		}).then(function(messages){
 			messages.forEach(function(m){ socket.emit('notable_message', clean(m)) });
-			socket.emit('server_commands', commands.commandDescriptions);
+			socket.emit('server_commands', commands.commands);
 			socket.emit('welcome');
 			shoe.roomSockets().forEach(function(s){
 				var user = s.publicUser;
@@ -346,11 +370,13 @@ function handleUserInRoom(socket, completeUser){
 			} else {
 				m.created = seconds;
 			}
+
 			db.on([shoe, m])
 			.spread(commands.onMessage)
 			.then(function(opts){ 
-				return opts.nostore ? m : this.storeMessage(m)
-			}).then(function(m){
+				return [opts.nostore ? m : this.storeMessage(m), opts]
+			}).spread(function(m, opts){
+				if (opts.silent) return;
 				if (m.changed) m.vote = '?';
 				shoe.pluginTransformAndSend(m, function(v, m){
 					io.sockets.in(roomId).emit(v, clean(m));
@@ -419,7 +445,7 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('request', function(request){
 		var roomId = request.room, publicUser = shoe.publicUser;
-		console.log('REQUEST', publicUser.name + ' requests access to room ' + roomId);
+		console.log(publicUser.name + ' requests access to room ' + roomId);
 		db.on()
 		.then(function(){ return this.deleteAccessRequests(roomId, publicUser.id) })
 		.then(function(){ return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0,200)) })

@@ -2,8 +2,8 @@ var config,
 	request = require('request'),
 	Busboy = require('busboy');
 	
-exports.configure = function(conf){
-	config = conf;
+exports.configure = function(miaou){
+	config = miaou.config;
 	return this;
 }
 

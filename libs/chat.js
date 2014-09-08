@@ -4,8 +4,8 @@ var fs = require('fs'),
 	server = require('./server.js'),
 	clientSidePluginNames;
 
-exports.configure = function(config){
-	clientSidePluginNames = (config.plugins||[]).filter(function(n){
+exports.configure = function(miaou){
+	clientSidePluginNames = (miaou.config.plugins||[]).filter(function(n){
 		return fs.existsSync(path.resolve(__dirname, '..', n, '..', 'client-scripts'))
 	}).map(function(p) {
 		return p.split('/').slice(-2,-1)[0]

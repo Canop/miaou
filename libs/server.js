@@ -7,6 +7,7 @@ var fs = require("fs"),
 	login = require('./login.js'),
 	db = require('./db.js'),
 	naming = require('./naming.js'),
+	miaou, // properties : db, config, bot
 	baseURL,
 	session = require('express-session'),
 	RedisStore = require('connect-redis')(session),
@@ -26,7 +27,7 @@ passport.deserializeUser(function(id, done) {
 	.finally(db.off);
 });
 
-function configureOauth2Strategies(config){
+function configureOauth2Strategies(){
 	var impls = {
 		google: {
 			strategyConstructor: require('passport-google-oauth').OAuth2Strategy,
@@ -40,7 +41,7 @@ function configureOauth2Strategies(config){
 			scope: 'identity'
 		}
 	};
-	var oauthConfigs = config.oauth2;
+	var oauthConfigs = miaou.config.oauth2;
 	for (var key in oauthConfigs) {
 		var params = oauthConfigs[key], impl = impls[key];
 		if (!impl) {
@@ -63,12 +64,12 @@ function configureOauth2Strategies(config){
 }
 
 // defines the routes to be taken by GET and POST requests
-function defineAppRoutes(config){
+function defineAppRoutes(){
 	var auths = require('./auths.js'),
-		rooms = require('./rooms.js').configure(config),
-		upload = require('./upload.js').configure(config),
-		profile = require('./profile.js').configure(config),
-		chat = require('./chat.js').configure(config),
+		rooms = require('./rooms.js').configure(miaou),
+		upload = require('./upload.js').configure(miaou),
+		profile = require('./profile.js').configure(miaou),
+		chat = require('./chat.js').configure(miaou),
 		help = require('./help.js'),
 		intro = require('./intro.js');
 	function ensureAuthenticated(req, res, next) {
@@ -111,8 +112,8 @@ function defineAppRoutes(config){
 }
 
 // starts the whole server, both regular http and websocket
-function startServer(config){
-	var cookieParser = require('cookie-parser')(config.secret);
+function startServer(){
+	var cookieParser = require('cookie-parser')(miaou.config.secret);
 	app = express();
 	server = http.createServer(app);
 	app.disable('x-powered-by');
@@ -125,7 +126,7 @@ function startServer(config){
 	app.use(bodyParser.urlencoded({ extended:false }));
 	app.use(cookieParser);
 	app.use(session({
-		store: sessionStore, secret: config.secret, saveUninitialized: true, resave: true /* todo test resave false */
+		store: sessionStore, secret: miaou.config.secret, saveUninitialized: true, resave: true /* todo test resave false */
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
@@ -143,10 +144,11 @@ function startServer(config){
 		return next();
 	});
 	
-	defineAppRoutes(config);
-	console.log('Miaou server starting on port', config.port);
-	server.listen(config.port);
-	require('./ws.js').configure(config, db).listen(server, sessionStore, cookieParser, db);
+	defineAppRoutes();
+	var port = miaou.config.port;
+	console.log('Miaou server starting on port', port);
+	server.listen(port);
+	require('./ws.js').configure(miaou).listen(server, sessionStore, cookieParser, db);
 }
 
 var url = exports.url = function(pathname){ // todo cleaner way in express not supposing absolute paths ?
@@ -167,19 +169,31 @@ exports.renderErr = function(res, err, base){
 	res.render('error.jade', { base:base||'', error: err.toString() });
 }
 
-function initPlugins(config){
-	(config.plugins||[]).map(function(n){
+function initPlugins(){
+	(miaou.config.plugins||[]).map(function(n){
 		return require(path.resolve(__dirname, '..', n))
 	}).forEach(function(p){
-		if (p.init) p.init(config, db);
+		if (p.init) p.init(miaou.config, miaou.db);
 	});
 }
 
 exports.start = function(config){
 	baseURL = config.server;
+	miaou = {
+		db:db,
+		config:config
+	}
 	db.init(config.database, function(){
-		configureOauth2Strategies(config);
-		startServer(config);
-		initPlugins(config);
+		db.on("miaou")
+		.then(db.getBot)
+		.then(function(b){
+			miaou.bot = b
+		})
+		.finally(db.off)
+		.then(function(){
+			configureOauth2Strategies();
+			startServer();
+			initPlugins();
+		});		
 	});
 }

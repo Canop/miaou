@@ -2,8 +2,8 @@ var config,
 	naming = require('./naming.js'),
 	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i;
 
-exports.configure = function(conf){
-	config = conf;
+exports.configure = function(miaou){
+	config = miaou.config;
 	return this;
 }
 
