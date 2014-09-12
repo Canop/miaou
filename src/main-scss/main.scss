@@ -230,6 +230,13 @@ body.mobile #message-scroller {
 				cursor: pointer;
 			}
 		}
+		table {
+			border-collapse: collapse;
+			th, td {
+				border: 1px solid #bbb;
+				padding: 0 3px;
+			}
+		}
 	}
 	&.me {
 		background-color: #fdf6e5;
