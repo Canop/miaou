@@ -14,7 +14,7 @@ function makeCommand(status){
 			var now = Date.now()/1000|0,
 				matches = m.content.match(/^!!\w+\s+(.*)$/),
 				out = {
-					author:bot.id, authorname:bot.name, created:now,
+					author:bot.id, authorname:bot.name, created:now, bot:true,
 					content:'*'+shoe.publicUser.name+'* is *'+status+'*'
 				};
 			if (matches) out.content += ' ( '+matches[1]+' )';
@@ -23,6 +23,7 @@ function makeCommand(status){
 			});
 		}, 100);
 		opts.silent = true;
+		opts.nostore = true;
 	}
 }
 
