@@ -2,8 +2,8 @@ var auths = require('./auths.js'),
 	server = require('./server.js'),
 	langs;
 	
-exports.configure = function(conf){
-	langs = require('./langs.js').configure(conf);
+exports.configure = function(miaou){
+	langs = require('./langs.js').configure(miaou);
 	return this;
 }
 

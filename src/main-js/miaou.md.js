@@ -100,7 +100,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		if (!yetPresent && message) notableMessages.push(message);
 		notableMessages = notableMessages.filter(function(m){ return m.score>4 }).sort(function(a,b){
 			return ((b.pin||0)-(a.pin||0)) || (b.score-a.score + (b.created-a.created)/7000);
-		}).slice(0,12)
+		}).slice(0,20)
 		md.showMessages(notableMessages, $('#notable-messages'));
 		if (isPageHidden) $page.removeClass('selected');
 	}

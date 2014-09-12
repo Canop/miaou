@@ -309,9 +309,11 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);
 	})
 	.on('get_newer', function(cmd){
+		if (!shoe.room) return;
 		db.on([shoe, true, nbMessagesPerPage, '>=', cmd.from, '<', cmd.until]).spread(emitMessages).finally(db.off);
 	})
 	.on('get_older', function(cmd){
+		if (!shoe.room) return;
 		db.on([shoe, false, nbMessagesPerPage, '<=', cmd.from, '>', cmd.until]).spread(emitMessages).finally(db.off);
 	})
 	.on('hist', function(search){

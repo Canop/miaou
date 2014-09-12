@@ -5,8 +5,9 @@ var path = require('path'),
 	langs,
 	plugins;
 
-exports.configure = function(conf){
-	langs = require('./langs.js').configure(conf);
+exports.configure = function(miaou){
+	var conf = miaou.config;
+	langs = require('./langs.js').configure(miaou);
 	plugins = (conf.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
 	if (conf.forbiddenUsernames) {
 		blacklist = conf.forbiddenUsernames.map(function(s){ return new RegExp(s,'i') }); 

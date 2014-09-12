@@ -6,7 +6,8 @@ var langs = exports.all = {
 };
 exports.legal; // codes of the languages proposed in room creation / filtering
 
-exports.configure = function(conf){
+exports.configure = function(miaou){
+	var conf = miaou.config;
 	exports.legal = {};
 	for (var key in langs) {
 		var lang = langs[key];

@@ -7,17 +7,13 @@ var path = require('path'),
 
 exports.configure = function(miaou){
 	var config = miaou.config, db = miaou.db,
-		plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) }),
-		helpmess = 'For a detailed help on Miaou, see the [help page]('+server.url('/help')+')\nCommands :';
-
+		plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
 	db.on(botname).then(db.getBot).then(function(b){ bot = b }).finally(db.off);
-	
 	function registerCommand(name, fun, help, filter){
 		var cmd = {name:name, fun:fun, help:help, filter:filter};
 		commands[name] = cmd;
 		all.push(cmd);
 	}
-	
 	plugins.forEach(function(plugin){
 		if (plugin.registerCommands) plugin.registerCommands(registerCommand);
 	});
@@ -34,9 +30,9 @@ exports.configure = function(miaou){
 var getHelpText = exports.getHelpText = function(room){
 	return 'For a detailed help on Miaou, see the [help page]('+server.url('/help')+')\nCommands :'+
 	all.filter(function(cmd){
-		return cmd.filter===undefined || cdm.filter(room)
+		return cmd.filter===undefined || cmd.filter(room)
 	}).map(function(cmd){
-		return '\n* `' + cmd.name + '` : ' + cmd.help
+		return '\n* `!!' + cmd.name + '` : ' + cmd.help
 	}).join('');
 }
 

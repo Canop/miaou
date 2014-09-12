@@ -173,7 +173,7 @@ function initPlugins(){
 	(miaou.config.plugins||[]).map(function(n){
 		return require(path.resolve(__dirname, '..', n))
 	}).forEach(function(p){
-		if (p.init) p.init(miaou.config, miaou.db);
+		if (p.init) p.init(miaou);
 	});
 }
 
