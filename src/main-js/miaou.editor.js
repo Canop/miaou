@@ -21,7 +21,7 @@ miaou(function(ed, chat, md, ms, ws){
 	}
 
 	function sendInput(){
-		var txt = $input.val().replace(/\s+$/,'');
+		var txt = $input.val().replace(/^\s{1,3}/,'').replace(/\s+$/,'');
 		if (txt.replace(replyRegex,'').length){
 			$input.val('');
 			var m = {content: txt};
