@@ -1,23 +1,30 @@
 
 (function(){
+	
+	var coldefregex = /^\s*[:\-]*(\|[:\-]*)+[:\-]*\s*$/;
 
 	function Table(cols){
-		this.style = cols.match(/[:\-]+/g).map(function(c, i){
-			if (c[c.length-1]!==':') return'';
-			return 'td:nth-child('+(i+1)+'){text-align:'+( c[0]===':' ? 'center' : 'right' )+'}'; 
+		this.style = cols.match(/[:\-]+/g).map(function(c){
+			return c[c.length-1]!==':' ? 'left' : ( c[0]===':' ? 'center' : 'right' );
+		}).map(function(align, i){
+			return 'td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
 		}).join('');
 		this.rows = [];
 	}
 	Table.prototype.push = function(row){
-		this.rows.push(row.match(/[^|]+/g));
+		this.rows.push(row.match(/[^|]+/g)||[]);
 	}
 	Table.prototype.html = function(username){
-		var h = '<table>'
+		var h = '<table>',
+			n = Math.max.apply(0, this.rows.map(function(v){ return v.length }));
 		if (this.style) h += '<style scoped>'+this.style+'</style>';
 		h += this.rows.map(function(r, ir){
-			return '<tr>'+r.map(function(c){
-				var tag = ir ? 'td' : 'th';
-				return '<'+tag+'>'+fmtStr(c.trim(), username)+'</'+tag+'>';
+			if (!r.length) return '';
+			return '<tr>'+r.map(function(c,ic){
+				var tag = ir ? 'td' : 'th',
+					cell = '<'+tag;
+				if (ic===r.length-1 && ic<n-1) cell += ' colspan='+(n-ic);
+				return cell + '>'+fmtStr(c.trim(), username)+'</'+tag+'>';
 			}).join('')+'</tr>';
 		}).join('');
 		h += '</table>';
@@ -30,7 +37,11 @@
 			if (i%2) return '<code>'+t+'</code>';
 			return t
 			.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>,]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
-			.replace(/\[([^\]]+)\]\((\d+)#(\d+)\)/ig, '<a target=_blank href="$2#$3">$1</a>') // exemple : [lien interne miaou](7#123456)
+			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d+)\)/g, function(s,t,r,_,m){ // exemple : [lien interne miaou](7#123456)
+				if (!(r||room)) return s;
+				return '<a target=_blank href='+(r||room.id)+'#'+m+'>'+t+'</a>';
+			})
+			//~ .replace(/\[([^\]]+)\]\((\d+)#(\d+)\)/g, '<a target=_blank href="$2#$3">$1</a>')
 			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig, '$1<a target=_blank href="$2">$2</a>') // exemple : http://dystroy.org
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
 				return a
@@ -76,10 +87,16 @@
 					lout.push(table.html(username));
 					table = null;
 				}
-			} else if (looksLikeARow && l<lin.length-1 && /^\s*[:\-]*(\|[:\-]*)+[:\-]*\s*$/.test(lin[l+1])) {
-				table = new Table(lin[++l]);
-				table.push(s);
-				continue;
+			} else if (looksLikeARow) {
+				if (coldefregex.test(s)) {
+					table = new Table(s);
+					table.push('');
+					continue;
+				} else if (l<lin.length-1 && coldefregex.test(lin[l+1])) {
+					table = new Table(lin[++l]);
+					table.push(s);
+					continue;
+				}
 			}
 			s = fmtStr(s, username);
 			if (m=s.match(/^(?:&gt;\s*)(.*)$/)) {
