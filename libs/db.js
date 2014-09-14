@@ -408,6 +408,15 @@ proto.search = function(roomId, pattern, lang, N){
 	);
 }
 
+// accepts a tsquery for example 'dog&!cat' (find dogs but filter out cats)
+proto.search_tsquery = function(roomId, tsquery, lang, N){
+	return this.queryRows(
+		"select message.id, author, player.name as authorname, content, created, pin, star, up, down, score from message"+
+		" inner join player on author=player.id"+
+		" where to_tsvector($1, content) @@ to_tsquery($1,$2) and room=$3 order by message.id desc limit $4",
+		[lang, tsquery, roomId, N]
+	);
+}
 // builds an histogram, each record relative to a utc day
 proto.messageHistogram = function(roomId, pattern, lang) {
 	return pattern ? this.queryRows(
