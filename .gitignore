@@ -16,6 +16,7 @@ sql/postgres.alter.sql
 trav
 graphics/*.png
 plugins/miaou.bot
+plugins/mountyhall
 
 # compilation byproducts
 .sass-cache
