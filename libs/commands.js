@@ -43,9 +43,10 @@ exports.commands = commands;
 exports.onMessage = function(shoe, m){
 	var cmdMatch = m.content.match(/^!!(\w+)/);
 	if (!cmdMatch) return {};	
-	var opts = {}, cmd = cmdMatch[1] ;
-	if (!commands[cmd] || !commands[cmd].fun) throw 'Command "' + cmd + '" not found';
-	return Promise.resolve(commands[cmd].fun.call(this, cmd, shoe, m, opts)).then(function(){
+	var opts = {}, cmd = commands[cmdMatch[1]];
+	if (!cmd || !cmd.fun) throw 'Command "' + cmd.name + '" not found';
+	if (cmd.filter && !cmd.filter(shoe.room)) throw 'Command "'+cmd.name+'" not available in this room';
+	return Promise.resolve(cmd.fun.call(this, cmd.name, shoe, m, opts)).then(function(){
 		return opts;
 	});
 }
