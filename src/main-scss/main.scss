@@ -133,7 +133,7 @@ section {
 		line-height: 18px;
 		font-style: italic;
 		color: #444;
-		font-size: 13px;
+		font-size: 95%;
 		&:hover {
 			background: $profile-bg-color;
 		}
@@ -143,9 +143,7 @@ section {
 		}
 	}
 }
-body.mobile #users .user {
-	line-height: 30px;
-}
+
 
 #me {
 	position: relative;
@@ -282,9 +280,7 @@ body.mobile #message-scroller {
 		padding: 2px;
 	}
 }
-body.mobile .message .user {
-	width: 75px;
-}
+
 .rendered {
 	text-align: left;
 }

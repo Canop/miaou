@@ -27,7 +27,7 @@ var pg = require('pg').native,
 	MAX_AGE_FOR_TOTAL_DELETION = 2*60,
 	pool;
 
-//~ Promise.longStackTraces(); // this will be removed in production in the future
+Promise.longStackTraces(); // this will be removed in production in the future
 
 // The connection object which is used for all postgress accesses from other files
 function Con(){}

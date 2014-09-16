@@ -1,5 +1,16 @@
 // mtabs : tabs of the mobile version of the chat
 
+
+body.mobile {
+	font-size: 12px;
+	#users .user {
+		line-height: 30px;
+	}
+	.message .user {
+		width: 75px;
+	}
+}
+
 .mtabs {
 	background: none;
 }
