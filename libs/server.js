@@ -48,7 +48,7 @@ function configureOauth2Strategies(){
 			console.log('no implementation for ' + key + ' strategy');
 			continue;
 		}
-		params.callbackURL = url("/auth/"+key+"/callback");
+		params.callbackURL = url("/auth/"+key+"/callback"); 
 		passport.use(new (impl.strategyConstructor)(params, function(accessToken, refreshToken, profile, done) {			
 			db.on(profile)
 			.then(db.getCompleteUserFromOAuthProfile)

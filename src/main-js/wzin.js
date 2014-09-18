@@ -52,7 +52,7 @@ var wzin = (function(){
 			$().add(e1).add(e2).css({background:this.fill});			
 		}
 		var p1 = e1.offset(), h1 = e1.outerHeight(), w1 = e1.outerWidth(),
-			p2 = e2.offset(), h2 = e2.outerHeight(), w2 = e1.outerWidth(),
+			p2 = e2.offset(), h2 = e2.outerHeight(), w2 = e2.outerWidth(),
 			H = Math.max(p2.top+h2, p1.top+h1) - p1.top,	
 			ps = {
 				top: p1.top,
