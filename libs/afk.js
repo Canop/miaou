@@ -11,15 +11,11 @@ function makeCommand(status){
 	return function(cmd, shoe, m, opts){
 		setTimeout(function(){
 			// sends a flake to all rooms in which the user is
-			var now = Date.now()/1000|0,
-				matches = m.content.match(/^!!\w+\s+(.*)$/),
-				out = {
-					author:bot.id, authorname:bot.name, created:now, bot:true,
-					content:'*'+shoe.publicUser.name+'* is *'+status+'*'
-				};
-			if (matches) out.content += ' ( '+matches[1]+' )';
+			var text = '*'+shoe.publicUser.name+'* is *'+status+'*',
+				matches = m.content.match(/^!!\w+\s+(.+)$/);
+			if (matches) text += ' ( '+matches[1]+' )';
 			shoe.userRooms().forEach(function(roomId){
-				shoe.io().sockets.in(roomId).emit('message', out);
+				shoe.emitBotFlakeToRoom(bot, text, roomId);
 			});
 		}, 100);
 		opts.silent = true;

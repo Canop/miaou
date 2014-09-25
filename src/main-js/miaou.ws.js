@@ -30,6 +30,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			info.state = 'ready';
 			socket.emit('enter', room.id);
 		})
+		.on('auth_dialog', md.showGrantAccessDialog)
 		.on('ban', mod.showBan)
 		.on('set_enter_time', setEnterTime)
 		.on('server_commands', function(commands){

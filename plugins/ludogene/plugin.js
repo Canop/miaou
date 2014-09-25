@@ -44,20 +44,16 @@ function storeInMess(m, game, shoe){
 
 function onCommand(cmd, shoe, m){
 	var match = m.content.match(/^!!(\w+)\s+@(\w[\w_\-\d]{2,})\s*$/);
-	if (match) {
-		if (match[2]===shoe.publicUser.name) throw "You can't play against yourself";
-		storeInMess(m, {
-			players: [
-				{name:match[2]}, // id will be resolved later
-				{id:m.author, name:m.authorname}
-			],
-			type: cmd==='game' ? 'Tribo' : cmd[0].toUpperCase()+cmd.slice(1),
-			status:'ask'
-		}, shoe);
-	} else {
-		// this also covers the case of somebody trying to input a game
-		throw 'Bad syntax. Use `!!'+cmd+' @yourOpponent`';
-	}
+	if (!match) throw 'Bad syntax. Use `!!'+cmd+' @yourOpponent`';
+	if (match[2]===shoe.publicUser.name) throw "You can't play against yourself";
+	storeInMess(m, {
+		players: [
+			{name:match[2]}, // id will be resolved later
+			{id:m.author, name:m.authorname}
+		],
+		type: cmd==='game' ? 'Tribo' : cmd[0].toUpperCase()+cmd.slice(1),
+		status:'ask'
+	}, shoe);
 }
 
 exports.accept = function(shoe, arg, accepter){

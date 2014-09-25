@@ -21,9 +21,10 @@ exports.configure = function(miaou){
 		setTimeout(function(){
 			shoe.botMessage(bot, getHelpText(shoe.room));
 		}, 10);
-	}, 'gives this help');	
+	}, 'gives this help');
 	require('./afk.js').configure(miaou).registerCommands(registerCommand);
 	require('./flakes.js').registerCommands(registerCommand);
+	require('./summon.js').configure(miaou).registerCommands(registerCommand);
 	all.sort(function(a,b){ return a.name>b.name ? 1 : -1 });
 }
 

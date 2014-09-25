@@ -4,7 +4,7 @@ var config,
 	minDelayBetweenMessages,
 	socketio = require('socket.io'),
 	connect = require('connect'),
-	io, db,
+	io, db, bot,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
@@ -15,6 +15,7 @@ var config,
 exports.configure = function(miaou){
 	config = miaou.config;
 	db = miaou.db;
+	bot = miaou.bot;
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
 	plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
@@ -67,6 +68,11 @@ Shoes.error = function(err, messageContent){
 }
 Shoes.emitToRoom = function(key, m){
 	io.sockets.in(this.room.id).emit(key, clean(m));
+}
+Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
+	io.sockets.in(roomId||this.room.id).emit('message', {
+		author:bot.id, authorname:bot.name, created:Date.now()/1000|0, bot:true, content:content
+	});
 }
 Shoes.pluginTransformAndSend = function(m, sendFun){
 	onSendMessagePlugins.forEach(function(plugin){
@@ -316,6 +322,28 @@ function handleUserInRoom(socket, completeUser){
 		if (!shoe.room) return;
 		db.on([shoe, false, nbMessagesPerPage, '<=', cmd.from, '>', cmd.until]).spread(emitMessages).finally(db.off);
 	})
+	.on('grant_access', function(userId){
+		if (!shoe.room) return;
+		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		db.on(userId)
+		.then(db.getUserById)
+		.then(function(user){
+			if (!user) throw 'User "'+username+'" not found';
+			return [user, this.getAuthLevel(shoe.room.id, user.id)]
+		})
+		.spread(function(user, authLevel){ 
+			// TODO test bans 
+			if (authLevel) throw "you can't grant access to this user, he has already access to the room";
+			shoe.emitBotFlakeToRoom(bot, "*"+user.name+"* has been granted access by *"+shoe.publicUser.name+"*", shoe.room.id);
+			return this.changeRights([
+				{cmd:"insert_auth", user:user.id, auth:"write"}, {cmd:"delete_ar", user:user.id}
+			], shoe.publicUser.id, shoe.room);
+		}).then(function(){
+			exports.emitAccessRequestAnswer(shoe.room.id, userId, true);			
+		}).catch(function(e) {
+			shoe.error(e);
+		}).finally(db.off);
+	})
 	.on('hist', function(search){
 		if (!shoe.room) return;
 		db.on(shoe.room.id)
@@ -445,7 +473,7 @@ function handleUserInRoom(socket, completeUser){
 		}).catch(function(err){ console.log('ERR in PM :', err) })
 		.finally(db.off);
 	})
-	.on('request', function(request){
+	.on('request', function(request){ // not called from chat but from request.jade
 		var roomId = request.room, publicUser = shoe.publicUser;
 		console.log(publicUser.name + ' requests access to room ' + roomId);
 		db.on()

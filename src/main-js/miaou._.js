@@ -115,7 +115,7 @@ miaou(function(appl){
 // Note : this isn't compatible with mangling of function argument names
 function miaou(f){
 	$(function(){
-		f.apply(null, f.toString().match(/\([^\)]+\)/)[0].match(/\w+/g).map(function(name){
+		f.apply(null, (f.toString().match(/\([^\)]*\)/)[0].match(/\w+/g)||[]).map(function(name){
 			return miaou[name] = miaou[name] || {};
 		}));
 	});

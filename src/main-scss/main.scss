@@ -273,11 +273,13 @@ body.mobile #message-scroller {
 	}
 }
 
-#messages .message, #messages .error {
-	display: flex;
-	.content {
-		width: calc(100% - 122px);
-		padding: 2px;
+#messages {
+	.message, .error, .access_request {
+		display: flex;
+		.content {
+			width: calc(100% - 122px);
+			padding: 2px;
+		}
 	}
 }
 

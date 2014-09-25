@@ -117,7 +117,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		md.scrollToBottom();
 	}
 	
-	// builds a notification message with a close button. The fil callback
+	// builds a notification message with a close button. The fill callback
 	//  is passed the container and a close function
 	md.notificationMessage = function(fill){
 		var wab = isAtBottom(),
@@ -126,28 +126,6 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		$md.append($('<button>').addClass('remover').text('X').click(remove));
 		fill($md, remove);
 		if (wab) md.scrollToBottom();
-	}
-
-	md.showRequestAccess = function(ar){
-		md.notificationMessage(function($c){
-			var h;
-			if (!ar.answered) h = "<span class=user>"+ar.user.name+"</span> requests access to the room.";
-			else if (ar.outcome) h = "<span class=user>"+ar.user.name+"</span> has been given "+ar.outcome+" right.";
-			else h = "<span class=user>"+ar.user.name+"</span> has been denied entry by <span class=user>"+ar.answerer.name+"</span>.";
-			var $p = $('<div>').html(h);
-			$c.append($p).data('user', ar.user)
-			if (usr.checkAuth('admin')) {
-				$('<button>').text('Manage Users').click(function(){ $('#auths').click() }).appendTo($p);
-				if (!vis()) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
-			}
-			if (ar.request_message) {
-				$('<div>').addClass('access_request').append(
-					$('<div>').addClass('user').text(ar.user.name)
-				).append(
-					$('<div>').addClass('content').append(miaou.mdToHtml(ar.request_message))
-				).appendTo($p);
-			}
-		});
 	}
 	
 	// checks immediately and potentially after image loading that

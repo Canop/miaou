@@ -69,10 +69,12 @@ html
 									td.date= r.requested
 									td
 										- var name = "answer_request_"+r.player
-										input(type="radio", _name=name, id="g"+i, value="grant")
-										label(for="g"+i) Grant Access
-										input(type="radio", _name=name, id="d"+i, value="deny")
-										label(for="d"+i) Deny Access
+										div
+											input(type="radio", _name=name, id="g"+i, value="grant")
+											label(for="g"+i) Grant Access
+										div
+											input(type="radio", _name=name, id="d"+i, value="deny")
+											label(for="d"+i) Deny Access
 								tr.userLine
 									td
 										span= r.name+' '

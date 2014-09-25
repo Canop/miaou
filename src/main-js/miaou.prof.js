@@ -15,7 +15,9 @@ miaou(function(prof){
 		else css.bottom = ch-up.top-uh-4;
 		css.left = up.left + uw + 4;
 		if ($message.hasClass('access_request')) {
-			css.left += 4; css.bottom -= 4;
+			css.left += 4; css.bottom -= 6;
+		} else if ($message.hasClass('notification')) {
+			css.left += 7; css.bottom -= 10;
 		} else if (!$message.hasClass('message')) {
 			css.left += 6; css.bottom -= 7;
 		}
