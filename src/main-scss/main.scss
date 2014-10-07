@@ -230,6 +230,7 @@ body.mobile #message-scroller {
 		}
 		table {
 			border-collapse: collapse;
+			display: inline-table;
 			margin: 5px 0;
 			th, td {
 				border: 1px solid #bbb;
@@ -380,7 +381,7 @@ body.mobile .message-menu .vote {
 }
 #notable-messages, #search-results {
 	.message {
-		font-size: 13px;
+		font-size: 12px;
 		padding: 2px 2px 2px 6px;
 		border-bottom: thin dashed #aaa;
 		&:hover {
@@ -392,10 +393,11 @@ body.mobile .message-menu .vote {
 			transition: background 0.2s;
 		}
 		transition: background 0.6s;
-	}
-	.message {
 		cursor: pointer;
 		padding: 6px;
+		&.pin {
+			font-size: 13px;
+		}
 	}
 	.content {
 		opacity: 0.8;
