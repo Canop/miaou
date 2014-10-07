@@ -37,7 +37,7 @@ $.fn.selectLines = function(){
 $.fn.insertLine = function(s){
 	return this.each(function(){
 		var e = this.selectionEnd, v = this.value;
-		if (e>0 && v[e-2]!='\n') s = '\n'+s;
+		if (e>0 && v[e-1]!='\n') s = '\n'+s;
 		if (e<v.length && v[e]!='\n') s += '\n';
 		this.value = v.slice(0,e)+s+v.slice(e);
 		this.selectionStart += s.length;
