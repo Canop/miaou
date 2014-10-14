@@ -1,10 +1,10 @@
 
 (function(){
 	
-	var coldefregex = /^\s*[:\-]*([\|\+][:\-]*)+[:\-]*\s*$/;
+	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+\s*$/;
 
 	function Table(cols){
-		this.style = cols.match(/[:\-]+/g).map(function(c){
+		this.style = (cols.match(/[:\-]+/g)||[]).map(function(c){ // the ||[] might be over defensive now
 			return c[c.length-1]!==':' ? 'left' : ( c[0]===':' ? 'center' : 'right' );
 		}).map(function(align, i){
 			return 'td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
