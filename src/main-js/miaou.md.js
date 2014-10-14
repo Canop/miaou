@@ -76,6 +76,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 				$('<div>').addClass('nminfo').html(votesAbstract(m) + ' ' + miaou.formatDate((m.created+chat.timeOffset)*1000) + ' by ' + m.authorname)
 			).appendTo($div);
 			if (m.id) $md.attr('mid',m.id);
+			$md.addClass(m.pin ? 'pin' : 'star');
 			md.render($content, m);
 			if ($content.height()>80) {
 				$content.addClass("closed");
