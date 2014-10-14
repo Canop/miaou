@@ -23,7 +23,7 @@ var pg = require('pg').native,
 	Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
 	path = require("path"),
-	MAX_AGE_FOR_EDIT = 5000+10, // +10 : additionnal delay to not issue an error if the browser was just at the max time
+	MAX_AGE_FOR_EDIT = 50000+10, // +10 : additionnal delay to not issue an error if the browser was just at the max time - 34 days
 	MAX_AGE_FOR_TOTAL_DELETION = 2*60,
 	pool;
 
@@ -508,6 +508,11 @@ proto.storePings = function(roomId, users, messageId){
 proto.deletePings = function(roomId, userId){
 	return this.execute("delete from ping where room=$1 and player=$2", [roomId, userId]);
 }
+
+proto.deleteAllUserPings = function(userId){
+	return this.execute("delete from ping where player=$1", [userId]);
+}
+
 
 proto.fetchUserPings = function(userId){
 	return this.queryRows("select player, room, name, message from ping, room where player=$1 and room.id=ping.room", [userId]);
