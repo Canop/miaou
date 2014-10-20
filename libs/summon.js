@@ -1,9 +1,11 @@
 // 
 
-var db;
+var db,
+	bot;
 
 exports.configure = function(miaou){
 	db = miaou.db;
+	bot = miaou.bot;
 	return this;
 }
 
@@ -13,7 +15,6 @@ exports.registerCommands = function(registerCommand){
 		var match = message.content.match(/^!!summon\s+@(\w[\w_\-\d]{2,})(\b|$)/);
 		if (!match) throw 'Bad syntax. Use `!!'+cmd+' @some_other_user`';
 		var username=match[1];
-		console.log("username",username);
 		if (username===shoe.publicUser.name) throw "You can't summon yourself";
 		return db.on(username)
 		.then(db.getUserByName)
@@ -23,10 +24,10 @@ exports.registerCommands = function(registerCommand){
 		})
 		.spread(function(user, authLevel){
 			if (!shoe.room.private) {
-				return shoe.emitBotFlakeToRoom(bot, user.name+" has been notified of your wish to come in this public room.", roomId);
+				return shoe.emitBotFlakeToRoom(bot, user.name+" has been notified of your wish he comes in this public room.", shoe.room.id);
 			}
 			if (authLevel) {
-				return shoe.emitBotFlakeToRoom(bot, user.name+" has been notified of your wish to come in this room (in which he has access).", roomId);				
+				return shoe.emitBotFlakeToRoom(bot, user.name+" has been notified of your wish he comes in this room (in which he has access).", shoe.room.id);				
 			}
 			shoe.emit('auth_dialog', {id:user.id, name:user.name});
 		})

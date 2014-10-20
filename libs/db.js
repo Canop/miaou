@@ -301,15 +301,15 @@ proto.changeRights = function(actions, userId, room){
 			break;
 		case "delete_auth":
 			// the exists part is used to check the user doing the change has at least as much auth than the modified user
-			sql = "delete from room_auth ma where ma.player=$1 and ma.room=$2 and exists (select * from room_auth ua where ua.player=$3 and ua.room=$4 and ua.auth>=ma.auth)";
-			args = [a.user, room.id, userId, room.id];
+			sql = "delete from room_auth ma where ma.player=$1 and ma.room=$2 and exists (select * from room_auth ua where ua.player=$3 and ua.room=$2 and ua.auth>=ma.auth)";
+			args = [a.user, room.id, userId];
 			break;
 		case "unban":
 			sql = "delete from ban where id=$1 and room=$2";
 			args = [a.id, room.id];
 			break;
 		}
-		return con.queryRow(sql, args);
+		return con.queryRow(sql, args, true);
 	});	
 }
 
