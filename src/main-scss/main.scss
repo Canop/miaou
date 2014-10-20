@@ -710,7 +710,7 @@ table.form {
 	}
 }
 
-button {
+button, input[type=submit], input[type=reset] {
 	background-color: #E3DAC9;
 	padding: 4px 8px;
 	border: 1px solid #999;
@@ -724,10 +724,10 @@ button {
     &.small {
 		font-size: 75%;
     }
-}
-button:hover,button:focus {
-    border-color: #666;
-    color: black;
+	&:hover, &:focus {
+		border-color: #666;
+		color: black;
+	}    
 }
 button.small {
 	padding: 2px 4px;

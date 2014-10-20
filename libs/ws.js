@@ -273,7 +273,7 @@ function handleUserInRoom(socket, completeUser){
 		}).then(function(){
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
 			socketWaitingApproval.forEach(function(o){
-				if (o.roomId===shoe.room.id) socket.emit('request', o.ar);
+				if (o.roomId===shoe.room.id && o.ar) socket.emit('request', o.ar);
 			});
 			return this.getNotableMessages(shoe.room.id, now-maxAgeForNotableMessages);
 		}).then(function(messages){
@@ -331,7 +331,7 @@ function handleUserInRoom(socket, completeUser){
 			if (!user) throw 'User "'+username+'" not found';
 			return [user, this.getAuthLevel(shoe.room.id, user.id)]
 		})
-		.spread(function(user, authLevel){ 
+		.spread(function(user, authLevel){
 			// TODO test bans 
 			if (authLevel) throw "you can't grant access to this user, he has already access to the room";
 			shoe.emitBotFlakeToRoom(bot, "*"+user.name+"* has been granted access by *"+shoe.publicUser.name+"*", shoe.room.id);
@@ -473,6 +473,13 @@ function handleUserInRoom(socket, completeUser){
 		}).catch(function(err){ console.log('ERR in PM :', err) })
 		.finally(db.off);
 	})
+	.on('pre_request', function(request){ // not called from chat but from request.jade
+		var roomId = request.room, publicUser = shoe.publicUser;
+		console.log(publicUser.name + ' is on the request page for room ' + roomId);
+		socketWaitingApproval.push({
+			socket:socket, userId:publicUser.id, roomId:roomId
+		});
+	})
 	.on('request', function(request){ // not called from chat but from request.jade
 		var roomId = request.room, publicUser = shoe.publicUser;
 		console.log(publicUser.name + ' requests access to room ' + roomId);
@@ -482,6 +489,7 @@ function handleUserInRoom(socket, completeUser){
 		.then(function(ar){
 			ar.user = publicUser;
 			socket.broadcast.to(roomId).emit('request', ar);
+			popon(socketWaitingApproval, function(o){ return o.socket===socket }); // cleans the pre_request
 			socketWaitingApproval.push({
 				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
 			});

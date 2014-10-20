@@ -113,7 +113,7 @@ html
 									td.auth
 										- var name = "change_auth_"+ua.player
 										select(_name=name)
-											if room.auth==='own'
+											if room.auth === 'own'
 												option(value="own", selected=ua.auth==="own") own
 											option(value="admin", selected=ua.auth==="admin") admin
 											option(value="write", selected=ua.auth==="write") write

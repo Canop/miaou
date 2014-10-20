@@ -125,7 +125,7 @@ function applyLangs(trans){
 		}
 	});
 }
-$.each(langs, function(key, lang){
+$.each(langs, function(key, lang){	
 	var $lang = $(document.getElementById(key));
 	lang.on = localStorage[key] !== 'off';
 	$lang.click(function(){
@@ -135,3 +135,4 @@ $.each(langs, function(key, lang){
 	});
 });
 applyLangs();
+

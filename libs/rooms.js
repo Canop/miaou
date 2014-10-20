@@ -7,6 +7,7 @@ exports.configure = function(miaou){
 	return this;
 }
 
+// room admin page GET
 exports.appGetRoom = function(req, res, db){
 	db.on([+req.param('id'), +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
@@ -22,6 +23,7 @@ exports.appGetRoom = function(req, res, db){
 	}).finally(db.off);
 }
 
+// room admin page POST
 exports.appPostRoom = function(req, res, db){
 	var roomId = +req.param('id'), name = req.param('name').trim(), room;
 	if (!/^.{2,50}$/.test(name)) {
@@ -40,23 +42,42 @@ exports.appPostRoom = function(req, res, db){
 		return [room, req.user, auth];
 	}).spread(db.storeRoom)
 	.then(function(){
-		res.redirect(server.roomUrl(room));	
+		res.redirect(server.roomUrl(room));	// executes the room get
 	}).catch(function(err){
 		res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
 	}).finally(db.off);
 }
 
+// rooms list GET
 exports.appGetRooms = function(req, res, db){
-	db.on(+req.user.id)
-	.then(function(uid){
+	db.on()
+	.then(function(){
 		return [
-			this.listFrontPageRooms(uid),
-			this.fetchUserPingRooms(uid, 0)
+			this.listFrontPageRooms(req.user.id),
+			this.fetchUserPingRooms(req.user.id, 0)
 		]
-	}).spread(function(rooms, pings){
+	})
+	.spread(function(rooms, pings){
 		rooms.forEach(function(r){ r.path = server.roomPath(r) });
 		res.render(server.mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user, langs:langs.legal });
-	}).catch(function(err){
+	})
+	.catch(function(err){
 		server.renderErr(res, err);
-	}).finally(db.off);
+	})
+	.finally(db.off);
+}
+
+// rooms list POST
+exports.appPostRooms = function(req, res, db){
+	db.on()
+	.then(function(){
+		if (req.param('clear_pings')) return this.deleteAllUserPings(req.user.id)
+	})
+	.then(function(){
+		res.redirect("rooms");	// executes the rooms list get
+	})
+	.catch(function(err){
+		server.renderErr(res, err);
+	})
+	.finally(db.off);
 }

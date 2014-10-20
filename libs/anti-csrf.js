@@ -2,7 +2,7 @@
 // - checking the referrer in POST requests
 // - checking a secret session token in POST requests
 // This implies that all modules must
-// - do all actions on POST forms
+// - do all actions on POST forms (or on a socket)
 // - send the POST request for a page with same URL
 // - insert in the forms a hidden parameter :
 //    input(type="hidden", name="secret", value=secret)
