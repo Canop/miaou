@@ -407,7 +407,7 @@ function handleUserInRoom(socket, completeUser){
 			db.on([shoe, m])
 			.spread(commands.onMessage)
 			.then(function(opts){ 
-				return [opts.nostore ? m : this.storeMessage(m), opts]
+				return [opts.nostore ? m : this.storeMessage(m, opts.ignoreMaxAgeForEdition), opts]
 			}).spread(function(m, opts){
 				if (opts.silent) return;
 				if (m.changed) m.vote = '?';

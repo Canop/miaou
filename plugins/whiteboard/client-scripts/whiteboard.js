@@ -5,7 +5,7 @@ miaou(function(plugins, chat, md, ms){
 	plugins.whiteboard = {
 		start: function(){
 			ms.registerStatusModifier(function(message, status){
-				if (!status.old && r.test(message.content)) {
+				if (r.test(message.content)) {
 					status.editable = true;
 				}
 			});
