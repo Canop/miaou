@@ -1,7 +1,12 @@
 
 miaou(function(chat, md, ws, gui, plugins, ws){
 	
-	chat.MAX_AGE_FOR_EDIT= 50000; // seconds TODO get it from server - 34 days
+	chat.config = { // may be changed by server later
+		maxMessageContentSize: 8000,
+		minDelayBetweenMessages: 500,
+		maxAgeForMessageEdition: 30,
+		maxAgeForMessageTotalDeletion: 3*60,
+	};
 	chat.DELAY_BEFORE_PROFILE_POPUP= 300; // ms
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
 	chat.nbUnseenMessages = 0;

@@ -34,7 +34,6 @@ miaou(function(){
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
 		if (level==="loud") {
-			console.log('loud ping!');
 			audio.play();
 		}
 	}

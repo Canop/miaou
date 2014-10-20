@@ -22,6 +22,13 @@ miaou(function(ed, chat, md, ms, ws){
 
 	function sendInput(){
 		var txt = $input.val().replace(/^\s{1,3}/,'').replace(/\s+$/,'');
+		if (txt.length > chat.config.maxMessageContentSize) {		
+			miaou.dialog({
+				title: "Message too big",
+				content: "Messages can't be more than "+chat.config.maxMessageContentSize+" characters long.\nYour message is "+txt.length+" characters long."
+			});
+			return;
+		}
 		if (txt.replace(replyRegex,'').length){
 			$input.val('');
 			var m = {content: txt};
@@ -171,6 +178,7 @@ miaou(function(ed, chat, md, ms, ws){
 		$input = $('#input');
 		input = $input[0];
 		$input.on('keydown', function(e){
+			if (miaou.dialog.has()) return false;
 			if (e.ctrlKey && !e.shiftKey) {
 				var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;
 				switch(e.which){

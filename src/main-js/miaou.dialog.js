@@ -13,15 +13,17 @@ miaou(function(){
 		var $d = $('<div class=dialog/>').hide().addClass(options.cssClass||'small');
 		$d.append($('<div class=dialog-title/>').text(options.title||''));
 		$d.append($('<div class=dialog-content/>').append(options.content));
-		var $buttons = $('<div class=dialog-buttons/>').appendTo($d);
+		var buttons = options.buttons||{OK:null},
+			$buttons = $('<div class=dialog-buttons/>').appendTo($d);
 		var close = function(){
+			dialogs.splice(dialogs.indexOf(d), 1);
 			$d.fadeOut('fast', function(){$d.remove();});
 			$(window).off('keyup', handleKey);
 		}
 		var handleKey = function(e){
-			if (e.which===27) close();
+			if (e.which===27 || (e.which===13&&Object.keys(buttons).length===1)) close();
 		}
-		$.each(options.buttons, function(name, func){
+		$.each(buttons, function(name, func){
 			$buttons.append($('<button>').html(name).click(function(){
 				if (!(func && func()===false)) close();
 			}));
@@ -35,9 +37,14 @@ miaou(function(){
 			show: function(callback){ $d.fadeIn(callback) }, // shows a previously hidden dialog
 			exists: function() { return !!$d.parent().length } // if false, it won't be possible to show it
 		}
-		$(window).on('keyup', handleKey);
+		setTimeout(function(){ $(window).on('keyup', handleKey) }, 300); // this delay mostly to prevent the handling of the keydown event which lead to this dialog
 		dialogs.push(d);
 		return d;
+	}
+	
+	// returns true if a dialog is currently open
+	miaou.dialog.has = function(){
+		return !!dialogs.length;
 	}
 	
 	miaou.dialog.closeAll = function(){

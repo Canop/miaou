@@ -269,6 +269,9 @@ function handleUserInRoom(socket, completeUser){
 			shoe.room = r;
 			console.log(shoe.publicUser.name, 'enters room', shoe.room.id, ':', shoe.room.name);
 			socket.emit('room', shoe.room).join(shoe.room.id);
+			socket.emit('config', ['maxMessageContentSize','minDelayBetweenMessages','maxAgeForMessageTotalDeletion','maxAgeForMessageEdition'].reduce(function(c,k){
+				c[k] = config[k]; return c;
+			}, {}));
 			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);
 		}).then(function(){
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);

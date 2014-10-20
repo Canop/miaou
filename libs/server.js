@@ -184,7 +184,7 @@ exports.start = function(config){
 		db:db,
 		config:config
 	}
-	db.init(config.database, function(){
+	db.init(config, function(){
 		db.on("miaou")
 		.then(db.getBot)
 		.then(function(b){

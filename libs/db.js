@@ -23,8 +23,7 @@ var pg = require('pg').native,
 	Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
 	path = require("path"),
-	MAX_AGE_FOR_EDIT = 50000+10, // +10 : additionnal delay to not issue an error if the browser was just at the max time - 34 days
-	MAX_AGE_FOR_TOTAL_DELETION = 2*60,
+	config,
 	pool;
 
 Promise.longStackTraces(); // this will be removed in production in the future
@@ -458,11 +457,11 @@ proto.storeMessage = function(m, dontCheckAge){
 	if (m.id) {
 		var savedAuthorname = m.authorname;
 			sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
-		if (!dontCheckAge) sql += ' and created>'+(now()-MAX_AGE_FOR_EDIT);
+		if (!dontCheckAge) sql += ' and created>'+(now()-config.maxAgeForMessageEdition);
 		sql += ' returning *';
 		return this.queryRow(sql, [m.content, m.changed, m.id, m.room, m.author]).then(function(m){
 			m.authorname = savedAuthorname;
-			if (m.content.length || m.created<now()-MAX_AGE_FOR_TOTAL_DELETION) return m;
+			if (m.content.length || m.created<now()-config.maxAgeForMessageTotalDeletion) return m;
 			return this.queryRow(
 				"delete from ping where message=$1", [m.id], true
 			).then(function(){
@@ -657,8 +656,9 @@ function logQuery(sql, args){ // used in debug
 }
 
 // must be called before any call to connect
-exports.init = function(dbConfig, cb){
-	var conString = dbConfig.url;
+exports.init = function(miaouConfig, cb){
+	config = miaouConfig;
+	var conString = config.database.url;
 	pg.defaults.parseInt8 = true;
 	pg.connect(conString, function(err, client, done){
 		if (err) return console.log('Connection to PostgreSQL database failed');

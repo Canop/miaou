@@ -6,8 +6,10 @@
 {
 	"server": "http://dystroy.org/miaou",
 	"port": 8204,
-	"maxMessageContentSize": 4000,
-	"minDelayBetweenMessages": 200,
+	"maxMessageContentSize": 5000,
+	"minDelayBetweenMessages": 600,
+	"maxAgeForMessageEdition": 3600,
+	"maxAgeForMessageTotalDeletion": 180,
 	"secret": "a string here",
 	"database": {
 		"url": "postgres://database_user:database_pwd@localhost/miaou"
