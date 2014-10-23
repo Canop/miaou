@@ -127,6 +127,13 @@ proto.getBot = function(botname){
 	})
 }
 
+///////////////////////////////////////////// #prefs
+
+// sets a preference (parameters must be valid)
+proto.setPref = function(userId, name, value){
+	
+}
+
 ///////////////////////////////////////////// #rooms
 
 proto.storeRoom = function(r, author, authlevel) {
