@@ -415,7 +415,7 @@ function handleUserInRoom(socket, completeUser){
 					io.sockets.in(roomId).emit(v, clean(m));
 				});
 				if (m.content && m.id){
-					var pings = m.content.match(/@\w[\w_\-\d]{2,}(\b|$)/g);
+					var pings = m.content.match(/@\w[\w\-]{2,}(\b|$)/g);
 					if (pings) {
 						pings = pings.map(function(s){ return s.slice(1) });
 						var remainingpings = [];

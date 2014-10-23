@@ -63,7 +63,7 @@
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
 			var m, s = lin[l].replace(/</g,'&lt;').replace(/>/g,'&gt;')
-				.replace(/^@\w[\w_\-\d]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : ''),
+				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : ''),
 				looksLikeARow = /\|/.test(s);
 			if ( !(table && looksLikeARow) && (m=s.match(/^(?:    |\t)(.*)$/)) ) {
 				lout.push('<code class=indent>'+m[1]+'</code>');

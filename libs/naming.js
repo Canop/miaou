@@ -99,16 +99,16 @@ exports.suggestUsername = function(completeName){
 	return (removeDiacritics(completeName.trim())+'@@@@@@@'.slice(completeName.length))
 		.replace(/^\W/g, function(){ return String.fromCharCode(~~(Math.random()*24)+97) })
 		.replace(/\s/g, '_')
-		.replace(/[^\w_\-\d]/g, function(){ return validChars[~~(Math.random()*validChars.length)] })
+		.replace(/[^\w\-]/g, function(){ return validChars[~~(Math.random()*validChars.length)] })
 		.slice(0, 20)
 }
 
 exports.toUrlDecoration = function(roomName){
 	return removeDiacritics(roomName||'')
-		.replace(/[^\w_\-\d\s]/g,'')
+		.replace(/[^\w\-\s]/g,'')
 		.replace(/\s+/g, '_');
 }
 
 exports.isValidUsername = function(username){
-	return !!(username && /^\w[\w_\-\d]{2,19}$/.test(username));
+	return !!(username && /^\w[\w\-]{2,19}$/.test(username));
 }

@@ -232,7 +232,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		if (message.content) {
 			// Updates the link (as reply) to upwards messages
 			// To make things simpler, we consider only one link upwards
-			var matches = message.content.match(/^\s*@\w[\w_\-\d]{2,}#(\d+)/);
+			var matches = message.content.match(/^\s*@\w[\w\-]{2,}#(\d+)/);
 			if (matches) message.repliesTo = +matches[1];
 		}		
 		if (message.bot) $user.addClass('bot');
