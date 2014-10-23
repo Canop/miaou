@@ -34,7 +34,7 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 			pings.forEach(function(p){
 				$c.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
 					window.open(p.room);
-					if ($md.find('.openroom').length==1) remove();
+					if ($c.find('.openroom').length==1) remove();
 					else $(this).remove();
 				}))
 			});
