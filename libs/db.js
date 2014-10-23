@@ -75,7 +75,7 @@ proto.getUserById = function(id){
 // Only public fields are returned
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
-	return this.queryRow('select id, name, oauthdisplayname, email, bot from player where name=$1', [username]);
+	return this.queryRow('select id, name, oauthdisplayname, email, bot from player where name=$1', [username], true);
 }
 
 

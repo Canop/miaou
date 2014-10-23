@@ -1,4 +1,4 @@
-// 
+// !!summon command : pings a user and, if necessary, displays a notification bar with a "grant right" button
 
 var db,
 	bot;
