@@ -56,8 +56,8 @@ html
 								div.rendered.input#roomdescription
 					p#err.error
 					div.dialog-buttons
-						button#cancel Cancel
-						input(type='submit', value='Save')#submit
+						input#cancel(type="button", value="Cancel")
+						input#submit(type='submit', value='Save')
 		
 		script.
 			$(document.body).addClass(
@@ -78,6 +78,9 @@ html
 				if (room.auth!=='own') $('#private').prop('disabled', true);
 				$('#lang').val(room.lang || langs[0].key);
 				$('#id').val(room.id);
+				$('#cancel').click(function(){ location = room.id });
+			} else {
+				$('#cancel').click(function(){ location = 'rooms' });			
 			}
 			if (error) {
 				$('#err').text(error);
@@ -92,7 +95,6 @@ html
 					$('#submit').prop('disabled', false);
 				}
 			});
-			$('#cancel').click(function(){ history.back() });
 			function format(){
 				$('#roomdescription').html(miaou.mdToHtml($('#description').val()));
 			}
