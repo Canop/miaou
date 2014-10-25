@@ -2,6 +2,7 @@ doctype html
 html
 	head
 		title Miaou - Room Edition
+		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
@@ -59,6 +60,9 @@ html
 						input(type='submit', value='Save')#submit
 		
 		script.
+			$(document.body).addClass(
+				/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+			);
 			var langs = !{langs};
 			for (var key in langs) {
 				var lang = langs[key];
