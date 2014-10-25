@@ -3,7 +3,7 @@
 miaou(function(ed, chat, md, ms, ws){
 
 	var $input, input,
-		replyRegex = /@(\w[\w_\-\d\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
+		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
 		stash, // save of the unsent message edition, if any
 		editedMessage, // currently edited message, if any (if you cycle through messages, their edited content is saved in a property stash)
 		savedValue, $autocompleter, editwzin, replywzin;

@@ -49,6 +49,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			// todo : don't repeat things in md.addMessage that should not be repeated
 			for (var i=0; i<messages.length; i++) messageIn(messages[i]);
 		})
+		.on('mod_dialog', mod.dialog)
 		.on('room', function(r){
 			if (room.id!==r.id) {
 				console.log('SHOULD NOT HAPPEN!');
