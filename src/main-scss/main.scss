@@ -625,15 +625,28 @@ table.form {
 	input, textarea {
 		width: 100%;
 	}
+	input[type=radio], input[type=checkbox] {
+		width: initial;
+	}
 	textarea {
 		height: 80px;
+	}
+	td.leftborder {
+		border-left: 1px solid #222;
 	}
 	th, td {
 		padding: 4px;
 	}
 	th, td:first-child {
 		text-align: right;
-		width: 110px;
+	}
+	th:last-child {
+		text-align: left;
+	}
+}
+body.desktop table.form {
+	th {
+		width: 160px;
 	}
 }
 .dialog-content {
@@ -909,21 +922,23 @@ div#logo {
 div#notifs {
 	color: #c2b0a8;
 }
-div.MP {
-	width: 70%;
-	max-width: 1000px;
-	min-width: 800px;
+body.desktop {
+	.MP {
+		width: 70%;
+		max-width: 1000px;
+		min-width: 800px;
+	}
+	.thinMP {
+		width: 70%;
+		max-width: 600px;
+		min-width: 500px;
+		margin: auto;
+	}
+}
+.MP, .thinMP {
 	margin: auto;
 	position: relative;
 }
-div.thinMP {
-	width: 70%;
-	max-width: 600px;
-	min-width: 500px;
-	margin: auto;
-}
-
-
 
 #response {
 	color: #555;
@@ -992,6 +1007,7 @@ div.thinMP {
 	}
 }
 
+// light tabs of the right column of the chat
 .tabs {
 	display: table;
 	width: 100%;

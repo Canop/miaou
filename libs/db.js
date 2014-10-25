@@ -130,8 +130,13 @@ proto.getBot = function(botname){
 ///////////////////////////////////////////// #prefs
 
 // sets a preference (parameters must be valid)
-proto.setPref = function(userId, name, value){
-	
+proto.upsertPref = function(userId, name, value){
+	return this.upsert('pref', 'value', value, 'player', userId, 'name', name);
+}
+proto.getPrefs = function(userId){
+	return this.queryRows(
+		"select name, value from pref where player=$1", [userId]
+	);
 }
 
 ///////////////////////////////////////////// #rooms
@@ -694,7 +699,7 @@ var on = exports.on = function(val){
 
 // releases the connection which returns to the pool
 // It's ok to call this function more than once
-proto.off = function(){
+proto.off = function(v){
 	if (this instanceof Con) {
 		if (this.done) {
 			this.done();
@@ -705,6 +710,7 @@ proto.off = function(){
 	} else {
 		console.log('not a connection!'); // if this happens, there's probably a leaked connection
 	}
+	return v;
 }
 
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
@@ -733,6 +739,48 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 		}
 	});
 	return resolver.promise.bind(this);
+}
+
+// exemple : upsert('pref', 'value', 'normal', 'player', 3, 'name', 'notif')
+proto.upsert = function(table, changedColumn, newValue, conditions){
+	var	con = this,
+		resolver = Promise.defer(),
+		sql = "update "+table+" set "+changedColumn+"=$1",
+		args = [newValue],
+		colnames = [changedColumn],
+		nbConditions = (arguments.length-3)>>1;
+	for (var i=0; i<nbConditions; i++){
+		colnames.push(arguments[i*2+3]);
+		sql += (i ? " and " : " where ") + arguments[i*2+3] + "=$"+(i+2)
+		args.push(arguments[i*2+4]);
+	}
+	con.client.query(sql, args, function(err, res){
+		if (err) {
+			console.log('Error in query:');
+			logQuery(sql, args);
+			resolver.reject(err);
+			return;
+		}
+		if (res.rowCount) {
+			resolver.resolve();
+			return;
+		}
+		var	valnums = ["$1"];
+		for (var i=0; i<nbConditions; i++){
+			valnums.push('$'+(i+2));
+		}
+		sql = "insert into "+table+"("+colnames.join(',')+") values("+valnums.join(',')+")";
+		con.client.query(sql, args, function(err, res){
+			if (err) {
+				console.log('Error in query:');
+				logQuery(sql, args);
+				resolver.reject(err);
+			} else {
+				resolver.resolve();
+			}
+		});
+	});
+	return resolver.promise.bind(this);	
 }
 
 proto.queryRows = proto.execute = function(sql, args){

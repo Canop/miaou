@@ -45,6 +45,7 @@ html
 		script.
 			var me = !{user},
 				room = !{JSON.stringify(room)},
+				userPrefs = !{JSON.stringify(userPrefs)},
 				pluginsToStart = !{pluginsToStart};
 			if (!room) {
 				location = 'rooms';
@@ -67,7 +68,7 @@ html
 				$('.mpage').eq($(this).index()).toggle();
 			});
 			$('#editProfile').click(function(){
-				location = 'profile';
+				location = 'prefs';
 			});
 			
 			miaou(function(chat){

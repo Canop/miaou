@@ -1,6 +1,7 @@
 var fs = require('fs'),
 	path = require('path'),
 	auths = require('./auths.js'),
+	prefs = require('./prefs.js'),
 	server = require('./server.js'),
 	clientSidePluginNames;
 
@@ -20,10 +21,11 @@ exports.appGet = function(req, res, db){
 			userId = req.user.id;
 		return [
 			this.fetchRoomAndUserAuth(roomId, userId),
-			this.getRoomUserActiveBan(roomId, userId)
+			this.getRoomUserActiveBan(roomId, userId),
+			prefs.get.call(this, userId)
 		]
 	})
-	.spread(function(room, ban){
+	.spread(function(room, ban, prefs){
 		room.path = server.roomPath(room);
 		req.session.room = room;
 		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
@@ -34,6 +36,7 @@ exports.appGet = function(req, res, db){
 		res.render(server.mobile(req) ? 'chat.mob.jade' : 'chat.jade', {
 			user:JSON.stringify(req.user),
 			room:room,
+			userPrefs:prefs,
 			pluginsToStart:JSON.stringify(clientSidePluginNames)
 		});
 		//~ console.dir(req.session);

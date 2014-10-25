@@ -2,28 +2,35 @@ doctype html
 html
 	head
 		title Miaou - Profile Creation
+		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+		style.
+			#username-main {
+				width:330px;
+				margin:auto;
+				padding:40px 4px;
+			}
 	body
 		form(method="post")
 			input(type="hidden", name="secret", value=secret)
-			div#centerer
-				div.dialog.centered
-					div.dialog-title Profile Edition
-					div.dialog-content
-						p Pick a name by which you will be recognized.
-						p Choose wisely (not &quot;wisely&quot;).
-						div.form
-							label.label Name
-							input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
-						p#err.error= error
-					div.dialog-buttons
-						button#submit Save
-						button#gotochat Go to chat
-						button#gotoextendedprofile Add more info to my profile
+			div#username-main
+				img(src="static/Miaou-300-f.png",vspace="20px")
+				p Pick a name by which you will be recognized.
+				p Choose wisely (not &quot;wisely&quot;).
+				p
+					label.label Name&thinsp;:&nbsp;
+					input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
+				p#err.error= error
+				button#submit Save
+				button#gotochat Go to chat
+				button#gotoextendedprofile Add more info to my profile
 		
 		script.
+			$(document.body).addClass(
+				/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+			);
 			var valid = !{JSON.stringify(valid)};
 			$('#name').focus().keyup(function(){
 				if (!this.validity.valid){
@@ -41,4 +48,4 @@ html
 			
 			if (!valid) $('#gotochat, #gotoextendedprofile').hide();
 			$('#gotochat').click(function(){ location = 'rooms'; return false; });
-			$('#gotoextendedprofile').click(function(){ location = 'profile'; return false; });
+			$('#gotoextendedprofile').click(function(){ location = 'prefs'; return false; });

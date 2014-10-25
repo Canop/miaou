@@ -29,6 +29,6 @@ exports.registerCommands = function(registerCommand){
 		back: 'back'
 	};
 	for (var cmd in status) {
-		registerCommand(cmd, makeCommand(status[cmd]), "tells the world you're "+status[cmd]);
+		registerCommand(cmd, makeCommand(status[cmd]), "tell the world you're "+status[cmd]);
 	}
 }

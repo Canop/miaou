@@ -1,0 +1,148 @@
+doctype html
+html
+	head
+		title Miaou - Preferences
+		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
+		link(rel="icon",type="image/png",href="static/M-32.png")
+		link(rel='stylesheet', href='static/main.css')
+		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+		script(src="static/miaou.min.js")
+		style.
+			.CL, .CR {
+				background: $bg-color;
+				width: 50%;
+				padding: 2px;
+				display: table-cell;
+				vertical-align: top;
+			}
+			.CC {
+				padding: 2px;
+			}
+			code {
+				white-space: pre-wrap;
+			}
+	body.home
+		section#home-top
+			div.MP
+				a(href="rooms")
+					img(src="static/Miaou-300-f.png",width="180px",hspace="5px")
+				p.links
+					| You're logged as
+					a.username(href="prefs",title="edit profile")= user.name
+					| -
+					a(id="logout",href="#") Log Out
+					| -
+					a(href="help#About",target=help) Help
+		section#home-notifs
+			div.MP
+				h2 Preferences
+				p#err.error= error
+
+		#home-tabs.MP
+			span.tab.selected Profile
+			span.tab Identities
+			span.tab Notifications
+			span.tab Display
+		#home-tab-shadows.MP
+			span.tab.selected 
+			span.tab 
+			span.tab 
+			span.tab 
+			
+		section#home-main.hastabs
+			div#home-main-content
+				form(method="post")
+					input(type="hidden", name="secret", value=secret)
+					div.page.selected
+						table.form
+							tr
+								th Name
+								td
+									input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
+							tr
+								th About me
+								td
+									input#description(type="text", name="description", maxlength="250")
+							tr
+								th Prefered Language
+								td
+									select#lang(name="lang")
+							tr
+								th Location
+								td
+									input#location(type="text", name="location", value="", maxlength="250")
+							tr
+								th Web Site
+								td
+									input#url(type="url", name="url", value="", maxlength="250")
+					div.page.externalProfiles
+						p If you have an account on one of those sites, you may display it in your Miaou profile by proving ownership below.
+						table.form
+							each ep in externalProfileInfos
+								tr
+									th= ep.name
+								tr
+									td
+										if ep.html
+											div.externalProfile !{ep.html}
+											div.inputs
+												- var cbid = "remove_"+ep.name
+												input(type="checkbox",name=cbid,id=cbid)
+												label(for=cbid) Remove this profile
+										else
+											table
+												each field in ep.fields
+													tr
+														td
+															label= field.label+'\u2009: '
+														td
+															input(type=(field.type||'text'),name=field.name)
+														if field.notice
+															td= field.notice
+											if ep.creationDescription
+												p !{ep.creationDescription}
+					div.page
+						table.form
+							tr
+								th Desktop Notification
+								td
+									input#notif_never(type="radio", name="notif", value="never")
+									label(for="notif_never") Never
+									br
+									input#notif_on_ping(type="radio", name="notif", value="on_ping")
+									label(for="notif_on_ping") When you're pinged or replied to (<i>highly recommended</i>)
+									br
+									input#notif_on_message(type="radio", name="notif", value="on_message")
+									label(for="notif_on_message") Whenever a message is posted in an open room
+							tr
+								th Notification Sound
+								td
+									select#sound(name="sound")
+										option(value="none") none
+										option(value="quiet") very quiet
+										option(value="standard") standard (recommended)
+
+					div.page
+						table.form
+							tr
+								th Message Date Display
+								td
+									input#date_display_hover(type="radio", name="datdpl", value="hover")
+									label(for="date_display_hover") On hover
+									br
+									input#date_display_on_break(type="radio", name="datdpl", value="on_breaks")
+									label(for="date_display_on_break") On breaks
+									br
+									input#date_display_always(type="radio", name="datdpl", value="always")
+									label(for="date_display_always") Always
+					div.dialog-buttons
+						button#submit Save
+						button#close Home
+		script.
+			var externalProfileInfos = !{JSON.stringify(externalProfileInfos)},
+				valid = !{JSON.stringify(valid)},
+				langs = !{langs},
+				userinfo = !{userinfo},
+				userPrefs = !{JSON.stringify(userPrefs)},
+				tabletop = 250;
+		script(src="static/prefs.min.js")
