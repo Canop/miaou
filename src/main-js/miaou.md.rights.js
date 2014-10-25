@@ -1,6 +1,6 @@
 // messages and notifications in the chat related to user rights
 
-miaou(function(md, usr,ws){
+miaou(function(md, gui, usr, ws){
 
 	md.showRequestAccess = function(ar){
 		md.notificationMessage(function($c, close){
@@ -32,7 +32,6 @@ miaou(function(md, usr,ws){
 			var $p = $('<div>').html(h);
 			$c.append($p).data('user', user);
 			$('<button>').text('Grant Access').click(function(){ ws.emit('grant_access', user.id); close(); }).appendTo($p);
-			if (!vis()) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
 		});
 	}
 

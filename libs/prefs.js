@@ -109,7 +109,7 @@ exports.appAllPrefs = function(req, res, db){
 				var val = req.param(key);
 				if (!val || val===userPrefs[key]) continue;
 				if (val.length>VALUE_MAX_LENGTH) {
-					console.log("pref value too long :", obj[key]);
+					console.log("pref value too long :", val);
 					continue;				
 				}
 				dbops.push(this.upsertPref(req.user.id, key, val));	

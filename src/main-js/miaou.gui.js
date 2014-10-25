@@ -1,5 +1,5 @@
 
-miaou(function(gui, chat, ed, hist, md, mh, ms, prof, usr, win, ws, wz){
+miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 	
 	// returns true if an event is over an element
 	gui.eventIsOver = function(event, o) {
@@ -218,8 +218,12 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, prof, usr, win, ws, wz){
 				if (visible) {
 					chat.clearPings();
 				} else {
-					miaou.notify(r || room, from, text);
 					if (mid && !chat.oldestUnseenPing) chat.oldestUnseenPing = mid;
+				}
+			}
+			if (!visible) {
+				if ( userPrefs.notif==="on_message" || (ping && userPrefs.notif==="on_ping") ) {
+					notif.show(r || room, from, text);					
 				}
 			}
 			if (!visible && mid) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);

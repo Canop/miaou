@@ -10,7 +10,7 @@ html(lang=room.lang)
 	body.chat
 		div#left
 			section#prefs
-				a#me.pref(href="prefs",title="Edit profile")
+				a#me.pref(href="prefs?",title="Edit profile")
 			section
 				button.small#auths authorizations
 				h2 Users
@@ -109,6 +109,8 @@ html(lang=room.lang)
 					return false;
 				}
 			});
+			
+			$('#me').attr('href', "prefs?room="+room.id);
 			
 			miaou(function(chat){
 				chat.start();

@@ -10,7 +10,8 @@ function selectTab(i) {
 	$container.find('.page').removeClass('selected').eq(i).addClass('selected');
 	if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
 }
-selectTab(0);
+if (location.hash==="#notifs") selectTab(2);
+else selectTab(0);
 $('.tab').click(function(){
 	selectTab($(this).index());
 });			
@@ -44,4 +45,16 @@ $('#sound').val(userPrefs.sound);
 $('input[name=datdpl][value='+userPrefs.datdpl+']').prop('checked', true);
 
 if (!valid) $('#close').hide();
-$('#close').click(function(){ location = 'rooms'; return false; });
+
+var roomMatch = location.href.match(/(\?|&)room=(\d+)/);
+if (roomMatch) {
+	$('#close').text("Back to room").click(function(){
+		location=roomMatch[2];
+		return false;		
+	});
+} else {
+	$('#close').click(function(){
+		location='rooms';
+		return false;
+	});
+}
