@@ -45,7 +45,7 @@ exports.onMessage = function(shoe, m){
 	var cmdMatch = m.content.match(/^!!(\w+)/);
 	if (!cmdMatch) return {};	
 	var opts = {}, cmd = commands[cmdMatch[1]];
-	if (!cmd || !cmd.fun) throw 'Command "' + cmd.name + '" not found';
+	if (!cmd || !cmd.fun) throw 'Command "' + cmdMatch[1] + '" not found';
 	if (cmd.filter && !cmd.filter(shoe.room)) throw 'Command "'+cmd.name+'" not available in this room';
 	return Promise.resolve(cmd.fun.call(this, cmd.name, shoe, m, opts)).then(function(){
 		return opts;
