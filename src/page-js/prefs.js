@@ -24,7 +24,7 @@ for (var key in langs) {
 	var lang = langs[key];
 	$('#lang').append($('<option>').attr('value', key).text(lang.name));
 }
-$('#name').focus().keyup(function(){
+$('#name').keyup(function(){
 	if (!this.validity.valid){ // not compatible with IE, that's fine 
 		$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');
 		$('#submit').prop('disabled', true);
@@ -36,6 +36,9 @@ $('#name').focus().keyup(function(){
 		$('#submit').prop('disabled', false);
 	}
 });
+$('#submit').hide();
+$('input, select').on("blur keyup change", function(){ $('#submit').show(); });
+
 $('#description').val(userinfo.description||'');
 $('#location').val(userinfo.location||'');
 $('#url').val(userinfo.url||'');
