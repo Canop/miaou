@@ -1,3 +1,6 @@
+// used for home-like pages :
+//  rooms.jade
+//  prefs.jade
 body.home {
 	overflow-y: scroll;
 	background: darken( $bg-color, 5% ) ;
@@ -11,7 +14,7 @@ body.home {
 	}
 	#home-notifs {
 	}
-	#home-tabs,#home-tab-shadows {
+	#home-tabs, #home-tab-shadows {
 		.tab {
 			height: 30px;
 			position: absolute;
@@ -30,6 +33,27 @@ body.home {
 			padding: 8px;				
 		}		
 	}
+	&.mobile {
+		#home-tabs, #home-tab-shadows {
+			.tab {
+				width: 70px;
+				&:nth-child(1) {
+					margin-left:10px;				
+				}
+				&:nth-child(2) {
+					margin-left:95px;
+				}
+				&:nth-child(3) {
+					margin-left:180px;
+				}
+				&:nth-child(4) {
+					margin-left:265px;
+				}
+				padding: 4px;				
+			}		
+		}
+	}
+
 	#home-tabs {
 		height: 30px;
 		.tab {
@@ -52,22 +76,25 @@ body.home {
 		}
 	}
 	#home-main {
+		position: absolute;
+		left:0; right:0;
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
 		&.hastabs {
 			margin-top: 26px;
 		}
-		position: absolute;
-		left:0; right:0;
 		z-index: 3;
 		background: $bg-color ;
 		box-shadow: 0 0 10px black;
 		padding: 15px;
 		#home-main-content {
-			width: 70%;
-			max-width: 1000px;
-			min-width: 800px;			
+			.page { // used for home-like pages but not for home
+				display: none;
+				&.selected {
+					display: block;
+				}
+			}
 		}
 		h3 {
 			margin-left: 8px;
@@ -88,13 +115,19 @@ body.home {
 			margin: 0 5px;
 		}
 	}
+	&.desktop {
+		#home-main-content {
+			width: 70%;
+			max-width: 1000px;
+			min-width: 800px;
+		}
+	}
 	&.mobile {
 		#logo {
 			margin-top: 6px;
 			text-align: center;
 		}
 		line-height: 25px;
-		padding: 5px;
 		p.links a {
 			margin-right: 15px;
 		}

@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'fontello';
-	src: url('fontello.woff?f8c3138f') format('woff');
+	src: url('fontello.woff?f1cb85af') format('woff');
 }
 $bg-color: #F0EAD6; // or #def
 $mtab-height: 39px;   // height of the top tabs in mobile interface
@@ -184,7 +184,6 @@ body.mobile #message-scroller {
 		position: relative;
 		align-items: center;
 		align-content: center;
-		width: 120px;
 		padding: 1px 3px;
 		color: #555;
 		text-overflow: ellipsis;
@@ -277,8 +276,22 @@ body.mobile #message-scroller {
 #messages {
 	.message, .error, .access_request {
 		display: flex;
+		.user {
+			flex-basis: 120px;
+			flex-grow: 0;
+			flex-shrink: 0;
+		}
 		.content {
-			width: calc(100% - 122px);
+			padding: 2px;
+			flex-grow: 1;
+		}
+		.mdate {
+			align-self: flex-start;
+			flex-basis: 90px;
+			flex-shrink: 0;
+			flex-grow: 0;
+			text-align: right;
+			font-size: 80%;
 			padding: 2px;
 		}
 	}
@@ -625,15 +638,28 @@ table.form {
 	input, textarea {
 		width: 100%;
 	}
+	input[type=radio], input[type=checkbox] {
+		width: initial;
+	}
 	textarea {
 		height: 80px;
+	}
+	td.leftborder {
+		border-left: 1px solid #222;
 	}
 	th, td {
 		padding: 4px;
 	}
 	th, td:first-child {
 		text-align: right;
-		width: 110px;
+	}
+	th:last-child {
+		text-align: left;
+	}
+}
+body.desktop table.form {
+	th {
+		width: 160px;
 	}
 }
 .dialog-content {
@@ -710,7 +736,7 @@ table.form {
 	}
 }
 
-button, input[type=submit], input[type=reset] {
+button, input[type=button], input[type=submit], input[type=reset] {
 	background-color: #E3DAC9;
 	padding: 4px 8px;
 	border: 1px solid #999;
@@ -909,21 +935,23 @@ div#logo {
 div#notifs {
 	color: #c2b0a8;
 }
-div.MP {
-	width: 70%;
-	max-width: 1000px;
-	min-width: 800px;
+body.desktop {
+	.MP {
+		width: 70%;
+		max-width: 1000px;
+		min-width: 800px;
+	}
+	.thinMP {
+		width: 70%;
+		max-width: 600px;
+		min-width: 500px;
+		margin: auto;
+	}
+}
+.MP, .thinMP {
 	margin: auto;
 	position: relative;
 }
-div.thinMP {
-	width: 70%;
-	max-width: 600px;
-	min-width: 500px;
-	margin: auto;
-}
-
-
 
 #response {
 	color: #555;
@@ -992,6 +1020,7 @@ div.thinMP {
 	}
 }
 
+// light tabs of the right column of the chat
 .tabs {
 	display: table;
 	width: 100%;

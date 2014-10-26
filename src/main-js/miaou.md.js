@@ -270,6 +270,10 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		if (!$mc) $mc = $('<div>').addClass('content');
 		$mc.appendTo($md);
 		md.render($mc, message, oldMessage);
+		if (!gui.mobile && userPrefs.datdpl!=="hover") {
+			var $mdate = $('<div>').addClass('mdate').text(miaou.formatTime(message.created)).appendTo($md);
+			if (userPrefs.datdpl!=="always") $mdate.hide();
+		}
 		updateLoaders();
 		resize($md, wasAtBottom);
 		md.showMessageFlowDisruptions();
@@ -277,12 +281,21 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 	}
 
 	md.showMessageFlowDisruptions = function(){
-		var lastMessage;
-		$('#messages > .message').removeClass('disrupt').each(function(){
-			var $this = $(this), message = $this.data('message');
-			if (lastMessage && message.created-lastMessage.created > miaou.chat.DISRUPTION_THRESHOLD) $this.addClass('disrupt')
+		var	$messages = $('#messages > .message'),
+			lastMessage;
+		for (var i=0; i<$messages.length; i++) {
+			var	$message = $messages.eq(i),
+				message = $message.data('message');
+			if (lastMessage && message.created-lastMessage.created > miaou.chat.DISRUPTION_THRESHOLD) {
+				$message.addClass('disrupt');
+				if (userPrefs.datdpl==="on_breaks" && !gui.mobile) {
+					$messages.eq(i-1).add($message).find('.mdate').show();
+				}
+			} else {
+				$message.removeClass('disrupt'); // useful ?
+			}
 			lastMessage = message;
-		});
+		}
 	}
 
 	md.opener = function(e){

@@ -1,39 +1,38 @@
 // manages desktop notifications
 
-miaou(function(){
-	var audio = new Audio('static/119472-ping-loud.wav'),
-		levels = ["none", "silent", "loud"],
-		labels = ["no ping",,];
-		level = localStorage['notification'];
-	if (!~levels.indexOf(level)) {
-		level = localStorage['notification'] = "none";
-	}
-	
-	if (!$('body').hasClass('mobile')) { // desktop notifications don't seem to work on mobile
-		var $switch = $('<div id=ping>').addClass('radios').appendTo('#prefs');
-		$('<span>').addClass('label').text('').appendTo($switch);
-		levels.forEach(function(l, i){
-			var $r = $('<span>').addClass('radio').text(labels[i]||l).click(function(){
-				$(this).addClass('selected').siblings('.radio').removeClass('selected');
-				level = localStorage['notification'] = l;
-				if (level !== "none" && Notification.permission !== "granted") {
-					Notification.requestPermission(function (permission) {
-						if (!('permission' in Notification)) { // from the MDN - not sure if useful
-							Notification.permission = permission; 
-						}
-					});
-				}
-			}).appendTo($switch);
-			if (l===level) $r.addClass('selected');
+miaou(function(notif, md){
+	var sounds = {
+		quiet:    'ping-quiet.wav',
+		standard: 'ping-standard.wav'
+	};
+	var sound = sounds[userPrefs.sound],
+		audio;
+		
+	if (sound) audio = new Audio('static/'+sound);
+	if (userPrefs.notif !== "never" && Notification.permission !== "granted") {
+		md.notificationMessage(function($c, close){
+			$('<p>').appendTo($c).text("Please grant Miaou the permission to issue desktop notifications or change the settings.");
+			$('<button>').appendTo($c).text('Grant Permission (recommended)').click(function(){
+				Notification.requestPermission(function (permission) {
+					if (!('permission' in Notification)) { // from the MDN - not sure if useful
+						Notification.permission = permission; 
+					}
+					setTimeout(md.scrollToBottom, 100);
+				});
+				close();
+			});
+			$('<button>').appendTo($c).text('Change Settings').click(function(){
+				window.location = 'prefs?room='+room.id+'#notifs';
+			});
 		});
 	}
 	
-	miaou.notify = function(room, authorname, content){
-		if (level==="none") return;
+	notif.show = function(room, authorname, content){
 		var n = new Notification(authorname + ' in ' + room.name, {body: content});
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
-		if (level==="loud") {
+		if (audio) {
+			console.log("Playing sound", sound);
 			audio.play();
 		}
 	}

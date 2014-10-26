@@ -29,6 +29,8 @@ miaou.min.js
 miaou.min.js.map
 static/intro.css
 static/intro2.css
+static/prefs.min.js
+static/rooms.min.js
 
 # execution byproducts
 *.log

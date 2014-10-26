@@ -2,6 +2,7 @@ doctype html
 html
 	head
 		title Miaou - Room Edition
+		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/main.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
@@ -55,10 +56,13 @@ html
 								div.rendered.input#roomdescription
 					p#err.error
 					div.dialog-buttons
-						input#cancel(type='button', value='Cancel')
-						input(type='submit', value='Save')#submit
+						input#cancel(type="button", value="Cancel")
+						input#submit(type='submit', value='Save')
 		
 		script.
+			$(document.body).addClass(
+				/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+			);
 			var langs = !{langs};
 			for (var key in langs) {
 				var lang = langs[key];
@@ -74,6 +78,9 @@ html
 				if (room.auth!=='own') $('#private').prop('disabled', true);
 				$('#lang').val(room.lang || langs[0].key);
 				$('#id').val(room.id);
+				$('#cancel').click(function(){ location = room.id });
+			} else {
+				$('#cancel').click(function(){ location = 'rooms' });			
 			}
 			if (error) {
 				$('#err').text(error);
@@ -88,7 +95,6 @@ html
 					$('#submit').prop('disabled', false);
 				}
 			});
-			$('#cancel').click(function(){ history.back() });
 			function format(){
 				$('#roomdescription').html(miaou.mdToHtml($('#description').val()));
 			}

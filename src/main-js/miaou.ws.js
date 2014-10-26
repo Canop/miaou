@@ -33,7 +33,6 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		.on('auth_dialog', md.showGrantAccessDialog)
 		.on('ban', mod.showBan)
 		.on('config', function(serverConfig){
-			console.log("received config :", serverConfig);
 			for (var key in serverConfig) chat.config[key] = serverConfig[key];
 		})
 		.on('set_enter_time', setEnterTime)

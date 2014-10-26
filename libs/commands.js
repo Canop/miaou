@@ -21,7 +21,7 @@ exports.configure = function(miaou){
 		setTimeout(function(){
 			shoe.botMessage(bot, getHelpText(shoe.room));
 		}, 10);
-	}, 'gives this help');
+	}, 'get this help');
 	require('./afk.js').configure(miaou).registerCommands(registerCommand);
 	require('./ban.js').configure(miaou).registerCommands(registerCommand);
 	require('./flakes.js').registerCommands(registerCommand);

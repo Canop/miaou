@@ -71,7 +71,8 @@ function defineAppRoutes(){
 		profile = require('./profile.js').configure(miaou),
 		chat = require('./chat.js').configure(miaou),
 		help = require('./help.js'),
-		intro = require('./intro.js');
+		intro = require('./intro.js'),
+		prefs = require('./prefs.js').configure(miaou);
 	function ensureAuthenticated(req, res, next) {
 		if (req.isAuthenticated()) return next();
 		var roomId = req.params[0];
@@ -103,7 +104,7 @@ function defineAppRoutes(){
 	map('get', '/auths', auths.appGetAuths);
 	map('post', '/auths', auths.appPostAuths);
 	map('all', '/username', profile.appAllUsername, true);
-	map('all', '/profile', profile.appAllProfile, true);
+	map('all', '/prefs', prefs.appAllPrefs, true);
 	map('get', '/publicProfile', profile.appGetPublicProfile, true, true);
 	map('get', /^\/user\/(\d+)$/, profile.appGetUser, true, true);
 	map('get', '/help', help.appGetHelp, true, true);
@@ -114,6 +115,8 @@ function defineAppRoutes(){
 
 // starts the whole server, both regular http and websocket
 function startServer(){
+	naming.configure(miaou);
+
 	var cookieParser = require('cookie-parser')(miaou.config.secret);
 	app = express();
 	server = http.createServer(app);

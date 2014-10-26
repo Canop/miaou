@@ -13,13 +13,12 @@ var gametypes = {
 //  and returning both the message and the game whose id is passed
 // The caller **must** end the promise chain with off
 function dbGetGame(shoe, mid){
-	return shoe.db.on(mid).then(function(){
-		var data = cache.get(mid);
+	return shoe.db.on().then(function(){
 		return cache.get(mid) || this.getMessage(mid).then(function(m){
 			var g = JSON.parse(m.content.split(' ')[2]);
 			m.room = shoe.room.id; // db.getMessage doesn't provide the room, we must set it before saving
 			gametypes[g.type].restore(g);
-			data = [m, g];
+			var data = [m, g];
 			cache.set(mid, data);
 			return data;
 		});

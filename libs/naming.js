@@ -1,4 +1,6 @@
-var validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+var	path = require('path'),
+	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+	blacklist = [];
 
 // from https://github.com/backbone-paginator/backbone.paginator/blob/master/plugins/diacritic.js
 var defaultDiacriticsRemovalMap = [
@@ -88,12 +90,22 @@ var defaultDiacriticsRemovalMap = [
 	{'base':'z','letters':/[\u007A\u24E9\uFF5A\u017A\u1E91\u017C\u017E\u1E93\u1E95\u01B6\u0225\u0240\u2C6C\uA763]/g}
 ];
 
+
 var removeDiacritics = function(str){
 	for(var i=0; i<defaultDiacriticsRemovalMap.length; i++) {
 		str = str.replace(defaultDiacriticsRemovalMap[i].letters, defaultDiacriticsRemovalMap[i].base);
 	}
 	return str;
 }
+
+exports.configure = function(miaou){
+	plugins = (miaou.config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
+	if (miaou.config.forbiddenUsernames) {
+		blacklist = miaou.config.forbiddenUsernames.map(function(s){ return new RegExp(s,'i') }); 
+	}
+	return this;
+}
+
 
 exports.suggestUsername = function(completeName){
 	return (removeDiacritics(completeName.trim())+'@@@@@@@'.slice(completeName.length))
@@ -111,4 +123,11 @@ exports.toUrlDecoration = function(roomName){
 
 exports.isValidUsername = function(username){
 	return !!(username && /^\w[\w\-]{2,19}$/.test(username));
+}
+
+exports.isUsernameForbidden = function(n){
+	for (var i=0; i<blacklist.length; i++) {
+		if (blacklist[i].test(n)) return true;
+	}
+	return false;
 }

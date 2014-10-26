@@ -17,7 +17,7 @@ html
 			.CC {
 				padding: 2px;
 			}
-	body.home
+	body.home.desktop
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="static/gh_ribbon_right_gray.png",alt="Fork me on GitHub")
 		section#home-top
@@ -29,7 +29,7 @@ html
 				img(src="static/Miaou-300-f.png")
 				p.links
 					| You're logged as
-					a.username(href="profile",title="edit profile")= user.name
+					a.username(href="prefs",title="edit profile")= user.name
 					| -
 					a(id="logout",href="#") Log Out
 					| -

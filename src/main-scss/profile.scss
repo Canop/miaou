@@ -6,7 +6,7 @@ div.externalProfile {
 .externalProfiles {
 	text-align: left;
 	margin-left: 8px;
-	section.externalProfileForm {
+	section.externalProfileForm, table.form {
 		td {
 			text-align: left;
 		}
@@ -17,7 +17,7 @@ div.externalProfile {
 			padding: 0;
 		}
 		input[type=checkbox]{
-			width: inherit;
+			width: initial;
 			margin: 2px 8px 0 0;
 		}
 		div.inputs {

@@ -1,7 +1,6 @@
 var path = require('path'),
 	naming = require('./naming.js'),
 	server = require('./server.js'),
-	blacklist = [],
 	langs,
 	plugins;
 
@@ -9,17 +8,7 @@ exports.configure = function(miaou){
 	var conf = miaou.config;
 	langs = require('./langs.js').configure(miaou);
 	plugins = (conf.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
-	if (conf.forbiddenUsernames) {
-		blacklist = conf.forbiddenUsernames.map(function(s){ return new RegExp(s,'i') }); 
-	}
 	return this;
-}
-
-function isUsernameForbidden(n){
-	for (var i=0; i<blacklist.length; i++) {
-		if (blacklist[i].test(n)) return true;
-	}
-	return false;
 }
 
 // Checks that the profile is complete enough to be used for the chat
@@ -37,6 +26,10 @@ exports.appAllUsername = function(req, res, db){
 	.then(function(){
 		if (req.method==='POST') {
 			var name = req.param('name');
+			if (naming.isUsernameForbidden(name)) {
+				error = "Sorry, that username is reserved.";
+				return;
+			}
 			if (name!=req.user.name && naming.isValidUsername(name)) {
 				req.user.name = name;
 				return this.updateUser(req.user);
@@ -59,92 +52,6 @@ exports.appAllUsername = function(req, res, db){
 	}).finally(db.off)
 }
 
-// handles get and post '/profile' requests
-exports.appAllProfile = function(req, res, db){
-	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
-		return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
-	});
-	var error = '';
-	db.on(externalProfileInfos)
-	.map(function(epi){
-		return this.getPlayerPluginInfo(epi.name, req.user.id);
-	}).then(function(ppis){ // todo use map(ppi,i) to avoid iteration
-		ppis.forEach(function(ppi,i){
-			if (ppi) externalProfileInfos[i].ppi = ppi.info;
-		});
-		return externalProfileInfos;
-	}).map(function(epi){
-		if (epi.ppi) epi.html = epi.ep.render(epi.ppi);
-		if (req.method==='POST') {
-			if (epi.html) {
-				if (req.param('remove_'+epi.name)) {
-					epi.ppi = null;
-					return this.deletePlayerPluginInfo(epi.name, req.user.id);
-				}
-			} else {
-				var vals = {}, allFilled = true;
-				epi.fields.forEach(function(f){
-					if (!(vals[f.name] = req.param(f.name))) allFilled = false;
-				});
-				if (allFilled) return epi.ep.creation.create(req.user, epi.ppi||{}, vals);
-			}
-		}
-	}).map(function(ppi, i){
-		var epi = externalProfileInfos[i];
-		if (typeof ppi === 'object') { // in case of creation success
-			epi.ppi = ppi;
-			this.storePlayerPluginInfo(epi.name, req.user.id, ppi);
-			epi.html = epi.ep.render(ppi);
-		} else if (ppi===1) { // deletion
-			epi.html = null;
-		}
-	}).then(function(){
-		if (req.method==='POST') {
-			var name = req.param('name').trim();
-			if (name === req.user.name || !naming.isValidUsername(name)) return;
-			if (isUsernameForbidden(name)) {
-				error = "Sorry, that username is reserved.";
-				return;
-			}
-			req.user.name = name;
-			return this.updateUser(req.user);
-		}
-	}).then(function(){
-		if (req.method==='POST') {
-			return this.updateUserInfo(req.user.id, {
-				description: req.param('description')||null,
-				location: req.param('location')||null,
-				url: req.param('url')||null,
-				lang: req.param('lang')||null
-			});
-		}
-	}).catch(function(err){
-		console.log('Err...', err);
-		if (err.code=='23505') { // PostgreSQL / unique_violation
-			error = "Sorry, this username isn't available."
-		} else {
-			error = err;
-		}
-	}).then(function(){
-		return this.getUserInfo(req.user.id);
-	}).then(function(userinfo){
-		externalProfileInfos.forEach(function(epi){
-			if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
-		});
-		var hasValidName = naming.isValidUsername(req.user.name);
-		res.render('profile.jade', {
-			user: req.user,
-			externalProfileInfos: externalProfileInfos,
-			valid : hasValidName,
-			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			langs: JSON.stringify(langs.legal),
-			userinfo: JSON.stringify(userinfo),
-			error: error
-		});
-	}).catch(function(err){
-		server.renderErr(res, err);
-	}).finally(db.off)
-}
 
 // handles GET on '/publicProfile'
 exports.appGetPublicProfile = function(req, res, db){

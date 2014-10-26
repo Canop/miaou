@@ -10,7 +10,7 @@ html(lang=room.lang)
 	body.chat
 		div#left
 			section#prefs
-				a#me.pref(href="profile",title="Edit profile")
+				a#me.pref(href="prefs?",title="Profile Settings")
 			section
 				button.small#auths authorizations
 				h2 Users
@@ -62,6 +62,7 @@ html(lang=room.lang)
 		script.
 			var me = !{user},
 				room = !{JSON.stringify(room)},
+				userPrefs = !{JSON.stringify(userPrefs)},
 				pluginsToStart = !{pluginsToStart};
 			if (room) window.name = 'room_'+room.id;			
 			else location = 'rooms';
@@ -74,7 +75,7 @@ html(lang=room.lang)
 			$('#help').click(function(){ window.open('help') });
 			$('#changeroom').click(function(){ window.open('rooms') });
 			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
-			$('#me').text(me.name);
+			$('#me').text(me.name).append(' <span class=icon>\ue828</span>').attr('href', "prefs?room="+room.id);
 			
 			function tab(page){
 				$('.tab').removeClass('selected');
@@ -108,7 +109,7 @@ html(lang=room.lang)
 					return false;
 				}
 			});
-			
+						
 			miaou(function(chat){
 				chat.start();
 				$(window).keyup(function(e){

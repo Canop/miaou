@@ -1,3 +1,4 @@
+
 var loginRoom = localStorage['login.room'];
 if (loginRoom) {
 	delete localStorage['login.room'];

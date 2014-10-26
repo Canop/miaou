@@ -32,5 +32,5 @@ exports.registerCommands = function(registerCommand){
 			shoe.emit('auth_dialog', {id:user.id, name:user.name});
 		})
 		.finally(db.off);
-	}, "tries to bring a user in the room : `!!summon @some_user_name`");
+	}, "bring a user in the room : `!!summon @some_user_name`");
 }
