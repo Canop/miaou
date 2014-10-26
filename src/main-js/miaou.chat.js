@@ -17,7 +17,7 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	chat.commands = {}; // all known commands issued with !! (value=description)
 
 	var listeners = {};
-
+	
 	chat.clearPings = function() {
 		// clear the pings of the current room and ask for the ones of the other rooms
 		ws.emit('clear_pings', chat.lastReceivedPing);

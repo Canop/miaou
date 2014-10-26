@@ -1,11 +1,14 @@
 // manages desktop notifications
 
 miaou(function(notif, md){
+	
+	if (typeof userPrefs === "undefined") return;
+	
 	var sounds = {
 		quiet:    'ping-quiet.wav',
 		standard: 'ping-standard.wav'
 	};
-	var sound = sounds[userPrefs.sound],
+	var sound = userPrefs ? sounds[userPrefs.sound] : null,
 		audio;
 		
 	if (sound) audio = new Audio('static/'+sound);
