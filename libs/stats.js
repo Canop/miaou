@@ -88,8 +88,10 @@ function doStats(cmd, shoe, m, opts) {
 				return line;
 			}).join('\n');
 		}
+		var asflake = c.length>500;
+		if (asflake) opts.nostore = true;
 		setTimeout(function(){
-			shoe.botMessage(bot, c);
+			shoe[asflake ? "emitBotFlakeToRoom" : "botMessage"](bot, c);
 		}, 100);
 	})
 }
