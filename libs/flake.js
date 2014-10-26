@@ -1,5 +1,9 @@
 // flakes are unpersisted messages (with no id)
 
+exports.configure = function(miaou){
+	return this;
+}
+
 exports.registerCommands = function(registerCommand){
 	registerCommand('flake', function(cmd, shoe, m, opts){
 		delete m.id; // to prevent injection 

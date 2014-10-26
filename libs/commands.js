@@ -22,10 +22,9 @@ exports.configure = function(miaou){
 			shoe.botMessage(bot, getHelpText(shoe.room));
 		}, 10);
 	}, 'get this help');
-	require('./afk.js').configure(miaou).registerCommands(registerCommand);
-	require('./ban.js').configure(miaou).registerCommands(registerCommand);
-	require('./flakes.js').registerCommands(registerCommand);
-	require('./summon.js').configure(miaou).registerCommands(registerCommand);
+	['afk','ban','flake','stats','summon'].forEach(function(cmd){
+		require('./'+cmd+'.js').configure(miaou).registerCommands(registerCommand);
+	});
 	all.sort(function(a,b){ return a.name>b.name ? 1 : -1 });
 }
 
