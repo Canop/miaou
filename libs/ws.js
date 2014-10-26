@@ -501,7 +501,7 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('search', function(search){
 		if (!shoe.room) return;
-		db.on([shoe.room.id, search.pattern, 'english', 20])
+		db.on([shoe.room.id, search.pattern, 'english', 50])
 		.spread(db.search)
 		.filter(function(m){ return !/^!!deleted /.test(m.content) })
 		.map(function(m){ return lighten(m) })
