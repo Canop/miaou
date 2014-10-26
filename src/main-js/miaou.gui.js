@@ -1,6 +1,8 @@
 
 miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 	
+	gui.mobile = $(document.body).hasClass('mobile');
+	
 	// returns true if an event is over an element
 	gui.eventIsOver = function(event, o) {
 		if (!o.length) return false;
@@ -160,7 +162,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 			$('#message-scroller').on('scroll', hist.showPage);
 		}
 		
-		if ($(document.body).hasClass('mobile')) {
+		if (gui.mobile) {
 			$('#messages').on('click', '.message', md.toggleMessageMenus)
 			.on('click', '.user,.profile', prof.toggle);
 			$(window).resize(md.scrollToBottom);

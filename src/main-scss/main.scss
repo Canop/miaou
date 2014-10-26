@@ -184,7 +184,6 @@ body.mobile #message-scroller {
 		position: relative;
 		align-items: center;
 		align-content: center;
-		width: 120px;
 		padding: 1px 3px;
 		color: #555;
 		text-overflow: ellipsis;
@@ -277,8 +276,22 @@ body.mobile #message-scroller {
 #messages {
 	.message, .error, .access_request {
 		display: flex;
+		.user {
+			flex-basis: 120px;
+			flex-grow: 0;
+			flex-shrink: 0;
+		}
 		.content {
-			width: calc(100% - 122px);
+			padding: 2px;
+			flex-grow: 1;
+		}
+		.mdate {
+			align-self: flex-start;
+			flex-basis: 90px;
+			flex-shrink: 0;
+			flex-grow: 0;
+			text-align: right;
+			font-size: 80%;
 			padding: 2px;
 		}
 	}

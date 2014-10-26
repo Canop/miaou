@@ -7,7 +7,7 @@ miaou.formatDateDDMMM = function(date){
 	return (d<10 ? '0' : '') + d + ' ' + miaou.MMM[date.getMonth()];
 }
 
-miaou.formatDate = function(t){
+miaou.formatDate = function(t){ // time in ms
 	var date = new Date(t), now = new Date,
 		m = date.getMinutes(), h = date.getHours(), Y = date.getFullYear();
 		s = s = (h<10?'0':'')+h+':'+(m<10?'0':'')+m;

@@ -1,6 +1,6 @@
 // Handles the message editor
 
-miaou(function(ed, chat, md, ms, ws){
+miaou(function(ed, chat, gui, md, ms, ws){
 
 	var $input, input,
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
@@ -44,7 +44,7 @@ miaou(function(ed, chat, md, ms, ws){
 			stash = null;
 			chat.sendMessage(m);
 			$('#preview').html('');
-			if (!$(document.body).hasClass('mobile')) $input.focus();
+			if (!gui.mobile) $input.focus();
 		}
 	}
 
