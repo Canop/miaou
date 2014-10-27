@@ -2,7 +2,13 @@
 
 miaou(function(notif, md){
 	
-	if (typeof userPrefs === "undefined") return;
+	if (!window.userPrefs || !window.Notification) {
+		// covers two cases :
+		// - a page with miaou.min.js but no prefs
+		// - a browser without Notification (Chrome/Android) 
+		notif.show = function(){};
+		return;
+	}
 	
 	var sounds = {
 		quiet:    'ping-quiet.wav',
