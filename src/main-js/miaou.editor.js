@@ -21,7 +21,7 @@ miaou(function(ed, chat, gui, md, ms, ws){
 	}
 
 	function sendInput(){
-		var txt = $input.val().replace(/^\s{1,3}/,'').replace(/\s+$/,'');
+		var txt = $input.val().replace(/\s+$/,'');
 		if (txt.length > chat.config.maxMessageContentSize) {		
 			miaou.dialog({
 				title: "Message too big",
