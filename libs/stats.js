@@ -13,7 +13,7 @@ function doStats(cmd, shoe, m, opts) {
 		n = 10;
 	if (match) {
 		topic = match[1];
-		n = +match[2] || n;
+		n = Math.min(+match[2] || n, 500);
 	}
 	if (/me/i.test(topic)) topic = '@'+m.authorname;
 	var cols, from, title, args=[], c;
@@ -52,12 +52,13 @@ function doStats(cmd, shoe, m, opts) {
 			{name:"Id", value:"id"},		
 			{name:"Name", value:"name"},		
 			{name:"Language", value:"lang"},		
+			{name:"Private", value:"private"},		
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
 			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
-		from = "from room order by c3 desc limit "+n;
-		title = "Rooms Statistics (top "+n+")";		
+		from = "from room order by c4 desc limit "+n;
+		title = "Rooms Statistics (top "+n+")";
 	} else if (/^room$/i.test(topic)) {
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where room=$1)"},
@@ -66,6 +67,13 @@ function doStats(cmd, shoe, m, opts) {
 		];
 		args.push(shoe.room.id);
 		title = "Statistics of the room *"+shoe.room.name+"*";		
+	} else if (/^votes$/i.test(topic)) {
+		cols = [
+			{name:"vote", value:"vote"},
+			{name:"number", value:"count(*)"},
+		];
+		from = "from message_vote group by vote order by c1 desc";
+		title = "Voting Statistics";		
 	} else {
 		throw "Wrong statistics request. Use `!!stats [server|me|@user|users|room|rooms] [n]`.";
 	}
@@ -99,5 +107,5 @@ function doStats(cmd, shoe, m, opts) {
 }
 
 exports.registerCommands = function(registerCommand){
-	registerCommand('stats', doStats, "Statistics. Usage : `!!stats [server|@user|users|room|rooms] [n]`");
+	registerCommand('stats', doStats, "Usage : `!!stats [server|@user|users|room|rooms|votes] [n]`");
 }
