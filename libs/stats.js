@@ -30,19 +30,20 @@ function doStats(cmd, shoe, m, opts) {
 			{name:"Name", value:"name"},
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
+			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star')"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
-		// todo stars
 		from = "from player where bot is false order by c1 desc limit "+n;
 		title = "Users Statistics (top "+n+")";
 	} else if (topic[0]==='@') {
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
+			{name:"Received Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star')"},
+			{name:"Given Stars", value:"(select count(*) from message_vote where player=player.id and vote='star')"},
 			{name:"Messages In This Room", value:"(select count(*) from message where room=$2 and author=player.id)"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
-		// todo stars
 		from = "from player where name=$1";
 		args.push(topic.slice(1), shoe.room.id);
 		title = "Statistics for user "+topic;
@@ -50,11 +51,12 @@ function doStats(cmd, shoe, m, opts) {
 		cols = [
 			{name:"Id", value:"id"},		
 			{name:"Name", value:"name"},		
+			{name:"Language", value:"lang"},		
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
 			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
-		from = "from room order by c2 desc limit "+n;
+		from = "from room order by c3 desc limit "+n;
 		title = "Rooms Statistics (top "+n+")";		
 	} else if (/^room$/i.test(topic)) {
 		cols = [
