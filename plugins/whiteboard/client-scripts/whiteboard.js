@@ -1,6 +1,6 @@
 miaou(function(plugins, chat, md, ms){
 
-	var r = /^\s*!!whiteboard(\s|$)/;
+	var r = /^\s*!!whiteboard\b/;
 
 	function removeCommand(node){
 		if (node.nodeType===3) {

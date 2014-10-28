@@ -80,7 +80,7 @@ function defineAppRoutes(){
 	}
 	function ensureCompleteProfile(req, res, next) {
 		if (naming.isValidUsername(req.user.name)) return next();
-		res.redirect(url('/profile'));
+		res.redirect(url('/username'));
 	}
 	function map(verb, path, fun, noNeedForCompleteProfile, noNeedForLogin){
 		var args = [path];
