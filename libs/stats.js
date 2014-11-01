@@ -15,7 +15,7 @@ function doStats(cmd, shoe, m, opts) {
 		topic = match[1];
 		n = Math.min(+match[2] || n, 500);
 	}
-	if (/me/i.test(topic)) topic = '@'+m.authorname;
+	if (/^me$/i.test(topic)) topic = '@'+m.authorname;
 	var cols, from, title, args=[], c;
 	if (/^server$/i.test(topic)) {
 		cols = [
@@ -49,7 +49,7 @@ function doStats(cmd, shoe, m, opts) {
 		title = "Statistics for user "+topic;
 	} else if (/^rooms$/i.test(topic)) {
 		cols = [
-			{name:"Id", value:"id"},		
+			{name:"Id", value:"id"},
 			{name:"Name", value:"name"},		
 			{name:"Language", value:"lang"},		
 			{name:"Private", value:"private"},		
