@@ -72,7 +72,7 @@ miaou(function(ed, chat, gui, md, ms, ws){
 			$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
 			Object.keys(chat.commands).filter(function(n){
 				return !n.indexOf(accmd)
-			}).forEach(function(name){
+			}).sort().forEach(function(name){
 				$('<span>').text(name).appendTo($autocompleter).click(function(){
 					$input.replaceSelection(name.slice(accmd.length));
 					$autocompleter.remove();
