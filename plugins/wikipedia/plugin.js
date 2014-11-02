@@ -85,7 +85,12 @@ function onCommand(cmd, shoe, m){
 }
 
 exports.registerCommands = function(cb){
-	cb('wiki', onCommand, "displays the relevant Wikipedia page (English site). Example : `!!wiki Neil Armstrong`");
+	cb({
+		name:'wiki', fun:onCommand,
+		help:"displays the relevant Wikipedia page (English site). Example : `!!wiki Neil Armstrong`",
+		detailedHelp:"You may also simply paste the URL of a wikipedia page to have it abstracted for you."+
+			"Example: `http://fr.wikipedia.org/wiki/Chat`"
+	});
 }
 
 // intercepts links to wikipedia and sends boxed abstracts.

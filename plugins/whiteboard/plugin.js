@@ -32,5 +32,8 @@ function onCommand(cmd, shoe, m, opts){
 }
 
 exports.registerCommands = function(cb){
-	cb('whiteboard', onCommand, "Starting a message with `!!whiteboard` lets everybody edit it");
+	cb({
+		name:'whiteboard', fun:onCommand,
+		help:"Starting a message with `!!whiteboard` lets everybody edit it"
+	});
 }

@@ -107,5 +107,11 @@ function doStats(cmd, shoe, m, opts) {
 }
 
 exports.registerCommands = function(registerCommand){
-	registerCommand('stats', doStats, "Usage : `!!stats [server|@user|users|room|rooms|votes] [n]`");
+	registerCommand({
+		name:'stats', fun:doStats,
+		help:"Usage : `!!stats [server|me|@user|users|room|rooms|votes] [n]`",
+		detailedHelp: "Examples:"+
+			"\n* `!!stats me` : give some stats about you"+
+			"\n* `!!stats rooms 100` : list the 100 rooms having the most messages"
+	});
 }

@@ -101,7 +101,10 @@ exports.onChangeMessage = function(shoe, m){
 exports.registerCommands = function(cb){
 	//cb('game', onCommand, "propose a random game. Type `!!game @somebody`");
 	//for (var key in gametypes) cb(key.toLowerCase(), onCommand, "propose a game of "+key+". Type `!!"+key.toLowerCase()+" @somebody`");
-	cb('tribo', onCommand, "propose a game of Tribo. Type `!!tribo @somebody`");
+	cb({
+		name:'tribo', fun:onCommand,
+		help:"propose a game of Tribo. Type `!!tribo @somebody`"
+	});
 }
 
 exports.registerGameObserver = function(type, cb){

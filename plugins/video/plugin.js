@@ -51,6 +51,6 @@ exports.onNewShoe = function(shoe){
 }
 
 exports.registerCommands = function(cb){
-	cb('video', onCommand, "open a video+audio chat. Type `!!video @somebody`");
-	cb('audio', onCommand, "open a audio chat. Type `!!audio @somebody`");
+	cb({name:'video', fun:onCommand, help:"open a video+audio chat. Type `!!video @somebody`"});
+	cb({name:'audio', fun:onCommand, help:"open a audio chat. Type `!!audio @somebody`"});
 }
