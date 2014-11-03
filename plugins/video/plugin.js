@@ -37,8 +37,8 @@ function getVD(shoe, mid) {
 	});
 }
 
-function onCommand(cmd, shoe, m){
-	makeVD(shoe, m);
+function onCommand(ct){
+	makeVD(ct.shoe, ct.message);
 }
 
 exports.onNewShoe = function(shoe){

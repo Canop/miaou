@@ -7,15 +7,15 @@ exports.configure = function(miaou){
 	return this;
 }
 
-function doStats(cmd, shoe, m, opts) {
-	var	match = m.content.match(/^\s*!!stats\s*([@\w\-]+)(\s+\d+)?/),
+function doStats(ct) {
+	var	match = ct.text().match(/^\s*!!stats\s*([@\w\-]+)(\s+\d+)?/),
 		topic = 'server',
 		n = 10;
 	if (match) {
 		topic = match[1];
 		n = Math.min(+match[2] || n, 500);
 	}
-	if (/^me$/i.test(topic)) topic = '@'+m.authorname;
+	if (/^me$/i.test(topic)) topic = '@'+ct.username();
 	var cols, from, title, args=[], c;
 	if (/^server$/i.test(topic)) {
 		cols = [
@@ -45,7 +45,7 @@ function doStats(cmd, shoe, m, opts) {
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
 		from = "from player where name=$1";
-		args.push(topic.slice(1), shoe.room.id);
+		args.push(topic.slice(1), ct.shoe.room.id);
 		title = "Statistics for user "+topic;
 	} else if (/^rooms$/i.test(topic)) {
 		cols = [
@@ -65,8 +65,8 @@ function doStats(cmd, shoe, m, opts) {
 			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=$1)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=$1)"},
 		];
-		args.push(shoe.room.id);
-		title = "Statistics of the room *"+shoe.room.name+"*";		
+		args.push(ct.shoe.room.id);
+		title = "Statistics of the room *"+ct.shoe.room.name+"*";		
 	} else if (/^votes$/i.test(topic)) {
 		cols = [
 			{name:"vote", value:"vote"},
@@ -99,10 +99,8 @@ function doStats(cmd, shoe, m, opts) {
 			}).join('\n');
 		}
 		var asflake = c.length>500;
-		if (asflake) opts.nostore = true;
-		setTimeout(function(){
-			shoe[asflake ? "emitBotFlakeToRoom" : "botMessage"](bot, c);
-		}, 100);
+		if (asflake) ct.nostore = true;
+		ct.reply(c, asflake);
 	})
 }
 

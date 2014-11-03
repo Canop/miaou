@@ -9,14 +9,14 @@ exports.configure = function(miaou){
 exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name:'ban',
-		fun:function(cmd, shoe, message, opts){
+		fun:function(ct){
+			var	shoe = ct.shoe;
 			if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) throw "Only an admin can do that";
-			var match = message.content.match(/^!!ban\s+@(\w[\w_\-\d]{2,})(\b|$)/);
+			var match = ct.text().match(/^!!ban\s+@(\w[\w_\-\d]{2,})(\b|$)/);
 			if (!match) throw 'Bad syntax. Use `!!ban @some_other_user`';
 			var username=match[1];
-			if (username===shoe.publicUser.name) throw "You can't ban yourself";
-			return db.on(username)
-			.then(db.getUserByName)
+			if (username===ct.username()) throw "You can't ban yourself";
+			return this.getUserByName(username)
 			.then(function(user){
 				if (!user) throw 'User "'+username+'" not found';
 				return [user, this.getAuthLevel(shoe.room.id, user.id)]
@@ -30,7 +30,6 @@ exports.registerCommands = function(registerCommand){
 				}
 				shoe.emit('mod_dialog', {id:user.id, name:user.name});
 			})
-			.finally(db.off);
 		},
 		help:"Temporarily ban a user from the room : `!!ban @some_user_name`",
 		detailedHelp:"A dialog will open to ask you the ban duration"

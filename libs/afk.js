@@ -8,18 +8,18 @@ exports.configure = function(miaou){
 }
 
 function makeCommand(status){
-	return function(cmd, shoe, m, opts){
+	return function(ct){
 		setTimeout(function(){
 			// sends a flake to all rooms in which the user is
-			var text = '*'+shoe.publicUser.name+'* is *'+status+'*',
-				matches = m.content.match(/^!!\w+\s+(.+)$/);
+			var	text = '*'+ct.username()+'* is *'+status+'*',
+				matches = ct.text().match(/^!!\w+\s+(.+)$/);
 			if (matches) text += ' ( '+matches[1]+' )';
-			shoe.userRooms().forEach(function(roomId){
-				shoe.emitBotFlakeToRoom(bot, text, roomId);
+			ct.shoe.userRooms().forEach(function(roomId){
+				ct.shoe.emitBotFlakeToRoom(bot, text, roomId);
 			});
 		}, 100);
-		opts.silent = true;
-		opts.nostore = true;
+		ct.silent = true;
+		ct.nostore = true;
 	}
 }
 

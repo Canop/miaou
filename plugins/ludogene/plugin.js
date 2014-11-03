@@ -41,8 +41,10 @@ function storeInMess(m, game, shoe){
 	}
 }
 
-function onCommand(cmd, shoe, m){
-	var match = m.content.match(/^!!(\w+)\s+@(\w[\w_\-\d]{2,})\s*$/);
+function onCommand(ct){
+	var	m = ct.message,
+		shoe = ct.shoe,
+		match = m.content.match(/^!!(\w+)\s+@(\w[\w_\-\d]{2,})\s*$/);
 	if (!match) throw 'Bad syntax. Use `!!'+cmd+' @yourOpponent`';
 	if (match[2]===shoe.publicUser.name) throw "You can't play against yourself";
 	storeInMess(m, {

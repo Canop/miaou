@@ -10,9 +10,10 @@ function chown(newMessage, savedMessage){
 }
 
 // note : core calls this with context being a db connection
-function onCommand(cmd, shoe, m, opts){
+function onCommand(ct){
+	var m = ct.message;
 	if (m.id) {
-		opts.ignoreMaxAgeForEdition = true;
+		ct.ignoreMaxAgeForEdition = true;
 		// not a new message, let's check it was already a whiteboard message
 		//  and in that case we just set the author so that it can be saved
 		var savedMessage = cache.get(m.id);

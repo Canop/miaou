@@ -73,9 +73,10 @@ function dequeue(){
 	});
 }
 
-function onCommand(cmd, shoe, m){
-	var lines = m.content.split('\n');
-	var searched = lines[0].slice('!!wiki'.length).trim();
+function onCommand(ct){
+	var	m = ct.message,
+		lines = m.content.split('\n'),
+		searched = lines[0].slice('!!wiki'.length).trim();
 	if (searched) {
 		lines[0] = 'http://en.wikipedia.org/wiki/'+encodeURIComponent(searched);
 		m.content = lines.join('\n');
@@ -88,7 +89,7 @@ exports.registerCommands = function(cb){
 	cb({
 		name:'wiki', fun:onCommand,
 		help:"displays the relevant Wikipedia page (English site). Example : `!!wiki Neil Armstrong`",
-		detailedHelp:"You may also simply paste the URL of a wikipedia page to have it abstracted for you."+
+		detailedHelp:"You may also simply paste the URL of a wikipedia page to have it abstracted for you.\n"+
 			"Example: `http://fr.wikipedia.org/wiki/Chat`"
 	});
 }

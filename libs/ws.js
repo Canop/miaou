@@ -118,7 +118,7 @@ Shoes.userRooms = function(){
 		var clients = io.sockets.adapter.rooms[roomId];
 		for (var clientId in clients) {
 			var socket = io.sockets.connected[clientId];
-			if (socket.publicUser && socket.publicUser.id===uid) {
+			if (socket && socket.publicUser && socket.publicUser.id===uid) {
 				rooms.push(roomId);
 				break;
 			}
@@ -406,15 +406,20 @@ function handleUserInRoom(socket, completeUser){
 
 			db.on([shoe, m])
 			.spread(commands.onMessage)
-			.then(function(opts){ 
-				return [opts.nostore ? m : this.storeMessage(m, opts.ignoreMaxAgeForEdition), opts]
-			}).spread(function(m, opts){
-				if (opts.silent) return;
+			.then(function(commandTask){
+				return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
+			}).spread(function(m, commandTask){
+				if (commandTask.silent) return;
 				if (m.changed) m.vote = '?';
 				shoe.pluginTransformAndSend(m, function(v, m){
 					io.sockets.in(roomId).emit(v, clean(m));
 				});
-				if (m.content && m.id){
+				if (commandTask.replyContent) {
+					var txt = commandTask.replyContent;
+					if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
+					shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
+				}
+				if (m.content && m.id) {
 					var pings = m.content.match(/@\w[\w\-]{2,}(\b|$)/g);
 					if (pings) {
 						pings = pings.map(function(s){ return s.slice(1) });
