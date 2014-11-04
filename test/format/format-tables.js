@@ -1,0 +1,54 @@
+var fmt = require("./miaou.format.node.js").mdToHtml,
+	buster = require("buster");
+	
+function t(s,r){
+	return function(){
+		buster.assert.equals(fmt(s), r);		
+	}
+}
+
+buster.testCase("Formatting - Tables", {
+	"simple markdown table": t(
+		"col 1|col 2|col 3\n"+
+		"-|-|-\n"+
+		"A1| A2 |A3\n"+
+		"B1| B2 |B3",
+		'<table><style scoped>td:nth-child(1){text-align:left}td:nth-child(2){text-align:left}td:nth-child(3){text-align:left}</style><tr><th>col 1</th><th>col 2</th><th>col 3</th></tr><tr><td>A1</td><td>A2</td><td>A3</td></tr><tr><td>B1</td><td>B2</td><td>B3</td></tr></table>'
+	),
+	"simple sql table": t(
+		"message | player | vote \n"+
+		"---------+--------+------\n"+
+		"   37528 |     89 | pin\n"+
+		"   38454 |    245 | up\n"+
+		"   38468 |      1 | pin\n"+
+		"     778 |      4 | up",
+		"<table><style scoped>td:nth-child(1){text-align:left}td:nth-child(2){text-align:left}td:nth-child(3){text-align:left}</style><tr><th>message</th><th>player</th><th>vote</th></tr><tr><td>37528</td><td>89</td><td>pin</td></tr><tr><td>38454</td><td>245</td><td>up</td></tr><tr><td>38468</td><td>1</td><td>pin</td></tr><tr><td>778</td><td>4</td><td>up</td></tr></table>"
+	),
+	"style and link in cells": t(
+		"gras|italic|lien\n"+
+		"---|---|---\n"+
+		"**GRAS**|*Italie* <-là|[dystroy](http://dystroy.org)",
+		'<table><style scoped>td:nth-child(1){text-align:left}td:nth-child(2){text-align:left}td:nth-child(3){text-align:left}</style><tr><th>gras</th><th>italic</th><th>lien</th></tr><tr><td><b>GRAS</b></td><td><i>Italie</i> &lt;-là</td><td><a target=_blank href="http://dystroy.org">dystroy</a></td></tr></table>'
+	),
+	"with outside pipes": t(
+		"|verbose|markdown|\n"+
+		"|-------|--------|\n"+
+		"|with   |  pipes |",
+		'<table><style scoped>td:nth-child(1){text-align:left}td:nth-child(2){text-align:left}</style><tr><th>verbose</th><th>markdown</th></tr><tr><td>with</td><td>pipes</td></tr></table>'
+	),
+	"table without th": t(
+		"-|-|\ntable|sans|titres",
+		'<table><style scoped>td:nth-child(1){text-align:left}td:nth-child(2){text-align:left}</style><tr><td>table</td><td>sans</td><td>titres</td></tr></table>'
+	),
+	"table with alignments, empty cell and tail span": t(
+		"left|right|center\n"+
+		"-----|--:|:-:\n"+
+		"12|25|34\n"+
+		"empty cell->| |<-empty cell\n"+
+		"and now| some spanning",
+		'<table><style scoped>td:nth-child(1){text-align:left}td:nth-child(2){text-align:right}td:nth-child(3){text-align:center}</style><tr><th>left</th><th>right</th><th>center</th></tr><tr><td>12</td><td>25</td><td>34</td></tr><tr><td>empty cell-&gt;</td><td></td><td>&lt;-empty cell</td></tr><tr><td>and now</td><td colspan=2>some spanning</td></tr></table>'
+	),
+
+
+});
+

@@ -1,5 +1,5 @@
-var buster = require("buster"),
-	tribo = require('../plugins/ludogene/client-scripts/Tribo.js');
+var	buster = require("buster"),
+	tribo = require('../../plugins/ludogene/client-scripts/Tribo.js');
 
 buster.testCase("Tribo", {
     "encode/decode move": function () {

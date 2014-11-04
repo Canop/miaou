@@ -1,15 +1,16 @@
-// buster tests can be executed with
-//   $ buster-test
-// when you're at the root of the project.
-// Note that it seems that buster must be
-// installed globally and as root to work.
-
 var config = module.exports;
 
-config["core"] = {
-    rootPath: "../",
+config["all"] = {
     environment: "node",
     tests: [
-        "test/*-test.js"
-    ]
-}
+        "format/format-basic.js",
+        "format/format-titles.js",
+        "format/format-links.js",
+        "format/format-lists.js",
+        "format/format-images.js",
+        "format/format-code.js",
+        "format/format-quotes.js",
+        "format/format-tables.js",
+        "ludogene/tribo.js"
+    ]	
+};
