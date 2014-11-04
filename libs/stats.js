@@ -77,8 +77,7 @@ function doStats(ct) {
 	} else {
 		throw "Wrong statistics request. Use `!!stats [server|me|@user|users|room|rooms] [n]`.";
 	}
-	var sql = "select "+
-		cols.map(function(col, i){ return col.value+' c'+i }).join(',');
+	var sql = "select " + cols.map(function(col, i){ return col.value+' c'+i }).join(',');
 	if (from) sql += ' '+from;
 	return this.queryRows(sql, args, true).then(function(rows){
 		var c;
@@ -98,9 +97,7 @@ function doStats(ct) {
 				return line;
 			}).join('\n');
 		}
-		var asflake = c.length>500;
-		if (asflake) ct.nostore = true;
-		ct.reply(c, asflake);
+		ct.reply(c, ct.nostore = c.length>500);
 	})
 }
 
