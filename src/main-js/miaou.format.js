@@ -1,7 +1,6 @@
-
 (function(){
 	
-	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+\s*$/;
+	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+\|?\s*$/;
 
 	function Table(cols){
 		this.style = (cols.match(/[:\-]+/g)||[]).map(function(c){ // the ||[] might be over defensive now
@@ -41,7 +40,6 @@
 				if (!(r||room)) return s;
 				return '<a target=_blank href='+(r||room.id)+'#'+m+'>'+t+'</a>';
 			})
-			//~ .replace(/\[([^\]]+)\]\((\d+)#(\d+)\)/g, '<a target=_blank href="$2#$3">$1</a>')
 			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig, '$1<a target=_blank href="$2">$2</a>') // exemple : http://dystroy.org
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
 				return a
