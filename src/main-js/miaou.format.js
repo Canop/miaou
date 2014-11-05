@@ -1,12 +1,14 @@
 (function(){
 	
-	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+\|?\s*$/;
+	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+\|?\s*$/,
+		nextId = 1;
 
 	function Table(cols){
+		var id = this.id = 'tbl'+nextId++;
 		this.style = (cols.match(/[:\-]+/g)||[]).map(function(c){ // the ||[] might be over defensive now
 			return c[c.length-1]!==':' ? 'left' : ( c[0]===':' ? 'center' : 'right' );
 		}).map(function(align, i){
-			return 'td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
+			return '#'+id+' td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
 		}).join('');
 		this.rows = [];
 	}
@@ -14,7 +16,7 @@
 		this.rows.push(row.match(/[^|]+/g)||[]);
 	}
 	Table.prototype.html = function(username){
-		var h = '<table>',
+		var h = '<table id='+this.id+'>',
 			n = Math.max.apply(0, this.rows.map(function(v){ return v.length }));
 		if (this.style) h += '<style scoped>'+this.style+'</style>';
 		h += this.rows.map(function(r, ir){
