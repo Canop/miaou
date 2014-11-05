@@ -201,3 +201,8 @@ exports.start = function(config){
 		});		
 	});
 }
+
+exports.stop = function(cb){
+	console.log("Miaou stops");
+	if (cb) cb();
+}

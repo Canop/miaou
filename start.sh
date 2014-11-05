@@ -1,2 +1,4 @@
-# nohup node main.js >> server.log 2>&1 < /dev/null &
-nohup node main.js 2>&1 | tee -a server.log &
+#!/bin/bash
+# starts Miaou server in nohup and shows the log in the console
+( nohup node main.js 2>&1 & echo $! > miaou.pid ) | tee -a server.log &
+
