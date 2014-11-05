@@ -9,6 +9,7 @@ exports.configure = function(miaou){
 
 function doStats(ct) {
 	var	match = ct.text().match(/^\s*!!stats\s*([@\w\-]+)(\s+\d+)?/),
+		room = ct.shoe.room,
 		topic = 'server',
 		n = 10;
 	if (match) {
@@ -35,6 +36,17 @@ function doStats(ct) {
 		];
 		from = "from player where bot is false order by c1 desc limit "+n;
 		title = "Users Statistics (top "+n+")";
+	} else if (/^roomusers$/i.test(topic)) {
+		cols = [
+			{name:"Name", value:"name"},
+			{name:"Room Messages", value:"(select count(*) from message where author=player.id and room=$1)"},
+			{name:"Two Last Days Room Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id and room=$1)"},
+			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star' and room=$1)"},
+			{name:"Total Messages", value:"(select count(*) from message where author=player.id)"},
+		];
+		from = "from player where bot is false and exists(select id from message where author=player.id and room=$1) order by c1 desc limit "+n;
+		args.push(room.id);
+		title = "Room Users Statistics (top "+n+")";
 	} else if (topic[0]==='@') {
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
@@ -45,7 +57,7 @@ function doStats(ct) {
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
 		from = "from player where name=$1";
-		args.push(topic.slice(1), ct.shoe.room.id);
+		args.push(topic.slice(1), room.id);
 		title = "Statistics for user "+topic;
 	} else if (/^rooms$/i.test(topic)) {
 		cols = [
@@ -65,8 +77,8 @@ function doStats(ct) {
 			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=$1)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=$1)"},
 		];
-		args.push(ct.shoe.room.id);
-		title = "Statistics of the room *"+ct.shoe.room.name+"*";		
+		args.push(room.id);
+		title = "Statistics of the room *"+room.name+"*";		
 	} else if (/^votes$/i.test(topic)) {
 		cols = [
 			{name:"vote", value:"vote"},
@@ -97,14 +109,14 @@ function doStats(ct) {
 				return line;
 			}).join('\n');
 		}
-		ct.reply(c, ct.nostore = c.length>500);
+		ct.reply(c, ct.nostore = c.length>800);
 	})
 }
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name:'stats', fun:doStats,
-		help:"Usage : `!!stats [server|me|@user|users|room|rooms|votes] [n]`",
+		help:"Usage : `!!stats [server|me|@user|users|room|roomusers|rooms|votes] [n]`",
 		detailedHelp: "Examples:"+
 			"\n* `!!stats me` : give some stats about you"+
 			"\n* `!!stats rooms 100` : list the 100 rooms having the most messages"
