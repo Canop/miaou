@@ -44,9 +44,13 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"**Now the reverse : all in bold and the last word in *italic***",
 		'<b>Now the reverse : all in bold and the last word in <i>italic</i></b>'
 	),
-    "mix strike, italic and bold": t(
+    "mix strike, italic and bold - 1": t(
 		"most of ---this sentence is striken, with some _italic_ and some __bold__---",
 		"most of <strike>this sentence is striken, with some <i>italic</i> and some <b>bold</b></strike>"
+	),
+    "mix strike, italic and bold - 2": t(
+		"** bold sentence with ---striken *italicized words*---**",
+		"<b> bold sentence with <strike>striken <i>italicized words</i></strike></b>"
 	),
 	"orphan stars":t(
 		"**start is bold** but here are some stars : ** (*not boldening*)",
@@ -55,5 +59,13 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
     "mix on 3 lines": t(
 		"some **bold** followed\nby\n2 *other lines*",
 		"some <b>bold</b> followed<br>by<br>2 <i>other lines</i>"
+	),
+	"false style - style starting in link text": t(
+		'[** false bold link text](http://dystroy.org)**',
+		'<a target=_blank href="http://dystroy.org">** false bold link text</a>**'
+	),
+	"// false style - one star then two": t( // is it really a bug ?
+		'*one star then two**',
+		'*one star then two**'
 	),
 });
