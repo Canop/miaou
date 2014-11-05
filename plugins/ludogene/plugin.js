@@ -43,6 +43,7 @@ function storeInMess(m, game, shoe){
 
 function onCommand(ct){
 	var	m = ct.message,
+		cmd = ct.cmd.name,
 		shoe = ct.shoe,
 		match = m.content.match(/^!!(\w+)\s+@(\w[\w_\-\d]{2,})\s*$/);
 	if (!match) throw 'Bad syntax. Use `!!'+cmd+' @yourOpponent`';
