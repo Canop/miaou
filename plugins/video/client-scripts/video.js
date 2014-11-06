@@ -74,8 +74,7 @@ miaou(function(plugins, chat, md, ws){
 		} else {
 			this.$status.text(
 				this.usernames[+!this.index]+
-				(this.accept[+!this.index] ? " is waiting for you to accept" : " hasn't yet accepted")+
-				" the video chat"
+				(this.accept[+!this.index] ? " is waiting for you to accept" : " hasn't yet accepted")
 			);
 		}
 		if (iab) {
