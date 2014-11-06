@@ -227,7 +227,7 @@ proto.listFrontPageRooms = function(userId){
 		" (select max(created) from message m where m.room = r.id and m.author=$1) as lastcreated"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  
 		" where listed is true or auth is not null"+
-		" order by auth desc nulls last, lastcreated desc, private desc, messageCount desc limit 200", [userId]
+		" order by lastcreated desc, private desc, messageCount desc limit 200", [userId]
 	);
 }
 
