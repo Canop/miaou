@@ -1,24 +1,26 @@
 (function(){
 	
-	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+\|?\s*$/,
+	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
 		nextId = 1;
 
 	function Table(cols){
+		this.coldefstr = cols;
 		var id = this.id = 'tbl'+nextId++;
-		this.style = (cols.match(/[:\-]+/g)||[]).map(function(c){ // the ||[] might be over defensive now
-			return c[c.length-1]!==':' ? 'left' : ( c[0]===':' ? 'center' : 'right' );
-		}).map(function(align, i){
-			return '#'+id+' td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
-		}).join('');
+		if (/:/.test(cols)) {
+			this.style = (cols.match(/[:\-]+/g)||[]).map(function(c){ // the ||[] might be over defensive now
+				return c[c.length-1]!==':' ? 'left' : ( c[0]===':' ? 'center' : 'right' );
+			}).map(function(align, i){
+				return '#'+id+' td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
+			}).join('');
+		}
 		this.rows = [];
 	}
 	Table.prototype.push = function(row){
 		this.rows.push(row.match(/[^|]+/g)||[]);
 	}
 	Table.prototype.html = function(username){
-		var h = '<table id='+this.id+'>',
+		var h = this.style ? '<table id='+this.id+'><style scoped>'+this.style+'</style>' : '<table>',
 			n = Math.max.apply(0, this.rows.map(function(v){ return v.length }));
-		if (this.style) h += '<style scoped>'+this.style+'</style>';
 		h += this.rows.map(function(r, ir){
 			if (!r.length) return '';
 			return '<tr>'+r.map(function(c,ic){
@@ -45,14 +47,18 @@
 			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig, '$1<a target=_blank href="$2">$2</a>') // exemple : http://dystroy.org
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
 				return a
-				+ b.replace(/(^|\W)\*\*(.+?)\*\*([^\w\/]|$)/g, "$1<b>$2</b>$3")
-				.replace(/(^|[^\w\/])\*([^\*]+)\*([^\w\/]|$)/g, "$1<i>$2</i>$3")
-				.replace(/(^|[^\w\/])__(.+?)__([^\w\/]|$)/g, "$1<b>$2</b>$3")
-				.replace(/(^|[^\w\/])_([^_]+)_([^\w\/]|$)/g, "$1<i>$2</i>$3")
-				.replace(/(^|[^\w\/])---(.+?)---([^\w\/]|$)/g, "$1<strike>$2</strike>$3")
+				+ b.replace(/(^|\W)\*\*(.+?)\*\*(?=[^\w\/]|$)/g, "$1<b>$2</b>")
+				.replace(/(^|[^\w\/])\*([^\*]+)\*(?=[^\w\/\*]|$)/g, "$1<i>$2</i>")
+				.replace(/(^|[^\w\/])__(.+?)__(?=[^\w\/]|$)/g, "$1<b>$2</b>")
+				.replace(/(^|[^\w\/])_([^_]+)_(?=[^\w\/]|$)/g, "$1<i>$2</i>")
+				.replace(/(^|[^\w\/])---(.+?)---(?=[^\w\/]|$)/g, "$1<strike>$2</strike>")
 				.replace(/(^|[^.!?:;]* )(\/me)([^.!?:;]*)/g, '<span class=slashme>$1'+(username||'/me')+'$3</span>')
 				+ c;
-			});
+			})
+			// the following 3 replacements are only here for very specific cases, I'm not sure they're worth the cost
+			.replace(/---[^<>]+?(<(\w+)[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){ return '<strike>'+s.slice(3,-3)+'</strike>' })
+			.replace(/\*\*[^<>]+?(<(\w+)[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*\*/g, function(s){ return '<b>'+s.slice(2,-2)+'</b>' })
+			.replace(/\*[^<>\*]+?(<(\w+)[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*(?=[^\*]|$)/g, function(s){ return '<i>'+s.slice(1,-1)+'</i>' })
 		}).join('');
 	}
 
@@ -80,14 +86,16 @@
 				continue;
 			}
 			if (table) {
-				if (looksLikeARow) {
+				if (s===table.coldefstr) {
+					continue;
+				} else if (looksLikeARow) {
 					table.push(s);
 					continue;
 				} else {
 					lout.push(table.html(username));
 					table = null;
 				}
-			} else if (looksLikeARow) {
+			} else if (looksLikeARow || /^\+\-[\-\+]*\+$/.test(s)) {
 				if (coldefregex.test(s)) {
 					table = new Table(s);
 					table.push('');
@@ -121,4 +129,11 @@
 		if (table) lout.push(table.html(username));
 		return lout.join('<br>');
 	}
+	
+	// the only purpose of the reset function is to allow unit testing
+	miaou.mdToHtml.reset = function(){
+		nextId = 1;
+		return miaou.mdToHtml;
+	}
+	
 })();

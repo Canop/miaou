@@ -3,9 +3,16 @@ var fmt = require("./miaou.format.node.js").mdToHtml,
 	
 function t(s,r){
 	return function(){
-		buster.assert.equals(fmt(s), r);		
+		try {
+			buster.assert.equals(fmt.reset()(s), r);		
+		} catch (e) {
+			console.log("Erroring markdown :");
+			console.log(s);
+			throw e;
+		}
 	}
 }
+
 
 buster.testCase("Formatting - Bold, Italic, Strike", {
     "no change": t(
@@ -32,6 +39,10 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"---first--- and ---third--- words as strike",
 		"<strike>first</strike> and <strike>third</strike> words as strike"
 	),
+    "two italicized words separated by just one space": t( // bug observed here : http://dystroy.org/miaou/73?Tribo_Room#538224
+		"*sob* *sob*",
+		"<i>sob</i> <i>sob</i>"
+	),
 	"italic and bold nested": t(
 		"*This sentence is in italic and the end is **in bold too***",
 		'<i>This sentence is in italic and the end is <b>in bold too</b></i>'
@@ -40,7 +51,7 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"**Now the reverse : all in bold and the last word in *italic* **",
 		'<b>Now the reverse : all in bold and the last word in <i>italic</i> </b>'
 	),
-	"// bold and italic nested without spacing": t(
+	"// bold and italic nested without spacing": t( // it makes a bad code, I don't really have a solution right now apart using a dom tree - current solution : alternate stars and low dashes
 		"**Now the reverse : all in bold and the last word in *italic***",
 		'<b>Now the reverse : all in bold and the last word in <i>italic</i></b>'
 	),
@@ -64,7 +75,7 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		'[** false bold link text](http://dystroy.org)**',
 		'<a target=_blank href="http://dystroy.org">** false bold link text</a>**'
 	),
-	"// false style - one star then two": t( // is it really a bug ?
+	"false style - one star then two": t(
 		'*one star then two**',
 		'*one star then two**'
 	),

@@ -28,13 +28,21 @@ buster.testCase("Formatting - Links", {
 		"[This md styled link has some **bold** and *italic*](http://dystroy.org/miaou/help#Ping_and_reply)",
 		'<a target=_blank href="http://dystroy.org/miaou/help#Ping_and_reply">This md styled link has some <b>bold</b> and <i>italic</i></a>'
 	),
-	"// boldened raw URL": t(
+	"boldened raw URL": t(
 		"** http://dystroy.org **",
 		'<b> <a target=_blank href="http://dystroy.org">http://dystroy.org</a> </b>'
 	),
-	"// markdown link in a styled sentence": t(
+	"markdown link in a striken sentence": t( // bug : http://dystroy.org/miaou/3?Code_Croissants#525888
 		"@Florian ---c'est quel langage ton fichier de provisionning vagrant https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1 ?--- ok > Puppet",
 		"@Florian <strike>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</strike> ok &gt; Puppet"
+	),
+	"markdown link in a bold sentence": t(
+		"@Florian **c'est quel langage ton fichier de provisionning vagrant https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1 ?** ok > Puppet",
+		"@Florian <b>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</b> ok &gt; Puppet"
+	),
+	"markdown link in a italicized sentence": t(
+		"@Florian *c'est quel langage ton fichier de provisionning vagrant https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1 ?* ok > Puppet",
+		"@Florian <i>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</i> ok &gt; Puppet"
 	),
 	"markdown link in title": t(
 		"# [link](http://some.com/link) here !",
