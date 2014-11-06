@@ -194,7 +194,7 @@ body.mobile #message-scroller {
 			font-style: italic;
 		}
 	}
-	.content {
+	.content, .rendered {
 		word-wrap: break-word;
 		overflow-y: hidden;
 		overflow-x: hidden;
