@@ -35,6 +35,7 @@ static/rooms.min.js
 # execution byproducts
 *.log
 dump.rdb
+miaou.pid
 
 # vagrant
 .vagrant/
