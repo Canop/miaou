@@ -92,25 +92,6 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 		})
 		.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
 		.on('mouseleave', '.replyButton,.deleteButton,.editButton', prof.shownow)
-		.on('mouseenter', '.reply', function(e){
-			var $this = $(this),
-				mid = $this.attr('to');
-			wz.onmouseleave();
-			var $target = $('#messages > .message').filter(function(){ return $(this).data('message').id==mid }).eq(0);
-			if ($target.length) {
-				if (replyWzin) replyWzin.remove();
-				replyWzin = wzin($this.closest('.message'), $target, {
-					zIndex:5, fill:'rgba(139, 69, 19, .2)', scrollable:'#message-scroller'
-				});
-			}
-			e.stopPropagation();
-		})
-		.on('mouseleave', '.reply', function(){
-			if (replyWzin) {
-				replyWzin.remove();
-				replyWzin = null;
-			}
-		})
 		.on('mouseenter', '.message', wz.onmouseenter)
 		.on('mouseleave', '.message', wz.onmouseleave)
 		.on('click', '.reply', function(e){

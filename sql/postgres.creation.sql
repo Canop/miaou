@@ -2,7 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 6);
+insert into db_version (component, version) values('core', 8);
 
 CREATE TABLE room (
 	id serial primary key,
@@ -100,9 +100,22 @@ CREATE TABLE plugin_player_info (
 	PRIMARY KEY(plugin, player)
 );
 
+CREATE TABLE ban (
+	id bigserial primary key,
+	room integer references room(id) NULL,
+	banned integer references player(id),
+	banner integer references player(id),
+	bandate integer NOT NULL,
+	expires integer NOT NULL,
+	reason varchar(255)
+);
+create index ban_idx on ban(room, banned, expires);
+
+
 CREATE TABLE pref (
 	player integer references player(id),
 	name varchar(6) not null,
 	value varchar(20) not null,
 	primary key(player,name)
 );
+

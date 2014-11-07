@@ -56,9 +56,9 @@
 				+ c;
 			})
 			// the following 3 replacements are only here for very specific cases, I'm not sure they're worth the cost
-			.replace(/---[^<>]+?(<(\w+)[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){ return '<strike>'+s.slice(3,-3)+'</strike>' })
-			.replace(/\*\*[^<>]+?(<(\w+)[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*\*/g, function(s){ return '<b>'+s.slice(2,-2)+'</b>' })
-			.replace(/\*[^<>\*]+?(<(\w+)[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*(?=[^\*]|$)/g, function(s){ return '<i>'+s.slice(1,-1)+'</i>' })
+			.replace(/---[^<>]+?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){ return '<strike>'+s.slice(3,-3)+'</strike>' })
+			.replace(/\*\*[^<>]+?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*\*/g, function(s){ return '<b>'+s.slice(2,-2)+'</b>' })
+			.replace(/\*[^<>\*]+?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*(?=[^\*]|$)/g, function(s){ return '<i>'+s.slice(1,-1)+'</i>' })
 		}).join('');
 	}
 

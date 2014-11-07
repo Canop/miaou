@@ -41,7 +41,7 @@ body {
 	top:0; left:0; bottom:0;
 	width: $left-panel-width;
 	//~ background: linear-gradient( lighten($bg-color, 12%), darken($bg-color, 1%) );
-	background: linear-gradient( $bg-color, darken($bg-color, 20%) );
+	background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) );
 	overflow-y: auto;
 }
 #right {
@@ -49,7 +49,7 @@ body {
 	width: $right-panel-width;
 	overflow-y: auto;
 	//~ background: linear-gradient( lighten($bg-color, 12%), darken($bg-color, 1%) );
-	background: linear-gradient( $bg-color, darken($bg-color, 20%) );
+	background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) );
 }
 #center {
 	display:flex;
@@ -198,7 +198,7 @@ body.mobile #message-scroller {
 		word-wrap: break-word;
 		overflow-y: hidden;
 		overflow-x: hidden;
-		min-height: 24px;
+		min-height: 26px;
 		line-height: 22px;
 		padding-top: 1px;
 		padding-left: 2px;
@@ -395,19 +395,21 @@ body.mobile .message-menu .vote {
 #notable-messages, #search-results {
 	.message {
 		font-size: 12px;
-		padding: 2px 2px 2px 6px;
 		border-bottom: thin dashed #aaa;
+		&:nth-child(even) {
+			background: rgba(0,0,0,0.04);
+		}
 		&:hover {
-			background: lighten($bg-color, 4%);
+			background: lighten($bg-color, 10%);
 			transition: background 0.2s;
 		}
 		&.selected {
-			background: lighten($bg-color, 23%);		
+			background: lighten($bg-color, 24%);		
 			transition: background 0.2s;
 		}
 		transition: background 0.6s;
 		cursor: pointer;
-		padding: 6px;
+		padding: 7px;
 		&.pin {
 			font-size: 13px;
 		}

@@ -11,7 +11,7 @@ miaou(function(prof){
 			$scroller = $user.closest('#message-scroller,#auths-page,#left'), ss = $scroller.scrollTop(), sh = $scroller.height(),
 			$container = $user.closest('#messages,#auths-page,body').first(), ch = $container.height();
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
-		if (up.top-ss<sh/2) css.top = up.top+1;
+		if (up.top-ss<sh/2) css.top = up.top+2;
 		else css.bottom = ch-up.top-uh-4;
 		css.left = up.left + uw + 4;
 		if ($message.hasClass('access_request')) {

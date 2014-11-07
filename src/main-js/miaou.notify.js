@@ -41,7 +41,6 @@ miaou(function(notif, md){
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
 		if (audio) {
-			console.log("Playing sound", sound);
 			audio.play();
 		}
 	}
