@@ -243,7 +243,12 @@ function handleUserInRoom(socket, completeUser){
 	.on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		if (shoe.room) {
 			console.log(shoe.completeUser.name, "leaves room", shoe.room.id, ':', shoe.room.name);
-			socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
+			var otherUserSocket = shoe.userSocket(shoe.completeUser.id);
+			if (otherUserSocket) {
+				console.log('... but has another socket in the room');
+			} else {
+				socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
+			}
 		} else {
 			console.log(shoe.completeUser.name, "disconnected before entering a room");
 		}
