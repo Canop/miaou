@@ -16,7 +16,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 	}
 	
 	gui.init = function(){
-		var replyWzin, timer;
+		var timer;
 		
 		$('#messages, #notable-messages, #search-results').on('click', '.message .content a[href]', function(e){
 			var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);

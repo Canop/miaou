@@ -227,6 +227,9 @@ body.mobile #message-scroller {
 				cursor: pointer;
 			}
 		}
+		div.tablewrap {
+			overflow-x: auto;		
+		}
 		table {
 			border-collapse: collapse;
 			display: inline-table;

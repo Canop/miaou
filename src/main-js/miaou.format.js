@@ -19,8 +19,9 @@
 		this.rows.push(row.match(/[^|]+/g)||[]);
 	}
 	Table.prototype.html = function(username){
-		var h = this.style ? '<table id='+this.id+'><style scoped>'+this.style+'</style>' : '<table>',
+		var h = '<div class=tablewrap>', 
 			n = Math.max.apply(0, this.rows.map(function(v){ return v.length }));
+		h += this.style ? '<table id='+this.id+'><style scoped>'+this.style+'</style>' : '<table>',
 		h += this.rows.map(function(r, ir){
 			if (!r.length) return '';
 			return '<tr>'+r.map(function(c,ic){
@@ -30,7 +31,7 @@
 				return cell + '>'+fmtStr(c.trim(), username)+'</'+tag+'>';
 			}).join('')+'</tr>';
 		}).join('');
-		h += '</table>';
+		h += '</table></div>';
 		return h;
 	}
 	
