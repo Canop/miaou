@@ -27,11 +27,12 @@ miaou(function(ms, chat, usr){
 			status.answerable = status.deletable = status.editable = false;
 			return;
 		}
-		var created = message.created+chat.timeOffset;
+		var created = message.created+chat.timeOffset,
+			modDeleted = /^!!deleted/.test(message.content);
 		status.answerable = message.author !== me.id;
 		status.old =  Date.now()/1000 - created > chat.config.maxAgeForMessageEdition;
-		status.deletable = status.editable = message.author===me.id && !status.old && message.content;
-		status.mod_deletable = usr.checkAuth('admin') && message.content;
+		status.deletable = status.editable = message.author===me.id && !status.old && message.content && !modDeleted;
+		status.mod_deletable = usr.checkAuth('admin') && message.content && !modDeleted;
 	});
 
 	ms.updateStatus = function(message){
