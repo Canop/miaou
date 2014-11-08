@@ -6,15 +6,19 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
 	
 	// registers a function which will be called when a message needs rendering
-	// Unless a renderer returns true, the other renderers will be called and
-	//  the last one will be the default, markdown based, renderer. If a renderer
-	//  has nothing specific to do, it should do nothing and return undefined.
-	// Passed arguments are
+	// Unless a renderer returns true, the other renderers will be called.
+	// A renderer can be registered to be executed before the standard markdown
+	//  based, renderer, or after : set postrendering to true to register the
+	//  renderer as a postrenderer (your renderer would then be able to use the
+	//  result of the previous renderers incliding the default one. 
+	// If a renderer has nothing specific to do, it should do nothing and return
+	//  undefined.
+	// Arguments passed to your renderer are
 	//  - $c : the div in which to render the message
 	//  - the message
 	//  - the previous version of the message if it's a replacement
 	// If it's a re-rendering (message was edited, or voted, etc.) the $c div
-	//  may be already rendered.
+	//  may be already rendered, even for the first renderer.
 	// $c is already added to the dom, which means it's possible to test the
 	//  parents if the rendering depends on it
 	md.registerRenderer = function(fun, postrendering){
