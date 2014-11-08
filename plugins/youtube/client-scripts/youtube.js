@@ -1,11 +1,29 @@
 (function() {
-	function getParameterByName(search, name) {
-		var match = RegExp('[?&]' + name + '=([^&]*)').exec(search);
-		return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-	}
-
 	function getEmbedLink(id) {
 		return 'https://www.youtube.com/embed/' + id;
+	}
+
+	// We want to make sure the video size isn't too big
+	function calculateVideoSize() {
+		var defaultWidth = 640;
+		var defaultHeight = 390;
+
+		// The width is the value we depend on.
+		var messagesDivWidth = $('.message:first-child .content').width();
+		if (messagesDivWidth > defaultWidth) {
+			return {width:defaultWidth, height: defaultHeight};
+		}
+
+		// If the message div is too small, we shrink the width and keep the ratio.
+		// Make sure it's not *too* small though.
+		if (messagesDivWidth === 0) {
+			return {width:0, height: 0};
+		}
+
+		return {
+			width:messagesDivWidth,
+			height:(((messagesDivWidth)*defaultHeight)/defaultWidth)|0
+		};
 	}
 
 	function replaceLink($c, m) {
@@ -15,7 +33,13 @@
 			if (!match) return line;
 
 			hasYoutubeLink = true;
-			return '<iframe width="500" height="300" src="' +
+			// We want to calculate for each new video, the screen size may have changed.
+			var size = calculateVideoSize();
+			return '<iframe width="' +
+				size.width +
+				'" height="' +
+				size.height +
+				'" src="' +
 				getEmbedLink(match[1]) +
 				'" frameborder="0" allowfullscreen></iframe>';
 		});
