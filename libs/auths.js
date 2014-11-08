@@ -97,6 +97,7 @@ exports.appPostAuths = function(req, res, db){
 }
 
 exports.wsOnBan = function(shoe, db, o){
+	if (!shoe.room) return console.log('No room in wsOnBan');
 	o.banner = shoe.publicUser.id;
 	o.bannername = shoe.publicUser.name;
 	db.on([shoe.room.id, o.banned])
