@@ -19,6 +19,7 @@
 		"./plugins/wikipedia/plugin.js",
 		"./plugins/video/plugin.js",
 		"./plugins/whiteboard/plugin.js",
+		"./plugins/youtube/plugin.js"
 	],
 	"oauth2": {
 		"google": {
