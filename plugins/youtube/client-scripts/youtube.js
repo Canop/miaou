@@ -1,4 +1,5 @@
-(function() {
+miaou(function(plugins, md){
+	
 	function getEmbedLink(id) {
 		return 'https://www.youtube.com/embed/' + id;
 	}
@@ -26,35 +27,27 @@
 		};
 	}
 
-	function replaceLink($c, m) {
+	function replaceLink($c, m){
+		if (!m.content || !/www\.youtube\.com\/watch/.test(m.content)) return;
 		var hasYoutubeLink = false;
-		var lines = m.content.split('<br>').map(function(line) {
-			var match = line.match(/^\s*https?:\/\/www\.youtube\.com\/watch.*[\?&]v=([a-zA-Z0-9]+)[&#\w\d=]*\s*$/);
+		var lines = $c.html().split('<br>').map(function(line){
+			var match = line.match(/^\s*<a[^>]* href="https?:\/\/www\.youtube\.com\/watch[&#\w\d=]*[\?&]v=([a-zA-Z0-9]+)[&#\w\d=]*">[^<>]+<\/a>\s*$/);
 			if (!match) return line;
-
 			hasYoutubeLink = true;
 			// We want to calculate for each new video, the screen size may have changed.
 			var size = calculateVideoSize();
-			return '<iframe width="' +
-				size.width +
-				'" height="' +
-				size.height +
-				'" src="' +
-				getEmbedLink(match[1]) +
+			return '<iframe width="' + size.width +
+				'" height="' + size.height +
+				'" src="' + getEmbedLink(match[1]) +
 				'" frameborder="0" allowfullscreen></iframe>';
 		});
-		if (!hasYoutubeLink) return false;
-
-		$c.html(lines.join('<br>'));
-		return hasYoutubeLink;
+		if (hasYoutubeLink) $c.html(lines.join('<br>'));
 	}
-
-	miaou(function(plugins, chat, md, ms) {
-		plugins.youtube = {
-			start: function() {
-				// post renderer
-				md.registerRenderer(replaceLink, true, true);
-			}
-		};
-	});
-}());
+	
+	plugins.youtube = {
+		start: function() {
+			// post renderer
+			md.registerRenderer(replaceLink, true, true);
+		}
+	};
+});
