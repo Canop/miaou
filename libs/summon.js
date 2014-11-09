@@ -26,10 +26,10 @@ exports.registerCommands = function(registerCommand){
 			})
 			.spread(function(user, authLevel){
 				if (!shoe.room.private) {
-					return shoe.emitBotFlakeToRoom(bot, user.name+" has been notified of your wish he comes in this public room.", shoe.room.id);
+					return shoe.emitBotFlakeToRoom(bot, user.name+" has been invited to this public room.", shoe.room.id);
 				}
 				if (authLevel) {
-					return shoe.emitBotFlakeToRoom(bot, user.name+" has been notified of your wish he comes in this room (in which he has access).", shoe.room.id);				
+					return shoe.emitBotFlakeToRoom(bot, user.name+" has been invited to this room (with access).", shoe.room.id);				
 				}
 				shoe.emit('auth_dialog', {id:user.id, name:user.name});
 			});
