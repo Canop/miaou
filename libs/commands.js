@@ -47,7 +47,7 @@ exports.configure = function(miaou){
 	registerCommand({
 		name:'help',
 		fun:function(ct){
-			var match = ct.message.content.match(/^!!help\s+(!!)?(\w+)/);
+			var match = ct.message.content.match(/!!help\s+(!!)?(\w+)/);
 			ct.nostore = true;
 			ct.reply(getHelpText(ct.shoe.room, match ? match[2] : null), true);
 		},
@@ -83,10 +83,10 @@ exports.commands = commands;
 // may return a promise
 // called with context being a db connection
 exports.onMessage = function(shoe, m){
-	var cmdMatch = m.content.match(/^!!(\w+)/);
-	if (!cmdMatch) return {};	
-	var cmd = commands[cmdMatch[1]];
-	if (!cmd || !cmd.fun) throw 'Command "' + cmdMatch[1] + '" not found';
+	var cmdMatch = m.content.match(/^\s*(@\w[\w\-]{2,}#?\d*\s+)?!!(\w+)(\s+|$)/);
+	if (!cmdMatch) return {};
+	var cmd = commands[cmdMatch[2]];
+	if (!cmd || !cmd.fun) throw 'Command "' + cmdMatch[2] + '" not found';
 	if (cmd.filter && !cmd.filter(shoe.room)) throw 'Command "'+cmd.name+'" not available in this room';
 	return (new CommandTask(cmd, shoe, m)).exec(this);	
 }
