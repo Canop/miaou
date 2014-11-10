@@ -48,7 +48,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 		});
 			
 		$('#messages').on('click', '.message .content img', function(e){
-			window.open(this.src);
+			window.open(this.getAttribute('href')||this.src);
 			e.stopPropagation();
 		})
 		.on('click', '.opener', md.opener)
