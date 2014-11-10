@@ -168,7 +168,7 @@ miaou(function(ed, chat, gui, md, ms, ws){
 				$scroller.scrollTop(Math.min(mtop+$scroller.scrollTop()-25, $scroller[0].scrollHeight));
 			}			
 			replywzin = wzin($message, $('#input'), {
-				zIndex:5, fill:'rgba(71, 71, 249, .15)', scrollable:'#message-scroller'
+				zIndex:5, fill:'rgba(71, 71, 249, .15)', scrollable:'#message-scroller', parent:document.body
 			});
 		}
 	}

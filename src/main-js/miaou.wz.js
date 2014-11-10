@@ -1,4 +1,4 @@
-// functions related to wzin reply effects
+// functions related to wzin conversation effects
 
 miaou(function(wz){
 
@@ -26,7 +26,7 @@ miaou(function(wz){
 		delete opts.fill;
 		(function down(si, colorIndex){
 			for (var i=si+1; i<messages.length; i++) {
-				if (messages[i].repliesTo===messages[si].id){
+				if (messages[i].repliesTo && messages[i].repliesTo===messages[si].id) { // be wary of flakes
 					wzins.push(wzin($messages.eq(si), $messages.eq(i), $.extend({fill:colors[colorIndex]}, opts)));
 					down(i, colorIndex);
 					colorIndex = (colorIndex+1)%colors.length;
