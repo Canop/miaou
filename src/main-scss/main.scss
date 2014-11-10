@@ -19,11 +19,6 @@ body {
 	margin:0;
 	padding:0;
 	&.chat {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
 		&.mobile {
 			background: white;
 		}
@@ -60,6 +55,7 @@ body {
 	bottom: 0;
 	box-shadow: 0 0 7px black;
 	z-index: 2;
+	overflow-x: visible;
 }
 #vert-center {
 	display:flex;
