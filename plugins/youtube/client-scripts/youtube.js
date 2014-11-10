@@ -5,12 +5,12 @@ miaou(function(plugins, md){
 	}
 
 	// We want to make sure the video size isn't too big
-	function calculateVideoSize() {
+	function calculateVideoSize($c) {
 		var defaultWidth = 640;
 		var defaultHeight = 390;
 
 		// The width is the value we depend on.
-		var messagesDivWidth = $('.message:first-child .content').width();
+		var messagesDivWidth = $c.width();
 		if (messagesDivWidth > defaultWidth) {
 			return {width:defaultWidth, height: defaultHeight};
 		}
@@ -35,7 +35,7 @@ miaou(function(plugins, md){
 			if (!match) return line;
 			hasYoutubeLink = true;
 			// We want to calculate for each new video, the screen size may have changed.
-			var size = calculateVideoSize();
+			var size = calculateVideoSize($c);
 			return '<iframe width="' + size.width +
 				'" height="' + size.height +
 				'" src="' + getEmbedLink(match[1]) +
