@@ -8,7 +8,7 @@ exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name:'flake',
 		fun:function(ct){
-			delete ct.message.id; // to prevent injection 
+			if (ct.message.id) throw "You can't change a persistent message to a flake";
 			ct.nostore = true;
 			ct.text(ct.text().replace(/^\s*!!flake\s*/,''));
 			if (!ct.text().trim().length) throw "You can't send an empty flake";
