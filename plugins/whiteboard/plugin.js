@@ -1,6 +1,6 @@
 var cache = require('bounded-cache')(100); // not necessarily the last version, we don't care
 
-var r = /^\s*!!whiteboard(\s|$)/;
+var r = /^(@[\w-]{3,}#?\d*\s+)?!!whiteboard(\s|$)/;
 
 function chown(newMessage, savedMessage){
 	if (savedMessage.author!==newMessage.author && r.test(savedMessage.content)!==r.test(newMessage.content)) {
