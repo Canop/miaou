@@ -1,6 +1,6 @@
 // Games are stored in JSON in messages
 // A valid game (even before accept) is always stored like this :
-//  !!game @otherPlayer jsonEncodedGame
+// maybeAPingOrReply !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
 var cache = require('bounded-cache')(300);
 
