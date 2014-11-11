@@ -15,7 +15,7 @@ var gametypes = {
 function dbGetGame(shoe, mid){
 	return shoe.db.on().then(function(){
 		return cache.get(mid) || this.getMessage(mid).then(function(m){
-			var g = JSON.parse(m.content.split(' ')[2]);
+			var g = JSON.parse(m.content.match(/!!game @\S{3,} (.*)$/)[1]);
 			m.room = shoe.room.id; // db.getMessage doesn't provide the room, we must set it before saving
 			gametypes[g.type].restore(g);
 			var data = [m, g];
@@ -27,10 +27,10 @@ function dbGetGame(shoe, mid){
 
 // serializes the game in the message and asynchronously notifies observers
 function storeInMess(m, game, shoe){
-	var saved = {type:game.type, status:game.status, players:game.players},
+	var	saved = {type:game.type, status:game.status, players:game.players},
 		gametype = gametypes[game.type];
 	gametype.store(game, saved);
-	m.content = "!!game @"+game.players[0].name+" "+JSON.stringify(saved);
+	m.content = m.content.match(/^(.*?)!!/)[1] + "!!game @"+game.players[0].name+" "+JSON.stringify(saved);
 	delete m.changed;
 	if (gametype.observers) {
 		 // warning : at this point it's still possible the message has no id
@@ -45,12 +45,12 @@ function onCommand(ct){
 	var	m = ct.message,
 		cmd = ct.cmd.name,
 		shoe = ct.shoe,
-		match = m.content.match(/^!!(\w+)\s+@(\w[\w_\-\d]{2,})\s*$/);
+		match = m.content.match(/(?:^|\W)!!\w+\s+@(\w[\w_\-\d]{2,})/);
 	if (!match) throw 'Bad syntax. Use `!!'+cmd+' @yourOpponent`';
-	if (match[2]===shoe.publicUser.name) throw "You can't play against yourself";
+	if (match[1]===shoe.publicUser.name) throw "You can't play against yourself";
 	storeInMess(m, {
 		players: [
-			{name:match[2]}, // id will be resolved later
+			{name:match[1]}, // id will be resolved later
 			{id:m.author, name:m.authorname}
 		],
 		type: cmd==='game' ? 'Tribo' : cmd[0].toUpperCase()+cmd.slice(1),

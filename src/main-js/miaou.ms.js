@@ -27,7 +27,7 @@ miaou(function(ms, chat, usr){
 			status.answerable = status.deletable = status.editable = false;
 			return;
 		}
-		var created = message.created+chat.timeOffset,
+		var	created = message.created+chat.timeOffset,
 			modDeleted = /^!!deleted/.test(message.content);
 		status.answerable = message.author !== me.id;
 		status.old =  Date.now()/1000 - created > chat.config.maxAgeForMessageEdition;

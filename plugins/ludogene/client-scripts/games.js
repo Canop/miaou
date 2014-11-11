@@ -59,14 +59,11 @@ miaou(function(games, chat, gui, md, ms, plugins, ws){
 	function messageGame(m){
 		if (!m.content) return;
 		if (m.game) return m.game;
-		var match = m.content.match(/^!!game @\S{3,} (.*)$/);
+		var match = m.content.match(/!!game @\S{3,} (.*)$/);
 		if (!match) return;
-		var game;
 		try {
-			game = JSON.parse(match[1]);
+			return m.game = JSON.parse(match[1]);
 		} catch (e){}
-		m.game = game;
-		return game;
 	}
 
 	plugins.ludogene = {
