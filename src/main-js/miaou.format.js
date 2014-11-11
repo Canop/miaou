@@ -45,6 +45,7 @@
 				if (!(r||room)) return s;
 				return '<a target=_blank href='+(r||room.id)+'#'+m+'>'+t+'</a>';
 			})
+			// fixme : the following replacement should not happen inside a link ( exemple :  [http://some.url](http://some.url) )
 			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig, '$1<a target=_blank href="$2">$2</a>') // exemple : http://dystroy.org
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
 				return a
@@ -57,9 +58,9 @@
 				+ c;
 			})
 			// the following 3 replacements are only here for very specific cases, I'm not sure they're worth the cost
-			.replace(/---[^<>]+?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){ return '<strike>'+s.slice(3,-3)+'</strike>' })
-			.replace(/\*\*[^<>]+?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*\*/g, function(s){ return '<b>'+s.slice(2,-2)+'</b>' })
-			.replace(/\*[^<>\*]+?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*(?=[^\*]|$)/g, function(s){ return '<i>'+s.slice(1,-1)+'</i>' })
+			.replace(/---[^<>]*?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){ return s.length>6 ? '<strike>'+s.slice(3,-3)+'</strike>' : s })
+			.replace(/\*\*[^<>]*?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*\*/g, function(s){ return s.length>4 ? '<b>'+s.slice(2,-2)+'</b>' : s })
+			.replace(/\*[^<>\*]*?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*\*(?=[^\*]|$)/g, function(s){ return s.length>2 ? '<i>'+s.slice(1,-1)+'</i>' : s })
 		}).join('');
 	}
 

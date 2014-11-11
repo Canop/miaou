@@ -16,6 +16,10 @@ buster.testCase("Formatting - Links", {
 		"[dystroy](http://dystroy.org)",
 		'<a target=_blank href="http://dystroy.org">dystroy</a>'
 	),
+	"// markdown link with an URL as name": t(
+		'[http://dystroy.org](http://dystroy.org/cv)',
+		'<a target="_blank" href="http://dystroy.org/cv">http://dystroy.org</a>'
+	),
 	"tricky URL with underscores - 1": t(
 		"http://this.link/shouldnt_be_styled/index.xml",
 		'<a target=_blank href="http://this.link/shouldnt_be_styled/index.xml">http://this.link/shouldnt_be_styled/index.xml</a>'
@@ -31,6 +35,10 @@ buster.testCase("Formatting - Links", {
 	"boldened raw URL": t(
 		"** http://dystroy.org **",
 		'<b> <a target=_blank href="http://dystroy.org">http://dystroy.org</a> </b>'
+	),
+	"// striken markdown link without space": t(
+		"---[http://why/this/no/strikeout?](http://why/this/no/strikeout?)---",
+		'<strike><a target=_blank href="http://why/this/no/strikeout?">http://why/this/no/strikeout?</a></strike>'
 	),
 	"markdown link in a striken sentence": t( // bug : http://dystroy.org/miaou/3?Code_Croissants#525888
 		"@Florian ---c'est quel langage ton fichier de provisionning vagrant https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1 ?--- ok > Puppet",
