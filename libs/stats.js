@@ -21,7 +21,8 @@ function doStats(ct) {
 	if (/^server$/i.test(topic)) {
 		cols = [
 			{name:"Users", value:"(select count(*) from player)"},
-			{name:"Rooms", value:"(select count(*) from room)"},
+			{name:"Public Rooms", value:"(select count(*) from room where private=false)"},
+			{name:"Private Rooms", value:"(select count(*) from room where private=true)"},
 			{name:"Messages", value:"(select count(*) from message)"},
 			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800)"},
 		];
