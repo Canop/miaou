@@ -10,7 +10,7 @@ exports.registerCommands = function(registerCommand){
 		fun:function(ct){
 			if (ct.message.id) throw "You can't change a persistent message to a flake";
 			ct.nostore = true;
-			ct.text(ct.text().replace(/^\s*!!flake\s*/,''));
+			ct.text(ct.text().replace(/!!flake\s*/,''));
 			if (!ct.text().trim().length) throw "You can't send an empty flake";
 		},
 		help:"send a flake, a message that won't be saved, only visible by users currently in room"

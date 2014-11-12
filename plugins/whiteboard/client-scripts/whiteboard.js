@@ -1,6 +1,6 @@
 miaou(function(plugins, chat, md, ms){
 
-	var r = /^\s*!!whiteboard\b/;
+	var r = /^\s*(@\w[\w\-]{2,}#?\d*\s+)?!!whiteboard\b/;
 
 	function removeCommand(node){
 		if (node.nodeType===3) {
@@ -35,8 +35,10 @@ miaou(function(plugins, chat, md, ms){
 				if (m.id) {
 					var oldMessage = md.getMessage(m.id);
 					if (oldMessage && oldMessage.whiteboard && oldMessage.author!==me.id) {
-						// to avoid an error, let's silently restore the !!whiteboard if it's missing
-						m.content = m.content.replace(/^(\s*!!\w*\s*)?/,'!!whiteboard ');
+						if (!r.test(m.content)) {
+							// to avoid an error, let's silently restore the !!whiteboard if it's missing
+							m.content = m.content.replace(/^(@[\w-]{3,}#?\d*\s+)?/,'$1!!whiteboard ');
+						}
 					}
 				}
 			});

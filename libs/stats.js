@@ -8,7 +8,7 @@ exports.configure = function(miaou){
 }
 
 function doStats(ct) {
-	var	match = ct.text().match(/^\s*!!stats\s*([@\w\-]+)(\s+\d+)?/),
+	var	match = ct.args.match(/([@\w\-]+)(\s+\d+)?/),
 		room = ct.shoe.room,
 		topic = 'server',
 		n = 10;

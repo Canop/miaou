@@ -15,8 +15,8 @@ exports.registerCommands = function(registerCommand){
 		fun:function(ct){
 			var shoe = ct.shoe;
 			if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) throw "Only an admin can do that";
-			var match = ct.text().match(/^!!summon\s+@(\w[\w_\-\d]{2,})(\b|$)/);
-			if (!match) throw 'Bad syntax. Use `!!'+cmd+' @some_other_user`';
+			var match = ct.args.match(/@(\w[\w_\-\d]{2,})/);
+			if (!match) throw 'Bad syntax. Use `!!summon @some_other_user`';
 			var username=match[1];
 			if (username===ct.username()) throw "You can't summon yourself";
 			return this.getUserByName(username)

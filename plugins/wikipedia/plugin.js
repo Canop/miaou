@@ -75,14 +75,14 @@ function dequeue(){
 
 function onCommand(ct){
 	var	m = ct.message,
-		lines = m.content.split('\n'),
-		searched = lines[0].slice('!!wiki'.length).trim();
-	if (searched) {
-		lines[0] = 'http://en.wikipedia.org/wiki/'+encodeURIComponent(searched);
-		m.content = lines.join('\n');
-	} else {
-		throw 'Bad syntax. Use `!!'+cmd+' what you want to search on wikipedia`';
-	}
+		done = false;
+	m.content = m.content.replace(/!!wiki\s+([^\s\n][^\n]+)/, function(_, searched, pos){
+		done = true;
+		var r = 'http://en.wikipedia.org/wiki/'+encodeURIComponent(searched.trim());
+		if (pos>3) r = '\n'+r; // due to how commands are parsed, it can only be after a ping or a reply
+		return r;
+	});
+	if (!done) throw 'Bad syntax. Use `!!wiki what you want to search on wikipedia`';
 }
 
 exports.registerCommands = function(cb){

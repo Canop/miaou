@@ -1,6 +1,6 @@
 var cache = require('bounded-cache')(100); // not necessarily the last version, we don't care
 
-var r = /^\s*!!whiteboard(\s|$)/;
+var r = /^(@[\w-]{3,}#?\d*\s+)?!!whiteboard(\s|$)/;
 
 function chown(newMessage, savedMessage){
 	if (savedMessage.author!==newMessage.author && r.test(savedMessage.content)!==r.test(newMessage.content)) {
@@ -13,7 +13,7 @@ function chown(newMessage, savedMessage){
 function onCommand(ct){
 	var m = ct.message;
 	if (m.id) {
-		ct.ignoreMaxAgeForEdition = true;
+		ct.ignoreMaxAgeForEdition = true; // note : this probably allows anybody to edit his very old message
 		// not a new message, let's check it was already a whiteboard message
 		//  and in that case we just set the author so that it can be saved
 		var savedMessage = cache.get(m.id);

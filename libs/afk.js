@@ -11,9 +11,8 @@ function makeCommand(status){
 	return function(ct){
 		setTimeout(function(){
 			// sends a flake to all rooms in which the user is
-			var	text = '*'+ct.username()+'* is *'+status+'*',
-				matches = ct.text().match(/^!!\w+\s+(.+)$/);
-			if (matches) text += ' ( '+matches[1]+' )';
+			var	text = '*'+ct.username()+'* is *'+status+'*';
+			if (ct.args) text += ' ( '+ct.args+' )';
 			ct.shoe.userRooms().forEach(function(roomId){
 				ct.shoe.emitBotFlakeToRoom(bot, text, roomId);
 			});
