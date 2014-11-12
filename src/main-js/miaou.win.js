@@ -25,7 +25,9 @@ miaou(function(win, chat, md, ws){
 	function closeMWin(){
 		var $mwin = $('#mwin');
 		if ($mwin.length) {
-			md.unrender($mwin.find('.content'), $mwin.data('message'));
+			var	$c = $mwin.find('.content'),
+				m = $mwin.data('message');
+			if (m && $c.length)	md.unrender($c, m);
 			$mwin.remove();
 		}
 	}
@@ -49,7 +51,7 @@ miaou(function(win, chat, md, ws){
 			sides.forEach(function(side){
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
 			});
-			$mc.html('loading...')
+			$mc.html('loading...'); // fixme : this isn't replaced when the message isn't found on the server (hard deleted)
 			ws.emit('get_message', message.id);
 		}
 	}
