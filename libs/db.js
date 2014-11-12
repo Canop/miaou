@@ -478,7 +478,7 @@ proto.storeMessage = function(m, dontCheckAge){
 				"delete from ping where message=$1", [m.id], true
 			).then(function(){
 				return this.queryRow(
-					"delete from message_vote where message=$1", [m.id]
+					"delete from message_vote where message=$1", [m.id], true
 				)
 			}).then(function(){ 
 				return this.queryRow(
