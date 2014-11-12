@@ -7,10 +7,10 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 	
 	// registers a function which will be called when a message needs rendering
 	// Unless a renderer returns true, the other renderers will be called.
-	// A renderer can be registered to be executed before the standard markdown
+	// A renderer can be registered to be executed before the standard,markdown
 	//  based, renderer, or after : set postrendering to true to register the
 	//  renderer as a postrenderer (your renderer would then be able to use the
-	//  result of the previous renderers incliding the default one. 
+	//  result of the previous renderers including the default one. 
 	// If a renderer has nothing specific to do, it should do nothing and return
 	//  undefined.
 	// Arguments passed to your renderer are

@@ -1,6 +1,6 @@
-// A simple SVG library
-//  website : http://Github.com/Canop/hu.js
-//  author  : denys.seguret@gmail.com
+/* http://Github.com/Canop/hu.js */
+
+// A simple SVG library by denys.seguret@gmail.com
 ;(function(){
 
 	"use strict";
@@ -9,13 +9,13 @@
 		U = function(n) { this.n = n },
 		fn = U.prototype,
 		nopx = { // css properties which don't need a unit
-			columnCount: 1,
-			fillOpacity: 1,
-			flexGrow: 1,
-			flexShrink: 1,
-			fontWeight: 1,
-			opacity: 1,
-			zIndex: 1
+			"column-count": 1,
+			"fill-opacity": 1,
+			"flex-grow": 1,
+			"flex-shrink": 1,
+			"font-weight": 1,
+			"opacity": 1,
+			"z-index": 1
 		};
 
 	function node(a, c){
@@ -36,7 +36,7 @@
 		return a[0]||a; // to support jQuery elements and nodelists
 	}	
 
-	window.ù = window.hu = function(a, c){
+	var ù = window.ù = window.hu = function(a, c){
 		if (!c) return new U(node(a));
 		c = node(c);
 		a = node(a, c);
@@ -64,7 +64,7 @@
 	// (to remove everything, just call the standard DOM functions)
 	fn.empty = function(){
 		for (var l=this.n.childNodes, i=l.length; i--;) {
-			if (!/^defs$/i.test(l[i].tagName)) l[i].remove();
+			if (!/^defs$/i.test(l[i].tagName)) this.n.removeChild(l[i]);
 		}
 		return this;
 	}
@@ -161,7 +161,7 @@
 		return this;
 	}
 	fn.remove = function(){
-		this.n.remove();
+		if (this.n.parentNode) this.n.parentNode.removeChild(this.n);
 		return this;
 	}
 	
@@ -194,7 +194,7 @@
 		}
 		var s = Date.now(), e = s+duration;
 		(function step(n){
-			n = Date.now()
+			n = Date.now();
 			vars.forEach(function(v){
 				v.f.call(u, v.k, v.s+(n-s)*(v.e-v.s)/duration);
 			});
