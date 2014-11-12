@@ -77,6 +77,16 @@
 				lout.push('<code class=indent>'+m[1]+'</code>');
 				continue;
 			}
+			if (m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gif|png|jpg)\s*$/)) {
+				var bu = (m[1]||"https://")+m[2]+m[3];
+				if (bu[bu.length-1]!=='m') {
+					// use thumbnail for imgur images whenever possible
+					lout.push('<img href='+bu+'.'+m[4]+' src='+bu+'m.'+m[4]+'>');
+				} else {
+					lout.push('<img src='+bu+'.'+m[4]+'>');
+				}
+				continue;
+			}
 			if (m=s.match(/^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/)) {
 				 // exemple : http://mustachify.me/?src=http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg
 				lout.push('<img src="'+m[1]+'.'+m[2]+'">');
