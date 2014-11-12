@@ -6,7 +6,7 @@ var Promise = require("bluebird"),
 	cache = require('bounded-cache')(200);
 
 function makeVD(shoe, message) {
-	var match = message.content.match(/^!!\w+\s*@(\w[\w_\-\d]{2,})/);
+	var match = message.content.match(/^(?:@\w[\w\-]{2,}#?\d*\s+)?!!\w+\s*@(\w[\w_\-\d]{2,})/);
 	if (!match) throw  'Bad syntax. Use `!!video @somebody` or `!!audio @somebody`';
 	var vd = {
 		usernames:[message.authorname, match[1]],

@@ -13,7 +13,7 @@ function chown(newMessage, savedMessage){
 function onCommand(ct){
 	var m = ct.message;
 	if (m.id) {
-		ct.ignoreMaxAgeForEdition = true;
+		ct.ignoreMaxAgeForEdition = true; // note : this probably allows anybody to edit his very old message
 		// not a new message, let's check it was already a whiteboard message
 		//  and in that case we just set the author so that it can be saved
 		var savedMessage = cache.get(m.id);

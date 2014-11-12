@@ -45,7 +45,7 @@ function onCommand(ct){
 	var	m = ct.message,
 		cmd = ct.cmd.name,
 		shoe = ct.shoe,
-		match = m.content.match(/(?:^|\W)!!\w+\s+@(\w[\w_\-\d]{2,})/);
+		match = ct.args.match(/^@(\w[\w_\-\d]{2,})/);
 	if (!match) throw 'Bad syntax. Use `!!'+cmd+' @yourOpponent`';
 	if (match[1]===shoe.publicUser.name) throw "You can't play against yourself";
 	storeInMess(m, {
