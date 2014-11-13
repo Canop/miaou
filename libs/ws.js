@@ -1,4 +1,4 @@
-var config,
+var	config,
 	path = require('path'),
 	maxContentLength,
 	minDelayBetweenMessages,
@@ -6,11 +6,13 @@ var config,
 	connect = require('connect'),
 	io, db, bot,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
+	maxHiatusForMerge = 60, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
 	socketWaitingApproval = [],
 	auths = require('./auths.js'),
-	commands = require('./commands.js');
+	commands = require('./commands.js'),
+	rooms = require('./rooms.js');
 
 exports.configure = function(miaou){
 	config = miaou.config;
@@ -215,8 +217,9 @@ function messageWithoutUserVote(message){
 //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
 //     different rooms and there's a reconnect
 function handleUserInRoom(socket, completeUser){
-	var shoe = new Shoe(socket, completeUser);
-
+	var shoe = new Shoe(socket, completeUser),
+		memroom,
+		send;
 	socket
 	.on('autocompleteping', function(namestart){
 		db.on()
@@ -260,6 +263,10 @@ function handleUserInRoom(socket, completeUser){
 		if (shoe.room && roomId==shoe.room.id){
 			console.log('WARN : user already in room'); // how does that happen ?
 			return;
+		}
+		memroom = rooms.mem(roomId);
+		send = function(v, m){
+			io.sockets.in(roomId).emit(v, clean(m));
 		}
 		db.on()
 		.then(function(){
@@ -375,7 +382,7 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);
 	})
 	.on('message', function(message){
-		if (!shoe.room) { // todo check this is useful and a complete enough solution
+		if (!shoe.room) {
 			console.log('no room. Asking client');
 			return socket.emit('get_room', message);
 		}
@@ -384,64 +391,86 @@ function handleUserInRoom(socket, completeUser){
 			console.log("invalid incoming message");
 			return;
 		}
-		var now = Date.now(),
+		var	now = Date.now(),
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
-			seconds = now/1000|0, content = message.content.replace(/\s+$/,'');
+			seconds = now/1000|0,
+			content = message.content.replace(/\s+$/,'');
 		if (content.length>maxContentLength) {
 			shoe.error('Message too big, consider posting a link instead', content);
-		} else if (now-shoe.lastMessageTime<minDelayBetweenMessages) {
-			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)", content);
-		} else {
-			shoe.lastMessageTime = now;
-			var u = shoe.publicUser,
-				m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id};
-			if (message.id) {
-				m.id = +message.id;
-				m.changed = seconds;
-				try {
-					for (var i=0; i<onChangeMessagePlugins.length; i++) {
-						onChangeMessagePlugins[i].onChangeMessage(shoe, m);
-					}
-				} catch(e) {
-					return shoe.error(e, m.content);
-				}
-			} else {
-				m.created = seconds;
-			}
-
-			db.on([shoe, m])
-			.spread(commands.onMessage)
-			.then(function(commandTask){
-				return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
-			}).spread(function(m, commandTask){
-				if (commandTask.silent) return;
-				if (m.changed) m.vote = '?';
-				shoe.pluginTransformAndSend(m, function(v, m){
-					io.sockets.in(roomId).emit(v, clean(m));
-				});
-				if (commandTask.replyContent) {
-					var txt = commandTask.replyContent;
-					if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
-					shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
-				}
-				if (m.content && m.id) {
-					var pings = m.content.match(/@\w[\w\-]{2,}(\b|$)/g);
-					if (pings) {
-						pings = pings.map(function(s){ return s.slice(1) });
-						var remainingpings = [];
-						pings.forEach(function(username){
-							if (shoe.userSocket(username)) return;
-							var socket = anyUserSocket(username);
-							if (socket) socket.emit('ping', {r:shoe.room, m:m});
-							else remainingpings.push(username);
-						});
-						if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
-					}
-				}
-			}).catch(function(e) {
-				shoe.error(e, m.content);
-			}).finally(db.off)
+			return;
 		}
+		if (now-shoe.lastMessageTime<minDelayBetweenMessages) {
+			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)", content);
+			return;
+		}
+		shoe.lastMessageTime = now;
+		var	u = shoe.publicUser,
+			m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id},
+			mm = memroom.mm, // eventual previous mergeable message
+			merge = null; // null or the content to concatenate to a previous message
+		if (message.id) {
+			m.id = +message.id;
+			m.changed = seconds;
+			try {
+				for (var i=0; i<onChangeMessagePlugins.length; i++) {
+					onChangeMessagePlugins[i].onChangeMessage(shoe, m);
+				}
+			} catch(e) {
+				return shoe.error(e, m.content);
+			}
+		} else {
+			m.created = seconds;
+		}
+
+		db.on([shoe, m])
+		.spread(commands.onMessage)
+		.then(function(commandTask){
+			if ( // let's see if the message can be merged with the previous one
+				!m.id // must not be already an edit
+				&& !commandTask.cmd // a command message isn't mergeable
+				&& !/^\s*@\w[\w\-]{2,}#\d+/.test(m.content) // a replying message can't be merged into a previous one
+				&& mm
+				&& mm.author===m.author && mm.created+maxHiatusForMerge>seconds // must be a recent message by same author
+				&& mm.content.length+m.content.length<maxContentLength  // must be not too big
+			) {
+				merge = m.content;
+				mm.content += '\n'+m.content;
+				mm.changed = seconds;
+				return [this.storeMessage(mm, true), commandTask]
+			}
+			memroom.mm = commandTask.cmd || m.id ? null : m;
+			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
+		}).spread(function(m, commandTask){
+			if (commandTask.silent) return;
+			if (m.changed) m.vote = '?';
+			for (var i=0; i<onSendMessagePlugins.length; i++) {
+				onSendMessagePlugins[i].onSendMessage(this, m, send);
+			}
+			if (merge) send('merge', {id:m.id, add:merge, changed:m.changed});
+			else send('message', m);
+			if (commandTask.replyContent) {
+				var txt = commandTask.replyContent;
+				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
+				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
+			}
+			var txt = merge || m.content;
+			if (txt && m.id) {
+				var pings = txt.match(/@\w[\w\-]{2,}(\b|$)/g);
+				if (pings) {
+					pings = pings.map(function(s){ return s.slice(1) });
+					var remainingpings = [];
+					pings.forEach(function(username){
+						if (shoe.userSocket(username)) return;
+						var socket = anyUserSocket(username);
+						if (socket) socket.emit('ping', {r:shoe.room, m:m});
+						else remainingpings.push(username);
+					});
+					if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
+				}
+			}
+		}).catch(function(e) {
+			shoe.error(e, m.content);
+		}).finally(db.off)
 	})
 	.on('mod_delete', function(ids){
 		if (!shoe.room) return;

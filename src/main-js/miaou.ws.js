@@ -4,7 +4,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 
 	ws.init = function(){
 		var pingRegex = new RegExp('@'+me.name+'(\\b|$)'),
-			info = { state:'connecting', start:Date.now(), nbmessages:0 },
+			info = { state:'connecting', start:Date.now() },
 			socket = io.connect(location.origin);
 
 		ws.emit = socket.emit.bind(socket);
@@ -12,12 +12,27 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 
 		function messageIn(message){
 			if (chat.trigger('incoming_message', message) === false) return;
-			info.nbmessages++;
 			md.addMessage(message);
 			md.updateNotableMessages(message);
-			if (message.created>chat.enterTime && message.content) {
+			if ((message.changed||message.created)>chat.enterTime && message.content) {
 				gui.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
 			}
+		}
+		
+		// called to merge a message
+		function merge(data){
+			var	old = $('#messages .message').last().data('message');
+			if (!old || old.id!==data.id) {
+				console.log("bad merge data", data);
+				return;
+			}
+			var merged = {
+				id:old.id, room:old.room,
+				author:old.author, authorname:old.authorname,
+				created:old.created, changed:data.changed,
+				content: old.content + '\n'+data.add
+			};
+			messageIn(merged);
 		}
 
 		function setEnterTime(serverTime){
@@ -48,6 +63,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			// todo : don't repeat things in md.addMessage that should not be repeated
 			for (var i=0; i<messages.length; i++) messageIn(messages[i]);
 		})
+		.on('merge', merge)
 		.on('mod_dialog', mod.dialog)
 		.on('room', function(r){
 			if (room.id!==r.id) {
