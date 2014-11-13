@@ -36,29 +36,44 @@ function selectTab(i) {
 	var $container = $('#home-main-content > .table').empty();
 	switch(i){
 	case 0:
-		$container.append(
-			$('<div>').addClass('CL').append(
-				$('<h3>').text('Your Public Rooms')
-			).append(
-				table(
-					rooms.filter(function(r){
-						return !r.private && (r.lastcreated || r.auth)
-					}),
-					"You didn't participate in any public room for now."
+		if (mobile) {
+			$container.append(
+				$('<div>').addClass('CL').append(
+					$('<h3>').text('Your Rooms')
+				).append(
+					table(
+						rooms.filter(function(r){
+							return (r.lastcreated || r.auth) && !r.dialog
+						}),
+						"You didn't participate in any non dialog room."
+					)
 				)
-			)
-		).append($('<div>').addClass('CR').append(
-				$('<h3>').text('Your Private Rooms')
-			).append(
-				table(
-					rooms.filter(function(r){
-						return r.private && r.auth && !r.dialog
-					}),
-					"You have access to no private room for now.<br>"+
-					"To enter a private room, click on its link (<a href=# onclick='selectTab(2)'>see them</a>) and request an access"
+			);			
+		} else {
+			$container.append(
+				$('<div>').addClass('CL').append(
+					$('<h3>').text('Your Public Rooms')
+				).append(
+					table(
+						rooms.filter(function(r){
+							return !r.private && (r.lastcreated || r.auth)
+						}),
+						"You didn't participate in any public room for now."
+					)
 				)
-			)
-		);
+			).append($('<div>').addClass('CR').append(
+					$('<h3>').text('Your Private Rooms')
+				).append(
+					table(
+						rooms.filter(function(r){
+							return r.private && r.auth && !r.dialog
+						}),
+						"You have access to no private room for now.<br>"+
+						"To enter a private room, click on its link (<a href=# onclick='selectTab(2)'>see them</a>) and request an access"
+					)
+				)
+			);
+		}
 		break;
 	case 1:
 		$container.append(

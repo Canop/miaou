@@ -72,7 +72,8 @@ html
 			div#home-main-content
 				div.table
 		script.
-			var rooms = !{JSON.stringify(rooms)},
+			var	mobile = false,
+				rooms = !{JSON.stringify(rooms)},
 				langs = !{JSON.stringify(langs)},
 				tabletop = 250;
 		script(src="static/rooms.min.js")
