@@ -89,6 +89,5 @@ exports.onMessage = function(shoe, m){
 	var cmd = commands[cmdMatch[2]];
 	if (!cmd || !cmd.fun) throw 'Command "' + cmdMatch[2] + '" not found';
 	if (cmd.filter && !cmd.filter(shoe.room)) throw 'Command "'+cmd.name+'" not available in this room';
-	console.log(new CommandTask(cmd, cmdMatch[3], shoe, m));
 	return (new CommandTask(cmd, cmdMatch[3], shoe, m)).exec(this);	
 }

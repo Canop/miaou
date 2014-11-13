@@ -308,9 +308,11 @@ miaou(function(ed, chat, gui, md, ms, ws){
 				finish();
 				if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
 				else alert("Hu? didn't exactly work, I think...");
+				document.getElementById('file').value = null;
 			}
 			xhr.onerror = function(){
 				alert("Something didn't work as expected :(");
+				document.getElementById('file').value = null;
 				finish();
 			}
 			$('#upload-controls').hide();

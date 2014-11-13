@@ -1,10 +1,18 @@
 var auths = require('./auths.js'),
 	server = require('./server.js'),
+	memobjects = {},
 	langs;
 	
 exports.configure = function(miaou){
 	langs = require('./langs.js').configure(miaou);
 	return this;
+}
+
+// returns a shared unpersisted object relative to the room
+exports.mem = function(roomId){
+	var mo = memobjects[roomId];
+	if (!mo) mo = memobjects[roomId] = {};
+	return mo;
 }
 
 // room admin page GET
@@ -36,7 +44,7 @@ exports.appPostRoom = function(req, res, db){
 			id:roomId, name:name, dialog:false,
 			private:req.param('private')==="on",
 			listed:req.param('listed')==="on",
-			description:req.param('description'),
+			description:req.param('description').replace(/\r\n?/g, '\n'),
 			lang:req.param('lang')
 		};
 		return [room, req.user, auth];
