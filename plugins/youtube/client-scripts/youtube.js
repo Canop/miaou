@@ -31,7 +31,7 @@ miaou(function(plugins, md){
 		if (!m.content || !/www\.youtube\.com\/watch/.test(m.content)) return;
 		var hasYoutubeLink = false;
 		var lines = $c.html().split('<br>').map(function(line){
-			var match = line.match(/^\s*<a[^>]* href="https?:\/\/www\.youtube\.com\/watch[&#\w\d=]*[\?&]v=([a-zA-Z0-9]+)[&#\w\d=]*">[^<>]+<\/a>\s*$/);
+			var match = line.match(/^\s*<a[^>]* href="https?:\/\/www\.youtube\.com\/watch[&#\w\d=]*[\?&]v=([a-zA-Z0-9-]+)[&#\w\d=]*">[^<>]+<\/a>\s*$/);
 			if (!match) return line;
 			hasYoutubeLink = true;
 			// We want to calculate for each new video, the screen size may have changed.
