@@ -12,6 +12,7 @@ var	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB t
 		notif: 'on_ping',	// when to raise a desktop notification
 		sound: 'standard', 	// sound on notification
 		datdpl: 'hover',	// date display 
+		nifvis: 'no',		// notifies even if the tab is visible
 	},
 	langs,
 	plugins;

@@ -45,6 +45,7 @@ $('#url').val(userinfo.url||'');
 $('#lang').val(userinfo.lang);
 $('input[name=notif][value='+userPrefs.notif+']').prop('checked', true);
 $('#sound').val(userPrefs.sound);
+$('#nifvis').val(userPrefs.nifvis);
 $('input[name=datdpl][value='+userPrefs.datdpl+']').prop('checked', true);
 
 if (!valid) $('#close').hide();

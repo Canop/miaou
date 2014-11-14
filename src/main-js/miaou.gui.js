@@ -204,7 +204,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 					if (mid && !chat.oldestUnseenPing) chat.oldestUnseenPing = mid;
 				}
 			}
-			if (!visible) {
+			if (!visible || userPrefs.nifvis==="yes") {
 				if ( userPrefs.notif==="on_message" || (ping && userPrefs.notif==="on_ping") ) {
 					notif.show(r || room, from, text);					
 				}
