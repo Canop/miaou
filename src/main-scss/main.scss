@@ -172,6 +172,10 @@ body.mobile #message-scroller {
 	padding: $mtab-height 0 0 0;
 }
 
+#messages .content {
+	line-height: 22px;
+}
+
 .message, #messages .error, .access_request {
 	position: relative;
     align-items: center;
@@ -195,7 +199,6 @@ body.mobile #message-scroller {
 		overflow-y: hidden;
 		overflow-x: hidden;
 		min-height: 26px;
-		line-height: 22px;
 		padding-top: 1px;
 		padding-left: 2px;
 		&.closed {
