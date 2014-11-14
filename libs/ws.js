@@ -6,7 +6,7 @@ var	config,
 	connect = require('connect'),
 	io, db, bot,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
-	maxHiatusForMerge = 60, // in seconds
+	maxHiatusForMerge = 30, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
 	socketWaitingApproval = [],
@@ -435,7 +435,7 @@ function handleUserInRoom(socket, completeUser){
 			) {
 				merge = m.content;
 				mm.content += '\n'+m.content;
-				mm.changed = seconds;
+				mm.created = seconds;
 				return [this.storeMessage(mm, true), commandTask]
 			}
 			memroom.mm = commandTask.cmd || m.id ? null : m;
@@ -446,7 +446,7 @@ function handleUserInRoom(socket, completeUser){
 			for (var i=0; i<onSendMessagePlugins.length; i++) {
 				onSendMessagePlugins[i].onSendMessage(this, m, send);
 			}
-			if (merge) send('merge', {id:m.id, add:merge, changed:m.changed});
+			if (merge) send('merge', {id:m.id, add:merge, created:m.created});
 			else send('message', m);
 			if (commandTask.replyContent) {
 				var txt = commandTask.replyContent;

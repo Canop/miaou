@@ -29,7 +29,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			var merged = {
 				id:old.id, room:old.room,
 				author:old.author, authorname:old.authorname,
-				created:old.created, changed:data.changed,
+				created:data.created,
 				content: old.content + '\n'+data.add
 			};
 			messageIn(merged);
