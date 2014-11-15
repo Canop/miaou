@@ -66,31 +66,6 @@ section {
 		margin-bottom: 8px;
 	}
 }
-#langfilter {
-	position: absolute;
-	right: 20px;
-	top: 20px;
-	.lang {
-		padding: 5px 5px 2px 5px;
-		border-radius: 5px;
-		margin: 4px;
-		cursor: pointer;
-		box-shadow: 0px 0px 2px rgba(0,0,0,0.4);
-		opacity: 0.5;
-		background: $bg-color;
-		transition: background-color 1s;
-		&.on {
-			background: lighten( $bg-color, 15% ) ;
-			box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
-			padding: 6px 4px 1px 6px;
-			opacity: 1;
-			transition: background-color 1s;
-		}
-		img {
-			max-width: 26px;
-		}
-	}
-}
 #users {
 	padding-top: 2px;
 	.user {
@@ -102,14 +77,14 @@ section {
 		overflow: hidden;
 		line-height: 18px;
 		font-style: italic;
-		color: #444;
+		color: $user-text-color-in-user-list;
 		font-size: 95%;
 		&:hover {
 			background: $profile-bg-color;
 		}
 		&.connected {
 			font-style: normal;
-			color: black;
+			color: $connected-user-text-color-in-user-list;
 		}
 	}
 }
@@ -117,7 +92,7 @@ section {
 #me {
 	position: relative;
 	text-decoration: none;
-	color: black	;
+	color: $general-text-color;
 	display: block;
 	text-align: center;
 }
@@ -306,7 +281,6 @@ body.mobile #message-scroller {
 	max-height: 70px;
 }
 
-
 #roomdescription {
 	padding: 5px;
 	img {
@@ -314,6 +288,7 @@ body.mobile #message-scroller {
 	}
 	font-size: 13px;
 }
+
 .message-menu {
 	position: absolute;
 	top: 0;
@@ -332,7 +307,7 @@ body.mobile #message-scroller {
 		margin: 0 4px;
 		cursor: pointer;
 		&.on {
-			color: black;
+			color: $general-text-color;
 		}
 	}
 	.unpin {
@@ -460,7 +435,7 @@ code {
 	left: 0;
 	z-index: 11;
 	span {
-		background: white;
+		background: $bg-color;
 		margin: 4px;
 		padding: 2px;
 		border: thin solid #333;
@@ -536,7 +511,7 @@ body.mobile #input-panel button {
 	}
 }
 h1 {
-	color: #655;
+	color: $title-text-color;
 	font-size: 125%;
 	margin-top: 5px;
 	margin-bottom: 5px;
@@ -546,7 +521,7 @@ h1 {
 	}
 }
 h2 {
-	color: #655;
+	color: $title-text-color;
 	font-size: 115%;
 	margin-top: 2px;
 	padding-top: 2px;
@@ -554,7 +529,7 @@ h2 {
 	padding-left: 3px;
 }
 h3 {
-	color: #655;
+	color: $title-text-color;
 	font-size: 110%;
 }
 p {
@@ -593,207 +568,9 @@ span.warning {
 	min-width:500px;
 }
 
-body.mobile .dialog.intro { 
-	right: 3%;
-	left: 3%;
-}
-.dialog-title {
-	margin-top: 0;
-	margin-bottom: 10px;
-	padding: 4px;
-	background: #E3DAC9;
-	font-size: 105%;
-	font-weight: normal;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	text-align: center;
-	&[error] {
-		border-color: red;
-	}
-}
-table.form {
-	width: 100%;
-	input, textarea {
-		width: 100%;
-	}
-	input[type=radio], input[type=checkbox] {
-		width: initial;
-	}
-	textarea {
-		height: 80px;
-	}
-	td.leftborder {
-		border-left: 1px solid #222;
-	}
-	th, td {
-		padding: 4px;
-	}
-	th, td:first-child {
-		text-align: right;
-	}
-	th:last-child {
-		text-align: left;
-	}
-}
-body.desktop table.form {
-	th {
-		width: 160px;
-	}
-}
-.dialog-content {
-	padding: 7px;
-	p, h2, .form, .label {
-		clear: both;
-	}
-	h2{
-		margin-left: 4px;
-	}
-	.label {
-		display:block;
-		font-weight:bold;
-		text-align:right;
-		width:120px;
-		float:left;
-		padding: 8px 4px;
-	}
-	input[type=text], .input {
-		float:left;
-		padding:4px 2px;
-		width: calc( 100% - 155px );
-		&.unlabeled {
-			width: calc( 100% - 25px );
-		}
-		margin: 4px 2px 15px 10px;
-	}
-	.small {
-		color:#666666;
-		display:block;
-		font-size:95%;
-		font-weight:normal;
-		text-align:right;
-		width:120px;
-	}
-	.cblabel {
-		float: left;
-		padding: 4px 2px;
-		width: calc( 100% - 200px );
-		margin: 2px 0 5px 0;
-	}
-	input[type=checkbox] {
-		float: left;
-		margin: 10px 10px;
-	}
-	textarea {
-		float:left;
-		padding:4px 2px;
-		border:solid 1px #888;
-		width: calc( 100% - 155px );
-		margin:2px 0 15px 10px;
-		height: 70px;
-	}
-	.mdpreview {
-		float:left;
-		padding:4px 2px;
-		width: calc( 100% - 155px );
-		margin:2px 0 20px 10px;
-		height: 70px;
-	}
-}
-.dialog-buttons {
-	padding: 11px 15px;
-	text-align: center;
-}
-.close_dialog {
-	float: right;
-	margin-top: 10px;
-	margin-right: 10px;
-	margin-bottom: 6px;
-	cursor: pointer;
-	&:hover {
-		background: #333;
-	}
-}
-
-button, input[type=button], input[type=submit], input[type=reset] {
-	background-color: #E3DAC9;
-	padding: 4px 8px;
-	border: 1px solid #999;
-	margin: 1px 4px;
-	border-radius: 2px;
-	box-shadow: 1px 1px 3px #999;
-    outline: none;
-    cursor: pointer;
-    color: #333;
-    transition: all 100ms ease;
-    &.small {
-		font-size: 75%;
-    }
-	&:hover, &:focus {
-		border-color: #666;
-		color: black;
-	}    
-}
-button.small {
-	padding: 2px 4px;
-	border-radius: 2px;
-	box-shadow: 1px 1px 2px #999;
-}
-
-div.radios {
-	text-align: center;
-	margin: 3px;
-	span.label {
-		font-size: 90%;
-		margin-right: 4px;
-	}
-	span.radio {
-		font-size: 80%;
-		background-color: #E3DAC9;
-		padding: 2px 2px;
-		border: 1px solid #999;
-		margin: 0;
-		cursor: pointer;
-		span {
-			position: relative;
-		}
-		&.selected {
-			span {
-				transform: translate(2px, 2px);
-				left: 1px;
-				top: 1px;
-			}
-			cursor: auto;
-			box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3);
-		}	
-		border-radius: 0;
-		border-left: none;	
-		border-right: none;	
-	}
-	:not(.radio) + span.radio {
-		border-radius: 7px 0 0 7px;
-		border-left: 1px solid #999;
-		border-right: 1px solid #999;
-		padding-left: 4px;
-	}
-	.radio + .radio {
-		border-radius: 0;
-	}
-	span.radio:last-child {
-		border-radius: 0 7px 7px 0;		
-		border-left: 1px solid #999;
-		border-right: 1px solid #999;
-		padding-right: 4px;
-	}
-}
-
-:invalid {
-	border: 2px solid red;
-}
-
 .closed {
 	overflow: hidden;
 }
-
 .opener, .closer {
 	position: absolute;
 	left: 0;
@@ -807,7 +584,7 @@ div.radios {
 		color: black;
 	}
 }
-.message .opener {
+.message .opener, {
 	background: rgba( $bg-color , 0.52);
 	&:hover {
 		background: rgba(255,255,255,0.6);
@@ -815,6 +592,12 @@ div.radios {
 }
 .opener::before {
 	content: '▼';
+}
+.message .closer {
+	background: rgba( $bg-color , 0.32);
+	&:hover {
+		background: rgba(255,255,255,0.6);
+	}
 }
 .closer::before {
 	content: '▲';
@@ -856,15 +639,6 @@ div.radios {
 	background: #d5cba6;
 }
 .message {
-	&.flash {
-		&:nth-child(odd) {
-			background: rgba(255, 215, 0, 0.6);
-		}
-		&:nth-child(even) {
-			background: rgba(215, 255, 0, 0.6);
-		}
-		transition: background-color 1s;	
-	}
 	a, a:visited {
 		color: Sienna ;
 	}
@@ -912,23 +686,6 @@ div#logo {
 }
 div#notifs {
 	color: #c2b0a8;
-}
-body.desktop {
-	.MP {
-		width: 70%;
-		max-width: 1000px;
-		min-width: 800px;
-	}
-	.thinMP {
-		width: 70%;
-		max-width: 600px;
-		min-width: 500px;
-		margin: auto;
-	}
-}
-.MP, .thinMP {
-	margin: auto;
-	position: relative;
 }
 
 #response {

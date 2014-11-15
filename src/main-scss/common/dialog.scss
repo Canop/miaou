@@ -45,6 +45,126 @@
 		color: #400;
 	}
 }
+.dialog-title {
+	margin-top: 0;
+	margin-bottom: 10px;
+	padding: 4px;
+	background: #E3DAC9;
+	font-size: 105%;
+	font-weight: normal;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	text-align: center;
+	&[error] {
+		border-color: red;
+	}
+}
+body.mobile .dialog.intro { 
+	right: 3%;
+	left: 3%;
+}
+table.form {
+	width: 100%;
+	input, textarea {
+		width: 100%;
+	}
+	input[type=radio], input[type=checkbox] {
+		width: initial;
+	}
+	textarea {
+		height: 80px;
+	}
+	td.leftborder {
+		border-left: 1px solid #222;
+	}
+	th, td {
+		padding: 4px;
+	}
+	th, td:first-child {
+		text-align: right;
+	}
+	th:last-child {
+		text-align: left;
+	}
+}
+body.desktop table.form {
+	th {
+		width: 160px;
+	}
+}
+.dialog-content {
+	padding: 7px;
+	p, h2, .form, .label {
+		clear: both;
+	}
+	h2{
+		margin-left: 4px;
+	}
+	.label {
+		display:block;
+		font-weight:bold;
+		text-align:right;
+		width:120px;
+		float:left;
+		padding: 8px 4px;
+	}
+	input[type=text], .input {
+		float:left;
+		padding:4px 2px;
+		width: calc( 100% - 155px );
+		&.unlabeled {
+			width: calc( 100% - 25px );
+		}
+		margin: 4px 2px 15px 10px;
+	}
+	.small {
+		color:#666666;
+		display:block;
+		font-size:95%;
+		font-weight:normal;
+		text-align:right;
+		width:120px;
+	}
+	.cblabel {
+		float: left;
+		padding: 4px 2px;
+		width: calc( 100% - 200px );
+		margin: 2px 0 5px 0;
+	}
+	input[type=checkbox] {
+		float: left;
+		margin: 10px 10px;
+	}
+	textarea {
+		float:left;
+		padding:4px 2px;
+		border:solid 1px #888;
+		width: calc( 100% - 155px );
+		margin:2px 0 15px 10px;
+		height: 70px;
+	}
+	.mdpreview {
+		float:left;
+		padding:4px 2px;
+		width: calc( 100% - 155px );
+		margin:2px 0 20px 10px;
+		height: 70px;
+	}
+}
+.dialog-buttons {
+	padding: 11px 15px;
+	text-align: center;
+}
+.close_dialog {
+	float: right;
+	margin-top: 10px;
+	margin-right: 10px;
+	margin-bottom: 6px;
+	cursor: pointer;
+	&:hover {
+		background: #333;
+	}
+}
 
 .ban-dialog {
 	span {

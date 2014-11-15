@@ -1,15 +1,25 @@
 
+// variables owned by the theme
+$bear-green: #9CD87A;
 
 // chat colors
 $bg-color: black;
 $general-text-color: gold;
+$title-text-color: $bear-green !default;
 $message-list-bg: #222;
-$profile-bg-color: #fffcc5 !default;
-$notifications-bg-color: #fffa9e !default;
+$user-text-color-in-user-list: $bear-green;
+$connected-user-text-color-in-user-list: $bear-green;
 
-// chat layout
-$input-height: 80px !default; // height of input
-$left-panel-width: 150px !default;
-$right-panel-width: 330px !default;
-$hist-width: 200px !default;
+// profile in chat
+$profile-bg-color: black;
+$profile-box-shadow: none;
+
+// buttons
+$button-bg-color: #555;
+$button-text-color: $bear-green;
+$button-box-shadow: none;
+$button-hover-text-color: darcken($bear-green, 20%);
+$small-button-box-shadow: none;
+
+
 

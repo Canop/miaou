@@ -5,10 +5,25 @@
 // chat colors
 $bg-color: #F0EAD6 !default;
 $general-text-color: black !default;
+$title-text-color: #655 !default;
 $message-list-bg: white !default;
 $message-me-bg: rgba(197, 135, 55, 0.1) !default;
-$profile-bg-color: #fffcc5 !default;
 $notifications-bg-color: #fffa9e !default;
+$connected-user-text-color-in-user-list: black !default;
+$user-text-color-in-user-list: #444 !default;
+
+// profile in chat
+$profile-bg-color: #fffcc5 !default;
+$profile-box-shadow: 2px 2px 2px #999 !default;
+
+// buttons
+$button-bg-color: #E3DAC9 !default;
+$button-text-color: #333 !default;
+$button-box-shadow: 1px 1px 3px #999 !default;
+$button-border: 1px solid #999 !default;
+$button-hover-text-color: black !default;
+$button-hover-border-color: #666 !default;
+$small-button-box-shadow: 1px 1px 2px #999 !default;
 
 // chat layout
 $input-height: 80px !default; // height of input
