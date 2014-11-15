@@ -7,7 +7,7 @@ For now, themes only apply to the chat rooms and only the desktop version. The r
 
 1. You can't test anything without having installed the Miaou server. Fortunately it's easy enough (see main readme) 
 1. Create a directory in `/src/main-scss/themes/`. The name of the directory will be the public name of the theme
-1. That directory should containe a file name variables.scss overiding the necessary variables (variables are defined in `/src/main-scss/common/variables-default.scss`)
+1. That directory should contain a file named `variables.scss` in which you'll override the necessary variables (variables are defined in `/src/main-scss/common/variables-default.scss`)
 1. Compile Miaou using `/make.sh`
 1. Register your theme in `/config.json`
 1. Restart the server using `/restart.sh`
