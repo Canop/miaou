@@ -1,29 +1,3 @@
-@font-face {
-	font-family: 'fontello';
-	src: url('fontello.woff?f1cb85af') format('woff');
-}
-$bg-color: #F0EAD6; // or #def
-$mtab-height: 39px;   // height of the top tabs in mobile interface
-$input-height: 80px; // height of input
-$minput-height: 50px; // height of input in mobile interface
-$left-panel-width: 150px;
-$right-panel-width: 330px;
-$hist-width: 200px;
-$profile-bg-color: #fffcc5;
-$notifications-bg-color: #fffa9e;
-
-body {
-	background: $bg-color;
-	font-family: Tahoma, Geneva, sans-serif;
-	font-size: 14px;
-	margin:0;
-	padding:0;
-	&.chat {
-		&.mobile {
-			background: white;
-		}
-	}
-}
 #prefs, #room-info {
 	margin: 5px;
 }
@@ -140,7 +114,6 @@ section {
 	}
 }
 
-
 #me {
 	position: relative;
 	text-decoration: none;
@@ -153,6 +126,7 @@ section {
   	margin-top:0;
 	vertical-align: top;
 	position: relative;
+	background: $message-list-bg;
 	.message + .message {
 		border-top: thin dotted #ddd;
 	}
@@ -240,7 +214,7 @@ body.mobile #message-scroller {
 		}
 	}
 	&.me {
-		background-color: #fdf6e5;
+		background: $message-me-bg;
 	}
 }
 .decorations {
@@ -1066,16 +1040,7 @@ body.desktop {
 	}
 }
 
-
 #searchInput {
 	width: calc(100% - 12px);
 	margin: 4px;
 }
-
-
-@import "mwin";
-@import "history";
-@import "dialog";
-@import "profile";
-@import "home";
-@import "mobile-chat";

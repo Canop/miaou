@@ -131,6 +131,13 @@ html
 					div.page
 						table.form
 							tr
+								th Message Chat Theme (beta)
+								td
+									select#theme(name="theme")
+										option(value="default") default (let the server or room choose the theme)
+										each theme in themes
+											option(value=theme)= theme
+							tr
 								th Message Date Display
 								td
 									input#date_display_hover(type="radio", name="datdpl", value="hover")

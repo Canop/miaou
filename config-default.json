@@ -21,6 +21,10 @@
 		"./plugins/whiteboard/plugin.js",
 		"./plugins/youtube/plugin.js"
 	],
+	"themes": [
+		"boring-goose",
+		"stoned-bear"
+	],
 	"oauth2": {
 		"google": {
 			"clientID": "your client ID, see https://code.google.com/apis/console/",

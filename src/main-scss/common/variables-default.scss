@@ -1,0 +1,21 @@
+// To create a theme, create a directory in /themes
+//  with a variables.scss file and copy from here
+//  the variables you want to override.
+
+// chat colors
+$bg-color: #F0EAD6 !default;
+$general-text-color: black !default;
+$message-list-bg: white !default;
+$message-me-bg: rgba(197, 135, 55, 0.1) !default;
+$profile-bg-color: #fffcc5 !default;
+$notifications-bg-color: #fffa9e !default;
+
+// chat layout
+$input-height: 80px !default; // height of input
+$left-panel-width: 150px !default;
+$right-panel-width: 330px !default;
+$hist-width: 200px !default;
+
+// mobile chat layout
+$minput-height: 50px !default; // height of input in mobile interface
+$mtab-height: 39px !default;   // height of the top tabs in mobile interface

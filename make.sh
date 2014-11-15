@@ -12,17 +12,42 @@ MAIN_SCSS_SRC_PATH="$ROOT_PATH/src/main-scss"
 PAGE_SCSS_SRC_PATH="$ROOT_PATH/src/page-scss"
 
 ##################################################################
-# building static/main.css
+# building the standard css served to non chat pages
 ##################################################################
 
-## builds the css file from the sass one
+## build the css from scss
 rm $STATIC_PATH/main.css
-sass -t compressed $MAIN_SCSS_SRC_PATH/main.scss > $STATIC_PATH/main.css 
-
+sass -t compressed $MAIN_SCSS_SRC_PATH/common/main.scss > $STATIC_PATH/main.css 
 ## concat plugin css
 cat $ROOT_PATH/plugins/*/css/*.css >> $STATIC_PATH/main.css
-
 echo main.css gzipped : `cat $STATIC_PATH/main.css | gzip -9f | wc -c` bytes
+
+##################################################################
+# building themes
+##################################################################
+
+## prepare the destination directory
+rm -rf $STATIC_PATH/themes/
+mkdir $STATIC_PATH/themes/
+
+## create all themes in static
+for f in $MAIN_SCSS_SRC_PATH/themes/*
+do
+theme=$(basename "$f")
+echo theme : $theme
+# creates the directory for the theme
+mkdir $STATIC_PATH/themes/$theme
+# copy the common scss files
+cp $MAIN_SCSS_SRC_PATH/common/*.scss $STATIC_PATH/themes/$theme
+# then the specific overrinding scss files
+cp $MAIN_SCSS_SRC_PATH/themes/$theme/*.scss $STATIC_PATH/themes/$theme
+# build the css file from the sass one
+sass -t compressed $STATIC_PATH/themes/$theme/main.scss > $STATIC_PATH/themes/$theme/miaou.css 
+# remove the now useless sass files
+rm $STATIC_PATH/themes/$theme/*.scss
+# concat plugin css
+cat $ROOT_PATH/plugins/*/css/*.css >> $STATIC_PATH/themes/$theme/miaou.css
+done
 
 ##################################################################
 # building static/miaou.min.js

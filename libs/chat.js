@@ -25,7 +25,7 @@ exports.appGet = function(req, res, db){
 			prefs.get.call(this, userId)
 		]
 	})
-	.spread(function(room, ban, prefs){
+	.spread(function(room, ban, userPrefs){
 		room.path = server.roomPath(room);
 		req.session.room = room;
 		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
@@ -36,7 +36,8 @@ exports.appGet = function(req, res, db){
 		res.render(server.mobile(req) ? 'chat.mob.jade' : 'chat.jade', {
 			user:JSON.stringify(req.user),
 			room:room,
-			userPrefs:prefs,
+			theme:prefs.theme(userPrefs),
+			userPrefs:userPrefs,
 			pluginsToStart:JSON.stringify(clientSidePluginNames)
 		});
 		//~ console.dir(req.session);

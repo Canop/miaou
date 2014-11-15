@@ -1,0 +1,18 @@
+@font-face {
+	font-family: 'fontello';
+	src: url('../../fontello.woff?f1cb85af') format('woff');
+}
+
+body {
+	background: $bg-color;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 14px;
+	color: $general-text-color;
+	margin:0;
+	padding:0;
+	&.chat {
+		&.mobile {
+			background: white;
+		}
+	}
+}

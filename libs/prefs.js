@@ -1,4 +1,4 @@
-// Manages user preferences.
+// Manages user preferences, including external profile infos and the choice of theme.
 //
 
 var	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
@@ -13,15 +13,23 @@ var	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB t
 		sound: 'standard', 	// sound on notification
 		datdpl: 'hover',	// date display 
 		nifvis: 'no',		// notifies even if the tab is visible
+		theme: 'default'	//
 	},
 	langs,
+	themes,
 	plugins;
 	
 exports.configure = function(miaou){
 	db = miaou.db;
 	langs = require('./langs.js').configure(miaou);
+	themes = miaou.config.themes;
 	plugins = (miaou.config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
 	return this;
+}
+
+exports.theme = function(prefs){
+	if (prefs && prefs.theme && prefs.theme!=='default') return prefs.theme;
+	return themes[0];
 }
 
 // returns either the prefs as a map object or a promise fullfilled with the prefs.
@@ -139,6 +147,7 @@ exports.appAllPrefs = function(req, res, db){
 			valid : hasValidName,
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
 			langs: JSON.stringify(langs.legal),
+			themes: themes,
 			userinfo: JSON.stringify(userinfo),
 			error: error
 		});

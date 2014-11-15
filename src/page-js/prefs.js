@@ -4,7 +4,7 @@ $(document.body).addClass(
 	/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
 );
 
-function selectTab(i) {
+function selectTab(i){
 	$('.tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
 	var $container = $('#home-main-content');
 	$container.find('.page').removeClass('selected').eq(i).addClass('selected');
@@ -25,7 +25,7 @@ for (var key in langs) {
 	$('#lang').append($('<option>').attr('value', key).text(lang.name));
 }
 $('#name').keyup(function(){
-	if (!this.validity.valid){ // not compatible with IE, that's fine 
+	if (!this.validity.valid) {
 		$('#err').text('Please type a name with 3 to 20 standard characters, digits, "_" or "-"');
 		$('#submit').prop('disabled', true);
 	} else if (/w+[_-]*[iy]+[_-]*s+[_-]*e+[_-]*l+[_-]*[iy]+/i.test(this.value)) {
@@ -46,6 +46,7 @@ $('#lang').val(userinfo.lang);
 $('input[name=notif][value='+userPrefs.notif+']').prop('checked', true);
 $('#sound').val(userPrefs.sound);
 $('#nifvis').val(userPrefs.nifvis);
+$('#theme').val(userPrefs.theme);
 $('input[name=datdpl][value='+userPrefs.datdpl+']').prop('checked', true);
 
 if (!valid) $('#close').hide();
