@@ -11,15 +11,15 @@ miaou(function(prof){
 			$scroller = $user.closest('#message-scroller,#auths-page,#left'), ss = $scroller.scrollTop(), sh = $scroller.height(),
 			$container = $user.closest('#messages,#auths-page,body').first(), ch = $container.height();
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
-		if (up.top-ss<sh/2) css.top = up.top+2;
-		else css.bottom = ch-up.top-uh-4;
-		css.left = up.left + uw + 4;
+		if (up.top-ss<sh/2) css.top = up.top+1;
+		else css.bottom = ch-up.top-uh-3;
+		css.left = up.left + uw + 5;
 		if ($message.hasClass('access_request')) {
-			css.left += 4; css.bottom -= 6;
+			css.left += 3; css.bottom -= 6;
 		} else if ($message.hasClass('notification')) {
-			css.left += 7; css.bottom -= 10;
+			css.left += 5; css.bottom -= 10;
 		} else if (!$message.hasClass('message')) {
-			css.left += 6; css.bottom -= 7;
+			css.left += 5; css.bottom -= 7;
 		}
 		var userId, data;
 		if ( (data = $user.data('user')) || (data = $message.data('user')) || (data = $user.closest('.notification').data('user')) ) userId = data.id;

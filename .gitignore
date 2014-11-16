@@ -31,6 +31,7 @@ static/intro.css
 static/intro2.css
 static/prefs.min.js
 static/rooms.min.js
+static/themes
 
 # execution byproducts
 *.log

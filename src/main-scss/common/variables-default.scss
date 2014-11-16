@@ -11,6 +11,13 @@ $message-me-bg: rgba(197, 135, 55, 0.1) !default;
 $notifications-bg-color: #fffa9e !default;
 $connected-user-text-color-in-user-list: black !default;
 $user-text-color-in-user-list: #444 !default;
+$user-text-color-in-message: #555 !default;
+
+// message sizing
+$message-min-height: 30px !default;
+$user-padding-in-message: 1px 3px !default;
+$message-content-padding: 4px !default;
+$message-content-line-height: 1.5 !default;
 
 // profile in chat
 $profile-bg-color: #fffcc5 !default;

@@ -16,6 +16,9 @@ For now, themes only apply to the chat rooms and only the desktop version. The r
 
 A theme may only set SCSS variables. No direct CSS rule is allowed.
 
-This limitation will make it possible to have Miaou still evolving and being maintained.
+Of course `!important` is totally forbidden too. Always.
 
 When somebody doesn't seem possible or convenient enough because there's no suitable variable, the common style and variables list may be changed by the core developpers.
+
+These limitations will make it possible to have Miaou still evolving and being maintained.
+

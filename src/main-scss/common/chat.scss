@@ -121,24 +121,20 @@ body.mobile #message-scroller {
 	padding: $mtab-height 0 0 0;
 }
 
-#messages .content {
-	line-height: 22px;
-}
 
 .message, #messages .error, .access_request {
 	position: relative;
-    align-items: center;
-    align-content: center;
     .user {
 		position: relative;
-		align-items: center;
-		align-content: center;
-		padding: 1px 3px;
-		color: #555;
+		padding: $user-padding-in-message;
+		color: $user-text-color-in-message;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
 		z-index: 6;
+		span {
+		
+		}
 		&.bot {
 			font-style: italic;
 		}
@@ -147,9 +143,6 @@ body.mobile #message-scroller {
 		word-wrap: break-word;
 		overflow-y: hidden;
 		overflow-x: hidden;
-		min-height: 26px;
-		padding-top: 1px;
-		padding-left: 2px;
 		&.closed {
 			max-height: 132px;
 		}
@@ -192,6 +185,37 @@ body.mobile #message-scroller {
 		background: $message-me-bg;
 	}
 }
+
+#messages {
+	.message, .error, .access_request {
+		min-height: $message-min-height;
+		display: flex;
+		align-items: center;
+		.user {
+			align-self: stretch;
+			flex-basis: 120px;
+			flex-grow: 0;
+			flex-shrink: 0;
+			display: flex;
+			align-items: center;
+		}
+		.content {
+			padding: $message-content-padding;
+			flex-grow: 1;
+			line-height: $message-content-line-height;
+		}
+		.mdate {
+			align-self: flex-start;
+			flex-basis: 90px;
+			flex-shrink: 0;
+			flex-grow: 0;
+			text-align: right;
+			font-size: 80%;
+			padding: 2px;
+		}
+	}
+}
+
 .decorations {
 	position: absolute;
 	z-index: 7;
@@ -224,29 +248,7 @@ body.mobile #message-scroller {
 	}
 }
 
-#messages {
-	.message, .error, .access_request {
-		display: flex;
-		.user {
-			flex-basis: 120px;
-			flex-grow: 0;
-			flex-shrink: 0;
-		}
-		.content {
-			padding: 2px;
-			flex-grow: 1;
-		}
-		.mdate {
-			align-self: flex-start;
-			flex-basis: 90px;
-			flex-shrink: 0;
-			flex-grow: 0;
-			text-align: right;
-			font-size: 80%;
-			padding: 2px;
-		}
-	}
-}
+
 
 .rendered {
 	text-align: left;

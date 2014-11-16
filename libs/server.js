@@ -148,6 +148,8 @@ function startServer(){
 		return next();
 	});
 	
+	app.locals.theme = miaou.config.themes[0]; // default theme
+	
 	defineAppRoutes();
 	var port = miaou.config.port;
 	console.log('Miaou server starting on port', port);

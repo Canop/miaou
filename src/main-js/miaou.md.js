@@ -85,6 +85,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 			if ($content.height()>80) {
 				$content.addClass("closed");
 				$md.append('<div class=opener>');
+				$md.reflow();
 			}
 		});
 	}
@@ -114,7 +115,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		console.log('ERROR', error);
 		if (typeof error === 'string') error = {txt:error};
 		$('<div>').addClass('error').append(
-			$('<div>').addClass('user error').text("Miaou")
+			$('<div>').addClass('user error').append("<span>Miaou</span>")
 		).append(
 			$('<div>').addClass('content').text(error.txt || "an error occured - connection might be damaged")
 		).appendTo('#messages');
@@ -138,16 +139,13 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 	function resize($md, wasAtBottom){
 		var $content = $md.find('.content');
 		var resize = function(){
-			var h = $content.height();
-			//~ console.log(h, $('.content')[0].clientHeight);
 			$content.removeClass("closed");
-			$md.find('.opener').remove();
+			$md.find('.opener,.closer').remove();
 			if ($content.height()>158) {
 				$content.addClass("closed");
-				h = $content.height()
 				$md.append('<div class=opener>');
+				$md.reflow();
 			}
-			$md.find('.user').height(h).css('line-height',h+'px');
 			if (wasAtBottom) md.scrollToBottom();
 		}
 		resize();
@@ -169,8 +167,9 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 			if (h>158) todo.push({$md:$md, $content:$content});
 		});
 		todo.forEach(function(t){
-			t.$md.append('<div class=opener>')
+			t.$md.append('<div class=opener>');
 			t.$content.addClass("closed").height();
+			t.$md.reflow();
 		});
 		if (wasAtBottom) md.scrollToBottom();
 	}
@@ -207,7 +206,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 			insertionIndex = messages.length - 1, // -1 : insert at begining, i>=0 : insert after i
 			wasAtBottom = isAtBottom(),
 			$md = $('<div>').addClass('message').data('message', message),
-			$user = $('<div>').addClass('user').text(message.authorname).appendTo($md),
+			$user = $('<div>').addClass('user').append($('<span/>').text(message.authorname)).appendTo($md),
 			$decorations = $('<div>').addClass('decorations').appendTo($user),
 			$mc,
 			votesHtml = votesAbstract(message);
@@ -309,7 +308,9 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		e.stopPropagation();
 	}
 	md.closer = function(e){
-		$(this).removeClass('closer').addClass('opener').closest('.message').find('.content').addClass('closed');
+		var $md = $(this).removeClass('closer').addClass('opener').closest('.message');
+		$md.find('.content').addClass('closed');
+		$md.reflow();
 		e.stopPropagation();			
 	}
 
