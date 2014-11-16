@@ -45,6 +45,7 @@
 	overflow-y: scroll;
 	flex-grow: 1;
 	flex-basis: 0;
+	margin-bottom: -3px; // I d'ont understand why I have some empty space at bottom without that
 }
 .table {
 	display: table;
@@ -103,10 +104,10 @@ section {
 	position: relative;
 	background: $message-list-bg;
 	.message + .message {
-		border-top: thin dotted #ddd;
+		border-top: $normal-border-separation;
 	}
 	.message + .message.disrupt {
-		border-top: thin solid #ccc;
+		border-top: $disrupt-border-separation;
 	}
 }
 
@@ -462,6 +463,8 @@ $input-buttons-width: 74px;
 	margin-left: 2px;
 	resize: none; 
 	float: left;
+	background: $input-bg;
+	color: $input-text-color;
 }
 body.mobile #input {
 	height: $minput-height;
@@ -768,26 +771,24 @@ div#notifs {
 		text-align: center;
 		padding: 5px;
 		border-style:solid;
-		border-color:  #655;
-		border-width: 0 0 1px 0;
+		border-color:  $chat-tabs-border-color;
+		border-width: 0 0 $chat-tabs-border-width 0;
 		border-radius: 0;
-		opacity: 0.5;
-		color: $title-text-color;
+		color: transparentize($title-text-color, 0.5);
 		cursor: pointer;
 		font-weight: bold;
 		&:hover {
-			opacity: 0.8;
+			color: transparentize($title-text-color, 0.2);
 		}
 		&.selected {
-			border-width: 1px 1px 0 1px;
+			color: $title-text-color;
+			border-width: $chat-tabs-border-width $chat-tabs-border-width 0 $chat-tabs-border-width;
 			&:first-child {
-				border-width: 1px 1px 0 0;
+				border-width: $chat-tabs-border-width $chat-tabs-border-width 0 0;
 			}
 			&:last-child	 {
-				border-width: 1px 0 0 1px;
+				border-width: $chat-tabs-border-width 0 0 $chat-tabs-border-width;
 			}
-			opacity: 1;
-			font-weight: bold;
 		}
 	}
 }

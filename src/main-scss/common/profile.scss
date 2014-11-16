@@ -41,8 +41,11 @@ div.externalProfile {
 	box-shadow: $profile-box-shadow;
 	width: 216px;
 	min-height: 24px;
-	color: black;
+	color: $profile-text-color;
 	background: $profile-bg-color;
+	a {
+		color: $profile-text-color;	
+	}
 	h1 {
 		width: 100%;
 		text-align: center;

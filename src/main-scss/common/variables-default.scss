@@ -7,12 +7,17 @@ $bg-color: #F0EAD6 !default;
 $general-text-color: black !default;
 $title-text-color: #655 !default;
 $message-list-bg: white !default;
-$message-me-bg: rgba(197, 135, 55, 0.1) !default;
+$message-me-bg: rgba(202, 195, 192, 0.19) !default;
 $notifications-bg-color: #fffa9e !default;
 $connected-user-text-color-in-user-list: black !default;
 $user-text-color-in-user-list: #444 !default;
 $user-text-color-in-message: #555 !default;
 $code-text-color: #444 !default;
+$chat-tabs-border-color: #655 !default;
+$input-bg: white !default;
+$input-text-color: black !default;
+$normal-border-separation: thin dotted #ddd !default;
+$disrupt-border-separation: thin solid #ccc !default;
 
 // message sizing
 $message-min-height: 30px !default;
@@ -23,6 +28,7 @@ $message-content-line-height: 1.5 !default;
 // profile in chat
 $profile-bg-color: #fffcc5 !default;
 $profile-box-shadow: 2px 2px 2px #999 !default;
+$profile-text-color: black !default;
 
 // buttons
 $button-bg-color: #E3DAC9 !default;
@@ -38,6 +44,7 @@ $input-height: 80px !default; // height of input
 $left-panel-width: 150px !default;
 $right-panel-width: 330px !default;
 $hist-width: 200px !default;
+$chat-tabs-border-width: 1px !default;
 
 // mobile chat layout
 $minput-height: 50px !default; // height of input in mobile interface
