@@ -33,14 +33,18 @@ exports.appGet = function(req, res, db){
 				res.render('request.jade', { room:room, lastAccessRequest:ar });
 			});
 		}
-		res.render(server.mobile(req) ? 'chat.mob.jade' : 'chat.jade', {
+		var locals = {
 			user:JSON.stringify(req.user),
 			room:room,
-			theme:prefs.theme(userPrefs),
 			userPrefs:userPrefs,
 			pluginsToStart:JSON.stringify(clientSidePluginNames)
-		});
-		//~ console.dir(req.session);
+		};
+		if (server.mobile(req)) {
+			res.render('chat.mob.jade', locals);
+		} else {
+			locals.theme = prefs.theme(userPrefs);
+			res.render('chat.jade', locals);
+		}
 	}).catch(db.NoRowError, function(){
 		// not an error as it happens when there's no room id in url
 		res.redirect(server.url('/rooms'));
