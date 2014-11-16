@@ -376,7 +376,7 @@ body.mobile .message-menu .vote {
 }
 code {
 	font-family: monospace;
-	color: #444;
+	color: $code-text-color;
 	white-space: pre;
 }
 .indent {
@@ -772,7 +772,7 @@ div#notifs {
 		border-width: 0 0 1px 0;
 		border-radius: 0;
 		opacity: 0.5;
-		color: #655;
+		color: $title-text-color;
 		cursor: pointer;
 		font-weight: bold;
 		&:hover {

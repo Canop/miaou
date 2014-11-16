@@ -1,15 +1,17 @@
 
 // variables owned by the theme
 $bear-green: #9CD87A;
+$bear-text: #FFFACD;
 
 // chat colors
 $bg-color: black;
-$general-text-color: gold;
+$general-text-color: $bear-text;
 $title-text-color: $bear-green !default;
 $message-list-bg: #222;
 $user-text-color-in-user-list: $bear-green;
 $connected-user-text-color-in-user-list: $bear-green;
 $user-text-color-in-message: $bear-green;
+$code-text-color: #999;
 
 // message sizing
 $message-min-height: 60px;
