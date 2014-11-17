@@ -184,8 +184,10 @@ body.mobile #message-scroller {
 		hr {
 			width: 100%;
 			height: 1px;
-			border: none;
-			background-image: $message-hr-background-image;
+			border-top: none;
+			border-left: none;
+			border-right: none;
+			border-bottom: $normal-border-separation;
 			display: inline-block; 
 		}
 	}
