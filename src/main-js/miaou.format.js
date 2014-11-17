@@ -67,9 +67,15 @@
 	// converts from the message exchange format (mainly a restricted set of Markdown) to HTML
 	miaou.mdToHtml = function(md, withGuiFunctions, username){
 		var nums=[], table,
-			lin = md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
+			lin = md
+			.replace(/^--/,'') // should only happen when previewing messages
+			.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
+			if (/^--\s*$/.test(lin[l])) {
+				lout.push('<hr>');
+				continue;
+			}
 			var m, s = lin[l].replace(/</g,'&lt;').replace(/>/g,'&gt;')
 				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : ''),
 				looksLikeARow = /\|/.test(s);

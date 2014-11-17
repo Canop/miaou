@@ -403,10 +403,15 @@ function handleUserInRoom(socket, completeUser){
 			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)", content);
 			return;
 		}
+		if (/^--/.test(content)) {
+			var nomerge = true;
+			content = content.replace(/^--\s*/, '');
+		}
 		shoe.lastMessageTime = now;
 		var	u = shoe.publicUser,
 			m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id},
 			mm = memroom.mm, // eventual previous mergeable message
+			isreply = /^\s*@\w[\w\-]{2,}#\d+/.test(content),
 			merge = null; // null or the content to concatenate to a previous message
 		if (message.id) {
 			m.id = +message.id;
@@ -426,9 +431,10 @@ function handleUserInRoom(socket, completeUser){
 		.spread(commands.onMessage)
 		.then(function(commandTask){
 			if ( // let's see if the message can be merged with the previous one
-				!m.id // must not be already an edit
+				!nomerge
+				&& !m.id // must not be already an edit
 				&& !commandTask.cmd // a command message isn't mergeable
-				&& !/^\s*@\w[\w\-]{2,}#\d+/.test(m.content) // a replying message can't be merged into a previous one
+				&& !isreply // a replying message can't be merged into a previous one
 				&& mm
 				&& mm.author===m.author && mm.created+maxHiatusForMerge>seconds // must be a recent message by same author
 				&& mm.content.length+m.content.length<maxContentLength  // must be not too big
@@ -438,7 +444,7 @@ function handleUserInRoom(socket, completeUser){
 				mm.created = seconds;
 				return [this.storeMessage(mm, true), commandTask]
 			}
-			memroom.mm = commandTask.cmd || m.id ? null : m;
+			memroom.mm = commandTask.cmd || m.id || isreply ? null : m;
 			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
 		}).spread(function(m, commandTask){
 			if (commandTask.silent) return;

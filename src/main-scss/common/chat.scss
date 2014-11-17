@@ -181,6 +181,13 @@ body.mobile #message-scroller {
 				padding: 0 3px;
 			}
 		}
+		hr {
+			width: 100%;
+			height: 1px;
+			border: none;
+			background-image: $message-hr-background-image;
+			display: inline-block; 
+		}
 	}
 	&.me {
 		background: $message-me-bg;

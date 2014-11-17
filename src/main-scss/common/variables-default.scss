@@ -16,8 +16,9 @@ $code-text-color: #444 !default;
 $chat-tabs-border-color: #655 !default;
 $input-bg: white !default;
 $input-text-color: black !default;
-$normal-border-separation: thin dotted #ddd !default;
-$disrupt-border-separation: thin solid #ccc !default;
+$normal-border-separation: thin dotted #ccc !default;
+$disrupt-border-separation: thin solid #aaa !default;
+$message-hr-background-image: linear-gradient(to right, rgba(0,0,0,0.05), rgba(0,0,0,0.2), rgba(0,0,0,0.05)) !default;
 
 // message sizing
 $message-min-height: 30px !default;
