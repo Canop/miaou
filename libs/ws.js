@@ -6,7 +6,7 @@ var	config,
 	connect = require('connect'),
 	io, db, bot,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
-	maxHiatusForMerge = 15, // in seconds
+	maxHiatusForMerge = 20, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
 	socketWaitingApproval = [],

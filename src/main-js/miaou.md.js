@@ -308,9 +308,11 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		e.stopPropagation();
 	}
 	md.closer = function(e){
+		var wab = isAtBottom();
 		var $md = $(this).removeClass('closer').addClass('opener').closest('.message');
 		$md.find('.content').addClass('closed');
 		$md.reflow();
+		if (wab) md.scrollToBottom();
 		e.stopPropagation();			
 	}
 
