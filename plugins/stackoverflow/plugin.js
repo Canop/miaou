@@ -1,5 +1,6 @@
 
 var Promise = require("bluebird"),
+	soboxer = require("./soboxer.js"),
 	config = require('../../config.json'),
 	request = require('request');
 	
@@ -65,4 +66,23 @@ exports.externalProfile = {
 		],
 		create: createSOProfile
 	}, render: renderSOProfile
+}
+
+// intercepts links to wikipedia and sends boxed abstracts.
+// It directly fetches the page because I don't find anything usable
+//  for representation using the Wikipedia API.
+// Requests are queued and only one at a time is done.
+exports.onSendMessage = function(shoe, m, send){
+	if (!m.content || !m.id) return;
+	var r = /(?:^|\n)\s*https?:\/\/stackoverflow.com\/(\w+)\/(\d+)\S*\s*(?:$|\n)/g,
+		match;
+	while (match=r.exec(m.content)) {
+		var task = { mid:m.id, line:match[0], type:match[1], num:+match[2], send:send };
+		console.log(task);
+		if (task.type !== "questions") {
+			console.log("unsupported SO link type", task);
+			return;
+		}
+		soboxer.addTask(task);
+	}
 }

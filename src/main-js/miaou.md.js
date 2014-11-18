@@ -383,7 +383,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 			$m = $('.message[mid='+args.mid+']'),
 			wab = isAtBottom();
 		$m.find('.content').html(function(_, h){
-			return h.replace($from.html(), '<div class=box>'+args.to+'</div>')
+			return h.replace($from.html(), '<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>')
 		});
 		resize($m, wab);
 	}

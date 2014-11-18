@@ -1,0 +1,77 @@
+.stackoverflow {
+	display: table-row;
+	padding: 15px;
+	background: white;
+	color: black;
+	font-size: 95%;
+}
+
+.so-side, .so-main {
+	display: table-cell;
+	vertical-align: top;
+}
+
+.so-side {
+	width: 100px;
+	text-align: center;
+	padding-top: 5px;
+}
+
+.so-score, .so-answers {
+}
+
+.so-q {
+	font-weight: bold;
+}
+
+.so-side img {
+	max-width: 100%;
+}
+
+.so-tags span {
+	background-color: #E0EAF1;
+	color: #3E6D8E;
+	border-color: #3E6D8E;
+	border-style: solid;
+	font-size: .85em;
+	padding: 3px 4px;
+	border-width: 0px 1px 1px 0px;
+	margin-right: 5px;
+}
+
+.so-side .num {
+	font-weight: bold;
+	font-size: 120%;
+	opacity: 0.8;
+}
+
+.so-accepted {
+	color: green;
+}
+
+a.so-title {
+	font-weight: bold;
+	font-size: 110%;
+	text-decoration: none;
+}
+a.so-title img {
+	margin-right: 10px;
+	vertical-align: middle;
+	padding-bottom: 8px;
+}
+
+.so-body {
+	/* border: thin dashed #aaa;*/
+	padding: 5px;
+	margin: 5px 0;
+}
+
+.so-body pre {
+	margin-left: 10px;
+}
+
+.so-body code {
+	color: #555;
+	line-height: 1.1;
+	font-size: 95%;
+}
