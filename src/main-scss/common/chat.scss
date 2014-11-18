@@ -45,7 +45,6 @@
 	overflow-y: scroll;
 	flex-grow: 1;
 	flex-basis: 0;
-	margin-bottom: -3px; // I d'ont understand why I have some empty space at bottom without that
 }
 .table {
 	display: table;
@@ -189,6 +188,7 @@ body.mobile #message-scroller {
 			border-right: none;
 			border-bottom: $normal-border-separation;
 			display: inline-block; 
+			// margin: $hr-in-message-margin;
 		}
 	}
 	&.me {
