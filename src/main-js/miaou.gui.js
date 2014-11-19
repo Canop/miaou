@@ -16,7 +16,8 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 	}
 	
 	gui.init = function(){
-		var timer;
+		var	timer,
+			lastUserAction; // ms
 		
 		$('#messages, #notable-messages, #search-results').on('click', '.message .content a[href]', function(e){
 			var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
@@ -102,6 +103,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 			var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
 			if (message.vote) ws.emit('vote', {action:'remove',  message:message.id, level:message.vote});
 			if (message.vote!=vote) ws.emit('vote', {action:'add',  message:message.id, level:vote});
+			gui.userAct();
 			return false;
 		})
 		.on('click', '.unpin', function(){
@@ -194,6 +196,12 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 		// When the window is resized, all the messages have to be resized too.
 		$(window).on('resize', md.resizeAll);
 		
+		// called in case of user action proving he's right in front of the chat so
+		//  we should not ping him
+		gui.userAct = function(){
+			lastUserAction = Date.now();
+		}
+		
 		// called in case of new message (or a new important event related to a message)
 		gui.touch = function(mid, ping, from, text, r){
 			var visible = vis();
@@ -205,7 +213,10 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 				}
 			}
 			if (!visible || userPrefs.nifvis==="yes") {
-				if ( userPrefs.notif==="on_message" || (ping && userPrefs.notif==="on_ping") ) {
+				if (
+					userPrefs.notif==="on_message"
+					|| (ping && userPrefs.notif==="on_ping" && Date.now()-lastUserAction>1500)
+				) {
 					notif.show(r || room, from, text);					
 				}
 			}

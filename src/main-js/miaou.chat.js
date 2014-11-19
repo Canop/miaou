@@ -128,6 +128,7 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 		if (typeof m === "string") m = {content:m};
 		var r = chat.trigger("sending_message", m, context);
 		if (r!==false) ws.emit('message', m);
+		gui.userAct();
 	}
 	
 });
