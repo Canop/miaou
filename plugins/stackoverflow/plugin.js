@@ -1,7 +1,7 @@
 
 var Promise = require("bluebird"),
 	soboxer = require("./soboxer.js"),
-	config = require('../../config.json'),
+	config,
 	request = require('request');
 	
 exports.name = "StackOverflow";
@@ -73,16 +73,26 @@ exports.externalProfile = {
 //  for representation using the Wikipedia API.
 // Requests are queued and only one at a time is done.
 exports.onSendMessage = function(shoe, m, send){
+	// TODO How to avoid using two regexes here ?
 	if (!m.content || !m.id) return;
-	var r = /(?:^|\n)\s*https?:\/\/stackoverflow.com\/(\w+)\/(\d+)\S*\s*(?:$|\n)/g,
+	var r = r = /(?:^|\n)\s*https?:\/\/stackoverflow.com\/questions\/(\d+)[^\s#]+(#comment\d+_\d+)?\S*\s*(?:$|\n)/gm,
 		match;
 	while (match=r.exec(m.content)) {
-		var task = { mid:m.id, line:match[0], type:match[1], num:+match[2], send:send };
-		console.log(task);
-		if (task.type !== "questions") {
-			console.log("unsupported SO link type", task);
-			return;
+		var task = { mid:m.id, line:match[0], send:send };
+		if (match[2]) {
+			task.type = "comments";
+			task.num = +match[2].match(/^.{8}(\d+)/)[1];
+		} else {
+			task.type = "questions";
+			task.num = +match[1];
 		}
+		console.log(task);
 		soboxer.addTask(task);
 	}
+}
+
+
+exports.init = function(miaou){
+	config = miaou.config;
+	soboxer.init(miaou);
 }

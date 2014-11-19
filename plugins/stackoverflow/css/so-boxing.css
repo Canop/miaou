@@ -6,9 +6,13 @@
 	font-size: 95%;
 }
 
-.so-side, .so-main {
+.so-side {
 	display: table-cell;
 	vertical-align: top;
+}
+.so-main {
+	display: table-cell;
+	vertical-align: middle;
 }
 
 .so-side {
@@ -17,10 +21,7 @@
 	padding-top: 5px;
 }
 
-.so-score, .so-answers {
-}
-
-.so-q {
+.so-type {
 	font-weight: bold;
 }
 
@@ -64,6 +65,9 @@ a.so-title img {
 	/* border: thin dashed #aaa;*/
 	padding: 5px;
 	margin: 5px 0;
+}
+.so-comment {
+
 }
 
 .so-body pre {
