@@ -219,6 +219,7 @@ function messageWithoutUserVote(message){
 function handleUserInRoom(socket, completeUser){
 	var shoe = new Shoe(socket, completeUser),
 		memroom,
+		lastmmisreply,
 		send;
 	socket
 	.on('autocompleteping', function(namestart){
@@ -406,6 +407,9 @@ function handleUserInRoom(socket, completeUser){
 		if (/^--/.test(content)) {
 			var nomerge = true;
 			content = content.replace(/^--\s*/, '');
+		} else if (/^\+\+/.test(content)) {
+			var domerge = true;
+			content = content.replace(/^\+\+\s*/, '');
 		}
 		shoe.lastMessageTime = now;
 		var	u = shoe.publicUser,
@@ -436,7 +440,9 @@ function handleUserInRoom(socket, completeUser){
 				&& !commandTask.cmd // a command message isn't mergeable
 				&& !isreply // a replying message can't be merged into a previous one
 				&& mm
-				&& mm.author===m.author && mm.created+maxHiatusForMerge>seconds // must be a recent message by same author
+				&& mm.author===m.author // must be by same author
+				&& (domerge || !lastmmisreply) // can't normally merge with a reply
+				&& (domerge || mm.created+maxHiatusForMerge>seconds) // must be recent or the new one having ++ 
 				&& mm.content.length+m.content.length<maxContentLength  // must be not too big
 			) {
 				merge = m.content;
@@ -444,7 +450,8 @@ function handleUserInRoom(socket, completeUser){
 				mm.created = seconds;
 				return [this.storeMessage(mm, true), commandTask]
 			}
-			memroom.mm = commandTask.cmd || m.id || isreply ? null : m;
+			lastmmisreply = isreply;
+			memroom.mm = commandTask.cmd || m.id ? null : m;
 			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
 		}).spread(function(m, commandTask){
 			if (commandTask.silent) return;
