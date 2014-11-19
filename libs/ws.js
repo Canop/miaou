@@ -6,7 +6,7 @@ var	config,
 	connect = require('connect'),
 	io, db, bot,
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
-	maxHiatusForMerge = 20, // in seconds
+	maxHiatusForMerge = 25, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
 	socketWaitingApproval = [],
@@ -157,7 +157,6 @@ function anyUserSocket(userIdOrName) {
 	}
 }
 
-
 // using a filtering function, picks some elements, removes them from the array,
 //  executes a callback on each of them
 // todo find a clearer name
@@ -219,7 +218,7 @@ function messageWithoutUserVote(message){
 function handleUserInRoom(socket, completeUser){
 	var shoe = new Shoe(socket, completeUser),
 		memroom,
-		lastmmisreply,
+		lastmmisreply, lastmmisatleastfivelines,
 		send;
 	socket
 	.on('autocompleteping', function(namestart){
@@ -434,6 +433,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe, m])
 		.spread(commands.onMessage)
 		.then(function(commandTask){
+			var isatleastfivelines = /(\n.*?){4}/.test(m.content);
 			if ( // let's see if the message can be merged with the previous one
 				!nomerge
 				&& !m.id // must not be already an edit
@@ -441,16 +441,18 @@ function handleUserInRoom(socket, completeUser){
 				&& !isreply // a replying message can't be merged into a previous one
 				&& mm
 				&& mm.author===m.author // must be by same author
-				&& (domerge || !lastmmisreply) // can't normally merge with a reply
-				&& (domerge || mm.created+maxHiatusForMerge>seconds) // must be recent or the new one having ++ 
+				&& ( domerge || ( !lastmmisreply && !lastmmisatleastfivelines ) ) // can't normally merge with a reply or a long message
+				&& ( domerge || mm.created+maxHiatusForMerge>seconds ) // must be recent or the new one having ++ 
 				&& mm.content.length+m.content.length<maxContentLength  // must be not too big
 			) {
 				merge = m.content;
 				mm.content += '\n'+m.content;
 				mm.created = seconds;
+				lastmmisatleastfivelines = isatleastfivelines;
 				return [this.storeMessage(mm, true), commandTask]
 			}
 			lastmmisreply = isreply;
+			lastmmisatleastfivelines = isatleastfivelines;
 			memroom.mm = commandTask.cmd || m.id ? null : m;
 			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
 		}).spread(function(m, commandTask){
