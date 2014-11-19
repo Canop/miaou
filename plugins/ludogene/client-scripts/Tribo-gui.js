@@ -1,4 +1,4 @@
-miaou(function(games, ws){
+miaou(function(games, gui, ws){
 
 	var T = 10, // size of the board in cells (not expected to change)
 		CS = 20, // size of a cell in pixels
@@ -94,6 +94,7 @@ miaou(function(games, ws){
 									for (var k=0; lineMarks && k<lineMarks.length; k++) lineMarks[k].remove();
 								}).on('click', function(){
 									ws.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
+									gui.userAct();
 								}).attr({cursor:'pointer'});
 							} else {
 								c.on('mouseenter', function(){ c.attr('fill', 'red') })
