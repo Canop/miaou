@@ -4,7 +4,7 @@
 	<title>Message Format Sandbox</title>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src=miaou.min.js></script>
-	<link rel="stylesheet" href="main.css"></link>
+	<link rel="stylesheet" href="themes/boring-goose/miaou.css"></link>
 	<style>
 		body {
 			background: #F0EAD6;
@@ -94,7 +94,10 @@ If you need more title levels in a chat comment... There might be a problem.
 </div>
 <script>
 function format(){
-	var html = miaou.mdToHtml.reset()($('#test_input').val());
+	var md = $('#test_input').val();
+	console.log(JSON.stringify(md));
+	var html = miaou.mdToHtml.reset()(md);
+	console.log(JSON.stringify(html));
 	$('#html').text(html);
 	$('#result').html(html);
 }
