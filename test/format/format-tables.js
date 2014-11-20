@@ -72,7 +72,18 @@ buster.testCase("Formatting - Tables", {
 		"and now| some spanning",
 		'<div class=tablewrap><table id=tbl1><style scoped>#tbl1 td:nth-child(1){text-align:left}#tbl1 td:nth-child(2){text-align:right}#tbl1 td:nth-child(3){text-align:center}</style><tr><th>left</th><th>right</th><th>center</th></tr><tr><td>12</td><td>25</td><td>34</td></tr><tr><td>empty cell-&gt;</td><td></td><td>&lt;-empty cell</td></tr><tr><td>and now</td><td colspan=2>some spanning</td></tr></table></div>'
 	),
-
+	"simple table after an empty line": t(
+		"A table whose cells are only one line :\n\nth 1 | th 2 | th 3\n-----|:----:|-----:\nbla  |      | no new line in cells\nbla  |      | hop\nother|  row | mono line",
+		"A table whose cells are only one line :<br><br><div class=tablewrap><table id=tbl1><style scoped>#tbl1 td:nth-child(1){text-align:left}#tbl1 td:nth-child(2){text-align:center}#tbl1 td:nth-child(3){text-align:right}</style><tr><th>th 1</th><th>th 2</th><th>th 3</th></tr><tr><td>bla</td><td></td><td>no new line in cells</td></tr><tr><td>bla</td><td></td><td>hop</td></tr><tr><td>other</td><td>row</td><td>mono line</td></tr></table></div>"
+	),
+	"wysiwyg table where cells are be multi line and styled": t(
+		"th 1 | th 2 | th 3\n-----|:----:|-----:\nbla  |      | multi\nbla  |      | line cell\n-----|------|-----\nother|*row* | **mono line**\n-----|------|-----\nlast | of   | and last cell\nrow  |table | is on three\n     |      | lines! ",
+		"<div class=tablewrap><table id=tbl1><style scoped>#tbl1 td:nth-child(1){text-align:left}#tbl1 td:nth-child(2){text-align:center}#tbl1 td:nth-child(3){text-align:right}</style><tr><th>th 1</th><th>th 2</th><th>th 3</th></tr><tr><td>bla<br>bla</td><td><br></td><td>multi<br>line cell</td></tr><tr><td>other</td><td><i>row</i></td><td><b>mono line</b></td></tr><tr><td>last<br>row<br></td><td>of<br>table<br></td><td>and last cell<br>is on three<br>lines!</td></tr></table></div>"
+	),
+	"table where rows are separated with --": t(
+		"th 1 | th 2 | th 3\n-----|:----:|-----:\nbla  |      | multi\nbla  |      | line cell\n--\nother| row | mono line\n--\nlast | of  | and last cell\nrow  |table| is on two lines",
+		"<div class=tablewrap><table id=tbl1><style scoped>#tbl1 td:nth-child(1){text-align:left}#tbl1 td:nth-child(2){text-align:center}#tbl1 td:nth-child(3){text-align:right}</style><tr><th>th 1</th><th>th 2</th><th>th 3</th></tr><tr><td>bla<br>bla</td><td><br></td><td>multi<br>line cell</td></tr><tr><td>other</td><td>row</td><td>mono line</td></tr><tr><td>last<br>row</td><td>of<br>table</td><td>and last cell<br>is on two lines</td></tr></table></div>" 
+	)
 
 });
 

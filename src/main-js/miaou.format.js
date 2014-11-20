@@ -1,11 +1,16 @@
 (function(){
 	
-	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
+	var	coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
+		regularcoldefregex = /^\s*[:\-]*(\|[:\-]+)*\|?\s*$/,
+		rowchange = {},
 		nextId = 1;
 
 	function Table(cols){
 		this.coldefstr = cols;
+		this.regular = !/\+/.test(cols); // A "regular" table may accept multi-lines cells
 		var id = this.id = 'tbl'+nextId++;
+		this.multiline = false;
+		this.nbcols = 0;
 		if (/:/.test(cols)) {
 			this.style = (cols.match(/[:\-]+/g)||[]).map(function(c){ // the ||[] might be over defensive now
 				return c[c.length-1]!==':' ? 'left' : ( c[0]===':' ? 'center' : 'right' );
@@ -13,24 +18,81 @@
 				return '#'+id+' td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
 			}).join('');
 		}
-		this.rows = [];
+		this.lines = [];
 	}
 	Table.prototype.push = function(row){
-		this.rows.push(row.match(/[^|]+/g)||[]);
+		var cells = row.match(/[^|]+/g);
+		if (cells) {
+			this.lines.push(cells);
+			this.nbcols = Math.max(this.nbcols, cells.length);
+		} else {
+			this.lines.push([]);
+		}
+	}
+	// add to the table if it looks like part of it, and return true
+	// doesn't add if it's not compatible, and return false
+	Table.prototype.read = function(s){
+		if (regularcoldefregex.test(s)) {
+			if (this.regular) {
+				this.multiline = true;
+				this.lines.push(rowchange);
+			}
+			return true;
+		}
+		if (s===this.coldefstr) {
+			return true;
+		}
+		if (/\|/.test(s)) {
+			this.push(s);
+			return true;
+		}
+		return false;
+	}
+	// cc : cell content array
+	Table.prototype.toRow = function(cc, ishead){
+		if (!cc.length) return '';
+		var	h = '<tr>',
+			tag = ishead ? 'th' : 'td';
+		for (var i=0; i<cc.length; i++) {
+			h += '<'+tag;
+			if (i===cc.length-1 && i<this.nbcols-1) h += ' colspan='+(this.nbcols-i);
+			h += '>'+cc[i]+'</'+tag+'>';
+		}
+		return h+'</tr>';
 	}
 	Table.prototype.html = function(username){
-		var h = '<div class=tablewrap>', 
-			n = Math.max.apply(0, this.rows.map(function(v){ return v.length }));
-		h += this.style ? '<table id='+this.id+'><style scoped>'+this.style+'</style>' : '<table>',
-		h += this.rows.map(function(r, ir){
-			if (!r.length) return '';
-			return '<tr>'+r.map(function(c,ic){
-				var tag = ir ? 'td' : 'th',
-					cell = '<'+tag;
-				if (ic===r.length-1 && ic<n-1) cell += ' colspan='+(n-ic);
-				return cell + '>'+fmtStr(c.trim(), username)+'</'+tag+'>';
-			}).join('')+'</tr>';
-		}).join('');
+		var	h = '<div class=tablewrap>';
+		h += this.style ? '<table id='+this.id+'><style scoped>'+this.style+'</style>' : '<table>';
+		if (this.multiline) {
+			var currentRow;
+			this.lines.forEach(function(line, il){
+				if (line===rowchange) {
+					if (currentRow) h += this.toRow(currentRow, false);
+					currentRow = null;
+				} else {
+					var row = line.map(function(c){ return fmtStr(c.trim(), username) });
+					if (!il) {
+						h += this.toRow(row, true);
+					} else if (currentRow) {
+						for (var i=0; i<row.length; i++) {
+							if (i<currentRow.length) currentRow[i] += '<br>'+ row[i];
+							else currentRow[i] = row[i];
+						}
+						
+					} else {
+						currentRow = row;
+					}
+				}
+			}, this);
+			if (currentRow) h += this.toRow(currentRow, false);
+		} else {
+			h += this.lines.map(function(r, ir){
+				return this.toRow(
+					r.map(function(c){ return fmtStr(c.trim(), username) }),
+					!ir
+				);
+			}, this).join('');			
+		}
 		h += '</table></div>';
 		return h;
 	}
@@ -68,18 +130,13 @@
 	miaou.mdToHtml = function(md, withGuiFunctions, username){
 		var nums=[], table,
 			lin = md
-			.replace(/^(--|\+\+)/,'') // should only happen when previewing messages
+			.replace(/^(--(?!-)|\+\+)/,'') // should only happen when previewing messages
 			.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
-			if (/^--\s*$/.test(lin[l])) {
-				lout.push('<hr>');
-				continue;
-			}
 			var m, s = lin[l].replace(/</g,'&lt;').replace(/>/g,'&gt;')
-				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : ''),
-				looksLikeARow = /\|/.test(s);
-			if ( !(table && looksLikeARow) && (m=s.match(/^(?:    |\t)(.*)$/)) ) {
+				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : '');
+			if ( (m=s.match(/^(?:    |\t)(.*)$/)) && !(table && /\|/.test(s)) ) {
 				lout.push('<code class=indent>'+m[1]+'</code>');
 				continue;
 			}
@@ -104,16 +161,10 @@
 				continue;
 			}
 			if (table) {
-				if (s===table.coldefstr) {
-					continue;
-				} else if (looksLikeARow) {
-					table.push(s);
-					continue;
-				} else {
-					lout.push(table.html(username));
-					table = null;
-				}
-			} else if (looksLikeARow || /^\+\-[\-\+]*\+$/.test(s)) {
+				if (table.read(s)) continue;
+				lout.push(table.html(username));
+				table = null;
+			} else if (/\|/.test(s) || /^\+\-[\-\+]*\+$/.test(s)) {
 				if (coldefregex.test(s)) {
 					table = new Table(s);
 					table.push('');
@@ -123,6 +174,10 @@
 					table.push(s);
 					continue;
 				}
+			}
+			if (/^--\s*$/.test(lin[l])) {
+				lout.push('<hr>');
+				continue;
 			}
 			s = fmtStr(s, username);
 			if (m=s.match(/^(?:&gt;\s*)(.*)$/)) {
