@@ -403,7 +403,7 @@ function handleUserInRoom(socket, completeUser){
 			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)", content);
 			return;
 		}
-		if (/^--/.test(content)) {
+		if (/^--[^-]/.test(content)) {
 			var nomerge = true;
 			content = content.replace(/^--\s*/, '');
 		} else if (/^\+\+/.test(content)) {
