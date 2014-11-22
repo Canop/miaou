@@ -42,7 +42,7 @@ exports.appGet = function(req, res, db){
 		if (server.mobile(req)) {
 			res.render('chat.mob.jade', locals);
 		} else {
-			locals.theme = prefs.theme(userPrefs);
+			locals.theme = prefs.theme(userPrefs, req.param("theme"));
 			res.render('chat.jade', locals);
 		}
 	}).catch(db.NoRowError, function(){

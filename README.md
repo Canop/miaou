@@ -45,11 +45,7 @@ As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou
 
 A [vagrant](http://www.vagrantup.com/) configuration is available to help you set up a development environment quickly. See more information at its [documentation](vagrant/vagrant.md).
 
-If you have the ability and will to contribute, come and discuss with us. The best landing place is usually the Miaou room where you can ping @dystroy or @Florian.
-
-Here are the currently identified topics on which help would be welcome : http://dystroy.org/miaou/helpus 
-
-But there are also many other tasks in the TODO list, just ask !
+If you have the ability and will to contribute, come and discuss with us. The best landing place is usually the [Miaou room](http://dystroy.org/miaou/1?Miaou) where you can ping @dystroy or @Florian. We'll show you where we manage ideas, reports, tasks and you'll see the list of tasks waiting for a volunteer.
 
 ## License
 

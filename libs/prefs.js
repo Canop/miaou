@@ -27,7 +27,8 @@ exports.configure = function(miaou){
 	return this;
 }
 
-exports.theme = function(prefs){
+exports.theme = function(prefs, requestedTheme){
+	if (requestedTheme && ~themes.indexOf(requestedTheme)) return requestedTheme;
 	if (prefs && prefs.theme && prefs.theme!=='default') return prefs.theme;
 	return themes[0];
 }
