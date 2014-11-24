@@ -1,6 +1,8 @@
 var auths = require('./auths.js'),
 	server = require('./server.js'),
+	maxAgeForNotableMessages = 50*24*60*60, // in seconds
 	memobjects = {},
+	clean = require('./ws.js').clean,
 	langs;
 	
 exports.configure = function(miaou){
@@ -9,10 +11,33 @@ exports.configure = function(miaou){
 }
 
 // returns a shared unpersisted object relative to the room
+// the context of the call must be a db con
 exports.mem = function(roomId){
 	var mo = memobjects[roomId];
-	if (!mo) mo = memobjects[roomId] = {};
+	if (!mo) {
+		mo = memobjects[roomId] = {id:roomId};
+		var now = Date.now()/1000|0;
+		return this
+		.getNotableMessages(roomId, now-maxAgeForNotableMessages)
+		.then(function(notables){
+			for (var i=0; i<notables.lenght; i++) clean(notables[i]);
+			mo.notables = notables;
+			return mo;
+		});
+	}
 	return mo;
+}
+
+// updates the list and resolves the closure with it
+// context of the call must be a db con
+exports.updateNotables = function(memroom){
+	return this
+	.getNotableMessages(memroom.id, Date.now()/1000-maxAgeForNotableMessages|0)
+	.then(function(notables){
+		for (var i=0; i<notables.lenght; i++) clean(notables[i]);
+		memroom.notables = notables;
+		return notables;
+	});
 }
 
 // room admin page GET

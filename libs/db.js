@@ -417,7 +417,7 @@ proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
 		'select message.id, author, player.name as authorname, player.bot, content, created, pin, star, up, down, score from message'+
 		' inner join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
-		' order by pin desc, score desc limit 20', [roomId, createdAfter]
+		' order by pin desc, score desc, created desc limit 20', [roomId, createdAfter]
 	);
 }
 

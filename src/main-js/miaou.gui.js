@@ -15,6 +15,20 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 		);
 	}
 	
+	gui.isAtBottom = function(){
+		var $scroller = $('#message-scroller'), $messages = $('#messages'),
+			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
+		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
+	}
+
+	gui.scrollToBottom = function(){
+		setTimeout(function(scroller){ // because it doesn't always work on Firefox without this 
+			$(scroller).scrollTop(scroller.scrollHeight);
+			hist.showPage();
+		}, 10, document.getElementById('message-scroller'));
+	}
+
+	
 	gui.init = function(){
 		var	timer,
 			lastUserAction; // ms
@@ -30,7 +44,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 						md.focusMessage(+parts[4]);
 					} else {
 						// it's just an url to our room. Let's... err... scroll to bottom ?
-						md.scrollToBottom();
+						gui.scrollToBottom();
 					}
 					e.preventDefault();
 				} else {
@@ -101,8 +115,8 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 		})
 		.on('click', '.vote', function(){
 			var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
-			if (message.vote) ws.emit('vote', {action:'remove',  message:message.id, level:message.vote});
-			if (message.vote!=vote) ws.emit('vote', {action:'add',  message:message.id, level:vote});
+			if (message.vote) ws.emit('vote', {action:'remove', mid:message.id, level:message.vote});
+			if (message.vote!=vote) ws.emit('vote', {action:'add', mid:message.id, level:vote});
 			gui.userAct();
 			return false;
 		})
@@ -146,12 +160,12 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 		}
 		
 		if (gui.mobile) {
-			$('#messages').on('click', '.message', md.toggleMessageMenus)
+			$('#messages').on('click', '.message', md.toggleMessageHoverInfos)
 			.on('click', '.user,.profile', prof.toggle);
-			$(window).resize(md.scrollToBottom);
+			$(window).resize(gui.scrollToBottom);
 		} else {
 			$('#messages,#users')
-			.on('mouseenter', '.message', md.showMessageMenus).on('mouseleave', '.message', md.hideMessageMenus)
+			.on('mouseenter', '.message', md.showMessageHoverInfos).on('mouseleave', '.message', md.hideMessageHoverInfos)
 			.on('mouseenter', '.user', prof.show);
 			$(document.body).on('mouseleave', '.profile', prof.hide)
 			.on('mouseleave', '.user', function(e){
@@ -182,7 +196,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 			$(this).hide();
 			$('#input').focus();
 			$('#preview-panel').show();
-			md.scrollToBottom();
+			gui.scrollToBottom();
 		});
 		$('#hidePreview').click(function(){
 			$('#input').focus();

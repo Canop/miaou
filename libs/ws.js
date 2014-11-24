@@ -1,11 +1,11 @@
-var	config,
+var	apiversion = 16,
+	config,
 	path = require('path'),
 	maxContentLength,
 	minDelayBetweenMessages,
 	socketio = require('socket.io'),
 	connect = require('connect'),
-	io, db, bot,
-	maxAgeForNotableMessages = 50*24*60*60, // in seconds
+	io, db, bot, apiversion,
 	maxHiatusForMerge = 25, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
@@ -41,7 +41,7 @@ function lighten(obj){
 	return obj;
 }
 
-function clean(m){
+var clean = exports.clean = function(m){
 	lighten(m);
 	if (m.content && /^!!deleted /.test(m.content)) {
 		m.content = m.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/)[0];
@@ -94,7 +94,7 @@ Shoes.userSocket = function(userIdOrName) {
 		sockets = [];
 	for (var clientId in clients) {
 		var socket = io.sockets.connected[clientId];
-		if (socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
+		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
 			return socket;
 		}		
 	}
@@ -264,12 +264,16 @@ function handleUserInRoom(socket, completeUser){
 			console.log('WARN : user already in room'); // how does that happen ?
 			return;
 		}
-		memroom = rooms.mem(roomId);
+		socket.emit('apiversion', apiversion);
 		send = function(v, m){
 			io.sockets.in(roomId).emit(v, clean(m));
 		}
 		db.on()
 		.then(function(){
+			return rooms.mem.call(this, roomId);
+		})
+		.then(function(mr){
+			memroom = mr;
 			return [
 				this.fetchRoomAndUserAuth(roomId, shoe.publicUser.id),
 				this.getRoomUserActiveBan(roomId, shoe.publicUser.id)
@@ -290,9 +294,7 @@ function handleUserInRoom(socket, completeUser){
 			socketWaitingApproval.forEach(function(o){
 				if (o.roomId===shoe.room.id && o.ar) socket.emit('request', o.ar);
 			});
-			return this.getNotableMessages(shoe.room.id, now-maxAgeForNotableMessages);
-		}).then(function(messages){
-			messages.forEach(function(m){ socket.emit('notable_message', clean(m)) });
+			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('welcome');
 			shoe.roomSockets().forEach(function(s){
@@ -429,7 +431,6 @@ function handleUserInRoom(socket, completeUser){
 		} else {
 			m.created = seconds;
 		}
-
 		db.on([shoe, m])
 		.spread(commands.onMessage)
 		.then(function(commandTask){
@@ -576,14 +577,49 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);		
 	})
 	.on('vote', function(vote){
+		console.log('vote', vote);
+		var changedMessageIsInNotables,
+			updatedMessage,
+			strIds = memroom.notables.map(function(m){ return m.id }).join(' ');
 		if (!shoe.room) return;
-		if (vote.level=='pin' && !(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		db.on([shoe.room.id, shoe.publicUser.id, vote.message, vote.level])
+		if (vote.level==='pin' && !(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		db.on([shoe.room.id, shoe.publicUser.id, vote.mid, vote.level])
 		.spread(db[vote.action==='add'?'addVote':'removeVote'])
-		.then(function(updatedMessage){
-			var lm = clean(updatedMessage);
-			socket.emit('message', lm);
-			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
+		.then(function(um){ // TODO most often we don't need the message, don't query it
+			updatedMessage = clean(um);
+			changedMessageIsInNotables = false;
+			for (var i=0; i<memroom.notables.length; i++) {
+				if (memroom.notables[i].id===vote.mid) {
+					changedMessageIsInNotables = true;
+					break;
+				}
+			}
+			return rooms.updateNotables.call(this, memroom);
+		})
+		.then(function(){
+			shoe.emitToRoom('vote', {
+				level: vote.level,
+				mid: vote.mid,
+				voter: shoe.publicUser.id,
+				diff: vote.action==='add' ? 1 : -1
+			});
+			var notableIds = memroom.notables.map(function(m){ return m.id });
+			if (notableIds.join(' ')!==strIds) {
+				// list of notables has changed, we send it
+				console.log("LIST CHANGED");
+				var notablesUpdate = { ids:notableIds };
+				if (!changedMessageIsInNotables) {
+					for (var i=0; i<memroom.notables.length; i++) {
+						if (memroom.notables[i].id===updatedMessage.id) {
+							// the voted message entered the notables, we should send it 
+							// TODO useless if message is among the very recent ones (last page)
+							notablesUpdate.m = updatedMessage;
+							break;
+						}
+					}
+				}
+				shoe.emitToRoom('notableIds', notablesUpdate);
+			}
 		}).catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);
 	});

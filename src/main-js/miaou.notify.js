@@ -26,7 +26,7 @@ miaou(function(notif, md){
 					if (!('permission' in Notification)) { // from the MDN - not sure if useful
 						Notification.permission = permission; 
 					}
-					setTimeout(md.scrollToBottom, 100);
+					setTimeout(gui.scrollToBottom, 100);
 				});
 				close();
 			});

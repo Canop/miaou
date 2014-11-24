@@ -37,5 +37,8 @@
   },
   "scripts": {
     "start": "sh start.sh"
+  },
+  "devDependencies": {
+    "stackvis": "^0.2.0"
   }
 }

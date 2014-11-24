@@ -84,7 +84,7 @@ function dequeue(){
 	currentTask = task;
 	var box = cache.get(task.key);
 	if (box !== undefined) {
-		console.log('SO box', task.key, 'found in cache');
+		//~ console.log('SO box', task.key, 'found in cache');
 		return setTimeout(function(){
 			currentTask = null;
 			if (box) task.send('box', {mid:task.mid, from:task.line, to:box});
@@ -94,9 +94,8 @@ function dequeue(){
 	var handler = handlers[task.type],
 		url = apiurl+task.type+"/"+task.num+"?site=stackoverflow&filter="+handler.filter;
 	if (apikey) url += "&key="+apikey;
-	console.log("URL:", url);
 	getFromSO(url, function(error, data) {
-		console.log('SO box', task.key, 'fetched');
+		//~ console.log('SO box', task.key, 'fetched');
 		currentTask = null;
 		setTimeout(dequeue, 50);
 		if (error) {
@@ -104,7 +103,7 @@ function dequeue(){
 			cache.set(task.key, null, TTL);
 			return;
 		}
-		console.dir(data);
+		//~ console.dir(data);
 		if (!data.items || !data.items.length) {
 			console.log("invalid answer (or bad SO url)");
 			cache.set(task.key, null, TTL);

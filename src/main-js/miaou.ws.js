@@ -10,13 +10,16 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		ws.emit = socket.emit.bind(socket);
 		ws.on = socket.on.bind(socket);
 
-		function messageIn(message){
-			if (chat.trigger('incoming_message', message) === false) return;
-			md.addMessage(message);
-			md.updateNotableMessages(message);
-			if ((message.changed||message.created)>chat.enterTime && message.content) {
-				gui.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
-			}
+		function messagesIn(messages){
+			(Array.isArray(messages) ? messages : [messages]).forEach(function(message){
+				if (chat.trigger('incoming_message', message) === false) return;
+				md.addMessage(message);
+				if ((message.changed||message.created)>chat.enterTime && message.content) {
+					gui.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
+				}
+			});
+			md.updateLoaders();
+			md.showMessageFlowDisruptions();
 		}
 		
 		// called to merge a message
@@ -32,7 +35,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 				created:data.created,
 				content: old.content + '\n'+data.add
 			};
-			messageIn(merged);
+			messagesIn(merged);
 		}
 
 		function setEnterTime(serverTime){
@@ -44,6 +47,11 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		.on('ready', function(){			
 			info.state = 'ready';
 			socket.emit('enter', room.id);
+		})
+		.on('apiversion', function(vers){
+			console.log("RECEIVE ", vers);
+			if (!miaou.apiversion) miaou.apiversion=vers;
+			else if (miaou.apiversion<vers) location.reload();
 		})
 		.on('auth_dialog', md.showGrantAccessDialog)
 		.on('ban', mod.showBan)
@@ -58,11 +66,8 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			socket.emit('enter', room.id);
 			socket.emit('message', unhandledMessage);
 		})
-		.on('message', messageIn)
-		.on('messages', function(messages){
-			// todo : don't repeat things in md.addMessage that should not be repeated
-			for (var i=0; i<messages.length; i++) messageIn(messages[i]);
-		})
+		.on('message', messagesIn)
+		.on('messages', messagesIn)
 		.on('merge', merge)
 		.on('mod_dialog', mod.dialog)
 		.on('room', function(r){
@@ -77,7 +82,10 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			$('#roomdescription').html(miaou.mdToHtml(room.description));
 		})
 		.on('box', md.box)
-		.on('notable_message', md.updateNotableMessages)
+		.on('notables', function(notableMessages){
+			md.showMessages(notableMessages, $('#notable-messages'));
+		})
+		.on('notableIds', md.updateNotableMessages)
 		.on('request', md.showRequestAccess)
 		.on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
@@ -88,7 +96,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		.on('welcome', function(){
 			info.state = 'connected';
 			if (location.hash) md.focusMessage(+location.hash.slice(1));
-			else md.scrollToBottom();
+			else gui.scrollToBottom();
 			usr.showEntry(me);
 		})
 		.on('invitation', function(invit){
@@ -103,7 +111,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
 			).appendTo('#messages');
 			gui.touch(0, true, invit.byname, 'You have been invited in a dialog room.');
-			md.scrollToBottom();
+			gui.scrollToBottom();
 		})
 		.on('pm_room', function(roomId){
 			miaou.pmwin.location = roomId;
@@ -126,6 +134,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		.on('enter',usr.showEntry)
 		.on('leave', usr.showLeave)
 		.on('miaou.error', md.showError)
+		.on('vote', md.applyVote)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect
 			socket.disconnect();

@@ -86,7 +86,6 @@ exports.onSendMessage = function(shoe, m, send){
 			task.type = "questions";
 			task.num = +match[1];
 		}
-		console.log(task);
 		soboxer.addTask(task);
 	}
 }

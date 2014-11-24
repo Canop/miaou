@@ -1,4 +1,4 @@
-var fs = require("fs"),
+var	fs = require("fs"),
 	http = require('http'),
 	path = require('path'),
 	express = require('express'),
@@ -188,7 +188,7 @@ exports.start = function(config){
 	miaou = {
 		db:db,
 		config:config
-	}
+	};
 	db.init(config, function(){
 		db.on("miaou")
 		.then(db.getBot)

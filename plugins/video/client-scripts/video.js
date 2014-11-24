@@ -1,4 +1,4 @@
-miaou(function(plugins, chat, md, ws){
+miaou(function(plugins, chat, gui, md, ws){
 	
 	"use strict";
 	
@@ -51,7 +51,7 @@ miaou(function(plugins, chat, md, ws){
 		this.off();
 	}
 	VD.prototype.update = function(){
-		var iab = md.isAtBottom();
+		var iab = gui.isAtBottom();
 		this.$controls.find('button').remove();
 		this.$cams.hide();
 		this.$status.show();
@@ -78,8 +78,8 @@ miaou(function(plugins, chat, md, ws){
 			);
 		}
 		if (iab) {
-			md.scrollToBottom();
-			$('video').load(md.scrollToBottom);
+			gui.scrollToBottom();
+			$('video').load(gui.scrollToBottom);
 		}
 	}
 	VD.prototype.send = function(verb, o){

@@ -15,6 +15,7 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	chat.timeOffset = 0;
 	chat.enterTime = 0; // both in seconds since epoch, server time
 	chat.commands = {}; // all known commands issued with !! (value=description)
+	chat.voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
 
 	var listeners = {};
 	

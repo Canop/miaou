@@ -252,7 +252,7 @@ miaou(function(ed, chat, gui, md, ms, ws){
 					input.value = savedValue;
 					tryautocomplete();
 				} else if (replywzin) {
-					md.scrollToBottom();
+					gui.scrollToBottom();
 					ed.cancelReply();
 				} else {
 					ed.cancelEdit();
