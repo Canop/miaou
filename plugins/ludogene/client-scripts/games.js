@@ -24,6 +24,7 @@ miaou(function(games, chat, gui, md, ms, plugins, ws){
 			$c.text(game.type + ' not yet started');
 			return;
 		}
+		if (!games[game.type]) return;
 		games[game.type].render($c, m, game, true);
 	}
 
