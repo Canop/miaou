@@ -51,7 +51,7 @@
 		}
 	}
 	.mwintab {
-		background: white;
+		background: $bg-color;
 		border-radius: 4px;
 		border: 5px solid transparentize( darken( $bg-color, 15% ), .12 );
 		padding: 3px;
@@ -80,10 +80,10 @@
 	z-index: 21;
 	padding: 20px;
 	border-radius: 5px;
-	box-shadow: 0 0 5px black;
-	background: transparentize( darken( $bg-color, 15% ), .12 );
+	box-shadow: $mwin-shadow;
+	background: $mwin-bg;
 	.content {
-		background: white;
+		background: $mwin-content-bg;
 		padding: 2px;
 		overflow-y: auto;
 	}

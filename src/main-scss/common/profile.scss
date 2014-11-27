@@ -42,7 +42,7 @@ div.externalProfile {
 	width: 216px;
 	min-height: 24px;
 	color: $profile-text-color;
-	background: $profile-bg-color;
+	background: $profile-bg;
 	a {
 		color: $profile-text-color;	
 	}
@@ -61,7 +61,7 @@ div.externalProfile {
 }
 .user.profiled {
 	box-shadow: $profile-box-shadow;
-	background: $profile-bg-color;
+	background: $profile-bg;
 	z-index: 6;
 }
 

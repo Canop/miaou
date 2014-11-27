@@ -37,6 +37,7 @@ button, input[type=button], input[type=submit], input[type=reset] {
 	&:hover, &:focus {
 		border-color: $button-hover-border-color;
 		color: $button-hover-text-color;
+		background-color: $button-hover-bg-color;
 	}    
 }
 

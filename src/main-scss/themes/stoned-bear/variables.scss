@@ -27,7 +27,7 @@ $message-content-padding: 10px;
 $message-content-line-height: 1.3;
 
 // profile in chat
-$profile-bg-color: #1B0E05;
+$profile-bg: #1B0E05;
 $profile-box-shadow: none;
 $profile-text-color: #8ADADA;
 
@@ -35,6 +35,7 @@ $profile-text-color: #8ADADA;
 $button-bg-color: #555;
 $button-text-color: $bear-green;
 $button-box-shadow: none;
+$button-hover-bg-color: #555;
 $button-hover-text-color: darcken($bear-green, 20%);
 $small-button-box-shadow: none;
 

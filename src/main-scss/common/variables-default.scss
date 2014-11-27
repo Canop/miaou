@@ -4,6 +4,10 @@
 
 // chat colors
 $bg-color: #F0EAD6 !default;
+$left-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) ) !default;
+$right-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) ) !default;
+$box-background: white !default;
+
 $general-text-color: black !default;
 $title-text-color: #655 !default;
 $message-list-bg: white !default;
@@ -19,15 +23,63 @@ $input-text-color: black !default;
 $normal-border-separation: thin dotted #ddd !default;
 $disrupt-border-separation: thin solid #ddd !default;
 $message-decoration-button-box-shadow: 1px 1px 2px #999 !default;
+$message-content-bg: transparent !default;
+$side-message-separation: thin dashed #aaa !default;
+$input-border: inherit !default;
+
+$message-content-border-color: #bbb !default;
+$decoration-color: #aaa !default;
+$decoration-clickable-color: #444 !default;
+$deleted-message-color: #666 !default;
+
+$message-menu-bg: white !default;
+$message-menu-color: #555 !default;
+$message-menu-txt-color: black !default;
+$message-menu-vote-color: #888 !default;
+$message-menu-vote-hover-color: #555 !default;
+$message-menu-link-color: #336 !default;
+
+$message-me-user-bg: inherit !default;
+$message-me-user-color: inherit !default;			
+
+
+$message-votes-color: black !default;
+
+$slashme-color: #333 !default;
+$citation-border-color: #bbb !default;
+$h3-underline-color: black !default;
+$h4-underline-color: #333 !default;
+$h5-underline-color: #999 !default;
+$center-shadow: 0 0 7px black !default;
+
+$opener-closer-color: #988 !default;
+$opener-closer-hover-color: black !default;
+$opener-bg: rgba( $bg-color , 0.52) !default;
+$opener-hover-bg: rgba(255,255,255,0.6) !default;
+$closer-bg: rgba( $bg-color , 0.32) !default;
+$closer-hover-bg: rgba(255,255,255,0.6) !default;
+
+$reply-box-bg: #ede7d3 !default;
+$reply-box-hover-bg: #d5cba6 !default;
+$reply-box-color: #222 !default;
+
+$goingto-bg: #d5cba6 !default;
+
+$mwin-bg: transparentize( darken( $bg-color, 15% ), .12 ) !default;
+$mwin-content-bg: white !default;
+$mwin-shadow: 0 0 5px black !default;
 
 // message sizing
 $message-min-height: 30px !default;
 $user-padding-in-message: 1px 3px !default;
 $message-content-padding: 4px !default;
 $message-content-line-height: 1.5 !default;
+$message-content-flex-grow: 1 !default;
+$message-content-border-radius : inherit !default;
+$message-content-margin: 0 !default;
 
 // profile in chat
-$profile-bg-color: #fffcc5 !default;
+$profile-bg: #fffcc5 !default;
 $profile-box-shadow: 2px 2px 2px #999 !default;
 $profile-text-color: black !default;
 
@@ -36,6 +88,7 @@ $button-bg-color: #E3DAC9 !default;
 $button-text-color: #333 !default;
 $button-box-shadow: 1px 1px 3px #999 !default;
 $button-border: 1px solid #999 !default;
+$button-hover-bg-color: #E3DAC9 !default;
 $button-hover-text-color: black !default;
 $button-hover-border-color: #666 !default;
 $small-button-box-shadow: 1px 1px 2px #999 !default;
@@ -50,3 +103,8 @@ $chat-tabs-border-width: 1px !default;
 // mobile chat layout
 $minput-height: 50px !default; // height of input in mobile interface
 $mtab-height: 39px !default;   // height of the top tabs in mobile interface
+
+// dialog
+$dialog-bg: white !default; 
+$dialog-color: black !default;
+$dialog-title-bg: #E3DAC9 !default;

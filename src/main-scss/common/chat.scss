@@ -9,16 +9,14 @@
 #left {
 	top:0; left:0; bottom:0;
 	width: $left-panel-width;
-	//~ background: linear-gradient( lighten($bg-color, 12%), darken($bg-color, 1%) );
-	background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) );
+	background: $left-background;
 	overflow-y: auto;
 }
 #right {
 	top:0; right:0; bottom:0;
 	width: $right-panel-width;
 	overflow-y: auto;
-	//~ background: linear-gradient( lighten($bg-color, 12%), darken($bg-color, 1%) );
-	background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) );
+	background: $right-background;
 }
 #center {
 	display:flex;
@@ -27,7 +25,7 @@
 	left: $left-panel-width;
 	right: $right-panel-width;
 	bottom: 0;
-	box-shadow: 0 0 7px black;
+	box-shadow: $center-shadow;
 	z-index: 2;
 	overflow-x: visible;
 }
@@ -79,7 +77,7 @@ section {
 		color: $user-text-color-in-user-list;
 		font-size: 95%;
 		&:hover {
-			background: $profile-bg-color;
+			background: $profile-bg;
 		}
 		&.connected {
 			font-style: normal;
@@ -120,7 +118,6 @@ body.mobile #message-scroller {
 	padding: $mtab-height 0 0 0;
 }
 
-
 .message, #messages .error, .access_request {
 	position: relative;
     .user {
@@ -131,14 +128,14 @@ body.mobile #message-scroller {
 		overflow: hidden;
 		white-space: nowrap;
 		z-index: 6;
-		span {
-		
-		}
 		&.bot {
 			font-style: italic;
 		}
 	}
 	.content, .rendered {
+		border-radius: $message-content-border-radius;
+		padding: $message-content-padding;
+		background: $message-content-bg; 
 		word-wrap: break-word;
 		overflow-y: hidden;
 		overflow-x: hidden;
@@ -149,12 +146,16 @@ body.mobile #message-scroller {
 	}
 	&.me {
 		background: $message-me-bg;
+		.user {
+			background: $message-me-user-bg;
+			color: $message-me-user-color;			
+		}
 	}
 }
 
 .message .content, .rendered {
 	.box {
-		background: white;
+		background: $box-background;
 		margin: 2px;
 		border: thin solid #ddd;
 		h1 {
@@ -183,7 +184,7 @@ body.mobile #message-scroller {
 		display: inline-table;
 		margin: 5px 0;
 		th, td {
-			border: 1px solid #bbb;
+			border: 1px solid $message-content-border-color;
 			padding: 0 3px;
 		}
 	}
@@ -194,8 +195,8 @@ body.mobile #message-scroller {
 		border-left: none;
 		border-right: none;
 		border-bottom: $normal-border-separation;
-		display: inline-block; 
-		// margin: $hr-in-message-margin;
+		display: inline-block;
+		// border-color: red; doesn't work...
 	}
 }
 #messages {
@@ -212,8 +213,8 @@ body.mobile #message-scroller {
 			align-items: center;
 		}
 		.content {
-			padding: $message-content-padding;
-			flex-grow: 1;
+			margin: $message-content-margin;
+			flex-grow: $message-content-flex-grow;
 			line-height: $message-content-line-height;
 		}
 		.mdate {
@@ -252,33 +253,25 @@ body.mobile #message-scroller {
 		margin: 2px;
 		flex: 0 0 15px;
 		cursor: default;
-		color: #aaa;
+		color: $decoration-color;
 		&.clickable {
-			color: #444;
+			color: $decoration-clickable-color;
 			cursor: pointer;
 		}
 	}
 }
 
-
-
 .rendered {
 	text-align: left;
-}
-.message.edited .content::before {
-	font-family: "fontello";
-	content: "\e80c";
-	color: #666;
-	margin-right: 4px;
 }
 
 .message.deleted .content {
 	font-family: "fontello";
-	color: #666;
+	color: $deleted-message-color;
 	margin-right: 4px;
 	font-size: 80%;
 	a {
-		color: #666;	
+		color: $deleted-message-color;	
 	}
 	&::before {
 		content: "\e80d  deleted";
@@ -307,21 +300,23 @@ body.mobile #message-scroller {
 	position: absolute;
 	top: 0;
 	right: 1px;
-	background: white;
-	color: black;
+	background: $message-menu-bg;
+	color: $message-menu-color;
 	opacity: 0.85;
 	font-size: 90%;
-	color: #555;
 	.txt {
-		color: black;
+		color: $message-menu-txt-color;
 	}
 	.vote {
 		font-family: "fontello";
-		color: #888;
+		color: $message-menu-vote-color;
 		margin: 0 4px;
 		cursor: pointer;
 		&.on {
 			color: $general-text-color;
+		}
+		&:hover {
+			color: $message-menu-vote-hover-color;
 		}
 	}
 	.unpin {
@@ -331,7 +326,7 @@ body.mobile #message-scroller {
 	.link, .makemwin {
 		cursor: pointer;
 		font-family: "fontello";
-		color: #336;
+		color: $message-menu-link-color;
 		margin: 0 4px;
 		text-decoration: none;
 	}
@@ -343,7 +338,7 @@ body.mobile .message-menu .vote {
 	position: absolute;
 	bottom: 7px;
 	right: 1px;
-	color: black;
+	color: $message-votes-color;
 	opacity: 0.6;
 	font-size: 80%;
 }
@@ -354,13 +349,13 @@ body.mobile .message-menu .vote {
 }
 .message-votes .vote, .nminfo .vote {
 	font-family: "fontello";
-	color: black;
+	color: $message-votes-color;
 	margin: 0 4px;
 }
 #notable-messages, #search-results {
 	.message {
 		font-size: 12px;
-		border-bottom: thin dashed #aaa;
+		border-bottom: $side-message-separation;
 		&:nth-child(even) {
 			background: rgba(0,0,0,0.04);
 		}
@@ -396,10 +391,10 @@ code {
 }
 .slashme {
 	font-style:italic;
-	color: #333;
+	color: $slashme-color;
 }
 .citation {
-	border-left: medium solid #bbb;
+	border-left: medium solid $citation-border-color;
 	margin-left: 15px;
 	padding-left: 0;
 	display: inline-block;
@@ -426,13 +421,13 @@ code {
 	text-decoration: underline;
 }
 .h3 {
-	border-bottom: 1px dashed black;
+	border-bottom: 1px dashed $h3-underline-color;
 }
 .h4 {
-	border-bottom: 1px dotted #333;
+	border-bottom: 1px dotted $h4-underline-color;
 }
 .h5 {
-	border-bottom: 1px dotted #999;
+	border-bottom: 1px dotted $h5-underline-color;
 }
 
 #input-panel {
@@ -476,6 +471,7 @@ $input-buttons-width: 74px;
 	float: left;
 	background: $input-bg;
 	color: $input-text-color;
+	border: $input-border;
 }
 body.mobile #input {
 	height: $minput-height;
@@ -485,7 +481,7 @@ body.mobile #input {
 	height: $input-height;
 	float: left;
 	word-wrap: break-word;
-	background: white;
+	background: $input-bg;
 	overflow-y: auto;
 	padding: 2px;
 }
@@ -595,64 +591,46 @@ span.warning {
 	height: 13px;
 	text-align: center;
 	cursor: pointer;
-	color: #988;
+	color: $opener-closer-color;
 	&:hover {
-		color: black;
+		color: $opener-closer-hover-color;
 	}
 }
 .message .opener, {
-	background: rgba( $bg-color , 0.52);
+	background: $opener-bg;
 	&:hover {
-		background: rgba(255,255,255,0.6);
+		background: $opener-hover-bg;
 	}
 }
 .opener::before {
 	content: '▼';
 }
 .message .closer {
-	background: rgba( $bg-color , 0.32);
+	background: $closer-bg;
 	&:hover {
-		background: rgba(255,255,255,0.6);
+		background: $closer-hover-bg;
 	}
 }
 .closer::before {
 	content: '▲';
 }
 
-.section-opener, .section-closer {
-	cursor: pointer;
-	color: #988;
-	margin-bottom: 0;
-}
-.section-opener::before {
-	content: '▶ ';
-}
-.section-closer::before {
-	content: '▼ ';
-}
-.section-closer + section {
-	border-left: 2px solid rgba(#988,0.4);
-	padding: 5px;
-	margin-top: -4px;
-	margin-left: 6px;
-}
-
 .reply {
 	font-family: 'fontello';
-	color: #222;
+	color: $reply-box-color;
 	cursor: pointer;
 	padding: 3px;
 	border-radius: 2px;
-	background: #ede7d3;
+	background: $reply-box-bg;
 	opacity: 0.75;
 	&:hover {
-		background: #d5cba6;
+		background: $reply-box-hover-bg;
 		opacity: 1;
 	}
 }
 
 .message.goingto, .message.me.goingto {
-	background: #d5cba6;
+	background: $goingto-bg;
 }
 .message {
 	a, a:visited {
