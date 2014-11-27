@@ -31,7 +31,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 	
 	gui.init = function(){
 		var	timer,
-			lastUserAction; // ms
+			lastUserAction = 0; // ms
 		
 		$('#messages, #notable-messages, #search-results').on('click', '.message .content a[href]', function(e){
 			var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
@@ -231,7 +231,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 					userPrefs.notif==="on_message"
 					|| (ping && userPrefs.notif==="on_ping" && Date.now()-lastUserAction>1500)
 				) {
-					notif.show(r || room, from, text);					
+					notif.show(mid, r || room, from, text);					
 				}
 			}
 			if (!visible && mid) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);

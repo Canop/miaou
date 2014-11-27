@@ -1,4 +1,4 @@
-var	apiversion = 16,
+var	apiversion = 20,
 	config,
 	path = require('path'),
 	maxContentLength,
@@ -70,6 +70,19 @@ Shoes.error = function(err, messageContent){
 }
 Shoes.emitToRoom = function(key, m){
 	io.sockets.in(this.room.id).emit(key, clean(m));
+}
+// emits something to all sockets of a given user. Returns the number of sockets
+Shoes.emitToAllSocketsOfUser = function(key, args){
+	var	currentUserId = this.publicUser.id,
+		nbs = 0;
+	for (var clientId in io.sockets.connected) {
+		var socket = io.sockets.connected[clientId];
+		if (socket && socket.publicUser && socket.publicUser.id===currentUserId) {
+			socket.emit(key, args);
+			nbs++;
+		}
+	}
+	return nbs;
 }
 Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
 	io.sockets.in(roomId||this.room.id).emit('message', {
@@ -236,20 +249,23 @@ function handleUserInRoom(socket, completeUser){
 	.on('clear_pings', function(lastPingTime){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
 		if (!shoe.room) return console.log('No room in clear_pings');
 		db.on([shoe.room.id, shoe.publicUser.id])
-		.spread(db.deletePings)
+		.spread(db.deleteRoomPings)
 		.then(function(){
 			return this.fetchUserPingRooms(shoe.publicUser.id, lastPingTime);
 		}).then(function(pings){
 			socket.emit('pings', pings);
 		}).finally(db.off);
 	})
+	.on('rm_pings', function(roomIds){ // remove all pings of the specified room Ids and propagate to other sockets of same user
+		db.on([roomIds, shoe.publicUser.id])
+		.spread(db.deleteRoomsPings)
+		.then(function(){
+			shoe.emitToAllSocketsOfUser('rm_pings', roomIds);
+		}).finally(db.off);
+	})
 	.on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
 		if (shoe.room) {
-			console.log(shoe.completeUser.name, "leaves room", shoe.room.id, ':', shoe.room.name);
-			var otherUserSocket = shoe.userSocket(shoe.completeUser.id);
-			if (otherUserSocket) {
-				console.log('... but has another socket in the room');
-			} else {
+			if (!shoe.userSocket(shoe.completeUser.id)) {
 				socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
 			}
 		} else {
@@ -298,11 +314,15 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('server_commands', commands.commands);
 			socket.emit('welcome');
 			shoe.roomSockets().forEach(function(s){
+				if (!s) {
+					console.log("null socket");
+					return;
+				}
 				var user = s.publicUser;
 				if (!user) console.log('missing user on socket');
 				else socket.emit('enter', user);
 			});
-			return this.deletePings(shoe.room.id, shoe.publicUser.id);
+			return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
 		}).catch(function(err){
@@ -477,9 +497,18 @@ function handleUserInRoom(socket, completeUser){
 					var remainingpings = [];
 					pings.forEach(function(username){
 						if (shoe.userSocket(username)) return;
-						var socket = anyUserSocket(username);
-						if (socket) socket.emit('ping', {r:shoe.room, m:m});
-						else remainingpings.push(username);
+						// user isn't in the room, we notify him with a cross-room ping in the other rooms
+						var pinged = false;
+						for (var clientId in io.sockets.connected) {
+							var socket = io.sockets.connected[clientId];
+							if (socket && socket.publicUser && socket.publicUser.name===username) {
+								socket.emit('ping', {r:shoe.room, m:m});
+								pinged = true;
+							}
+						}
+						if (!pinged) {
+							remainingpings.push(username);
+						}
 					});
 					if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
 				}
@@ -577,7 +606,6 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);		
 	})
 	.on('vote', function(vote){
-		console.log('vote', vote);
 		var changedMessageIsInNotables,
 			updatedMessage,
 			strIds = memroom.notables.map(function(m){ return m.id }).join(' ');
@@ -606,7 +634,6 @@ function handleUserInRoom(socket, completeUser){
 			var notableIds = memroom.notables.map(function(m){ return m.id });
 			if (notableIds.join(' ')!==strIds) {
 				// list of notables has changed, we send it
-				console.log("LIST CHANGED");
 				var notablesUpdate = { ids:notableIds };
 				if (!changedMessageIsInNotables) {
 					for (var i=0; i<memroom.notables.length; i++) {

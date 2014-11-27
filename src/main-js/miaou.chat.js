@@ -28,18 +28,31 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	//   room : id of the room
 	//   roomname
 	function makeCrossRoomPingsNotificationMessage(pings){
-		md.notificationMessage(function($c, remove){
+		var roomIds = pings.map(function(p){ return p.room });
+		md.notificationMessage(function($c){
 			var t = "You've been pinged in room";
 			if (pings.length>1) t += 's';
 			$('<span>').text(t).appendTo($c);
 			pings.forEach(function(p){
-				$c.append($('<button>').addClass('openroom').text(p.roomname).click(function(){
+				$c.append($('<button>').addClass('openroom').attr('pingroom', p.room).text(p.roomname).click(function(){
+					ws.emit('rm_pings', roomIds.splice(roomIds.indexOf(p.room)), 1);
 					window.open(p.room);
-					if ($c.find('.openroom').length==1) remove();
-					else $(this).remove();
-				}))
+				}));
 			});
+		}).onclose(function(){
+			if (roomIds.length) ws.emit('rm_pings', roomIds);
+		});
+	}
 
+	// remove the ping notifications related to the passed rooms 
+	chat.removeRoomPings = function(roomIds){
+		$('.notification').each(function(){
+			var $n = $(this);
+			if (!$n.find('button[pingroom]').length) return;
+			roomIds.forEach(function(r){
+				$n.find('button[pingroom='+r+']').remove();
+			});
+			if (!$n.find('button[pingroom]').length) $n.remove();
 		});
 	}
 
@@ -54,7 +67,7 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	}
 	chat.ping = function(p){ // this is used for instant cross-room pings
 		makeCrossRoomPingsNotificationMessage([{room:p.r.id, roomname:p.r.name}]);
-		gui.touch(0, true, p.m.authorname, p.m.content, p.r);
+		gui.touch(p.m.id, true, p.m.authorname, p.m.content, p.r);
 	}
 	
 	chat.start = function(){

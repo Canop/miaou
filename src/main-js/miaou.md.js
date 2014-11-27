@@ -59,36 +59,55 @@ miaou(function(md, chat, gui, hist, usr){
 	// used for notable messages and search results
 	md.showMessages = function(messages, $div){
 		$div.empty();
-		messages.forEach(function(m){
-			var $content = $('<div>').addClass('content');
-			var $md = $('<div>').addClass('message').data('message',m).append($content).append(
-				$('<div>').addClass('nminfo').html(md.votesAbstract(m) + ' ' + miaou.formatDate((m.created+chat.timeOffset)*1000) + ' by ' + m.authorname)
-			).appendTo($div);
-			if (m.id) $md.attr('mid',m.id);
-			$md.addClass(m.pin ? 'pin' : 'star');
-			md.render($content, m);
-			if ($content.height()>80) {
-				$content.addClass("closed");
-				$md.append('<div class=opener>');
-				$md.reflow();
-			}
-		});
+		for (var i=0; i<messages.length; i++) {
+			md.addSideMessageDiv(messages[i], $div);
+		}
+	}
+	
+	// builds the message div and append it to the container, managing resizing.
+	// May be used for notable messages and search results
+	md.addSideMessageDiv = function(m, $div, $repl){
+		var	$content = $('<div>').addClass('content');
+		var $md = $('<div>').addClass('message').data('message',m).append($content).append(
+			$('<div>').addClass('nminfo').html(md.votesAbstract(m) + ' ' + miaou.formatDate((m.created+chat.timeOffset)*1000) + ' by ' + m.authorname)
+		);
+		if ($repl) $repl.replaceWith($md);
+		else $md.appendTo($div);
+		if (m.id) $md.attr('mid',m.id);
+		$md.addClass(m.pin ? 'pin' : 'star');
+		md.render($content, m);
+		if ($content.height()>80) {
+			$content.addClass("closed");
+			$md.append('<div class=opener>');
+			$md.reflow();
+		}
+	}
+	
+	// if the message is present among notable ones, we replace the div
+	//  with the new version
+	md.updateNotableMessage = function(m){
+		var	$container = $('#notable-messages'),
+			$repl = $container.children('.message[mid='+m.id+']');
+		if ($repl.length) md.addSideMessageDiv(m, $container, $repl);
 	}
 	
 	// the passed upd object contains
 	//  ids : sorted ids of notable messages
 	//  m : optional message which is entering the list 
 	md.updateNotableMessages = function(upd){
-		var mmap = {};
-		$('#notable-messages .message').each(function(){
+		var	$container = $('#notable-messages'),
+			mmap = {};
+		$container.find('.message').each(function(){
 			var m = $(this).data('message');
 			mmap[m.id] = m;
 		});
 		if (upd.m) mmap[upd.m.id] = upd.m;
-		md.showMessages(
-			upd.ids.map(function(id){ return mmap[id] }),
-			$('#notable-messages')
-		);
+		$container.empty();
+		upd.ids.forEach(function(id){
+			var m = mmap[id];
+			if (!m) return console.log("No message in notables for id ", id);
+			md.addSideMessageDiv(m, $container);
+		});
 	}
 
 	md.showError = function(error){
@@ -106,13 +125,23 @@ miaou(function(md, chat, gui, hist, usr){
 	// builds a notification message with a close button. The fill callback
 	//  is passed the container and a close function
 	md.notificationMessage = function(fill){
-		var wab = gui.isAtBottom(),
-			$md = $('<div>').addClass('notification').appendTo('#messages');
-			remove = $md.remove.bind($md, null); // I think this null is worth a blog post (and thanks @zirak)
-		$md.append($('<button>').addClass('remover').text('X').click(remove));
-		fill($md, remove);
+		var	notification = {closelisteners:[]},
+			wab = gui.isAtBottom(),
+			$md = $('<div>').addClass('notification').appendTo('#messages').data('notification', notification);
+		notification.remove = function(){
+			var f;
+			while (f = notification.closelisteners.shift()) f();
+			$md.remove();
+		}
+		notification.onclose = function(f){
+			notification.closelisteners.push(f);
+		}
+		$md.append($('<button>').addClass('remover').text('X').click(notification.remove));
+		fill($md, notification.remove);
 		if (wab) gui.scrollToBottom();
+		return notification;
 	}
+	
 	
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
@@ -262,7 +291,6 @@ miaou(function(md, chat, gui, hist, usr){
 	}
 
 	md.showMessageFlowDisruptions = function(){
-		console.log("showMessageFlowDisruptions");
 		var	$messages = $('#messages > .message'),
 			lastMessage;
 		$messages.find('.disrupt').removeClass('disrupt');

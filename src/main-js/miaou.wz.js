@@ -23,7 +23,7 @@ miaou(function(wz){
 				ui = i;
 			}
 		}
-		delete opts.fill;
+		opts.fill = undefined;
 		(function down(si, colorIndex){
 			for (var i=si+1; i<messages.length; i++) {
 				if (messages[i].repliesTo && messages[i].repliesTo===messages[si].id) { // be wary of flakes

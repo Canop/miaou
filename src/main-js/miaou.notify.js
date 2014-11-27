@@ -36,7 +36,14 @@ miaou(function(notif, md){
 		});
 	}
 	
-	notif.show = function(room, authorname, content){
+	notif.show = function(mid, room, authorname, content){
+		mid = mid||0;
+		if (mid==localStorage.lastnotif) {
+			console.log("avoiding duplicate notif mid=",mid); // yes, also for no id messages
+			return;
+		} else {
+			localStorage.lastnotif = mid;
+		}
 		var n = new Notification(authorname + ' in ' + room.name, {body: content});
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };

@@ -14,6 +14,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			(Array.isArray(messages) ? messages : [messages]).forEach(function(message){
 				if (chat.trigger('incoming_message', message) === false) return;
 				md.addMessage(message);
+				if (message.id) md.updateNotableMessage(message);
 				if ((message.changed||message.created)>chat.enterTime && message.content) {
 					gui.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
 				}
@@ -130,6 +131,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		.on('hist', hist.show)
 		.on('pings', chat.pings)
 		.on('ping', chat.ping)
+		.on('rm_pings', chat.removeRoomPings)		
 		.on('disconnect', function(){ console.log('DISCONNECT') })
 		.on('enter',usr.showEntry)
 		.on('leave', usr.showLeave)

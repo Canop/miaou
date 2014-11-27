@@ -83,6 +83,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 	md.goToMessageDiv = function(messageId){
 		var $messages = $('#message-scroller'),
 			$message = $('.message', $messages).filter(function(){ return $(this).data('message').id==messageId }).addClass('goingto');
+		if (!$message.length) return;
 		setTimeout(function(){
 			var mtop = $message.offset().top;
 			if (mtop<0 || mtop>$messages.height()) $messages.animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
@@ -94,6 +95,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 	// ensures the messages and the messages around it are loaded,
 	//  and then scroll to it and flashes it
 	md.focusMessage = function(messageId){
+		if (!messageId) return;
 		var $messages = $('#messages > .message'), l = $messages.length,
 			beforeId = 0, afterId = 0, mids = new Array($messages.length);
 		for (var i=0; i<l; i++) {
