@@ -292,18 +292,21 @@ miaou(function(md, chat, gui, hist, usr){
 
 	md.showMessageFlowDisruptions = function(){
 		var	$messages = $('#messages > .message'),
-			lastMessage;
-		$messages.find('.disrupt').removeClass('disrupt');
+			lastMessage, $lastMessage;
+		$messages.find('.before-disrupt').removeClass('before-disrupt');
+		$messages.find('.after-disrupt').removeClass('after-disrupt');
 		for (var i=0; i<$messages.length; i++) {
 			var	$message = $messages.eq(i),
 				message = $message.data('message');
 			if (lastMessage && message.created-lastMessage.created > miaou.chat.DISRUPTION_THRESHOLD) {
-				$message.addClass('disrupt');
+				$lastMessage.addClass('before-disrupt');
+				$message.addClass('after-disrupt');
 				if (userPrefs.datdpl==="on_breaks" && !gui.mobile) {
 					$messages.eq(i-1).add($message).find('.mdate').show();
 				}
 			}
 			lastMessage = message;
+			$lastMessage = $message;
 		}
 	}
 

@@ -20,14 +20,23 @@ $code-text-color: #444 !default;
 $chat-tabs-border-color: #655 !default;
 $input-bg: white !default;
 $input-text-color: black !default;
-$normal-border-separation: thin dotted #ddd !default;
-$disrupt-border-separation: thin solid #ddd !default;
+
+$message-normal-border-top: thin dotted #ddd !default;
+$message-normal-border-bottom: none !default;
+$message-me-normal-border-top: $message-normal-border-top !default;
+$message-me-normal-border-bottom: $message-normal-border-bottom !default;
+$message-border-top-after-bisrupt: thin solid #ddd !default;
+$message-border-bottom-before-bisrupt: none !default;
+
 $message-decoration-button-box-shadow: 1px 1px 2px #999 !default;
 $message-content-bg: transparent !default;
-$side-message-separation: thin dashed #aaa !default;
+
+$side-message-border-top: thin solid rgba(255,255,255,0.1) !default;
+$side-message-border-bottom: thin solid rgba(0,0,0,0.1) !default;
+
 $input-border: inherit !default;
 
-$message-content-border-color: #bbb !default;
+$message-content-table-border-color: #bbb !default;
 $decoration-color: #aaa !default;
 $decoration-clickable-color: #444 !default;
 $deleted-message-color: #666 !default;

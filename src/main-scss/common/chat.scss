@@ -99,11 +99,19 @@ section {
 	vertical-align: top;
 	position: relative;
 	background: $message-list-bg;
-	.message + .message {
-		border-top: $normal-border-separation;
-	}
-	.message + .message.disrupt {
-		border-top: $disrupt-border-separation;
+	.message {
+		border-top: $message-normal-border-top;
+		border-bottom: $message-normal-border-bottom;
+		&.me {
+			border-top: $message-me-normal-border-top;
+			border-bottom: $message-me-normal-border-bottom;		
+		}
+		&.before-disrupt {
+			border-bottom: $message-border-bottom-before-bisrupt;
+		}
+		&.after-disrupt {
+			border-top: $message-border-top-after-bisrupt;
+		}	
 	}
 }
 
@@ -147,7 +155,7 @@ body.mobile #message-scroller {
 	&.me {
 		background: $message-me-bg;
 		.user {
-			background: $message-me-user-bg;
+			//background: $message-me-user-bg;
 			color: $message-me-user-color;			
 		}
 	}
@@ -156,11 +164,13 @@ body.mobile #message-scroller {
 .message .content, .rendered {
 	.box {
 		background: $box-background;
+		color: black;
 		margin: 2px;
 		border: thin solid #ddd;
 		h1 {
 			margin: 10px;
 			font-size: 120%;
+			color: black;
 		}
 		img {
 			max-width: 40%;
@@ -184,7 +194,7 @@ body.mobile #message-scroller {
 		display: inline-table;
 		margin: 5px 0;
 		th, td {
-			border: 1px solid $message-content-border-color;
+			border: 1px solid $message-content-table-border-color;
 			padding: 0 3px;
 		}
 	}
@@ -194,7 +204,7 @@ body.mobile #message-scroller {
 		border-top: none;
 		border-left: none;
 		border-right: none;
-		border-bottom: $normal-border-separation;
+		border-bottom: $message-normal-border-bottom; // FIXME bof...
 		display: inline-block;
 		// border-color: red; doesn't work...
 	}
@@ -353,9 +363,12 @@ body.mobile .message-menu .vote {
 	margin: 0 4px;
 }
 #notable-messages, #search-results {
+	.message + .message {
+		border-top: $side-message-border-top;		
+	}
 	.message {
 		font-size: 12px;
-		border-bottom: $side-message-separation;
+		border-bottom: $side-message-border-bottom;	
 		&:nth-child(even) {
 			background: rgba(0,0,0,0.04);
 		}
