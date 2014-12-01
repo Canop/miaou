@@ -474,7 +474,7 @@ proto.storeMessage = function(m, dontCheckAge){
 			sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
 		if (!dontCheckAge) sql += ' and created>'+(now()-config.maxAgeForMessageEdition);
 		sql += ' returning *';
-		return this.queryRow(sql, [m.content, m.changed, m.id, m.room, m.author]).then(function(m){
+		return this.queryRow(sql, [m.content, m.changed||0, m.id, m.room, m.author]).then(function(m){
 			m.authorname = savedAuthorname;
 			if (m.content.length || m.created<now()-config.maxAgeForMessageTotalDeletion) return m;
 			return this.queryRow(

@@ -10,6 +10,7 @@ COMMON_SCRIPTS_SRC_PATH="$ROOT_PATH/src/main-js"
 PAGE_SCRIPTS_SRC_PATH="$ROOT_PATH/src/page-js"
 MAIN_SCSS_SRC_PATH="$ROOT_PATH/src/main-scss"
 PAGE_SCSS_SRC_PATH="$ROOT_PATH/src/page-scss"
+THEMES_SRC_PATH="$ROOT_PATH/themes"
 
 ##################################################################
 # building the standard css served to non chat pages
@@ -31,16 +32,16 @@ rm -rf $STATIC_PATH/themes/
 mkdir $STATIC_PATH/themes/
 
 ## create all themes in static
-for f in $MAIN_SCSS_SRC_PATH/themes/*
+for f in $THEMES_SRC_PATH/*
 do
 theme=$(basename "$f")
 echo theme : $theme
 # creates the directory for the theme
 mkdir $STATIC_PATH/themes/$theme
 # copy the common scss files
-cp $MAIN_SCSS_SRC_PATH/common/*.scss $STATIC_PATH/themes/$theme
+cp $MAIN_SCSS_SRC_PATH/*.scss $STATIC_PATH/themes/$theme
 # then the specific overrinding scss files
-cp $MAIN_SCSS_SRC_PATH/themes/$theme/*.scss $STATIC_PATH/themes/$theme
+cp $THEMES_SRC_PATH/$theme/*.scss $STATIC_PATH/themes/$theme
 # build the css file from the sass one
 sass -t compressed $STATIC_PATH/themes/$theme/main.scss > $STATIC_PATH/themes/$theme/miaou.css 
 # remove the now useless sass files

@@ -1,0 +1,13 @@
+// Wzin colors can be changed in variables.scss
+
+@for $i from 1 through length($wzin-conv-bg) {
+	.wzin-conv-#{$i} {
+		background: nth($wzin-conv-bg, $i);
+	}
+}
+.wzin-edit {
+	background: $wzin-edit-bg;
+}
+.wzin-reply {
+	background: $wzin-reply-bg;
+}

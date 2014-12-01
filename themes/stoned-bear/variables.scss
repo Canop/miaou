@@ -2,10 +2,13 @@
 // variables owned by the theme
 $bear-green: #C8D584;
 $bear-text: #FFFACD;
+$mes-brown: #222222;
+$mes-me-brown: #2c2523;
 
 // chat colors
 $bg-color: #2F4F4F;
-$general-text-color: $bear-text;
+$general-text-color: transparentize( $bear-text , 0.14 );
+//~ $general-text-color: $bear-text;
 $title-text-color: $bear-green !default;
 $message-me-bg: rgba(163, 83, 49, 0.08);
 $message-list-bg: #222;
@@ -13,24 +16,36 @@ $user-text-color-in-user-list: $bear-green;
 $connected-user-text-color-in-user-list: $bear-green;
 $user-text-color-in-message: $bear-green;
 $code-text-color: #999;
-$chat-tabs-border-color: rgba(0,0,0,0.3);
-$chat-tabs-border-width: 2px;
 $input-bg: lighten($bg-color, 6%);
 $input-text-color: white;
+$notification-text-color: #A0522D;
+
+$slashme-color: transparentize( $bear-text , 0.6 );
+
 
 $message-content-table-border-color: $bg-color;
 
 $message-decoration-button-box-shadow: none;
 
-//~ $message-normal-border-top: thin solid #2d2d2d;
-//~ $message-normal-border-bottom: thin solid #1a1a1a;
-//~ $message-me-normal-border-top: thin solid #362a21;
-//~ $message-me-normal-border-bottom: thin solid #271e17;
-//~ $message-border-top-after-bisrupt: thin solid #473c39;
-//~ $message-border-bottom-before-bisrupt: thin solid #13100f;
+$decoration-color: rgba($bear-text,.2);
+$decoration-clickable-color: $bear-text;
 
-$mes-brown: #222222;
-$mes-me-brown: #2c2523;
+$message-menu-bg: $bg-color;
+$message-menu-color: $bear-text;
+$message-menu-txt-color: $bear-text;
+$message-menu-vote-color: rgba($bear-text,.2);
+$message-menu-vote-hover-color: $bear-text;
+$message-menu-link-color: $bear-text;
+
+$message-votes-color: $bear-text;
+
+
+
+$reply-box-bg: rgba(222,184,135,0.15);
+$reply-box-hover-bg: rgba(222,184,135,0.6);
+$reply-box-color: rgba(255,255,255,0.5);
+
+
 $message-normal-border-top: thin solid lighten( $mes-brown, 4% );
 $message-normal-border-bottom: thin solid darken( $mes-brown, 4% );
 $message-me-normal-border-top: thin solid lighten( $mes-me-brown, 3% );
@@ -41,10 +56,16 @@ $message-border-bottom-before-bisrupt: thin solid darken( $mes-brown, 12% );
 
 $goingto-bg: transparentize( brown, 0.2 );
 
+// side tabs
+$chat-tabs-border-color: rgba(0,0,0,0.2);
+$chat-tabs-border-width: 1px;
+$chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.08));
+$chat-tabs-selected-bg-image: none; 
+
 
 // message sizing
-$message-min-height: 44px;
-$message-content-padding: 10px;
+$message-min-height: 40px;
+$message-content-padding: 8px;
 $message-content-line-height: 1.3;
 
 // profile in chat
@@ -71,10 +92,14 @@ $small-button-box-shadow: none;
 ::-webkit-scrollbar-thumb {
 	-webkit-box-shadow: inset 2px 2px 6px rgba(255,255,255,0.2);
 	border-radius: 2px;
-	background: $mes-me-brown;
-}
-::-webkit-scrollbar-thumb:hover {
 	background: $mes-brown;
 }
+::-webkit-scrollbar-thumb:hover {
+	background: $mes-me-brown;
+}
 
 
+// wzins
+$wzin-conv-bg : ( rgba(176,224,230,0.32), rgba(255,255,102,0.3), rgba(188,143,143,0.3), rgba(255,235,215,0.3) );
+$wzin-edit-bg: $mes-me-brown;
+$wzin-reply-bg: rgba(176,224,230,0.45);

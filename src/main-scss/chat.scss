@@ -447,7 +447,7 @@ code {
 	position: relative;
 	background: $bg-color;
 	width:100%;
-	flex-basis:  $input-height + 10px;
+	flex-basis:  $input-height + 8px;
 	flex-grow: 0;
 	z-index: 10;
 }
@@ -714,6 +714,7 @@ div#notifs {
 .notification {
 	padding: 5px;
 	background-color: $notifications-bg-color;
+	color: $notification-text-color;
 	.user {
 		font-style:italic;
 		z-index: 8;
@@ -782,8 +783,10 @@ div#notifs {
 		&:hover {
 			color: transparentize($title-text-color, 0.2);
 		}
+		background-image: $chat-tabs-unselected-bg-image;
 		&.selected {
 			color: $title-text-color;
+			background-image: $chat-tabs-selected-bg-image;
 			border-width: $chat-tabs-border-width $chat-tabs-border-width 0 $chat-tabs-border-width;
 			&:first-child {
 				border-width: $chat-tabs-border-width $chat-tabs-border-width 0 0;

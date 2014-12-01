@@ -1,6 +1,6 @@
 // Handles the message editor
 
-miaou(function(ed, chat, gui, md, ms, ws){
+miaou(function(ed, chat, gui, md, ms, skin, ws){
 
 	var $input, input,
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
@@ -168,7 +168,7 @@ miaou(function(ed, chat, gui, md, ms, ws){
 				$scroller.scrollTop(Math.min(mtop+$scroller.scrollTop()-25, $scroller[0].scrollHeight));
 			}			
 			replywzin = wzin($message, $('#input'), {
-				zIndex:5, fill:'rgba(71, 71, 249, .15)', scrollable:'#message-scroller', parent:document.body
+				zIndex:5, fill:skin.wzincolors.reply, scrollable:'#message-scroller', parent:document.body
 			});
 		}
 	}
@@ -376,7 +376,7 @@ miaou(function(ed, chat, gui, md, ms, ws){
 		$('#help').hide();
 		if (editwzin) editwzin.remove();
 		editwzin = wzin($message, $('#input'), {
-			zIndex:5, fill:'rgba(208, 120, 16, .3)', scrollable:'#message-scroller', parent:document.body, changeElementBackground:true
+			zIndex:5, fill:skin.wzincolors.edit, scrollable:'#message-scroller', parent:document.body, changeElementBackground:true
 		});
 		updateReplyWzin();
 	}

@@ -13,11 +13,14 @@ $title-text-color: #655 !default;
 $message-list-bg: white !default;
 $message-me-bg: rgba(240,234,214,0.5) !default;
 $notifications-bg-color: #fffa9e !default;
+$notification-text-color: black !default;
 $connected-user-text-color-in-user-list: black !default;
 $user-text-color-in-user-list: #444 !default;
 $user-text-color-in-message: #555 !default;
 $code-text-color: #444 !default;
-$chat-tabs-border-color: #655 !default;
+
+
+
 $input-bg: white !default;
 $input-text-color: black !default;
 
@@ -78,6 +81,12 @@ $mwin-bg: transparentize( darken( $bg-color, 15% ), .12 ) !default;
 $mwin-content-bg: white !default;
 $mwin-shadow: 0 0 5px black !default;
 
+// side tabs
+$chat-tabs-border-color: #655 !default;
+$chat-tabs-border-width: 1px !default;
+$chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.01),rgba(0,0,0,0.07)) !default;
+$chat-tabs-selected-bg-image: none !default; 
+
 // message sizing
 $message-min-height: 30px !default;
 $user-padding-in-message: 1px 3px !default;
@@ -103,11 +112,10 @@ $button-hover-border-color: #666 !default;
 $small-button-box-shadow: 1px 1px 2px #999 !default;
 
 // chat layout
-$input-height: 80px !default; // height of input
+$input-height: 83px !default; // height of input
 $left-panel-width: 150px !default;
 $right-panel-width: 330px !default;
 $hist-width: 200px !default;
-$chat-tabs-border-width: 1px !default;
 
 // mobile chat layout
 $minput-height: 50px !default; // height of input in mobile interface
@@ -117,3 +125,9 @@ $mtab-height: 39px !default;   // height of the top tabs in mobile interface
 $dialog-bg: white !default; 
 $dialog-color: black !default;
 $dialog-title-bg: #E3DAC9 !default;
+
+// wzins
+$wzin-conv-bg: ( rgba(139, 69, 19, .2), rgba(42, 18, 234, .17), rgba(180, 237, 228, .4), rgba(192, 169, 244, .4) ) !default;
+$wzin-edit-bg: rgba(208, 120, 16, .3) !default;
+$wzin-reply-bg: rgba(71, 71, 249, .15) !default;
+

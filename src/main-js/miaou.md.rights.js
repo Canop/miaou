@@ -28,7 +28,7 @@ miaou(function(md, gui, usr, ws){
 	// if this is called, me is supposed to be an admin of the room
 	md.showGrantAccessDialog = function(user){
 		md.notificationMessage(function($c, close){
-			var h = "Please confirm you want to invite <span class=user>"+user.name+"</span> (hint : check his profile by hovering his name).";
+			var h = "Please confirm you want to invite <span class=user>"+user.name+"</span> (you may check his profile by hovering his name).";
 			var $p = $('<div>').html(h);
 			$c.append($p).data('user', user);
 			$('<button>').text('Grant Access').click(function(){ ws.emit('grant_access', user.id); close(); }).appendTo($p);

@@ -1,6 +1,6 @@
 // functions related to wzin conversation effects
 
-miaou(function(wz){
+miaou(function(wz, skin){
 
 	var wzins = [];
 	
@@ -8,7 +8,7 @@ miaou(function(wz){
 	// The algorithm searches only in normal directions (no replying
 	//  to a future message) and guarantees acyclicity
 	wz.onmouseenter = function(){
-		var colors = ['rgba(139, 69, 19, .2)', 'rgba(42, 18, 234, .15)', 'rgba(180, 237, 228, .4)', 'rgba(192, 169, 244, .25)'],
+		var colors = skin.wzincolors.conv,
 			opts = { zIndex:5, fill:colors[0], scrollable:'#message-scroller' },
 			$message = $(this), w,
 			ci = -1, // index of the central message among all
