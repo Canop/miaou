@@ -647,7 +647,7 @@ span.warning {
 }
 .message {
 	a, a:visited {
-		color: Sienna ;
+		color: $message-link-color;
 	}
 }
 
