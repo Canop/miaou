@@ -18,6 +18,12 @@ var wzin = (function(){
 		this.chbg = !!opts.changeElementBackground;
 		this.bind($(window), 'resize', Wzin.prototype.update);
 		this.update();
+		
+		if (opts.observe) {
+			this.observer = new MutationObserver(this.update.bind(this));
+			this.observer.observe(e1[0]||e1, {attributes:true, subtree:true, characterData:true});
+			this.observer.observe(e2[0]||e2, {attributes:true, subtree:true, characterData:true});
+		}
 	}
 	Wzin.prototype.bind = function(jqobj, eventtype, fun){
 		fun = fun.bind(this);
@@ -27,6 +33,7 @@ var wzin = (function(){
 
 	Wzin.prototype.remove = function(){
 		this.svg.remove();
+		if (this.observer) this.observer.disconnect();
 		while (this.bindings.length) {
 			var args = this.bindings.shift();
 			args[0].off(args[1], args[2]);

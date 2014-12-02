@@ -9,7 +9,7 @@ miaou(function(wz, skin){
 	//  to a future message) and guarantees acyclicity
 	wz.onmouseenter = function(){
 		var colors = skin.wzincolors.conv,
-			opts = { zIndex:5, fill:colors[0], scrollable:'#message-scroller' },
+			opts = { zIndex:5, fill:colors[0], scrollable:'#message-scroller', observe:true },
 			$message = $(this), w,
 			ci = -1, // index of the central message among all
 			cid = $message.data('message').id;
