@@ -119,7 +119,7 @@ miaou(function(ed, chat, gui, md, ms, skin, ws){
 
 	function replyPreviousOrNext(dif) {
 		var	messages = md.getMessages().filter(function(m){
-			return m.id && m.author !== me.id && !(editedMessage && m.id>editedMessage.id);
+			return m.id && m.content && m.author !== me.id && !(editedMessage && m.id>editedMessage.id);
 		}), index = -1, m = input.value.match(replyRegex);
 		if (m) {
 			var mid = +m[2];
