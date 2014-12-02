@@ -15,7 +15,7 @@ miaou(function(skin){
 				if (!rule.selectorText) continue;
 				var match = rule.selectorText.match(regex);
 				if (!match) continue;
-				var bg = rule.style.getPropertyValue("background");
+				var bg = rule.style.getPropertyValue("background-color");
 				if (match.length===1) return bg;
 				matches.push({ num:+match[1], bg:bg });
 			}
