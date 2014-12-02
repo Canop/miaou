@@ -2,12 +2,14 @@
 
 miaou(function(wz, skin){
 
-	var wzins = [];
+	var	wzins = [],
+		frozen;
 	
 	// highlights the conversation graph on hover of one message
 	// The algorithm searches only in normal directions (no replying
 	//  to a future message) and guarantees acyclicity
 	wz.onmouseenter = function(){
+		if (wzins.length) return;
 		var colors = skin.wzincolors.conv,
 			opts = { zIndex:5, fill:colors[0], scrollable:'#message-scroller', observe:true },
 			$message = $(this), w,
@@ -33,11 +35,19 @@ miaou(function(wz, skin){
 				}
 			}
 		})(ci, 0);
+		frozen = false;
 	}
 
 	wz.onmouseleave = function(){
+		if (frozen) return;
 		var w;
 		while (w=wzins.pop()) w.remove();
 	}
+	
+	$(window).click(function(){
+		if (!wzins.length) return;
+		frozen = ! frozen;
+		wz.onmouseleave();
+	});
 
 });
