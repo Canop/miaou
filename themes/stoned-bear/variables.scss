@@ -22,6 +22,7 @@ $notification-text-color: #A0522D;
 $message-link-color: #c07220;
 $slashme-color: transparentize( $bear-text , 0.6 );
 
+//~ $side-message-even-background: none;
 
 $message-content-table-border-color: $bg-color;
 
@@ -39,12 +40,9 @@ $message-menu-link-color: $bear-text;
 
 $message-votes-color: $bear-text;
 
-
-
 $reply-box-bg: rgba(222,184,135,0.15);
 $reply-box-hover-bg: rgba(222,184,135,0.6);
 $reply-box-color: rgba(255,255,255,0.5);
-
 
 $message-normal-border-top: thin solid lighten( $mes-brown, 4% );
 $message-normal-border-bottom: thin solid darken( $mes-brown, 4% );

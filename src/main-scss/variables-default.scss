@@ -19,8 +19,6 @@ $user-text-color-in-user-list: #444 !default;
 $user-text-color-in-message: #555 !default;
 $code-text-color: #444 !default;
 
-
-
 $input-bg: white !default;
 $input-text-color: black !default;
 
@@ -36,6 +34,7 @@ $message-content-bg: transparent !default;
 
 $side-message-border-top: thin solid rgba(255,255,255,0.1) !default;
 $side-message-border-bottom: thin solid rgba(0,0,0,0.1) !default;
+$side-message-even-background: rgba(0,0,0,0.03) !default;
 
 $input-border: inherit !default;
 

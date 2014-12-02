@@ -370,7 +370,7 @@ body.mobile .message-menu .vote {
 		font-size: 12px;
 		border-bottom: $side-message-border-bottom;	
 		&:nth-child(even) {
-			background: rgba(0,0,0,0.04);
+			background: $side-message-even-background;
 		}
 		&:hover {
 			background: lighten($bg-color, 10%);
@@ -645,7 +645,7 @@ span.warning {
 .message.goingto, .message.me.goingto {
 	background: $goingto-bg;
 }
-.message {
+.message .content, .rendered {
 	a, a:visited {
 		color: $message-link-color;
 	}
