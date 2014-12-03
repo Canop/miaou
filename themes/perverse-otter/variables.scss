@@ -1,0 +1,134 @@
+
+$accent: rgba(purple,0.9);
+$accent-plus: rgb(255, 0, 255);
+$accent-minus: rgb(189, 51, 164);
+
+//------------
+
+$bg-color: #222;
+$left-background: #222;
+$right-background: #222;
+$box-background: rgba(255, 255, 255, 0.8);
+
+$general-text-color: #bbb;
+$title-text-color: #bbb;
+$message-content-bg: #333;
+$input-border: none;
+$chat-tabs-border-color: rgba(PaleVioletRed,.5);
+$message-link-color: PaleVioletRed;
+$slashme-color: #999;
+
+$side-message-even-background: none;
+
+$message-content-border-color: #333;
+
+$decoration-color: $accent-minus;
+$decoration-clickable-color: $accent;
+
+$message-menu-bg: black;
+$message-menu-color: white;
+$message-menu-txt-color: white;
+$message-menu-vote-color: $accent;
+$message-menu-vote-hover-color: $accent-plus;
+$message-menu-link-color: #aaa;
+
+$message-votes-color: $accent;
+
+$center-shadow: none;
+
+$message-list-bg: #2a2a2a;
+$message-me-bg: transparent;
+
+$connected-user-text-color-in-user-list: #bbb;
+$user-text-color-in-user-list: #666;
+$message-me-user-color: PaleVioletRed;			
+
+$user-text-color-in-message: #888;
+$code-text-color: #888;
+
+$message-content-table-border-color: #555;
+
+$citation-border-color: #666;
+$h3-underline-color: #666;
+$h4-underline-color: #666;
+$h5-underline-color: #666;
+
+$input-bg: #333;
+$input-text-color: #bbb;
+$message-normal-border-top: none;
+$message-normal-border-bottom: none;
+$message-border-bottom-before-bisrupt: none;
+$message-border-top-after-bisrupt: none;
+$message-decoration-button-box-shadow: none;
+
+$side-message-border-top: 4px solid $right-background;
+$side-message-border-bottom: none;
+
+$opener-closer-color: $accent;
+$opener-closer-hover-color: $accent-plus;
+$opener-bg: rgba(43,0,43,0.15);
+$opener-hover-bg: rgba(43,0,43,0.5);
+$closer-bg: rgba( $bg-color , 0.32);
+$closer-hover-bg: rgba(43,0,43,0.5);
+
+$reply-box-bg: #222;
+$reply-box-hover-bg: #333;
+$reply-box-color: $message-link-color;
+
+$goingto-bg: rgba(128, 0, 128, 0.7);
+
+// profile in chat
+$profile-bg: rgba(20,0,10,0.94);
+$profile-box-shadow: none;
+$profile-text-color: #ccc;
+
+// message sizing
+$message-min-height: 34px;
+$message-content-padding: 6px 10px;
+$message-content-flex-grow: 0;
+$message-content-border-radius: 5px;
+$message-content-margin: 4px;
+
+// buttons
+$button-bg-color: $accent;
+$button-text-color: #bbb;
+$button-box-shadow: none;
+$button-border: none;
+$button-hover-text-color: white;
+$button-hover-bg-color: $accent-plus;
+$button-hover-border-color: none;
+$small-button-box-shadow: none;
+
+$right-panel-width: 450px;
+
+
+::-webkit-scrollbar {
+	width: 8px;
+}
+::-webkit-scrollbar-track {
+	border-radius:6px;
+	background: #222;
+}
+::-webkit-scrollbar-track:hover {
+	background: #111;
+}
+::-webkit-scrollbar-thumb {
+	border-radius:6px;
+	background: $accent;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: $accent-plus;
+}
+
+// dialog
+
+$dialog-bg: #1a1a1a;
+$dialog-color: #bbb;
+$dialog-title-bg: #333;
+
+$mwin-bg: rgba(30,30,30,0.7);
+$mwin-content-bg: #111;
+$mwin-shadow: none;
+
+// wzins
+$wzin-conv-bg : ( rgba(176,224,230,0.25), rgba(255,255,102,0.2), rgba(188,143,143,0.2), rgba(255,235,215,0.2) );
