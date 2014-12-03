@@ -2,12 +2,14 @@
 // A valid game (even before accept) is always stored like this :
 // maybeAPingOrReply !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
-var cache = require('bounded-cache')(300);
+var cache = require('bounded-cache')(300),
+	tribostats = require('./tribostats.js');
 
 var gametypes = {
-	Tribo: require('./client-scripts/Tribo.js')
-	,Flore: require('./client-scripts/Flore.js')
+	Tribo: require('./client-scripts/Tribo.js'),
+	Flore: require('./client-scripts/Flore.js')
 };
+
 
 // returns a bound promise opening a connection to the db
 //  and returning both the message and the game whose id is passed
@@ -15,7 +17,8 @@ var gametypes = {
 function dbGetGame(shoe, mid){
 	return shoe.db.on().then(function(){
 		return cache.get(mid) || this.getMessage(mid).then(function(m){
-			var g = JSON.parse(m.content.match(/!!game @\S{3,} (.*)$/)[1]);
+			var	json = m.content.match(/!!game @\S{3,} (.*)$/)[1],
+				g = JSON.parse(json);
 			m.room = shoe.room.id; // db.getMessage doesn't provide the room, we must set it before saving
 			gametypes[g.type].restore(g);
 			var data = [m, g];
@@ -29,9 +32,11 @@ function dbGetGame(shoe, mid){
 function storeInMess(m, game, shoe){
 	var	saved = {type:game.type, status:game.status, players:game.players},
 		gametype = gametypes[game.type];
+	if (game.scores) saved.scores = game.scores;
+	if (game.current>=0) saved.current = game.current; // current is -1, 0 or 1
 	gametype.store(game, saved);
 	m.content = m.content.match(/^(.*?)!!/)[1] + "!!game @"+game.players[0].name+" "+JSON.stringify(saved);
-	delete m.changed;
+	m.changed = 0;
 	if (gametype.observers) {
 		 // warning : at this point it's still possible the message has no id
 		 // we should provide a way for the observer to be notified after the message has been saved
@@ -98,15 +103,18 @@ exports.onNewShoe = function(shoe){
 exports.onChangeMessage = function(shoe, m){
 	var data = cache.peek(m.id);
 	if (!data) return;
-	if (data[1].moves) throw "A started game can't be rewritten or deleted";
+	if (data[1].moves) return "A started game can't be rewritten or deleted";
 }
 
 exports.registerCommands = function(cb){
 	//cb('game', onCommand, "propose a random game. Type `!!game @somebody`");
-	//for (var key in gametypes) cb(key.toLowerCase(), onCommand, "propose a game of "+key+". Type `!!"+key.toLowerCase()+" @somebody`");
 	cb({
 		name:'tribo', fun:onCommand,
 		help:"propose a game of Tribo. Type `!!tribo @somebody`"
+	});
+	cb({
+		name:'tribostats', fun:tribostats.onCommand,
+		help:"compute Tribo related stats for the rom. Type `!!tribostats [games|players|twc]`"
 	});
 }
 
@@ -115,3 +123,26 @@ exports.registerGameObserver = function(type, cb){
 	if (!gt.observers) gt.observers = [];
 	gt.observers.push(cb);
 }
+
+// This function is just on for a temporary time.
+// Its goal is to cure messages containing games with the old saving format
+// This part will be removed as soon as I've cured enough messages
+exports.onSendMessage = function(shoe, m, send){
+	if (/^!!game /.test(m.content)) {
+		var match = m.content.match(/!!game @\S{3,} (.*)$/);
+		if (match) {
+			g = JSON.parse(match[1]);
+			var mustBeCured = g.status!=="ask" && !g.scores; // old format, we must resave it to ensure consistency
+			console.log("game", m.id, "must be cured : ", mustBeCured);
+			if (mustBeCured) {
+				m.room = shoe.room.id;
+				gametypes[g.type].restore(g);
+				storeInMess(m, g, shoe);
+				shoe.db.on().then(function(){
+					return this.storeMessage(m, true);
+				}).finally(shoe.db.off);
+			}
+		}
+	}
+}
+
