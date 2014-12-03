@@ -234,7 +234,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 					notif.show(mid, r || room, from, text);					
 				}
 			}
-			if (!visible && mid) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
+			if (!visible) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
 		}
 
 		gui.updateTab = function(hasPing, nbUnseenMessages){

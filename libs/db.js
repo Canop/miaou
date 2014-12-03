@@ -439,6 +439,7 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 		[lang, tsquery, roomId, N]
 	);
 }
+
 // builds an histogram, each record relative to a utc day
 proto.messageHistogram = function(roomId, pattern, lang) {
 	return pattern ? this.queryRows(

@@ -4,7 +4,7 @@
 //  - hovering a message
 //  - closing/opening a big message
 
-miaou(function(md, chat, gui, hist, ms, usr, ws){
+miaou(function(md, chat, gui, hist, ms, usr, ws, wz){
 
 	// o : mid, level, diff, self, voter
 	// diff  : +1 or -1
@@ -32,6 +32,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
+		wz.updateAll();		
 	}
 	md.closer = function(e){
 		var wab = gui.isAtBottom();
@@ -39,7 +40,8 @@ miaou(function(md, chat, gui, hist, ms, usr, ws){
 		$md.find('.content').addClass('closed');
 		$md.reflow();
 		if (wab) gui.scrollToBottom();
-		e.stopPropagation();			
+		e.stopPropagation();
+		wz.updateAll();		
 	}
 		
 	// returns the html needed to fill the message menu (the thing at the top right visible on hover)

@@ -34,6 +34,9 @@ exports.configure = function(miaou){
 //  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801,"changed":null,"pin":0,"star":0,"up":0,"down":0,"vote":null,"score":0}
 // lighted :
 //  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801}
+// FIXME : this function might be slow and, more importantly, it makes the object slower to iterate (hash table mode)
+//            (confirmed for the iteration : http://jsperf.com/lightenings)
+//         Is the solution to clone the object ?
 function lighten(obj){
 	for (var k in obj) {
 		if (!obj[k]) delete obj[k];
@@ -441,12 +444,11 @@ function handleUserInRoom(socket, completeUser){
 		if (message.id) {
 			m.id = +message.id;
 			m.changed = seconds;
-			try {
-				for (var i=0; i<onChangeMessagePlugins.length; i++) {
-					onChangeMessagePlugins[i].onChangeMessage(shoe, m);
+			for (var i=0; i<onChangeMessagePlugins.length; i++) {
+				var error = onChangeMessagePlugins[i].onChangeMessage(shoe, m);
+				if (error) { // we don't use trycatch for performance reasons
+					return shoe.error(error, m.content);
 				}
-			} catch(e) {
-				return shoe.error(e, m.content);
 			}
 		} else {
 			m.created = seconds;

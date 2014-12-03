@@ -13,7 +13,7 @@ miaou(function(md, gui, usr, ws){
 			if (usr.checkAuth('admin')) {
 				$('<button>').text('Manage Users').click(function(){ $('#auths').click(); close(); }).appendTo($p);
 				$('<button>').text('Grant Access').click(function(){ ws.emit('grant_access', ar.user.id); close(); }).appendTo($p);
-				if (!vis()) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
+				gui.touch();
 			}
 			if (ar.request_message) {
 				$('<div>').addClass('access_request').append(

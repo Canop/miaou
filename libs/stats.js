@@ -24,14 +24,14 @@ function doStats(ct) {
 			{name:"Public Rooms", value:"(select count(*) from room where private=false)"},
 			{name:"Private Rooms", value:"(select count(*) from room where private=true)"},
 			{name:"Messages", value:"(select count(*) from message)"},
-			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800)"},
+			{name:"Last Two Last Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800)"},
 		];
 		title = "Server Statistics";
 	} else if (/^users$/i.test(topic)) {
 		cols = [
 			{name:"Name", value:"name"},
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
-			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
+			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
 			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star')"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
@@ -41,7 +41,7 @@ function doStats(ct) {
 		cols = [
 			{name:"Name", value:"name"},
 			{name:"Room Messages", value:"(select count(*) from message where author=player.id and room=$1)"},
-			{name:"Two Last Days Room Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id and room=$1)"},
+			{name:"Last Two Days Room Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id and room=$1)"},
 			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star' and room=$1)"},
 			{name:"Total Messages", value:"(select count(*) from message where author=player.id)"},
 		];
@@ -51,7 +51,7 @@ function doStats(ct) {
 	} else if (topic[0]==='@') {
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
-			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
+			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
 			{name:"Received Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star')"},
 			{name:"Given Stars", value:"(select count(*) from message_vote where player=player.id and vote='star')"},
 			{name:"Messages In This Room", value:"(select count(*) from message where room=$2 and author=player.id)"},
@@ -67,7 +67,7 @@ function doStats(ct) {
 			{name:"Language", value:"lang"},		
 			{name:"Private", value:"private"},		
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
-			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
+			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
 		from = "from room order by c4 desc limit "+n;
@@ -75,7 +75,7 @@ function doStats(ct) {
 	} else if (/^room$/i.test(topic)) {
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where room=$1)"},
-			{name:"Two Last Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=$1)"},
+			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=$1)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=$1)"},
 		];
 		args.push(room.id);

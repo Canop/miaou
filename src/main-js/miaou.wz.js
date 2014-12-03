@@ -11,7 +11,7 @@ miaou(function(wz, skin){
 	wz.onmouseenter = function(){
 		if (wzins.length) return;
 		var colors = skin.wzincolors.conv,
-			opts = { zIndex:5, fill:colors[0], scrollable:'#message-scroller', observe:true },
+			opts = { zIndex:5, fill:colors[0], scrollable:'#message-scroller' },
 			$message = $(this), w,
 			ci = -1, // index of the central message among all
 			cid = $message.data('message').id;
@@ -42,6 +42,10 @@ miaou(function(wz, skin){
 		if (frozen) return;
 		var w;
 		while (w=wzins.pop()) w.remove();
+	}
+	
+	wz.updateAll = function(){
+		for (var i=0; i<wzins.length; i++) wzins[i].update(); 
 	}
 	
 	$(window).click(function(){
