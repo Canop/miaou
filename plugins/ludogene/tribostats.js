@@ -1,5 +1,74 @@
+
+function playersInfos(messages, f){
+	var playersmap = {}, players = [];
+	messages.forEach(function(m){
+		var	p = [], g = m.g;
+		if (!g.scores) return;
+		for (var i=0; i<2; i++) {
+			p[i] = playersmap[g.players[i].id];
+			if (!p[i]) {
+				players.push(
+					playersmap[g.players[i].id] = p[i] = {
+						name:g.players[i].name,
+						n:0,  // total number of games
+						f:0,  // number of finished games
+						s:0,  // sum of scores in finished games
+						d:0,  // number of dropped games
+						sd:0, // sum of scores in dropped games
+						w:0,  // wins
+						l:0,  // losses
+					}
+				);
+			}
+			p[i].n++;
+		}
+		if (g.status==="finished") {
+			p[0].f++;
+			p[1].f++;
+			p[0].s += g.scores[0];
+			p[1].s += g.scores[1];
+			if (g.scores[0]>g.scores[1]) {
+				p[0].w++;
+				p[1].l++;
+			} else {
+				p[1].w++;
+				p[0].l++;					
+			}
+		} else {
+			if (g.current===undefined) {
+				console.log("unfinished game without current", m.id);
+				return;
+			}
+			p[g.current].d++;
+			p[g.current].sd += g.scores[g.current];
+		}
+	});
+	players.forEach(f);
+	return players.sort(function(a,b){ return b.r-a.r });
+}
+
+function matrixInfo(messages) {
+	var playersmap = {}, players = [];
+	messages.forEach(function(m){
+		var	p = [], g = m.g;
+		for (var i=0; i<2; i++) {
+			p[i] = playersmap[g.players[i].id];
+			if (!p[i]) {
+				players.push(
+					playersmap[g.players[i].id] = p[i] = {id:g.players[i].id, name:g.players[i].name, opponents:{}}
+				);
+			}
+		}
+		var games = p[0].opponents[p[1].id];
+		if (!games) games = p[0].opponents[p[1].id] = [];
+		games.push({id:m.id, f:g.status==="finished"});
+	});
+	return players;
+}
+
 exports.onCommand = function(ct, id){
 	console.log("==================================\ntribostats "+ct.args);
+	var keepBots = ct.args==="players";
 	return this.queryRows(
 		"select id, content from message where room=$1 and content like '!!game %' limit $2", [ct.shoe.room.id, 1000]
 	)
@@ -13,16 +82,19 @@ exports.onCommand = function(ct, id){
 		}
 	})
 	.filter(function(m){
-		return m && m.g && (m.g.status==="running"||m.g.status==="finished") && m.g.type==="Tribo";
+		return m && m.g && m.g.type==="Tribo"
+			&& m.g.scores
+			&& (m.g.status==="running"||m.g.status==="finished")
+			&& (keepBots||m.g.players[0].name!=="meow")
 	})
 	.then(function(messages){
-		var title, cols, rows = [], f;
+		var title, cols, rows = [], f, players;
 		switch (ct.args) {
+			
 		case "games":
-			title = "Tribo Games started in this room";
+			title = "Tribo Games played in this room (excluding the ones with bots)";
 			cols = ["Game","status", "Winner","First Player","Second Player"];
 			messages.forEach(function(m){
-				if (!m.g.scores) return;
 				var winner = '-', status = '?'; 
 				if (m.g.status==="finished") {
 					winner = "**" + ( m.g.scores[0]>m.g.scores[1] ? m.g.players[0].name : m.g.players[1].name ) + "**";
@@ -39,66 +111,76 @@ exports.onCommand = function(ct, id){
 				]);
 			});
 			break;
+						
+		case "matrix":
+			var	data = matrixInfo(messages),
+				l = data.length<15 ? 3 : 2;
+			title = "Tribo Games Matrix";
+			cols = [' '].concat(data.map(function(p){
+				var tokens = p.name.split(/[_-]/);
+				if (tokens.length==1) tokens = p.name.split(/(?:[a-z])(?=[A-Z])/);
+				if (tokens.length==1) return p.name.slice(0,l);
+				var s = tokens[0][0]+tokens[1][0];
+				if (l>2 && tokens.length>2) s += tokens[2][0];
+				return s;
+			}));
+			rows = data.map(function(p){
+				return [p.name].concat(data.map(function(o){
+					if (o.id===p.id) return "-";
+					var games = p.opponents[o.id];
+					if (!games) return " ";
+					if (games.length===1) {
+						if (games[0].f) return "**[X](#"+games[0].id+")**";
+						else return "[X](#"+games[0].id+")";
+					} else {
+						return games.length;
+					}
+				}));
+			});
+			break;
+			
 		case "twc":
 			title = "Tribo World Cup Style Scoring";
-			messages = messages.filter(function(m){
-				return m.g.players[0].name !== "meow";
+			cols = ["Player", "Finished Games", "Wins", "Losses", "Unfinished", "Avg Score", "TWC Score", "Avg TWC Score"];
+			players = playersInfos(messages, function(p){
+				p.t = 2*p.w + p.s; // total twc score
+				p.r = p.t / p.f;   // ranking value
 			});
-			f = function(p){ p.f = 2*p.w + p.s };
-			cols = ["Player", "Games", "Wins", "Losses", "Unfinished", "Mean Score", "TWC Score"];
-		case "players":
-			title = title || "Tribo players results in this room (this isn't a ladder)";
-			cols = cols || ["Player", "Games", "Wins", "Losses", "Drops", "Mean Score"/*, "F"*/];
-			var playersmap = {}, players = [];
-			messages.forEach(function(m){
-				var	p = [], g = m.g;
-				if (!g.scores) return;
-				for (var i=0; i<2; i++) {
-					p[i] = playersmap[g.players[i].id];
-					if (!p[i]) {
-						players.push(
-							playersmap[g.players[i].id] = p[i] = {n:0, s:0, w:0, l:0, d:0}
-						);
-					}
-					p[i].name = g.players[i].name; // we want the last one
-					p[i].n++; // number of games started and not dropped
-					p[i].s += g.scores[i];
-				}
-				if (g.status!=="finished") {
-					if (g.current===undefined) {
-						console.log("unfinished game without current", m.id);
-						return;
-					}
-					p[g.current].d++; // drop
-					var nd = +!g.current; // non dropper
-					p[nd].s -= g.scores[nd];
-					p[nd].n--;
-				} else if (g.scores[0]>g.scores[1]) {
-					p[0].w++;
-					p[1].l++;
-				} else {
-					p[1].w++;
-					p[0].l++;					
-				}
-			});
-			players = players.filter(function(p){ return p.n });
-			if (!f) f = function(p){ p.f = (2*p.w+p.s-10*p.d)/p.n + 3*Math.log(p.n+1); }
-			players.forEach(f);
-			players.sort(function(a,b){ return b.f-a.f });
 			console.log(players);
 			rows = players.map(function(p){
-				var cells = [
+				return [
+					p.name,
+					p.f,
+					p.w,
+					p.l,
+					p.n-p.f,
+					(p.s/p.f).toFixed(2),
+					p.t.toFixed(2),
+					(p.t/p.f).toFixed(2)
+				];
+			});
+			break;
+			
+		case "players":
+			title = title || "Tribo players results in this room";
+			cols = cols || ["Player", "Games", "Wins", "Losses", "Drops", "Avg Score"];
+			players = playersInfos(messages, function(p){
+				p.t = (p.s+p.sd)/(p.f+p.d); // average score including dropped games
+				p.r = p.t + 2*p.w/(p.f+p.d) + 5*Math.log(p.n); // ranking value
+			});
+			console.log(players);
+			rows = players.map(function(p){
+				return [
 					p.name,
 					p.n,
 					p.w,
 					p.l,
 					p.d,
-					(p.s/p.n).toFixed(2)
+					p.t.toFixed(2)
 				];
-				if (cols.length>cells.length) cells.push(p.f);
-				return cells;
 			});
 			break;
+
 		default:
 			throw "command not understood";
 		}
