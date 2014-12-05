@@ -14,9 +14,11 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			(Array.isArray(messages) ? messages : [messages]).forEach(function(message){
 				if (chat.trigger('incoming_message', message) === false) return;
 				md.addMessage(message);
-				if (message.id) md.updateNotableMessage(message);
-				if ((message.changed||message.created)>chat.enterTime && message.content) {
-					gui.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
+				if (message.id) {
+					md.updateNotableMessage(message);
+					if ((message.changed||message.created)>chat.enterTime && message.content) {
+						gui.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
+					}
 				}
 			});
 			md.updateLoaders();
