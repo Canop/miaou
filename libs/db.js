@@ -19,7 +19,7 @@
 //      this.rollback();
 //   }).finally(db.off);
 
-var pg = require('pg').native,
+var pg = require('pg'),
 	Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
 	path = require("path"),
@@ -683,6 +683,12 @@ function logQuery(sql, args){ // used in debug
 // must be called before any call to connect
 exports.init = function(miaouConfig, cb){
 	config = miaouConfig;
+	if (config.database.native_pg) {
+		console.log("Using native driver to connect to PostgreSQL");
+		pg = pg.native;
+	} else {
+		console.log("Using NOT native driver to connect to PostgreSQL");
+	}
 	var conString = config.database.url;
 	pg.defaults.parseInt8 = true;
 	pg.connect(conString, function(err, client, done){

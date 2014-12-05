@@ -12,7 +12,8 @@
 	"maxAgeForMessageTotalDeletion": 180,
 	"secret": "a string here",
 	"database": {
-		"url": "postgres://database_user:database_pwd@localhost/miaou"
+		"url": "postgres://database_user:database_pwd@localhost/miaou",
+		"native_pg": false
 	},
 	"plugins": [
 		"./plugins/stackoverflow/plugin.js",
