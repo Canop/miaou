@@ -1,5 +1,5 @@
 
-miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
+miaou(function(gui, chat, ed, hist, md, mh, ms, horn, prof, usr, win, ws, wz){
 	
 	gui.mobile = $(document.body).hasClass('mobile');
 	
@@ -231,7 +231,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, prof, usr, win, ws, wz){
 					userPrefs.notif==="on_message"
 					|| (ping && userPrefs.notif==="on_ping" && Date.now()-lastUserAction>1500)
 				) {
-					notif.show(mid, r || room, from, text);					
+					horn.show(mid, r || room, from, text);					
 				}
 			}
 			if (!visible) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);

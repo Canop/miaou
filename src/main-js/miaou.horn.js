@@ -1,14 +1,16 @@
-// manages desktop notifications
+// manages desktop notifications and sounds
 
-miaou(function(notif, md){
+miaou(function(horn, md){
 	
 	if (!window.userPrefs || !window.Notification) {
 		// covers two cases :
 		// - a page with miaou.min.js but no prefs
 		// - a browser without Notification (Chrome/Android) 
-		notif.show = function(){};
+		horn.show = function(){};
 		return;
 	}
+	
+	var notifications = [];
 	
 	var sounds = {
 		quiet:    'ping-quiet.wav',
@@ -36,7 +38,7 @@ miaou(function(notif, md){
 		});
 	}
 	
-	notif.show = function(mid, room, authorname, content){
+	horn.show = function(mid, room, authorname, content){
 		mid = mid||0;
 		if (mid==localStorage.lastnotif) {
 			console.log("avoiding duplicate notif mid=",mid); // yes, also for no id messages
