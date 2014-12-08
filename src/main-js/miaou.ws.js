@@ -17,7 +17,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 				if (message.id) {
 					md.updateNotableMessage(message);
 					if ((message.changed||message.created)>chat.enterTime && message.content) {
-						gui.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
+						notif.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
 					}
 				}
 			});
@@ -80,7 +80,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			room = r;
 			localStorage['successfulLoginLastTime'] = "yes";
 			localStorage['room'] = room.id;
-			gui.updateTab(0, 0);
+			notif.updateTab(0, 0);
 			$('#roomname').text(room.name);
 			$('#roomdescription').html(miaou.mdToHtml(room.description));
 		})
@@ -113,7 +113,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 			).append(
 				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
 			).appendTo('#messages');
-			gui.touch(0, true, invit.byname, 'You have been invited in a dialog room.');
+			notif.touch(0, true, invit.byname, 'You have been invited in a dialog room.');
 			gui.scrollToBottom();
 		})
 		.on('pm_room', function(roomId){

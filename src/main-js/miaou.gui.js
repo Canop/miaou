@@ -27,11 +27,9 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, horn, prof, usr, win, ws, wz){
 			hist.showPage();
 		}, 10, document.getElementById('message-scroller'));
 	}
-
 	
 	gui.init = function(){
-		var	timer,
-			lastUserAction = 0; // ms
+		var	timer;
 		
 		$('#messages, #notable-messages, #search-results').on('click', '.message .content a[href]', function(e){
 			var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
@@ -209,48 +207,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, horn, prof, usr, win, ws, wz){
 			
 		// When the window is resized, all the messages have to be resized too.
 		$(window).on('resize', md.resizeAll);
-		
-		// called in case of user action proving he's right in front of the chat so
-		//  we should not ping him
-		gui.userAct = function(){
-			lastUserAction = Date.now();
-		}
-		
-		// called in case of new message (or a new important event related to a message)
-		gui.touch = function(mid, ping, from, text, r){
-			var visible = vis();
-			if (ping) {
-				if (visible) {
-					chat.clearPings();
-				} else {
-					if (mid && !chat.oldestUnseenPing) chat.oldestUnseenPing = mid;
-				}
-			}
-			if (!visible || userPrefs.nifvis==="yes") {
-				if (
-					userPrefs.notif==="on_message"
-					|| (ping && userPrefs.notif==="on_ping" && Date.now()-lastUserAction>1500)
-				) {
-					horn.show(mid, r || room, from, text);					
-				}
-			}
-			if (!visible) gui.updateTab(chat.oldestUnseenPing, ++chat.nbUnseenMessages);
-		}
-
-		gui.updateTab = function(hasPing, nbUnseenMessages){
-			var title = room.name,
-				icon = 'static/M-32';
-			if (hasPing) {
-				title = '*'+title;
-				icon += '-ping';
-			} else if (nbUnseenMessages) {
-				title = nbUnseenMessages+'-'+title;
-				icon += '-new';
-			}
-			document.title = title;
-			$('#favicon').attr('href', icon+'.png');
-		}
-		
+				
 		ed.init();
 	}
 });

@@ -9,7 +9,6 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	};
 	chat.DELAY_BEFORE_PROFILE_POPUP= 300; // ms
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
-	chat.nbUnseenMessages = 0;
 	chat.oldestUnseenPing = 0;
 	chat.lastReceivedPing = 0;
 	chat.timeOffset = 0;
@@ -18,11 +17,6 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	chat.voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
 
 	var listeners = {};
-	
-	chat.clearPings = function() {
-		// clear the pings of the current room and ask for the ones of the other rooms
-		ws.emit('clear_pings', chat.lastReceivedPing);
-	}
 	
 	// pings : an array whose elements contains 
 	//   room : id of the room
@@ -67,25 +61,10 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	}
 	chat.ping = function(p){ // this is used for instant cross-room pings
 		makeCrossRoomPingsNotificationMessage([{room:p.r.id, roomname:p.r.name}]);
-		gui.touch(p.m.id, true, p.m.authorname, p.m.content, p.r);
+		notif.touch(p.m.id, true, p.m.authorname, p.m.content, p.r);
 	}
 	
 	chat.start = function(){
-		vis(function(){
-			if (vis()) {
-				chat.clearPings();
-				chat.nbUnseenMessages = 0;
-				if (chat.oldestUnseenPing) {
-					md.focusMessage(chat.oldestUnseenPing);
-					chat.oldestUnseenPing = 0;
-				}
-				gui.updateTab(0, 0);
-				$('#input').focus();
-			}
-		});
-		setInterval(function(){
-			if (vis()) chat.clearPings();
-		}, 3*60*1000);
 		ws.init();
 		gui.init();
 		md.registerRenderer(function($c, message, oldMessage){
