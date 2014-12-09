@@ -61,7 +61,11 @@ function matrixInfo(messages) {
 		}
 		var games = p[0].opponents[p[1].id];
 		if (!games) games = p[0].opponents[p[1].id] = [];
-		games.push({id:m.id, f:g.status==="finished"});
+		var diff = g.scores[0]-g.scores[1];
+		var result = "W";
+		if (diff === 0) result = "D";
+		if (diff < 0) result = "L";
+		games.push({id:m.id, f:g.status==="finished", r: result});
 	});
 	return players;
 }
@@ -130,8 +134,9 @@ exports.onCommand = function(ct, id){
 					var games = p.opponents[o.id];
 					if (!games) return " ";
 					if (games.length===1) {
-						if (games[0].f) return "**[X](#"+games[0].id+")**";
-						else return "[X](#"+games[0].id+")";
+						var result = "["+games[0].r+"](#"+games[0].id+")";
+						if (games[0].f) return "**"+result+"**";
+						else return result;
 					} else {
 						return games.length;
 					}
