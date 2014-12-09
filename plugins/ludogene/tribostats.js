@@ -61,10 +61,7 @@ function matrixInfo(messages) {
 		}
 		var games = p[0].opponents[p[1].id];
 		if (!games) games = p[0].opponents[p[1].id] = [];
-		var diff = g.scores[0]-g.scores[1];
-		var result = "W";
-		if (diff === 0) result = "D";
-		if (diff < 0) result = "L";
+		var result = (g.scores[0] - g.scores[1] > 0) ? "W" : "L";
 		games.push({id:m.id, f:g.status==="finished", r: result});
 	});
 	return players;
