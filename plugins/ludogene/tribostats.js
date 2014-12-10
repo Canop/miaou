@@ -117,7 +117,7 @@ exports.onCommand = function(ct, id){
 				l = data.length<15 ? 3 : 2;
 			title = "Tribo Games Matrix";
 			cols = [' '].concat(data.map(function(p){
-				var tokens = p.name.split(/[_-]/);
+				var tokens = p.name.split(/[_-](?=\w)/);
 				if (tokens.length==1) tokens = p.name.split(/(?:[a-z])(?=[A-Z])/);
 				if (tokens.length==1) return p.name.slice(0,l);
 				var s = tokens[0][0]+tokens[1][0];
