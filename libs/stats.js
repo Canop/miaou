@@ -24,7 +24,7 @@ function doStats(ct) {
 			{name:"Public Rooms", value:"(select count(*) from room where private=false)"},
 			{name:"Private Rooms", value:"(select count(*) from room where private=true)"},
 			{name:"Messages", value:"(select count(*) from message)"},
-			{name:"Last Two Last Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800)"},
+			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800)"},
 		];
 		title = "Server Statistics";
 	} else if (/^users$/i.test(topic)) {

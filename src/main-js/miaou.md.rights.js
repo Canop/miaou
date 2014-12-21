@@ -1,6 +1,6 @@
 // messages and notifications in the chat related to user rights
 
-miaou(function(md, gui, usr, ws){
+miaou(function(md, gui, notif, usr, ws){
 
 	md.showRequestAccess = function(ar){
 		md.notificationMessage(function($c, close){

@@ -81,6 +81,9 @@ $mwin-bg: transparentize( darken( $bg-color, 15% ), .12 ) !default;
 $mwin-content-bg: white !default;
 $mwin-shadow: 0 0 5px black !default;
 
+$first-not-seen-top-border: 6px dotted rgba(0,0,0,0.1) !default;
+
+
 // side tabs
 $chat-tabs-border-color: #655 !default;
 $chat-tabs-border-width: 1px !default;

@@ -1,6 +1,6 @@
 // manages desktop notifications and sounds
 
-miaou(function(horn, md){
+miaou(function(horn, md, notif){
 	
 	if (!window.userPrefs || !window.Notification) {
 		// covers two cases :
@@ -9,8 +9,6 @@ miaou(function(horn, md){
 		horn.show = function(){};
 		return;
 	}
-	
-	var notifications = [];
 	
 	var sounds = {
 		quiet:    'ping-quiet.wav',

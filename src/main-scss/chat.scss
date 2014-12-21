@@ -43,6 +43,10 @@
 	flex-grow: 1;
 	flex-basis: 0;
 }
+#notifications {
+	flex-grow: 0;
+}
+
 .table {
 	display: table;
 	width:100%;
@@ -112,6 +116,9 @@ section {
 		&.after-disrupt {
 			border-top: $message-border-top-after-bisrupt;
 		}	
+	}
+	.rvis + .rnvis {
+		border-top: $first-not-seen-top-border;
 	}
 }
 
@@ -446,7 +453,6 @@ code {
 #input-panel {
 	position: relative;
 	background: $bg-color;
-	width:100%;
 	flex-basis:  $input-height + 8px;
 	flex-grow: 0;
 	z-index: 10;

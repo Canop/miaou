@@ -524,6 +524,11 @@ proto.storePings = function(roomId, users, messageId){
 	);
 }
 
+// delete any ping
+proto.deletePing = function(mid, userId){
+	return this.execute("delete from ping where message=$1 and player=$2", [mid, userId]);
+}
+
 proto.deleteRoomPings = function(roomId, userId){
 	return this.execute("delete from ping where room=$1 and player=$2", [roomId, userId]);
 }
@@ -537,9 +542,8 @@ proto.deleteAllUserPings = function(userId){
 	return this.execute("delete from ping where player=$1", [userId]);
 }
 
-
 proto.fetchUserPings = function(userId){
-	return this.queryRows("select player, room, name, message from ping, room where player=$1 and room.id=ping.room", [userId]);
+	return this.queryRows("select room r, name rname, message mid from ping left join room on room.id=ping.room where player=$1", [userId]);
 }
 
 // returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)

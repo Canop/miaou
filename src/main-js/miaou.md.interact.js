@@ -82,9 +82,11 @@ miaou(function(md, chat, gui, hist, ms, usr, ws, wz){
 		($('.message-menu, .editButton, .replyButton, .deleteButton', this).length ? md.hideMessageHoverInfos : md.showMessageHoverInfos).call(this);
 	}
 
-	md.goToMessageDiv = function(messageId){
-		var $messages = $('#message-scroller'),
-			$message = $('.message', $messages).filter(function(){ return $(this).data('message').id==messageId }).addClass('goingto');
+	// argument : messageId or $messageDiv
+	md.goToMessageDiv = function(arg){
+		var	$messages = $('#message-scroller'),
+			$message = typeof arg === "number" || typeof arg === "string" ? $('.message[mid='+arg+']', $messages) : arg;
+		$message.addClass('goingto');
 		if (!$message.length) return;
 		setTimeout(function(){
 			var mtop = $message.offset().top;

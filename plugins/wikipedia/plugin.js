@@ -18,7 +18,7 @@ function dequeue(){
 			currentTask = null;
 			if (box) task.send('box', {mid:task.mid, from:task.line, to:box});
 			dequeue();
-		}, 0);
+		}, 50);
 	}
 	request(task.line, function(error, res, body){
 		console.log('wikipedia box', task.line, 'fetched');

@@ -1,5 +1,5 @@
 
-miaou(function(chat, md, ws, gui, plugins, ws){
+miaou(function(chat, md, notif, ws, gui, plugins, ws){
 	
 	chat.config = { // may be changed by server later
 		maxMessageContentSize: 8000,
@@ -9,61 +9,13 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 	};
 	chat.DELAY_BEFORE_PROFILE_POPUP= 300; // ms
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
-	chat.oldestUnseenPing = 0;
-	chat.lastReceivedPing = 0;
 	chat.timeOffset = 0;
 	chat.enterTime = 0; // both in seconds since epoch, server time
 	chat.commands = {}; // all known commands issued with !! (value=description)
 	chat.voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
 
 	var listeners = {};
-	
-	// pings : an array whose elements contains 
-	//   room : id of the room
-	//   roomname
-	function makeCrossRoomPingsNotificationMessage(pings){
-		var roomIds = pings.map(function(p){ return p.room });
-		md.notificationMessage(function($c){
-			var t = "You've been pinged in room";
-			if (pings.length>1) t += 's';
-			$('<span>').text(t).appendTo($c);
-			pings.forEach(function(p){
-				$c.append($('<button>').addClass('openroom').attr('pingroom', p.room).text(p.roomname).click(function(){
-					ws.emit('rm_pings', roomIds.splice(roomIds.indexOf(p.room)), 1);
-					window.open(p.room);
-				}));
-			});
-		}).onclose(function(){
-			if (roomIds.length) ws.emit('rm_pings', roomIds);
-		});
-	}
 
-	// remove the ping notifications related to the passed rooms 
-	chat.removeRoomPings = function(roomIds){
-		$('.notification').each(function(){
-			var $n = $(this);
-			if (!$n.find('button[pingroom]').length) return;
-			roomIds.forEach(function(r){
-				$n.find('button[pingroom='+r+']').remove();
-			});
-			if (!$n.find('button[pingroom]').length) $n.remove();
-		});
-	}
-
-	chat.pings = function(pings){ // this is used for old pings, made when user wasn't connected
-		if (pings.length) {
-			pings.forEach(function(p){
-				chat.oldestUnseenPing = Math.min(chat.oldestUnseenPing, p.first);
-				chat.lastReceivedPing = Math.max(chat.lastReceivedPing, p.last);
-			});
-			makeCrossRoomPingsNotificationMessage(pings);
-		}		
-	}
-	chat.ping = function(p){ // this is used for instant cross-room pings
-		makeCrossRoomPingsNotificationMessage([{room:p.r.id, roomname:p.r.name}]);
-		notif.touch(p.m.id, true, p.m.authorname, p.m.content, p.r);
-	}
-	
 	chat.start = function(){
 		ws.init();
 		gui.init();
@@ -121,7 +73,7 @@ miaou(function(chat, md, ws, gui, plugins, ws){
 		if (typeof m === "string") m = {content:m};
 		var r = chat.trigger("sending_message", m, context);
 		if (r!==false) ws.emit('message', m);
-		gui.userAct();
+		notif.userAct();
 	}
 	
 });

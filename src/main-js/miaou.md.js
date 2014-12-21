@@ -127,7 +127,7 @@ miaou(function(md, chat, gui, hist, usr){
 	md.notificationMessage = function(fill){
 		var	notification = {closelisteners:[]},
 			wab = gui.isAtBottom(),
-			$md = $('<div>').addClass('notification').appendTo('#messages').data('notification', notification);
+			$md = notification.$md = $('<div>').addClass('notification').appendTo('#notifications').data('notification', notification);
 		notification.remove = function(){
 			var f;
 			while (f = notification.closelisteners.shift()) f();
@@ -141,7 +141,6 @@ miaou(function(md, chat, gui, hist, usr){
 		if (wab) gui.scrollToBottom();
 		return notification;
 	}
-	
 	
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
@@ -210,10 +209,10 @@ miaou(function(md, chat, gui, hist, usr){
 	}
 
 	// inserts or updates a message in the main #messages div
-	md.addMessage = function(message){
+	md.addMessage = function(message, shouldStickToBottom){
 		var messages = md.getMessages(), oldMessage,
 			insertionIndex = messages.length - 1, // -1 : insert at begining, i>=0 : insert after i
-			wasAtBottom = gui.isAtBottom(),
+			//~ wasAtBottom = gui.isAtBottom(),
 			$md = $('<div>').addClass('message').data('message', message),
 			$user = $('<div>').addClass('user').append($('<span/>').text(message.authorname)).appendTo($md),
 			$decorations = $('<div>').addClass('decorations').appendTo($user),
@@ -286,8 +285,9 @@ miaou(function(md, chat, gui, hist, usr){
 			var $mdate = $('<div>').addClass('mdate').text(miaou.formatTime(message.created)).appendTo($md);
 			if (userPrefs.datdpl!=="always") $mdate.hide();
 		}
-		resize($md, wasAtBottom);
-		if (wasAtBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) gui.scrollToBottom();		
+		resize($md, shouldStickToBottom);
+		if (shouldStickToBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) gui.scrollToBottom($md);
+		return $md;
 	}
 
 	md.showMessageFlowDisruptions = function(){

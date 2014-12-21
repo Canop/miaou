@@ -1,6 +1,6 @@
 // ws : handles the connection to the server over socket.io (websocket whenever possible)
 
-miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
+miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 
 	ws.init = function(){
 		var pingRegex = new RegExp('@'+me.name+'(\\b|$)'),
@@ -11,14 +11,25 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		ws.on = socket.on.bind(socket);
 
 		function messagesIn(messages){
-			(Array.isArray(messages) ? messages : [messages]).forEach(function(message){
+			var	visible = vis(),
+				isAtBottom = gui.isAtBottom(),
+				shouldStickToBottom = isAtBottom || info.state!=='connected';
+			messages = Array.isArray(messages) ? messages.sort(function(m1,m2){ return m1.id-m2.id }) : [messages];
+			messages.forEach(function(message){
 				if (chat.trigger('incoming_message', message) === false) return;
-				md.addMessage(message);
+				if (shouldStickToBottom && !visible) {
+					var $lastSeen = $('#messages .rvis').last();
+					if ($lastSeen.length) {
+						if ($lastSeen.offset().top<10) shouldStickToBottom = false;
+					}
+				}
+				var $md = md.addMessage(message, shouldStickToBottom);
+				$md.addClass(visible||info.state!=='connected' ? 'rvis' : 'rnvis');
 				if (message.id) {
 					md.updateNotableMessage(message);
-					if ((message.changed||message.created)>chat.enterTime && message.content) {
-						notif.touch(message.id, pingRegex.test(message.content), message.authorname, message.content);
-					}
+				}
+				if ((message.changed||message.created)>chat.enterTime && message.content) {
+					notif.touch(message.id, pingRegex.test(message.content), message.authorname, message.content, room, $md);
 				}
 			});
 			md.updateLoaders();
@@ -48,11 +59,10 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 
 		socket
 		.on('ready', function(){			
-			info.state = 'ready';
+			info.state = 'entering';
 			socket.emit('enter', room.id);
 		})
 		.on('apiversion', function(vers){
-			console.log("RECEIVE ", vers);
 			if (!miaou.apiversion) miaou.apiversion=vers;
 			else if (miaou.apiversion<vers) location.reload();
 		})
@@ -98,6 +108,7 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		})
 		.on('welcome', function(){
 			info.state = 'connected';
+			gui.entered = true;
 			if (location.hash) md.focusMessage(+location.hash.slice(1));
 			else gui.scrollToBottom();
 			usr.showEntry(me);
@@ -131,9 +142,8 @@ miaou(function(ws, chat, gui, hist, md, mod, usr, ed){
 		})
 		.on('autocompleteping', ed.proposepings)
 		.on('hist', hist.show)
-		.on('pings', chat.pings)
-		.on('ping', chat.ping)
-		.on('rm_pings', chat.removeRoomPings)		
+		.on('pings', notif.pings)
+		.on('rm_ping', notif.removePing)
 		.on('disconnect', function(){ console.log('DISCONNECT') })
 		.on('enter',usr.showEntry)
 		.on('leave', usr.showLeave)

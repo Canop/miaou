@@ -1,4 +1,4 @@
-miaou(function(games, chat, gui, md, ms, plugins, ws){
+miaou(function(games, chat, md, ms, notif, plugins, ws){
 
 	function send(m, game, verb, o){
 		o = o || {};
@@ -93,7 +93,7 @@ miaou(function(games, chat, gui, md, ms, plugins, ws){
 					if (!game) return;
 					var playername = game.players[arg.move.p].name;
 					if (games[game.type].move($message.find('.content'), m, game, arg.move) && game.players[+!arg.move.p].id===me.id) {
-						gui.touch(m.id, true, playername, playername + ' made a move in your Tribo game');
+						notif.touch(m.id, true, playername, playername + ' made a move in your Tribo game');
 					}
 				});
 			});

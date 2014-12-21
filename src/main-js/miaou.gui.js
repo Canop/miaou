@@ -1,6 +1,6 @@
 
-miaou(function(gui, chat, ed, hist, md, mh, ms, horn, prof, usr, win, ws, wz){
-	
+miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws, wz){
+		
 	gui.mobile = $(document.body).hasClass('mobile');
 	
 	// returns true if an event is over an element
@@ -21,11 +21,14 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, horn, prof, usr, win, ws, wz){
 		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
 	}
 
-	gui.scrollToBottom = function(){
-		setTimeout(function(scroller){ // because it doesn't always work on Firefox without this 
-			$(scroller).scrollTop(scroller.scrollHeight);
-			hist.showPage();
-		}, 10, document.getElementById('message-scroller'));
+	function _scrollToBottom(){
+		var scroller = document.getElementById('message-scroller');
+		$(scroller).scrollTop(scroller.scrollHeight);
+	}
+
+	gui.scrollToBottom = function($m){
+		_scrollToBottom();
+		if ($m) $m.find('img').load(function(){ console.log('img load'); _scrollToBottom() });
 	}
 	
 	gui.init = function(){
@@ -115,7 +118,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, horn, prof, usr, win, ws, wz){
 			var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
 			if (message.vote) ws.emit('vote', {action:'remove', mid:message.id, level:message.vote});
 			if (message.vote!=vote) ws.emit('vote', {action:'add', mid:message.id, level:vote});
-			gui.userAct();
+			notif.userAct();
 			return false;
 		})
 		.on('click', '.unpin', function(){

@@ -1,4 +1,4 @@
-var	apiversion = 20,
+var	apiversion = 23,
 	config,
 	path = require('path'),
 	maxContentLength,
@@ -75,11 +75,12 @@ Shoes.emitToRoom = function(key, m){
 	io.sockets.in(this.room.id).emit(key, clean(m));
 }
 // emits something to all sockets of a given user. Returns the number of sockets
-Shoes.emitToAllSocketsOfUser = function(key, args){
+Shoes.emitToAllSocketsOfUser = function(key, args, onlyOtherSockets){
 	var	currentUserId = this.publicUser.id,
 		nbs = 0;
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
+		if (onlyOtherSockets && socket === this.socket) continue;
 		if (socket && socket.publicUser && socket.publicUser.id===currentUserId) {
 			socket.emit(key, args);
 			nbs++;
@@ -249,21 +250,11 @@ function handleUserInRoom(socket, completeUser){
 	.on('ban', function(ban){
 		auths.wsOnBan(shoe, db, ban);
 	})
-	.on('clear_pings', function(lastPingTime){ // tells that pings in the room have been seen, and ask if there are pings in other rooms
-		if (!shoe.room) return console.log('No room in clear_pings');
-		db.on([shoe.room.id, shoe.publicUser.id])
-		.spread(db.deleteRoomPings)
+	.on('rm_ping', function(mid){ // remove the ping(s) related to that message and propagate to other sockets of same user
+		db.on([mid, shoe.publicUser.id])
+		.spread(db.deletePing)
 		.then(function(){
-			return this.fetchUserPingRooms(shoe.publicUser.id, lastPingTime);
-		}).then(function(pings){
-			socket.emit('pings', pings);
-		}).finally(db.off);
-	})
-	.on('rm_pings', function(roomIds){ // remove all pings of the specified room Ids and propagate to other sockets of same user
-		db.on([roomIds, shoe.publicUser.id])
-		.spread(db.deleteRoomsPings)
-		.then(function(){
-			shoe.emitToAllSocketsOfUser('rm_pings', roomIds);
+			shoe.emitToAllSocketsOfUser('rm_ping', mid, true);
 		}).finally(db.off);
 	})
 	.on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
@@ -309,6 +300,9 @@ function handleUserInRoom(socket, completeUser){
 			}, {}));
 			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);
 		}).then(function(){
+			return this.fetchUserPings(completeUser.id);
+		}).then(function(pings){
+			if (pings.length) socket.emit('pings', pings);
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
 			socketWaitingApproval.forEach(function(o){
 				if (o.roomId===shoe.room.id && o.ar) socket.emit('request', o.ar);
@@ -498,19 +492,20 @@ function handleUserInRoom(socket, completeUser){
 					pings = pings.map(function(s){ return s.slice(1) });
 					var remainingpings = [];
 					pings.forEach(function(username){
+						//~ console.log("User is in room : ", !!shoe.userSocket(username));
 						if (shoe.userSocket(username)) return;
 						// user isn't in the room, we notify him with a cross-room ping in the other rooms
 						var pinged = false;
 						for (var clientId in io.sockets.connected) {
 							var socket = io.sockets.connected[clientId];
 							if (socket && socket.publicUser && socket.publicUser.name===username) {
-								socket.emit('ping', {r:shoe.room, m:m});
+								socket.emit('pings', [{r:shoe.room.id, rname:shoe.room.name, mid:m.id}]);
 								pinged = true;
 							}
 						}
-						if (!pinged) {
+						//~ if (!pinged) {
 							remainingpings.push(username);
-						}
+						//~ }
 					});
 					if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
 				}

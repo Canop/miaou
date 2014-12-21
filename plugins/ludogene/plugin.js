@@ -127,6 +127,7 @@ exports.registerGameObserver = function(type, cb){
 // This function is just on for a temporary time.
 // Its goal is to cure messages containing games with the old saving format
 // This part will be removed as soon as I've cured enough messages
+/*
 exports.onSendMessage = function(shoe, m, send){
 	if (/^!!game /.test(m.content)) {
 		var match = m.content.match(/!!game @\S{3,} (.*)$/);
@@ -145,4 +146,4 @@ exports.onSendMessage = function(shoe, m, send){
 		}
 	}
 }
-
+*/
