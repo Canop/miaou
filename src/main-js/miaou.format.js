@@ -102,7 +102,7 @@
 		return s.split('`').map(function(t,i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
-			.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>,]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
+			.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d+)\)/g, function(s,t,r,_,m){ // exemple : [lien interne miaou](7#123456)
 				if (!(r||room)) return s;
 				return '<a target=_blank href='+(r||room.id)+'#'+m+'>'+t+'</a>';

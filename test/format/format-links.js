@@ -16,6 +16,10 @@ buster.testCase("Formatting - Links", {
 		"[dystroy](http://dystroy.org)",
 		'<a target=_blank href="http://dystroy.org">dystroy</a>'
 	),
+	"markdown link with commas": t(
+		"[dystroy](http://dystroy.org/bla,bla,bla)",
+		'<a target=_blank href="http://dystroy.org/bla,bla,bla">dystroy</a>'
+	),
 	"// markdown link with an URL as name": t(
 		'[http://dystroy.org](http://dystroy.org/cv)',
 		'<a target="_blank" href="http://dystroy.org/cv">http://dystroy.org</a>'
