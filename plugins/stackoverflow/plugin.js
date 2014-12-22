@@ -68,28 +68,17 @@ exports.externalProfile = {
 	}, render: renderSOProfile
 }
 
-// intercepts links to wikipedia and sends boxed abstracts.
-// It directly fetches the page because I don't find anything usable
-//  for representation using the Wikipedia API.
+// intercepts links and sends boxed abstracts.
 // Requests are queued and only one at a time is done.
+// As it is done each time a message is sent, performances are critical
 exports.onSendMessage = function(shoe, m, send){
-	// TODO How to avoid using two regexes here ?
 	if (!m.content || !m.id) return;
-	var r = r = /(?:^|\n)\s*https?:\/\/stackoverflow.com\/questions\/(\d+)[^\s#]+(#comment\d+_\d+)?\S*\s*(?:$|\n)/gm,
-		match;
-	while (match=r.exec(m.content)) {
-		var task = { mid:m.id, line:match[0], send:send };
-		if (match[2]) {
-			task.type = "comments";
-			task.num = +match[2].match(/^.{8}(\d+)/)[1];
-		} else {
-			task.type = "questions";
-			task.num = +match[1];
-		}
+	soboxer.rawTasks(m.content).forEach(function(task){
+		task.mid = m.id;
+		task.send = send;
 		soboxer.addTask(task);
-	}
+	});
 }
-
 
 exports.init = function(miaou){
 	config = miaou.config;

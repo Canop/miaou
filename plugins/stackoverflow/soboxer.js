@@ -13,7 +13,8 @@ var	http = require('http'),
 	tasks = new Deque(2000), currentTask;
 
 var handlers = {
-	"questions":{
+	"SO question":{
+		category:"questions",
 		filter:"!L_Zm1rmoFy)u)LqgLTvHLi",
 		dobox:function(item){ // builds the HTML of a question from its JSON element as sent by the SO API
 			var side = '', main = '';
@@ -33,7 +34,28 @@ var handlers = {
 			return '<div class=stackoverflow><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
 		}
 	},
-	"comments":{
+	"SO answer":{
+		category:"answers",
+		filter:"!)6EG5Z9Ys.RpJe_vSYewAIdDZ-cm",
+		dobox:function(item){ // builds the HTML of an answer from its JSON element as sent by the SO API
+			var side = '', main = '';
+
+			side += '<div class=so-type>Answer</div>';
+			side += '<div class="so-score'+(item.is_accepted?' so-accepted':'')+'">Score: <span class=num>'+item.score+'</span></div>';
+			side += '<img class=so-owner-img src="'+item.owner.profile_image+'">';
+			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
+
+			main += '<a target=_blank class=so-title href="'+item.link+'">'+
+				'<img src=http://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png width=40>'+
+				item.title+'</a>';
+			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
+			main += '<div class=so-body>'+item.body+'</div>';
+			
+			return '<div class=stackoverflow><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
+		}
+	},
+	"SO comment":{
+		category:"comments",
 		filter:"!*K)GSjDWh5D7ZCvl",
 		dobox:function(item){
 			var side = '', main = '';
@@ -82,6 +104,7 @@ function dequeue(){
 	var task = tasks.shift();
 	if (!task) return;
 	currentTask = task;
+	//~ console.log("Doing", task);
 	var box = cache.get(task.key);
 	if (box !== undefined) {
 		//~ console.log('SO box', task.key, 'found in cache');
@@ -92,8 +115,9 @@ function dequeue(){
 		}, 50);
 	}
 	var handler = handlers[task.type],
-		url = apiurl+task.type+"/"+task.num+"?site=stackoverflow&filter="+handler.filter;
+		url = apiurl+handler.category+"/"+task.num+"?site=stackoverflow&filter="+handler.filter;
 	if (apikey) url += "&key="+apikey;
+	//~ console.log("SE API URL", url);
 	getFromSO(url, function(error, data) {
 		//~ console.log('SO box', task.key, 'fetched');
 		currentTask = null;
@@ -103,7 +127,7 @@ function dequeue(){
 			cache.set(task.key, null, TTL);
 			return;
 		}
-		//~ console.dir(data);
+		console.dir(data);
 		if (!data.items || !data.items.length) {
 			console.log("invalid answer (or bad SO url)");
 			cache.set(task.key, null, TTL);
@@ -117,7 +141,7 @@ function dequeue(){
 
 // task is an object whose properties are
 //  - line : the line of text (URL to SO)
-//  - type : "questions" | "answers" | "comments"
+//  - type : "SO question" | "SO answer" | "SO comment" etc.
 //  - num  : id of the thing
 //  - mid  : the id of the message 
 //  - send : box sending function
@@ -126,6 +150,31 @@ exports.addTask = function(task){
 	tasks.push(task);
 	dequeue();
 }
+
+// read the text to find and analyze SE URL
+exports.rawTasks = function(text){
+	var	tasks = [],
+		r = /(?:^|\n)\s*https?:\/\/stackoverflow.com\/questions\/(\d+)\/([^\s#]*)(#\S+)?\s*(?:$|\n)/g,
+		match;
+	while (match=r.exec(text)) {
+		var	path = match[2], submatch,
+			hash = match[3],
+			task = { line:match[0] };
+		if ( path && (submatch=path.match(/^[^\/]+\/(\d+)$/)) ) {
+			task.type = "SO answer";
+			task.num = +submatch[1];			
+		} else if ( hash && (submatch=hash.match(/^#comment(\d+)_\d+$/)) ) {
+			task.type = "SO comment";
+			task.num = +submatch[1];			
+		} else {
+			task.type = "SO question";
+			task.num = +match[1];
+		}
+		tasks.push(task);
+	}
+	return tasks;
+}
+
 
 exports.init = function(miaou){
 	try {
