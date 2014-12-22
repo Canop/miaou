@@ -72,6 +72,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 		.on('click', '.editButton', function(){
 			prof.hide();
 			ed.editMessage($(this).closest('.message'));
+			return false;
 		})
 		.on('click', '.deleteButton', function(){
 			prof.hide();
@@ -102,9 +103,11 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 					}
 				}
 			});
+			return false;
 		})
 		.on('click', '.replyButton', function(){
 			ed.replyToMessage($(this).closest('.message'));
+			return false;
 		})
 		.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
 		.on('mouseleave', '.replyButton,.deleteButton,.editButton', prof.shownow)
@@ -145,15 +148,18 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 			$this.remove();
 			md.getMessages().forEach(function(m){ if (m.id<mid) olderPresent=m.id });
 			ws.emit('get_older', {from:mid, until:olderPresent});
+			return false;
 		})
 		.on('click', '.newerLoader', function(){
 			var $this = $(this), mid = +$this.attr('mid'), newerPresent = 0;
 			$this.remove();
 			md.getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
 			ws.emit('get_newer', {from:mid, until:newerPresent});
+			return false;
 		})
 		.on('click', '.pen', function(){
 			mh.show($(this).closest('.message').data('message'));
+			return false;
 		});
 		
 		if ($('#hist').length) {
@@ -187,6 +193,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 			} else {
 				$('#searchInput').focus();
 			}
+			return false;
 		}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
 
 		if (usr.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });
@@ -198,11 +205,13 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 			$('#input').focus();
 			$('#preview-panel').show();
 			gui.scrollToBottom();
+			return false;
 		});
 		$('#hidePreview').click(function(){
 			$('#input').focus();
 			$('#showPreview').show();
 			$('#preview-panel').hide();
+			return false;
 		});
 		$('#input').on('change keyup', function(){
 			$('#preview').html(miaou.mdToHtml(this.value, false, me.name));

@@ -33,6 +33,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws, wz){
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
 		wz.updateAll();		
+		return false;
 	}
 	md.closer = function(e){
 		var wab = gui.isAtBottom();
@@ -42,6 +43,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws, wz){
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
 		wz.updateAll();		
+		return false;
 	}
 		
 	// returns the html needed to fill the message menu (the thing at the top right visible on hover)
@@ -74,12 +76,15 @@ miaou(function(md, chat, gui, hist, ms, usr, ws, wz){
 		if (message.status.editable) $('<button>').addClass('editButton').text('edit').prependTo($decs);
 		if (message.status.answerable) $('<button>').addClass('replyButton').text('reply').prependTo($decs);
 		$('<div>').addClass('message-menu').html(getMessageMenuHtml(message)).appendTo(this);
+		return false;
 	}
 	md.hideMessageHoverInfos = function(){
 		$('.message-menu, .editButton, .replyButton, .deleteButton').remove();
+		return false;
 	}
 	md.toggleMessageHoverInfos = function(){
 		($('.message-menu, .editButton, .replyButton, .deleteButton', this).length ? md.hideMessageHoverInfos : md.showMessageHoverInfos).call(this);
+		return false;
 	}
 
 	// argument : messageId or $messageDiv
