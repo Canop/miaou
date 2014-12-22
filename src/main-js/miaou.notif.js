@@ -45,7 +45,7 @@ miaou(function(notif, chat, horn, md, ws){
 			if (room.id==n.r) localPings.push(n);
 			else otherRooms[n.r] = n.rname;
 		});
-		notifMessage = md.notificationMessage(function($c, close){
+		notifMessage = md.notificationMessage(function($c){
 			if (localPings.length) {
 				$('<div>').append(
 					$('<span>').text(localPings.length + (localPings.length>1 ? ' pings' : ' ping') + ' in this room.')

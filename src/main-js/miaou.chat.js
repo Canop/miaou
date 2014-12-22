@@ -1,5 +1,5 @@
 
-miaou(function(chat, md, notif, ws, gui, plugins, ws){
+miaou(function(chat, horn, md, notif, ws, gui, plugins, ws){
 	
 	chat.config = { // may be changed by server later
 		maxMessageContentSize: 8000,
@@ -17,6 +17,7 @@ miaou(function(chat, md, notif, ws, gui, plugins, ws){
 	var listeners = {};
 
 	chat.start = function(){
+		horn.init();
 		ws.init();
 		gui.init();
 		md.registerRenderer(function($c, message, oldMessage){

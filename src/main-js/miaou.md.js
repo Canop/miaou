@@ -82,7 +82,7 @@ miaou(function(md, chat, gui, hist, usr){
 			$md.reflow();
 		}
 	}
-	
+
 	// if the message is present among notable ones, we replace the div
 	//  with the new version
 	md.updateNotableMessage = function(m){
@@ -90,7 +90,7 @@ miaou(function(md, chat, gui, hist, usr){
 			$repl = $container.children('.message[mid='+m.id+']');
 		if ($repl.length) md.addSideMessageDiv(m, $container, $repl);
 	}
-	
+
 	// the passed upd object contains
 	//  ids : sorted ids of notable messages
 	//  m : optional message which is entering the list 
