@@ -6,6 +6,8 @@ miaou(function(horn, md){
 		quiet:    'ping-quiet.wav',
 		standard: 'ping-standard.wav'
 	};
+	var sound = userPrefs ? sounds[userPrefs.sound] : null,
+		audio;
 	
 	horn.init = function(){
 		if (!window.userPrefs || !window.Notification) {
@@ -14,10 +16,7 @@ miaou(function(horn, md){
 			// - a browser without Notification (Chrome/Android) 
 			horn.show = function(){};
 			return;
-		}
-		
-		var sound = userPrefs ? sounds[userPrefs.sound] : null,
-			audio;
+		}		
 			
 		if (sound) audio = new Audio('static/'+sound);
 		if (userPrefs.notif !== "never" && Notification.permission !== "granted") {
