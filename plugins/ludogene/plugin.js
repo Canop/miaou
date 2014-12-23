@@ -114,7 +114,7 @@ exports.registerCommands = function(cb){
 	});
 	cb({
 		name:'tribostats', fun:tribostats.onCommand,
-		help:"compute Tribo related stats for the rom. Type `!!tribostats [games|players|twc|matrix]`"
+		help:"compute Tribo related stats for the room. Type `!!tribostats [games|players|twc|matrix]`"
 	});
 }
 
