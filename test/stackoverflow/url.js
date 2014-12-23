@@ -49,5 +49,13 @@ buster.testCase("StackExchange URL Analyzing", {
 		"http://superuser.com/questions/308771/why-are-we-still-using-cpus-instead-of-gpus/308779#308779",
 		"superuser", false, "answers", 308779
 	),
+	"SO answer share": c(
+		"http://stackoverflow.com/a/17781189/263525",
+		"stackoverflow", false, "answers", 17781189
+	),
+	"Meta askubuntu share without user": c(
+		"http://meta.askubuntu.com/q/7070",
+		"askubuntu", true, "questions", 7070
+	)
 });
 

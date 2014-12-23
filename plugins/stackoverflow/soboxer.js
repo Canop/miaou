@@ -129,7 +129,7 @@ function dequeue(){
 			cache.set(task.key, null, TTL);
 			return;
 		}
-		console.dir(data);
+		//~ console.dir(data);
 		if (!data.items || !data.items.length) {
 			console.log("invalid answer (or bad SO url)");
 			cache.set(task.key, null, TTL);
@@ -158,13 +158,16 @@ exports.addTask = function(task){
 // read the text to find and analyze SE URL
 exports.rawTasks = function(text){
 	var	tasks = [],
-		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|stackexchange|superuser).com\/questions\/(\d+)\/([^\s#]*)(#\S+)?\s*(?:$|\n)/g,
+		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|stackexchange|superuser).com\/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/g,
 		match;
 	while (match=r.exec(text)) {
-		var	path = match[4], submatch,
-			hash = match[5],
+		var	path = match[5], submatch,
+			hash = match[6],
 			task = { line:match[0], meta:!!match[1], site:match[2] };
-		if ( path && (submatch=path.match(/^[^\/]+\/(\d+)$/)) ) {
+		if ( match[3]==='a' ) {
+			task.type = "answers";
+			task.num = +match[4];
+		} else if ( path && (submatch=path.match(/^\/[^\/]+\/(\d+)$/)) ) {
 			task.type = "answers";
 			task.num = +submatch[1];			
 		} else if ( hash && (submatch=hash.match(/^#comment(\d+)_\d+$/)) ) {
@@ -172,7 +175,7 @@ exports.rawTasks = function(text){
 			task.num = +submatch[1];			
 		} else {
 			task.type = "questions";
-			task.num = +match[3];
+			task.num = +match[4];
 		}
 		tasks.push(task);
 	}
