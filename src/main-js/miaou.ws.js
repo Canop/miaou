@@ -25,11 +25,12 @@ miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 				}
 				var $md = md.addMessage(message, shouldStickToBottom);
 				$md.addClass(visible||info.state!=='connected' ? 'rvis' : 'rnvis');
-				if (message.id) {
-					md.updateNotableMessage(message);
-				}
-				if ((message.changed||message.created)>chat.enterTime && message.content) {
-					notif.touch(message.id, pingRegex.test(message.content), message.authorname, message.content, room, $md);
+				var ping = pingRegex.test(message.content);
+				if (message.id) md.updateNotableMessage(message);
+				if (
+					(message.id||ping) && (message.changed||message.created)>chat.enterTime && message.content)
+				) {
+					notif.touch(message.id, ping, message.authorname, message.content, room, $md);
 				}
 			});
 			md.updateLoaders();
