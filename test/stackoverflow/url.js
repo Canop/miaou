@@ -2,22 +2,52 @@ var	buster = require("buster"),
 	boxer = require('../../plugins/stackoverflow/soboxer.js');
 
 
-function c(text, type, num){
+function c(text, site, meta, type, num){
 	return function(){
 		var tasks = boxer.rawTasks(text);
-		if (!type) {
+		if (!site) {
 			buster.assert.equals(tasks.length, 0);
 			return;
 		}
 		buster.assert.equals(tasks.length, 1);
+		buster.assert.equals(tasks[0].site, site);
+		buster.assert.equals(tasks[0].meta, meta);
 		buster.assert.equals(tasks[0].type, type);
 		buster.assert.equals(tasks[0].num, num);
 	}
 }
 
 buster.testCase("StackExchange URL Analyzing", {
-    "nothing": c("http://stackoverflow.com/questions/"),
-    "SO question": c("http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go", "SO question", 11353679),
-    "SO comment": c("http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go#comment23781666_11357116", "SO comment", 23781666),
-    "SO answer": c("http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go/11357116#11357116", "SO answer", 11357116)
+   "nothing": c(
+		"http://stackoverflow.com/questions/"
+	),
+    "SO question": c(
+		"http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go",
+		"stackoverflow", false, "questions", 11353679
+	),
+    "SO comment": c(
+		"http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go#comment23781666_11357116",
+		"stackoverflow", false, "comments", 23781666
+	),
+    "SO answer": c(
+		"http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go/11357116#11357116",
+		"stackoverflow", false, "answers", 11357116
+	),
+    "Meta StackExchange answer": c(
+		"http://meta.stackexchange.com/questions/203346/flags-in-chat-are-defective-by-design/204564#204564",
+		"stackexchange", true, "answers", 204564
+	),
+    "AskUbuntu question": c(
+		"http://askubuntu.com/questions/339354/cant-alloc-filename-when-executing-mdb-export-on-a-mounted-file",
+		"askubuntu", false, "questions", 339354
+	),
+    "Meta AskUbuntu question": c(
+		"http://meta.askubuntu.com/questions/7070/do-users-have-to-lose-their-sense-of-humour-to-answer-questions-on-the-askubuntu",
+		"askubuntu", true, "questions", 7070
+	),
+	"SuperUser answer": c(
+		"http://superuser.com/questions/308771/why-are-we-still-using-cpus-instead-of-gpus/308779#308779",
+		"superuser", false, "answers", 308779
+	),
 });
+

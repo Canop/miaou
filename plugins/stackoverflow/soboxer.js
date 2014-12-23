@@ -11,12 +11,18 @@ var	http = require('http'),
 	apikey, // necessary to get a bigger quota (10 000 instead of 300)
 	TTL = 15*60*1000,
 	tasks = new Deque(2000), currentTask;
+	
+function logoCDN(task){
+	var img = '<img src=http://cdn.sstatic.net/'+task.site;
+	if (task.meta) img += 'meta';
+	img += '/img/apple-touch-icon.png width=40>';
+	return img;
+}
 
 var handlers = {
-	"SO question":{
-		category:"questions",
+	"questions":{
 		filter:"!L_Zm1rmoFy)u)LqgLTvHLi",
-		dobox:function(item){ // builds the HTML of a question from its JSON element as sent by the SO API
+		dobox:function(item, task){ // builds the HTML of a question from its JSON element as sent by the SO API
 			var side = '', main = '';
 
 			side += '<div class=so-type>Question</div>';
@@ -25,19 +31,16 @@ var handlers = {
 			side += '<img class=so-owner-img src="'+item.owner.profile_image+'">';
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 
-			main += '<a target=_blank class=so-title href="'+item.link+'">'+
-				'<img src=http://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png width=40>'+
-				item.title+'</a>';
+			main += '<a target=_blank class=so-title href="'+item.link+'">'+logoCDN(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
 			
-			return '<div class=stackoverflow><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
+			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
 		}
 	},
-	"SO answer":{
-		category:"answers",
+	"answers":{
 		filter:"!)6EG5Z9Ys.RpJe_vSYewAIdDZ-cm",
-		dobox:function(item){ // builds the HTML of an answer from its JSON element as sent by the SO API
+		dobox:function(item, task){ // builds the HTML of an answer from its JSON element as sent by the SO API
 			var side = '', main = '';
 
 			side += '<div class=so-type>Answer</div>';
@@ -46,18 +49,17 @@ var handlers = {
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 
 			main += '<a target=_blank class=so-title href="'+item.link+'">'+
-				'<img src=http://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png width=40>'+
+				'<img src=http://cdn.sstatic.net/'+task.site+'/img/apple-touch-icon.png width=40>'+
 				item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
 			
-			return '<div class=stackoverflow><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
+			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
 		}
 	},
-	"SO comment":{
-		category:"comments",
+	"comments":{
 		filter:"!*K)GSjDWh5D7ZCvl",
-		dobox:function(item){
+		dobox:function(item, task){
 			var side = '', main = '';
 
 			side += '<div class=so-type>Comment</div>';
@@ -69,7 +71,7 @@ var handlers = {
 				Date(item.creation_date)+ // todo make the browser compute the date using the locale
 				'</i></a>';
 			
-			return '<div class=stackoverflow><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
+			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
 			
 		}
 	}
@@ -115,7 +117,7 @@ function dequeue(){
 		}, 50);
 	}
 	var handler = handlers[task.type],
-		url = apiurl+handler.category+"/"+task.num+"?site=stackoverflow&filter="+handler.filter;
+		url = apiurl+task.type+"/"+task.num+"?site="+(task.meta?'meta.':'')+task.site+"&filter="+handler.filter;
 	if (apikey) url += "&key="+apikey;
 	//~ console.log("SE API URL", url);
 	getFromSO(url, function(error, data) {
@@ -133,7 +135,7 @@ function dequeue(){
 			cache.set(task.key, null, TTL);
 			return;
 		}
-		var box = handler.dobox(data.items[0]);
+		var box = handler.dobox(data.items[0], task);
 		cache.set(task.key, box, TTL);
 		task.send('box', {mid:task.mid, from:task.line, to:box});	   
 	});
@@ -141,7 +143,9 @@ function dequeue(){
 
 // task is an object whose properties are
 //  - line : the line of text (URL to SO)
-//  - type : "SO question" | "SO answer" | "SO comment" etc.
+//  - type : "questions" | "answers" | "comments"
+//  - site : "stackoverflow" | "askubuntu" | ...
+//  - meta : false | true
 //  - num  : id of the thing
 //  - mid  : the id of the message 
 //  - send : box sending function
@@ -154,21 +158,21 @@ exports.addTask = function(task){
 // read the text to find and analyze SE URL
 exports.rawTasks = function(text){
 	var	tasks = [],
-		r = /(?:^|\n)\s*https?:\/\/stackoverflow.com\/questions\/(\d+)\/([^\s#]*)(#\S+)?\s*(?:$|\n)/g,
+		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|stackexchange|superuser).com\/questions\/(\d+)\/([^\s#]*)(#\S+)?\s*(?:$|\n)/g,
 		match;
 	while (match=r.exec(text)) {
-		var	path = match[2], submatch,
-			hash = match[3],
-			task = { line:match[0] };
+		var	path = match[4], submatch,
+			hash = match[5],
+			task = { line:match[0], meta:!!match[1], site:match[2] };
 		if ( path && (submatch=path.match(/^[^\/]+\/(\d+)$/)) ) {
-			task.type = "SO answer";
+			task.type = "answers";
 			task.num = +submatch[1];			
 		} else if ( hash && (submatch=hash.match(/^#comment(\d+)_\d+$/)) ) {
-			task.type = "SO comment";
+			task.type = "comments";
 			task.num = +submatch[1];			
 		} else {
-			task.type = "SO question";
-			task.num = +match[1];
+			task.type = "questions";
+			task.num = +match[3];
 		}
 		tasks.push(task);
 	}
