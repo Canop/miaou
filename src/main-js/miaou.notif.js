@@ -2,6 +2,10 @@
 
 miaou(function(notif, chat, horn, md, ws){
 				
+	//~ le ping concernant un message que tu as probablement vu (tu étais là peu avant ou la fenêtre était visible)
+	 //~ n'apparait pas tout de suite (il est dans un état non acquité mais non visible) et il est automatiquement
+	  //~ acquité si tu écris peu après, ou si tu réponds
+				
 	// $m is a reference to the message element (useful when there's no message id)
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid, $m:message}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
