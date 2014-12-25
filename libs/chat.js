@@ -30,20 +30,20 @@ exports.appGet = function(req, res, db){
 		req.session.room = room;
 		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
 			return this.getLastAccessRequest(room.id, req.user.id).then(function(ar){
-				res.render('request.jade', { room:room, lastAccessRequest:ar });
+				res.render('request.jade', { vars:{ room:room }, lastAccessRequest:ar });
 			});
 		}
 		var locals = {
-			user:JSON.stringify(req.user),
+			me:req.user,
 			room:room,
 			userPrefs:userPrefs,
-			pluginsToStart:JSON.stringify(clientSidePluginNames)
+			pluginsToStart:clientSidePluginNames
 		};
 		if (server.mobile(req)) {
-			res.render('chat.mob.jade', locals);
+			res.render('chat.mob.jade', {vars:locals});
 		} else {
 			locals.theme = prefs.theme(userPrefs, req.param("theme"));
-			res.render('chat.jade', locals);
+			res.render('chat.jade', {vars:locals});
 		}
 	}).catch(db.NoRowError, function(){
 		// not an error as it happens when there's no room id in url

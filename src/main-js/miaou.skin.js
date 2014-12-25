@@ -31,7 +31,5 @@ miaou(function(skin){
 		edit:  getCssBackground(/^\.wzin-edit$/),
 		reply: getCssBackground(/^\.wzin-reply$/)
 	}
-	
-	console.log("skin:", skin);
 
 });

@@ -1,9 +1,9 @@
 // ws : handles the connection to the server over socket.io (websocket whenever possible)
 
-miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
+miaou(function(ws, chat, gui, hist, locals, md, mod, notif, usr, ed){
 
 	ws.init = function(){
-		var pingRegex = new RegExp('@'+me.name+'(\\b|$)'),
+		var pingRegex = new RegExp('@'+locals.me.name+'(\\b|$)'),
 			info = { state:'connecting', start:Date.now() },
 			socket = io.connect(location.origin);
 
@@ -28,9 +28,9 @@ miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 				var ping = pingRegex.test(message.content);
 				if (message.id) md.updateNotableMessage(message);
 				if (
-					(message.id||ping) && (message.changed||message.created)>chat.enterTime && message.content)
+					(message.id||ping) && (message.changed||message.created)>chat.enterTime && message.content
 				) {
-					notif.touch(message.id, ping, message.authorname, message.content, room, $md);
+					notif.touch(message.id, ping, message.authorname, message.content, locals.room, $md);
 				}
 			});
 			md.updateLoaders();
@@ -61,7 +61,7 @@ miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 		socket
 		.on('ready', function(){			
 			info.state = 'entering';
-			socket.emit('enter', room.id);
+			socket.emit('enter', locals.room.id);
 		})
 		.on('apiversion', function(vers){
 			if (!miaou.apiversion) miaou.apiversion=vers;
@@ -77,7 +77,7 @@ miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 			for (var key in commands) chat.commands[key] = commands[key];
 		})
 		.on('get_room', function(unhandledMessage){
-			socket.emit('enter', room.id);
+			socket.emit('enter', locals.room.id);
 			socket.emit('message', unhandledMessage);
 		})
 		.on('message', messagesIn)
@@ -85,15 +85,15 @@ miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 		.on('merge', merge)
 		.on('mod_dialog', mod.dialog)
 		.on('room', function(r){
-			if (room.id!==r.id) {
+			if (locals.room.id!==r.id) {
 				console.log('SHOULD NOT HAPPEN!');
 			}
-			room = r;
+			locals.room = r;
 			localStorage['successfulLoginLastTime'] = "yes";
-			localStorage['room'] = room.id;
+			localStorage['room'] = locals.room.id;
 			notif.updateTab(0, 0);
-			$('#roomname').text(room.name);
-			$('#roomdescription').html(miaou.mdToHtml(room.description));
+			$('#roomname').text(locals.room.name);
+			$('#roomdescription').html(miaou.mdToHtml(locals.room.description));
 		})
 		.on('box', md.box)
 		.on('notables', function(notableMessages){
@@ -104,7 +104,7 @@ miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 		.on('reconnect', function(){
 			console.log('RECONNECT, sending room again');
 			setTimeout(function(){
-				socket.emit('enter', room.id);
+				socket.emit('enter', locals.room.id);
 			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
 		})
 		.on('welcome', function(){
@@ -112,7 +112,7 @@ miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 			gui.entered = true;
 			if (location.hash) md.focusMessage(+location.hash.slice(1));
 			else gui.scrollToBottom();
-			usr.showEntry(me);
+			usr.showEntry(locals.me);
 		})
 		.on('invitation', function(invit){
 			var $md = $('<div>').html(

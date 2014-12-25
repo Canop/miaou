@@ -1,6 +1,7 @@
 // functions related to user profile displaying on hover
 
-miaou(function(prof){
+miaou(function(prof, locals){
+	
 	prof.shownow = function(){
 		if ($('.dialog').length) return;
 		// code in this function is a little messy, partly because it's used in many contexts
@@ -24,7 +25,7 @@ miaou(function(prof){
 		var userId, data;
 		if ( (data = $user.data('user')) || (data = $message.data('user')) || (data = $user.closest('.notification').data('user')) ) userId = data.id;
 		else userId = $message.data('message').author;
-		$p.load('publicProfile?user='+userId+'&room='+room.id);		
+		$p.load('publicProfile?user='+userId+'&room='+locals.room.id);		
 		$p.css(css).appendTo($container);
 		$user.addClass('profiled');
 	};

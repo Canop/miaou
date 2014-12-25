@@ -6,7 +6,9 @@ html
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js")
+		script(src="static/prefs.min.js")
 		style.
 			.CL, .CR {
 				background: $bg-color;
@@ -151,11 +153,3 @@ html
 					div.dialog-buttons
 						button#submit Save
 						button#close Home
-		script.
-			var externalProfileInfos = !{JSON.stringify(externalProfileInfos)},
-				valid = !{JSON.stringify(valid)},
-				langs = !{langs},
-				userinfo = !{userinfo},
-				userPrefs = !{JSON.stringify(userPrefs)},
-				tabletop = 250;
-		script(src="static/prefs.min.js")

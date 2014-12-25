@@ -1,4 +1,4 @@
-miaou(function(games, notif, ws){
+miaou(function(games, locals, notif, ws){
 
 	var T = 10, // size of the board in cells (not expected to change)
 		CS = 20, // size of a cell in pixels
@@ -13,7 +13,7 @@ miaou(function(games, notif, ws){
 		this.u = -1; // user index in the game
 		this.grads = colors.map(function(c){ return s.rgrad(0.3, 0.3, 1, c, '#000') });
 		this.holeGrad = s.rgrad(0.3, 0.3, 1, 'rgba(0,0,0,0.5)', bg);
-		g.players.forEach(function(p,i){ if (p.id===me.id) this.u=i }, this);
+		g.players.forEach(function(p,i){ if (p.id===locals.me.id) this.u=i }, this);
 		if (abstract) {
 			this.layout = "row";
 			this.W = availableWidth;

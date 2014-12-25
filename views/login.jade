@@ -6,6 +6,9 @@ html
 		link(rel="icon", type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
+		script(src="static/miaou.min.js")
+		script(src="static/login.min.js")
 		style.
 			#buttons {
 				line-height: 40px;
@@ -21,33 +24,3 @@ html
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="static/gh_ribbon_right_gray.png",alt="Fork me on GitHub")
 		
-		script.
-			if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent)) $(document.body).addClass('mobile');
-
-			var m = location.toString().match(/room=(\d+)/), strategies = !{JSON.stringify(oauth2Strategies)};
-			if (m) {
-				localStorage['login.room'] = m[1];
-			} else {
-				delete localStorage['login.room'];
-			}
-			if (localStorage['successfulLoginLastTime'] && localStorage['lastUsedStrategy'] && strategies[localStorage['lastUsedStrategy']]) {
-				delete localStorage['successfulLoginLastTime'];
-				$('#buttons').html('<i>Authentication in progress...</i>');
-				$('.toRemoveWhenLogin').remove();
-				setTimeout(function(){ location = strategies[localStorage['lastUsedStrategy']].url }, 100);
-			} else {
-				var names = {
-					google: "<span class=icon>&#xe818;</span> Google",
-					stackexchange: "<span class=icon>&#xe816;</span> StackExchange",
-					github: "<span class=icon>&#xe817;</span> GitHub",
-					reddit: "<span class=icon>&#xe819;</span> reddit"
-				};
-				for (var key in strategies) {
-					(function(key, strategy){
-						$('<button>').html(names[key]||key).click(function(){
-							localStorage['lastUsedStrategy'] = key;
-							location = strategies[key].url;
-						}).appendTo('#buttons');
-					})(key, strategies[key]);
-				}
-			}

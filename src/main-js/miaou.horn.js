@@ -1,16 +1,16 @@
 // manages desktop notifications and sounds
 
-miaou(function(horn, md){
+miaou(function(horn, locals, md){
 
 	var sounds = {
 		quiet:    'ping-quiet.wav',
 		standard: 'ping-standard.wav'
 	};
-	var sound = userPrefs ? sounds[userPrefs.sound] : null,
+	var sound = locals.userPrefs ? sounds[locals.userPrefs.sound] : null,
 		audio;
 	
 	horn.init = function(){
-		if (!window.userPrefs || !window.Notification) {
+		if (!locals.userPrefs || !window.Notification) {
 			// covers two cases :
 			// - a page with miaou.min.js but no prefs
 			// - a browser without Notification (Chrome/Android) 
@@ -19,7 +19,7 @@ miaou(function(horn, md){
 		}		
 			
 		if (sound) audio = new Audio('static/'+sound);
-		if (userPrefs.notif !== "never" && Notification.permission !== "granted") {
+		if (locals.userPrefs.notif !== "never" && Notification.permission !== "granted") {
 			md.notificationMessage(function($c, close){
 				$('<p>').appendTo($c).text("Please grant Miaou the permission to issue desktop notifications or change the settings.");
 				$('<button>').appendTo($c).text('Grant Permission (recommended)').click(function(){
@@ -32,7 +32,7 @@ miaou(function(horn, md){
 					close();
 				});
 				$('<button>').appendTo($c).text('Change Settings').click(function(){
-					window.location = 'prefs?room='+room.id+'#notifs';
+					window.location = 'prefs?room='+locals.room.id+'#notifs';
 				});
 			});
 		}
@@ -46,7 +46,7 @@ miaou(function(horn, md){
 		} else {
 			localStorage.lastnotif = mid;
 		}
-		var n = new Notification(authorname + ' in ' + room.name, {body: content});
+		var n = new Notification(authorname + ' in ' + locals.room.name, {body: content});
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
 		if (audio) {

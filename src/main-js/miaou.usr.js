@@ -1,6 +1,6 @@
 // functions related to users
 
-miaou(function(usr, mod, ed, ws){
+miaou(function(usr, locals, mod, ed, ws){
 
 	var levels = ['read', 'write', 'admin', 'own'];
 
@@ -10,7 +10,7 @@ miaou(function(usr, mod, ed, ws){
 
 	usr.showUserHoverButtons = function(){
 		var user = $(this).data('user');
-		if (user.name===me.name) return;
+		if (user.name===locals.me.name) return;
 		var decs = $('.decorations', this)
 		.append($('<button>').text('ping').click(function(){
 			ed.ping(user.name);
@@ -62,7 +62,7 @@ miaou(function(usr, mod, ed, ws){
 	// returns true if the user's authorization level in room is at least the passed one
 	usr.checkAuth = function(auth) {
 		for (var i=levels.length; i--;) {
-			if (levels[i]===room.auth) return true;
+			if (levels[i]===locals.room.auth) return true;
 			if (levels[i]===auth) return false;
 		}
 		return false;

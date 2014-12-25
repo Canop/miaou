@@ -1,4 +1,4 @@
-miaou(function(plugins, chat, gui, md, ws){
+miaou(function(plugins, chat, gui, locals, md, ws){
 	
 	"use strict";
 	
@@ -25,8 +25,8 @@ miaou(function(plugins, chat, gui, md, ws){
 		this.started = false;
 		this.ready = [false, false]; // ready : message rendered (but maybe no accept)
 		this.accept = [false, false]; // accept : user clicked the Start button and didn't click Stop
-		if (usernames[0]===me.name) this.index = 0;
-		else if (usernames[1]===me.name) this.index = 1;
+		if (usernames[0]===locals.me.name) this.index = 0;
+		else if (usernames[1]===locals.me.name) this.index = 1;
 		if (~this.index) this.ready[this.index] = true;
 	}
 	VD.prototype.render = function($c){ // renders the VD in a message, called only once

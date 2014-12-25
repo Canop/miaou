@@ -138,13 +138,8 @@ function startServer(){
 	
 	app.use(function(req, res, next) {
 		res.set("X-Frame-Options", "deny");
-		res.set("Content-Security-Policy", "script-src 'self' 'unsafe-inline' http://ajax.googleapis.com");
-		//~ I would like to use stricter script-src directives :
-		//~ res.set("Content-Security-Policy", "script-src 'self' http://ajax.googleapis.com");
-		//~ But that's not so easy.
-		//~ The problem is that part of the inline scripts is jade generated which
-		//~ makes them harder to move out of the HTML. A solution might be to move those variables
-		//~ into non javascript (json) inlined scripts but that's not very clean and a big overhead.
+		//~ res.set("Content-Security-Policy", "script-src 'self' 'unsafe-inline' http://ajax.googleapis.com");
+		res.set("Content-Security-Policy", "script-src 'self' http://ajax.googleapis.com");
 		return next();
 	});
 	

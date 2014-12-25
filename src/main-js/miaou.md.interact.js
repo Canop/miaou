@@ -4,7 +4,7 @@
 //  - hovering a message
 //  - closing/opening a big message
 
-miaou(function(md, chat, gui, hist, ms, usr, ws, wz){
+miaou(function(md, chat, gui, hist, locals, ms, usr, ws, wz){
 
 	// o : mid, level, diff, self, voter
 	// diff  : +1 or -1
@@ -14,7 +14,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws, wz){
 			var	$md = $(this),
 				m = $md.data('message');
 			m[o.level] = (m[o.level]||0)+o.diff;
-			if (o.voter===me.id) m.vote = o.diff>0 ? o.level : null;
+			if (o.voter===locals.me.id) m.vote = o.diff>0 ? o.level : null;
 			if ($md.closest('#messages').length) {
 				$md.find('.message-votes').remove();
 				$md.append($('<div/>').addClass('message-votes').html(md.votesAbstract(m)));
@@ -56,7 +56,7 @@ miaou(function(md, chat, gui, hist, ms, usr, ws, wz){
 		if (message.id) {
 			h += '<a class=link target=_blank href="'+md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ';
 			h += '<a class=makemwin title="float">&#xe81d;</a> ';
-			h += chat.voteLevels.slice(0, message.author===me.id ? 1 : 4).slice(usr.checkAuth('admin')?0:1).map(function(l){
+			h += chat.voteLevels.slice(0, message.author===locals.me.id ? 1 : 4).slice(usr.checkAuth('admin')?0:1).map(function(l){
 				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 			}).join('');
 			if (message.pin>(message.vote=="pin") && usr.checkAuth('admin')) {

@@ -5,6 +5,7 @@ html
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/help.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+		script(src="static/help.min.js")
 	body
 		div#summary
 			h1 Summary
@@ -221,21 +222,3 @@ html
 				h3 Use the software on your server
 				p You can, of course, it's open-source for a reason. Miaou also provides a <a href="https://github.com/Canop/miaou/blob/master/vagrant/vagrant.md">vagrant configuration</a> to help you quickly set up a development environment. It is based on puppet, so you can as well reuse it.
 				
-		script.
-			$('h2+div, h2+p, h3+div, h3+p').hide();
-			$('h2, h3').click(function(){
-				$(this).toggleClass('open').next('div, p').toggle();
-			}).each(function(){
-				var hash = '#' + $(this).text().replace(/\W/g, '_');
-				if (hash===location.hash) {
-					$(this).parents().prev('h2').add(this).click();
-				}
-				$(this).clone().appendTo('#summary').click(function(){
-					location.hash = hash;
-					location.reload();
-				});
-			});
-			$('#summary h1').click(function(){
-				location.hash = '';
-				location.reload();
-			});

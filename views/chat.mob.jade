@@ -7,7 +7,9 @@ html
 		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 		script(src="static/socket.io.min.js")
+		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js")
+		script(src="static/chat.mob.min.js")
 	body.chat.mobile
 		div.mtabs
 			div.mtab.closed#me(page="left") pre-loading...
@@ -43,35 +45,4 @@ html
 			textarea#input
 			button.small#send Send
 			
-		script.
-			var me = !{user},
-				room = !{JSON.stringify(room)},
-				userPrefs = !{JSON.stringify(userPrefs)},
-				pluginsToStart = !{pluginsToStart};
-			if (!room) {
-				location = 'rooms';
-			}
-			if (room.private) {
-				$('#roomname').addClass('private').attr('title', 'This room is private');
-			}
-			$('#help').click(function(){ window.open('help#Writing_Messages') });		
-			$('#changeroom').click(function(){ location = 'rooms' });
-			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
-			$('#me').text(me.name);
-			$('.tab').click(function(){
-				$('.tab').removeClass('selected');
-				$(this).addClass('selected');
-				$('.page').removeClass('selected').filter('#'+$(this).attr('page')).addClass('selected');
-			});
 
-			$('.mtab').click(function(){
-				$(this).toggleClass('open closed');
-				$('.mpage').eq($(this).index()).toggle();
-			});
-			$('#editProfile').click(function(){
-				location = 'prefs';
-			});
-			
-			miaou(function(chat){
-				chat.start();
-			});

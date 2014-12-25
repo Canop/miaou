@@ -81,7 +81,10 @@ miaou(function(hist, md, ws){
 			console.log('received histogram of another search', $('#searchInput').val().trim(), res);
 			return;
 		}
-		var records = res.hist, d = records[0].d, n = records[records.length-1].d - d,
+		$('#hist').empty();
+		var records = res.hist;
+		if (!records || !records.length) return;
+		var	d = records[0].d, n = records[records.length-1].d - d,
 			$hist = $('#hist'), maxn = 0, logmaxn,
 			$month, lastMonth;
 		$('#search-results .message.selected').removeClass('selected');
@@ -90,7 +93,7 @@ miaou(function(hist, md, ws){
 		});
 		if (n<0 || n>5000 || maxn==0) return console.log('invalid data', res);
 		logmaxn = Math.log(maxn);
-		$('#hist').empty()[n>30?'removeClass':'addClass']('zoomed');
+		$('#hist')[n>30?'removeClass':'addClass']('zoomed');
 		function day(d, n, m, sn, sm){
 			var date = new Date(d*24*60*60*1000),
 				month = miaou.MMM[date.getMonth()]+' '+date.getFullYear();

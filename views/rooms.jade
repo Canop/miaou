@@ -5,7 +5,9 @@ html
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js")
+		script(src="static/rooms.min.js")
 		style.
 			.CL, .CR {
 				background: $bg-color;
@@ -23,7 +25,7 @@ html
 		section#home-top
 			div.MP
 				div#langfilter
-					each lang, key in langs
+					each lang, key in vars.langs
 						div.lang.off(id=key)
 							img(src="static/langs/"+key+".png")
 				img(src="static/Miaou-300-f.png")
@@ -71,9 +73,3 @@ html
 		section#home-main.hastabs
 			div#home-main-content
 				div.table
-		script.
-			var	mobile = false,
-				rooms = !{JSON.stringify(rooms)},
-				langs = !{JSON.stringify(langs)},
-				tabletop = 250;
-		script(src="static/rooms.min.js")
