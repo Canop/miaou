@@ -31,7 +31,7 @@ var handlers = {
 			side += '<img class=so-owner-img src="'+item.owner.profile_image+'">';
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 
-			main += '<a target=_blank class=so-title href="'+item.link+'">'+logoCDN(task)+item.title+'</a>';
+			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
 			
@@ -48,7 +48,7 @@ var handlers = {
 			side += '<img class=so-owner-img src="'+item.owner.profile_image+'">';
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 
-			main += '<a target=_blank class=so-title href="'+item.link+'">'+
+			main += '<a target=_blank class=so-title href="'+task.line+'">'+
 				'<img src=http://cdn.sstatic.net/'+task.site+'/img/apple-touch-icon.png width=40>'+
 				item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
@@ -66,7 +66,7 @@ var handlers = {
 			side += '<div class=so-score>Score: <span class=num>'+item.score+'</span></div>';
 
 			main += '<span class=so-comment>'+item.body+'</span> - ';
-			main += '<a target=_blank class=so-comment-link href='+item.link+'">'+
+			main += '<a target=_blank class=so-comment-link href='+task.line+'">'+
 				item.owner.display_name+' <i>'+
 				Date(item.creation_date)+ // todo make the browser compute the date using the locale
 				'</i></a>';

@@ -28,7 +28,7 @@ miaou(function(ws, chat, gui, hist, md, mod, notif, usr, ed){
 				var ping = pingRegex.test(message.content);
 				if (message.id) md.updateNotableMessage(message);
 				if (
-					(message.id||ping) && (message.changed||message.created)>chat.enterTime && message.content)
+					(message.id||ping) && (message.changed||message.created)>chat.enterTime && message.content
 				) {
 					notif.touch(message.id, ping, message.authorname, message.content, room, $md);
 				}
