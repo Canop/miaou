@@ -104,8 +104,9 @@
 			return t
 			.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d+)\)/g, function(s,t,r,_,m){ // exemple : [lien interne miaou](7#123456)
-				if (!(r||(locals&&locals.room))) return s;
-				return '<a target=_blank href='+(r||locals.room.id)+'#'+m+'>'+t+'</a>';
+				r = r||(miaou&&miaou.locals&&miaou.locals.room.id);
+				if (!r) return s;
+				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
 			})
 			// fixme : the following replacement should not happen inside a link ( exemple :  [http://some.url](http://some.url) )
 			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig, '$1<a target=_blank href="$2">$2</a>') // exemple : http://dystroy.org
