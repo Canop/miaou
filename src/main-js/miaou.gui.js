@@ -1,5 +1,5 @@
 
-miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws, wz){
+miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, win, ws, wz){
 		
 	gui.mobile = $(document.body).hasClass('mobile');
 	
@@ -28,7 +28,9 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 
 	gui.scrollToBottom = function($m){
 		_scrollToBottom();
-		if ($m) $m.find('img').load(function(){ console.log('img load'); _scrollToBottom() });
+		if ($m && $m.find) { // FIXME : cleaner API
+			$m.find('img').load(function(){ console.log('img load'); _scrollToBottom() });
+		}
 	}
 	
 	gui.init = function(){
@@ -38,7 +40,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 			var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
 			if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
 				// it's an url towards a room or message on this server
-				if (room.id===+parts[2]) {
+				if (locals.room.id===+parts[2]) {
 					// it's an url for the same room
 					if (parts[4]) {
 						// it's an url for a message
@@ -196,9 +198,9 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 			return false;
 		}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
 
-		if (usr.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+room.id });
+		if (usr.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+locals.room.id });
 		else $('#editroom').hide();
-		$('#auths').click(function(){ location = 'auths?id='+room.id });			
+		$('#auths').click(function(){ location = 'auths?id='+locals.room.id });			
 				
 		$('#showPreview').click(function(){
 			$(this).hide();
@@ -214,7 +216,7 @@ miaou(function(gui, chat, ed, hist, md, mh, ms, notif, horn, prof, usr, win, ws,
 			return false;
 		});
 		$('#input').on('change keyup', function(){
-			$('#preview').html(miaou.mdToHtml(this.value, false, me.name));
+			$('#preview').html(miaou.mdToHtml(this.value, false, locals.me.name));
 		});
 			
 		// When the window is resized, all the messages have to be resized too.

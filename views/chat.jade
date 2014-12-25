@@ -1,12 +1,14 @@
 doctype html
-html(lang=room.lang)
+html(lang=vars.room.lang)
 	head
-		title Miaou
+		title=JSON.stringify(locals)
 		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet',href='static/themes/'+theme+'/miaou.css')
+		link(rel='stylesheet',href='static/themes/'+locals.theme+'/miaou.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 		script(src="static/socket.io.min.js")
+		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js")
+		script(src="static/chat.min.js")
 	body.chat
 		div#left
 			section#prefs
@@ -21,7 +23,7 @@ html(lang=room.lang)
 					div#messages
 				div#notifications
 				div#input-panel
-					textarea#input(lang=room.lang)
+					textarea#input(lang=vars.room.lang)
 					button.small#send Send
 					button.small#showPreview Preview
 					button.small#cancelEdit(style="display:none") Cancel
@@ -59,61 +61,4 @@ html(lang=room.lang)
 					i
 						p Type anything to search it (common English words are ignored)
 						p Hit <code>esc</code> to clear
-
-		script.
-			var me = !{user},
-				room = !{JSON.stringify(room)},
-				userPrefs = !{JSON.stringify(userPrefs)},
-				pluginsToStart = !{pluginsToStart};
-			if (room) window.name = 'room_'+room.id;			
-			else location = 'rooms';
-			if (room.private) {
-				$('#roomname').addClass('private').attr('title', 'This room is private');
-			}
-			if (room.dialog) {
-				$('#auths,#editroom').hide();
-			}
-			$('#help').click(function(){ window.open('help') });
-			$('#changeroom').click(function(){ window.open('rooms') });
-			$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
-			$('#me').text(me.name).append(' <span class=icon>\ue828</span>').attr('href', "prefs?room="+room.id);
-			
-			function tab(page){
-				$('.tab').removeClass('selected');
-				$('.tab[page='+page+']').addClass('selected');
-				$('.page').removeClass('selected');
-				$('#'+page).addClass('selected');
-				if (page==="search") {
-					miaou.hist.open();
-					$('#searchInput').focus();
-				} else if (page==="notablemessagespage") {
-					miaou.hist.close();	
-				}
-				miaou.md.resizeAll();
-			}
-			$('.tab').click(function(){
-				tab($(this).attr('page'));
-			});
-			
-			$('#uploadOpen').click(function(){
-				$('#upload-panel').show();
-				$('#input-panel').hide();
-			});
-			$('#cancelUpload').click(function(){
-				$('#upload-panel').hide();
-				$('#input-panel').show();
-			});
-			
-			$(window).on('keydown', function(e){
-				if (e.which===70 && e.ctrlKey) {
-					tab("search");
-					return false;
-				}
-			});
-						
-			miaou(function(chat){
-				chat.start();
-				$(window).keyup(function(e){
-					if (e.which===35) miaou.gui.scrollToBottom();
-				});
-			});
+		

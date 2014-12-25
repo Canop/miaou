@@ -29,8 +29,17 @@ miaou.min.js
 miaou.min.js.map
 static/intro.css
 static/intro2.css
+static/auths.min.js 
+static/chat.min.js 
+static/chat.mob.min.js 
+static/help.min.js 
+static/login.min.js 
 static/prefs.min.js
+static/request.min.js 
+static/room.min.js 
 static/rooms.min.js
+static/user.min.js 
+static/username.min.js 
 static/themes
 
 # execution byproducts

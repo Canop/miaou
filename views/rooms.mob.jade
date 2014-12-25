@@ -6,7 +6,9 @@ html
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js")
+		script(src="static/rooms.min.js")
 		style.
 			body.mobile {
 				padding: 0;
@@ -111,11 +113,4 @@ html
 				div.tab Dialog<br>Rooms
 		div#home-main-content
 			div.table
-
-		script.
-			var	mobile = true,
-				rooms = !{JSON.stringify(rooms)},
-				langs = !{JSON.stringify(langs)},
-				tabletop = 200;
-		script(src="static/rooms.min.js")
 

@@ -1,6 +1,6 @@
 // manages the list and dispatching of notifications
 
-miaou(function(notif, chat, horn, md, ws){
+miaou(function(notif, chat, horn, locals, md, ws){
 				
 	//~ le ping concernant un message que tu as probablement vu (tu étais là peu avant ou la fenêtre était visible)
 	 //~ n'apparait pas tout de suite (il est dans un état non acquité mais non visible) et il est automatiquement
@@ -22,7 +22,7 @@ miaou(function(notif, chat, horn, md, ws){
 	notif.nextPing = function(){
 		var done = false;
 		for (var i=0; i<notifications.length; i++) {
-			if (notifications[i].r==room.id) {
+			if (notifications[i].r==locals.room.id) {
 				if (done) {
 					return true;
 				} else {
@@ -46,7 +46,7 @@ miaou(function(notif, chat, horn, md, ws){
 		if (notifMessage) notifMessage.remove();
 		var	localPings = [], otherRooms = {};
 		notifications.forEach(function(n){
-			if (room.id==n.r) localPings.push(n);
+			if (locals.room.id==n.r) localPings.push(n);
 			else otherRooms[n.r] = n.rname;
 		});
 		notifMessage = md.notificationMessage(function($c){
@@ -101,25 +101,25 @@ miaou(function(notif, chat, horn, md, ws){
 	
 	// called in case of new message (or a new important event related to a message)
 	notif.touch = function(mid, ping, from, text, r, $md){
-		r = r || room;
+		r = r || locals.room;
 		var	visible = vis(),
 			userDidntJustAct = Date.now()-lastUserAction>1500;
 		if (ping && (mid||$md) && userDidntJustAct && !$('#mwin[mid='+mid+']').length) {
 			notif.pings([{r:r.id, rname:r.name, mid:mid, $md:$md}]);
 		}
-		if (!visible || userPrefs.nifvis==="yes") {
+		if (!visible || locals.userPrefs.nifvis==="yes") {
 			if (
-				( userPrefs.notif==="on_message" || (ping && userPrefs.notif==="on_ping") )
+				( locals.userPrefs.notif==="on_message" || (ping && locals.userPrefs.notif==="on_ping") )
 				 && userDidntJustAct
 			) {
-				horn.show(mid, r || room, from, text);					
+				horn.show(mid, r||locals.room, from, text);					
 			}
 		}
 		if (!visible) notif.updateTab(!!notifications.length, ++nbUnseenMessages);
 	}
 
 	notif.updateTab = function(hasPing, nbUnseenMessages){
-		var title = room.name,
+		var title = locals.room.name,
 			icon = 'static/M-32';
 		if (hasPing) {
 			title = '*'+title;
@@ -132,12 +132,13 @@ miaou(function(notif, chat, horn, md, ws){
 		$('#favicon').attr('href', icon+'.png');
 	}
 
-	vis(function(){
-		if (vis()) {
-			nbUnseenMessages = 0;
-			notif.updateTab(0, 0);
-			$('#input').focus();
-		}
-	});
-
+	notif.init = function(){
+		vis(function(){
+			if (vis()) {
+				nbUnseenMessages = 0;
+				notif.updateTab(0, 0);
+				$('#input').focus();
+			}
+		});
+	}
 });

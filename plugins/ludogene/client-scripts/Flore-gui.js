@@ -1,7 +1,7 @@
 // This is a temporary implementation for the Flore GUI
 // Hopefully I'll have a prettier rendering
 
-miaou(function(games, ws){
+miaou(function(games, locals, ws){
 
 	if (typeof Snap === 'undefined') return; // this file is part of the big minified file imported in all miaou pages, even the ones not importing snap-svg
 
@@ -19,7 +19,7 @@ miaou(function(games, ws){
 		this.u = -1; // user index in the game
 		this.colors = ['FloralWhite', 'LightPink'],
 		this.grads = this.colors.map(function(c){ return s.gradient("r(0.3,0.3,1)"+c+"-(0,0,0)") });
-		g.players.forEach(function(p,i){ if (p.id===me.id) this.u=i }, this);
+		g.players.forEach(function(p,i){ if (p.id===locals.me.id) this.u=i }, this);
 		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg);
 		if (abstract) {
 			this.layout = "row";

@@ -41,8 +41,7 @@ exports.appAllUsername = function(req, res, db){
 	}).then(function(){
 		var hasValidName = naming.isValidUsername(req.user.name);
 		res.render('username.jade', {
-			user: req.user,
-			valid : hasValidName,
+			vars: {valid : hasValidName},
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
 			error: error
 		});
@@ -99,7 +98,7 @@ exports.appGetUser = function(req, res, db){
 		]
 	}).spread(function(user, info, rooms){
 		rooms.forEach(function(r){ r.path = '../'+server.roomPath(r) });
-		res.render('user.jade', {user:user, userinfo:info, rooms:rooms});
+		res.render('user.jade', { vars:{user:user, userinfo:info, rooms:rooms} });
 	}).catch(db.NoRowError, function(){
 		server.renderErr(res, "User not found", '../');
 	}).catch(function(err){

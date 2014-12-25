@@ -1,4 +1,4 @@
-miaou(function(games, chat, md, ms, notif, plugins, ws){
+miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 
 	function send(m, game, verb, o){
 		o = o || {};
@@ -8,10 +8,10 @@ miaou(function(games, chat, md, ms, notif, plugins, ws){
 
 	function renderAsk($c, m, game){
 		var $p = $('<div>').addClass('game-proposal').appendTo($c);
-		if (game.players[0].name===me.name) {
+		if (game.players[0].name===locals.me.name) {
 			$p.append("<i>"+game.players[1].name+"</i> wants to play a game of "+game.type+" with you. ");
 			$('<button/>').text('Accept').click(function(){ send(m, game, "accept") }).appendTo($p);
-		} else if (game.players[1].name===me.name) {
+		} else if (game.players[1].name===locals.me.name) {
 			$p.append("You proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");
 		} else {
 			$p.append("<i>"+game.players[1].name+"</i> proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");
@@ -92,7 +92,7 @@ miaou(function(games, chat, md, ms, notif, plugins, ws){
 						game = messageGame(m);
 					if (!game) return;
 					var playername = game.players[arg.move.p].name;
-					if (games[game.type].move($message.find('.content'), m, game, arg.move) && game.players[+!arg.move.p].id===me.id) {
+					if (games[game.type].move($message.find('.content'), m, game, arg.move) && game.players[+!arg.move.p].id===locals.me.id) {
 						notif.touch(m.id, true, playername, playername + ' made a move in your Tribo game');
 					}
 				});

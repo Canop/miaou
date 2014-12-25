@@ -1,7 +1,7 @@
 // md is short for "message display"
 // Here are functions related to the display of messages in the chat and to the various message element lists
 
-miaou(function(md, chat, gui, hist, usr){
+miaou(function(md, chat, gui, hist, locals, usr){
 	var renderers = [], unrenderers = [];
 	
 	// registers a function which will be called when a message needs rendering
@@ -248,7 +248,7 @@ miaou(function(md, chat, gui, hist, usr){
 		}		
 		if (message.bot) $user.addClass('bot');
 		usr.insertInUserList({id:message.author, name:message.authorname}, message.changed||message.created);
-		if (message.authorname===me.name) {
+		if (message.authorname===locals.me.name) {
 			$md.addClass('me');
 			$('.error').remove();
 		}
@@ -281,9 +281,9 @@ miaou(function(md, chat, gui, hist, usr){
 		if (!$mc) $mc = $('<div>').addClass('content');
 		$mc.appendTo($md);
 		md.render($mc, message, oldMessage);
-		if (!gui.mobile && userPrefs.datdpl!=="hover") {
+		if (!gui.mobile && locals.userPrefs.datdpl!=="hover") {
 			var $mdate = $('<div>').addClass('mdate').text(miaou.formatTime(message.created)).appendTo($md);
-			if (userPrefs.datdpl!=="always") $mdate.hide();
+			if (locals.userPrefs.datdpl!=="always") $mdate.hide();
 		}
 		resize($md, shouldStickToBottom);
 		if (shouldStickToBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) gui.scrollToBottom($md);
@@ -301,7 +301,7 @@ miaou(function(md, chat, gui, hist, usr){
 			if (lastMessage && message.created-lastMessage.created > miaou.chat.DISRUPTION_THRESHOLD) {
 				$lastMessage.addClass('before-disrupt');
 				$message.addClass('after-disrupt');
-				if (userPrefs.datdpl==="on_breaks" && !gui.mobile) {
+				if (locals.userPrefs.datdpl==="on_breaks" && !gui.mobile) {
 					$messages.eq(i-1).add($message).find('.mdate').show();
 				}
 			}

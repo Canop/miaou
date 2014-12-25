@@ -143,14 +143,16 @@ exports.appAllPrefs = function(req, res, db){
 		var hasValidName = naming.isValidUsername(req.user.name);
 		res.render('prefs.jade', {
 			user: req.user,
-			userPrefs: userPrefs,
-			externalProfileInfos: externalProfileInfos,
-			valid : hasValidName,
+			error: error,
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			langs: JSON.stringify(langs.legal),
 			themes: themes,
-			userinfo: JSON.stringify(userinfo),
-			error: error
+			externalProfileInfos: externalProfileInfos,
+			vars:{
+				userPrefs: userPrefs,
+				valid : hasValidName,
+				langs: langs.legal,
+				userinfo: userinfo,
+			}
 		});
 	}).catch(function(err){
 		server.renderErr(res, err);

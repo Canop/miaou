@@ -35,6 +35,7 @@ exports.appGetAuths = function(req, res, db){
 			if (!dontlistasrecent[u.id]) unauthorizedUsers.push(u);
 		});
 		res.render('auths.jade', {
+			vars:{room:room}, 
 			room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers, bans:bans
 		});
 	}).catch(db.NoRowError, function(){

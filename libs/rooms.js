@@ -48,9 +48,9 @@ exports.appGetRoom = function(req, res, db){
 		if (!auths.checkAtLeast(room.auth, 'admin')) {
 			return server.renderErr(res, "Admin level is required to manage the room");
 		}
-		res.render('room.jade', { room:JSON.stringify(room), error:"null", langs:JSON.stringify(langs.legal) });
+		res.render('room.jade', {vars:{ room:room, error:null, langs:langs.legal }});
 	}).catch(db.NoRowError, function(){
-		res.render('room.jade', { room:"null", error:"null", langs:JSON.stringify(langs.legal) });
+		res.render('room.jade', {vars:{ room:null, error:null, langs:langs.legal }});
 	}).catch(function(err){
 		server.renderErr(res, err);
 	}).finally(db.off);
@@ -77,7 +77,7 @@ exports.appPostRoom = function(req, res, db){
 	.then(function(){
 		res.redirect(server.roomUrl(room));	// executes the room get
 	}).catch(function(err){
-		res.render('room.jade', { room: JSON.stringify(room), error: JSON.stringify(err.toString()) });
+		res.render('room.jade', {vars:{ room:room, error:err.toString() }});
 	}).finally(db.off);
 }
 
@@ -92,7 +92,11 @@ exports.appGetRooms = function(req, res, db){
 	})
 	.spread(function(rooms, pings){
 		rooms.forEach(function(r){ r.path = server.roomPath(r) });
-		res.render(server.mobile(req) ? 'rooms.mob.jade' : 'rooms.jade', { rooms:rooms, pings:pings, user:req.user, langs:langs.legal });
+		var mobile = server.mobile(req);
+		res.render(
+			mobile ? 'rooms.mob.jade' : 'rooms.jade',
+			{ vars:{rooms:rooms, langs:langs.legal, mobile:mobile}, user:req.user, pings:pings }
+		);
 	})
 	.catch(function(err){
 		server.renderErr(res, err);

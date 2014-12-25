@@ -120,3 +120,8 @@ function miaou(f){
 		}));
 	});
 }
+try {
+	miaou.locals = JSON.parse($('#locals').html());
+} catch(e) {
+	console.log("Error while loading locals");
+}
