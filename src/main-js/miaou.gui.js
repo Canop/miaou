@@ -3,18 +3,6 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		
 	gui.mobile = $(document.body).hasClass('mobile');
 	
-	// returns true if an event is over an element
-	gui.eventIsOver = function(event, o) {
-		if (!o.length) return false;
-		var pos = o.offset(), ex = event.pageX, ey = event.pageY;
-		return (
-			ex>=pos.left
-			&& ex<=pos.left+o.width()
-			&& ey>=pos.top
-			&& ey<pos.top+o.height()
-		);
-	}
-	
 	gui.isAtBottom = function(){
 		var $scroller = $('#message-scroller'), $messages = $('#messages'),
 			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
@@ -177,9 +165,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			.on('mouseenter', '.message', md.showMessageHoverInfos).on('mouseleave', '.message', md.hideMessageHoverInfos)
 			.on('mouseenter', '.user', prof.show);
 			$(document.body).on('mouseleave', '.profile', prof.hide)
-			.on('mouseleave', '.user', function(e){
-				if (!gui.eventIsOver(e, $('.profile'))) prof.hide();
-			});
+			.on('mouseleave', '.user', prof.checkOverProfile);
 			$('#users').on('mouseenter', '.user', usr.showUserHoverButtons)
 			.on('mouseleave', '.user', usr.hideUserHoverButtons);
 		}

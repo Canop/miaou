@@ -1,6 +1,14 @@
 // functions related to user profile displaying on hover
 
-miaou(function(prof, locals){
+miaou(function(prof, gui, locals){
+	
+	var showTimer;
+	
+	prof.checkOverProfile = function(e){
+		if (!$(document.elementFromPoint(e.pageX, e.pageY)).closest('.profile,.profiled').length) {
+			prof.hide();
+		}
+	}
 	
 	prof.shownow = function(){
 		if ($('.dialog').length) return;
@@ -9,8 +17,10 @@ miaou(function(prof, locals){
 			$message = $user.closest('.message,.notification,.userLine,.access_request'),
 			up = ($message.length ? $message : $user).position(),
 			uh = $user.height(), uw = $user.width(),
-			$scroller = $user.closest('#message-scroller,#auths-page,#left'), ss = $scroller.scrollTop(), sh = $scroller.height(),
-			$container = $user.closest('#messages,#auths-page,body').first(), ch = $container.height();
+			$scroller = $user.closest('#message-scroller,#auths-page,#left'),
+			ss = $scroller.scrollTop(), sh = $scroller.height(),
+			$container = $user.closest('#messages,#auths-page,body').first(),
+			ch = $container.height();
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
 		if (up.top-ss<sh/2) css.top = up.top+1;
 		else css.bottom = ch-up.top-uh-3;
@@ -28,18 +38,20 @@ miaou(function(prof, locals){
 		$p.load('publicProfile?user='+userId+'&room='+locals.room.id);		
 		$p.css(css).appendTo($container);
 		$user.addClass('profiled');
+		$(window).on('mousemove', prof.checkOverProfile);
 	};
 	
 	// used in chat.jade, chat.mob.jade and auths.jade
 	prof.show = function(){
 		prof.hide();
-		miaou.profileTimer = setTimeout(prof.shownow.bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
+		showTimer = setTimeout(prof.shownow.bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
 	};
 	
 	prof.hide = function(){
-		clearTimeout(miaou.profileTimer);
+		clearTimeout(showTimer);
 		$('.profile').remove();
-		$('.user').removeClass('profiled');
+		$('.profiled').removeClass('profiled');
+		$(window).off('mousemove', prof.checkOverProfile);
 	};
 	
 	prof.toggle = function(){
