@@ -131,7 +131,7 @@
 	miaou.mdToHtml = function(md, withGuiFunctions, username){
 		var nums=[], table,
 			lin = md
-			.replace(/^(--(?!-)|\+\+)/,'') // should only happen when previewing messages
+			.replace(/^(--(?!-)|\+\+(?=\s*\S+))/,'') // should only happen when previewing messages
 			.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {

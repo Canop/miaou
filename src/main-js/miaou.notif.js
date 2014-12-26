@@ -6,8 +6,8 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	 //~ n'apparait pas tout de suite (il est dans un état non acquité mais non visible) et il est automatiquement
 	  //~ acquité si tu écris peu après, ou si tu réponds
 					
-	// $m is a reference to the message element (useful when there's no message id)
-	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid, $m:message}
+	// $md is a reference to the message element (useful when there's no message id)
+	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid, $md:message}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
 		nbUnseenMessages = 0,
 		lastUserAction = 0; // ms

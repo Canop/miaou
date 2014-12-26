@@ -425,7 +425,7 @@ function handleUserInRoom(socket, completeUser){
 		if (/^--[^-]/.test(content)) {
 			var nomerge = true;
 			content = content.replace(/^--\s*/, '');
-		} else if (/^\+\+/.test(content)) {
+		} else if (/^\+\+(?=\s*\S+)/.test(content)) {
 			var domerge = true;
 			content = content.replace(/^\+\+\s*/, '');
 		}
@@ -460,7 +460,7 @@ function handleUserInRoom(socket, completeUser){
 				&& mm.author===m.author // must be by same author
 				&& ( domerge || ( !lastmmisreply && !lastmmisatleastfivelines ) ) // can't normally merge with a reply or a long message
 				&& ( domerge || mm.created+maxHiatusForMerge>seconds ) // must be recent or the new one having ++ 
-				&& mm.content.length+m.content.length<maxContentLength  // must be not too big
+				&& mm.content && mm.content.length+m.content.length<maxContentLength  // must be not too big
 			) {
 				merge = m.content;
 				mm.content += '\n'+m.content;
