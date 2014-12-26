@@ -1,6 +1,6 @@
 // Handles the message editor
 
-miaou(function(ed, chat, gui, locals, md, ms, skin, ws){
+miaou(function(ed, chat, gui, locals, md, ms, notif, skin, ws){
 
 	var $input, input,
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
@@ -21,6 +21,7 @@ miaou(function(ed, chat, gui, locals, md, ms, skin, ws){
 	}
 
 	function sendInput(){
+		notif.userAct();
 		var txt = $input.val().replace(/\s+$/,'');
 		if (txt.length > chat.config.maxMessageContentSize) {		
 			miaou.dialog({
@@ -178,6 +179,7 @@ miaou(function(ed, chat, gui, locals, md, ms, skin, ws){
 		$input = $('#input');
 		input = $input[0];
 		$input.on('keydown', function(e){
+			notif.userAct();
 			if (miaou.dialog.has()) return false;
 			if (e.ctrlKey && !e.shiftKey) {
 				var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;

@@ -5,15 +5,12 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	//~ le ping concernant un message que tu as probablement vu (tu étais là peu avant ou la fenêtre était visible)
 	 //~ n'apparait pas tout de suite (il est dans un état non acquité mais non visible) et il est automatiquement
 	  //~ acquité si tu écris peu après, ou si tu réponds
-	  
-	// when there's a ping in a new message and user is watching, highlight it
 					
 	// $m is a reference to the message element (useful when there's no message id)
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid, $m:message}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
 		nbUnseenMessages = 0,
 		lastUserAction = 0; // ms
-	
 	
 	function lastNotificationInRoom(){
 		for (var i=notifications.length; i--;) {
@@ -111,10 +108,15 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	// called in case of new message (or a new important event related to a message)
 	notif.touch = function(mid, ping, from, text, r, $md){
 		r = r || locals.room;
-		var	visible = vis(),
-			userDidntJustAct = Date.now()-lastUserAction>1500;
-		if (ping && (mid||$md) && userDidntJustAct && !$('#mwin[mid='+mid+']').length) {
-			notif.pings([{r:r.id, rname:r.name, mid:mid, $md:$md}]);
+		var	visible = vis(), lastUserActionAge = Date.now()-lastUserAction;
+		if (ping && (mid||$md)) {
+			if (visible  && lastUserActionAge<2000) {
+				md.goToMessageDiv($md);
+				return;
+			}
+			if (lastUserActionAge>1500 && !$('#mwin[mid='+mid+']').length) {
+				notif.pings([{r:r.id, rname:r.name, mid:mid, $md:$md}]);
+			}
 		}
 		if (!visible || locals.userPrefs.nifvis==="yes") {
 			if (
@@ -146,6 +148,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 			if (vis()) {
 				nbUnseenMessages = 0;
 				notif.updateTab(0, 0);
+				notif.userAct();
 				// we go to the last notification message, highlight it and remove the ping
 				var ln = lastNotificationInRoom();
 				if (ln) {
