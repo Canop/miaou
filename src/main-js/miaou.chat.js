@@ -1,5 +1,5 @@
 
-miaou(function(chat, horn, locals, md, notif, ws, gui, plugins, ws){
+miaou(function(chat, horn, links, locals, md, notif, ws, gui, plugins, ws){
 	
 	chat.config = { // may be changed by server later
 		maxMessageContentSize: 8000,
@@ -20,6 +20,7 @@ miaou(function(chat, horn, locals, md, notif, ws, gui, plugins, ws){
 		notif.init();
 		horn.init();
 		ws.init();
+		links.init();
 		gui.init();
 		md.registerRenderer(function($c, message, oldMessage){
 			if (oldMessage && message.content===oldMessage.content && $c.text().length) return; // mainly to avoid removing boxed content

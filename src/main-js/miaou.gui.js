@@ -23,36 +23,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 	
 	gui.init = function(){
 		var	timer;
-		
-		$('#messages, #notable-messages, #search-results').on('click', '.message .content a[href]', function(e){
-			var parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
-			if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
-				// it's an url towards a room or message on this server
-				if (locals.room.id===+parts[2]) {
-					// it's an url for the same room
-					if (parts[4]) {
-						// it's an url for a message
-						md.focusMessage(+parts[4]);
-					} else {
-						// it's just an url to our room. Let's... err... scroll to bottom ?
-						gui.scrollToBottom();
-					}
-					e.preventDefault();
-				} else {
-					// it's an url for another room or for a message in another room, let's go to the right tab
-					//  if it's already open, or open it if not
-					this.target = 'room_'+parts[2];
-					var h = parts[1]+parts[2];
-					if (parts[3] && parts[3].indexOf('=')===-1) h += parts[3].slice('&')[0];
-					h += h.indexOf('?')===-1 ? '?' : '&';
-					h += 't='+Date.now();
-					if (parts[4]) h += '#'+parts[4];
-					this.href = h;
-				}
-			}
-			e.stopPropagation();
-		});
-			
+					
 		$('#messages').on('click', '.message .content img', function(e){
 			window.open(this.getAttribute('href')||this.src);
 			e.stopPropagation();

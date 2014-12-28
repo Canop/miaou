@@ -29,7 +29,8 @@ miaou(function(skin){
 	skin.wzincolors = {
 		conv:  getCssBackground(/^\.wzin-conv-(\d+)$/),
 		edit:  getCssBackground(/^\.wzin-edit$/),
-		reply: getCssBackground(/^\.wzin-reply$/)
+		reply: getCssBackground(/^\.wzin-reply$/),
+		link: getCssBackground(/^\.wzin-link$/)
 	}
 
 });

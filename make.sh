@@ -64,7 +64,7 @@ cat $ROOT_PATH/plugins/*/client-scripts/*.js >> $STATIC_PATH/miaou.concat.js
 # minify the common js using uglify.js
 cd $STATIC_PATH
 # fixme : remove mountyhall from here
-uglifyjs miaou.concat.js --screw-ie8 -cmt --reserved "chat,ed,gui,hist,locals,md,mh,mod,ms,notif,prof,skin,usr,win,ws,wz,games,plugins,mountyhall" --output miaou.min.js --source-map miaou.min.js.map
+uglifyjs miaou.concat.js --screw-ie8 -cmt --reserved "chat,ed,gui,hist,links,locals,md,mh,mod,ms,notif,prof,skin,usr,win,ws,wz,games,plugins,mountyhall" --output miaou.min.js --source-map miaou.min.js.map
 
 echo miaou.min.js gzipped : `cat miaou.min.js | gzip -9f | wc -c` bytes
 
