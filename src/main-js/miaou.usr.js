@@ -2,7 +2,9 @@
 
 miaou(function(usr, locals, mod, ed, ws){
 
-	var levels = ['read', 'write', 'admin', 'own'];
+	var	levels = ['read', 'write', 'admin', 'own'],
+		recentUsers = []; // sorted list of {id,name,mc} (this list isn't displayed but used for ping autocompletion)
+		
 
 	function $user(user){
 		return $('#users .user').filter(function(){ return $(this).data('user').id===user.id });
@@ -26,8 +28,34 @@ miaou(function(usr, locals, mod, ed, ws){
 		}
 	}
 	
+	usr.recentNamesStartingWith = function(s){
+		return recentUsers.filter(function(u){ return !u.name.lastIndexOf(s,0) }).map(function(u){ return u.name });
+	}
+	
 	usr.hideUserHoverButtons = function(){
 		$('#users .user .decorations button').remove();
+	}
+	
+	usr.insert= function(user, time){
+		usr.insertInUserList(user, time);
+		usr.insertAmongRecentUsers(user, time);
+	}
+	
+	usr.insertAmongRecentUsers = function(user, time){
+		user.mc = time;
+		for (var i=0; i<recentUsers.length; i++) {
+			if (recentUsers[i].id===user.id) {
+				recentUsers.splice(i, 1);
+				break;
+			}
+		}
+		for (var i=0; i<recentUsers.length; i++) {
+			if (time>recentUsers[i].mc) {
+				recentUsers.splice(i, 0, user);
+				return;
+			}
+		}
+		recentUsers.push(user);
 	}
 	
 	usr.insertInUserList = function(user, time) {

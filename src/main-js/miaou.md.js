@@ -247,7 +247,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			if (matches) message.repliesTo = +matches[1];
 		}		
 		if (message.bot) $user.addClass('bot');
-		usr.insertInUserList({id:message.author, name:message.authorname}, message.changed||message.created);
+		usr.insert({id:message.author, name:message.authorname}, message.changed||message.created);
 		if (message.authorname===locals.me.name) {
 			$md.addClass('me');
 			$('.error').remove();

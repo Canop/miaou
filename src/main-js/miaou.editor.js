@@ -1,6 +1,6 @@
 // Handles the message editor
 
-miaou(function(ed, chat, gui, locals, md, ms, notif, skin, ws){
+miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	var $input, input,
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
@@ -65,8 +65,14 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, ws){
 			$autocompleter.remove();
 			$autocompleter = null;
 		}
+		// should we display the name autocompleting menu ?
 		var acname = getacname();
-		if (acname) return ws.emit('autocompleteping', acname);
+		if (acname) {
+			var recentNames = usr.recentNamesStartingWith(acname);
+			if (recentNames.length) ed.proposepings(recentNames);
+			return ws.emit('autocompleteping', acname);
+		}
+		// should we display the command autocompleting menu ?
 		var accmd = getaccmd();
 		if (accmd) {
 			savedValue = input.value;
@@ -408,17 +414,19 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, ws){
 	
 	// receives list of pings
 	ed.proposepings = function(names){
-		var acname = getacname();
+		var	acname = getacname(),
+			currentlySelectedName = $autocompleter ? $autocompleter.find('.selected').text() : null;
 		savedValue = input.value;
 		if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
 		if ($autocompleter) $autocompleter.remove();
 		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
 		names.forEach(function(name){
-			$('<span>').text(name).appendTo($autocompleter).click(function(){
+			var $span = $('<span>').text(name).appendTo($autocompleter).click(function(){
 				ed.ping(name);
 				$autocompleter.remove();
 				$autocompleter = null;
 			});
+			if (name===currentlySelectedName) $span.addClass('selected');
 		});
 	}
 });

@@ -1,4 +1,4 @@
-var	apiversion = 23,
+var	apiversion = 25,
 	config,
 	path = require('path'),
 	maxContentLength,
@@ -300,8 +300,11 @@ function handleUserInRoom(socket, completeUser){
 			}, {}));
 			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);
 		}).then(function(){
-			return this.fetchUserPings(completeUser.id);
-		}).then(function(pings){
+			return [
+				this.fetchUserPings(completeUser.id),
+				this.listRecentUsers(shoe.room.id, 50)
+			]
+		}).spread(function(pings, recentUsers){
 			if (pings.length) socket.emit('pings', pings);
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
 			socketWaitingApproval.forEach(function(o){
@@ -309,6 +312,7 @@ function handleUserInRoom(socket, completeUser){
 			});
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
+			socket.emit('recent_users', recentUsers);
 			socket.emit('welcome');
 			shoe.roomSockets().forEach(function(s){
 				if (!s) {

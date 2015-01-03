@@ -149,6 +149,9 @@ miaou(function(ws, chat, gui, hist, locals, md, mod, notif, usr, ed){
 		.on('enter',usr.showEntry)
 		.on('leave', usr.showLeave)
 		.on('miaou.error', md.showError)
+		.on('recent_users', function(users){
+			users.forEach(function(user){ usr.insertAmongRecentUsers(user, user.md) });
+		})
 		.on('vote', md.applyVote)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect
