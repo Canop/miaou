@@ -352,6 +352,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		var message = $message.data('message'),
 			txt = input.value, m = txt.match(replyRegex),
 			s = input.selectionStart, e = input.selectionEnd, l = txt.length, yetPresent = false;
+		notif.userAct(message.id);
 		if (m) {
 			input.value = txt = txt.replace(replyRegex,'').replace(/^\s/,'');
 			yetPresent = m[1]===message.authorname && m[2]==message.id;

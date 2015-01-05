@@ -64,10 +64,13 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 					}
 				}
 			});
+			notif.userAct(message.id);
 			return false;
 		})
 		.on('click', '.replyButton', function(){
-			ed.replyToMessage($(this).closest('.message'));
+			var	$m = $(this).closest('.message');
+			notif.userAct($m.data('message').id);
+			ed.replyToMessage($m);
 			return false;
 		})
 		.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
@@ -75,14 +78,16 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		.on('mouseenter', '.message', wz.onmouseenter)
 		.on('mouseleave', '.message', wz.onmouseleave)
 		.on('click', '.reply', function(e){
+			var	$m = $(this).closest('.message');
+			notif.userAct($m.data('message').id);
 			md.focusMessage(+$(this).attr('to'));
-			e.stopPropagation();			
+			e.stopPropagation();		
 		})
 		.on('click', '.vote', function(){
 			var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
 			if (message.vote) ws.emit('vote', {action:'remove', mid:message.id, level:message.vote});
 			if (message.vote!=vote) ws.emit('vote', {action:'add', mid:message.id, level:vote});
-			notif.userAct();
+			notif.userAct(message.id);
 			return false;
 		})
 		.on('click', '.unpin', function(){
@@ -97,11 +102,13 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 					}
 				}
 			});
+			notif.userAct(m.id);
 			return false;
 		})
 		.on('click', '.makemwin', function(){
 			var $e = $(this), message = $e.closest('.message').data('message');
 			win.add(message);
+			notif.userAct(message.id);
 			return false;
 		})	
 		.on('click', '.olderLoader', function(){
@@ -119,7 +126,9 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			return false;
 		})
 		.on('click', '.pen', function(){
-			mh.show($(this).closest('.message').data('message'));
+			var m = $(this).closest('.message').data('message');
+			mh.show(m);
+			notif.userAct(m.id);
 			return false;
 		});
 		

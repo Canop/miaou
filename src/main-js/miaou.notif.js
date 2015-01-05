@@ -20,8 +20,18 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	
 	// called in case of user action proving he's right in front of the chat so
 	//  we should not ping him
-	notif.userAct = function(){
+	// If the user action is related to a message, its mid is passed
+	notif.userAct = function(mid){
 		lastUserAction = Date.now();
+		if (mid) {
+			for (var i=notifications.length; i--;) {
+				if (notifications[i].mid===mid) {
+					notifications.splice(i, 1);
+					notif.updatePingsList();
+					return;
+				}
+			}			
+		}
 	}
 	
 	// goes to next ping in the room. Return true if there's still another one after that
@@ -41,6 +51,8 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		}
 		return false;
 	}
+	
+	
 
 	notif.updatePingsList = function(){
 		if (!vis()) notif.updateTab(!!notifications.length, nbUnseenMessages);
@@ -52,8 +64,12 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		if (notifMessage) notifMessage.remove();
 		var	localPings = [], otherRooms = {};
 		notifications.forEach(function(n){
-			if (locals.room.id==n.r) localPings.push(n);
-			else otherRooms[n.r] = n.rname;
+			if (locals.room.id==n.r) {
+				
+				localPings.push(n);
+			} else {
+				otherRooms[n.r] = n.rname;
+			}
 		});
 		notifMessage = md.notificationMessage(function($c){
 			if (localPings.length) {
