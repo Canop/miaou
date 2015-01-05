@@ -2,10 +2,8 @@
 
 miaou(function(notif, chat, horn, locals, md, ws){
 				
-	//~ le ping concernant un message que tu as probablement vu (tu étais là peu avant ou la fenêtre était visible)
-	 //~ n'apparait pas tout de suite (il est dans un état non acquité mais non visible) et il est automatiquement
-	  //~ acquité si tu écris peu après, ou si tu réponds
-					
+	// TODO : save the ping in db when it was never displayed ?
+				
 	// $md is a reference to the message element (useful when there's no message id)
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid, $md:message}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
@@ -23,15 +21,11 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	// If the user action is related to a message, its mid is passed
 	notif.userAct = function(mid){
 		lastUserAction = Date.now();
-		if (mid) {
-			for (var i=notifications.length; i--;) {
-				if (notifications[i].mid===mid) {
-					notifications.splice(i, 1);
-					notif.updatePingsList();
-					return;
-				}
-			}			
-		}
+		notif.removePing(mid);
+		// we assume the user sees the most recent messages if he acts
+		$('#messages .message:gt(-4)').each(function(){
+			notif.removePing($(this).attr('mid'));
+		});
 	}
 	
 	// goes to next ping in the room. Return true if there's still another one after that
@@ -51,8 +45,6 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		}
 		return false;
 	}
-	
-	
 
 	notif.updatePingsList = function(){
 		if (!vis()) notif.updateTab(!!notifications.length, nbUnseenMessages);
@@ -62,15 +54,17 @@ miaou(function(notif, chat, horn, locals, md, ws){
 			return;
 		}
 		if (notifMessage) notifMessage.remove();
-		var	localPings = [], otherRooms = {};
+		var	localPings = [], otherRooms = {}, nbvisible = 0;
 		notifications.forEach(function(n){
 			if (locals.room.id==n.r) {
-				
 				localPings.push(n);
+				var $m = n.$m || $('#messages .message[mid='+n.mid+']');
+				if ($m && $m.length && $m.offset().top>10) nbvisible++;
 			} else {
 				otherRooms[n.r] = n.rname;
 			}
 		});
+		if (nbvisible>=notifications.length) return;
 		notifMessage = md.notificationMessage(function($c){
 			if (localPings.length) {
 				$('<div>').append(
@@ -111,9 +105,10 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	}
 	
 	notif.removePing = function(mid){
+		if (!mid) return;
 		// we assume here there's at most one notification to a given message
 		for (var i=0; i<notifications.length; i++) {
-			if (notifications[i].mid===mid) {
+			if (notifications[i].mid==mid) {
 				notifications.splice(i, 1);
 				notif.updatePingsList();
 				return;
@@ -127,7 +122,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		var	visible = vis(), lastUserActionAge = Date.now()-lastUserAction;
 		if (ping && (mid||$md)) {
 			if (visible  && lastUserActionAge<2000) {
-				md.goToMessageDiv($md);
+				md.goToMessageDiv(mid||$md);
 				return;
 			}
 			if (lastUserActionAge>1500 && !$('#mwin[mid='+mid+']').length) {
@@ -137,7 +132,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		if (!visible || locals.userPrefs.nifvis==="yes") {
 			if (
 				( locals.userPrefs.notif==="on_message" || (ping && locals.userPrefs.notif==="on_ping") )
-				 && userDidntJustAct
+				 && lastUserActionAge>500
 			) {
 				horn.show(mid, r||locals.room, from, text);					
 			}
@@ -160,22 +155,24 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	}
 
 	notif.init = function(){
+		$(window).on('focus', notif.updatePingsList);
 		vis(function(){
 			if (vis()) {
 				nbUnseenMessages = 0;
 				notif.updateTab(0, 0);
-				notif.userAct();
 				// we go to the last notification message, highlight it and remove the ping
 				var ln = lastNotificationInRoom();
 				if (ln) {
 					var $md = ln.$md || $('#messages .message[mid='+ln.mid+']');
 					if ($md.length) {
+						console.log("going to", $md);
 						md.goToMessageDiv($md);
 						ws.emit("rm_ping", ln.mid);
 						notif.removePing(ln.mid);
 					}
 				}
 				$('#input').focus();
+				notif.userAct();
 			}
 		});
 	}

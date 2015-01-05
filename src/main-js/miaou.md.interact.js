@@ -91,8 +91,8 @@ miaou(function(md, chat, gui, hist, locals, ms, usr, ws, wz){
 	md.goToMessageDiv = function(arg){
 		var	$messages = $('#message-scroller'),
 			$message = typeof arg === "number" || typeof arg === "string" ? $('.message[mid='+arg+']', $messages) : arg;
-		$message.addClass('goingto');
 		if (!$message.length) return;
+		$message.addClass('goingto');
 		setTimeout(function(){
 			var mtop = $message.offset().top;
 			if (mtop<0 || mtop>$messages.height()) $messages.animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
