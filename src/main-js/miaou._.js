@@ -112,6 +112,7 @@ miaou(function(appl){
 
 */
 
+
 // Note : this isn't compatible with mangling of function argument names
 function miaou(f){
 	$(function(){
@@ -120,8 +121,41 @@ function miaou(f){
 		}));
 	});
 }
-try {
-	miaou.locals = JSON.parse($('#locals').html());
-} catch(e) {
-	console.log("Error while loading locals");
-}
+
+(function(){
+	
+	// Initialization of locals (variables provided by the server for the page
+	try {
+		miaou.locals = JSON.parse($('#locals').html());
+	} catch(e) {
+		console.log("Error while loading locals");
+	}
+	
+	// Discovery of the root URL
+	var scripts = document.getElementsByTagName("script");
+	for (var i=scripts.length; i--;) {
+		if (!scripts[i].src) continue;
+		var m = scripts[i].src.match(/(https?:\S+\/)static\/miaou(\.[a-z]+)?.js/);
+		if (m) {
+			miaou.root = m[1];
+			break;
+		}
+	}
+	
+	// Sending errors to the server
+	var nbsenterrors = 0;
+	window.onerror = function(message, url, line, col, err){
+		if (nbsenterrors++>3) {
+			console.log("not sending error");
+			return;
+		}
+		$.post("/error", {
+			user:locals.me?locals.me.name:"?", // not always defined
+			page:location.href,
+			message:message,
+			url:url, line:line, col:col,
+			err:err
+		});
+	}
+	
+})();

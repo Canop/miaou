@@ -68,6 +68,7 @@ function defineAppRoutes(){
 	var auths = require('./auths.js'),
 		rooms = require('./rooms.js').configure(miaou),
 		upload = require('./upload.js').configure(miaou),
+		clienterrors = require('./clienterrors.js').configure(miaou),
 		profile = require('./profile.js').configure(miaou),
 		chat = require('./chat.js').configure(miaou),
 		help = require('./help.js'),
@@ -111,6 +112,7 @@ function defineAppRoutes(){
 	map('get', '/helpus', help.appGetHelpUs, true, true);
 	map('get', '/intro', intro.appGetIntro, true, true);
 	map('post', '/upload', upload.appPostUpload, true);
+	map('post', '/error', clienterrors.appPostError, true, true);
 }
 
 // starts the whole server, both regular http and websocket
@@ -134,7 +136,7 @@ function startServer(){
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
-	app.use(require('./anti-csrf.js')({ whitelist:['/upload'] }));
+	app.use(require('./anti-csrf.js')({ whitelist:['/upload', '/error'] }));
 	
 	app.use(function(req, res, next) {
 		res.set("X-Frame-Options", "deny");
