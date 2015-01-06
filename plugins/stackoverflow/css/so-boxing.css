@@ -13,6 +13,8 @@
 .so-main {
 	display: table-cell;
 	vertical-align: middle;
+	max-width: 0px;
+	width: 100%;
 }
 
 .so-side {
@@ -72,6 +74,7 @@ a.so-title img {
 
 .so-body pre {
 	margin-left: 10px;
+	overflow-x: auto;
 }
 
 .so-body code {
