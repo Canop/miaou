@@ -21,27 +21,31 @@ buster.testCase("StackExchange URL Analyzing", {
    "nothing": c(
 		"http://stackoverflow.com/questions/"
 	),
-    "SO question": c(
+	"SO question": c(
 		"http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go",
 		"stackoverflow", false, "questions", 11353679
 	),
-    "SO comment": c(
+	"SO comment 1": c(
 		"http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go#comment23781666_11357116",
 		"stackoverflow", false, "comments", 23781666
 	),
-    "SO answer": c(
+	"SO comment 2": c(
+		"http://stackoverflow.com/questions/27797971/how-to-decode-this-im-really-having-hard-time/27798176#comment44004900_27798176",
+		"stackoverflow", false, "comments", 44004900
+	),
+	"SO answer": c(
 		"http://stackoverflow.com/questions/11353679/whats-the-recommended-way-to-connect-to-mysql-from-go/11357116#11357116",
 		"stackoverflow", false, "answers", 11357116
 	),
-    "Meta StackExchange answer": c(
+	"Meta StackExchange answer": c(
 		"http://meta.stackexchange.com/questions/203346/flags-in-chat-are-defective-by-design/204564#204564",
 		"stackexchange", true, "answers", 204564
 	),
-    "AskUbuntu question": c(
+	"AskUbuntu question": c(
 		"http://askubuntu.com/questions/339354/cant-alloc-filename-when-executing-mdb-export-on-a-mounted-file",
 		"askubuntu", false, "questions", 339354
 	),
-    "Meta AskUbuntu question": c(
+	"Meta AskUbuntu question": c(
 		"http://meta.askubuntu.com/questions/7070/do-users-have-to-lose-their-sense-of-humour-to-answer-questions-on-the-askubuntu",
 		"askubuntu", true, "questions", 7070
 	),

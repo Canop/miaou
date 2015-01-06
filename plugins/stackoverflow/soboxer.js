@@ -164,14 +164,14 @@ exports.rawTasks = function(text){
 		var	path = match[5], submatch,
 			hash = match[6],
 			task = { line:match[0], meta:!!match[1], site:match[2] };
-		if ( match[3]==='a' ) {
+		if ( hash && (submatch=hash.match(/^#comment(\d+)_\d+$/)) ) {
+			task.type = "comments";
+			task.num = +submatch[1];			
+		} else if ( match[3]==='a' ) {
 			task.type = "answers";
 			task.num = +match[4];
 		} else if ( path && (submatch=path.match(/^\/[^\/]+\/(\d+)$/)) ) {
 			task.type = "answers";
-			task.num = +submatch[1];			
-		} else if ( hash && (submatch=hash.match(/^#comment(\d+)_\d+$/)) ) {
-			task.type = "comments";
 			task.num = +submatch[1];			
 		} else {
 			task.type = "questions";
