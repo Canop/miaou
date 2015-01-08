@@ -2,8 +2,6 @@
 
 miaou(function(notif, chat, horn, locals, md, ws){
 				
-	// TODO : save the ping in db when it was never displayed ?
-				
 	// $md is a reference to the message element (useful when there's no message id)
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid, $md:message}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
@@ -21,6 +19,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	// If the user action is related to a message, its mid is passed
 	notif.userAct = function(mid){
 		lastUserAction = Date.now();
+		ws.emit("rm_ping", mid); // TODO know if the ping is saved in db to avoid useless messages
 		notif.removePing(mid);
 		// we assume the user sees the most recent messages if he acts
 		$('#messages .message:gt(-4)').each(function(){
@@ -59,7 +58,10 @@ miaou(function(notif, chat, horn, locals, md, ws){
 			if (locals.room.id==n.r) {
 				localPings.push(n);
 				var $m = n.$m || $('#messages .message[mid='+n.mid+']');
-				if ($m && $m.length && $m.offset().top>10) nbvisible++;
+				if ($m && $m.length && $m.offset().top>10) {
+					ws.emit("rm_ping", n.mid);
+					nbvisible++;
+				}
 			} else {
 				otherRooms[n.r] = n.rname;
 			}

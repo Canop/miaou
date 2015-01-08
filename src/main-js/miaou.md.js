@@ -144,6 +144,9 @@ miaou(function(md, chat, gui, hist, locals, usr){
 	
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
+	// TODO This function is very expensive (cpu). We should be able to batch
+	//  resizings on a set of messages in order to not interleave measures and
+	//  changes (do all closings and reflows at the end)
 	function resize($md, wasAtBottom){
 		var $content = $md.find('.content');
 		var resize = function(){

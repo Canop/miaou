@@ -2,7 +2,8 @@
 
 miaou(function(hist, md, ws){
 	
-	var currentPattern; // as the xhr-pulling flavour of socket.io doesn't handle callbacks, we have to store the currently searched pattern
+	var	visible = false,
+		currentPattern; // as the xhr-pulling flavour of socket.io doesn't handle callbacks, we have to store the currently searched pattern
 	
 	// arg : +1 or -1
 	function moveSelect(d){
@@ -61,16 +62,18 @@ miaou(function(hist, md, ws){
 	});
 
 	hist.open = function(){
+		visible = true;
 		$('#hist').show();
 		hist.search($('#searchInput').val().trim());
 	}
 
 	hist.close = function(){
+		visible = false;
 		$('#hist').hide();
 	}
 
 	hist.search = function(pattern) {
-		if (!$('#hist').length) return;
+		if (!visible) return;
 		currentPattern = pattern;
 		ws.emit('hist', {pattern:pattern});
 	}
@@ -118,7 +121,7 @@ miaou(function(hist, md, ws){
 	}
 	
 	hist.showPage = function(){
-		if (!$('#hist').length) return;
+		if (!visible) return;
 		var $scroller = $('#message-scroller'), sh = $scroller.height();
 		var $messages = $('#messages > .message').filter(function(){
 			var y = $(this).offset().top;
