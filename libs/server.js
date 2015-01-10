@@ -173,10 +173,10 @@ exports.renderErr = function(res, err, base){
 }
 
 function initPlugins(){
-	(miaou.config.plugins||[]).map(function(n){
-		return require(path.resolve(__dirname, '..', n))
-	}).forEach(function(p){
-		if (p.init) p.init(miaou);
+	(miaou.config.plugins||[]).forEach(function(n){
+		var	pluginfilepath = path.resolve(__dirname, '..', n),
+			plugin = require(pluginfilepath);
+		if (plugin.init) plugin.init(miaou, path.dirname(pluginfilepath));
 	});
 }
 
