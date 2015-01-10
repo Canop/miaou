@@ -20,7 +20,8 @@
 		"./plugins/wikipedia/plugin.js",
 		"./plugins/video/plugin.js",
 		"./plugins/whiteboard/plugin.js",
-		"./plugins/youtube/plugin.js"
+		"./plugins/youtube/plugin.js",
+		"./plugins/survey/plugin.js"
 	],
 	"themes": [
 		"boring-goose",

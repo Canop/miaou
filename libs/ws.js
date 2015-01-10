@@ -1,4 +1,4 @@
-var	apiversion = 25,
+var	apiversion = 27,
 	config,
 	path = require('path'),
 	maxContentLength,

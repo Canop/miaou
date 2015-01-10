@@ -1,0 +1,65 @@
+miaou(function(md, plugins, ws){
+
+	function render($c, m){
+		if (!/^\s*!!survey\b/.test(m.content)) return;
+		console.log('survey asking server for votes', m);
+		ws.emit('survey.votes', m.id);
+		var $list = $c.find('ul,ol');
+		var $table = $('<table class=survey-table>').insertBefore($list);
+		$list.find('li').each(function(){
+			var iid = 'survey_'+m.id;
+			$('<tr>').appendTo($table)
+			.append(
+				$('<td>').append('<input class=survey-cb disabled type=checkbox name='+iid+' id='+iid+'>')
+				.append($('<label for='+iid+'>').html(this.innerHTML))
+			)
+			.append('<td class=nb-votes>')
+			.append('<td class=pc-votes>')
+		});
+		$list.remove();
+	}
+
+	// this is called on initial rendering and when other users vote
+	function onreceivevotes(data){
+		console.log('received votes', data);
+		$('.message[mid='+data.mid+']').each(function(){
+			var $table = $('.survey-table', this),
+				$inputs = $table.find('input'),
+				sum = 0;
+			for (var key in data.votes) {
+				sum += data.votes[key];
+			}
+			$inputs.prop('disabled', false);
+			$table.find('tr').each(function(i){
+				var votes = data.votes[i]||0;
+				$('.nb-votes', this).text(votes);
+				$('.pc-votes', this).html(votes ? '<i>'+Math.round(100*votes/sum)+'%</i>' : '');
+			});
+			if (data.vote==+data.vote) { // undefined=unknown_vote, -1=no_vote
+				$inputs.prop('checked', false);
+				if (data.vote>=0) $inputs.eq(data.vote).prop('checked', true);
+			}
+		});
+	}
+
+	$(document.body).on('change', '.survey-cb', function(){
+		var cb = this, $cb = $(cb), mid = +$(this).closest('.message').attr('mid');
+		if (this.checked) {
+			var idx = $cb.closest('tr').index();
+			$cb.closest('table').find('.survey-cb').filter(function(){ return this!==cb }).prop('checked', false);
+			ws.emit('survey.vote', {mid:mid, vote:idx});
+		} else {
+			ws.emit('survey.vote', {mid:mid, vote:-1});
+		}
+		console.log($cb.closest('tr').index());
+	});
+
+	plugins.survey = {
+		start: function(){
+			md.registerRenderer(render, true);
+			ws.on('survey.votes', onreceivevotes);
+			
+		}
+	}
+
+});

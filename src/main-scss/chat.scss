@@ -160,6 +160,12 @@ body.mobile #message-scroller {
 		pre, ul, ol {
 			margin: 0;
 		}
+		input[type=checkbox] {
+			vertical-align: middle;
+		}
+		pre + br, ul + br, ol + br {
+			display: none;
+		}
 	}
 	&.me {
 		background: $message-me-bg;

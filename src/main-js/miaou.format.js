@@ -238,12 +238,13 @@
 		if (code) lout.push('<pre><code>'+code.join('\n')+'</code></pre>');
 		if (ol) lout.push('<ol>'+ol.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ol>');
 		if (ul) lout.push('<ul>'+ul.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ul>');
-		var html = '';
-		lout.forEach(function(line, index){
-			if (index && !/(<\/pre>|<\/ul>|<\/ol>)$/.test(html)) html += '<br>';
-			html += line;
-		});
-		return html;
+		//~ var html = '';
+		//~ lout.forEach(function(line, index){
+			//~ if (index && !/(<\/pre>|<\/ul>|<\/ol>)$/.test(html)) html += '<br>';
+			//~ html += line;
+		//~ });
+		//~ return html;
+		return lout.join('<br>');
 	}
 	
 	// the only purpose of the reset function is to allow unit testing
