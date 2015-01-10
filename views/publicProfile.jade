@@ -1,6 +1,6 @@
 h1= user.name
 div#userinfo
-	if auth != 'no access'
+	if auth != 'no access' && auth != 'none'
 		div
 			span.def role in this room
 			span.val= auth
