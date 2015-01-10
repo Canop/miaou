@@ -157,7 +157,9 @@ body.mobile #message-scroller {
 		&.closed {
 			max-height: 132px;
 		}
-
+		pre, ul, ol {
+			margin: 0;
+		}
 	}
 	&.me {
 		background: $message-me-bg;
@@ -422,16 +424,6 @@ code {
 .citation::before {
 	content: ".";
 	opacity: 0;
-}
-.olli {
-	margin: 0 5px;
-	font-weight: 700;
-}
-.olli::after {
-	content: ".";
-}
-.ulli::before {
-	content: "• ";
 }
 .h1 {
 	font-weight: bold;

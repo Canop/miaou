@@ -129,7 +129,7 @@
 
 	// converts from the message exchange format (mainly a restricted set of Markdown) to HTML
 	miaou.mdToHtml = function(md, withGuiFunctions, username){
-		var nums=[], table,
+		var table,
 			ul, ol, code, // arrays : their elements make multi lines structures
 			lin = md
 			.replace(/^(--(?!-)|\+\+(?=\s*\S+))/,'') // should only happen when previewing messages
@@ -139,7 +139,7 @@
 			var m, s = lin[l].replace(/</g,'&lt;').replace(/>/g,'&gt;')
 				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : '');
 			
-			var codeline = (/^(?:    |\t)/.test(s)) && !(table && /\|/.test(s));
+			var codeline = /^(    |\t)/.test(s) && !(table && /\|/.test(s));
 			if (code) {
 				if (codeline) {
 					code.push(s);
@@ -199,15 +199,35 @@
 				lout.push('<span class=citation>'+m[1]+'</span>');
 				continue;
 			}
-			if (m=s.match(/^(?:\d+\.\s+)(.*)$/)) {
-				nums[l]=(nums[l-1]||0)+1;
-				lout.push('<span class=olli>'+nums[l]+'</span>'+m[1]);
+			
+			m=s.match(/^(?:\d+\.\s+)(.*)$/);
+			if (ol) {
+				if (m) {
+					ol.push(m[1]);
+					continue;
+				} else {
+					lout.push('<ol>'+ol.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ol>');
+					ol = null;
+				}
+			} else if (m) {
+				ol = [m[1]]
 				continue;
 			}
-			if (m=s.match(/^(?:\*\s+)(.*)$/)) {
-				lout.push('<span class=ulli></span>'+m[1]);
+						
+			m=s.match(/^(?:\*\s+)(.*)$/);
+			if (ul) {
+				if (m) {
+					ul.push(m[1]);
+					continue;
+				} else {
+					lout.push('<ul>'+ul.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ul>');
+					ul = null;
+				}
+			} else if (m) {
+				ul = [m[1]]
 				continue;
 			}
+
 			if (m=s.match(/^(?:(#+)\s+)(.*)$/))	{
 				lout.push('<span class=h'+m[1].length+'>'+m[2]+'</span>');
 				continue;
@@ -216,7 +236,14 @@
 		}
 		if (table) lout.push(table.html(username));
 		if (code) lout.push('<pre><code>'+code.join('\n')+'</code></pre>');
-		return lout.join('<br>');
+		if (ol) lout.push('<ol>'+ol.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ol>');
+		if (ul) lout.push('<ul>'+ul.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ul>');
+		var html = '';
+		lout.forEach(function(line, index){
+			if (index && !/(<\/pre>|<\/ul>|<\/ol>)$/.test(html)) html += '<br>';
+			html += line;
+		});
+		return html;
 	}
 	
 	// the only purpose of the reset function is to allow unit testing
