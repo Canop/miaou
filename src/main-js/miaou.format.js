@@ -139,7 +139,7 @@
 			var m, s = lin[l].replace(/</g,'&lt;').replace(/>/g,'&gt;')
 				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : '');
 			
-			var codeline = (m=s.match(/^(?:    |\t)(.*)$/)) && !(table && /\|/.test(s));
+			var codeline = (/^(?:    |\t)/.test(s)) && !(table && /\|/.test(s));
 			if (code) {
 				if (codeline) {
 					code.push(s);
