@@ -14,7 +14,7 @@ buster.testCase("Formatting - Code", {
 	),
 	"Code bloc with tabs": t(
 		"A code block :\n\t#html, #result {\n\tpadding: 1%;\n\tmargin : 0.5%;\n\tbackground: white;\n\t}",
-		'A code block :<br><code class=indent>#html, #result {</code><br><code class=indent>padding: 1%;</code><br><code class=indent>margin : 0.5%;</code><br><code class=indent>background: white;</code><br><code class=indent>}</code>'
+		'A code block :<br><pre><code>\t#html, #result {\n\tpadding: 1%;\n\tmargin : 0.5%;\n\tbackground: white;\n\t}</code></pre>'
 	),
 	"Code bloc with spaces": t(
 		"    function t(s,r){\n"+
@@ -22,7 +22,7 @@ buster.testCase("Formatting - Code", {
 		"            buster.assert.equals(fmt(s), r);\n"+
 		"        }\n"+
 		"    }",
-		'<code class=indent>function t(s,r){</code><br><code class=indent>    return function(){</code><br><code class=indent>        buster.assert.equals(fmt(s), r);</code><br><code class=indent>    }</code><br><code class=indent>}</code>'
+		'<pre><code>    function t(s,r){\n        return function(){\n            buster.assert.equals(fmt(s), r);\n        }\n    }</code></pre>'
 	),
 });
 

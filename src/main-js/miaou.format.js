@@ -130,6 +130,7 @@
 	// converts from the message exchange format (mainly a restricted set of Markdown) to HTML
 	miaou.mdToHtml = function(md, withGuiFunctions, username){
 		var nums=[], table,
+			ul, ol, code, // arrays : their elements make multi lines structures
 			lin = md
 			.replace(/^(--(?!-)|\+\+(?=\s*\S+))/,'') // should only happen when previewing messages
 			.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
@@ -137,10 +138,21 @@
 		for (var l=0; l<lin.length; l++) {
 			var m, s = lin[l].replace(/</g,'&lt;').replace(/>/g,'&gt;')
 				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : '');
-			if ( (m=s.match(/^(?:    |\t)(.*)$/)) && !(table && /\|/.test(s)) ) {
-				lout.push('<code class=indent>'+m[1]+'</code>');
+			
+			var codeline = (m=s.match(/^(?:    |\t)(.*)$/)) && !(table && /\|/.test(s));
+			if (code) {
+				if (codeline) {
+					code.push(s);
+					continue;
+				} else {
+					lout.push('<pre><code>'+code.join('\n')+'</code></pre>');
+					code = null;
+				}
+			} else if (codeline) {
+				code = [s];
 				continue;
 			}
+			
 			if (m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gif|png|jpg)\s*$/)) {
 				var bu = (m[1]||"https://")+m[2]+m[3];
 				if (bu[bu.length-1]!=='m') {
@@ -161,6 +173,7 @@
 				lout.push('<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">');
 				continue;
 			}
+			
 			if (table) {
 				if (table.read(s)) continue;
 				lout.push(table.html(username));
@@ -176,6 +189,7 @@
 					continue;
 				}
 			}
+			
 			if (/^--\s*$/.test(lin[l])) {
 				lout.push('<hr>');
 				continue;
@@ -201,6 +215,7 @@
 			lout.push(s);
 		}
 		if (table) lout.push(table.html(username));
+		if (code) lout.push('<pre><code>'+code.join('\n')+'</code></pre>');
 		return lout.join('<br>');
 	}
 	

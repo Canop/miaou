@@ -401,13 +401,13 @@ body.mobile .message-menu .vote {
 		max-height: 48px;
 	}
 }
+pre {
+	white-space: pre-wrap;
+	overflow-x: auto;
+}
 code {
 	font-family: monospace;
 	color: $code-text-color;
-	white-space: pre;
-}
-.indent {
-	margin-left: 15px;
 }
 .slashme {
 	font-style:italic;
