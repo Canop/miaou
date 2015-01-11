@@ -5,13 +5,11 @@ function onCommand(ct){
 	var	m = ct.message,
 		lines = m.content.split('\n'),
 		itemlines = lines.filter(function(l){ return /^(\d+\.|\*)\s+/.test(l) })
-	console.log("lines:", lines);
 	if (!itemlines.length) throw 'Nothing asked';
 }
 
 // handles the message by which a user votes
 function wsvote(shoe, userdata){
-	console.log('wsvote', userdata);
 	var mid = userdata.mid;
 	// FIXME check in query the user has access to the room
 	db.on()
@@ -22,7 +20,6 @@ function wsvote(shoe, userdata){
 		);			
 	})
 	.then(function(){
-		console.log("deleted");
 		if (userdata.vote >= 0) {
 			return this.execute(
 				"insert into survey_vote (message, player, item) values ($1, $2, $3)",
@@ -47,7 +44,6 @@ function wsvote(shoe, userdata){
 
 // handles messages querying votes
 function wsvotes(shoe, mid){
-	console.log('wsvotes', mid);
 	var data = {mid:mid};
 	db.on()
 	.then(function(){
@@ -56,14 +52,12 @@ function wsvotes(shoe, mid){
 		);
 	})
 	.then(function(row){
-		console.log('ROW:', row);
 		data.vote = row ? row.item : -1;
 		return this.queryRows(
 			"select item, count(*) nb from survey_vote where message=$1 group by item", [mid]
 		);
 	})
 	.then(function(rows){
-		console.log('ROWS:', rows);
 		data.votes = {};
 		rows.forEach(function(row){
 			data.votes[row.item] = row.nb;

@@ -1,0 +1,11 @@
+.message .content table.survey-table td {
+	border: initial;
+}
+.pc-votes {
+	width: 120px;
+	color: transparent;
+	cursor: default;
+}
+.survey-table tr:hover .pc-votes {
+	color: #222;
+}

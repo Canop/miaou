@@ -1,4 +1,4 @@
-var	apiversion = 27,
+var	apiversion = 28,
 	config,
 	path = require('path'),
 	maxContentLength,
@@ -62,7 +62,7 @@ function Shoe(socket, completeUser){
 	this.lastMessageTime;
 	this.db = db;
 	socket['publicUser'] = this.publicUser;
-	this.emit = function(key, m){ socket.emit(key, clean(m)) };
+	this.emit = socket.emit.bind(socket);
 }
 var Shoes = Shoe.prototype;
 
@@ -72,7 +72,7 @@ Shoes.error = function(err, messageContent){
 	this.socket.emit('miaou.error', {txt:err.toString(), mc:messageContent});
 }
 Shoes.emitToRoom = function(key, m){
-	io.sockets.in(this.room.id).emit(key, clean(m));
+	io.sockets.in(this.room.id).emit(key, m);
 }
 // emits something to all sockets of a given user. Returns the number of sockets
 Shoes.emitToAllSocketsOfUser = function(key, args, onlyOtherSockets){

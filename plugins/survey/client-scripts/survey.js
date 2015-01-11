@@ -2,16 +2,16 @@ miaou(function(md, plugins, ws){
 
 	function render($c, m){
 		if (!/^\s*!!survey\b/.test(m.content)) return;
-		console.log('survey asking server for votes', m);
 		ws.emit('survey.votes', m.id);
 		var $list = $c.find('ul,ol');
 		var $table = $('<table class=survey-table>').insertBefore($list);
-		$list.find('li').each(function(){
-			var iid = 'survey_'+m.id;
+		$list.find('li').each(function(i){
+			var	surveyid = 'survey_'+m.id,
+				itemid = surveyid+'_'+i;
 			$('<tr>').appendTo($table)
 			.append(
-				$('<td>').append('<input class=survey-cb disabled type=checkbox name='+iid+' id='+iid+'>')
-				.append($('<label for='+iid+'>').html(this.innerHTML))
+				$('<td>').append('<input class=survey-cb disabled type=checkbox name='+surveyid+' id='+itemid+'>')
+				.append($('<label for='+itemid+'>').html(this.innerHTML))
 			)
 			.append('<td class=nb-votes>')
 			.append('<td class=pc-votes>')
@@ -21,7 +21,6 @@ miaou(function(md, plugins, ws){
 
 	// this is called on initial rendering and when other users vote
 	function onreceivevotes(data){
-		console.log('received votes', data);
 		$('.message[mid='+data.mid+']').each(function(){
 			var $table = $('.survey-table', this),
 				$inputs = $table.find('input'),
@@ -31,9 +30,9 @@ miaou(function(md, plugins, ws){
 			}
 			$inputs.prop('disabled', false);
 			$table.find('tr').each(function(i){
-				var votes = data.votes[i]||0;
+				var votes = data.votes[i]||0, pc = Math.round(100*votes/sum)||0;
 				$('.nb-votes', this).text(votes);
-				$('.pc-votes', this).html(votes ? '<i>'+Math.round(100*votes/sum)+'%</i>' : '');
+				$('.pc-votes', this).html('<i>'+pc+'%</i>').css("box-shadow", "inset "+pc+"px 0 0 0 rgba(182,105,57,0.4)");
 			});
 			if (data.vote==+data.vote) { // undefined=unknown_vote, -1=no_vote
 				$inputs.prop('checked', false);
@@ -51,7 +50,6 @@ miaou(function(md, plugins, ws){
 		} else {
 			ws.emit('survey.vote', {mid:mid, vote:-1});
 		}
-		console.log($cb.closest('tr').index());
 	});
 
 	plugins.survey = {
