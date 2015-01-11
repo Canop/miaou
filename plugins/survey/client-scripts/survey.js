@@ -3,6 +3,7 @@ miaou(function(md, plugins, ws){
 	function render($c, m){
 		if (!/^\s*!!survey\b/.test(m.content)) return;
 		ws.emit('survey.votes', m.id);
+		Groumf.replaceTextWithTextInHTML($c[0], /^\s*(@\w[\w\-]{2,}#?\d*\s+)?!!survey\b/, '');
 		var $list = $c.find('ul,ol');
 		var $table = $('<table class=survey-table>').insertBefore($list);
 		$list.find('li').each(function(i){
@@ -17,6 +18,7 @@ miaou(function(md, plugins, ws){
 			.append('<td class=pc-votes>')
 		});
 		$list.remove();
+		return true;
 	}
 
 	// this is called on initial rendering and when other users vote
@@ -56,7 +58,6 @@ miaou(function(md, plugins, ws){
 		start: function(){
 			md.registerRenderer(render, true);
 			ws.on('survey.votes', onreceivevotes);
-			
 		}
 	}
 

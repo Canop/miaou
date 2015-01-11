@@ -80,7 +80,14 @@ exports.onChangeMessage = function(shoe, m){
 exports.registerCommands = function(cb){
 	cb({
 		name:'survey', fun:onCommand,
-		help:"starts a survey. Type `!!help !!survey` for detailed information"
+		help:"starts a survey. Type `!!help !!survey` for detailed information",
+		detailedHelp: "Example:"
+			+ "\n    !!survey What's your favorite colour"
+			+ "\n    * Red"
+			+ "\n    * Dark Red"
+			+ "\n    * Light Red"
+			+ "\n    * Purple"
+			+ "\n    * Octarine"
 	});
 }
 

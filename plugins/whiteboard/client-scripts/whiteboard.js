@@ -2,19 +2,6 @@ miaou(function(plugins, chat, locals, md, ms){
 
 	var r = /^\s*(@\w[\w\-]{2,}#?\d*\s+)?!!whiteboard\b/;
 
-	function removeCommand(node){
-		if (node.nodeType===3) {
-			var result = node.nodeValue.replace(r, '');
-			if (result !== node.nodeValue) {
-				node.nodeValue = result;
-				return true;
-			}
-		}
-		for (var nodes=node.childNodes, i=0; i<nodes.length; i++) {
-			if (removeCommand(node.childNodes[i])) return true;
-		}
-	}
-
 	plugins.whiteboard = {
 		start: function(){
 			ms.registerStatusModifier(function(message, status){
@@ -24,7 +11,7 @@ miaou(function(plugins, chat, locals, md, ms){
 			});
 			md.registerRenderer(function($c, m){
 				if (r.test(m.content)) {
-					removeCommand($c[0]);
+					Groumf.replaceTextWithTextInHTML($c[0], r, '');
 					$c.closest('#messages .message').find('.user .decorations').prepend(
 						$('<div>&#xe824;</div>').addClass('decoration')
 					);
