@@ -2,8 +2,7 @@
 
 miaou(function(notif, chat, horn, locals, md, ws){
 				
-	// $md is a reference to the message element (useful when there's no message id)
-	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid, $md:message}
+	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
 		nbUnseenMessages = 0,
 		lastUserAction = 0; // ms
@@ -14,17 +13,20 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		}
 	}
 	
+	notif.log = function(){ // for console
+		return notifications; 
+	}
+	
 	// called in case of user action proving he's right in front of the chat so
 	//  we should not ping him
 	// If the user action is related to a message, its mid is passed
 	notif.userAct = function(mid){
 		lastUserAction = Date.now();
-		ws.emit("rm_ping", mid); // TODO know if the ping is saved in db to avoid useless messages
-		notif.removePing(mid);
 		// we assume the user sees the most recent messages if he acts
 		$('#messages .message:gt(-4)').each(function(){
-			notif.removePing($(this).attr('mid'));
+			notif.removePing($(this).attr('mid'), true, true);
 		});
+		notif.removePing(mid, true, true);
 	}
 	
 	// goes to next ping in the room. Return true if there's still another one after that
@@ -35,8 +37,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 				if (done) {
 					return true;
 				} else {
-					if (notifications[i].$md) md.goToMessageDiv(notifications[i].$md);
-					else md.focusMessage(notifications[i].mid);
+					md.focusMessage(notifications[i].mid);
 					ws.emit("rm_ping", notifications[i].mid);
 					notifications.splice(i++, 1);
 				}
@@ -53,21 +54,14 @@ miaou(function(notif, chat, horn, locals, md, ws){
 			return;
 		}
 		if (notifMessage) notifMessage.remove();
-		var	localPings = [], otherRooms = {}, nbvisible = 0;
+		var	localPings = [], otherRooms = {};
 		notifications.forEach(function(n){
 			if (locals.room.id==n.r) {
 				localPings.push(n);
-				var $m = n.$m || $('#messages .message[mid='+n.mid+']');
-				n.visible = $m && $m.length && $m.offset().top>10;
-				if (n.visible) {
-					ws.emit("rm_ping", n.mid);
-					nbvisible++;
-				}
 			} else {
 				otherRooms[n.r] = n.rname;
 			}
 		});
-		if (nbvisible*notifications.length===1) return;
 		notifMessage = md.notificationMessage(function($c){
 			if (localPings.length) {
 				$('<div>').append(
@@ -98,6 +92,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		var	changed = false,
 			map = notifications.reduce(function(map,n){ map[n.mid]=1;return map; }, {});
 		pings.forEach(function(ping){
+			if (!ping.mid) console.log("ERROR MISSING ID");// temp assert
 			if (!map[ping.mid]) {
 				notifications.push(ping);
 				changed = true;
@@ -107,11 +102,18 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		if (changed) notif.updatePingsList();
 	}
 	
-	notif.removePing = function(mid){
+	notif.removePing = function(mid, forwardToServer, flash){
 		if (!mid) return;
 		// we assume here there's at most one notification to a given message
 		for (var i=0; i<notifications.length; i++) {
 			if (notifications[i].mid==mid) {
+				if (flash) {
+					var $md = $('#messages .message[mid='+mid+']');
+					if ($md.length) {
+						md.goToMessageDiv($md);
+					}
+				}
+				if (forwardToServer) ws.emit("rm_ping", mid); // TODO know if the ping is saved in db to avoid useless messages
 				notifications.splice(i, 1);
 				notif.updatePingsList();
 				return;
@@ -129,7 +131,8 @@ miaou(function(notif, chat, horn, locals, md, ws){
 				return;
 			}
 			if (lastUserActionAge>1500 && !$('#mwin[mid='+mid+']').length) {
-				notif.pings([{r:r.id, rname:r.name, mid:mid, $md:$md}]);
+				if (mid) notif.pings([{r:r.id, rname:r.name, mid:mid}]);
+				else if ($md) md.goToMessageDiv($md);
 			}
 		}
 		if (!visible || locals.userPrefs.nifvis==="yes") {
@@ -142,6 +145,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		}
 		if (!visible) notif.updateTab(!!notifications.length, ++nbUnseenMessages);
 	}
+
 
 	notif.updateTab = function(hasPing, nbUnseenMessages){
 		var title = locals.room.name,
@@ -157,27 +161,28 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		$('#favicon').attr('href', icon+'.png');
 	}
 
+	var lastfocustime = 0;
+	function onfocus(){
+		var now = Date.now();
+		if (now-lastfocustime<1000) {
+			return;
+		}
+		lastfocustime = now;
+		nbUnseenMessages = 0;
+		notif.updateTab(0, 0);
+		// we go to the last notification message, highlight it and remove the ping
+		var ln = lastNotificationInRoom();
+		if (ln) {
+			notif.removePing(ln.mid, true, true);
+		}
+		$('#input').focus();
+		notif.userAct();
+	}
+
 	notif.init = function(){
-		$(window).on('focus', notif.updatePingsList);
+		$(window).on('focus', onfocus);
 		vis(function(){
-			if (vis()) {
-				nbUnseenMessages = 0;
-				notif.updateTab(0, 0);
-				// we remove the visible
-				// we go to the last notification message, highlight it and remove the ping
-				var ln = lastNotificationInRoom();
-				if (ln) {
-					var $md = ln.$md || $('#messages .message[mid='+ln.mid+']');
-					if ($md.length) {
-						console.log("going to", $md);
-						md.goToMessageDiv($md);
-						ws.emit("rm_ping", ln.mid);
-						notif.removePing(ln.mid);
-					}
-				}
-				$('#input').focus();
-				notif.userAct();
-			}
+			if (vis()) onfocus();
 		});
 	}
 });

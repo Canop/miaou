@@ -104,6 +104,7 @@ section {
 	position: relative;
 	background: $message-list-bg;
 	.message {
+		transition: background 0.6s;
 		border-top: $message-normal-border-top;
 		border-bottom: $message-normal-border-bottom;
 		&.me {
@@ -395,7 +396,6 @@ body.mobile .message-menu .vote {
 			background: lighten($bg-color, 24%);		
 			transition: background 0.2s;
 		}
-		transition: background 0.6s;
 		cursor: pointer;
 		padding: 7px;
 		&.pin {
@@ -648,6 +648,7 @@ span.warning {
 
 .message.goingto, .message.me.goingto {
 	background: $goingto-bg;
+	transition: background .2s;
 }
 .message .content, .rendered {
 	a, a:visited {

@@ -1,4 +1,4 @@
-var	apiversion = 29,
+var	apiversion = 31,
 	config,
 	path = require('path'),
 	maxContentLength,
@@ -6,7 +6,7 @@ var	apiversion = 29,
 	socketio = require('socket.io'),
 	connect = require('connect'),
 	io, db, bot, apiversion,
-	maxHiatusForMerge = 25, // in seconds
+	maxHiatusForMerge = 5, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
 	socketWaitingApproval = [],
