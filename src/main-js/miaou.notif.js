@@ -58,7 +58,8 @@ miaou(function(notif, chat, horn, locals, md, ws){
 			if (locals.room.id==n.r) {
 				localPings.push(n);
 				var $m = n.$m || $('#messages .message[mid='+n.mid+']');
-				if ($m && $m.length && $m.offset().top>10) {
+				n.visible = $m && $m.length && $m.offset().top>10;
+				if (n.visible) {
 					ws.emit("rm_ping", n.mid);
 					nbvisible++;
 				}
@@ -66,7 +67,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 				otherRooms[n.r] = n.rname;
 			}
 		});
-		if (nbvisible>=notifications.length) return;
+		if (nbvisible*notifications.length===1) return;
 		notifMessage = md.notificationMessage(function($c){
 			if (localPings.length) {
 				$('<div>').append(
@@ -162,6 +163,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 			if (vis()) {
 				nbUnseenMessages = 0;
 				notif.updateTab(0, 0);
+				// we remove the visible
 				// we go to the last notification message, highlight it and remove the ping
 				var ln = lastNotificationInRoom();
 				if (ln) {
