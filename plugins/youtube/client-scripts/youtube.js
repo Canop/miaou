@@ -36,10 +36,11 @@ miaou(function(plugins, md){
 			hasYoutubeLink = true;
 			// We want to calculate for each new video, the screen size may have changed.
 			var size = calculateVideoSize($c);
-			return '<iframe width="' + size.width +
-				'" height="' + size.height +
-				'" src="' + getEmbedLink(match[1]) +
-				'" frameborder="0" allowfullscreen></iframe>';
+			return '<iframe width=' + size.width +
+				' height=' + size.height +
+				' sandbox="allow-forms allow-scripts"' +
+				' src="' + getEmbedLink(match[1])+'"' +
+				' frameborder=0 allowfullscreen></iframe>';
 		});
 		if (hasYoutubeLink) $c.html(lines.join('<br>'));
 	}
