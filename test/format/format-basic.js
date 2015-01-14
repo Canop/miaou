@@ -79,4 +79,8 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		'*one star then two**',
 		'*one star then two**'
 	),
+	"xml entities": t(
+		'*a &acute;*',
+		'<i>a &amp;acute;</i>'
+	),
 });

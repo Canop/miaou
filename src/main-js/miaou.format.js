@@ -136,7 +136,7 @@
 			.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
-			var m, s = lin[l].replace(/</g,'&lt;').replace(/>/g,'&gt;')
+			var m, s = lin[l].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : '');
 			
 			var codeline = /^(    |\t)/.test(s) && !(table && /\|/.test(s));
