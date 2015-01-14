@@ -140,7 +140,7 @@ function startServer(){
 	
 	app.use(function(req, res, next) {
 		res.set("X-Frame-Options", "deny");
-		//~ res.set("Content-Security-Policy", "script-src 'self' 'unsafe-inline' http://ajax.googleapis.com");
+		//~ res.set("Content-Security-Policy", "script-src 'self'");
 		res.set("Content-Security-Policy", "script-src 'self' http://ajax.googleapis.com");
 		return next();
 	});
