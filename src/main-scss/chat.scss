@@ -556,6 +556,10 @@ h2 {
 	padding-top: 2px;
 	margin-bottom: 2px;
 	padding-left: 3px;
+	a {
+		text-decoration: none;	
+		color: $title-text-color;
+	}
 }
 h3 {
 	color: $title-text-color;

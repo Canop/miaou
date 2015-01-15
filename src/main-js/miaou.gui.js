@@ -141,7 +141,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			.on('click', '.user,.profile', prof.toggle);
 			$(window).resize(gui.scrollToBottom);
 		} else {
-			$('#messages,#users')
+			$('#messages, #users')
 			.on('mouseenter', '.message', md.showMessageHoverInfos).on('mouseleave', '.message', md.hideMessageHoverInfos)
 			.on('mouseenter', '.user', prof.show);
 			$(document.body).on('mouseleave', '.profile', prof.hide)

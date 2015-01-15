@@ -12,6 +12,7 @@ var	apiversion = 31,
 	socketWaitingApproval = [],
 	auths = require('./auths.js'),
 	commands = require('./commands.js'),
+	server = require('./server.js'),
 	rooms = require('./rooms.js');
 
 exports.configure = function(miaou){
@@ -292,6 +293,7 @@ function handleUserInRoom(socket, completeUser){
 		.spread(function(r, ban){
 			if (r.private && !r.auth) throw new Error('Unauthorized user'); // FIXME don't fill the logs with those errors that can come very fast in case of pulling
 			if (ban) throw new Error('Banned user');
+			r.path = server.roomPath(r);
 			shoe.room = r;
 			console.log(shoe.publicUser.name, 'enters room', shoe.room.id, ':', shoe.room.name);
 			socket.emit('room', shoe.room).join(shoe.room.id);

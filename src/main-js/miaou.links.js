@@ -24,6 +24,7 @@ miaou(function(links, locals, md, skin){
 					// it's an url for the same room
 					if (mid) {
 						// it's an url for a message
+						this.href = locals.room.path + '#' + mid
 						$(this).click(function(){
 							md.focusMessage(mid);
 							return false;
@@ -55,5 +56,10 @@ miaou(function(links, locals, md, skin){
 	links.init = function(){
 		md.registerRenderer(transformLinksToMiaou, true);
 	};
+	
+	links.permalink = function(message){
+		return miaou.root + locals.room.path + '#' + message.id;
+	}
+
 	
 });

@@ -48,7 +48,8 @@ html(lang=vars.room.lang)
 			section#room-info
 				button.small#changeroom home
 				button.small#editroom edit
-				h2#roomname
+				h2
+					a#roomname(href=vars.room.path)
 				div#roomdescription.rendered
 			div.tabs
 				span.tab.selected(page="notablemessagespage") Notable Messages

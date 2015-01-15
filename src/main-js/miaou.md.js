@@ -52,10 +52,6 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		if ($message.length) return $message.eq(0).data('message');
 	}
 
-	md.permalink = function(message){
-		return location.href.match(/^[^&#]*/) + '#' + message.id;
-	}
-
 	// used for notable messages and search results
 	md.showMessages = function(messages, $div){
 		$div.empty();

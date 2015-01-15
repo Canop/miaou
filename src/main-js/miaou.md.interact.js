@@ -4,7 +4,7 @@
 //  - hovering a message
 //  - closing/opening a big message
 
-miaou(function(md, chat, gui, hist, locals, ms, usr, ws, wz){
+miaou(function(md, chat, gui, hist, links, locals, ms, notif, usr, ws, wz){
 
 	// o : mid, level, diff, self, voter
 	// diff  : +1 or -1
@@ -28,17 +28,20 @@ miaou(function(md, chat, gui, hist, locals, ms, usr, ws, wz){
 	}
 
 	md.opener = function(e){
-		var wab = gui.isAtBottom();
-		$(this).removeClass('opener').addClass('closer').closest('.message').find('.content').removeClass('closed');
+		var	wab = gui.isAtBottom(),
+			$md = $(this).removeClass('opener').addClass('closer').closest('.message');
+		$md.find('.content').removeClass('closed');
+		notif.userAct($md.data('message').id);
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
 		wz.updateAll();		
 		return false;
 	}
 	md.closer = function(e){
-		var wab = gui.isAtBottom();
-		var $md = $(this).removeClass('closer').addClass('opener').closest('.message');
+		var	wab = gui.isAtBottom(),
+			$md = $(this).removeClass('closer').addClass('opener').closest('.message');
 		$md.find('.content').addClass('closed');
+		notif.userAct($md.data('message').id);
 		$md.reflow();
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
@@ -54,7 +57,7 @@ miaou(function(md, chat, gui, hist, locals, ms, usr, ws, wz){
 		infos.push(miaou.formatRelativeDate((message.created+chat.timeOffset)*1000));
 		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ';
 		if (message.id) {
-			h += '<a class=link target=_blank href="'+md.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ';
+			h += '<a class=link target=_blank href="'+links.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ';
 			h += '<a class=makemwin title="float">&#xe81d;</a> ';
 			h += chat.voteLevels.slice(0, message.author===locals.me.id ? 1 : 4).slice(usr.checkAuth('admin')?0:1).map(function(l){
 				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
