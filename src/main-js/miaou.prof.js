@@ -20,7 +20,7 @@ miaou(function(prof, gui, locals){
 			$scroller = $user.closest('#message-scroller,#auths-page,#left'),
 			ss = $scroller.scrollTop(), sh = $scroller.height(),
 			$container = $user.closest('#messages,#auths-page,body').first(),
-			ch = $container.height() || $(window).height(); // sometimes $('body').height() is measured as 0, I don't know why...
+			ch = $container.height() || $(window).height();
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
 				
 		if (up.top-ss<sh/2) css.top = up.top+1;

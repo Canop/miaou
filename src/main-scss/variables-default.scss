@@ -14,7 +14,10 @@ $message-list-bg: white !default;
 $message-me-bg: rgba(240,234,214,0.5) !default;
 $notifications-bg-color: #fffa9e !default;
 $notification-text-color: black !default;
+
+$connected-user-bg-color-in-user-list: rgba(255,255,255,0.55) !default;
 $connected-user-text-color-in-user-list: black !default;
+
 $user-text-color-in-user-list: #444 !default;
 $user-text-color-in-message: #555 !default;
 $code-text-color: #444 !default;
@@ -82,6 +85,7 @@ $mwin-content-bg: white !default;
 $mwin-shadow: 0 0 5px black !default;
 
 $first-not-seen-top-border: 6px dotted rgba(0,0,0,0.1) !default;
+
 
 
 // side tabs

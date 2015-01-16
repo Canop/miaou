@@ -36,7 +36,8 @@ miaou(function(usr, locals, mod, ed, ws){
 		$('#users .user .decorations button').remove();
 	}
 	
-	usr.insert= function(user, time){
+	usr.insert = function(user, time){
+		console.log('insert', user);
 		usr.insertInUserList(user, time);
 		usr.insertAmongRecentUsers(user, time);
 	}
@@ -75,8 +76,11 @@ miaou(function(usr, locals, mod, ed, ws){
 				return false;
 			}
 		});
-		if (target) $u.insertBefore(target);
-		else $('#users').append($u);
+		if (target) {
+			$u.insertBefore(target).hide().fadeIn();
+		} else {
+			$('#users').append($u);
+		}
 		return $u;
 	}
 
@@ -84,7 +88,7 @@ miaou(function(usr, locals, mod, ed, ws){
 		usr.insertInUserList(user).addClass('connected');
 	}
 	usr.showLeave = function(user){
-		$user(user).removeClass('connected');		
+		$user(user).removeClass('connected');	
 	}
 
 	// returns true if the user's authorization level in room is at least the passed one
@@ -95,5 +99,4 @@ miaou(function(usr, locals, mod, ed, ws){
 		}
 		return false;
 	}
-		
 });

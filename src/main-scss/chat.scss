@@ -86,7 +86,11 @@ section {
 		&.connected {
 			font-style: normal;
 			color: $connected-user-text-color-in-user-list;
+			box-shadow: $connected-user-bg-color-in-user-list 200px 0 0 0 inset;
+			transition: box-shadow 2s;
 		}
+		box-shadow: $connected-user-bg-color-in-user-list 0 0 0 0 inset;
+		transition: box-shadow 2s;
 	}
 }
 
