@@ -37,7 +37,6 @@ miaou(function(usr, locals, mod, ed, ws){
 	}
 	
 	usr.insert = function(user, time){
-		console.log('insert', user);
 		usr.insertInUserList(user, time);
 		usr.insertAmongRecentUsers(user, time);
 	}
