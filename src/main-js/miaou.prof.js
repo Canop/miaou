@@ -22,7 +22,7 @@ miaou(function(prof, gui, locals){
 			$container = $user.closest('#messages,#auths-page,body').first(),
 			ch = $container.height() || $(window).height();
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
-				
+		
 		if (up.top-ss<sh/2) css.top = up.top+1;
 		else css.bottom = ch-up.top-uh-3;
 		css.left = up.left + uw + 5;

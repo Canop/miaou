@@ -144,6 +144,7 @@ body.mobile #message-scroller {
 		position: relative;
 		padding: $user-padding-in-message;
 		color: $user-text-color-in-message;
+		max-width: 300px;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;

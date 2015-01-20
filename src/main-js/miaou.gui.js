@@ -137,16 +137,20 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		}
 		
 		if (gui.mobile) {
-			$('#messages').on('click', '.message', md.toggleMessageHoverInfos)
+			$('#messages')
+			.on('click', '.message', md.toggleMessageHoverInfos)
 			.on('click', '.user,.profile', prof.toggle);
 			$(window).resize(gui.scrollToBottom);
 		} else {
-			$('#messages, #users')
-			.on('mouseenter', '.message', md.showMessageHoverInfos).on('mouseleave', '.message', md.hideMessageHoverInfos)
+			$('#messages, #users, #notifications')
+			.on('mouseenter', '.message', md.showMessageHoverInfos)
+			.on('mouseleave', '.message', md.hideMessageHoverInfos)
 			.on('mouseenter', '.user', prof.show);
-			$(document.body).on('mouseleave', '.profile', prof.hide)
+			$(document.body)
+			.on('mouseleave', '.profile', prof.hide)
 			.on('mouseleave', '.user', prof.checkOverProfile);
-			$('#users').on('mouseenter', '.user', usr.showUserHoverButtons)
+			$('#users')
+			.on('mouseenter', '.user', usr.showUserHoverButtons)
 			.on('mouseleave', '.user', usr.hideUserHoverButtons);
 		}
 		
