@@ -55,7 +55,7 @@ miaou(function(locals){
 							"You didn't participate in any non dialog room."
 						)
 					)
-				);			
+				);		
 			} else {
 				$container.append(
 					$('<div>').addClass('CL').append(
@@ -158,7 +158,5 @@ miaou(function(locals){
 		});
 	});
 	applyLangs();
-
-
 
 });

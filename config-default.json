@@ -17,6 +17,7 @@
 	},
 	"plugins": [
 		"./plugins/stackoverflow/plugin.js",
+		"./plugins/github/plugin.js",
 		"./plugins/wikipedia/plugin.js",
 		"./plugins/video/plugin.js",
 		"./plugins/whiteboard/plugin.js",
