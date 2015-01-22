@@ -2,6 +2,7 @@
 // Here are functions related to the display of messages in the chat and to the various message element lists
 
 miaou(function(md, chat, gui, hist, locals, usr){
+	
 	var renderers = [], unrenderers = [];
 	
 	// registers a function which will be called when a message needs rendering

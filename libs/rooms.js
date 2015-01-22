@@ -1,9 +1,12 @@
-var auths = require('./auths.js'),
+"use strict";
+
+const auths = require('./auths.js'),
 	server = require('./server.js'),
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
-	memobjects = {},
-	clean = require('./ws.js').clean,
-	langs;
+	memobjects = new Map,
+	clean = require('./ws.js').clean;
+
+var langs;
 	
 exports.configure = function(miaou){
 	langs = require('./langs.js').configure(miaou);
@@ -13,9 +16,10 @@ exports.configure = function(miaou){
 // returns a shared unpersisted object relative to the room
 // the context of the call must be a db con
 exports.mem = function(roomId){
-	var mo = memobjects[roomId];
+	var mo = memobjects.get(roomId);
 	if (!mo) {
-		mo = memobjects[roomId] = {id:roomId};
+		mo = {id:roomId};
+		memobjects.set(roomId, mo);
 		var now = Date.now()/1000|0;
 		return this
 		.getNotableMessages(roomId, now-maxAgeForNotableMessages)

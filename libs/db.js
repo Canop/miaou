@@ -1,3 +1,5 @@
+"use strict";
+
 // postgresql persistence
 // Usage :
 //   
@@ -19,10 +21,11 @@
 //      this.rollback();
 //   }).finally(db.off);
 
-var pg = require('pg'),
-	Promise = require("bluebird"),
+const Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
-	path = require("path"),
+	path = require("path");
+
+var pg = require('pg'),
 	config,
 	pool;
 
@@ -471,7 +474,7 @@ proto.getMessage = function(messageId, userId){
 // else stores a message and sets its id
 proto.storeMessage = function(m, dontCheckAge){
 	if (m.id) {
-		var savedAuthorname = m.authorname;
+		var savedAuthorname = m.authorname,
 			sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
 		if (!dontCheckAge) sql += ' and created>'+(now()-config.maxAgeForMessageEdition);
 		sql += ' returning *';

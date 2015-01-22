@@ -1,11 +1,10 @@
 // Manages user preferences, including external profile infos and the choice of theme.
 //
 
-var	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
+const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
 	Promise = require("bluebird"),
 	path = require('path'),
 	naming = require('./naming.js'),
-	db,
 	server = require('./server.js'),
 	cache = require('bounded-cache')(5),
 	defaultPrefs = { // also defines the valid keys
@@ -14,7 +13,9 @@ var	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB t
 		datdpl: 'hover',	// date display 
 		nifvis: 'no',		// notifies even if the tab is visible
 		theme: 'default'	//
-	},
+	};
+
+var	db,
 	langs,
 	themes,
 	plugins;

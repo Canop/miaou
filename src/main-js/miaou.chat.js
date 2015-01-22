@@ -1,5 +1,5 @@
 
-miaou(function(chat, horn, links, locals, md, notif, ws, gui, plugins, ws){
+miaou(function(chat, horn, links, locals, md, notif, gui, plugins, ws){
 	
 	chat.config = { // may be changed by server later
 		maxMessageContentSize: 8000,
@@ -39,6 +39,10 @@ miaou(function(chat, horn, links, locals, md, notif, ws, gui, plugins, ws){
 			$c.empty().append(message.content ? miaou.mdToHtml(message.content, !!$c.closest('#messages').length, message.authorname) : '')
 		});
 		locals.pluginsToStart.forEach(function(name){
+			if (!plugins[name]) {
+				console.log("Missing plugin : ", name);
+				return;
+			}
 			plugins[name].start();
 		});
 	}	

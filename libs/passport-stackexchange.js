@@ -1,4 +1,6 @@
-var name = 'stackexchange',
+"use strict";
+
+const name = 'stackexchange',
 	util = require('util'),
 	OAuth2Strategy = require('passport-oauth').OAuth2Strategy,
 	zlib = require('zlib'),

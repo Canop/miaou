@@ -1,3 +1,5 @@
+"use strict";
+
 // flakes are unpersisted messages (with no id)
 
 exports.configure = function(miaou){

@@ -1,4 +1,6 @@
-var server = require('./server.js');
+"use strict";
+
+const server = require('./server.js');
 	
 exports.configure = function(miaou){
 	return this;

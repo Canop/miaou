@@ -1,6 +1,8 @@
+"use strict";
+
 // manage authorizations and bans
 
-var levels = ['read', 'write', 'admin', 'own'],
+const levels = ['read', 'write', 'admin', 'own'],
 	naming = require('./naming.js'),
 	server = require('./server.js'),
 	ws = require('./ws.js');

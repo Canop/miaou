@@ -1,4 +1,6 @@
-var	fs = require("fs"),
+"use strict";
+
+const fs = require("fs"),
 	http = require('http'),
 	path = require('path'),
 	express = require('express'),
@@ -7,13 +9,14 @@ var	fs = require("fs"),
 	login = require('./login.js'),
 	db = require('./db.js'),
 	naming = require('./naming.js'),
-	miaou, // properties : db, config, bot
-	baseURL,
 	session = require('express-session'),
 	RedisStore = require('connect-redis')(session),
 	sessionStore = new RedisStore({}),
 	oauth2Strategies = {},
-	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i,
+	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i;
+
+var	miaou, // properties : db, config, bot
+	baseURL,
 	app, server;
 
 passport.serializeUser(function(user, done) {

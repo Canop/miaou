@@ -1,8 +1,12 @@
-var path = require('path'),
+"use strict";
+
+const path = require('path'),
 	Promise = require("bluebird"),
 	server = require('./server.js'),
-	bot, botname = "miaou.help",
-	commands = {},
+	botname = "miaou.help",
+	commands = {}
+
+var bot,
 	all = [];
 	
 function CommandTask(cmd, args, shoe, message){

@@ -1,9 +1,12 @@
-var fs = require('fs'),
+"use strict";
+
+const fs = require('fs'),
 	path = require('path'),
 	auths = require('./auths.js'),
 	prefs = require('./prefs.js'),
-	server = require('./server.js'),
-	clientSidePluginNames;
+	server = require('./server.js');
+
+var	clientSidePluginNames;
 
 exports.configure = function(miaou){
 	clientSidePluginNames = (miaou.config.plugins||[]).filter(function(n){

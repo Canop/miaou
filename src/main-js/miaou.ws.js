@@ -1,6 +1,6 @@
 // ws : handles the connection to the server over socket.io (websocket whenever possible)
 
-miaou(function(ws, chat, gui, hist, locals, md, mod, notif, usr, ed){
+miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr){
 
 	ws.init = function(){
 		var pingRegex = new RegExp('@'+locals.me.name+'(\\b|$)'),

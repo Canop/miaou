@@ -55,7 +55,7 @@ done
 ##################################################################
 
 # concat common client side javascript
-rm $STATIC_PATH/miaou.concat.js
+echo "\"use strict\";" > $STATIC_PATH/miaou.concat.js
 cat $COMMON_SCRIPTS_SRC_PATH/*.js >> $STATIC_PATH/miaou.concat.js
 
 # add plugin client side scripts
@@ -84,7 +84,9 @@ done
 cd $PAGE_SCRIPTS_SRC_PATH
 for f in *.js
 do
-uglifyjs "$f" --screw-ie8 -ct --output "$STATIC_PATH/${f%.*}.min.js"
+fname="${f%.*}.min.js"
+uglifyjs "$f" --screw-ie8 -ct --output "$STATIC_PATH/$fname"
+echo $fname gzipped : `cat $STATIC_PATH/$fname | gzip -9f | wc -c` bytes
 done
 
 

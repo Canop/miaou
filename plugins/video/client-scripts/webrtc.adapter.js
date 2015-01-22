@@ -1,11 +1,15 @@
 // Mostly from https://bitbucket.org/webrtc/codelab
 
 var RTCPeerConnection = null;
+var RTCSessionDescription = null;
+var RTCIceCandidate = null;
 var getUserMedia = null;
 var attachMediaStream = null;
+var createIceServer = null;
 var reattachMediaStream = null;
 var webrtcDetectedBrowser = null;
 var webrtcDetectedVersion = null;
+
 
 if (navigator.mozGetUserMedia) {
 	webrtcDetectedBrowser = "firefox";

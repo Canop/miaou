@@ -14,6 +14,10 @@ miaou(function(links, locals, md, skin){
 		linkwzin = null;
 	}
 	
+	function addStop(link){
+		$(link).click(function(e){ e.stopPropagation() });
+	}
+	
 	function transformLinksToMiaou($c){
 		$c.find('a[href]').each(function(){
 			var	parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
@@ -48,7 +52,10 @@ miaou(function(links, locals, md, skin){
 					h += 't='+Date.now();
 					if (parts[4]) h += '#'+parts[4];
 					this.href = h;
+					addStop(this);
 				}
+			} else {
+				addStop(this);
 			}
 		});
 	}

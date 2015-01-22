@@ -1,9 +1,11 @@
+"use strict";
 
-var langs = exports.all = {
+const langs = exports.all = {
 	en: { pgname:'english' },
 	fr: { pgname:'french' },
 	it: { pgname:'italian' }
 };
+
 exports.legal; // codes of the languages proposed in room creation / filtering
 
 exports.configure = function(miaou){

@@ -165,7 +165,6 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			} else {
 				$('#searchInput').focus();
 			}
-			return false;
 		}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
 
 		if (usr.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+locals.room.id });

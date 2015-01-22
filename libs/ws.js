@@ -1,19 +1,22 @@
-var	apiversion = 33,
-	config,
-	path = require('path'),
-	maxContentLength,
-	minDelayBetweenMessages,
-	socketio = require('socket.io'),
-	connect = require('connect'),
-	io, db, bot, apiversion,
+"use strict";
+
+const apiversion = 34,
 	maxHiatusForMerge = 10, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
-	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins,
+	path = require('path'),
+	socketio = require('socket.io'),
+	connect = require('connect'),
 	socketWaitingApproval = [],
 	auths = require('./auths.js'),
 	commands = require('./commands.js'),
 	server = require('./server.js'),
 	rooms = require('./rooms.js');
+
+var	config,
+	maxContentLength,
+	minDelayBetweenMessages,
+	io, db, bot,
+	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins;
 
 exports.configure = function(miaou){
 	config = miaou.config;
@@ -95,9 +98,9 @@ Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
 	});
 }
 Shoes.pluginTransformAndSend = function(m, sendFun){
-	onSendMessagePlugins.forEach(function(plugin){
+	for (var plugin of onSendMessagePlugins) {
 		plugin.onSendMessage(this, m, sendFun);
-	}, this);
+	}
 	sendFun('message', m);
 }
 Shoes.io = function(){
@@ -131,7 +134,7 @@ Shoes.botMessage = function(bot, content){
 // returns the ids of the rooms to which the user is currently connected
 Shoes.userRooms = function(){
 	var rooms = [],
-		uid = this.publicUser.id;
+		uid = this.publicUser.id,
 		iorooms = io.sockets.adapter.rooms;
 	for (var roomId in iorooms) {
 		if (+roomId!=roomId) continue;
@@ -309,14 +312,14 @@ function handleUserInRoom(socket, completeUser){
 		}).spread(function(pings, recentUsers){
 			if (pings.length) socket.emit('pings', pings);
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
-			socketWaitingApproval.forEach(function(o){
+			for (var o of socketWaitingApproval) {
 				if (o.roomId===shoe.room.id && o.ar) socket.emit('request', o.ar);
-			});
+			}
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
 			socket.emit('welcome');
-			shoe.roomSockets().forEach(function(s){
+			for (var s of shoe.roomSockets()) {
 				if (!s) {
 					console.log("null socket");
 					return;
@@ -324,7 +327,7 @@ function handleUserInRoom(socket, completeUser){
 				var user = s.publicUser;
 				if (!user) console.log('missing user on socket');
 				else socket.emit('enter', user);
-			});
+			}
 			return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
@@ -444,8 +447,8 @@ function handleUserInRoom(socket, completeUser){
 		if (message.id) {
 			m.id = +message.id;
 			m.changed = seconds;
-			for (var i=0; i<onChangeMessagePlugins.length; i++) {
-				var error = onChangeMessagePlugins[i].onChangeMessage(shoe, m);
+			for (var p of onChangeMessagePlugins) {
+				var error = p.onChangeMessage(shoe, m);
 				if (error) { // we don't use trycatch for performance reasons
 					return shoe.error(error, m.content);
 				}
@@ -481,8 +484,8 @@ function handleUserInRoom(socket, completeUser){
 		}).spread(function(m, commandTask){
 			if (commandTask.silent) return;
 			if (m.changed) m.vote = '?';
-			for (var i=0; i<onSendMessagePlugins.length; i++) {
-				onSendMessagePlugins[i].onSendMessage(this, m, send);
+			for (var p of onSendMessagePlugins) {
+				p.onSendMessage(this, m, send);
 			}
 			if (merge) send('merge', {id:m.id, add:merge, created:m.created});
 			else send('message', m);
@@ -497,7 +500,7 @@ function handleUserInRoom(socket, completeUser){
 				if (pings) {
 					pings = pings.map(function(s){ return s.slice(1) });
 					var remainingpings = [];
-					pings.forEach(function(username){
+					for (var username of pings) {
 						//~ console.log("User is in room : ", !!shoe.userSocket(username));
 						if (shoe.userSocket(username)) return;
 						// user isn't in the room, we notify him with a cross-room ping in the other rooms
@@ -512,7 +515,7 @@ function handleUserInRoom(socket, completeUser){
 						//~ if (!pinged) {
 							remainingpings.push(username);
 						//~ }
-					});
+					}
 					if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
 				}
 			}
@@ -605,7 +608,9 @@ function handleUserInRoom(socket, completeUser){
 			var lm = clean(updatedMessage);
 			socket.emit('message', lm);
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
-		}).catch(function(err){ console.log('ERR in vote handling:', err) })
+			return rooms.updateNotables.call(this, memroom);
+		})
+		.catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);		
 	})
 	.on('vote', function(vote){
@@ -654,9 +659,9 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	});
 
-	onNewShoePlugins.forEach(function(plugin){
+	for (let plugin of onNewShoePlugins) {
 		plugin.onNewShoe(shoe);
-	});
+	}
 
 	socket.emit('ready');
 }

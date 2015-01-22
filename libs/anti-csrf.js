@@ -1,3 +1,5 @@
+"use strict";
+
 // protects the user from CSRF attacks by
 // - checking the referrer in POST requests
 // - checking a secret session token in POST requests
@@ -9,15 +11,15 @@
 
 module.exports = function(options){
 
-	var whitemap = {};
+	var whitemap = new Set;
 	if (options && options.whitelist) {
-		options.whitelist.forEach(function(s){ whitemap[s]=1 })
+		options.whitelist.forEach(function(s){ whitemap.add(s) })
 	}
 		
 	return function(req, res, next){
 		var session = req.session;
 		if (!session.secret) session.secret = (Math.random()*Math.pow(36,5)|0).toString(36);
-		if (req.method==='POST' && !whitemap[req.path]) {
+		if (req.method==='POST' && !whitemap.has(req.path)) {
 			var refererHost = (req.headers.referer||'').match(/^https?:\/\/([^\/\:]+)/)[1];
 			if (req.param('secret')!==session.secret || refererHost!=req.hostname) {
 				console.log('Anti-csrf rejects this form');

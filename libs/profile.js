@@ -1,7 +1,10 @@
-var path = require('path'),
+"use strict";
+
+const path = require('path'),
 	naming = require('./naming.js'),
-	server = require('./server.js'),
-	langs,
+	server = require('./server.js');
+
+var langs,
 	plugins;
 
 exports.configure = function(miaou){

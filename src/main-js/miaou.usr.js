@@ -1,6 +1,6 @@
 // functions related to users
 
-miaou(function(usr, locals, mod, ed, ws){
+miaou(function(usr, ed, locals, mod, ws){
 
 	var	levels = ['read', 'write', 'admin', 'own'],
 		recentUsers = []; // sorted list of {id,name,mc} (this list isn't displayed but used for ping autocompletion)

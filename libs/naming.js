@@ -1,6 +1,9 @@
-var	path = require('path'),
-	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
-	blacklist = [];
+"use strict";
+
+const path = require('path'),
+	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+
+var blacklist = [];
 
 // from https://github.com/backbone-paginator/backbone.paginator/blob/master/plugins/diacritic.js
 var defaultDiacriticsRemovalMap = [
@@ -99,7 +102,6 @@ var removeDiacritics = function(str){
 }
 
 exports.configure = function(miaou){
-	plugins = (miaou.config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
 	if (miaou.config.forbiddenUsernames) {
 		blacklist = miaou.config.forbiddenUsernames.map(function(s){ return new RegExp(s,'i') }); 
 	}
