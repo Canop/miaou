@@ -24,7 +24,7 @@ html
 				p Choose wisely (not &quot;wisely&quot;).
 				p
 					label.label Name&thinsp;:&nbsp;
-					input#name(type="text", name="name", value=suggestedName, pattern="\\w[\\w_\\-\\d]{2,19}")
+					input#name(type="text", name="name", value=suggestedName, pattern="[a-zA-Z][\\w_\\-]{2,19}")
 				p#err.error= error
 				button#submit Save
 				button#gotochat Go to chat

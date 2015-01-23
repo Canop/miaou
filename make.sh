@@ -86,7 +86,8 @@ for f in *.js
 do
 fname="${f%.*}.min.js"
 uglifyjs "$f" --screw-ie8 -ct --output "$STATIC_PATH/$fname"
-echo $fname gzipped : `cat $STATIC_PATH/$fname | gzip -9f | wc -c` bytes
+# uncomment the next line to get the sizes of the specific scripts
+# echo $fname gzipped : `cat $STATIC_PATH/$fname | gzip -9f | wc -c` bytes
 done
 
 

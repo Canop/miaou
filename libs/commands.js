@@ -59,7 +59,7 @@ exports.configure = function(miaou){
 		help:'get help about commands. Usage : `!!help !!commandname`',
 		detailedHelp:"You can also get a list of all commands with just `!!help`"
 	});
-	['afk','ban','flake','stats','summon'].forEach(function(cmd){
+	['afk','ban','flake','pm','stats','summon'].forEach(function(cmd){
 		require('./'+cmd+'.js').configure(miaou).registerCommands(registerCommand);
 	});
 	all.sort(function(a,b){ return a.name>b.name ? 1 : -1 });

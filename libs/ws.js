@@ -9,6 +9,7 @@ const apiversion = 34,
 	socketWaitingApproval = [],
 	auths = require('./auths.js'),
 	commands = require('./commands.js'),
+	pm  = require('./pm.js'),
 	server = require('./server.js'),
 	rooms = require('./rooms.js');
 
@@ -541,29 +542,10 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);		
 	})
 	.on('pm', function(otherUserId){
-		if (!shoe.room) return;
-		var lounge, otherUser, message;
 		db.on(otherUserId)
-		.then(db.getUserById)
-		.then(function(user){
-			otherUser = user;
-			return this.getLounge(shoe.completeUser, otherUser)
-		}).then(function(r){
-			lounge = r;
-			var content = otherUser.name+' has been invited to join this private room.',
-				m = { content:content, author:shoe.publicUser.id, authorname:shoe.publicUser.name, room:lounge.id, created:Date.now()/1000|0 };
-			return this.storeMessage(m);
-		}).then(function(m){
-			message = m;
-			var socket = shoe.userSocket(otherUserId) || anyUserSocket(otherUserId);
-			if (socket) {
-				socket.emit('invitation', {room:lounge.id, byname:shoe.publicUser.name, message:message.id});
-			} else {
-				return this.storePing(lounge.id, otherUserId, message.id);				
-			}
-		}).then(function(){
-			socket.emit('pm_room', lounge.id)
-		}).catch(function(err){ console.log('ERR in PM :', err) })
+		.then(function(){
+			return pm.openPmRoom.call(this, shoe, otherUserId);
+		})
 		.finally(db.off);
 	})
 	.on('pre_request', function(request){ // not called from chat but from request.jade

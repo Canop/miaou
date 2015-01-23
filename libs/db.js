@@ -68,14 +68,12 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 }
 
 // returns an existing user found by his id
-// Only public fields are returned
 // Private fields are included in the returned object
 proto.getUserById = function(id){
 	return this.queryRow('select id, name, oauthdisplayname, email, bot from player where id=$1', [id]);
 }
 
 // returns an existing user found by his name
-// Only public fields are returned
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
 	return this.queryRow('select id, name, oauthdisplayname, email, bot from player where name=$1', [username], true);

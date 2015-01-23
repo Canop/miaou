@@ -54,7 +54,6 @@ exports.appAllUsername = function(req, res, db){
 	}).finally(db.off)
 }
 
-
 // handles GET on '/publicProfile'
 exports.appGetPublicProfile = function(req, res, db){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes

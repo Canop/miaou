@@ -45,6 +45,11 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, ws){
 			}
 			plugins[name].start();
 		});
+		chat.on("sending_message", function(message){
+			if (/^!!pm\s+@([\w-]{3,})/.test(message.content)) {
+				miaou.pmwin = window.open(); // the server will handle the !!pm request and have the window filled
+			}
+		});
 	}	
 
 	// Registers for an event ("incoming_message", "sending_message")
