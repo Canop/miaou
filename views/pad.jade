@@ -1,0 +1,16 @@
+doctype html
+html
+	head
+		title Miaou - Pad
+		link(rel="icon",type="image/png",href="static/M-32.png")
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
+		script(src="static/jquery-2.1.3.min.js")
+		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
+		script(src="static/miaou.min.js")
+		script(src="static/pad.min.js")
+	body.pad
+		div#non-top
+			p bla bla
+		div#top-slider
+			div top slider
+	
