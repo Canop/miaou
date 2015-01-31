@@ -27,32 +27,32 @@ clean:
 # main js file : static/miaou.min.js
 # note : the cd static; is because I didn't find another way to have a correctly linked source map
 ./static/miaou.concat.js: $(MAIN_JS_SOURCES) $(PLUGIN_JS_SOURCES)
-	@echo "\"use strict\";" > ./static/miaou.concat.js
-	cat $(MAIN_JS_SOURCES) >> ./static/miaou.concat.js
-	cat $(PLUGIN_JS_SOURCES) >> ./static/miaou.concat.js
+	@echo "\"use strict\";" > $@
+	cat $(MAIN_JS_SOURCES) >> $@
+	cat $(PLUGIN_JS_SOURCES) >> $@
 ./static/miaou.min.js: ./static/miaou.concat.js
-	cd static; uglifyjs miaou.concat.js $(UGLIFY_OPTIONS) --output miaou.min.js --source-map miaou.min.js.map
-	@echo ./static/miaou.min.js gzipped : `cat ./static/miaou.min.js | gzip -9f | wc -c` bytes
+	cd static; uglifyjs miaou.concat.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $(@F).map
+	@echo $@ gzipped : `cat $@ | gzip -9f | wc -c` bytes
 main-js: ./static/miaou.min.js
 
 #js of specific pages : static/[somepage].js
 ./build/page-js: 
-	mkdir -p ./build/page-js
+	mkdir -p $@
 ./build/page-js/%.min.js: ./src/page-js/%.js
 	cp $< build/page-js/
-	cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $*.min.js --source-map $*.min.js.map
+	cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $*.min.js.map
 page-js: ./build/page-js $(PAGES_JS_OUT)
 	@cp ./build/page-js/* ./static/
 
 # constant resource files
 ./static/%: ./src/rsc/%
-	@mkdir -p $(dir $@)
+	@mkdir -p $(@D)
 	cp $< $@
 rsc: $(RSC_FILES)
 
 # CSS of specific pages : static/[somepage].css
 ./build/page-scss: 
-	mkdir -p ./build/page-scss
+	mkdir -p $@
 ./build/page-scss/%.css: ./src/page-scss/%.scss
 	sass -t compressed $< > $@
 page-css: ./build/page-scss $(PAGES_CSS_OUT)
@@ -71,9 +71,9 @@ page-css: ./build/page-scss $(PAGES_CSS_OUT)
 ./build/themes/%:
 	mkdir -p $@
 ./static/themes/%/miaou.css: ./build/themes/% ./themes/%/*.scss ./src/main-scss/*.scss
-	mkdir -p $(dir $@)
+	mkdir -p $(@D)
 	cp ./src/main-scss/*.scss ./build/themes/$*/
 	cp ./themes/$*/*.scss ./build/themes/$*/
-	sass -t compressed  ./build/themes/$*/main.scss > $(dir $@)miaou.css
-	cat ./plugins/*/css/*.css >> $(dir $@)miaou.css
+	sass -t compressed  ./build/themes/$*/main.scss > $(@D)/miaou.css
+	cat ./plugins/*/css/*.css >> $(@D)/miaou.css
 themes: $(THEME_OUT_CSS)
