@@ -1,4 +1,4 @@
-# Makes all the client side things which goes in /static
+# Makes all the client side things which go in /static
 
 PAGES_SCSS_SOURCES:=$(wildcard ./src/page-scss/*.scss)
 PAGES_CSS_OUT:=$(patsubst %.scss, ./build/page-scss/%.css, $(notdir $(PAGES_SCSS_SOURCES)))
@@ -25,7 +25,7 @@ clean:
 	rm -rf ./build
 
 # main js file : static/miaou.min.js
-# note : the cd static; is because I didn't find another way to have a correctly linked source map
+# There's a cd static; because I didn't find another way to have a correctly linked source map
 ./static/miaou.concat.js: $(MAIN_JS_SOURCES) $(PLUGIN_JS_SOURCES)
 	@echo "\"use strict\";" > $@
 	cat $(MAIN_JS_SOURCES) >> $@
@@ -66,7 +66,6 @@ page-css: ./build/page-scss $(PAGES_CSS_OUT)
 # 	copy the standard scss files
 # 	override them with files of the theme (when available)
 #	build the css file from the sass one
-#	remove the now useless sass files
 # 	and finally concat css of plugins
 ./build/themes/%:
 	mkdir -p $@
