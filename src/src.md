@@ -1,13 +1,21 @@
-This directory contains files that will be moved out of here, then concatenated, minified and|or modified before execution.
+This directory contains files that will be moved out of here, concatenated, minified or modified before execution.
 
-## common-scripts
+## main-js
 
-The scripts that make /static/miaou.min.js
+The scripts that make /static/miaou.min.js. They're concatenated and minified.
 
-## page-scripts
+## page-js
 
 Scripts only used in specific pages, minified and then moved to /static
 
-## scss
+## main-scss
 
-Sources of /static/main.css
+Sources of the main css file (depending on the themes)
+
+## page-scss
+
+Sources of page specific css files
+
+## rsc
+
+Those files will be copied as is in the /static directory

@@ -13,17 +13,6 @@ PAGE_SCSS_SRC_PATH="$ROOT_PATH/src/page-scss"
 THEMES_SRC_PATH="$ROOT_PATH/themes"
 
 ##################################################################
-# building the standard css served to non chat pages
-##################################################################
-
-## build the css from scss
-# rm $STATIC_PATH/main.css
-# sass -t compressed $MAIN_SCSS_SRC_PATH/common/main.scss > $STATIC_PATH/main.css 
-## concat plugin css
-# cat $ROOT_PATH/plugins/*/css/*.css >> $STATIC_PATH/main.css
-# echo main.css gzipped : `cat $STATIC_PATH/main.css | gzip -9f | wc -c` bytes
-
-##################################################################
 # building themes
 ##################################################################
 

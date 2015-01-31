@@ -30,6 +30,7 @@ html
 	body
 		- authLevels = ['read', 'write', 'admin', 'own']
 		- rol = authLevels.indexOf(room.auth)
+		- canseeauths = true
 		form(method="post")
 			input(type="hidden", name="room", value=room.id)
 			input(type="hidden", name="secret", value=secret)
@@ -59,85 +60,91 @@ html
 							a(href="room?id="+room.id) edit the room
 							| .
 						default
-							| Your authorization level doesn't make it possible for you to manage rights in this room.
-				div.C.C1
-					h2 Access Requests
-					if requests.length
+							if room.listed || rol>=1
+								| Your authorization level doesn't make it possible for you to manage rights in this room.
+							else
+								- canseeauths = false
+								| Room settings prevent unauthorized users to see authorizations.
+				if canseeauths
+					div.C.C1
+						h2 Access Requests
+						if requests.length
+							table.list
+								each r, i in requests
+									tr.userLine(data-user={id:r.player})
+										th
+											span.user= r.name
+										td.date= r.requested
+										td
+											- var name = "answer_request_"+r.player
+											div
+												input(type="radio", _name=name, id="g"+i, value="grant")
+												label(for="g"+i) Grant Access
+											div
+												input(type="radio", _name=name, id="d"+i, value="deny")
+												label(for="d"+i) Deny Access
+									tr.userLine
+										td
+											span= r.name+' '
+											| says
+										td.rendered(colspan="2")= r.request_message
+									tr.userLine.denyMessageTr(style="display:none")
+										td(colspan="3")
+											input(type="text",style="width:100%",_name="deny_message_"+r.player,placeholder="optional message")
+						else
+							p none currently
+						h2 Recent Users With No Authorization
+						if unauthorizedUsers.length
+							table.list
+								each u in unauthorizedUsers
+									tr.userLine(data-user={id:u.id})
+										th
+											span.user= u.name
+										if rol>=2
+											td.auth
+												- var name = "insert_auth_"+u.id
+												select(_name=name)
+													option(value="admin") admin
+													option(value="write") write
+													option(value="none",selected) no access
+						else
+							p none currently
+					div.C.C1
+						h2 Existing Authorizations
 						table.list
-							each r, i in requests
-								tr.userLine(data-user={id:r.player})
+							each ua in auths
+								tr.userLine(data-user={id:ua.player})
 									th
-										span.user= r.name
-									td.date= r.requested
-									td
-										- var name = "answer_request_"+r.player
-										div
-											input(type="radio", _name=name, id="g"+i, value="grant")
-											label(for="g"+i) Grant Access
-										div
-											input(type="radio", _name=name, id="d"+i, value="deny")
-											label(for="d"+i) Deny Access
-								tr.userLine
-									td
-										span= r.name+' '
-										| says
-									td.rendered(colspan="2")= r.request_message
-								tr.userLine.denyMessageTr(style="display:none")
-									td(colspan="3")
-										input(type="text",style="width:100%",_name="deny_message_"+r.player,placeholder="optional message")
-					else
-						p none currently
-					h2 Recent Users With No Authorization
-					if unauthorizedUsers.length
-						table.list
-							each u in unauthorizedUsers
-								tr.userLine(data-user={id:u.id})
-									th
-										span.user= u.name
-									if rol>=2
+										span.user= ua.name
+									- ual = authLevels.indexOf(ua.auth)
+									if rol>=2 && rol>=ual
 										td.auth
-											- var name = "insert_auth_"+u.id
+											- var name = "change_auth_"+ua.player
 											select(_name=name)
-												option(value="admin") admin
-												option(value="write") write
-												option(value="none",selected) no access
-					else
-						p none currently
-				div.C.C1
-					h2 Existing Authorizations
-					table.list
-						each ua in auths
-							tr.userLine(data-user={id:ua.player})
-								th
-									span.user= ua.name
-								- ual = authLevels.indexOf(ua.auth)
-								if rol>=2 && rol>=ual
-									td.auth
-										- var name = "change_auth_"+ua.player
-										select(_name=name)
-											if room.auth === 'own'
-												option(value="own", selected=ua.auth==="own") own
-											option(value="admin", selected=ua.auth==="admin") admin
-											option(value="write", selected=ua.auth==="write") write
-											option(value="none") no access
-								else
-									td.auth= ua.auth
-				div.C.C2
-					h2 Active Bans
-					table.list
-						each ban in bans
-							tr
-								th
-									span.user=ban.bannedname
-								td									
-									| banned by
-									span.user=' '+ban.bannername+' '
-									| until
-									span= ' '+new Date(ban.expires*1000)
-								td(style="white-space:nowrap")
-									- var name = "unban_"+ban.id+"_"+ban.banned
-									input(type="checkbox",_name=name,id=name)
-									label(for=name) unban
-				p#submit_bar
-					input(type="reset", value="Cancel Changes", disabled)
-					input(type="submit", value="Validate Changes", disabled)
+												if room.auth === 'own'
+													option(value="own", selected=ua.auth==="own") own
+												option(value="admin", selected=ua.auth==="admin") admin
+												option(value="write", selected=ua.auth==="write") write
+												option(value="none") no access
+									else
+										td.auth= ua.auth
+					div.C.C2
+						h2 Active Bans
+						table.list
+							each ban in bans
+								tr
+									th
+										span.user=ban.bannedname
+									td									
+										| banned by
+										span.user=' '+ban.bannername+' '
+										| until
+										span= ' '+new Date(ban.expires*1000)
+									td(style="white-space:nowrap")
+										- var name = "unban_"+ban.id+"_"+ban.banned
+										input(type="checkbox",_name=name,id=name)
+										label(for=name) unban
+					if rol>=2
+						p#submit_bar
+							input(type="reset", value="Cancel Changes", disabled)
+							input(type="submit", value="Validate Changes", disabled)

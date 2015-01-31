@@ -224,6 +224,7 @@ proto.listAccessibleRooms = function(userId){
 
 // lists the rooms that should make it to the front page
 // Note : this query is very heavy (about 50ms for a user in many rooms)
+// TODO make a partial index with message count on rooms where listed is true ?
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+

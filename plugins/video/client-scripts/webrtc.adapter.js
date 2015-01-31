@@ -10,7 +10,6 @@ var reattachMediaStream = null;
 var webrtcDetectedBrowser = null;
 var webrtcDetectedVersion = null;
 
-
 if (navigator.mozGetUserMedia) {
 	webrtcDetectedBrowser = "firefox";
 
