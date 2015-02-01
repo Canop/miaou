@@ -315,14 +315,15 @@ body.mobile #message-scroller {
 	max-height: 130px;
 	cursor: pointer;
 }
-#search-results .content img, #notable-messages .content img, table.list .rendered img {
+#search-results .content img, #notable-messages .content img,
+table.list .rendered img, .rooms-list .rendered img {
 	max-height: 70px;
 }
 
 #roomdescription {
 	padding: 5px;
 	img {
-		max-height: 250px;
+		max-height: 300px;
 	}
 	font-size: 13px;
 }
@@ -689,13 +690,15 @@ span.warning {
 #roomButtons {
 	text-align: center;
 }
-#changeroom, #editroom{
-	float: right;
-	margin: 1px 3px;
-}
-#auths {
-	float: right;
-	margin: 1px 8px 1px 0;
+body.chat { // the whole bloc will be removed when I switch to pad
+	#changeroom, #editroom{
+		float: right;
+		margin: 1px 3px;
+	}
+	#auths {
+		float: right;
+		margin: 1px 8px 1px 0;
+	}
 }
 body.mobile #changeroom, body.mobile #editroom{
 	float: inherit;
@@ -748,6 +751,7 @@ div#notifs {
 	font-style:italic;
 	font-size: 95%;
 	opacity: 0.7;
+	padding: 5px 0;
 }
 .newerLoader + .olderLoader {
 	border-top:solid 7px #ccc;	

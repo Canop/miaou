@@ -51,10 +51,12 @@ page-js: ./build/page-js $(PAGES_JS_OUT)
 rsc: $(RSC_FILES)
 
 # CSS of specific pages : static/[somepage].css
-./build/page-scss: 
+./build/page-scss: ./src/main-scss/*.scss
 	mkdir -p $@
-./build/page-scss/%.css: ./src/page-scss/%.scss
-	sass -t compressed $< > $@
+	cp ./src/main-scss/*.scss ./build/page-scss/
+./build/page-scss/%.css: ./src/page-scss/%.scss ./build/page-scss
+	cp $< ./build/page-scss/
+	sass -t compressed ./build/page-scss/$*.scss > $@
 page-css: ./build/page-scss $(PAGES_CSS_OUT)
 	@cp ./build/page-scss/*.css ./static/
 

@@ -108,6 +108,22 @@ exports.appGetRooms = function(req, res, db){
 	.finally(db.off);
 }
 
+exports.appGetJsonRooms = function(req, res, db){
+	db.on(req.user.id)
+	.then(db.listFrontPageRooms)
+	.then(function(rooms){
+		rooms.forEach(function(r){ r.path = server.roomPath(r) });
+		res.json(
+			{ rooms:rooms, langs:langs.legal }
+		);
+	})
+	.catch(function(err){
+		res.json({error: err.toString()});
+	})
+	.finally(db.off);
+}
+
+
 // rooms list POST
 exports.appPostRooms = function(req, res, db){
 	db.on()

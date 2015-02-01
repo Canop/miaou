@@ -5,31 +5,79 @@ html
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
 		link(rel='stylesheet', href='static/pad.css')
+		script(src="static/socket.io.min.js")
 		script(src="static/jquery-2.1.3.min.js")
 		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js")
 		script(src="static/pad.min.js")
 	body.pad
 		#non-top
-			#left left
-			#center center
-			#right right
+			#left
+				#users
+			#center
+				#vert-center
+					#message-scroller
+						div#messages
+					#notifications
+					#input-panel
+						textarea#input(lang=vars.room.lang)
+						button.small#send Send
+						button.small#showPreview Preview
+						button.small#cancelEdit(style="display:none") Cancel
+						button.small#uploadOpen Upload
+					#upload-panel
+						#upload-controls
+							| Select an image to send to imgur
+							br
+							br
+							input(type="file",id="file")
+							button#uploadSend Send
+							button#cancelUpload Cancel
+						#upload-wait(style="display:none")
+							img(src="static/ajax-loader-brown.gif")
+					#preview-panel
+						#preview.rendered
+						button.small#shortcuts Shortcuts
+						button.small#hidePreview Hide
+				#hist
+			#right
+				div#roomdescription.rendered
+				div.tabs
+					span.tab.selected(page="notablemessagespage") Notable Messages
+					span.tab(page="search") Search
+				div.page.selected#notablemessagespage
+					div#notable-messages
+				div.page#search
+					input#searchInput(autocomplete="off")
+					div#search-results
+						i
+							p Type anything to search it (common English words are ignored)
+							p Hit <code>esc</code> to clear
 		#stripe
 			#M-opener
 				img#M-img(src="static/M-150.png")
 			#room-and-rooms.closed
-				#room-panel
-					#room-title Nom de la Salle
-					#room-buttons
-						button.small watch
-						button.small edit
-						button.small authorizations
+				#room-panel-wrapper
+					#room-panel-bg
+					#room-panel
+						#room-title
+							a#roomname(href=vars.room.path)
+						#room-buttons
+							button.small watch
+							button.small#editroom edit
+							button.small#auths authorizations
 				#rooms-panel
 					#rooms
-						p ici il y a
-						p toutes les salles
-						p c'est un gros tableau
-						p bla bla
+						#rooms-spinner
+							img(src="static/ajax-loader-brown.gif")
+						#rooms-content
+							#rooms-tabs
+								span.tab Your Main Rooms
+								span.tab Public Rooms
+								span.tab Private Rooms
+								span.tab Dialog Rooms
+								span.tab.aftertabs
+							#rooms-page
 			#watches.normal
 				.watch watch 1
 				.watch watch 2
