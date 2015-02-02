@@ -142,18 +142,35 @@
 	.rooms-list {
 		flex: 0 1 800px;
 		.room {
-			a.room-title {
-				color: inherit;
-				margin: 4px 0;
-				display: block;
+			display: flex;
+			flex-direction: row;
+			.room-left {
+				flex: 1;
+				a.room-title {
+					color: inherit;
+					margin: 4px 0;
+					display: block;
+				}
+				.room-desc {
+					margin-left: 20px;
+					background: rgba(255,255,255,.5);
+					padding: 4px;
+					min-height: 40px;
+					overflow: hidden;
+				}			
 			}
-			.room-desc {
-				margin-left: 20px;
-				background: rgba(255,255,255,.5);
+			.room-right {
+				flex: 0 0 80px;
+				visibility: hidden;
 				padding: 4px;
-				min-height: 40px;
-				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+				//~ align-items: stretch;
+				justify-content: center;
 			}
+		}
+		.room:hover .room-right {
+			visibility: visible;
 		}
 	}
 }
@@ -173,11 +190,20 @@
 	}
 }
 .watch {
-	background: #bada55;
 	padding: 1px 4px;
 	min-width: 80px;
 	margin: 4px;
 	font-size: 0.8em;
+	cursor: pointer;
+	box-shadow: 0 0 2px black;
+	border-radius: 2px;
+		.name {
+			max-width: 100px;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			display: inline-block;
+			white-space: nowrap;
+		}
 }
 
 
@@ -194,7 +220,7 @@
 	overflow-y: hidden;
 	margin-bottom: 10px;
 	position: relative;
-	-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0,0,0,1)), color-stop(0.5, rgba(0,0,0,1)), color-stop(1, rgba(0,0,0,0.1)));
+	-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0,0,0,1)), color-stop(0.6, rgba(0,0,0,1)), color-stop(0.8, rgba(0,0,0,.8)), color-stop(1, rgba(0,0,0,0)));
 }
 #roomdescription:hover {
 	max-height: none;

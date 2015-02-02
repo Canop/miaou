@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 34,
+const apiversion = 35,
 	maxHiatusForMerge = 10, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	path = require('path'),
@@ -308,9 +308,10 @@ function handleUserInRoom(socket, completeUser){
 		}).then(function(){
 			return [
 				this.fetchUserPings(completeUser.id),
-				this.listRecentUsers(shoe.room.id, 50)
+				this.listRecentUsers(shoe.room.id, 50),
+				this.listUserWatches(completeUser.id)
 			]
-		}).spread(function(pings, recentUsers){
+		}).spread(function(pings, recentUsers, watches){
 			if (pings.length) socket.emit('pings', pings);
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
 			for (var o of socketWaitingApproval) {
@@ -319,6 +320,7 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
+			socket.emit('watch', watches.filter(function(w){ return w.id!=shoe.room.id }));
 			socket.emit('welcome');
 			for (var s of shoe.roomSockets()) {
 				if (!s) {
@@ -595,6 +597,11 @@ function handleUserInRoom(socket, completeUser){
 		.catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);		
 	})
+	.on('unwatch', function(roomId){
+		db.on([roomId, shoe.publicUser.id])
+		.spread(db.deleteWatch)
+		.finally(db.off);
+	})
 	.on('vote', function(vote){
 		var changedMessageIsInNotables,
 			updatedMessage,
@@ -637,7 +644,20 @@ function handleUserInRoom(socket, completeUser){
 				}
 				shoe.emitToRoom('notableIds', notablesUpdate);
 			}
-		}).catch(function(err){ console.log('ERR in vote handling:', err) })
+		})
+		.catch(function(err){ console.log('ERR in vote handling:', err) })
+		.finally(db.off);
+	})
+	.on('watch', function(roomId){
+		db.on([roomId, shoe.publicUser.id])
+		.spread(db.insertWatch) // we don't check the authorization because it's checked at selection
+		.then(function(){
+			return this.fetchRoomAndUserAuth(roomId, shoe.publicUser.id);
+		})
+		.then(function(r){
+			if (r.private && !r.auth) throw new Error('Unauthorized user');
+			socket.emit('watch', [{id:r.id, name:r.name}]);
+		})
 		.finally(db.off);
 	});
 

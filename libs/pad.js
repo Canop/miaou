@@ -3,6 +3,8 @@
 // THIS IS IN DEVELOPMENT AND NOT SUPPOSED TO BE USED
 // manage the page integrating a chat room, list of rooms, and information on watched rooms (nb users, pings, etc.)
 
+// TODO [create room]
+
 const fs = require('fs'),
 	path = require('path'),
 	auths = require('./auths.js'),

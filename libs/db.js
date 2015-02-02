@@ -288,7 +288,10 @@ proto.listUserAuths = function(userId){
 
 // lists the authorizations of the room
 proto.listRoomAuths = function(roomId){
-	return this.queryRows("select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name", [roomId]);
+	return this.queryRows(
+		"select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name",
+		[roomId]
+	);
 }
 
 // do actions on user rights
@@ -344,6 +347,25 @@ proto.getAuthLevel = function(roomId, userId){
 	return this.queryRow(
 		"select auth from room_auth where player=$1 and room=$2",
 		[userId, roomId], true
+	);
+}
+
+//////////////////////////////////////////////// #watch
+
+proto.insertWatch = function(roomId, userId){
+	return this.execute("insert into watch(room, player) values($1,$2)", [roomId, userId]);
+}
+
+proto.deleteWatch = function(roomId, userId){
+	return this.execute("delete from watch where room=$1 and player=$2", [roomId, userId]);
+}
+
+proto.listUserWatches = function(userId){
+	return this.queryRows(
+		"select w.room id, r.name from watch w join room r on w.room=r.id"+
+		" left join room_auth a on a.room=r.id and a.player=$1"+
+		" where r.private is false or a.auth is not null"
+		, [userId]
 	);
 }
 

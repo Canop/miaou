@@ -1,5 +1,5 @@
 
-miaou(function(chat, locals){
+miaou(function(chat, locals, watch, ws){
 	var	me = locals.me,
 		room = locals.room,
 		rooms = [];
@@ -20,19 +20,38 @@ miaou(function(chat, locals){
 	
 	function listRooms(filter, title){
 		var $list = $('<div>').addClass('rooms-list').append(rooms.filter(filter).map(function(r){
-			var $r = $('<div>').addClass('room');
-			$('<a>').attr('href', r.path.replace(/(\d+).*$/, 'pad?room=$1'))
-			.addClass('room-title').text(r.name).appendTo($r);
+			var $r = $('<div>').addClass('room'),
+				$rl = $('<div>').addClass('room-left').appendTo($r),
+				$rr = $('<div>').addClass('room-right').appendTo($r),
+				iswatched = watch.watched(r.id),
+				path = r.path.replace(/(\d+).*$/, 'pad?room=$1');
+			$('<a>').attr('href', path).addClass('room-title').text(r.name).appendTo($rl);
 			var html = miaou.mdToHtml(r.description), floatImage = /^<img[^>]*><br>/.test(html);
 			if (floatImage) html = html.replace(/<br>/,'');
-			var $desc = $('<div>').addClass('rendered').addClass('room-desc').html(html).appendTo($r);
+			var $desc = $('<div>').addClass('rendered room-desc').html(html).appendTo($rl);
 			if (floatImage) $desc.find('img:eq(0)').css('float','left').css('margin-right','3px').click(function(){ location=r.path });
+			var s = watch.watched(r.id) ? 'unwatch' : 'watch';
+			if (r.id===locals.room.id) {
+				$('<span>').text("You're in that room").appendTo($rr);
+			} else {
+				$('<button>').addClass('small').text(iswatched ? 'unwatch' : 'watch').click(function(){
+					if (iswatched) {
+						ws.emit('unwatch', r.id);
+						watch.remove(r.id);
+						$(this).text('watch');
+					} else {
+						ws.emit('watch', r.id);
+						$(this).text('unwatch');
+					}
+					iswatched = !iswatched;
+				}).appendTo($rr);
+				$('<button>').addClass('small').text('enter').click(function(){ location = path; }).appendTo($rr);
+			}
 			return $r;
 		}));
 		if (title) $('<h3>').text(title).prependTo($list);
 		$list.appendTo('#rooms-page');
 	}
-	
 	
 	function selectRoomsTab(i){
 		$('#rooms-tabs .tab').removeClass('selected').eq(i).addClass('selected');
@@ -70,6 +89,7 @@ miaou(function(chat, locals){
 	
 	var showroomstimer;
 	function showRoomsPanel(){
+		if ($('#room-and-rooms').hasClass('open')) return;
 		$('#rooms').hide();
 		updateRooms();
 		$('#room-and-rooms').addClass('open').removeClass('closed');
