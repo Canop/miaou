@@ -46,7 +46,7 @@ miaou(function(win, chat, md, ws){
 			)
 		} else {
 			var $mc = $('<div/>').addClass('content');
-			$mwin = $('<div id=mwin/>').attr('mid',message.id).addClass('message').append($mc).appendTo(document.body);
+			var $mwin = $('<div id=mwin/>').attr('mid',message.id).addClass('message').append($mc).appendTo(document.body);
 			$mwin.append($('<div class=remover/>').text('X').click(closeMWin));
 			sides.forEach(function(side){
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
