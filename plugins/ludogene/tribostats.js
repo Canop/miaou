@@ -1,14 +1,17 @@
+"use strict";
 
-function playersInfos(messages, f){
+function playersInfos(messages, f, authorizedplayers){
 	var playersmap = {}, players = [];
 	messages.forEach(function(m){
 		var	p = [], g = m.g;
 		if (!g.scores) return;
 		for (var i=0; i<2; i++) {
+			if (authorizedplayers && !authorizedplayers.has(g.players[i].id)) return;
 			p[i] = playersmap[g.players[i].id];
 			if (!p[i]) {
 				players.push(
 					playersmap[g.players[i].id] = p[i] = {
+						id: g.players[i].id,
 						name:g.players[i].name,
 						n:0,  // total number of games
 						f:0,  // number of finished games
@@ -140,7 +143,7 @@ exports.onCommand = function(ct, id){
 			break;
 			
 		case "twc":
-			title = "Tribo World Cup Style Scoring";
+			title = "Tribo World Cup Style Running Scoring";
 			cols = ["Player", "Finished Games", "Wins", "Losses", "Unfinished", "Avg Score", "TWC Score", "Avg TWC Score"];
 			players = playersInfos(messages, function(p){
 				p.t = 2*p.w + p.s; // total twc score
@@ -154,6 +157,38 @@ exports.onCommand = function(ct, id){
 					p.w,
 					p.l,
 					p.n-p.f,
+					(p.s/p.f).toFixed(2),
+					p.t.toFixed(2),
+					(p.t/p.f).toFixed(2)
+				];
+			});
+			break;
+			
+		case "twc-final":
+			title = "Tribo World Cup Style End Scoring (players without enough games are eliminated)";
+			cols = ["Player", "Finished Games", "Wins", "Losses", "Avg Score", "Sum TWC Score", "Avg TWC Score"];
+			// doing it in two passages : first counting games, then computing on players having played enough games
+			players = playersInfos(messages, function(p){
+				p.r = p.f;
+			});
+			if (players.length<2) {
+				rows = [];
+				break;
+			}
+			var threshold = players[0].f / 2;
+			console.log("threshold:",threshold);
+			var authorizedplayers = new Set;
+			players.forEach(function(p){ if (p.f>=threshold) authorizedplayers.add(p.id) });
+			players = playersInfos(messages, function(p){
+				p.t = 2*p.w + p.s; // total twc score
+				p.r = p.t / p.f;   // ranking value
+			}, authorizedplayers);
+			rows = players.map(function(p){
+				return [
+					p.name,
+					p.f,
+					p.w,
+					p.l,
 					(p.s/p.f).toFixed(2),
 					p.t.toFixed(2),
 					(p.t/p.f).toFixed(2)
