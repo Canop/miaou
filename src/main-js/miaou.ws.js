@@ -159,6 +159,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 		})
 		.on('vote', md.applyVote)
 		.on('watch', watch.add)
+		.on('watch_incr', watch.incr)
+		.on('watch_raz', watch.raz)
+		.on('unwatch', watch.remove)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect
 			socket.disconnect();

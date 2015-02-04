@@ -144,6 +144,10 @@
 		.room {
 			display: flex;
 			flex-direction: row;
+			&:hover {
+				background: rgba(240,240,255,.3);
+				transition: background .5s;
+			}
 			.room-left {
 				flex: 1;
 				a.room-title {
@@ -167,6 +171,13 @@
 				flex-direction: column;
 				//~ align-items: stretch;
 				justify-content: center;
+				span {
+					margin: 8px 0;
+					text-align: center;				
+				}
+				.lastcreated {
+					font-size: 0.7em;
+				}
 			}
 		}
 		.room:hover .room-right {
@@ -197,13 +208,29 @@
 	cursor: pointer;
 	box-shadow: 0 0 2px black;
 	border-radius: 2px;
-		.name {
-			max-width: 100px;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			display: inline-block;
-			white-space: nowrap;
+	display: flex;
+	text-decoration: none;
+	color: inherit;
+	&:hover {
+		background: rgba(255,255,255,.3);
+		transition: background .2s;
+	}
+	.count:not(:empty) {
+		background: rgba(255,255,0,.3);
+		padding: 0 5px;
+		display: inline-block;
+		&.ping {
+			background: rgba(255,0,0,.3);
 		}
+	}
+	.name {
+		padding: 0 5px;
+		max-width: 100px;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		display: inline-block;
+		white-space: nowrap;
+	}
 }
 
 

@@ -18,7 +18,10 @@ exports.configure = function(miaou){
 exports.mem = function(roomId){
 	var mo = memobjects.get(roomId);
 	if (!mo) {
-		mo = {id:roomId};
+		mo = {
+			id:roomId,
+			watchers: new Set // watching sockets (check .connected before emitting)
+		};
 		memobjects.set(roomId, mo);
 		var now = Date.now()/1000|0;
 		return this
@@ -122,7 +125,6 @@ exports.appGetJsonRooms = function(req, res, db){
 	})
 	.finally(db.off);
 }
-
 
 // rooms list POST
 exports.appPostRooms = function(req, res, db){

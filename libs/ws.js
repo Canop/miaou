@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 35,
+const apiversion = 36,
 	maxHiatusForMerge = 10, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	path = require('path'),
@@ -66,7 +66,7 @@ function Shoe(socket, completeUser){
 	this.room;
 	this.lastMessageTime;
 	this.db = db;
-	socket['publicUser'] = this.publicUser;
+	socket.publicUser = this.publicUser;
 	this.emit = socket.emit.bind(socket);
 }
 var Shoes = Shoe.prototype;
@@ -92,6 +92,15 @@ Shoes.emitToAllSocketsOfUser = function(key, args, onlyOtherSockets){
 		}
 	}
 	return nbs;
+}
+Shoes.allSocketsOfUser = function(){
+	var sockets = [];
+	for (var socket of io.sockets.connected) {
+		if (socket.publicUser && socket.publicUser.id===this.publicUser.id) {
+			sockets.push(socket);
+		}
+	}
+	return sockets;
 }
 Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
 	io.sockets.in(roomId||this.room.id).emit('message', {
@@ -312,6 +321,7 @@ function handleUserInRoom(socket, completeUser){
 				this.listUserWatches(completeUser.id)
 			]
 		}).spread(function(pings, recentUsers, watches){
+			watches = watches.filter(function(w){ return w.id!==shoe.room.id });
 			if (pings.length) socket.emit('pings', pings);
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
 			for (var o of socketWaitingApproval) {
@@ -320,21 +330,29 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
-			socket.emit('watch', watches.filter(function(w){ return w.id!=shoe.room.id }));
+			socket.emit('watch', watches);
 			socket.emit('welcome');
+			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
 			for (var s of shoe.roomSockets()) {
 				if (!s) {
 					console.log("null socket");
-					return;
+					continue;
 				}
 				var user = s.publicUser;
 				if (!user) console.log('missing user on socket');
 				else socket.emit('enter', user);
 			}
+			return watches;
+		}).map(function(w){
+			return rooms.mem.call(this, w.id)
+		}).map(function(mr){
+			mr.watchers.add(socket)
+		}).all(function(){
 			return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
-		}).catch(function(err){
+		})
+		.catch(function(err){
 			shoe.error(err);
 		}).finally(db.off)
 	})
@@ -515,11 +533,22 @@ function handleUserInRoom(socket, completeUser){
 								pinged = true;
 							}
 						}
-						//~ if (!pinged) {
-							remainingpings.push(username);
-						//~ }
+						remainingpings.push(username);
 					}
 					if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
+				}
+				for (var s of memroom.watchers){
+					if (!s.publicUser) {
+						console.log("missing user in socket");
+					} else if (s.publicUser.id === shoe.publicUser.id) {
+						console.log("avoiding self incr");
+					} else if (!s.connected) {
+						console.log('removing unconnected watcher');
+						memroom.watchers.delete(s);
+					} else {
+						console.log('watcher is connected');
+						s.emit('watch_incr', shoe.room.id);
+					}
 				}
 			}
 		}).catch(function(e) {
@@ -600,6 +629,16 @@ function handleUserInRoom(socket, completeUser){
 	.on('unwatch', function(roomId){
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.deleteWatch)
+		.then(function(){
+			return rooms.mem(roomId);
+		})
+		.then(function(mr){
+			var sockets = shoe.allSocketsOfUser();
+			for (var s of sockets) {
+				mr.watchers.delete(s);
+				s.emit('unwatch', roomId);
+			}
+		})
 		.finally(db.off);
 	})
 	.on('vote', function(vote){
@@ -656,9 +695,19 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.then(function(r){
 			if (r.private && !r.auth) throw new Error('Unauthorized user');
-			socket.emit('watch', [{id:r.id, name:r.name}]);
+			return rooms.mem(r.id);
+		})
+		.then(function(mr){
+			var sockets = shoe.allSocketsOfUser();
+			for (var s of sockets) {
+				mr.watchers.add(s);
+				s.emit('watch', [{id:r.id, name:r.name}]);
+			}
 		})
 		.finally(db.off);
+	})
+	.on('watch_raz', function(){
+		shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
 	});
 
 	for (let plugin of onNewShoePlugins) {

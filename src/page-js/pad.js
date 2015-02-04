@@ -24,7 +24,7 @@ miaou(function(chat, locals, watch, ws){
 				$rl = $('<div>').addClass('room-left').appendTo($r),
 				$rr = $('<div>').addClass('room-right').appendTo($r),
 				iswatched = watch.watched(r.id),
-				path = r.path.replace(/(\d+).*$/, 'pad?room=$1');
+				path = r.path+'&pad=true';
 			$('<a>').attr('href', path).addClass('room-title').text(r.name).appendTo($rl);
 			var html = miaou.mdToHtml(r.description), floatImage = /^<img[^>]*><br>/.test(html);
 			if (floatImage) html = html.replace(/<br>/,'');
@@ -37,7 +37,6 @@ miaou(function(chat, locals, watch, ws){
 				$('<button>').addClass('small').text(iswatched ? 'unwatch' : 'watch').click(function(){
 					if (iswatched) {
 						ws.emit('unwatch', r.id);
-						watch.remove(r.id);
 						$(this).text('watch');
 					} else {
 						ws.emit('watch', r.id);
@@ -46,6 +45,9 @@ miaou(function(chat, locals, watch, ws){
 					iswatched = !iswatched;
 				}).appendTo($rr);
 				$('<button>').addClass('small').text('enter').click(function(){ location = path; }).appendTo($rr);
+			}
+			if (r.lastcreated) {
+				$('<span>').addClass('lastcreated').text('Last message: '+miaou.formatRelativeTime(r.lastcreated)).appendTo($rr);
 			}
 			return $r;
 		}));

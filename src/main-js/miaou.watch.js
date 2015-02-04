@@ -12,7 +12,8 @@ miaou(function(watch, locals){
 		console.log("watch add", watches);
 		watches.forEach(function(w){
 			if (w.id===locals.room.id || watch.watched(w.id)) return;
-			$('<div>').addClass('watch').attr('rid', w.id).attr('title', w.name)
+			$('<a>').addClass('watch').attr('rid', w.id).attr('title', w.name)
+			.attr('href', w.id+'?pad=true') // TODO better links with room name
 			.append($('<span>').addClass('count'))
 			.append($('<span>').addClass('name').text(w.name))
 			.appendTo('#watches')
@@ -23,5 +24,19 @@ miaou(function(watch, locals){
 		$('#watches .watch[rid='+roomId+']').remove();
 	}
 
+	watch.incr = function(roomId){
+		console.log('watch increment', roomId);
+		var $wc =  $('#watches .watch[rid='+roomId+'] .count');
+		if (!$wc.length) return console.log('no watch!');
+		$wc.text((+$wc.text()||0)+1);
+	}
+
+	watch.raz = function(roomId){
+		console.log('watch raz', roomId);
+		 $('#watches .watch[rid='+roomId+'] .count').empty();
+	}
 	
+	$('#watches').on('mouseenter', '.watch', function(){
+		
+	})
 });

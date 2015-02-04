@@ -76,7 +76,6 @@ function defineAppRoutes(){
 		chat = require('./chat.js').configure(miaou),
 		help = require('./help.js'),
 		intro = require('./intro.js'),
-		pad = require('./pad.js').configure(miaou),
 		prefs = require('./prefs.js').configure(miaou);
 	function ensureAuthenticated(req, res, next) {
 		if (req.isAuthenticated()) return next();
@@ -102,7 +101,6 @@ function defineAppRoutes(){
 	map('get', '/login', login.appGetLogin, true, true);
 	map('get', '/logout', login.appGetLogout, true, true);
 	map('get', /^\/(\d+)?$/, chat.appGet);
-	map('get', '/pad', pad.appGet);
 	map('get', '/room', rooms.appGetRoom);
 	map('post', '/room', rooms.appPostRoom);
 	map('get', '/rooms', rooms.appGetRooms);
