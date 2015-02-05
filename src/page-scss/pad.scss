@@ -144,8 +144,9 @@
 		.room {
 			display: flex;
 			flex-direction: row;
+			position: relative;
 			&:hover {
-				background: rgba(240,240,255,.3);
+				background: white; //rgba(240,240,255,.3);
 				transition: background .5s;
 			}
 			.room-left {
@@ -179,6 +180,17 @@
 					font-size: 0.7em;
 				}
 			}
+			.last-message {
+				display: none;
+				position: absolute;
+				left: 0;
+				right: 0;
+				background: white;
+				z-index: 55;
+				padding: 8px;
+				font-size: .9em;
+				border-top: solid thin #ddd;
+			}
 		}
 		.room:hover .room-right {
 			visibility: visible;
@@ -207,13 +219,25 @@
 	font-size: 0.8em;
 	cursor: pointer;
 	box-shadow: 0 0 2px black;
-	border-radius: 2px;
 	display: flex;
 	text-decoration: none;
 	color: inherit;
+	position: relative;
+	background: rgba(255,255,255,.3);
 	&:hover {
-		background: rgba(255,255,255,.3);
-		transition: background .2s;
+		background: white;
+	}
+	&.open {
+		box-shadow: 0 0 5px black;
+		height: 20px;
+	}
+	&.open::after {
+		position: absolute;
+		left:0; top: 11px; right: 0;
+		height: 12px; // hack dégueulasse
+		background: white;
+		z-index: 60;
+		content: "";
 	}
 	.count:not(:empty) {
 		background: rgba(255,255,0,.3);
@@ -230,6 +254,22 @@
 		overflow: hidden;
 		display: inline-block;
 		white-space: nowrap;
+	}
+	.messages {
+		position: absolute;
+		background: white;
+		min-height: 20px;
+		box-shadow: 0 0 5px black;
+		padding: 10px;
+		z-index: 55;
+		max-height: 50vh;
+		overflow-y: auto;
+		.opener {
+			display: none;
+		}
+		.nminfo {
+			padding-right: 2px;
+		}
 	}
 }
 

@@ -10,7 +10,7 @@ exports.appGetJsonLastMessages = function(req, res, db){
 	db.on([roomId, req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
-		if (!room)) throw "room \""+roomId+"\" not found";
+		if (!room) throw "room \""+roomId+"\" not found";
 		if (room.private && !auths.checkAtLeast(room.auth, 'write')) {
 			throw "unauthorized";
 		}

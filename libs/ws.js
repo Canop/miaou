@@ -95,8 +95,9 @@ Shoes.emitToAllSocketsOfUser = function(key, args, onlyOtherSockets){
 }
 Shoes.allSocketsOfUser = function(){
 	var sockets = [];
-	for (var socket of io.sockets.connected) {
-		if (socket.publicUser && socket.publicUser.id===this.publicUser.id) {
+	for (var clientId in io.sockets.connected) {
+		var socket = io.sockets.connected[clientId];
+		if (socket && socket.publicUser && socket.publicUser.id===this.publicUser.id) {
 			sockets.push(socket);
 		}
 	}

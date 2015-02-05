@@ -70,6 +70,7 @@ function configureOauth2Strategies(){
 function defineAppRoutes(){
 	var auths = require('./auths.js'),
 		rooms = require('./rooms.js').configure(miaou),
+		messages = require('./messages.js'),
 		upload = require('./upload.js').configure(miaou),
 		clienterrors = require('./clienterrors.js').configure(miaou),
 		profile = require('./profile.js').configure(miaou),
@@ -104,7 +105,6 @@ function defineAppRoutes(){
 	map('get', '/room', rooms.appGetRoom);
 	map('post', '/room', rooms.appPostRoom);
 	map('get', '/rooms', rooms.appGetRooms);
-	map('get', '/json/rooms', rooms.appGetJsonRooms);
 	map('post', '/rooms', rooms.appPostRooms);
 	map('get', '/auths', auths.appGetAuths);
 	map('post', '/auths', auths.appPostAuths);
@@ -117,6 +117,8 @@ function defineAppRoutes(){
 	map('get', '/intro', intro.appGetIntro, true, true);
 	map('post', '/upload', upload.appPostUpload, true);
 	map('post', '/error', clienterrors.appPostError, true, true);
+	map('get', '/json/rooms', rooms.appGetJsonRooms);
+	map('get', '/json/messages/last', messages.appGetJsonLastMessages, true, true);
 }
 
 // starts the whole server, both regular http and websocket

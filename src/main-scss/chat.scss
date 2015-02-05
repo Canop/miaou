@@ -102,7 +102,7 @@ section {
 	text-align: center;
 }
 
-#messages {
+#messages, .messages {
   	margin-top:0;
 	vertical-align: top;
 	position: relative;
@@ -230,7 +230,7 @@ body.mobile #message-scroller {
 		// border-color: red; doesn't work...
 	}
 }
-#messages {
+#messages, .messages {
 	.message, .error, .access_request {
 		min-height: $message-min-height;
 		display: flex;
@@ -315,7 +315,7 @@ body.mobile #message-scroller {
 	max-height: 130px;
 	cursor: pointer;
 }
-#search-results .content img, #notable-messages .content img,
+#search-results .content img, #notable-messages .content img, .messages .content img,
 table.list .rendered img, .rooms-list .rendered img {
 	max-height: 70px;
 }

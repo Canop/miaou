@@ -651,7 +651,7 @@ proto.getComponentVersion = function(component){
 exports.upgrade = function(component, patchDirectory, cb){
 	patchDirectory = path.resolve(__dirname, '..', patchDirectory); // because we're in ./libs
 	var startVersion, endVersion;
-	on(component)
+	var p = on(component)
 	.then(proto.getComponentVersion)
 	.then(function(version){
 		console.log('Component '+component+' : current version='+version);
@@ -695,7 +695,7 @@ exports.upgrade = function(component, patchDirectory, cb){
 			return this.rollback();
 		})
 	}).finally(proto.off)
-	.then(cb)
+	if (cb) p.then(cb)
 }
 
 //////////////////////////////////////////////// #global API

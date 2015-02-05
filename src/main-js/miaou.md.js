@@ -68,6 +68,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		var $md = $('<div>').addClass('message').data('message',m).append($content).append(
 			$('<div>').addClass('nminfo').html(md.votesAbstract(m) + ' ' + miaou.formatDate((m.created+chat.timeOffset)*1000) + ' by ' + m.authorname)
 		);
+		if (m.author===locals.me.id) $md.addClass('me');
 		if ($repl) $repl.replaceWith($md);
 		else $md.appendTo($div);
 		if (m.id) $md.attr('mid',m.id);

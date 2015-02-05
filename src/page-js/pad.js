@@ -23,6 +23,7 @@ miaou(function(chat, locals, watch, ws){
 			var $r = $('<div>').addClass('room'),
 				$rl = $('<div>').addClass('room-left').appendTo($r),
 				$rr = $('<div>').addClass('room-right').appendTo($r),
+				$rm = $('<div>').addClass('last-message').appendTo($r),
 				iswatched = watch.watched(r.id),
 				path = r.path+'&pad=true';
 			$('<a>').attr('href', path).addClass('room-title').text(r.name).appendTo($rl);
@@ -47,7 +48,22 @@ miaou(function(chat, locals, watch, ws){
 				$('<button>').addClass('small').text('enter').click(function(){ location = path; }).appendTo($rr);
 			}
 			if (r.lastcreated) {
-				$('<span>').addClass('lastcreated').text('Last message: '+miaou.formatRelativeTime(r.lastcreated)).appendTo($rr);
+				var $lc = $('<span>').addClass('lastcreated').text('Last message: '+miaou.formatRelativeTime(r.lastcreated)).appendTo($rr);
+				$lc.mouseenter(function(){
+					$.get('/json/messages/last?room='+r.id, function(data){
+						var m = data.messages[0];
+						console.log('Last message:', m);
+						$lc.text('Last message: '+miaou.formatRelativeTime(m.created));
+						$rm.empty().css('top',$r.height()+'px').show().append(
+							$('<i>').text(m.authorname+': ')
+						).append(
+							$('<span>').text(m.content.match(/^[^\n]{0,100}/)[0])
+						);
+					});
+				});
+				$r.mouseleave(function(){
+					$rm.hide();
+				});
 			}
 			return $r;
 		}));
