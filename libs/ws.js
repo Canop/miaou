@@ -542,12 +542,12 @@ function handleUserInRoom(socket, completeUser){
 					if (!s.publicUser) {
 						console.log("missing user in socket");
 					} else if (s.publicUser.id === shoe.publicUser.id) {
-						console.log("avoiding self incr");
+						//~ console.log("avoiding self incr");
 					} else if (!s.connected) {
 						console.log('removing unconnected watcher');
 						memroom.watchers.delete(s);
 					} else {
-						console.log('watcher is connected');
+						//~ console.log('watcher is connected');
 						s.emit('watch_incr', shoe.room.id);
 					}
 				}
@@ -628,10 +628,11 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);		
 	})
 	.on('unwat', function(roomId){
+		console.log(shoe.publicUser.name+' unwatches '+roomId);
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.deleteWatch)
 		.then(function(){
-			return rooms.mem(roomId);
+			return rooms.mem.call(this, roomId);
 		})
 		.then(function(mr){
 			var sockets = shoe.allSocketsOfUser();
@@ -696,9 +697,9 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.then(function(r){
 			if (r.private && !r.auth) throw new Error('Unauthorized user');
-			return rooms.mem(r.id);
+			return [rooms.mem.call(this, r.id), r];
 		})
-		.then(function(mr){
+		.spread(function(mr, r){
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
 				mr.watchers.add(s);

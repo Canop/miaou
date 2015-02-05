@@ -213,8 +213,8 @@
 	}
 }
 .watch {
-	padding: 1px 4px;
-	min-width: 80px;
+	padding: 1px 2px;
+	min-width: 25px;
 	margin: 4px;
 	font-size: 0.8em;
 	cursor: pointer;
@@ -248,8 +248,8 @@
 		}
 	}
 	.name {
-		padding: 0 5px;
-		max-width: 100px;
+		padding: 0 3px;
+		max-width: 72px;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		display: inline-block;

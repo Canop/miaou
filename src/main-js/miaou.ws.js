@@ -96,8 +96,8 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 			var htmldesc = miaou.mdToHtml(locals.room.description);
 			$('#roomdescription').html(htmldesc);
 			$('#room-panel-bg').css('background-image',function(){
-				var m = htmldesc.match(/^<img src="?([^\">]+)"?[^>]*><br>/);
-				return m ? 'url('+m[1]+')' : ''; 
+				var m = htmldesc.match(/^<img (?:href="?[^"> ]+"? )?src="?([^">]+)"?[^>]*>(<br>|$)/);
+				return m ? 'url('+m[1]+')' : '';
 			});
 		})
 		.on('box', md.box)

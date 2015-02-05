@@ -9,10 +9,9 @@ miaou(function(watch, locals, md, ws){
 	
 	// w must be {id:roomId,name:roomname}
 	watch.add = function(watches){
-		console.log("watch add", watches);
 		watches.forEach(function(w){
 			if (w.id===locals.room.id || watch.watched(w.id)) return;
-			$('<a>').addClass('watch').attr('rid', w.id).attr('title', w.name)
+			$('<a>').addClass('watch').attr('rid', w.id)
 			.attr('href', w.id+'?pad=true') // TODO better links with room name
 			.append($('<span>').addClass('count'))
 			.append($('<span>').addClass('name').text(w.name))
@@ -25,26 +24,26 @@ miaou(function(watch, locals, md, ws){
 	}
 
 	watch.incr = function(roomId){
-		console.log('watch increment', roomId);
 		var $wc =  $('#watches .watch[rid='+roomId+'] .count');
 		if (!$wc.length) return console.log('no watch!');
 		$wc.text((+$wc.text()||0)+1);
 	}
 
 	watch.raz = function(roomId){
-		console.log('watch raz', roomId);
 		 $('#watches .watch[rid='+roomId+'] .count').empty();
 	}
 
-	var mustclose;
+	var requiredrid;
 	$('#watches').on('mouseenter', '.watch', function(){
-		mustclose = false;
+		$('.watch').removeClass('open').find('.messages').remove();
 		var $w = $(this), off = $w.offset(), ww = $(window).width();
-		$.get('/json/messages/last?n=5&room='+$w.attr('rid'), function(data){
-			if (mustclose) return;
+		var rid = +$w.attr('rid');
+		requiredrid = rid;
+		$.get('json/messages/last?n=5&room='+requiredrid, function(data){
+			if (requiredrid!==rid) return;
 			var	nbunseen = +$w.find('.count').text(),
-				dl = Math.min(200, off.left-3),
-				dr = Math.min(200, ww-(off.left+dl)-3);
+				dl = Math.min(200, off.left-4),
+				dr = Math.min(200, ww-(off.left+dl)-4);
 			var $ml = $('<div>').addClass('messages').css({
 				top: $w.height()+10,
 				left: -dl,
@@ -63,7 +62,7 @@ miaou(function(watch, locals, md, ws){
 			$ml.scrollTop($ml[0].scrollHeight);
 		});
 	}).on('mouseleave', '.watch', function(){
-		mustclose = true;
+		requiredrid = 0;
 		$('.watch').removeClass('open').find('.messages').remove();
 	});
 });

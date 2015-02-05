@@ -10,7 +10,6 @@ miaou(function(chat, locals, watch, ws){
 		$('#rooms-content').hide();
 		$('#rooms-spinner').show();
 		$.get('json/rooms', function(data){
-			console.log(data);
 			rooms = data.rooms;
 			selectRoomsTab(0);
 			$('#rooms-spinner').hide();
@@ -49,9 +48,8 @@ miaou(function(chat, locals, watch, ws){
 			if (r.lastcreated) {
 				var $lc = $('<span>').addClass('lastcreated').text('Last message: '+miaou.formatRelativeTime(r.lastcreated)).appendTo($rr);
 				$lc.mouseenter(function(){
-					$.get('/json/messages/last?room='+r.id, function(data){
+					$.get('json/messages/last?room='+r.id, function(data){
 						var m = data.messages[0];
-						console.log('Last message:', m);
 						$lc.text('Last message: '+miaou.formatRelativeTime(m.created));
 						$rm.empty().css('top',$r.height()+'px').show().append(
 							$('<i>').text(m.authorname+': ')
