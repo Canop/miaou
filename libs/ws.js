@@ -331,7 +331,7 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
-			socket.emit('watch', watches);
+			socket.emit('wat', watches);
 			socket.emit('welcome');
 			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
 			for (var s of shoe.roomSockets()) {
@@ -627,7 +627,7 @@ function handleUserInRoom(socket, completeUser){
 		.catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);		
 	})
-	.on('unwatch', function(roomId){
+	.on('unwat', function(roomId){
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.deleteWatch)
 		.then(function(){
@@ -637,7 +637,7 @@ function handleUserInRoom(socket, completeUser){
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
 				mr.watchers.delete(s);
-				s.emit('unwatch', roomId);
+				s.emit('unwat', roomId);
 			}
 		})
 		.finally(db.off);
@@ -688,7 +688,7 @@ function handleUserInRoom(socket, completeUser){
 		.catch(function(err){ console.log('ERR in vote handling:', err) })
 		.finally(db.off);
 	})
-	.on('watch', function(roomId){
+	.on('wat', function(roomId){
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.insertWatch) // we don't check the authorization because it's checked at selection
 		.then(function(){
@@ -702,12 +702,13 @@ function handleUserInRoom(socket, completeUser){
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
 				mr.watchers.add(s);
-				s.emit('watch', [{id:r.id, name:r.name}]);
+				s.emit('wat', [{id:r.id, name:r.name}]);
 			}
 		})
 		.finally(db.off);
 	})
 	.on('watch_raz', function(){
+		if (!shoe.room) return;
 		shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
 	});
 

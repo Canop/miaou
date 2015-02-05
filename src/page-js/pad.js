@@ -31,16 +31,15 @@ miaou(function(chat, locals, watch, ws){
 			if (floatImage) html = html.replace(/<br>/,'');
 			var $desc = $('<div>').addClass('rendered room-desc').html(html).appendTo($rl);
 			if (floatImage) $desc.find('img:eq(0)').css('float','left').css('margin-right','3px').click(function(){ location=r.path });
-			var s = watch.watched(r.id) ? 'unwatch' : 'watch';
 			if (r.id===locals.room.id) {
 				$('<span>').text("You're in that room").appendTo($rr);
 			} else {
 				$('<button>').addClass('small').text(iswatched ? 'unwatch' : 'watch').click(function(){
 					if (iswatched) {
-						ws.emit('unwatch', r.id);
+						ws.emit('unwat', r.id);
 						$(this).text('watch');
 					} else {
-						ws.emit('watch', r.id);
+						ws.emit('wat', r.id);
 						$(this).text('unwatch');
 					}
 					iswatched = !iswatched;
