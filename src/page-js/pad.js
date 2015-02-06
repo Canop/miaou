@@ -17,8 +17,8 @@ miaou(function(chat, locals, watch, ws){
 		});
 	}
 	
-	function listRooms(filter, title){
-		var $list = $('<div>').addClass('rooms-list').append(rooms.filter(filter).map(function(r){
+	function listRooms(roomlist, title){
+		var $list = $('<div>').addClass('rooms-list').append(roomlist.map(function(r){
 			var $r = $('<div>').addClass('room'),
 				$rl = $('<div>').addClass('room-left').appendTo($r),
 				$rr = $('<div>').addClass('room-right').appendTo($r),
@@ -73,27 +73,32 @@ miaou(function(chat, locals, watch, ws){
 		$('#rooms-page').empty();
 		switch (i){
 		case 0:
-			listRooms(function(r){
-				return !r.private && (r.lastcreated || r.auth)
-			}, 'Your Public Rooms');
-			listRooms(function(r){
-				return r.private && r.auth && !r.dialog
-			}, 'Your Private Rooms');
+			listRooms(
+				rooms.filter(function(r){ return !r.private && (r.lastcreated || r.auth)})
+				, 'Your Public Rooms'
+			);
+			listRooms(
+				rooms.filter(function(r){ return r.private && r.auth && !r.dialog })
+				, 'Your Private Rooms'
+			);
 			break;
 		case 1:
-			listRooms(function(r){
-				return !r.private
-			});
+			listRooms(
+				rooms.filter(function(r){ return !r.private })
+				.sort(function(a,b){ return b.messagecount-a.messagecount })
+			);
 			break;
 		case 2:
-			listRooms(function(r){
-				return r.private && !r.dialog
-			});
+			listRooms(
+				rooms.filter(function(r){ return r.private && !r.dialog })
+				.sort(function(a,b){ return b.messagecount-a.messagecount })
+			);
 			break;
 		case 3:
-			listRooms(function(r){
-				return r.dialog
-			});
+			listRooms(
+				rooms.filter(function(r){ return r.dialog })
+				.sort(function(a,b){ return b.lastcreated-a.lastcreated })
+			);
 			break;
 		}
 	}
