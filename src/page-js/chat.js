@@ -1,4 +1,3 @@
-
 miaou(function(chat, locals){
 	var	me = locals.me,
 		room = locals.room;

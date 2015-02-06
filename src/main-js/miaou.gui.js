@@ -20,7 +20,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$m.find('img').load(function(){ console.log('img load'); _scrollToBottom() });
 		}
 	}
-	
+
 	gui.init = function(){
 		var	timer;
 					
