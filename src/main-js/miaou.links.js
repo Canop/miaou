@@ -59,14 +59,13 @@ miaou(function(links, locals, md, skin){
 			}
 		});
 	}
-	
+
 	links.init = function(){
 		md.registerRenderer(transformLinksToMiaou, true);
 	};
-	
+
 	links.permalink = function(message){
 		return miaou.root + locals.room.path + '#' + message.id;
 	}
 
-	
 });

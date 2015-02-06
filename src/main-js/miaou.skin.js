@@ -25,7 +25,6 @@ miaou(function(skin){
 		.map(function(a){ return a.bg });
 	}
 
-
 	skin.wzincolors = {
 		conv:  getCssBackground(/^\.wzin-conv-(\d+)$/),
 		edit:  getCssBackground(/^\.wzin-edit$/),
