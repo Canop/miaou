@@ -3,6 +3,7 @@
 const apiversion = 36,
 	maxHiatusForMerge = 10, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
+	Promise = require("bluebird"),
 	path = require('path'),
 	socketio = require('socket.io'),
 	connect = require('connect'),
@@ -142,24 +143,6 @@ Shoes.botMessage = function(bot, content){
 		shoe.emitToRoom('message', m);
 	}).finally(this.db.off);
 }
-// returns the ids of the rooms to which the user is currently connected
-Shoes.userRooms = function(){
-	var rooms = [],
-		uid = this.publicUser.id,
-		iorooms = io.sockets.adapter.rooms;
-	for (var roomId in iorooms) {
-		if (+roomId!=roomId) continue;
-		var clients = io.sockets.adapter.rooms[roomId];
-		for (var clientId in clients) {
-			var socket = io.sockets.connected[clientId];
-			if (socket && socket.publicUser && socket.publicUser.id===uid) {
-				rooms.push(roomId);
-				break;
-			}
-		}	
-	}
-	return rooms;
-}
 
 // returns all the sockets of the given roomId
 var roomSockets = exports.roomSockets = function(roomId){
@@ -177,6 +160,30 @@ var emitToRoom = exports.emitToRoom = function(roomId, key, m){
 
 var roomIds = exports.roomIds = function(){
 	return Object.keys(io.sockets.adapter.rooms).filter(function(n){ return n==+n });
+}
+
+// gives the ids of the rooms to which the user is currently connected (either directly or via a watch)
+// must be called with a connection as context, and returns a promise
+exports.userRooms = function(userId){
+	var rooms = [], iorooms = io.sockets.adapter.rooms;
+	for (var roomId in iorooms) {
+		if (+roomId!=roomId) continue;
+		var clients = io.sockets.adapter.rooms[roomId];
+		for (var clientId in clients) {
+			var socket = io.sockets.connected[clientId];
+			if (socket && socket.publicUser && socket.publicUser.id===userId) {
+				rooms.push(roomId);
+				break;
+			}
+		}	
+	}
+	if (!rooms.length) return Promise.resolve(rooms);
+	// if the user is connected, we add the rooms he watches
+	return this.listUserWatches(userId)
+	.then(function(watches){
+		for (var w of watches) rooms.push(w.id);
+		return rooms;
+	});
 }
 
 // returns the first found socket of the passed user (may be in another room)
@@ -328,6 +335,7 @@ function handleUserInRoom(socket, completeUser){
 			for (var o of socketWaitingApproval) {
 				if (o.roomId===shoe.room.id && o.ar) socket.emit('request', o.ar);
 			}
+			console.log("watches of user "+shoe.publicUser.name+":", watches);
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);

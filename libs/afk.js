@@ -2,7 +2,8 @@
 
 // handles !!afk and !!back
 
-var bot;
+var bot,
+	ws = require('./ws.js');
 
 exports.configure = function(miaou){
 	bot = miaou.bot;
@@ -11,14 +12,13 @@ exports.configure = function(miaou){
 
 function makeCommand(status){
 	return function(ct){
-		setTimeout(function(){
-			// sends a flake to all rooms in which the user is
+		ws.userRooms.call(this, ct.shoe.publicUser.id).then(function(rooms){
 			var	text = '*'+ct.username()+'* is *'+status+'*';
 			if (ct.args) text += ' ( '+ct.args+' )';
-			ct.shoe.userRooms().forEach(function(roomId){
+			for (var roomId of rooms) {
 				ct.shoe.emitBotFlakeToRoom(bot, text, roomId);
-			});
-		}, 100);
+			}
+		});
 		ct.silent = true;
 		ct.nostore = true;
 	}
