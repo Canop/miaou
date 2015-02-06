@@ -5,46 +5,46 @@ html(lang=vars.room.lang)
 		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet',href='static/themes/'+locals.theme+'/miaou.css')
 		script(src="static/jquery-2.1.3.min.js")
-		script(src="static/socket.io.min.js")
+		script(src="socket.io/socket.io.js")
 		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js")
 		script(src="static/chat.min.js")
 	body.chat
-		div#left
+		#left
 			section#prefs
 				a#me.pref(href="prefs?",title="Profile Settings")
 			section
 				button.small#auths authorizations
 				h2 Users
-				div#users
-		div#center
-			div#vert-center
-				div#message-scroller
+				#users
+		#center
+			#vert-center
+				#message-scroller
 					div#messages
-				div#notifications
-				div#input-panel
+				#notifications
+				#input-panel
 					textarea#input(lang=vars.room.lang)
 					button.small#send Send
 					button.small#showPreview Preview
 					button.small#cancelEdit(style="display:none") Cancel
 					button.small#uploadOpen Upload
 					button.small#help Help			
-				div#upload-panel
-					div#upload-controls
+				#upload-panel
+					#upload-controls
 						| Select an image to send to imgur
 						br
 						br
 						input(type="file",id="file")
 						button#uploadSend Send
 						button#cancelUpload Cancel
-					div#upload-wait(style="display:none")
+					#upload-wait(style="display:none")
 						img(src="static/ajax-loader-brown.gif")
-				div#preview-panel
-					div#preview.rendered
+				#preview-panel
+					#preview.rendered
 					button.small#shortcuts Shortcuts
 					button.small#hidePreview Hide
-			div#hist
-		div#right
+			#hist
+		#right
 			section#room-info
 				button.small#changeroom home
 				button.small#editroom edit

@@ -24,8 +24,8 @@ miaou(function(links, locals, md, skin){
 			if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
 				// it's an url towards a room or message on this server
 				if (locals.room.id===+parts[2]) {
-					var mid = +parts[4];
 					// it's an url for the same room
+					var mid = +parts[4];
 					if (mid) {
 						// it's an url for a message
 						this.href = locals.room.path + '#' + mid
@@ -46,12 +46,13 @@ miaou(function(links, locals, md, skin){
 					// it's an url for another room or for a message in another room, let's go to the right tab
 					//  if it's already open, or open it if not
 					this.target = 'room_'+parts[2];
-					var h = parts[1]+parts[2];
-					if (parts[3] && parts[3].indexOf('=')===-1) h += parts[3].slice('&')[0];
-					h += h.indexOf('?')===-1 ? '?' : '&';
-					h += 't='+Date.now();
-					if (parts[4]) h += '#'+parts[4];
-					this.href = h;
+					// TODO do we really need to rewrite the URL ? Why did I do what follows ?
+					//~ var h = parts[1]+parts[2];
+					//~ if (parts[3] && parts[3].indexOf('=')===-1) h += parts[3].slice('&')[0];
+					//~ h += h.indexOf('?')===-1 ? '?' : '&';
+					//~ h += 't='+Date.now();
+					//~ if (parts[4]) h += '#'+parts[4];
+					//~ this.href = h;
 					addStop(this);
 				}
 			} else {

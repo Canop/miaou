@@ -18,7 +18,10 @@ exports.configure = function(miaou){
 exports.mem = function(roomId){
 	var mo = memobjects.get(roomId);
 	if (!mo) {
-		mo = {id:roomId};
+		mo = {
+			id:roomId,
+			watchers: new Set // watching sockets (check .connected before emitting)
+		};
 		memobjects.set(roomId, mo);
 		var now = Date.now()/1000|0;
 		return this
@@ -104,6 +107,21 @@ exports.appGetRooms = function(req, res, db){
 	})
 	.catch(function(err){
 		server.renderErr(res, err);
+	})
+	.finally(db.off);
+}
+
+exports.appGetJsonRooms = function(req, res, db){
+	db.on(req.user.id)
+	.then(db.listFrontPageRooms)
+	.then(function(rooms){
+		rooms.forEach(function(r){ r.path = server.roomPath(r) });
+		res.json(
+			{ rooms:rooms, langs:langs.legal }
+		);
+	})
+	.catch(function(err){
+		res.json({error: err.toString()});
 	})
 	.finally(db.off);
 }

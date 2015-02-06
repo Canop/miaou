@@ -168,6 +168,7 @@ miaou(function(notif, chat, horn, locals, md, ws){
 			return;
 		}
 		lastfocustime = now;
+		ws.emit('watch_raz');
 		nbUnseenMessages = 0;
 		notif.updateTab(0, 0);
 		// we go to the last notification message, highlight it and remove the ping

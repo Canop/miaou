@@ -1,0 +1,296 @@
+@import "variables-default";
+
+#stripe {
+	position: fixed;
+	left: 0;
+	top: 0;
+	right: 0;
+	z-index: 50;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	box-shadow: 0 0 2px black;
+	background: $left-background;
+	&.closed {
+	}
+	&.open {
+	}
+}
+#stripe:hover {
+	box-shadow: 0 0 7px black;
+}
+
+#M-opener {
+	height: 40px;
+}
+#M-img {
+	height: 40px;
+}
+#room-and-rooms {
+}
+
+#rooms-panel {
+	display:flex;
+	align-items: stretch;
+}
+#room-panel-wrapper {
+	position: relative;
+	width: 600px;
+}
+#room-panel-bg, #room-panel {
+	position:absolute;
+	top:0; left:0; right:0;bottom:0;
+}
+#room-panel-bg {
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: cover;
+	opacity: 0.7;
+}
+#room-panel {
+	display:flex;
+	flex-direction: row;
+	align-items: center;
+	height: 40px;
+	padding: 0 4px;
+	button {
+		opacity: 0;
+		transition: opacity 1s;
+	}
+	position: relative;
+}
+#room-panel:hover button {
+	opacity: 1;
+	transition: opacity .5s;
+	z-index: 2;
+}
+#room-title {
+	flex: 1;
+	#roomname {
+		color: inherit;
+		text-decoration: none;
+		text-shadow: 0 0 4px rgba(255,255,255,.85);
+		font-size:120%;
+	}
+}
+#room-and-rooms.closed #rooms-panel {
+	height: 0;
+	transition: height .3s;
+	overflow-y: auto;
+}
+#room-and-rooms.open #rooms-panel {
+	height: 65vh;
+	transition: height .5s;
+}
+#room-and-rooms.open {
+	width: calc( 100vw - 40px );
+}
+#rooms {
+	//~ flex: 1;
+	display:flex;
+	align-items: stretch;
+}
+#rooms-spinner, #rooms-content {
+	flex: 1;
+	display:flex;
+}
+#rooms-spinner {
+	justify-content: center;
+	align-items: center;
+}
+#rooms-content {
+	align-items: stretch;
+	flex-direction: column;
+	padding: 5px;
+}
+
+#rooms-tabs {
+	display: flex;
+	flex-direction: row;
+	.tab {
+		text-align: center;
+		padding: 5px 10px;
+		border-style:solid;
+		border-color:  $chat-tabs-border-color;
+		border-width: 0 0 $chat-tabs-border-width 0;
+		color: transparentize($title-text-color, 0.5);
+		cursor: pointer;
+		background-image: $chat-tabs-unselected-bg-image;
+		&:hover {
+			color: transparentize($title-text-color, 0.2);
+		}
+		&.selected {
+			color: $title-text-color;
+			background-image: $chat-tabs-selected-bg-image;
+			border-width: $chat-tabs-border-width $chat-tabs-border-width 0 $chat-tabs-border-width;	
+		}
+	}
+	.aftertabs {
+		flex: 1
+	}
+}
+#rooms-page {
+	flex: 1;
+	border-style:solid;
+	border-color: $chat-tabs-border-color;
+	border-width: 0 $chat-tabs-border-width $chat-tabs-border-width $chat-tabs-border-width;	
+	padding: 5px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: row;
+	min-width: 1000px;
+	.rooms-list {
+		flex: 0 1 800px;
+		.room {
+			display: flex;
+			flex-direction: row;
+			position: relative;
+			&:hover {
+				background: white; //rgba(240,240,255,.3);
+				transition: background .5s;
+			}
+			.room-left {
+				flex: 1;
+				a.room-title {
+					color: inherit;
+					margin: 4px 0;
+					display: block;
+				}
+				.room-desc {
+					margin-left: 20px;
+					background: rgba(255,255,255,.5);
+					padding: 4px;
+					min-height: 40px;
+					overflow: hidden;
+				}			
+			}
+			.room-right {
+				flex: 0 0 80px;
+				visibility: hidden;
+				padding: 4px;
+				display: flex;
+				flex-direction: column;
+				//~ align-items: stretch;
+				justify-content: center;
+				span {
+					margin: 8px 0;
+					text-align: center;				
+				}
+				.lastcreated {
+					font-size: 0.7em;
+				}
+			}
+			.last-message {
+				display: none;
+				position: absolute;
+				left: 0;
+				right: 0;
+				background: white;
+				z-index: 55;
+				padding: 8px;
+				font-size: .9em;
+				border-top: solid thin #ddd;
+			}
+		}
+		.room:hover .room-right {
+			visibility: visible;
+		}
+	}
+}
+
+#watches {
+	display:flex;
+	flex-wrap: wrap;
+	&.normal {
+		flex-direction: row;	
+		align-items: center;
+		justify-content: flex-end;
+	}
+	&.sided {
+		flex-direction: column;
+		align-items: stretch;
+		width: 120px;
+	}
+}
+.watch {
+	padding: 1px 2px;
+	min-width: 25px;
+	margin: 4px;
+	font-size: 0.8em;
+	cursor: pointer;
+	box-shadow: 0 0 2px black;
+	display: flex;
+	text-decoration: none;
+	color: inherit;
+	position: relative;
+	background: rgba(255,255,255,.3);
+	&:hover {
+		background: white;
+	}
+	&.open {
+		box-shadow: 0 0 5px black;
+		height: 20px;
+	}
+	&.open::after {
+		position: absolute;
+		left:0; top: 11px; right: 0;
+		height: 12px; // hack dégueulasse
+		background: white;
+		z-index: 60;
+		content: "";
+	}
+	.count:not(:empty) {
+		background: rgba(255,255,0,.3);
+		padding: 0 5px;
+		display: inline-block;
+		&.ping {
+			background: rgba(255,0,0,.3);
+		}
+	}
+	.name {
+		padding: 0 3px;
+		max-width: 72px;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		display: inline-block;
+		white-space: nowrap;
+	}
+	.messages {
+		position: absolute;
+		background: white;
+		min-height: 20px;
+		box-shadow: 0 0 5px black;
+		padding: 10px;
+		z-index: 55;
+		max-height: 50vh;
+		overflow-y: auto;
+		.opener {
+			display: none;
+		}
+		.nminfo {
+			padding-right: 2px;
+		}
+	}
+}
+
+
+#non-top {
+	#left, #right, #center {
+		top: 40px;
+	}
+	#left, #right {
+		padding-top: 15px;
+	}
+}
+#roomdescription {
+	max-height: 60px;
+	overflow-y: hidden;
+	margin-bottom: 10px;
+	position: relative;
+	-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0,0,0,1)), color-stop(0.6, rgba(0,0,0,1)), color-stop(0.8, rgba(0,0,0,.8)), color-stop(1, rgba(0,0,0,0)));
+}
+#roomdescription:hover {
+	max-height: none;
+	-webkit-mask-image: none;
+	transition: max-height .3s; // doesn't work
+}

@@ -1,6 +1,6 @@
 // ws : handles the connection to the server over socket.io (websocket whenever possible)
 
-miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr){
+miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 
 	ws.init = function(){
 		var pingRegex = new RegExp('@'+locals.me.name+'(\\b|$)'),
@@ -83,7 +83,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr){
 		.on('message', messagesIn)
 		.on('messages', messagesIn)
 		.on('merge', merge)
-		.on('mod_dialog', mod.dialog)
+		.on('mod_dialog', mod.dialog) 
 		.on('room', function(r){
 			if (locals.room.id!==r.id) {
 				console.log('SHOULD NOT HAPPEN!');
@@ -93,7 +93,12 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr){
 			localStorage['room'] = locals.room.id;
 			notif.updateTab(0, 0);
 			$('#roomname').text(locals.room.name);
-			$('#roomdescription').html(miaou.mdToHtml(locals.room.description));
+			var htmldesc = miaou.mdToHtml(locals.room.description);
+			$('#roomdescription').html(htmldesc);
+			$('#room-panel-bg').css('background-image',function(){
+				var m = htmldesc.match(/^<img (?:href="?[^"> ]+"? )?src="?([^">]+)"?[^>]*>(<br>|$)/);
+				return m ? 'url('+m[1]+')' : '';
+			});
 		})
 		.on('box', md.box)
 		.on('notables', function(notableMessages){
@@ -153,6 +158,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr){
 			users.forEach(function(user){ usr.insertAmongRecentUsers(user, user.md) });
 		})
 		.on('vote', md.applyVote)
+		.on('wat', watch.add)
+		.on('watch_incr', watch.incr)
+		.on('watch_raz', watch.raz)
+		.on('unwat', watch.remove)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect
 			socket.disconnect();

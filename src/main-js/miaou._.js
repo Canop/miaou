@@ -117,7 +117,8 @@ miaou(function(appl){
 function miaou(f){
 	$(function(){
 		f.apply(null, (f.toString().match(/\([^\)]*\)/)[0].match(/\w+/g)||[]).map(function(name){
-			return miaou[name] = miaou[name] || {};
+			if (!miaou.hasOwnProperty(name)) miaou[name] = {};
+			return miaou[name];
 		}));
 	});
 }

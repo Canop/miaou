@@ -11,10 +11,7 @@
 
 module.exports = function(options){
 
-	var whitemap = new Set;
-	if (options && options.whitelist) {
-		options.whitelist.forEach(function(s){ whitemap.add(s) })
-	}
+	var whitemap = new Set(options.whitelist);
 		
 	return function(req, res, next){
 		var session = req.session;

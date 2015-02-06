@@ -13,7 +13,7 @@ RSC_FILES:=$(patsubst ./src/rsc/%, ./static/%, $(shell find ./src/rsc/* -type f)
 
 MAIN_JS_SOURCES:=$(sort $(wildcard ./src/main-js/*.js))
 PLUGIN_JS_SOURCES:=$(wildcard ./plugins/*/client-scripts/*.js)
-MIAOU_MODULES:="chat,ed,gui,hist,links,locals,md,mh,mod,ms,notif,prof,skin,usr,win,ws,wz,games,plugins,mountyhall"
+MIAOU_MODULES:="chat,ed,gui,hist,links,locals,md,mh,mod,ms,notif,prof,skin,usr,watch,win,ws,wz,games,plugins,mountyhall"
 UGLIFY_OPTIONS:=--screw-ie8 -cmt --reserved $(MIAOU_MODULES)
 
 .PHONY: clean page-js page-css themes rsc main-js
@@ -51,10 +51,12 @@ page-js: ./build/page-js $(PAGES_JS_OUT)
 rsc: $(RSC_FILES)
 
 # CSS of specific pages : static/[somepage].css
-./build/page-scss: 
+./build/page-scss: ./src/main-scss/*.scss
 	mkdir -p $@
-./build/page-scss/%.css: ./src/page-scss/%.scss
-	sass -t compressed $< > $@
+	cp ./src/main-scss/*.scss ./build/page-scss/
+./build/page-scss/%.css: ./src/page-scss/%.scss ./build/page-scss
+	cp $< ./build/page-scss/
+	sass -t compressed ./build/page-scss/$*.scss > $@
 page-css: ./build/page-scss $(PAGES_CSS_OUT)
 	@cp ./build/page-scss/*.css ./static/
 
