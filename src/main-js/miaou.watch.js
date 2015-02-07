@@ -44,12 +44,10 @@ miaou(function(watch, locals, md, notif, ws){
 		$.get('json/messages/last?n=5&room='+w.id, function(data){
 			if (requiredrid!==w.id) return;
 			var	nbunseen = +$w.find('.count').text(),
-				dl = Math.min(200, off.left-4),
-				dr = Math.min(200, ww-(off.left+dl)-4);
+				dr = Math.min(200, ww-off.left-$w.width()-20),
+				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
-				top: $w.height()+10,
-				left: -dl,
-				right: -dr, 
+				top: $w.height()+10, left: dl, right: -dr, 
 			}).appendTo($w);
 			var $top = $('<div>').addClass('watch-panel-top').appendTo($panel);
 			$('<span>').text(w.name).appendTo($top);

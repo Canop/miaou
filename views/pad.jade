@@ -54,9 +54,9 @@ html
 							p Type anything to search it (common English words are ignored)
 							p Hit <code>esc</code> to clear
 		#stripe
-			#M-opener
-				img#M-img(src="static/M-150.png")
-			#room-and-rooms.closed
+			#stripe-top
+				#M-opener
+					img#M-img(src="static/M-150.png")
 				#room-panel-wrapper
 					#room-panel-bg
 					#room-panel
@@ -65,17 +65,17 @@ html
 						#room-buttons
 							button.small#editroom edit
 							button.small#auths authorizations
-				#rooms-panel
-					#rooms
-						#rooms-spinner
-							img(src="static/ajax-loader-brown.gif")
-						#rooms-content
-							#rooms-tabs
-								span.tab Your Main Rooms
-								span.tab Public Rooms
-								span.tab Private Rooms
-								span.tab Dialog Rooms
-								span.tab.aftertabs
-							#rooms-page
-			#watches.normal
+				#watches
+			#rooms-panel.closed
+				#rooms
+					#rooms-spinner
+						img(src="static/ajax-loader-brown.gif")
+					#rooms-content
+						#rooms-tabs
+							span.tab Your Main Rooms
+							span.tab Public Rooms
+							span.tab Private Rooms
+							span.tab Dialog Rooms
+							span.tab.aftertabs
+						#rooms-page
 	

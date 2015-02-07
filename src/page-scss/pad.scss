@@ -6,14 +6,16 @@
 	top: 0;
 	right: 0;
 	z-index: 50;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
 	box-shadow: 0 0 2px black;
 	background: $left-background;
 	&.open {
 		box-shadow: 0 0 12px black;
 	}
+}
+#stripe-top {
+	display: flex;
+	flex-direction: row;
+	height: 40px;
 }
 
 #non-top {
@@ -30,16 +32,10 @@
 #M-img {
 	height: 40px;
 }
-#room-and-rooms {
-}
 
-#rooms-panel {
-	display:flex;
-	align-items: stretch;
-}
 #room-panel-wrapper {
 	position: relative;
-	width: 600px;
+	flex: 0 1 500px;
 }
 #room-panel-bg, #room-panel {
 	position:absolute;
@@ -77,17 +73,99 @@
 		font-size:120%;
 	}
 }
-#room-and-rooms.closed #rooms-panel {
-	height: 0;
-	transition: height .3s;
-	overflow-y: auto;
+
+#watches {
+	flex: 1 1;
+	display:flex;
+	flex-wrap: wrap;
+	flex-direction: row;	
+	align-items: center;
 }
-#room-and-rooms.open #rooms-panel {
-	height: 65vh;
-	transition: height .5s;
+.watch {
+	padding: 1px 2px;
+	min-width: 25px;
+	margin: 0 4px;
+	font-size: 0.8em;
+	cursor: pointer;
+	box-shadow: 0 0 2px black;
+	display: flex;
+	text-decoration: none;
+	color: inherit;
+	position: relative;
+	background: rgba(255,255,255,.3);
+	&:hover {
+		background: white;
+	}
+	&.open {
+		box-shadow: 0 0 5px black;
+		height: 20px;
+	}
+	&.open::after {
+		position: absolute;
+		left:0; top: 11px; right: 0;
+		height: 12px; // hack dégueulasse
+		background: white;
+		z-index: 60;
+		content: "";
+	}
+	.count:not(:empty) {
+		background: rgba(255,255,0,.3);
+		padding: 0 5px;
+		display: inline-block;
+		&.ping {
+			background: rgba(255,0,0,.3);
+		}
+	}
+	.name {
+		padding: 0 3px;
+		max-width: 72px;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		display: inline-block;
+		white-space: nowrap;
+	}
+	.watch-panel {
+		position: absolute;
+		background: white;
+		min-height: 20px;
+		box-shadow: 0 0 5px black;
+		padding: 10px;
+		z-index: 55;
+	}
+	.watch-panel-top { // inside watch-panel
+		height: 30px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		span {
+			flex: 1;
+			text-align: center;
+			font-weight: bold;
+		}
+	}
+	.messages { // inside watch-panel
+		max-height: 50vh;
+		overflow-y: auto;
+		.opener {
+			display: none;
+		}
+		.nminfo {
+			padding-right: 2px;
+		}
+	}
 }
-#room-and-rooms.open {
-	width: calc( 100vw - 40px );
+
+#rooms-panel {
+	display:flex;
+	align-items: stretch;
+	&.closed {
+		height: 0;
+		transition: height .5s;	
+	}
+	&.open {
+		height: 65vh;
+		transition: height .5s;	
+	}
 }
 #rooms {
 	//~ flex: 1;
@@ -202,93 +280,7 @@
 	}
 }
 
-#watches {
-	display:flex;
-	flex-wrap: wrap;
-	&.normal {
-		flex-direction: row;	
-		align-items: center;
-		justify-content: flex-end;
-	}
-	&.sided {
-		flex-direction: column;
-		align-items: stretch;
-		width: 120px;
-	}
-}
-.watch {
-	padding: 1px 2px;
-	min-width: 25px;
-	margin: 4px;
-	font-size: 0.8em;
-	cursor: pointer;
-	box-shadow: 0 0 2px black;
-	display: flex;
-	text-decoration: none;
-	color: inherit;
-	position: relative;
-	background: rgba(255,255,255,.3);
-	&:hover {
-		background: white;
-	}
-	&.open {
-		box-shadow: 0 0 5px black;
-		height: 20px;
-	}
-	&.open::after {
-		position: absolute;
-		left:0; top: 11px; right: 0;
-		height: 12px; // hack dégueulasse
-		background: white;
-		z-index: 60;
-		content: "";
-	}
-	.count:not(:empty) {
-		background: rgba(255,255,0,.3);
-		padding: 0 5px;
-		display: inline-block;
-		&.ping {
-			background: rgba(255,0,0,.3);
-		}
-	}
-	.name {
-		padding: 0 3px;
-		max-width: 72px;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		display: inline-block;
-		white-space: nowrap;
-	}
-	.watch-panel {
-		position: absolute;
-		background: white;
-		min-height: 20px;
-		box-shadow: 0 0 5px black;
-		padding: 10px;
-		z-index: 55;
-	}
-	.watch-panel-top { // inside watch-panel
-		height: 30px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		span {
-			flex: 1;
-			text-align: center;
-			font-weight: bold;
-		}
-	}
-	.messages { // inside watch-panel
-		max-height: 50vh;
-		overflow-y: auto;
-		.opener {
-			display: none;
-		}
-		.nminfo {
-			padding-right: 2px;
-		}
-	}
-}
+
 
 
 #non-top {

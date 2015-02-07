@@ -108,11 +108,11 @@ miaou(function(chat, locals, watch, ws){
 	});
 	
 	var openpaneltimer, showroomstimer;
-	function showRoomsPanel(){
-		if ($('#room-and-rooms').hasClass('open')) return;
+	function openRoomsPanel(){
+		if ($('#rooms-panel').hasClass('open')) return;
 		$('#rooms').hide();
 		updateRooms();
-		$('#room-and-rooms').addClass('open').removeClass('closed');
+		$('#rooms-panel').addClass('open').removeClass('closed');
 		$('#stripe').addClass('open');
 		$('#non-top').addClass('behind');
 		showroomstimer = setTimeout(function(){
@@ -123,16 +123,17 @@ miaou(function(chat, locals, watch, ws){
 		clearTimeout(openpaneltimer);
 		clearTimeout(showroomstimer);
 		$('#rooms-content').hide();
-		$('#room-and-rooms').addClass('closed').removeClass('open');		
+		$('#rooms-panel').addClass('closed').removeClass('open');		
 		$('#stripe').removeClass('open');		
 		$('#non-top').removeClass('behind');
 	}
 	
+	//~ $('#rooms-spinner.hide();	
 	$('#rooms-content').hide();
-	$('#room-and-rooms').on('mouseenter', function(){
-		openpaneltimer = setTimeout(showRoomsPanel, 180);
-	});
-	$('#room-and-rooms').on('mouseleave', function(){
+	$('#room-panel').on('mouseenter', function(){
+		openpaneltimer = setTimeout(openRoomsPanel, 180);
+	})
+	.on('mouseleave', function(){
 		clearTimeout(openpaneltimer);		
 	});
 	$('#stripe').on('mouseleave', hideRoomsPanel);
