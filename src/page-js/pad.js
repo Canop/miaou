@@ -18,6 +18,7 @@ miaou(function(chat, locals, watch, ws){
 	}
 	
 	function listRooms(roomlist, title){
+		roomlist = roomlist.filter(function(r){ return r.id!==room.id });
 		var $list = $('<div>').addClass('rooms-list').append(roomlist.map(function(r){
 			var $r = $('<div>').addClass('room'),
 				$rl = $('<div>').addClass('room-left').appendTo($r),
