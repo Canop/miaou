@@ -11,13 +11,17 @@
 	flex-wrap: wrap;
 	box-shadow: 0 0 2px black;
 	background: $left-background;
-	&.closed {
-	}
 	&.open {
+		box-shadow: 0 0 12px black;
 	}
 }
-#stripe:hover {
-	box-shadow: 0 0 7px black;
+
+#non-top {
+	opacity: 1;
+	&.behind {
+		opacity: .45;
+		transition: opacity .4s;
+	}
 }
 
 #M-opener {

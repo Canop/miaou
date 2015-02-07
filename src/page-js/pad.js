@@ -1,7 +1,6 @@
 
 miaou(function(chat, locals, watch, ws){
-	var	me = locals.me,
-		room = locals.room,
+	var	room = locals.room,
 		rooms = [];
 
 	// ROOMS MANAGEMENT
@@ -108,24 +107,34 @@ miaou(function(chat, locals, watch, ws){
 		selectRoomsTab($(this).index());
 	});
 	
-	var showroomstimer;
+	var openpaneltimer, showroomstimer;
 	function showRoomsPanel(){
 		if ($('#room-and-rooms').hasClass('open')) return;
 		$('#rooms').hide();
 		updateRooms();
 		$('#room-and-rooms').addClass('open').removeClass('closed');
+		$('#stripe').addClass('open');
+		$('#non-top').addClass('behind');
 		showroomstimer = setTimeout(function(){
 			$('#rooms').fadeIn("fast");
 		}, 500); // ensure the div is high enough
 	}
 	function hideRoomsPanel(){
+		clearTimeout(openpaneltimer);
 		clearTimeout(showroomstimer);
 		$('#rooms-content').hide();
 		$('#room-and-rooms').addClass('closed').removeClass('open');		
+		$('#stripe').removeClass('open');		
+		$('#non-top').removeClass('behind');
 	}
 	
 	$('#rooms-content').hide();
-	$('#room-and-rooms').on('mouseenter', showRoomsPanel);
+	$('#room-and-rooms').on('mouseenter', function(){
+		openpaneltimer = setTimeout(showRoomsPanel, 180);
+	});
+	$('#room-and-rooms').on('mouseleave', function(){
+		clearTimeout(openpaneltimer);		
+	});
 	$('#stripe').on('mouseleave', hideRoomsPanel);
 
 
