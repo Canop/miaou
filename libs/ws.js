@@ -164,8 +164,8 @@ var roomIds = exports.roomIds = function(){
 }
 
 // gives the ids of the rooms to which the user is currently connected (either directly or via a watch)
-exports.userRooms = function(userId){
-	var rooms = [],
+Shoes.userRooms = function(){
+	var rooms = [], userId = this.publicUser.id,
 		iorooms = io.sockets.adapter.rooms;
 	for (var roomId in iorooms) {
 		var m = roomId.match(/^w?(\d+)$/);
