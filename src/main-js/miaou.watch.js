@@ -1,6 +1,6 @@
 // functions related to user watching other rooms
 
-miaou(function(watch, locals, md, ws){
+miaou(function(watch, locals, md, notif, ws){
 
 	// tell if the room is watched
 	watch.watched = function(roomId){
@@ -13,6 +13,7 @@ miaou(function(watch, locals, md, ws){
 			if (w.id===locals.room.id || watch.watched(w.id)) return;
 			$('<a>').addClass('watch').attr('rid', w.id)
 			.attr('href', w.id+'?pad=true') // TODO better links with room name
+			.data('watch', w)
 			.append($('<span>').addClass('count'))
 			.append($('<span>').addClass('name').text(w.name))
 			.appendTo('#watches')
@@ -27,6 +28,7 @@ miaou(function(watch, locals, md, ws){
 		var $wc =  $('#watches .watch[rid='+roomId+'] .count');
 		if (!$wc.length) return console.log('no watch!');
 		$wc.text((+$wc.text()||0)+1);
+		notif.watchIncr();
 	}
 
 	watch.raz = function(roomId){
@@ -35,25 +37,32 @@ miaou(function(watch, locals, md, ws){
 
 	var requiredrid;
 	$('#watches').on('mouseenter', '.watch', function(){
-		$('.watch').removeClass('open').find('.messages').remove();
-		var $w = $(this), off = $w.offset(), ww = $(window).width();
-		var rid = +$w.attr('rid');
-		requiredrid = rid;
-		$.get('json/messages/last?n=5&room='+requiredrid, function(data){
-			if (requiredrid!==rid) return;
+		$('.watch').removeClass('open').find('.watch-panel').remove();
+		var	$w = $(this), w = $w.data('watch'),
+			off = $w.offset(), ww = $(window).width();
+		requiredrid = w.id;
+		$.get('json/messages/last?n=5&room='+w.id, function(data){
+			if (requiredrid!==w.id) return;
 			var	nbunseen = +$w.find('.count').text(),
 				dl = Math.min(200, off.left-4),
 				dr = Math.min(200, ww-(off.left+dl)-4);
-			var $ml = $('<div>').addClass('messages').css({
+			var $panel = $('<div>').addClass('watch-panel').css({
 				top: $w.height()+10,
 				left: -dl,
 				right: -dr, 
 			}).appendTo($w);
+			var $top = $('<div>').addClass('watch-panel-top').appendTo($panel);
+			$('<span>').text(w.name).appendTo($top);
+			$('<button>').addClass('small').text('unwatch').click(function(){
+				ws.emit('unwat', w.id);
+				$w.remove();
+				return false;
+			}).appendTo($top);
+			var $ml = $('<div>').addClass('messages').appendTo($panel);
 			$w.addClass('open');
 			if (data.error) {
 				return $ml.text("Error: "+data.error);
 			}
-			
 			if (!(nbunseen>data.messages.length)) {
 				$w.find('.count').empty();
 				ws.emit('watch_raz');
@@ -63,6 +72,6 @@ miaou(function(watch, locals, md, ws){
 		});
 	}).on('mouseleave', '.watch', function(){
 		requiredrid = 0;
-		$('.watch').removeClass('open').find('.messages').remove();
+		$('.watch').removeClass('open').find('.watch-panel').remove();
 	});
 });

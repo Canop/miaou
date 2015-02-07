@@ -121,6 +121,10 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		}
 	}
 	
+	notif.watchIncr = function(){
+		notif.updateTab(!!notifications.length, nbUnseenMessages+1);
+	}
+	
 	// called in case of new message (or a new important event related to a message)
 	notif.touch = function(mid, ping, from, text, r, $md){
 		r = r || locals.room;

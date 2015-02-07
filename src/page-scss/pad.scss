@@ -259,13 +259,26 @@
 		display: inline-block;
 		white-space: nowrap;
 	}
-	.messages {
+	.watch-panel {
 		position: absolute;
 		background: white;
 		min-height: 20px;
 		box-shadow: 0 0 5px black;
 		padding: 10px;
 		z-index: 55;
+	}
+	.watch-panel-top { // inside watch-panel
+		height: 30px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		span {
+			flex: 1;
+			text-align: center;
+			font-weight: bold;
+		}
+	}
+	.messages { // inside watch-panel
 		max-height: 50vh;
 		overflow-y: auto;
 		.opener {
