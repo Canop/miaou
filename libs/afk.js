@@ -12,17 +12,19 @@ exports.configure = function(miaou){
 
 function makeCommand(status){
 	return function(ct){
-		ws.userRooms.call(this, ct.shoe.publicUser.id).then(function(rooms){
+		setTimeout(function(){
+			// sends a flake to all rooms in which the user is (including via watching)
 			var	text = '*'+ct.username()+'* is *'+status+'*';
 			if (ct.args) text += ' ( '+ct.args+' )';
-			for (var roomId of rooms) {
+			ct.shoe.userRooms().forEach(function(roomId){
 				ct.shoe.emitBotFlakeToRoom(bot, text, roomId);
-			}
-		});
+			});
+		}, 100);
 		ct.silent = true;
 		ct.nostore = true;
 	}
 }
+
 
 exports.registerCommands = function(registerCommand){
 	var status = {

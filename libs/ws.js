@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 36,
+const apiversion = 37,
 	maxHiatusForMerge = 10, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
@@ -154,6 +154,7 @@ var roomSockets = exports.roomSockets = function(roomId){
 	return sockets;
 }
 
+// TODO function to also emit an incr to the related w room (to watchers)
 var emitToRoom = exports.emitToRoom = function(roomId, key, m){
 	io.sockets.in(roomId).emit(key, clean(m));
 }
@@ -163,27 +164,22 @@ var roomIds = exports.roomIds = function(){
 }
 
 // gives the ids of the rooms to which the user is currently connected (either directly or via a watch)
-// must be called with a connection as context, and returns a promise
 exports.userRooms = function(userId){
-	var rooms = [], iorooms = io.sockets.adapter.rooms;
+	var rooms = [],
+		iorooms = io.sockets.adapter.rooms;
 	for (var roomId in iorooms) {
-		if (+roomId!=roomId) continue;
-		var clients = io.sockets.adapter.rooms[roomId];
+		var m = roomId.match(/^w?(\d+)$/);
+		if (!m) continue;
+		var clients = iorooms[roomId];
 		for (var clientId in clients) {
 			var socket = io.sockets.connected[clientId];
 			if (socket && socket.publicUser && socket.publicUser.id===userId) {
-				rooms.push(roomId);
+				rooms.push(+m[1]);
 				break;
 			}
 		}	
 	}
-	if (!rooms.length) return Promise.resolve(rooms);
-	// if the user is connected, we add the rooms he watches
-	return this.listUserWatches(userId)
-	.then(function(watches){
-		for (var w of watches) rooms.push(w.id);
-		return rooms;
-	});
+	return rooms;
 }
 
 // returns the first found socket of the passed user (may be in another room)
@@ -208,9 +204,9 @@ function popon(arr, filter, act){
 	if (act) matches.forEach(act);
 }
 
-// closes all sockets from a user in a given room
+// closes all sockets from a user in a given (sio) room
 exports.throwOut = function(userId, roomId, text){
-	var clients = io.sockets.adapter.rooms[roomId];;
+	var clients = io.sockets.adapter.rooms[roomId];
 	for (var clientId in clients) {
 		var socket = io.sockets.connected[clientId];
 		if (socket.publicUser && socket.publicUser.id===userId) {
@@ -250,10 +246,12 @@ function messageWithoutUserVote(message){
 	return clone;
 }
 
-// handles the socket, whose life should be the same as the presence of the user in a room without reload
+// handles the socket, whose life should be the same as the presence of the user in a room without reload.
 // Implementation details :
 //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
 //     different rooms and there's a reconnect
+//  - the socket join the sio room whose id is the id of the room (a number)
+//     and a sio room for every watched room, with id 'w'+room.id
 function handleUserInRoom(socket, completeUser){
 	var shoe = new Shoe(socket, completeUser),
 		memroom,
@@ -291,7 +289,7 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('enter', function(roomId){			
 		var now = Date.now()/1000|0;
-		socket.emit('set_enter_time', now);
+		socket.emit('set_enter_time', now); // time synchronization
 		if (shoe.room && roomId==shoe.room.id){
 			console.log('WARN : user already in room'); // how does that happen ?
 			return;
@@ -342,6 +340,9 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('wat', watches);
 			socket.emit('welcome');
 			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
+			for (var w of watches) {
+				socket.join('w'+w.id);
+			}
 			for (var s of shoe.roomSockets()) {
 				if (!s) {
 					console.log("null socket");
@@ -351,12 +352,6 @@ function handleUserInRoom(socket, completeUser){
 				if (!user) console.log('missing user on socket');
 				else socket.emit('enter', user);
 			}
-			return watches;
-		}).map(function(w){
-			return rooms.mem.call(this, w.id)
-		}).map(function(mr){
-			mr.watchers.add(socket)
-		}).all(function(){
 			return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
@@ -524,6 +519,7 @@ function handleUserInRoom(socket, completeUser){
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
+			io.sockets.in('w'+roomId).emit('watch_incr', roomId);
 			var txt = merge || m.content;
 			if (txt && m.id) {
 				var pings = txt.match(/@\w[\w\-]{2,}(\b|$)/g);
@@ -538,26 +534,13 @@ function handleUserInRoom(socket, completeUser){
 						for (var clientId in io.sockets.connected) {
 							var socket = io.sockets.connected[clientId];
 							if (socket && socket.publicUser && socket.publicUser.name===username) {
-								socket.emit('pings', [{r:shoe.room.id, rname:shoe.room.name, mid:m.id}]);
+								socket.emit('pings', [{r:roomId, rname:shoe.room.name, mid:m.id}]);
 								pinged = true;
 							}
 						}
 						remainingpings.push(username);
 					}
 					if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
-				}
-				for (var s of memroom.watchers){
-					if (!s.publicUser) {
-						console.log("missing user in socket");
-					} else if (s.publicUser.id === shoe.publicUser.id) {
-						//~ console.log("avoiding self incr");
-					} else if (!s.connected) {
-						console.log('removing unconnected watcher');
-						memroom.watchers.delete(s);
-					} else {
-						//~ console.log('watcher is connected');
-						s.emit('watch_incr', shoe.room.id);
-					}
 				}
 			}
 		}).catch(function(e) {
@@ -585,8 +568,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on(otherUserId)
 		.then(function(){
 			return pm.openPmRoom.call(this, shoe, otherUserId);
-		})
-		.finally(db.off);
+		}).finally(db.off);
 	})
 	.on('pre_request', function(request){ // not called from chat but from request.jade
 		var roomId = request.room, publicUser = shoe.publicUser;
@@ -640,12 +622,9 @@ function handleUserInRoom(socket, completeUser){
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.deleteWatch)
 		.then(function(){
-			return rooms.mem.call(this, roomId);
-		})
-		.then(function(mr){
+			socket.leave('w'+roomId);
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
-				mr.watchers.delete(s);
 				s.emit('unwat', roomId);
 			}
 		})
@@ -705,12 +684,9 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.then(function(r){
 			if (r.private && !r.auth) throw new Error('Unauthorized user');
-			return [rooms.mem.call(this, r.id), r];
-		})
-		.spread(function(mr, r){
+			socket.join('w'+roomId);
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
-				mr.watchers.add(s);
 				s.emit('wat', [{id:r.id, name:r.name}]);
 			}
 		})

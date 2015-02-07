@@ -18,10 +18,7 @@ exports.configure = function(miaou){
 exports.mem = function(roomId){
 	var mo = memobjects.get(roomId);
 	if (!mo) {
-		mo = {
-			id:roomId,
-			watchers: new Set // watching sockets (check .connected before emitting)
-		};
+		mo = { id:roomId };
 		memobjects.set(roomId, mo);
 		var now = Date.now()/1000|0;
 		return this

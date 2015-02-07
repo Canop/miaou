@@ -78,6 +78,7 @@ exports.appPostAuths = function(req, res, db){
 					actions.push({cmd:'delete_auth', user:modifiedUserId});
 					if (r.private) {
 						ws.throwOut(modifiedUserId, r.id, 'Your rights to this room have been revoked');
+						ws.throwOut(modifiedUserId, 'w'+r.id);
 					}
 				} else {
 					actions.push({cmd:'update_auth', user:modifiedUserId, auth:new_auth});
@@ -115,6 +116,7 @@ exports.wsOnBan = function(shoe, db, o){
 	}).then(function(){
 		shoe.emitToRoom('ban', o);
 		ws.throwOut(o.banned, shoe.room.id, 'You have been banned from this room for ' + o.nb + ' ' + o.unit);
+		ws.throwOut(o.banned, 'w'+shoe.room.id);
 	}).catch(function(err){
 		shoe.error('error in ban : '+err.toString());
 	}).finally(db.off);
