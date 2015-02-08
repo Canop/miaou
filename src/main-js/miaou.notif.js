@@ -4,6 +4,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 				
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
+		hasWatchUnseen = false,
 		nbUnseenMessages = 0,
 		lastUserAction = 0; // ms
 	
@@ -80,7 +81,8 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 				var $otherrooms = $('<div>').append($('<span>').text(t)).appendTo($c);
 				$.each(otherRooms, function(r, rname){
 					$otherrooms.append($('<button>').addClass('openroom').attr('pingroom', r).text(rname).click(function(){
-						window.open(r);
+						if (/pad=true/.test(location.href)) location = r+'?pad=true';
+						else window.open(r);
 					}));
 				});
 			}	
@@ -121,10 +123,8 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 		}
 	}
 	
-	notif.watchIncr = function(){
-		notif.updateTab(!!notifications.length, nbUnseenMessages+1);
-	}
-	notif.watchRaz = function(){
+	notif.setHasWatchUnseen = function(b){
+		hasWatchUnseen = b;
 		notif.updateTab(!!notifications.length, nbUnseenMessages);
 	}
 	
@@ -163,7 +163,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 		} else if (nbUnseenMessages) {
 			title = nbUnseenMessages+'-'+title;
 			icon += '-new';
-		} else if (watch.hasUnseen()) { // this part is probably useless... to be reviewed
+		} else if (hasWatchUnseen) {
 			icon += '-new';			
 		}
 		document.title = title;

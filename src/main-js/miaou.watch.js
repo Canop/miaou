@@ -28,16 +28,12 @@ miaou(function(watch, locals, md, notif, ws){
 		var $wc =  $('#watches .watch[rid='+roomId+'] .count');
 		if (!$wc.length) return console.log('no watch!');
 		$wc.text((+$wc.text()||0)+1);
-		notif.watchIncr();
-	}
-	
-	watch.hasUnseen = function(){
-		return !!$('.watch .count:not(:empty)').length;
+		notif.setHasWatchUnseen(true);
 	}
 
 	watch.raz = function(roomId){
 		 $('#watches .watch[rid='+roomId+'] .count').empty();
-		 if (!$('.watch .count:not(:empty)').length) notif.watchRaz();
+		 if (!$('.watch .count:not(:empty)').length) notif.setHasWatchUnseen(false);
 	}
 
 	var requiredrid;
