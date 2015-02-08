@@ -156,7 +156,7 @@ function startServer(){
 	var port = miaou.config.port;
 	console.log('Miaou server starting on port', port);
 	server.listen(port);
-	require('./ws.js').configure(miaou).listen(server, sessionStore, cookieParser, db);
+	require('./ws.js').configure(miaou).listen(server, sessionStore, cookieParser);
 }
 
 var url = exports.url = function(pathname){ // todo cleaner way in express not supposing absolute paths ?

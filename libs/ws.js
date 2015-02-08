@@ -12,18 +12,21 @@ const apiversion = 37,
 	commands = require('./commands.js'),
 	pm  = require('./pm.js'),
 	server = require('./server.js'),
-	rooms = require('./rooms.js');
+	rooms = require('./rooms.js'),
+	shoes = require('./shoes.js');
 
-var	config,
+var	miaou,
 	maxContentLength,
 	minDelayBetweenMessages,
+	clientConfig, // config sent to clients when they connect
 	io, db, bot,
 	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins;
 
-exports.configure = function(miaou){
-	config = miaou.config;
+exports.configure = function(_miaou){
+	miaou = _miaou;
 	db = miaou.db;
 	bot = miaou.bot;
+	var config = miaou.config;
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
 	plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
@@ -31,6 +34,12 @@ exports.configure = function(miaou){
 	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });
 	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });
 	onChangeMessagePlugins = plugins.filter(function(p){ return p.onChangeMessage });
+	clientConfig = [
+		'maxMessageContentSize','minDelayBetweenMessages',
+		'maxAgeForMessageTotalDeletion','maxAgeForMessageEdition'
+	].reduce(function(c,k){
+		c[k] = config[k]; return c;
+	}, {});
 	commands.configure(miaou);
 	return this;
 }
@@ -58,92 +67,6 @@ var clean = exports.clean = function(m){
 	return m;
 }
 
-// A shoe embeds a socket and is provided to controlers and plugins.
-// It's kept in memory by the closures of the socket event handlers
-function Shoe(socket, completeUser){
-	this.socket = socket;
-	this.completeUser = completeUser;
-	this.publicUser = {id:completeUser.id, name:completeUser.name};
-	this.room;
-	this.lastMessageTime;
-	this.db = db;
-	socket.publicUser = this.publicUser;
-	this.emit = socket.emit.bind(socket);
-}
-var Shoes = Shoe.prototype;
-
-Shoes.error = function(err, messageContent){
-	console.log('Error for user', this.completeUser.name, 'in room', (this.room||{}).name);
-	console.log(err.stack || err);
-	this.socket.emit('miaou.error', {txt:err.toString(), mc:messageContent});
-}
-Shoes.emitToRoom = function(key, m){
-	io.sockets.in(this.room.id).emit(key, m);
-}
-// emits something to all sockets of a given user. Returns the number of sockets
-Shoes.emitToAllSocketsOfUser = function(key, args, onlyOtherSockets){
-	var	currentUserId = this.publicUser.id,
-		nbs = 0;
-	for (var clientId in io.sockets.connected) {
-		var socket = io.sockets.connected[clientId];
-		if (onlyOtherSockets && socket === this.socket) continue;
-		if (socket && socket.publicUser && socket.publicUser.id===currentUserId) {
-			socket.emit(key, args);
-			nbs++;
-		}
-	}
-	return nbs;
-}
-Shoes.allSocketsOfUser = function(){
-	var sockets = [];
-	for (var clientId in io.sockets.connected) {
-		var socket = io.sockets.connected[clientId];
-		if (socket && socket.publicUser && socket.publicUser.id===this.publicUser.id) {
-			sockets.push(socket);
-		}
-	}
-	return sockets;
-}
-Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
-	io.sockets.in(roomId||this.room.id).emit('message', {
-		author:bot.id, authorname:bot.name, created:Date.now()/1000|0, bot:true, content:content
-	});
-}
-Shoes.pluginTransformAndSend = function(m, sendFun){
-	for (var plugin of onSendMessagePlugins) {
-		plugin.onSendMessage(this, m, sendFun);
-	}
-	sendFun('message', m);
-}
-Shoes.io = function(){
-	return io;
-}
-Shoes.roomSockets = function(){
-	return roomSockets(this.room.id);
-}
-// returns the socket of the passed user if he's in the same room
-Shoes.userSocket = function(userIdOrName) {
-	var clients = io.sockets.adapter.rooms[this.room.id],
-		sockets = [];
-	for (var clientId in clients) {
-		var socket = io.sockets.connected[clientId];
-		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
-			return socket;
-		}		
-	}
-}
-// to be used by bots, creates a message, store it in db and emit it to the room
-Shoes.botMessage = function(bot, content){
-	var shoe = this;
-	this.db.on({content:content, author:bot.id, room:this.room.id, created:Date.now()/1000|0})
-	.then(db.storeMessage)
-	.then(function(m){
-		m.authorname = bot.name;
-		m.bot = true;
-		shoe.emitToRoom('message', m);
-	}).finally(this.db.off);
-}
-
 // returns all the sockets of the given roomId
 var roomSockets = exports.roomSockets = function(roomId){
 	var clients = io.sockets.adapter.rooms[roomId],
@@ -163,24 +86,7 @@ var roomIds = exports.roomIds = function(){
 	return Object.keys(io.sockets.adapter.rooms).filter(function(n){ return n==+n });
 }
 
-// gives the ids of the rooms to which the user is currently connected (either directly or via a watch)
-Shoes.userRooms = function(){
-	var rooms = [], userId = this.publicUser.id,
-		iorooms = io.sockets.adapter.rooms;
-	for (var roomId in iorooms) {
-		var m = roomId.match(/^w?(\d+)$/);
-		if (!m) continue;
-		var clients = iorooms[roomId];
-		for (var clientId in clients) {
-			var socket = io.sockets.connected[clientId];
-			if (socket && socket.publicUser && socket.publicUser.id===userId) {
-				rooms.push(+m[1]);
-				break;
-			}
-		}	
-	}
-	return rooms;
-}
+
 
 // returns the first found socket of the passed user (may be in another room)
 function anyUserSocket(userIdOrName) {
@@ -253,7 +159,7 @@ function messageWithoutUserVote(message){
 //  - the socket join the sio room whose id is the id of the room (a number)
 //     and a sio room for every watched room, with id 'w'+room.id
 function handleUserInRoom(socket, completeUser){
-	var shoe = new Shoe(socket, completeUser),
+	var shoe = new shoes.Shoe(socket, completeUser),
 		memroom,
 		lastmmisreply, lastmmisatleastfivelines,
 		send;
@@ -277,7 +183,7 @@ function handleUserInRoom(socket, completeUser){
 			shoe.emitToAllSocketsOfUser('rm_ping', mid, true);
 		}).finally(db.off);
 	})
-	.on('disconnect', function(){ // todo : are we really assured to get this event which is used to clear things ?
+	.on('disconnect', function(){
 		if (shoe.room) {
 			if (!shoe.userSocket(shoe.completeUser.id)) {
 				socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
@@ -316,9 +222,7 @@ function handleUserInRoom(socket, completeUser){
 			shoe.room = r;
 			console.log(shoe.publicUser.name, 'enters room', shoe.room.id, ':', shoe.room.name);
 			socket.emit('room', shoe.room).join(shoe.room.id);
-			socket.emit('config', ['maxMessageContentSize','minDelayBetweenMessages','maxAgeForMessageTotalDeletion','maxAgeForMessageEdition'].reduce(function(c,k){
-				c[k] = config[k]; return c;
-			}, {}));
+			socket.emit('config', clientConfig);
 			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);
 		}).then(function(){
 			return [
@@ -343,7 +247,7 @@ function handleUserInRoom(socket, completeUser){
 			for (var w of watches) {
 				socket.join('w'+w.id);
 			}
-			for (var s of shoe.roomSockets()) {
+			for (var s of roomSockets(shoe.room.id)) {
 				if (!s) {
 					console.log("null socket");
 					continue;
@@ -527,7 +431,6 @@ function handleUserInRoom(socket, completeUser){
 					pings = pings.map(function(s){ return s.slice(1) });
 					var remainingpings = [];
 					for (var username of pings) {
-						//~ console.log("User is in room : ", !!shoe.userSocket(username));
 						if (shoe.userSocket(username)) return;
 						// user isn't in the room, we notify him with a cross-room ping in the other rooms
 						var pinged = false;
@@ -704,9 +607,9 @@ function handleUserInRoom(socket, completeUser){
 	socket.emit('ready');
 }
 
-exports.listen = function(server, sessionStore, cookieParser, _db){
-	db = _db;
-	io = socketio(server);
+exports.listen = function(server, sessionStore, cookieParser){
+	io = miaou.io = socketio(server);
+	shoes.configure(miaou);
 	io.use(function(socket, next){
 		cookieParser(socket.handshake, {}, function(err){
 			if (err) {
