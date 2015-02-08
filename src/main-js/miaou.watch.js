@@ -18,6 +18,9 @@ miaou(function(watch, locals, md, notif, ws){
 			.append($('<span>').addClass('name').text(w.name))
 			.appendTo('#watches')
 		});
+		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){
+			return $(a).data('watch').name.localeCompare($(b).data('watch').name);
+		}));
 	}
 
 	watch.remove = function(roomId){
