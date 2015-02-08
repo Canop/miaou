@@ -318,6 +318,7 @@ body.mobile #message-scroller {
 #search-results .content img, #notable-messages .content img, .messages .content img,
 table.list .rendered img, .rooms-list .rendered img {
 	max-height: 70px;
+	max-width: 220px;
 }
 
 #roomdescription {
