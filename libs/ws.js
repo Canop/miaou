@@ -161,6 +161,7 @@ function messageWithoutUserVote(message){
 function handleUserInRoom(socket, completeUser){
 	var shoe = new shoes.Shoe(socket, completeUser),
 		memroom,
+		watchset = new Set, // set of watched rooms ids (if any)
 		lastmmisreply, lastmmisatleastfivelines,
 		send;
 	socket
@@ -187,6 +188,9 @@ function handleUserInRoom(socket, completeUser){
 		if (shoe.room) {
 			if (!shoe.userSocket(shoe.completeUser.id)) {
 				socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
+				for (var wid of watchset) {
+					socket.broadcast.to(wid).emit('leave', shoe.publicUser);	
+				}
 			}
 		} else {
 			console.log(shoe.completeUser.name, "disconnected before entering a room");
@@ -239,14 +243,8 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
 			socket.emit('welcome');
-			for (var s of roomSockets(shoe.room.id)) {
-				if (!s) {
-					console.log("null socket");
-					continue;
-				}
-				var user = s.publicUser;
-				if (!user) console.log('missing user on socket');
-				else socket.emit('enter', user);
+			for (var s of roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))) {
+				socket.emit('enter', s.publicUser);
 			}
 			return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
@@ -266,6 +264,8 @@ function handleUserInRoom(socket, completeUser){
 			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
 			for (var w of watches) {
 				socket.join('w'+w.id);
+				watchset.add(w.id);
+				io.sockets.in(w.id).emit('enter', shoe.publicUser);
 			}			
 		})
 		.catch(function(err){
@@ -538,6 +538,8 @@ function handleUserInRoom(socket, completeUser){
 			for (var s of sockets) {
 				s.emit('unwat', roomId);
 			}
+			socket.broadcast.to(roomId).emit('leave', shoe.publicUser);
+			watchset.delete(roomId);
 		})
 		.finally(db.off);
 	})
@@ -596,10 +598,12 @@ function handleUserInRoom(socket, completeUser){
 		.then(function(r){
 			if (r.private && !r.auth) throw new Error('Unauthorized user');
 			socket.join('w'+roomId);
+			watchset.add(roomId);
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
 				s.emit('wat', [{id:r.id, name:r.name}]);
 			}
+			socket.broadcast.to(roomId).emit('enter', shoe.publicUser);
 		})
 		.finally(db.off);
 	})
