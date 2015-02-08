@@ -227,26 +227,18 @@ function handleUserInRoom(socket, completeUser){
 		}).then(function(){
 			return [
 				this.fetchUserPings(completeUser.id),
-				this.listRecentUsers(shoe.room.id, 50),
-				this.listUserWatches(completeUser.id)
+				this.listRecentUsers(shoe.room.id, 50)
 			]
-		}).spread(function(pings, recentUsers, watches){
-			watches = watches.filter(function(w){ return w.id!==shoe.room.id });
+		}).spread(function(pings, recentUsers){
 			if (pings.length) socket.emit('pings', pings);
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
 			for (var o of socketWaitingApproval) {
 				if (o.roomId===shoe.room.id && o.ar) socket.emit('request', o.ar);
 			}
-			console.log("watches of user "+shoe.publicUser.name+":", watches);
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
-			socket.emit('wat', watches);
 			socket.emit('welcome');
-			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
-			for (var w of watches) {
-				socket.join('w'+w.id);
-			}
 			for (var s of roomSockets(shoe.room.id)) {
 				if (!s) {
 					console.log("null socket");
@@ -263,6 +255,22 @@ function handleUserInRoom(socket, completeUser){
 		.catch(function(err){
 			shoe.error(err);
 		}).finally(db.off)
+	})
+	.on('start_watch', function(){
+		db.on(completeUser.id)
+		.then(db.listUserWatches)
+		.then(function(watches){
+			watches = watches.filter(function(w){ return w.id!==shoe.room.id });
+			console.log("watches of user "+shoe.publicUser.name+":", watches);
+			socket.emit('wat', watches);
+			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
+			for (var w of watches) {
+				socket.join('w'+w.id);
+			}			
+		})
+		.catch(function(err){
+			shoe.error(err);
+		}).finally(db.off)		
 	})
 	.on('error', function(e){
 		console.log('socket.io error:', e);

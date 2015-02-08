@@ -1,6 +1,9 @@
 // functions related to user watching other rooms
 
 miaou(function(watch, locals, md, notif, ws){
+	
+	// this is false for mobile users, and for all users not beta-testing the pad until it's ready
+	watch.enabled = false;
 
 	// tell if the room is watched
 	watch.watched = function(roomId){

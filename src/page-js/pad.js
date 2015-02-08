@@ -183,6 +183,7 @@ miaou(function(chat, locals, watch, ws){
 			return false;
 		}
 	});
+	watch.enabled = true;
 	chat.start();
 	$(window).keyup(function(e){
 		if ($('#room-and-rooms').hasClass('open')) {

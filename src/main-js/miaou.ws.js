@@ -118,6 +118,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 			if (location.hash) md.focusMessage(+location.hash.slice(1));
 			else gui.scrollToBottom();
 			usr.showEntry(locals.me);
+			if (watch.enabled) socket.emit('start_watch');
 		})
 		.on('invitation', function(invit){
 			var $md = $('<div>').html(
