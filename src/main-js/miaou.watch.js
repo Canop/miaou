@@ -45,7 +45,7 @@ miaou(function(watch, locals, md, notif, ws){
 		$.get('json/messages/last?n=5&room='+w.id, function(data){
 			if (requiredrid!==w.id) return;
 			var	nbunseen = +$w.find('.count').text(),
-				dr = Math.min(200, ww-off.left-$w.width()-20),
+				dr = Math.max(Math.min(200, ww-off.left-$w.width()-20), 0),
 				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
 				top: $w.height()+10, left: dl, right: -dr, 
