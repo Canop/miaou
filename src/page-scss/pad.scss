@@ -102,7 +102,7 @@
 	}
 	&.open::after {
 		position: absolute;
-		left:0; top: 11px; right: 0;
+		left:0; top: 13px; right: 0;
 		height: 12px; // hack dégueulasse
 		background: white;
 		z-index: 60;
@@ -133,10 +133,11 @@
 		z-index: 55;
 	}
 	.watch-panel-top { // inside watch-panel
-		height: 30px;
+		height: 25px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin-bottom: 5px;
 		span {
 			flex: 1;
 			text-align: center;
