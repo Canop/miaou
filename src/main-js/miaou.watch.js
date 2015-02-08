@@ -30,9 +30,14 @@ miaou(function(watch, locals, md, notif, ws){
 		$wc.text((+$wc.text()||0)+1);
 		notif.watchIncr();
 	}
+	
+	watch.hasUnseen = function(){
+		return !!$('.watch .count:not(:empty)').length;
+	}
 
 	watch.raz = function(roomId){
 		 $('#watches .watch[rid='+roomId+'] .count').empty();
+		 if (!$('.watch .count:not(:empty)').length) notif.watchRaz();
 	}
 
 	var requiredrid;

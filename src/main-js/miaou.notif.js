@@ -1,6 +1,6 @@
 // manages the list and dispatching of notifications
 
-miaou(function(notif, chat, horn, locals, md, ws){
+miaou(function(notif, chat, horn, locals, md, watch, ws){
 				
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
@@ -124,6 +124,9 @@ miaou(function(notif, chat, horn, locals, md, ws){
 	notif.watchIncr = function(){
 		notif.updateTab(!!notifications.length, nbUnseenMessages+1);
 	}
+	notif.watchRaz = function(){
+		notif.updateTab(!!notifications.length, nbUnseenMessages);
+	}
 	
 	// called in case of new message (or a new important event related to a message)
 	notif.touch = function(mid, ping, from, text, r, $md){
@@ -160,26 +163,25 @@ miaou(function(notif, chat, horn, locals, md, ws){
 		} else if (nbUnseenMessages) {
 			title = nbUnseenMessages+'-'+title;
 			icon += '-new';
+		} else if (watch.hasUnseen()) { // this part is probably useless... to be reviewed
+			icon += '-new';			
 		}
 		document.title = title;
+		console.log('favicon:', icon);
 		$('#favicon').attr('href', icon+'.png');
 	}
 
 	var lastfocustime = 0;
 	function onfocus(){
 		var now = Date.now();
-		if (now-lastfocustime<1000) {
-			return;
-		}
+		if (now-lastfocustime<1000) return;
 		lastfocustime = now;
 		ws.emit('watch_raz');
 		nbUnseenMessages = 0;
 		notif.updateTab(0, 0);
 		// we go to the last notification message, highlight it and remove the ping
 		var ln = lastNotificationInRoom();
-		if (ln) {
-			notif.removePing(ln.mid, true, true);
-		}
+		if (ln) notif.removePing(ln.mid, true, true);
 		$('#input').focus();
 		notif.userAct();
 	}
