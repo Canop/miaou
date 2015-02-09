@@ -70,9 +70,16 @@ Shoes.io = function(){
 }
 
 // returns the socket of the passed user if he's in the same room
-Shoes.userSocket = function(userIdOrName) {
-	var clients = io.sockets.adapter.rooms[this.room.id],
-		sockets = [];
+Shoes.userSocket = function(userIdOrName, includeWatchers) {
+	var clients = io.sockets.adapter.rooms[this.room.id];
+	for (var clientId in clients) {
+		var socket = io.sockets.connected[clientId];
+		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
+			return socket;
+		}		
+	}
+	if (!includeWatchers) return;
+	clients = io.sockets.adapter.rooms['w'+this.room.id];
 	for (var clientId in clients) {
 		var socket = io.sockets.connected[clientId];
 		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {

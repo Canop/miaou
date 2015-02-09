@@ -186,10 +186,10 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('disconnect', function(){
 		if (shoe.room) {
-			if (!shoe.userSocket(shoe.completeUser.id)) {
+			if (!shoe.userSocket(shoe.completeUser.id, true)) {
 				socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
 				for (var wid of watchset) {
-					socket.broadcast.to(wid).emit('leave', shoe.publicUser);	
+					socket.broadcast.to(wid).emit('leave', shoe.publicUser);
 				}
 			}
 		} else {
@@ -197,7 +197,7 @@ function handleUserInRoom(socket, completeUser){
 		}
 		popon(socketWaitingApproval, function(o){ return o.socket===socket });
 	})
-	.on('enter', function(roomId){			
+	.on('enter', function(roomId){
 		var now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now); // time synchronization
 		if (shoe.room && roomId==shoe.room.id){
