@@ -179,6 +179,7 @@ miaou(function(chat, locals, watch, ws){
 
 	$('#M-opener').on('mouseenter', function(){
 		$('#M-menu').show();
+		hideRoomsPanel();
 	}).on('mouseleave', function(){
 		$('#M-menu').hide();
 	});
