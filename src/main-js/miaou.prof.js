@@ -30,20 +30,20 @@ miaou(function(prof, gui, locals){
 		$user.addClass('profiled');
 		$(window).on('mousemove', prof.checkOverProfile);
 	};
-	
+
 	// used in chat.jade, chat.mob.jade and auths.jade
 	prof.show = function(){
 		prof.hide();
 		showTimer = setTimeout(prof.shownow.bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
 	};
-	
+
 	prof.hide = function(){
 		clearTimeout(showTimer);
 		$('.profile').remove();
 		$('.profiled').removeClass('profiled');
 		$(window).off('mousemove', prof.checkOverProfile);
 	};
-	
+
 	prof.toggle = function(){
 		prof[$('.profile').length ? 'hide' : 'show'].call(this);
 	};

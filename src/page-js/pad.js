@@ -177,6 +177,17 @@ miaou(function(chat, locals, watch, ws){
 		$('#input-panel').show();
 	});
 
+	$('#M-opener').on('mouseenter', function(){
+		$('#M-menu').show();
+	}).on('mouseleave', function(){
+		$('#M-menu').hide();
+	});
+	$('#menu-logout').click(function(){
+		delete localStorage['successfulLoginLastTime'];
+		setTimeout(function(){ location = 'logout' }, 100);
+	});
+	$('#me').text(locals.me.name);
+
 	$(window).on('keydown', function(e){
 		if (e.which===70 && e.ctrlKey && $('#room-and-rooms').hasClass('open')) {
 			righttab("search");

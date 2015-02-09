@@ -31,6 +31,49 @@
 }
 #M-img {
 	height: 40px;
+	cursor: pointer;
+}
+#M-menu {
+	position: fixed;
+	top: 0;
+	width: 260px;
+	z-index: 70;
+	display: none;
+	box-shadow: 0 0 2px black;
+	background: $left-background;
+	a.menu-item {
+		color: inherit;
+		text-decoration: none;
+		&:hover {
+			background: rgba(255,255,255,.7);
+		}
+		&.menu-item {
+			display: block;
+			padding: 10px;
+			cursor: pointer;		
+		}
+	}
+}
+#menu-settings::before {
+	font-family: "fontello";
+	content: "\e828 ";
+	margin-right: 5px;
+}
+#menu-logout::before {
+	font-family: "fontello";
+	content: "\e829 ";
+	margin-right: 5px;
+}
+#menu-help::before {
+	font-family: "fontello";
+	content: "\e810 ";
+	margin-right: 5px;
+}
+#Miaou-img {
+	height: 39px;
+	margin-left: 4px;
+	margin-top: 1px;
+	cursor: pointer;
 }
 
 #room-panel-wrapper {
