@@ -125,7 +125,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 	
 	notif.setHasWatchUnseen = function(b){
 		hasWatchUnseen = b;
-		notif.updateTab(!!notifications.length, nbUnseenMessages);
+		if (!vis()) notif.updateTab(!!notifications.length, nbUnseenMessages);
 	}
 	
 	// called in case of new message (or a new important event related to a message)
