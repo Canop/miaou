@@ -89,7 +89,7 @@ var roomIds = exports.roomIds = function(){
 
 
 // returns the first found socket of the passed user (may be in another room)
-function anyUserSocket(userIdOrName) {
+exports.anyUserSocket = function(userIdOrName) {
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
 		if (socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {

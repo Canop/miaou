@@ -2,10 +2,10 @@
 
 // handles !!pm and the pm button
 
-const err = require('./err.js');
+const err = require('./err.js'),
+	ws = require('./ws.js');
 
-var bot,
-	db;
+var bot, db;
 
 exports.configure = function(miaou){
 	bot = miaou.bot;
@@ -33,7 +33,7 @@ var openPmRoom = exports.openPmRoom = function (shoe, otherUserId, otherUserName
 		});
 	})
 	.then(function(m){
-		var socket = shoe.userSocket(otherUser.id) || anyUserSocket(otherUser.id);
+		var socket = shoe.userSocket(otherUser.id) || ws.anyUserSocket(otherUser.id);
 		if (socket) {
 			socket.emit('invitation', {room:lounge.id, byname:shoe.publicUser.name, message:m.id});
 		} else {
