@@ -17,10 +17,7 @@ miaou(function(gui, locals, prof){
 		$('input[type=reset]').click(function(){ $('#submit_bar input').prop('disabled', true) });
 	}
 	$('#auths-page')
-	.on('mouseenter', '.user', prof.show).on('mouseleave', '.profile', prof.hide)
-	.on('mouseleave', '.user', function(e){
-		if (!gui.eventIsOver(e, $('.profile'))) prof.hide();
-	});
+	.on('mouseenter', '.user', prof.show).on('mouseleave', '.profile', prof.hide);
 	$('#backToRoom').click(function(){ location = room.path; return false });
 	$('input[type=radio]').click(function(){
 		var $row = $(this).closest('tr').nextAll('.denyMessageTr').first();
