@@ -69,14 +69,14 @@ miaou(function(watch, locals, md, notif, ws){
 				return $ml.text("Error: "+data.error);
 			}
 			if (!(nbunseen>data.messages.length)) {
-				$w.find('.count').empty();
-				ws.emit('watch_raz');
 			}
 			md.showMessages(data.messages.reverse(), $ml);
 			$ml.scrollTop($ml[0].scrollHeight);
 		});
 	}).on('mouseleave', '.watch', function(){
 		requiredrid = 0;
+		$('.count', this).empty();
 		$('.watch').removeClass('open').find('.watch-panel').remove();
+		ws.emit('watch_raz');
 	});
 });
