@@ -58,15 +58,15 @@ miaou(function(chat, locals, watch, ws){
 						);
 					});
 				});
-				$r.mouseleave(function(){
-					$rm.hide();
-				});
 			}
 			return $r;
 		}));
 		if (title) $('<h3>').text(title).prependTo($list);
 		$list.appendTo('#rooms-page');
 	}
+	$('#rooms-page').on('mouseleave', '.room', function(){
+		$('.last-message').hide();
+	});
 	
 	function selectRoomsTab(i){
 		$('#rooms-tabs .tab').removeClass('selected').eq(i).addClass('selected');
