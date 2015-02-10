@@ -93,12 +93,13 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, usr, ws, wz){
 	// argument : messageId or $messageDiv
 	md.goToMessageDiv = function(arg){
 		var	$messages = $('#message-scroller'),
+			mstop = $messages.offset().top,
 			$message = typeof arg === "number" || typeof arg === "string" ? $('.message[mid='+arg+']', $messages) : arg;
 		if (!$message.length) return;
 		$message.addClass('goingto');
 		setTimeout(function(){
 			var mtop = $message.offset().top;
-			if (mtop<0 || mtop>$messages.height()) $messages.animate({scrollTop: mtop+$messages.scrollTop()-25}, 400);
+			if (mtop<mstop || mtop>mstop+$messages.height()) $messages.animate({scrollTop: mtop-mstop+$messages.scrollTop()-25}, 400);
 			setTimeout(function(){ $message.removeClass('goingto'); }, 3000);
 			hist.showPage();
 		}, 300);
