@@ -188,6 +188,8 @@ miaou(function(chat, locals, watch, ws){
 		setTimeout(function(){ location = 'logout' }, 100);
 	});
 	$('#me').text(locals.me.name);
+	
+	$('#create-room').click(function(){ location="room" });
 
 	$(window).on('keydown', function(e){
 		if (e.which===70 && e.ctrlKey && $('#room-and-rooms').hasClass('open')) {
