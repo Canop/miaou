@@ -192,6 +192,10 @@
 		.nminfo {
 			padding-right: 2px;
 		}
+		.message:last-child .nminfo {
+			font-weight: bold;
+			opacity: 1;
+		}
 	}
 }
 
