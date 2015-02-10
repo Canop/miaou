@@ -129,3 +129,15 @@ $mwin-shadow: none;
 
 // wzins
 $wzin-conv-bg : ( rgba(176,224,230,0.35), rgba(255,255,102,0.3), rgba(188,143,143,0.3), rgba(255,235,215,0.3) );
+
+// pad
+$menu-item-hover-bg: $accent-minus;
+$roomname-text-shadow: 0 0 2px black;
+$watch-bg: $profile-bg;
+$watch-panel-bg: $profile-bg;
+$watch-count-new-bg: rgba(255,255,0,.2);
+$watch-count-ping-bg: rgba(255,0,0,.2);
+$pad-room-desc-bg: rgba(0,0,0,.1);
+$pad-room-hover-bg: black;
+$pad-room-last-message-bg: $pad-room-hover-bg;
+$pad-room-last-message-border-top: solid thin PaleVioletRed;

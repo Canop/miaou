@@ -9,7 +9,7 @@ $mes-me-brown: #2c2523;
 $bg-color: #2F4F4F;
 $general-text-color: transparentize( $bear-text , 0.14 );
 //~ $general-text-color: $bear-text;
-$title-text-color: $bear-green !default;
+$title-text-color: $bear-green;
 $message-me-bg: rgba(163, 83, 49, 0.08);
 $message-list-bg: #222;
 $user-text-color-in-user-list: $bear-green;
@@ -79,9 +79,10 @@ $button-bg-color: #555;
 $button-text-color: $bear-green;
 $button-box-shadow: none;
 $button-hover-bg-color: #555;
-$button-hover-text-color: darcken($bear-green, 20%);
+$button-hover-text-color: darcken( $bear-green , 10%);
 $small-button-box-shadow: none;
-
+$button-border: 1px solid #444;
+$button-hover-border-color: #888;
 
 ::-webkit-scrollbar {
 	width: 12px;
@@ -104,3 +105,15 @@ $small-button-box-shadow: none;
 $wzin-conv-bg : ( rgba(176,224,230,0.32), rgba(255,255,102,0.3), rgba(188,143,143,0.3), rgba(255,235,215,0.3) );
 $wzin-edit-bg: $mes-me-brown;
 $wzin-reply-bg: rgba(176,224,230,0.13);
+
+// pad
+$menu-item-hover-bg: transparentize( $mes-me-brown , 0.4 );;
+$roomname-text-shadow: 0 0 2px black;
+$watch-bg: #153131;
+$watch-panel-bg: #335353;
+$watch-count-new-bg: rgba(255,255,0,.6);
+$watch-count-ping-bg: rgba(255,0,0,.6);
+$pad-room-desc-bg: rgba(0,0,0,.1);
+$pad-room-hover-bg: #0b2727;
+$pad-room-last-message-bg: $pad-room-hover-bg;
+$pad-room-last-message-border-top: solid thin #131;

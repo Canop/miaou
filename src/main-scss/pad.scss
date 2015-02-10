@@ -1,4 +1,3 @@
-@import "variables-default";
 
 #stripe {
 	position: fixed;
@@ -44,13 +43,11 @@
 	a.menu-item {
 		color: inherit;
 		text-decoration: none;
+		display: block;
+		padding: 10px;
+		cursor: pointer;		
 		&:hover {
-			background: rgba(255,255,255,.7);
-		}
-		&.menu-item {
-			display: block;
-			padding: 10px;
-			cursor: pointer;		
+			background: $menu-item-hover-bg;
 		}
 	}
 }
@@ -112,7 +109,7 @@
 	#roomname {
 		color: inherit;
 		text-decoration: none;
-		text-shadow: 0 0 2px rgba(255,255,255,1);
+		text-shadow: $roomname-text-shadow;
 		font-size:120%;
 	}
 }
@@ -135,28 +132,27 @@
 	text-decoration: none;
 	color: inherit;
 	position: relative;
-	background: rgba(255,255,255,.3);
+	background: $watch-bg;
 	&:hover {
-		background: white;
+		background: $watch-panel-bg;
 	}
 	&.open {
 		box-shadow: 0 0 5px black;
-		//~ height: 20px;
 	}
 	&.open::after {
 		position: absolute;
 		left:0; top: 13px; right: 0;
 		height: 12px; // hack dégueulasse
-		background: white;
+		background: $watch-panel-bg;
 		z-index: 60;
 		content: "";
 	}
 	.count:not(:empty) {
-		background: rgba(255,255,0,.3);
+		background: $watch-count-new-bg;
 		padding: 0 5px;
 		display: inline-block;
 		&.ping {
-			background: rgba(255,0,0,.3);
+			background: $watch-count-ping-bg;
 		}
 	}
 	.name {
@@ -169,7 +165,7 @@
 	}
 	.watch-panel {
 		position: absolute;
-		background: white;
+		background: $watch-panel-bg;
 		min-height: 20px;
 		box-shadow: 0 0 5px black;
 		padding: 10px;
@@ -212,7 +208,6 @@
 	}
 }
 #rooms {
-	//~ flex: 1;
 	display:flex;
 	align-items: stretch;
 	max-width: 1200px;
@@ -273,7 +268,7 @@
 			flex-direction: row;
 			position: relative;
 			&:hover {
-				background: white; //rgba(240,240,255,.3);
+				background: $pad-room-hover-bg;
 				transition: background .5s;
 			}
 			.room-left {
@@ -285,7 +280,7 @@
 				}
 				.room-desc {
 					margin-left: 20px;
-					background: rgba(255,255,255,.5);
+					background: $pad-room-desc-bg;
 					padding: 4px;
 					min-height: 40px;
 					overflow: hidden;
@@ -297,7 +292,6 @@
 				padding: 4px;
 				display: flex;
 				flex-direction: column;
-				//~ align-items: stretch;
 				justify-content: center;
 				span {
 					margin: 8px 0;
@@ -312,11 +306,11 @@
 				position: absolute;
 				left: 0;
 				right: 0;
-				background: white;
+				background: $pad-room-last-message-bg;
 				z-index: 55;
 				padding: 8px;
 				font-size: .9em;
-				border-top: solid thin #ddd;
+				border-top: $pad-room-last-message-border-top;
 			}
 		}
 		.room:hover .room-right {
@@ -324,9 +318,6 @@
 		}
 	}
 }
-
-
-
 
 #non-top {
 	#left, #right, #center {
