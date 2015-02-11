@@ -6,10 +6,12 @@ const auths = require('./auths.js'),
 	memobjects = new Map,
 	clean = require('./ws.js').clean;
 
-var langs;
+var langs,
+	welcomeRoomIds;
 	
 exports.configure = function(miaou){
 	langs = require('./langs.js').configure(miaou);
+	welcomeRoomIds = miaou.config.welcomeRooms || [];
 	return this;
 }
 
@@ -87,20 +89,25 @@ exports.appPostRoom = function(req, res, db){
 
 // rooms list GET
 exports.appGetRooms = function(req, res, db){
-	db.on()
-	.then(function(){
+	db.on(welcomeRoomIds)
+	.map(function(roomId){
+		return this.fetchRoomAndUserAuth(roomId, req.user.id)
+	})
+	.then(function(welcomeRooms){
 		return [
 			this.listFrontPageRooms(req.user.id),
-			this.fetchUserPingRooms(req.user.id, 0)
+			this.fetchUserPingRooms(req.user.id, 0),
+			welcomeRooms
 		]
 	})
-	.spread(function(rooms, pings){
+	.spread(function(rooms, pings, welcomeRooms){
 		rooms.forEach(function(r){ r.path = server.roomPath(r) });
+		welcomeRooms.forEach(function(r){ r.path = server.roomPath(r) });
 		var mobile = server.mobile(req);
-		res.render(
-			mobile ? 'rooms.mob.jade' : 'rooms.jade',
-			{ vars:{rooms:rooms, langs:langs.legal, mobile:mobile}, user:req.user, pings:pings }
-		);
+		res.render(mobile ? 'rooms.mob.jade' : 'rooms.jade', {
+			vars:{rooms:rooms, langs:langs.legal, mobile:mobile, welcomeRooms:welcomeRooms},
+			user:req.user, pings:pings
+		});
 	})
 	.catch(function(err){
 		server.renderErr(res, err);

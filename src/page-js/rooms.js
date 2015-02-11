@@ -57,29 +57,36 @@ miaou(function(locals){
 					)
 				);		
 			} else {
-				$container.append(
-					$('<div>').addClass('CL').append(
-						$('<h3>').text('Your Public Rooms')
-					).append(
-						table(
-							rooms.filter(function(r){
-								return !r.private && (r.lastcreated || r.auth)
-							}),
-							"You didn't participate in any public room for now."
+				var userPublicRooms = rooms.filter(function(r){
+					return !r.private && (r.lastcreated || r.auth)
+				});
+				var userPrivateRooms = rooms.filter(function(r){
+					return r.private && r.auth && !r.dialog
+				});
+				
+				if (userPublicRooms.length+userPrivateRooms.length===0) {
+					$container.append(
+						$('<div>').addClass('CC').addClass('welcome-rooms').append(
+							table(locals.welcomeRooms)
 						)
-					)
-				).append($('<div>').addClass('CR').append(
-						$('<h3>').text('Your Private Rooms')
-					).append(
-						table(
-							rooms.filter(function(r){
-								return r.private && r.auth && !r.dialog
-							}),
+					);
+				} else {
+					$container.append(
+						$('<div>').addClass('CL').append(
+							$('<h3>').text('Your Public Rooms')
+						).append(table(
+							userPublicRooms,
+							"You didn't participate in any public room for now."
+						))
+					).append($('<div>').addClass('CR').append(
+							$('<h3>').text('Your Private Rooms')
+						).append(table(
+							userPrivateRooms,
 							"You have access to no private room for now.<br>"+
 							"To enter a private room, click on its link (<a href=# onclick='selectTab(2)'>see them</a>) and request an access"
-						)
-					)
-				);
+						))
+					);					
+				}
 			}
 			break;
 		case 1:
@@ -128,7 +135,7 @@ miaou(function(locals){
 		if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
 	}
 	selectTab(0);
-	if (!$('#home-main-content tr').length) selectTab(1);
+	//~ if (!$('#home-main-content tr').length) selectTab(1);
 	$('.tab').click(function(){
 		selectTab($(this).index());
 	});			
