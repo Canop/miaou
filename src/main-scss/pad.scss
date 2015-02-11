@@ -25,23 +25,6 @@
 	}
 }
 
-a.svg {
-	position: relative;
-	display: inline-block;
-}
-a.svg:after { // to make the link clickable, as events don't bubble out of the svg document
-	content: ""; 
-	position: absolute; 
-	top: 0; 
-	right: 0; 
-	bottom: 0; 
-	left: 0;
-}
-#Miaou-logo {
-	height: 40px;
-	padding-left: 2px;
-	color: $miaou-logo-color;
-}
 #M-menu {
 	position: fixed;
 	top: 0;
@@ -61,6 +44,30 @@ a.svg:after { // to make the link clickable, as events don't bubble out of the s
 		box-shadow: 0 0 2px black;
 		background: $left-background;
 	}
+}
+#Miaou-logo-wrapper {
+	position: relative;
+	display: block;
+	height: 40px;
+	width: 38px;
+	overflow: hidden;
+}
+#Miaou-logo-wrapper:after { // to make the link clickable, as events don't bubble out of the svg document
+	content: ""; 
+	position: absolute; 
+	top: 0; 
+	right: 0; 
+	bottom: 0; 
+	left: 0;
+}
+#M-menu:hover #Miaou-logo-wrapper {
+	width: 200px;
+	transition: width 1.5s;
+}
+#Miaou-logo {
+	height: 40px;
+	padding-left: 2px;
+	color: $miaou-logo-color;
 }
 #menu-content {
 	display: none;

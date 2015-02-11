@@ -185,23 +185,14 @@ miaou(function(chat, locals, watch, ws){
 	
 	$('#create-room').click(function(){ location="room" });
 	
-	
-	(function(){ // M menu
-		$('#Miaou-logo').on('load', function(){
-			var	svg = this.getSVGDocument().documentElement,
-				reducedViewBoxWidth = 220,
-				fullViewBoxWidth = svg.viewBox.baseVal.width
-			svg.viewBox.baseVal.width = reducedViewBoxWidth;
-			$('#M-menu').on('mouseenter', function(){
-				svg.viewBox.baseVal.width = fullViewBoxWidth;
-				hideRoomsPanel();
-				$(this).addClass('open');
-			}).on('mouseleave', function(){
-				svg.viewBox.baseVal.width = reducedViewBoxWidth;
-				$(this).removeClass('open');
-			});
+	$('#Miaou-logo').on('load', function(){
+		$('#M-menu').on('mouseenter', function(){
+			hideRoomsPanel();
+			$(this).addClass('open');
+		}).on('mouseleave', function(){
+			$(this).removeClass('open');
 		});
-	})();
+	});
 
 	$(window).on('keydown', function(e){
 		if (e.which===70 && e.ctrlKey && $('#room-and-rooms').hasClass('open')) {
