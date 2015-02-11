@@ -54,11 +54,10 @@ html
 							p Hit <code>esc</code> to clear
 		#stripe
 			#stripe-top
-				#M-opener
-					img#M-img(src="static/M-150.png")
-					#M-menu
-						a(href="rooms")
-							img#Miaou-img(src="static/Miaou-300.png")
+				#M-menu
+					a.svg(href="rooms")
+						object#Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
+					#menu-content
 						p You're connected as <span id=me></span>
 						a.menu-item#menu-logout Log Out
 						a.menu-item#menu-settings(href="prefs?") Settings

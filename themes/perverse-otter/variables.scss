@@ -123,7 +123,6 @@ $right-panel-width: 450px;
 }
 
 // dialog
-
 $dialog-bg: #1a1a1a;
 $dialog-color: #bbb;
 $dialog-title-bg: #333;
@@ -147,3 +146,6 @@ $pad-room-desc-bg: rgba(0,0,0,.1);
 $pad-room-hover-bg: black;
 $pad-room-last-message-bg: $pad-room-hover-bg;
 $pad-room-last-message-border-top: solid thin PaleVioletRed;
+
+// miaou logo
+$miaou-logo-color: $general-text-color;

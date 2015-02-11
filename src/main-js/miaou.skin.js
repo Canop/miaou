@@ -1,11 +1,11 @@
 
 miaou(function(skin){
 
-	// finds the value of the background for the rule(s) matching the
+	// finds the value of the property for the rule(s) matching the
 	//  passed regex.
 	// If there's a captured group in the regex, an array is returned (the submatch
 	//  is used as a number for sorting the elements)
-	function getCssBackground(regex){
+	function getCssValue(regex, property){
 		var matches = [];
 		for (var is=0; is<document.styleSheets.length; is++) {
 			var sheet = document.styleSheets[is];
@@ -15,7 +15,7 @@ miaou(function(skin){
 				if (!rule.selectorText) continue;
 				var match = rule.selectorText.match(regex);
 				if (!match) continue;
-				var bg = rule.style.getPropertyValue("background-color");
+				var bg = rule.style.getPropertyValue(property);
 				if (match.length===1) return bg;
 				matches.push({ num:+match[1], bg:bg });
 			}
@@ -26,10 +26,14 @@ miaou(function(skin){
 	}
 
 	skin.wzincolors = {
-		conv:  getCssBackground(/^\.wzin-conv-(\d+)$/),
-		edit:  getCssBackground(/^\.wzin-edit$/),
-		reply: getCssBackground(/^\.wzin-reply$/),
-		link: getCssBackground(/^\.wzin-link$/)
+		conv:  getCssValue(/^\.wzin-conv-(\d+)$/, "background-color"),
+		edit:  getCssValue(/^\.wzin-edit$/, "background-color"),
+		reply: getCssValue(/^\.wzin-reply$/, "background-color"),
+		link: getCssValue(/^\.wzin-link$/, "background-color")
 	}
+
+	$('#Miaou-logo').on('load', function(){
+		$('path',this.getSVGDocument()).css('stroke', getCssValue('#Miaou-logo', 'color'));
+	});
 
 });

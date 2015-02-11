@@ -177,12 +177,6 @@ miaou(function(chat, locals, watch, ws){
 		$('#input-panel').show();
 	});
 
-	$('#M-opener').on('mouseenter', function(){
-		$('#M-menu').show();
-		hideRoomsPanel();
-	}).on('mouseleave', function(){
-		$('#M-menu').hide();
-	});
 	$('#menu-logout').click(function(){
 		delete localStorage['successfulLoginLastTime'];
 		setTimeout(function(){ location = 'logout' }, 100);
@@ -190,6 +184,24 @@ miaou(function(chat, locals, watch, ws){
 	$('#me').text(locals.me.name);
 	
 	$('#create-room').click(function(){ location="room" });
+	
+	
+	(function(){ // M menu
+		$('#Miaou-logo').on('load', function(){
+			var	svg = this.getSVGDocument().documentElement,
+				reducedViewBoxWidth = 220,
+				fullViewBoxWidth = svg.viewBox.baseVal.width
+			svg.viewBox.baseVal.width = reducedViewBoxWidth;
+			$('#M-menu').on('mouseenter', function(){
+				svg.viewBox.baseVal.width = fullViewBoxWidth;
+				hideRoomsPanel();
+				$(this).addClass('open');
+			}).on('mouseleave', function(){
+				svg.viewBox.baseVal.width = reducedViewBoxWidth;
+				$(this).removeClass('open');
+			});
+		});
+	})();
 
 	$(window).on('keydown', function(e){
 		if (e.which===70 && e.ctrlKey && $('#room-and-rooms').hasClass('open')) {
