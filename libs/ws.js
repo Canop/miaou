@@ -72,7 +72,8 @@ var roomSockets = exports.roomSockets = function(roomId){
 	var clients = io.sockets.adapter.rooms[roomId],
 		sockets = [];
 	for (var clientId in clients) {
-		sockets.push(io.sockets.connected[clientId]);
+		var s = io.sockets.connected[clientId];
+		if (s) sockets.push(s); // TODO understand why s is often undefined
 	}
 	return sockets;
 }
