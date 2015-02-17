@@ -258,7 +258,6 @@ function handleUserInRoom(socket, completeUser){
 		db.on(completeUser.id)
 		.then(db.listUserWatches)
 		.then(function(watches){
-			watches = watches.filter(function(w){ return w.id!==shoe.room.id });
 			console.log("watches of user "+shoe.publicUser.name+":", watches);
 			socket.emit('wat', watches);
 			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);

@@ -1,7 +1,6 @@
 
 miaou(function(chat, locals, watch, ws){
-	var	room = locals.room,
-		rooms = [];
+	var	rooms = [];
 
 	// ROOMS MANAGEMENT
 	
@@ -17,7 +16,7 @@ miaou(function(chat, locals, watch, ws){
 	}
 	
 	function listRooms(roomlist, title){
-		roomlist = roomlist.filter(function(r){ return r.id!==room.id });
+		roomlist = roomlist.filter(function(r){ return r.id!==locals.room.id });
 		var $list = $('<div>').addClass('rooms-list').append(roomlist.map(function(r){
 			var $r = $('<div>').addClass('room'),
 				$rl = $('<div>').addClass('room-left').appendTo($r),
@@ -114,6 +113,7 @@ miaou(function(chat, locals, watch, ws){
 		$('#rooms-panel').addClass('open').removeClass('closed');
 		$('#stripe').addClass('open');
 		$('#non-top').addClass('behind');
+		$('#watch').text(locals.room.watched ? 'unwatch' : 'watch');
 		showroomstimer = setTimeout(function(){
 			$('#rooms').fadeIn("fast");
 		}, 500); // ensure the div is high enough
@@ -136,16 +136,25 @@ miaou(function(chat, locals, watch, ws){
 		clearTimeout(openpaneltimer);		
 	});
 	$('#stripe').on('mouseleave', hideRoomsPanel);
-
+	$('#watch').on('click', function(){
+		if (locals.room.watched) {
+			ws.emit('unwat', locals.room.id);
+			$(this).text('watch');
+		} else {
+			ws.emit('wat', locals.room.id);
+			$(this).text('unwatch');
+		}
+		locals.room.watched = !locals.room.watched;
+	});
 
 	// CHAT MANAGEMENT
 
-	if (room) window.name = 'room_'+room.id;
+	if (locals.room) window.name = 'room_'+locals.room.id;
 	else location = 'rooms';
-	if (room.private) {
+	if (locals.room.private) {
 		$('#roomname').addClass('private').attr('title', 'This room is private');
 	}
-	if (room.dialog) {
+	if (locals.room.dialog) {
 		$('#auths,#editroom').hide();
 	}
 	$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });

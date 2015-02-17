@@ -13,7 +13,11 @@ miaou(function(watch, locals, md, notif, ws){
 	// w must be {id:roomId,name:roomname}
 	watch.add = function(watches){
 		watches.forEach(function(w){
-			if (w.id===locals.room.id || watch.watched(w.id)) return;
+			if (w.id===locals.room.id) {
+				locals.room.watched = true;
+				return;
+			}
+			if (watch.watched(w.id)) return;
 			$('<a>').addClass('watch').attr('rid', w.id)
 			.attr('href', w.id) // TODO better links with room name
 			.data('watch', w)
@@ -28,6 +32,7 @@ miaou(function(watch, locals, md, notif, ws){
 
 	watch.remove = function(roomId){
 		$('#watches .watch[rid='+roomId+']').remove();
+		if (roomId===locals.room.id) locals.room.watched = false;
 	}
 
 	watch.incr = function(roomId){
