@@ -23,9 +23,8 @@ miaou(function(chat, locals, watch, ws){
 				$rl = $('<div>').addClass('room-left').appendTo($r),
 				$rr = $('<div>').addClass('room-right').appendTo($r),
 				$rm = $('<div>').addClass('last-message').appendTo($r),
-				iswatched = watch.watched(r.id),
-				path = r.path+'&pad=true';
-			$('<a>').attr('href', path).addClass('room-title').text(r.name).appendTo($rl);
+				iswatched = watch.watched(r.id);
+			$('<a>').attr('href', r.path).addClass('room-title').text(r.name).appendTo($rl);
 			var html = miaou.mdToHtml(r.description), floatImage = /^<img[^>]*><br>/.test(html);
 			if (floatImage) html = html.replace(/<br>/,'');
 			var $desc = $('<div>').addClass('rendered room-desc').html(html).appendTo($rl);
@@ -43,7 +42,7 @@ miaou(function(chat, locals, watch, ws){
 					}
 					iswatched = !iswatched;
 				}).appendTo($rr);
-				$('<button>').addClass('small').text('enter').click(function(){ location = path; }).appendTo($rr);
+				$('<button>').addClass('small').text('enter').click(function(){ location = r.path; }).appendTo($rr);
 			}
 			if (r.lastcreated) {
 				var $lc = $('<span>').addClass('lastcreated').text('Last message: '+miaou.formatRelativeTime(r.lastcreated)).appendTo($rr);

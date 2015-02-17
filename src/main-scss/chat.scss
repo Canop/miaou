@@ -694,16 +694,6 @@ span.warning {
 #roomButtons {
 	text-align: center;
 }
-body.chat { // the whole bloc will be removed when I switch to pad
-	#changeroom, #editroom{
-		float: right;
-		margin: 1px 3px;
-	}
-	#auths {
-		float: right;
-		margin: 1px 8px 1px 0;
-	}
-}
 body.mobile #changeroom, body.mobile #editroom{
 	float: inherit;
 }

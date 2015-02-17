@@ -2,7 +2,7 @@
 
 miaou(function(watch, locals, md, notif, ws){
 	
-	// this is false for mobile users, and for all users not beta-testing the pad until it's ready
+	// this is false for mobile users
 	watch.enabled = false;
 
 	// tell if the room is watched
@@ -15,7 +15,7 @@ miaou(function(watch, locals, md, notif, ws){
 		watches.forEach(function(w){
 			if (w.id===locals.room.id || watch.watched(w.id)) return;
 			$('<a>').addClass('watch').attr('rid', w.id)
-			.attr('href', w.id+'?pad=true') // TODO better links with room name
+			.attr('href', w.id) // TODO better links with room name
 			.data('watch', w)
 			.append($('<span>').addClass('count'))
 			.append($('<span>').addClass('name').text(w.name))

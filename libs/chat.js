@@ -45,10 +45,7 @@ exports.appGet = function(req, res, db){
 		if (server.mobile(req)) {
 			res.render('chat.mob.jade', {vars:locals});
 		} else {
-			res.render(
-				/^true/i.test(req.param('pad')) ? 'pad.jade' : 'chat.jade',
-				{vars:locals, theme:prefs.theme(userPrefs, req.param("theme"))}
-			);
+			res.render('pad.jade', {vars:locals, theme:prefs.theme(userPrefs, req.param("theme"))});
 		}
 	}).catch(db.NoRowError, function(){
 		// not an error as it happens when there's no room id in url

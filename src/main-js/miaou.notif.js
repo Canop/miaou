@@ -81,8 +81,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 				var $otherrooms = $('<div>').append($('<span>').text(t)).appendTo($c);
 				$.each(otherRooms, function(r, rname){
 					$otherrooms.append($('<button>').addClass('openroom').attr('pingroom', r).text(rname).click(function(){
-						if (/pad=true/.test(location.href)) location = r+'?pad=true';
-						else window.open(r);
+						location = r;
 					}));
 				});
 			}	
