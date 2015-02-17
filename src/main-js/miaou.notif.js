@@ -162,7 +162,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 		} else if (nbUnseenMessages) {
 			title = nbUnseenMessages+'-'+title;
 			icon += '-new';
-		} else if (hasWatchUnseen) {
+		} else if (hasWatchUnseen && !vis()) {
 			icon += '-new';			
 		}
 		document.title = title;
@@ -173,7 +173,10 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 	var lastfocustime = 0;
 	function onfocus(){
 		var now = Date.now();
-		if (now-lastfocustime<1000) return;
+		if (now-lastfocustime<1000) {
+			console.log("now-lastfocustime:",now-lastfocustime);
+			return;
+		}
 		lastfocustime = now;
 		ws.emit('watch_raz');
 		nbUnseenMessages = 0;
