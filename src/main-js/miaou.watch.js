@@ -15,6 +15,7 @@ miaou(function(watch, locals, md, notif, ws){
 		watches.forEach(function(w){
 			if (w.id===locals.room.id) {
 				locals.room.watched = true;
+				$('#watch').text('unwatch');
 				return;
 			}
 			if (watch.watched(w.id)) return;
@@ -33,6 +34,7 @@ miaou(function(watch, locals, md, notif, ws){
 	watch.remove = function(roomId){
 		$('#watches .watch[rid='+roomId+']').remove();
 		if (roomId===locals.room.id) locals.room.watched = false;
+		$('#watch').text('watch');
 	}
 
 	watch.incr = function(roomId){

@@ -80,9 +80,19 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 				if (nbotherrooms>1) t += 's';
 				var $otherrooms = $('<div>').append($('<span>').text(t)).appendTo($c);
 				$.each(otherRooms, function(r, rname){
-					$otherrooms.append($('<button>').addClass('openroom').attr('pingroom', r).text(rname).click(function(){
+					var $brs = $('<div>').addClass('pingroom').appendTo($otherrooms);
+					$('<button>').addClass('openroom').text(rname).click(function(){
 						location = r;
-					}));
+					}).appendTo($brs);
+					$('<button>').addClass('clearpings').text('clear').click(function(){
+						for (var i=notifications.length; i--;) {
+							if (notifications[i].r==r) {
+								ws.emit('rm_ping', notifications[i].mid);
+								notifications.splice(i, 1);
+							}
+						}
+						notif.updatePingsList();
+					}).appendTo($brs);
 				});
 			}	
 		});
@@ -121,7 +131,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 			}
 		}
 	}
-	
+
 	notif.setHasWatchUnseen = function(b){
 		hasWatchUnseen = b;
 		if (!vis()) notif.updateTab(!!notifications.length, nbUnseenMessages);

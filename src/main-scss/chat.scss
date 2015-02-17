@@ -738,6 +738,33 @@ div#notifs {
 		float: right;
 	}
 }
+.pingroom {
+	display: inline-block;
+	margin-left: 5px;
+	button {
+		margin: 0;
+		border-radius: 2px;
+	}
+	&:hover button {
+		border-color: $button-hover-border-color;
+	}
+	.openroom {
+		z-index:2;
+	}
+	&:hover .openroom {
+		border-radius: 2px 0 0 2px;
+	}
+	.clearpings {
+		visibility: hidden;
+		margin-left: -1px;
+		padding-left: 2px;
+		padding-right: 2px;
+	}
+	&:hover .clearpings {
+		visibility: visible;
+		border-radius: 0 2px 2px 0;
+	}
+}
 
 .olderLoader, .newerLoader {
 	cursor: pointer;

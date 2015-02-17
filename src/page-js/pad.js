@@ -113,7 +113,6 @@ miaou(function(chat, locals, watch, ws){
 		$('#rooms-panel').addClass('open').removeClass('closed');
 		$('#stripe').addClass('open');
 		$('#non-top').addClass('behind');
-		$('#watch').text(locals.room.watched ? 'unwatch' : 'watch');
 		showroomstimer = setTimeout(function(){
 			$('#rooms').fadeIn("fast");
 		}, 500); // ensure the div is high enough
