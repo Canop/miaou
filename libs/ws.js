@@ -87,8 +87,6 @@ var roomIds = exports.roomIds = function(){
 	return Object.keys(io.sockets.adapter.rooms).filter(function(n){ return n==+n });
 }
 
-
-
 // returns the first found socket of the passed user (may be in another room)
 exports.anyUserSocket = function(userIdOrName) {
 	for (var clientId in io.sockets.connected) {
@@ -263,9 +261,11 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('wat', watches);
 			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
 			for (var w of watches) {
-				socket.join('w'+w.id);
+				if (w.id!==shoe.room.id) {
+					socket.join('w'+w.id);
+					io.sockets.in(w.id).emit('enter', shoe.publicUser);
+				}
 				watchset.add(w.id);
-				io.sockets.in(w.id).emit('enter', shoe.publicUser);
 			}			
 		})
 		.catch(function(err){
@@ -533,7 +533,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.deleteWatch)
 		.then(function(){
-			socket.leave('w'+roomId);
+			if (roomId!==shoe.room.id) socket.leave('w'+roomId);
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
 				s.emit('unwat', roomId);
@@ -597,7 +597,7 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.then(function(r){
 			if (r.private && !r.auth) throw new Error('Unauthorized user');
-			socket.join('w'+roomId);
+			if (roomId!==shoe.room.id) socket.join('w'+roomId);
 			watchset.add(roomId);
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
