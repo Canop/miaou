@@ -145,6 +145,7 @@ miaou(function(chat, locals, watch, ws){
 		}
 		locals.room.watched = !locals.room.watched;
 	});
+	$('#menu-settings').attr('href', "prefs?room="+locals.room.id);
 
 	// CHAT MANAGEMENT
 
