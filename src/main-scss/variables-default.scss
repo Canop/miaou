@@ -22,6 +22,7 @@ $user-text-color-in-user-list: #444 !default;
 $user-text-color-in-message: #555 !default;
 $code-text-color: #444 !default;
 
+$input-panel-bg-color: $bg-color !default;
 $input-bg: white !default;
 $input-text-color: black !default;
 
@@ -100,6 +101,7 @@ $user-padding-in-message: 1px 3px !default;
 $message-content-padding: 4px !default;
 $message-content-line-height: 1.5 !default;
 $message-content-flex-grow: 1 !default;
+$message-wide-content-flex-grow: 1 !default;
 $message-content-border-radius : inherit !default;
 $message-content-margin: 0 !default;
 
@@ -140,6 +142,8 @@ $wzin-reply-bg: rgba(71, 71, 249, .14) !default;
 $wzin-link-bg: rgba(222, 1, 80, .25) !default;
 
 // pad
+$pad-background: $left-background !default;
+$menu-background: $left-background !default;
 $menu-item-hover-bg: rgba(255,255,255,.7) !default;
 $roomname-text-shadow: 0 0 2px rgba(255,255,255,1) !default;
 $watch-bg: rgba(255,255,255,.3) !default;

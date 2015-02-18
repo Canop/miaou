@@ -248,8 +248,11 @@ body.mobile #message-scroller {
 		}
 		.content {
 			margin: $message-content-margin;
-			flex-grow: $message-content-flex-grow;
 			line-height: $message-content-line-height;
+			flex-grow: $message-content-flex-grow;
+			&.wide {
+				flex-grow: $message-wide-content-flex-grow;			
+			}
 		}
 		.mdate {
 			align-self: flex-start;
@@ -460,7 +463,7 @@ code {
 
 #input-panel {
 	position: relative;
-	background: $bg-color;
+	background: $input-panel-bg-color;
 	flex-basis:  $input-height + 8px;
 	flex-grow: 0;
 	z-index: 10;

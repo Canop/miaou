@@ -6,7 +6,7 @@
 	right: 0;
 	z-index: 50;
 	box-shadow: 0 0 2px black;
-	background: $left-background;
+	background: $pad-background;
 	&.open {
 		box-shadow: 0 0 12px black;
 	}
@@ -42,7 +42,7 @@
 	&.open {
 		width: 260px;	
 		box-shadow: 0 0 2px black;
-		background: $left-background;
+		background: $menu-background;
 	}
 }
 #Miaou-logo-wrapper {

@@ -35,7 +35,7 @@ $message-votes-color: $accent;
 
 $center-shadow: none;
 
-$message-list-bg: #2a2a2a;
+$message-list-bg: none;
 $message-me-bg: transparent;
 
 $connected-user-text-color-in-user-list: #bbb;
@@ -134,7 +134,6 @@ $mwin-shadow: none;
 // wzins
 $wzin-conv-bg : ( rgba(176,224,230,0.25), rgba(255,255,102,0.2), rgba(188,143,143,0.2), rgba(255,235,215,0.2) );
 
-
 // pad
 $menu-item-hover-bg: $accent-minus;
 $roomname-text-shadow: 0 0 2px black;
@@ -149,3 +148,8 @@ $pad-room-last-message-border-top: solid thin PaleVioletRed;
 
 // miaou logo
 $miaou-logo-color: $general-text-color;
+
+// customizations
+#messages .message.me .content {
+	border-left: thick solid $message-me-user-color;
+}
