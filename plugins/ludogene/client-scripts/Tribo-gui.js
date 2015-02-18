@@ -202,7 +202,7 @@ miaou(function(games, locals, notif, ws){
 	games.Tribo = {
 		render: function($c, m, g, abstract){
 			Tribo.restore(g);
-			$c.empty().css('background', bg).closest('.message').removeClass('edited');
+			$c.empty().addClass('wide').css('background', bg).closest('.message').removeClass('edited');
 			var s = ù('<svg', $c),
 				p = new Panel(m, g, s, $c.width(), abstract);
 			s.width(p.W).height(p.H);
