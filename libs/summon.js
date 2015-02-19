@@ -21,6 +21,7 @@ exports.registerCommands = function(registerCommand){
 			if (!match) throw 'Bad syntax. Use `!!summon @some_other_user`';
 			var username=match[1];
 			if (username===ct.username()) throw "You can't summon yourself";
+			ct.alwaysPing = true;
 			return this.getUserByName(username)
 			.then(function(user){
 				if (!user) throw 'User "'+username+'" not found';

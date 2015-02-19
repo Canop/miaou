@@ -18,6 +18,7 @@ function CommandTask(cmd, args, shoe, message){
 	this.silent = false; // commands can set it to true to prevent source message to be distributed
 	this.replyContent = null;
 	this.replyAsFlake = false;
+	this.alwaysPing = false; // do cross room pings even if the user has no authorization
 	this.ignoreMaxAgeForEdition = false;
 }
 CommandTask.prototype.exec = function(con){

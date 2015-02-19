@@ -350,6 +350,13 @@ proto.getAuthLevel = function(roomId, userId){
 	);
 }
 
+proto.getAuthLevelByUsername = function(roomId, username){
+	return this.queryRow(
+		"select auth from room_auth,player where name=$1 and room=$2 and room_auth.player=player.id;",
+		[username, roomId], true
+	);
+}
+
 //////////////////////////////////////////////// #watch
 
 proto.insertWatch = function(roomId, userId){

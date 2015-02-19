@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 38,
+const apiversion = 39,
 	maxHiatusForMerge = 10, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
@@ -380,6 +380,7 @@ function handleUserInRoom(socket, completeUser){
 			m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id},
 			mm = memroom.mm, // eventual previous mergeable message
 			isreply = /^\s*@\w[\w\-]{2,}#\d+/.test(content),
+			commandTask,
 			merge = null; // null or the content to concatenate to a previous message
 		if (message.id) {
 			m.id = +message.id;
@@ -395,7 +396,8 @@ function handleUserInRoom(socket, completeUser){
 		}
 		db.on([shoe, m])
 		.spread(commands.onMessage)
-		.then(function(commandTask){
+		.then(function(ct){
+			commandTask = ct;
 			var isatleastfivelines = /(\n.*?){4}/.test(m.content);
 			if ( // let's see if the message can be merged with the previous one
 				!nomerge
@@ -432,27 +434,38 @@ function handleUserInRoom(socket, completeUser){
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
 			io.sockets.in('w'+roomId).emit('watch_incr', roomId);
+			var remainingpings = []; // names of pinged users that weren't in the room or watching
 			var txt = merge || m.content;
 			if (txt && m.id) {
 				var pings = txt.match(/@\w[\w\-]{2,}(\b|$)/g);
 				if (pings) {
-					pings = pings.map(function(s){ return s.slice(1) });
-					var remainingpings = [];
-					for (var username of pings) {
-						if (shoe.userSocket(username)) return;
-						// user isn't in the room, we notify him with a cross-room ping in the other rooms
-						var pinged = false;
-						for (var clientId in io.sockets.connected) {
-							var socket = io.sockets.connected[clientId];
-							if (socket && socket.publicUser && socket.publicUser.name===username) {
-								socket.emit('pings', [{r:roomId, rname:shoe.room.name, mid:m.id}]);
-								pinged = true;
-							}
-						}
-						remainingpings.push(username);
+					for (var ping of pings) {
+						var username = ping.slice(1);
+						if (!shoe.userSocket(username)) remainingpings.push(username);
 					}
-					if (remainingpings.length) return this.storePings(roomId, remainingpings, m.id);						
 				}
+			}
+			return remainingpings;
+		}).filter(function(unsentping){
+			if (!shoe.room.private) return true;
+			// user isn't in the room, we check he can enter the room (TODO check he's not banned ? or don't care ?)
+			return this.getAuthLevelByUsername(shoe.room.id, unsentping).then(function(oauth){
+				if (oauth) return true;
+				if (commandTask.cmd) return commandTask.alwaysPing;
+				shoe.error(unsentping+" has no right to this room and wasn't pinged");
+			});
+		}).then(function(remainingpings){
+			if (remainingpings.length) {
+				for (var username of remainingpings) {
+					// user can enter the room, we notify him with a cross-room ping in the other rooms
+					for (var clientId in io.sockets.connected) {
+						var socket = io.sockets.connected[clientId];
+						if (socket && socket.publicUser && socket.publicUser.name===username) {
+							socket.emit('pings', [{r:shoe.room.id, rname:shoe.room.name, mid:m.id}]);
+						}
+					}
+				}
+				return this.storePings(roomId, remainingpings, m.id);
 			}
 		}).catch(function(e) {
 			shoe.error(e, m.content);
