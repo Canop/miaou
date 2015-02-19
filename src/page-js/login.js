@@ -1,7 +1,5 @@
 miaou(function(locals){
 
-	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent)) $(document.body).addClass('mobile');
-
 	var	m = location.toString().match(/room=(\d+)/),
 		strategies = locals.oauth2Strategies;
 	if (m) {

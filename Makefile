@@ -16,9 +16,9 @@ PLUGIN_JS_SOURCES:=$(wildcard ./plugins/*/client-scripts/*.js)
 MIAOU_MODULES:="chat,ed,gui,hist,links,locals,md,mh,mod,ms,notif,prof,skin,usr,watch,win,ws,wz,games,plugins,mountyhall"
 UGLIFY_OPTIONS:=--screw-ie8 -cmt --reserved $(MIAOU_MODULES)
 
-.PHONY: clean page-js page-css themes rsc main-js
+.PHONY: clean page-js page-css themes rsc main-js js2-files
 
-all: page-js page-css themes rsc main-js
+all: page-js page-css themes rsc main-js js2-files
 
 clean:
 	rm -rf ./static/*
@@ -78,3 +78,13 @@ page-css: ./build/page-scss $(PAGES_CSS_OUT)
 	sass -t compressed  ./build/themes/$*/main.scss > $(@D)/miaou.css
 	cat ./plugins/*/css/*.css >> $(@D)/miaou.css
 themes: $(THEME_OUT_CSS)
+
+# Build the JS2 files needed for mobile pages
+# for f in ./static/*.js; do cp "$f" "${f}2"; done
+js2-files: page-js main-js rsc
+	cp static/chat.mob.min.js static/chat.mob.min.js2
+	cp static/jquery-2.1.3.min.js static/jquery-2.1.3.min.js2
+	cp static/socket.io.js static/socket.io.js2
+	cp static/miaou.min.js static/miaou.min.js2
+	cp static/room.min.js static/room.min.js2
+	
