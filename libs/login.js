@@ -8,7 +8,7 @@ exports.setOauth2Strategies = function(strategies){
 }
 
 exports.appGetLogin = function(req, res){
-	res.render('login.jade', {vars:{ oauth2Strategies:oauth2Strategies }});
+	res.render(server.mobile(req) ? 'login.mob.jade' : 'login.jade', {vars:{ oauth2Strategies:oauth2Strategies }});
 }
 
 exports.appGetLogout = function(req, res){
