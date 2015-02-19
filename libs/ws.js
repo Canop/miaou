@@ -618,6 +618,9 @@ function handleUserInRoom(socket, completeUser){
 			}
 			socket.broadcast.to(roomId).emit('enter', shoe.publicUser);
 		})
+		.catch(function(err){
+			shoe.error(err);
+		})
 		.finally(db.off);
 	})
 	.on('watch_raz', function(){
