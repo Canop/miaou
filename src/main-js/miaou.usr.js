@@ -18,7 +18,6 @@ miaou(function(usr, ed, locals, mod, ws){
 			ed.ping(user.name);
 		}))
 		.append($('<button>').text('pm').click(function(){
-			miaou.pmwin = window.open();
 			ws.emit('pm', user.id);			
 		}));
 		if (usr.checkAuth('admin')) {			

@@ -135,7 +135,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 			gui.scrollToBottom();
 		})
 		.on('pm_room', function(roomId){
-			miaou.pmwin.location = roomId;
+			location = roomId;
 		})
 		.on('go_to', function(messageId){
 			setTimeout(function(){ md.goToMessageDiv(messageId) }, 200);
