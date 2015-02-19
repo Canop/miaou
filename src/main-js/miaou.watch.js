@@ -10,6 +10,15 @@ miaou(function(watch, locals, md, notif, ws){
 		return $('#watches .watch[rid='+roomId+']').length>0;
 	}
 	
+	// if the room is a dialog room and we guess the name of the other user, return this name
+	function interlocutor(w){
+		if (!w.dialog) return;
+		var names = w.name.match(/^([a-zA-Z][\w\-]{2,19}) & ([a-zA-Z][\w\-]{2,19})$/);
+		if (!names) return;
+		if (names[1]===locals.me.name) return names[2];
+		if (names[2]===locals.me.name) return names[1];
+	}
+	
 	// w must be {id:roomId,name:roomname}
 	watch.add = function(watches){
 		watches.forEach(function(w){
@@ -19,11 +28,15 @@ miaou(function(watch, locals, md, notif, ws){
 				return;
 			}
 			if (watch.watched(w.id)) return;
+			var $name = $('<span>').addClass('name');
+			var otherusername = interlocutor(w);
+			if (otherusername) $name.text(otherusername).addClass('dialog-room');
+			else $name.text(w.name);
 			$('<a>').addClass('watch').attr('rid', w.id)
 			.attr('href', w.id) // TODO better links with room name
 			.data('watch', w)
 			.append($('<span>').addClass('count'))
-			.append($('<span>').addClass('name').text(w.name))
+			.append($name)
 			.appendTo('#watches')
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){

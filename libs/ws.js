@@ -601,7 +601,7 @@ function handleUserInRoom(socket, completeUser){
 			watchset.add(roomId);
 			var sockets = shoe.allSocketsOfUser();
 			for (var s of sockets) {
-				s.emit('wat', [{id:r.id, name:r.name}]);
+				s.emit('wat', [{id:r.id, name:r.name, private:r.private, dialog:r.dialog}]);
 			}
 			socket.broadcast.to(roomId).emit('enter', shoe.publicUser);
 		})

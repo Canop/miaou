@@ -362,7 +362,7 @@ proto.deleteWatch = function(roomId, userId){
 
 proto.listUserWatches = function(userId){
 	return this.queryRows(
-		"select w.room id, r.name from watch w join room r on w.room=r.id"+
+		"select w.room id, r.name, r.private, r.dialog from watch w join room r on w.room=r.id"+
 		" left join room_auth a on a.room=r.id and a.player=$1"+
 		" where w.player=$1 and (r.private is false or a.auth is not null)"
 		, [userId]

@@ -91,7 +91,6 @@
 	margin-right: 5px;
 }
 
-
 #room-panel-wrapper {
 	margin-left: 40px;
 	position: relative;
@@ -182,6 +181,13 @@
 		overflow: hidden;
 		display: inline-block;
 		white-space: nowrap;
+		&.dialog-room::before {
+			font-family: "fontello";
+			font-size: .85em;
+			content: "\e82f";
+			margin-right: 2px;
+			margin-top: -2px;
+		}
 	}
 	.watch-panel {
 		position: absolute;
