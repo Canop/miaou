@@ -68,7 +68,7 @@ miaou(function(watch, locals, md, notif, ws){
 		var	$w = $(this), w = $w.data('watch'), entertime = Date.now(),
 			off = $w.offset(), ww = $(window).width(),
 			nbunseen = +$w.find('.count').text()||0,
-			nbrequestedmessages = Math.min(15, Math.max(5, nbunseen));
+			nbrequestedmessages = Math.min(20, Math.max(5, nbunseen));
 		requiredrid = w.id;
 		function display(data){
 			if (requiredrid!==w.id) return;
@@ -97,7 +97,7 @@ miaou(function(watch, locals, md, notif, ws){
 			$w.one('mouseleave', function(){ $('.count', this).empty() });
 		}
 		$.get('json/messages/last?n='+nbrequestedmessages+'&room='+w.id, function(data){
-			setTimeout(display, 200 + entertime - Date.now(), data);
+			setTimeout(display, 250 + entertime - Date.now(), data);
 		});
 	}).on('mouseleave', '.watch', function(){
 		requiredrid = 0;

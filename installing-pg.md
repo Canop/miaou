@@ -58,4 +58,4 @@ In the config.json file, set up the required configuration :
 		"native_pg": false
 	},
 
-You may now try to start miaou (with `./start.sh` for example).
+You may now try to start miaou (with `./start.sh` for example), but only after you've build the application using `make`.
