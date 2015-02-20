@@ -4,12 +4,14 @@ PAGES_SCSS_SOURCES:=$(wildcard ./src/page-scss/*.scss)
 PAGES_CSS_OUT:=$(patsubst %.scss, ./build/page-scss/%.css, $(notdir $(PAGES_SCSS_SOURCES)))
 
 PAGES_JS_SOURCES:=$(wildcard ./src/page-js/*.js)
-PAGES_JS_OUT:=$(patsubst %.js, ./build/page-js/%.min.js, $(notdir $(PAGES_JS_SOURCES)))
+PAGES_JS_OUT:=$(patsubst %.js, ./static/%.min.js, $(notdir $(PAGES_JS_SOURCES)))
+PAGES_JS_MAP_OUT:=$(addsuffix .map, $(PAGES_JS_OUT))
 
 THEME_SRC_DIRS:=$(wildcard ./themes/*)
 THEME_OUT_CSS:=$(patsubst %, ./static/themes/%/miaou.css, $(notdir $(THEME_SRC_DIRS)))
 
 RSC_FILES:=$(patsubst ./src/rsc/%, ./static/%, $(shell find ./src/rsc/* -type f))
+JS2_FILES:=$(addprefix ./static/, $(addsuffix .min.js2, miaou login rooms chat.mob jquery-2.1.3 socket.io))
 
 MAIN_JS_SOURCES:=$(sort $(wildcard ./src/main-js/*.js))
 PLUGIN_JS_SOURCES:=$(wildcard ./plugins/*/client-scripts/*.js)
@@ -36,13 +38,17 @@ clean:
 main-js: ./static/miaou.min.js
 
 #js of specific pages : static/[somepage].js
+# FIXME "cp ./build/page-js/* ./static/" is done every time
 ./build/page-js: 
 	mkdir -p $@
 ./build/page-js/%.min.js: ./src/page-js/%.js
 	cp $< build/page-js/
 	cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $*.min.js.map
-page-js: ./build/page-js $(PAGES_JS_OUT)
-	@cp ./build/page-js/* ./static/
+./static/%.min.js: ./build/page-js/%.min.js
+	cp $< $@
+./static/%.min.js.map: ./build/page-js/%.min.js.map
+	cp $< $@
+page-js: ./build/page-js $(PAGES_JS_OUT) $(PAGES_JS_MAP_OUT)
 
 # constant resource files
 ./static/%: ./src/rsc/%
@@ -57,8 +63,9 @@ rsc: $(RSC_FILES)
 ./build/page-scss/%.css: ./src/page-scss/%.scss ./build/page-scss
 	cp $< ./build/page-scss/
 	sass -t compressed ./build/page-scss/$*.scss > $@
+./static/%.css: ./build/page-scss/%.css
+	cp $< $@
 page-css: ./build/page-scss $(PAGES_CSS_OUT)
-	@cp ./build/page-scss/*.css ./static/
 
 # Themes : static/themes/[sometheme]/main.css
 # theme : $*
@@ -80,11 +87,6 @@ page-css: ./build/page-scss $(PAGES_CSS_OUT)
 themes: $(THEME_OUT_CSS)
 
 # Build the JS2 files needed for mobile pages
-# for f in ./static/*.js; do cp "$f" "${f}2"; done
-js2-files: page-js main-js rsc
-	cp static/chat.mob.min.js static/chat.mob.min.js2
-	cp static/jquery-2.1.3.min.js static/jquery-2.1.3.min.js2
-	cp static/socket.io.js static/socket.io.js2
-	cp static/miaou.min.js static/miaou.min.js2
-	cp static/room.min.js static/room.min.js2
-	
+./static/%.js2: ./static/%.js
+	cp $< $@
+js2-files: page-js main-js rsc $(JS2_FILES)
