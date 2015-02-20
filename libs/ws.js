@@ -421,7 +421,8 @@ function handleUserInRoom(socket, completeUser){
 			memroom.mm = commandTask.cmd || m.id ? null : m;
 			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
 		}).spread(function(m, commandTask){
-			if (commandTask.silent) return;
+			var remainingpings = []; // names of pinged users that weren't in the room or watching
+			if (commandTask.silent) return remainingpings;
 			if (m.changed) m.vote = '?';
 			for (var p of onSendMessagePlugins) {
 				p.onSendMessage(this, m, send);
@@ -434,7 +435,6 @@ function handleUserInRoom(socket, completeUser){
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
 			io.sockets.in('w'+roomId).emit('watch_incr', roomId);
-			var remainingpings = []; // names of pinged users that weren't in the room or watching
 			var txt = merge || m.content;
 			if (txt && m.id) {
 				var pings = txt.match(/@\w[\w\-]{2,}(\b|$)/g);
@@ -465,7 +465,7 @@ function handleUserInRoom(socket, completeUser){
 						}
 					}
 				}
-				return this.storePings(roomId, remainingpings, m.id);
+				return this.storePings(shoe.room.id, remainingpings, m.id);
 			}
 		}).catch(function(e) {
 			shoe.error(e, m.content);
