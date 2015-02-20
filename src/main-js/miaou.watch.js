@@ -65,13 +65,14 @@ miaou(function(watch, locals, md, notif, ws){
 	var requiredrid;
 	$('#watches').on('mouseenter', '.watch', function(){
 		$('.watch').removeClass('open').find('.watch-panel').remove();
-		var	$w = $(this), w = $w.data('watch'),
-			off = $w.offset(), ww = $(window).width();
+		var	$w = $(this), w = $w.data('watch'), entertime = Date.now(),
+			off = $w.offset(), ww = $(window).width(),
+			nbunseen = +$w.find('.count').text()||0,
+			nbrequestedmessages = Math.min(15, Math.max(5, nbunseen));
 		requiredrid = w.id;
-		$.get('json/messages/last?n=5&room='+w.id, function(data){
+		function display(data){
 			if (requiredrid!==w.id) return;
-			var	nbunseen = +$w.find('.count').text(),
-				dr = Math.max(Math.min(200, ww-off.left-$w.width()-30), 0),
+			var	dr = Math.max(Math.min(200, ww-off.left-$w.width()-30), 0),
 				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
 				top: $w.height()+5, left: dl, right: -dr, 
@@ -88,14 +89,18 @@ miaou(function(watch, locals, md, notif, ws){
 			if (data.error) {
 				return $ml.text("Error: "+data.error);
 			}
-			if (!(nbunseen>data.messages.length)) {
-			}
 			md.showMessages(data.messages.reverse(), $ml);
+			$ml.find('.message').each(function(i){
+				if (i>=data.messages.length-nbunseen) $(this).addClass('unseen');
+			});
 			$ml.scrollTop($ml[0].scrollHeight);
+			$w.one('mouseleave', function(){ $('.count', this).empty() });
+		}
+		$.get('json/messages/last?n='+nbrequestedmessages+'&room='+w.id, function(data){
+			setTimeout(display, 200 + entertime - Date.now(), data);
 		});
 	}).on('mouseleave', '.watch', function(){
 		requiredrid = 0;
-		$('.count', this).empty();
 		$('.watch').removeClass('open').find('.watch-panel').remove();
 		ws.emit('watch_raz');
 	});

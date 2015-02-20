@@ -222,6 +222,9 @@
 			font-weight: bold;
 			opacity: 1;
 		}
+		.message.unseen {
+			background: $watch-count-new-bg;
+		}
 	}
 }
 

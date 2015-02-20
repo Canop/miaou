@@ -216,5 +216,4 @@ miaou(function(chat, locals, watch, ws){
 		}
 	});
 
-
 });
