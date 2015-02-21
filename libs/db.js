@@ -70,19 +70,26 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 // returns an existing user found by his id
 // Private fields are included in the returned object
 proto.getUserById = function(id){
-	return this.queryRow('select id, name, oauthdisplayname, email, bot from player where id=$1', [id]);
+	return this.queryRow(
+		'select id, name, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where id=$1', [id]
+	);
 }
 
 // returns an existing user found by his name
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
-	return this.queryRow('select id, name, oauthdisplayname, email, bot from player where name=$1', [username], true);
+	return this.queryRow(
+		'select id, name, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where name=$1',
+		[username], true
+	);
 }
 
-
-// right now it only updates the name, I'll enrich it if the need arises
+// updates the name, avatar_src and avatar_key
 proto.updateUser = function(user){
-	return this.queryRow('update player set name=$1 where id=$2', [user.name, user.id]);
+	return this.queryRow(
+		'update player set name=$1, avatarsrc=$2, avatarkey=$3 where id=$4',
+		[user.name, user.avatarsrc, user.avatarkey, user.id]
+	);
 }
 
 // saves the additional optional user info (location, description, lang, website)

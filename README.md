@@ -47,6 +47,8 @@ A [vagrant](http://www.vagrantup.com/) configuration is available to help you se
 
 If you have the ability and will to contribute, come and discuss with us. The best landing place is usually the [Miaou room](http://dystroy.org/miaou/1?Miaou) where you can ping @dystroy or @Florian. We'll show you where we manage ideas, reports, tasks and you'll see the list of tasks waiting for a volunteer.
 
+And, last thing, **always test before doing a pull request**.
+
 ## License
 
 Most of Miaou follows the [MIT License](http://opensource.org/licenses/MIT). Exceptions are specified [here](license.md).

@@ -23,8 +23,8 @@ html
 			code {
 				white-space: pre-wrap;
 			}
-	body.home
-		section#home-top
+	body.prefs
+		section#prefs-top
 			div.MP
 				a(href="rooms")
 					img(src="static/Miaou-300-f.png",width="180px",hspace="5px")
@@ -35,27 +35,29 @@ html
 					a(id="logout",href="#") Log Out
 					| -
 					a(href="help#About",target=help) Help
-		section#home-notifs
+		section
 			div.MP
 				h2 Preferences
 				p#err.error= error
 
-		#home-tabs.MP
+		#prefs-tabs.MP
 			span.tab.selected Profile
 			span.tab Identities
+			span.tab Avatar
 			span.tab Notifications
 			span.tab Display
-		#home-tab-shadows.MP
+		#prefs-tab-shadows.MP
 			span.tab.selected 
 			span.tab 
 			span.tab 
 			span.tab 
+			span.tab 
 			
-		section#home-main.hastabs
-			div#home-main-content
+		section#prefs-main.hastabs
+			#prefs-main-content
 				form(method="post")
 					input(type="hidden", name="secret", value=secret)
-					div.page.selected
+					.page.selected
 						table.form
 							tr
 								th Name
@@ -77,7 +79,7 @@ html
 								th Web Site
 								td
 									input#url(type="url", name="url", value="", maxlength="250")
-					div.page.externalProfiles
+					.page.externalProfiles
 						p If you have an account on one of those sites, you may display it in your Miaou profile by proving ownership below.
 						table.form
 							each ep in externalProfileInfos
@@ -103,7 +105,22 @@ html
 															td= field.notice
 											if ep.creationDescription
 												p !{ep.creationDescription}
-					div.page
+					.page.avatar
+						#avatar-edit.MP
+							#avatar-fields
+								.avatar-fields-row
+									label(for="avatar-src") Source:
+									select#avatar-src(name="avatar-src")
+										option(value="none") none
+								.avatar-fields-row
+									label#avatar-key-label(for="avatar-key")
+									input#avatar-key(name="avatar-key")
+								.avatar-fields-row
+									p#avatar-src-description
+								.avatar-fields-row
+									button(type="button")#avatar-try Try
+							#avatar-preview
+					.page
 						table.form
 							tr
 								th Desktop Notification
@@ -130,7 +147,7 @@ html
 										option(value="no") no notification
 										option(value="yes") notify too
 
-					div.page
+					.page
 						table.form
 							tr
 								th Message Chat Theme (beta)
@@ -150,6 +167,6 @@ html
 									br
 									input#date_display_always(type="radio", name="datdpl", value="always")
 									label(for="date_display_always") Always
-					div.dialog-buttons
+					.dialog-buttons
 						button#submit Save
 						button#close Home

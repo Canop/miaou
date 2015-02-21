@@ -1,57 +1,64 @@
-body.home {
-	overflow-y: scroll;
+body.prefs {
+	overflow-y: auto;
 	background: darken( $bg-color, 5% ) ;
 	a {
 		color: black;
 	}
-	#home-top {
+	#prefs-top {
 		background: $bg-color ;
 		box-shadow: 0 0 10px black;
 		padding: 3px;
 	}
-	#home-notifs {
-	}
-	#home-tabs, #home-tab-shadows {
+	#prefs-tabs, #prefs-tab-shadows {
 		.tab {
 			height: 30px;
 			position: absolute;
-			width: 140px;
+			width: 100px;
 			background: $bg-color ;
 			&:nth-child(2) {
-				margin-left:180px;
+				margin-left:140px;
 			}
 			&:nth-child(3) {
-				margin-left:360px;
+				margin-left:280px;
 			}
 			&:nth-child(4) {
-				margin-left:540px;
+				margin-left:420px;
+			}
+			&:nth-child(5) {
+				margin-left:560px;
 			}
 			text-align: center;
 			padding: 8px;				
 		}		
 	}
 	&.mobile {
-		#home-tabs, #home-tab-shadows {
+		#prefs-tabs, #prefs-tab-shadows {
 			.tab {
-				width: 70px;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				width: 50px;
 				&:nth-child(1) {
 					margin-left:10px;				
 				}
 				&:nth-child(2) {
-					margin-left:95px;
+					margin-left:75px;
 				}
 				&:nth-child(3) {
-					margin-left:180px;
+					margin-left:150px;
 				}
 				&:nth-child(4) {
-					margin-left:265px;
+					margin-left:225px;
+				}
+				&:nth-child(5) {
+					margin-left:300px;
 				}
 				padding: 4px;				
 			}		
 		}
 	}
 
-	#home-tabs {
+	#prefs-tabs {
 		height: 30px;
 		.tab {
 			z-index: 2;
@@ -62,7 +69,7 @@ body.home {
 			}
 		}
 	}
-	#home-tab-shadows {
+	#prefs-tab-shadows {
 		margin-top: -30px;
 		.tab {
 			z-index: 1;
@@ -72,7 +79,7 @@ body.home {
 			}
 		}
 	}
-	#home-main {
+	#prefs-main {
 		position: absolute;
 		left:0; right:0;
 		display: flex;
@@ -85,6 +92,14 @@ body.home {
 		background: $bg-color ;
 		box-shadow: 0 0 10px black;
 		padding: 15px;
+		#prefs-main-content {
+			.page {
+				display: none;
+				&.selected {
+					display: block;
+				}
+			}
+		}
 		h3 {
 			margin-left: 8px;
 			margin-bottom: 5px;
@@ -126,28 +141,29 @@ body.home {
 	}
 }
 
-#langfilter {
-	position: absolute;
-	right: 20px;
-	top: 20px;
-	.lang {
-		padding: 5px 5px 2px 5px;
-		border-radius: 5px;
-		margin: 4px;
-		cursor: pointer;
-		box-shadow: 0px 0px 2px rgba(0,0,0,0.4);
-		opacity: 0.5;
-		background: $bg-color;
-		transition: background-color 1s;
-		&.on {
-			background: lighten( $bg-color, 15% ) ;
-			box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
-			padding: 6px 4px 1px 6px;
-			opacity: 1;
-			transition: background-color 1s;
-		}
-		img {
-			max-width: 26px;
-		}
+#avatar-edit {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+}
+#avatar-fields {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+.avatar-fields-row {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	input, select, label, p {
+		margin: 10px;
 	}
 }
+#avatar-preview {
+	flex: 1 0 220px;
+	height: 220px;
+	display: flex;
+	align-items: center;
+	justify-content: center;	
+}
+

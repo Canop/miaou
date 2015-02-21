@@ -57,10 +57,10 @@ page-js: ./build/page-js $(PAGES_JS_OUT) $(PAGES_JS_MAP_OUT)
 rsc: $(RSC_FILES)
 
 # CSS of specific pages : static/[somepage].css
-./build/page-scss: ./src/main-scss/*.scss
+./build/page-scss:
 	mkdir -p $@
 	cp ./src/main-scss/*.scss ./build/page-scss/
-./build/page-scss/%.css: ./src/page-scss/%.scss ./build/page-scss
+./build/page-scss/%.css: ./src/page-scss/%.scss 
 	cp $< ./build/page-scss/
 	sass -t compressed ./build/page-scss/$*.scss > $@
 ./static/%.css: ./build/page-scss/%.css

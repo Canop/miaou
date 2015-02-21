@@ -7,14 +7,13 @@ miaou(function(locals){
 		userPrefs = locals.userPrefs,
 		tabletop = 250;
 
-
 	$(document.body).addClass(
 		/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
 	);
 
 	function selectTab(i){
 		$('.tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
-		var $container = $('#home-main-content');
+		var $container = $('#prefs-main-content');
 		$container.find('.page').removeClass('selected').eq(i).addClass('selected');
 		if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
 	}
@@ -56,6 +55,67 @@ miaou(function(locals){
 	$('#nifvis').val(userPrefs.nifvis);
 	$('#theme').val(userPrefs.theme);
 	$('input[name=datdpl][value='+userPrefs.datdpl+']').prop('checked', true);
+
+	// Avatar preferences management
+	avatarSources = {
+		gravatar:{
+			keyLabel: 'email',
+			description: 'Gravatar is a free service'+
+				' providing avatars globally identified by your email. You can upload your portrait'+
+				' at <a href=http://gravatar.com target=gravatar>gravatar.com</a>.',
+			key: locals.email
+		},
+		twitter:{
+			keyLabel: 'Twitter&nbsp;id'
+		},
+		facebook:{
+			keyLabel: 'Facebook&nbsp;id'
+		},
+		instagram:{
+			keyLabel: 'Instagram&nbsp;id'
+		},
+	}
+	function avatarTry(){
+		var src = $('#avatar-src').val(),
+			key = $('#avatar-key').val().trim();
+		if (key.length<1){
+			$('#avatar-preview').empty();
+			return;
+		}
+		var url = "http://avatars.io/"+src+"/"+key+'?size=large';
+		console.log("Try", url);
+		$('#avatar-preview').empty();
+		$('<img>').on('load', function(){
+			$(this).show();
+			avatarSources[src].key = key;
+		}).on('error', function(){
+			$('#avatar-preview').html('<p>Image not found</p>');			
+		}).attr('src',url).appendTo('#avatar-preview').hide();
+	}
+	function onchangeAvatarSrc(){
+		var src = avatarSources[$('#avatar-src').val()];
+		if (src) {
+			$('#avatar-key-label').html(src.keyLabel+':');
+			$('#avatar-src-description').html(src.description||'');
+			$('#avatar-key').val(src.key||'').show();
+		} else {
+			$('#avatar-key-label').html('');
+			$('#avatar-src-description').html('');
+			$('#avatar-key').val('').hide();
+		}
+	}
+	$('#avatar-src').append(Object.keys(avatarSources).map(function(key){
+		return $('<option>').text(key).val(key);
+	})).on('change', onchangeAvatarSrc);
+	if (locals.avatarsrc) {
+		$('#avatar-src').val(locals.avatarsrc);
+		$('#avatar-key').val(locals.avatarkey);
+		avatarSources[locals.avatarsrc].key = locals.avatarkey;
+		avatarTry();
+	} else {
+		onchangeAvatarSrc();
+	}
+	$('#avatar-try').click(avatarTry);
 
 	if (!valid) $('#close').hide();
 

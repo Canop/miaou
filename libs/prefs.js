@@ -95,13 +95,21 @@ exports.appAllPrefs = function(req, res, db){
 		}
 	}).then(function(){
 		if (req.method==='POST') {
-			var name = req.param('name').trim();
-			if (name === req.user.name || !naming.isValidUsername(name)) return;
+			var	name = req.param('name').trim(),
+				avatarsrc = req.param('avatar-src'),
+				avatarkey = req.param('avatar-key');
+			if (!naming.isValidUsername(name)) return;
 			if (naming.isUsernameForbidden(name)) {
 				error = "Sorry, that username is reserved.";
 				return;
 			}
+			if (avatarsrc==="none") {
+				avatarsrc = avatarkey = null;
+			}
+			if (name===req.user.name && avatarsrc==req.user.avatarsrc && avatarkey==req.user.avatarkey) return;
 			req.user.name = name;
+			req.user.avatarsrc = avatarsrc;
+			req.user.avatarkey = avatarkey;
 			return this.updateUser(req.user);
 		}
 	}).then(function(){
@@ -153,6 +161,9 @@ exports.appAllPrefs = function(req, res, db){
 				valid : hasValidName,
 				langs: langs.legal,
 				userinfo: userinfo,
+				email: req.user.email,
+				avatarsrc: req.user.avatarsrc,
+				avatarkey: req.user.avatarkey
 			}
 		});
 	}).catch(function(err){

@@ -25,7 +25,9 @@ CREATE TABLE player (
 	description varchar(255),
 	location varchar(255),
 	url varchar(255),
-	lang varchar(2) NOT NULL default 'en'	
+	lang varchar(2) NOT NULL default 'en',
+	avatarsrc varchar(20),
+	avatarkey varchar(255)
 );
 CREATE UNIQUE INDEX player_lower_name_index on  player (lower(name));
 
