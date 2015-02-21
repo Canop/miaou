@@ -465,6 +465,8 @@ function handleUserInRoom(socket, completeUser){
 						}
 					}
 				}
+				console.log("Pinging",remainingpings,"in room",shoe.room.name,"for message");
+				console.log(m);
 				return this.storePings(shoe.room.id, remainingpings, m.id);
 			}
 		}).catch(function(e) {
