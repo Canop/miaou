@@ -18,9 +18,9 @@ PLUGIN_JS_SOURCES:=$(wildcard ./plugins/*/client-scripts/*.js)
 MIAOU_MODULES:="chat,ed,gui,hist,links,locals,md,mh,mod,ms,notif,prof,skin,usr,watch,win,ws,wz,games,plugins,mountyhall"
 UGLIFY_OPTIONS:=--screw-ie8 -cmt --reserved $(MIAOU_MODULES)
 
-.PHONY: clean page-js page-css themes rsc main-js js2-files
+.PHONY: clean page-js page-js-map page-css themes rsc main-js js2-files
 
-all: page-js page-css themes rsc main-js js2-files
+all: page-js page-js-map page-css themes rsc main-js js2-files
 
 clean:
 	rm -rf ./static/*
@@ -37,18 +37,22 @@ clean:
 	@echo $@ gzipped : `cat $@ | gzip -9f | wc -c` bytes
 main-js: ./static/miaou.min.js
 
-#js of specific pages : static/[somepage].js
-# FIXME "cp ./build/page-js/* ./static/" is done every time
+#js and maps of specific pages : static/[somepage].js
+# FIXME 2 uglify... this is really not DRY...
 ./build/page-js: 
 	mkdir -p $@
-./build/page-js/%.min.js: ./src/page-js/%.js
-	cp $< build/page-js/
+./build/page-js/%.js: ./src/page-js/%.js
+	cp $< $@
+./build/page-js/%.min.js: ./build/page-js/%.js
+	cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $*.min.js.map
+./build/page-js/%.min.js.map: ./build/page-js/%.js
 	cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $*.min.js.map
 ./static/%.min.js: ./build/page-js/%.min.js
 	cp $< $@
 ./static/%.min.js.map: ./build/page-js/%.min.js.map
 	cp $< $@
-page-js: ./build/page-js $(PAGES_JS_OUT) $(PAGES_JS_MAP_OUT)
+page-js: ./build/page-js $(PAGES_JS_OUT)
+page-js-map: page-js $(PAGES_JS_MAP_OUT)
 
 # constant resource files
 ./static/%: ./src/rsc/%
