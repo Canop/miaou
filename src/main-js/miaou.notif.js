@@ -176,7 +176,6 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 			icon += '-new';			
 		}
 		document.title = title;
-		console.log('favicon:', icon);
 		$('#favicon').attr('href', icon+'.png');
 	}
 
