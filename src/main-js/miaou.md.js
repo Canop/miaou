@@ -216,9 +216,12 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			//~ wasAtBottom = gui.isAtBottom(),
 			$md = $('<div>').addClass('message').data('message', message),
 			$user = $('<div>').addClass('user').append($('<span/>').text(message.authorname)).appendTo($md),
+			$avbox = $('<div>').addClass('avbox').prependTo($user),
 			$decorations = $('<div>').addClass('decorations').appendTo($user),
 			$mc,
 			votesHtml = md.votesAbstract(message);
+		var avsrc = usr.avatarsrc(message);
+		if (avsrc) $('<img>').attr('src',avsrc).appendTo($avbox);
 		if (message.id) {
 			$md.attr('mid', message.id);
 			for (var i=messages.length; i--;) {
@@ -248,7 +251,9 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			if (matches) message.repliesTo = +matches[1];
 		}		
 		if (message.bot) $user.addClass('bot');
-		usr.insert({id:message.author, name:message.authorname}, message.changed||message.created);
+		usr.insert({
+			id:message.author, name:message.authorname, avs:message.avs, avk:message.avk
+		}, message.changed||message.created);
 		if (message.authorname===locals.me.name) {
 			$md.addClass('me');
 			$('.error').remove();

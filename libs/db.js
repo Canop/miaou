@@ -108,7 +108,9 @@ proto.getUserInfo = function(id){
 
 proto.listRecentUsers = function(roomId, N){
 	return this.queryRows(
-		"select message.author as id, min(player.name) as name, max(message.created) as mc from message join player on player.id=message.author"+
+		"select message.author as id, min(player.name) as name,"+
+		" min(player.avatarsrc) as avs, min(player.avatarkey) as avk,"+
+		" max(message.created) as mc from message join player on player.id=message.author"+
 		" where message.room=$1 and bot is false group by message.author order by mc desc limit $2", [roomId, N]
 	);
 }
@@ -420,7 +422,9 @@ proto.getRoomUserActiveBan = function(roomId, userId){
 //  that we didn't fetch because of N)
 proto.getMessages = function(roomId, userId, N, asc, c1, s1, c2, s2){
 	var args = [roomId, userId, N], messages,
-		sql = 'select message.id, author, player.name as authorname, player.bot, content, message.created as created, message.changed,'+
+		sql = 'select message.id, author, player.name as authorname, player.bot,'+
+		' player.avatarsrc as avs, player.avatarkey as avk,'+
+		' content, message.created as created, message.changed,'+
 		' pin, star, up, down, vote, score from message'+
 		' left join message_vote on message.id=message and message_vote.player=$2'+
 		' inner join player on author=player.id where room=$1';

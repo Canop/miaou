@@ -13,6 +13,11 @@ function Shoe(socket, completeUser){
 	this.socket = socket;
 	this.completeUser = completeUser;
 	this.publicUser = {id:completeUser.id, name:completeUser.name};
+	if (completeUser.avatarkey) {
+		this.publicUser.avs = completeUser.avatarsrc;
+		this.publicUser.avk = completeUser.avatarkey;
+		//~ this.publicUser.avatar = "http://avatars.io/"+completeUser.avatarsrc+"/"+completeUser.avatarkey+"?size=large";
+	}
 	this.room;
 	this.lastMessageTime;
 	this.db = db;
