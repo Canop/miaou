@@ -1,7 +1,6 @@
 "use strict";
 
 const apiversion = 40,
-	maxHiatusForMerge = 10, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
 	path = require('path'),
@@ -368,20 +367,15 @@ function handleUserInRoom(socket, completeUser){
 			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)", content);
 			return;
 		}
-		if (/^--[^-]/.test(content)) {
-			var nomerge = true;
-			content = content.replace(/^--\s*/, '');
-		} else if (/^\+\+(?=\s*\S+)/.test(content)) {
-			var domerge = true;
-			content = content.replace(/^\+\+\s*/, '');
-		}
 		shoe.lastMessageTime = now;
 		var	u = shoe.publicUser,
 			m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id},
-			mm = memroom.mm, // eventual previous mergeable message
 			isreply = /^\s*@\w[\w\-]{2,}#\d+/.test(content),
-			commandTask,
-			merge = null; // null or the content to concatenate to a previous message
+			commandTask;
+		if (u.avk) {
+			m.avk = u.avk;
+			m.avs = u.avs;
+		}
 		if (message.id) {
 			m.id = +message.id;
 			m.changed = seconds;
@@ -398,27 +392,6 @@ function handleUserInRoom(socket, completeUser){
 		.spread(commands.onMessage)
 		.then(function(ct){
 			commandTask = ct;
-			var isatleastfivelines = /(\n.*?){4}/.test(m.content);
-			if ( // let's see if the message can be merged with the previous one
-				!nomerge
-				&& !m.id // must not be already an edit
-				&& !commandTask.cmd // a command message isn't mergeable
-				&& !isreply // a replying message can't be merged into a previous one
-				&& mm
-				&& mm.author===m.author // must be by same author
-				&& ( domerge || ( !lastmmisreply && !lastmmisatleastfivelines ) ) // can't normally merge with a reply or a long message
-				&& ( domerge || mm.created+maxHiatusForMerge>seconds ) // must be recent or the new one having ++ 
-				&& mm.content && mm.content.length+m.content.length<maxContentLength  // must be not too big
-			) {
-				merge = m.content;
-				mm.content += '\n'+m.content;
-				mm.created = seconds;
-				lastmmisatleastfivelines = isatleastfivelines;
-				return [this.storeMessage(mm, true), commandTask]
-			}
-			lastmmisreply = isreply;
-			lastmmisatleastfivelines = isatleastfivelines;
-			memroom.mm = commandTask.cmd || m.id ? null : m;
 			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
 		}).spread(function(m, commandTask){
 			var remainingpings = []; // names of pinged users that weren't in the room or watching
@@ -427,17 +400,15 @@ function handleUserInRoom(socket, completeUser){
 			for (var p of onSendMessagePlugins) {
 				p.onSendMessage(this, m, send);
 			}
-			if (merge) send('merge', {id:m.id, add:merge, created:m.created});
-			else send('message', m);
+			send('message', m);
 			if (commandTask.replyContent) {
 				var txt = commandTask.replyContent;
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
 			io.sockets.in('w'+roomId).emit('watch_incr', roomId);
-			var txt = merge || m.content;
-			if (txt && m.id) {
-				var pings = txt.match(/@\w[\w\-]{2,}(\b|$)/g);
+			if (m.content && m.id) {
+				var pings = m.content.match(/@\w[\w\-]{2,}(\b|$)/g);
 				if (pings) {
 					for (var ping of pings) {
 						var username = ping.slice(1);

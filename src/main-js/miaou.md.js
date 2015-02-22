@@ -141,8 +141,8 @@ miaou(function(md, chat, gui, hist, locals, usr){
 	}
 	
 	function resizeUser($u){
-		$u.removeClass('size0 size1 size2 size3');
-		$u.addClass('size'+Math.min($u.height()/20|0,3));
+		$u.removeClass('size0 size1 size2 size3 size4');
+		$u.addClass('size'+Math.min($u.height()/22|0,4));
 	}
 	
 	// checks immediately and potentially after image loading that

@@ -36,22 +36,6 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 			md.updateLoaders();
 			md.showMessageFlowDisruptions();
 		}
-		
-		// called to merge a message
-		function merge(data){
-			var	old = $('#messages .message').last().data('message');
-			if (!old || old.id!==data.id) {
-				console.log("bad merge data", data);
-				return;
-			}
-			var merged = {
-				id:old.id, room:old.room,
-				author:old.author, authorname:old.authorname,
-				created:data.created,
-				content: old.content + '\n'+data.add
-			};
-			messagesIn(merged);
-		}
 
 		function setEnterTime(serverTime){
 			chat.enterTime = serverTime;
@@ -82,7 +66,6 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 		})
 		.on('message', messagesIn)
 		.on('messages', messagesIn)
-		.on('merge', merge)
 		.on('mod_dialog', mod.dialog) 
 		.on('room', function(r){
 			if (locals.room.id!==r.id) {

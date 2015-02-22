@@ -192,7 +192,14 @@ body.mobile #message-scroller {
 	.user.profiled, &:hover .user.profiled {
 		border-right: none;	
 	}
-	.user.size0, .user.size1 {
+	.user {
+		.avatar {
+			width: 16px;
+			height: 16px;
+		}
+		flex-direction: row;
+	}
+	.user.size1 {
 		.avatar {
 			width: 20px;
 			height: 20px;
@@ -201,8 +208,8 @@ body.mobile #message-scroller {
 	}
 	.user.size2 {
 		.avatar {
-			width: 24px;
-			height: 24px;
+			width: 30px;
+			height: 30px;
 		}
 		flex-direction: column;	
 	}
@@ -215,8 +222,8 @@ body.mobile #message-scroller {
 	}
 	.user.size4 {
 		.avatar {
-			width: 60px;
-			height: 60px;
+			width: 56px;
+			height: 56px;
 		}
 		flex-direction: column;	
 	}
