@@ -12,8 +12,9 @@ miaou(function(prof, gui, locals){
 	
 	prof.shownow = function(){
 		if ($('.dialog').length) return;
-		var $user = $(this).closest('.user'),
-			user = $user.data('user') || $user.closest('.notification,.user-messages').data('user'),
+		var $user = $(this).closest('.user');
+		if (!$user.length) $user = $(this).closest('.user-messages').find('.user');
+		var user = $user.data('user') || $user.closest('.notification,.user-messages').data('user'),
 			uo = $user.offset(),
 			uh = $user.outerHeight(), uw = $user.width(),
 			wh = $(window).height();

@@ -194,36 +194,36 @@ body.mobile #message-scroller {
 	}
 	.user {
 		.avatar {
-			width: 16px;
-			height: 16px;
+			max-width: 16px;
+			max-height: 16px;
 		}
 		flex-direction: row;
 	}
 	.user.size1 {
 		.avatar {
-			width: 20px;
-			height: 20px;
+			max-width: 20px;
+			max-height: 20px;
 		}
 		flex-direction: row;
 	}
 	.user.size2 {
 		.avatar {
-			width: 30px;
-			height: 30px;
+			max-width: 26px;
+			max-height: 26px;
 		}
 		flex-direction: column;	
 	}
 	.user.size3 {
 		.avatar {
-			width: 40px;
-			height: 40px;
+			max-width: 40px;
+			max-height: 40px;
 		}
 		flex-direction: column;	
 	}
 	.user.size4 {
 		.avatar {
-			width: 56px;
-			height: 56px;
+			max-width: 56px;
+			max-height: 56px;
 		}
 		flex-direction: column;	
 	}
@@ -362,9 +362,9 @@ body.mobile #message-scroller {
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-end;
-	pointer-events: none;
+	//~ pointer-events: none;
 	button {
-		pointer-events: auto;
+		//~ pointer-events: auto;
 		text-align: center;
 		padding: 0 3px;
 		margin-right: 2px;
@@ -377,7 +377,7 @@ body.mobile #message-scroller {
 		line-height: 14px;
 	}
 	.decoration {
-		pointer-events: auto;
+		//~ pointer-events: auto;
 		font-family: "fontello";
 		margin: 2px;
 		flex: 0 0 15px;

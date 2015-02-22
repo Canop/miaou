@@ -146,8 +146,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
 			//~ .on('mouseleave', '.message', md.hideMessageHoverInfos)
 			.on('mouseleave', md.hideMessageHoverInfos)
-			.on('mouseenter', '.user', prof.show)
-			.on('mouseenter', '.user', md.hideNotHoveredMessageInfos);
+			.on('mouseenter', '.decorations', prof.show)
+			.on('mouseenter', '.decorations', md.hideNotHoveredMessageInfos);
 			$(document.body)
 			.on('mouseleave', '.profile', prof.hide)
 			.on('mouseleave', '.user', prof.checkOverProfile);
