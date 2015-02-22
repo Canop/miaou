@@ -45,11 +45,11 @@ miaou(function(md, chat, gui, hist, locals, usr){
 	}
 	
 	md.getMessages = function(){
-		return $('#messages > .message').map(function(){ return $(this).data('message') }).get();
+		return $('#messages .message').map(function(){ return $(this).data('message') }).get();
 	}
 
 	md.getMessage = function(mid){
-		var $message = $('#messages > .message[mid='+mid+']');
+		var $message = $('#messages .message[mid='+mid+']');
 		if ($message.length) return $message.eq(0).data('message');
 	}
 
@@ -140,6 +140,11 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		return notification;
 	}
 	
+	function resizeUser($u){
+		$u.removeClass('size0 size1 size2 size3');
+		$u.addClass('size'+Math.min($u.height()/20|0,3));
+	}
+	
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
 	// TODO This function is very expensive (cpu). We should be able to batch
@@ -180,6 +185,9 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			t.$content.addClass("closed").height();
 			t.$md.reflow();
 		});
+		$messages.find('.user').each(function(){
+			resizeUser($(this));
+		});
 		if (wasAtBottom) gui.scrollToBottom();
 	}
 	
@@ -196,17 +204,31 @@ miaou(function(md, chat, gui, hist, locals, usr){
 				if (idmap[m.prev]) {
 					m.prev = 0;
 				} else {
-					$('<div>').addClass('olderLoader loader').attr('mid', m.prev).text("load older messages").insertBefore($messages[i]);
+					$('<div>').addClass('olderLoader loader').attr('mid', m.prev).text("load older messages")
+					.insertBefore($messages.eq(i).closest('.user-messages'));
 				}
 			}
 			if (m.next) {
 				if (idmap[m.next]) {
 					m.next = 0;
 				} else {
-					$('<div>').addClass('newerLoader loader').attr('mid', m.next).text("load newer messages").insertAfter($messages[i]);
+					$('<div>').addClass('newerLoader loader').attr('mid', m.next).text("load newer messages")
+					.insertAfter($messages.eq(i).closest('.user-messages'));
 				}
 			}
 		}
+	}
+	
+	// builds a new .user-messages div for the passed user)
+	function usermessagesdiv(user){
+		var $usermessages = $('<div>').addClass('user-messages').data('user',user),
+			$user = $('<div>').addClass('user').append($('<span/>').text(user.name)).appendTo($usermessages);
+		var avsrc = usr.avatarsrc(user);
+		if (avsrc) $('<img>').attr('src',avsrc).addClass('avatar').prependTo($user);
+		else $('<div>').addClass('avatar').prependTo($user);
+		if (user.bot) $user.addClass('bot');
+		if (user.id===locals.me.id) $usermessages.addClass('me');
+		return $usermessages;
 	}
 
 	// inserts or updates a message in the main #messages div
@@ -215,13 +237,11 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			insertionIndex = messages.length - 1, // -1 : insert at begining, i>=0 : insert after i
 			//~ wasAtBottom = gui.isAtBottom(),
 			$md = $('<div>').addClass('message').data('message', message),
-			$user = $('<div>').addClass('user').append($('<span/>').text(message.authorname)).appendTo($md),
-			$avbox = $('<div>').addClass('avbox').prependTo($user),
-			$decorations = $('<div>').addClass('decorations').appendTo($user),
+			$decorations = $('<div>').addClass('decorations').appendTo($md),
 			$mc,
+			user = { id:message.author, name:message.authorname, avs:message.avs, avk:message.avk },
 			votesHtml = md.votesAbstract(message);
-		var avsrc = usr.avatarsrc(message);
-		if (avsrc) $('<img>').attr('src',avsrc).appendTo($avbox);
+		if (message.bot) user.bot = true;
 		if (message.id) {
 			$md.attr('mid', message.id);
 			for (var i=messages.length; i--;) {
@@ -249,11 +269,8 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			// To make things simpler, we consider only one link upwards
 			var matches = message.content.match(/^\s*@\w[\w\-]{2,}#(\d+)/);
 			if (matches) message.repliesTo = +matches[1];
-		}		
-		if (message.bot) $user.addClass('bot');
-		usr.insert({
-			id:message.author, name:message.authorname, avs:message.avs, avk:message.avk
-		}, message.changed||message.created);
+		}
+		usr.insert(user, message.changed||message.created);
 		if (message.authorname===locals.me.name) {
 			$md.addClass('me');
 			$('.error').remove();
@@ -265,16 +282,32 @@ miaou(function(md, chat, gui, hist, locals, usr){
 				}
 				if (message.content === oldMessage.content) {
 					// we take the old message content, so as not to lose the possible replacements (e.g. boxing)
-					$mc = $('#messages > .message[mid='+message.id+'] .content');
+					$mc = $('#messages .message[mid='+message.id+'] .content');
 				} else if (message.changed !== oldMessage.changed) {
 					message.previous = oldMessage;
 				}
-				$('#messages > .message').eq(insertionIndex).replaceWith($md);
+				$('#messages .message').eq(insertionIndex).replaceWith($md);
 			} else {
-				$('#messages > .message').eq(insertionIndex).after($md);
+				var $previousmessageset = $('#messages .message').eq(insertionIndex).closest('.user-messages');
+				if ($previousmessageset.data('user').id===user.id) {
+					$previousmessageset.append($md);
+				} else {
+					var $nextmessageset = $('#messages .message').eq(insertionIndex+1).closest('.user-messages');
+					if ($nextmessageset.length && $nextmessageset.data('user').id===user.id) {
+						$nextmessageset.prepend($md);
+					} else {
+						var $newmessageset = usermessagesdiv(user).append($md);
+						$previousmessageset.after($newmessageset);
+					}
+				}
 			}
 		} else {
-			$md.prependTo('#messages');
+			var $nextmessageset = $('#messages .user-messages').first();
+			if ($nextmessageset.length && $nextmessageset.data('user').id===user.id) {
+				$nextmessageset.prepend($md);
+			} else {
+				usermessagesdiv(user).append($md).prependTo('#messages');				
+			}
 		}
 		if (message.content && message.changed) {
 			var $pen = $('<div>&#xe80c;</div>').addClass('decoration pen').appendTo($decorations);
@@ -292,6 +325,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			if (locals.userPrefs.datdpl!=="always") $mdate.hide();
 		}
 		resize($md, shouldStickToBottom);
+		resizeUser($md.siblings('.user'));
 		if (shouldStickToBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) gui.scrollToBottom($md);
 		return $md;
 	}

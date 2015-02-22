@@ -69,11 +69,13 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, usr, ws, wz){
 		return h;
 	}
 
+	var $hoveredMessage;
 	md.showMessageHoverInfos = function(){
 		md.hideMessageHoverInfos();
 		var	$message = $(this),
 			message = $message.data('message'),
 			$decs = $message.find('.decorations');
+		$hoveredMessage = $message;
 		ms.updateStatus(message);
 		if (message.status.deletable || message.status.mod_deletable) $('<button>').addClass('deleteButton').text('delete').prependTo($decs);
 		if (message.status.editable) $('<button>').addClass('editButton').text('edit').prependTo($decs);
@@ -83,11 +85,22 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, usr, ws, wz){
 	}
 	md.hideMessageHoverInfos = function(){
 		$('.message-menu, .editButton, .replyButton, .deleteButton').remove();
+		$hoveredMessage = null;
 		return false;
 	}
 	md.toggleMessageHoverInfos = function(){
 		($('.message-menu, .editButton, .replyButton, .deleteButton', this).length ? md.hideMessageHoverInfos : md.showMessageHoverInfos).call(this);
 		return false;
+	}
+	// mainly a workaround for some mouseleave events I can't catch
+	md.hideNotHoveredMessageInfos = function(e){
+		if ($hoveredMessage) {
+			var off = $hoveredMessage.offset();
+			var x = e.pageX-off.left, y = e.pageY-off.top;
+			if (x<0 || x>$hoveredMessage.outerWidth() || y<0 || y>$hoveredMessage.outerHeight()) {
+				md.hideMessageHoverInfos();
+			}
+		}
 	}
 
 	// argument : messageId or $messageDiv

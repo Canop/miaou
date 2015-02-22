@@ -12,20 +12,16 @@ miaou(function(prof, gui, locals){
 	
 	prof.shownow = function(){
 		if ($('.dialog').length) return;
-		// code in this function is a little messy, partly because it's used in many contexts
 		var $user = $(this).closest('.user'),
-			$message = $user.closest('.message,.notification,.userLine,.access_request'),
+			user = $user.data('user') || $user.closest('.notification,.user-messages').data('user'),
 			uo = $user.offset(),
-			uh = $user.outerHeight(), uw = $user.outerWidth(),
+			uh = $user.outerHeight(), uw = $user.width(),
 			wh = $(window).height();
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
 		if (uo.top<wh/2) css.top = uo.top;
 		else css.bottom = wh-uo.top-uh;
-		css.left = uo.left + uw - 1;
-		var userId, data;
-		if ( (data = $user.data('user')) || (data = $message.data('user')) || (data = $user.closest('.notification').data('user')) ) userId = data.id;
-		else userId = $message.data('message').author;
-		$p.load('publicProfile?user='+userId+'&room='+locals.room.id);		
+		css.left = uo.left + uw;
+		$p.load('publicProfile?user='+user.id+'&room='+locals.room.id);
 		$p.css(css).appendTo('body');
 		$user.addClass('profiled');
 		$(window).on('mousemove', prof.checkOverProfile);

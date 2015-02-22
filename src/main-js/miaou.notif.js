@@ -182,10 +182,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 	var lastfocustime = 0;
 	function onfocus(){
 		var now = Date.now();
-		if (now-lastfocustime<1000) {
-			console.log("now-lastfocustime:",now-lastfocustime);
-			return;
-		}
+		if (now-lastfocustime<1000) return;
 		lastfocustime = now;
 		ws.emit('watch_raz');
 		nbUnseenMessages = 0;

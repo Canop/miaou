@@ -150,6 +150,10 @@ $pad-room-last-message-border-top: solid thin PaleVioletRed;
 $miaou-logo-color: $general-text-color;
 
 // customizations
-#messages .message.me .content {
-	border-left: thick solid $message-me-user-color;
+#messages .user {
+	border-radius: 4px;
+	border-left: 4px solid #111;
+}
+#messages .user-messages.me .user {
+	border-left: 4px solid $message-me-user-color;
 }

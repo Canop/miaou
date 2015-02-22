@@ -17,7 +17,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 	gui.scrollToBottom = function($m){
 		_scrollToBottom();
 		if ($m && $m.find) { // FIXME : cleaner API
-			$m.find('img').load(function(){ console.log('img load'); _scrollToBottom() });
+			$m.find('img').load(_scrollToBottom);
 		}
 	}
 
@@ -144,8 +144,10 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		} else {
 			$('#messages, #users, #notifications')
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
-			.on('mouseleave', '.message', md.hideMessageHoverInfos)
-			.on('mouseenter', '.user', prof.show);
+			//~ .on('mouseleave', '.message', md.hideMessageHoverInfos)
+			.on('mouseleave', md.hideMessageHoverInfos)
+			.on('mouseenter', '.user', prof.show)
+			.on('mouseenter', '.user', md.hideNotHoveredMessageInfos);
 			$(document.body)
 			.on('mouseleave', '.profile', prof.hide)
 			.on('mouseleave', '.user', prof.checkOverProfile);

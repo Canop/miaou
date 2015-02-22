@@ -123,7 +123,10 @@ body.pad #me {
 		}
 		&.after-disrupt {
 			border-top: $message-border-top-after-bisrupt;
-		}	
+		}
+		&:hover .content {
+			background: #eee; // theme
+		}
 	}
 	.rvis + .rnvis {
 		border-top: $first-not-seen-top-border;
@@ -141,9 +144,83 @@ body.mobile #message-scroller {
 	padding: $mtab-height 0 0 0;
 }
 
+.user-messages {
+	position: relative;
+	margin-top: $user-messages-vmargin;
+	margin-bottom: $user-messages-vmargin;
+	&.me {
+		background: $message-me-bg;
+		.user {
+			color: $message-me-user-color;			
+		}
+	}
+	.user {
+		position: absolute;
+		left:0;
+		top:0;
+		bottom:0;
+		padding: $user-padding-in-message;
+		color: $user-text-color-in-message;
+		width: 110px;
+		z-index: 6;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		span {
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+		&.bot {
+			font-style: italic;
+		}
+		div.avatar { // no avatar available
+			background: #eee; // theme
+		}
+		.avatar {
+			margin: 4px;
+		}
+		border-right: 2px solid #ccc; // theme
+	}
+	&:hover .user {
+		border-right: 2px solid #999; // theme	
+	}
+	.user.profiled, &:hover .user.profiled {
+		border-right: none; // theme	
+	}
+	.user.size0, .user.size1 {
+		.avatar {
+			width: 20px;
+			height: 20px;
+		}
+		flex-direction: row;
+	}
+	.user.size2 {
+		.avatar {
+			width: 30px;
+			height: 30px;
+		}
+		flex-direction: column;	
+	}
+	.user.size3 {
+		.avatar {
+			width: 40px;
+			height: 40px;
+		}
+		flex-direction: column;	
+	}
+	.user.size4 {
+		.avatar {
+			width: 60px;
+			height: 60px;
+		}
+		flex-direction: column;	
+	}
+}
+
 .message, #messages .error, .access_request {
 	position: relative;
-    .user {
+    .user { // FIXME obsolète, à virer
 		position: relative;
 		padding: $user-padding-in-message;
 		color: $user-text-color-in-message;
@@ -182,13 +259,6 @@ body.mobile #message-scroller {
 		}
 		pre + br, ul + br, ol + br {
 			display: none;
-		}
-	}
-	&.me {
-		background: $message-me-bg;
-		.user {
-			//background: $message-me-user-bg;
-			color: $message-me-user-color;			
 		}
 	}
 }
@@ -245,7 +315,7 @@ body.mobile #message-scroller {
 	.message, .error, .access_request {
 		min-height: $message-min-height;
 		display: flex;
-		align-items: center;
+		align-items: stretch;
 		.user {
 			align-self: stretch;
 			flex-basis: 120px;
@@ -275,25 +345,25 @@ body.mobile #message-scroller {
 }
 
 .decorations {
-	position: absolute;
 	z-index: 7;
-	right: 0;
-	top: 0;
-	bottom: 0;
+	flex: 0 0 120px;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-end;
+	pointer-events: none;
 	button {
+		pointer-events: auto;
 		text-align: center;
 		padding: 0 3px;
-		margin: 0 3px 0 0;
+		margin: 0 3px;
 		border-radius: 3px;
 		box-shadow: $message-decoration-button-box-shadow;		
 		font-size: 10px;
 		line-height: 14px;
 	}
 	.decoration {
+		pointer-events: auto;
 		font-family: "fontello";
 		margin: 2px;
 		flex: 0 0 15px;

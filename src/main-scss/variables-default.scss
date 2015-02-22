@@ -26,12 +26,14 @@ $input-panel-bg-color: $bg-color !default;
 $input-bg: white !default;
 $input-text-color: black !default;
 
-$message-normal-border-top: thin dotted #ddd !default;
+$message-normal-border-top: none !default;
 $message-normal-border-bottom: none !default;
 $message-me-normal-border-top: $message-normal-border-top !default;
 $message-me-normal-border-bottom: $message-normal-border-bottom !default;
 $message-border-top-after-bisrupt: thin solid #ddd !default;
 $message-border-bottom-before-bisrupt: none !default;
+
+$user-messages-vmargin: 4px !default;
 
 $message-decoration-button-box-shadow: 1px 1px 2px #999 !default;
 $message-content-bg: transparent !default;
