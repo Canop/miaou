@@ -8,11 +8,12 @@ $mes-me-brown: #2c2523;
 // chat colors
 $bg-color: #2F4F4F;
 $general-text-color: transparentize( $bear-text , 0.14 );
-//~ $general-text-color: $bear-text;
 $title-text-color: $bear-green;
 $message-me-bg: rgba(163, 83, 49, 0.08);
 $message-list-bg: #222;
 $user-text-color-in-user-list: $bear-green;
+
+$hovered-message-content-bg: rgba(100,200,0,.04);
 
 $connected-user-text-color-in-user-list: $bear-green;
 $connected-user-bg-color-in-user-list: rgba(0,0,0,0.1);
@@ -25,7 +26,7 @@ $notification-text-color: #A0522D;
 $message-link-color: #c07220;
 $slashme-color: transparentize( $bear-text , 0.6 );
 
-//~ $side-message-even-background: none;
+$no-avatar-bg: $bg-color;
 
 $message-content-table-border-color: $bg-color;
 
@@ -47,12 +48,21 @@ $reply-box-bg: rgba(222,184,135,0.15);
 $reply-box-hover-bg: rgba(222,184,135,0.6);
 $reply-box-color: rgba(255,255,255,0.5);
 
-$message-normal-border-top: thin solid lighten( $mes-brown, 4% );
-$message-normal-border-bottom: thin solid darken( $mes-brown, 4% );
-$message-me-normal-border-top: thin solid lighten( $mes-me-brown, 3% );
-$message-me-normal-border-bottom: thin solid darken( $mes-me-brown, 3% );
+$message-normal-border-top: none;
+$message-normal-border-bottom: none;
+$message-me-normal-border-top: none;
+$message-me-normal-border-bottom: none;
 $message-border-top-after-bisrupt: thin solid lighten( $mes-brown, 12% );
 $message-border-bottom-before-bisrupt: thin solid darken( $mes-brown, 12% );
+
+$user-messages-vmargin: 0;
+
+$user-in-messages-border-right: 2px solid rgba(0,0,0,.00);
+$hovered-user-in-messages-border-right: 2px solid rgba(0,0,0,.11);
+$user-messages-border-top: thin solid lighten( $mes-brown, 4% );
+$user-messages-border-bottom: thin solid darken( $mes-brown, 4% );
+$user-messages-me-border-top: thin solid lighten( $mes-me-brown, 3% );
+$user-messages-me-border-bottom: thin solid darken( $mes-me-brown, 3% );
 
 
 $goingto-bg: transparentize( brown, 0.2 );
@@ -65,8 +75,8 @@ $chat-tabs-selected-bg-image: none;
 
 
 // message sizing
-$message-min-height: 40px;
-$message-content-padding: 8px;
+$message-min-height: 30px;
+$message-content-padding: 4px;
 $message-content-line-height: 1.3;
 
 // profile in chat

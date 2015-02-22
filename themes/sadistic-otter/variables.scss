@@ -13,6 +13,8 @@ $box-background: rgba(255, 255, 255, 0.8);
 $general-text-color: #bbb;
 $title-text-color: #bbb;
 $message-content-bg: #0a0a0a;
+$hovered-message-content-bg: #333;
+
 $input-border: none;
 $chat-tabs-border-color: $accent-minus;
 
@@ -29,6 +31,10 @@ $message-menu-vote-hover-color: $accent-plus;
 $message-menu-link-color: #aaa;
 
 $message-votes-color: $accent;
+$no-avatar-bg: #444;
+
+$user-in-messages-border-right: none;
+$hovered-user-in-messages-border-right: none;
 
 $center-shadow: none;
 

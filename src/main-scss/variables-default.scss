@@ -34,9 +34,18 @@ $message-border-top-after-bisrupt: thin solid #ddd !default;
 $message-border-bottom-before-bisrupt: none !default;
 
 $user-messages-vmargin: 4px !default;
+$user-in-messages-border-right: 2px solid #ccc !default;
+$hovered-user-in-messages-border-right: 2px solid #999 !default;
+$user-messages-border-top: none !default;
+$user-messages-border-bottom: none !default;
+$user-messages-me-border-top: none !default;
+$user-messages-me-border-bottom: none !default;
 
 $message-decoration-button-box-shadow: 1px 1px 2px #999 !default;
 $message-content-bg: transparent !default;
+$hovered-message-content-bg: #eee !default;
+
+$no-avatar-bg: #eee !default;
 
 $side-message-border-top: thin solid rgba(255,255,255,0.1) !default;
 $side-message-border-bottom: thin solid rgba(0,0,0,0.1) !default;

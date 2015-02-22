@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 39,
+const apiversion = 40,
 	maxHiatusForMerge = 10, // in seconds
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),

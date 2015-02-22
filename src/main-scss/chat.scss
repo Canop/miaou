@@ -125,7 +125,7 @@ body.pad #me {
 			border-top: $message-border-top-after-bisrupt;
 		}
 		&:hover .content {
-			background: #eee; // theme
+			background: $hovered-message-content-bg; // theme
 		}
 	}
 	.rvis + .rnvis {
@@ -148,8 +148,12 @@ body.mobile #message-scroller {
 	position: relative;
 	margin-top: $user-messages-vmargin;
 	margin-bottom: $user-messages-vmargin;
+	border-top: $user-messages-border-top;
+	border-bottom: $user-messages-border-bottom;
 	&.me {
 		background: $message-me-bg;
+		border-top: $user-messages-me-border-top;
+		border-bottom: $user-messages-me-border-bottom;
 		.user {
 			color: $message-me-user-color;			
 		}
@@ -175,18 +179,18 @@ body.mobile #message-scroller {
 			font-style: italic;
 		}
 		div.avatar { // no avatar available
-			background: #eee; // theme
+			background: $no-avatar-bg;
 		}
 		.avatar {
 			margin: 4px;
 		}
-		border-right: 2px solid #ccc; // theme
+		border-right: $user-in-messages-border-right;
 	}
 	&:hover .user {
-		border-right: 2px solid #999; // theme	
+		border-right: $hovered-user-in-messages-border-right;	
 	}
 	.user.profiled, &:hover .user.profiled {
-		border-right: none; // theme	
+		border-right: none;	
 	}
 	.user.size0, .user.size1 {
 		.avatar {
@@ -197,8 +201,8 @@ body.mobile #message-scroller {
 	}
 	.user.size2 {
 		.avatar {
-			width: 30px;
-			height: 30px;
+			width: 24px;
+			height: 24px;
 		}
 		flex-direction: column;	
 	}
@@ -356,7 +360,10 @@ body.mobile #message-scroller {
 		pointer-events: auto;
 		text-align: center;
 		padding: 0 3px;
-		margin: 0 3px;
+		margin-right: 2px;
+		&:last-child {
+			margin-right: 12px;		
+		}
 		border-radius: 3px;
 		box-shadow: $message-decoration-button-box-shadow;		
 		font-size: 10px;
