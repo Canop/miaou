@@ -164,6 +164,10 @@ body.prefs {
 	height: 220px;
 	display: flex;
 	align-items: center;
-	justify-content: center;	
+	justify-content: center;
+	img {
+		max-height: 220px;
+		max-width: 220px;
+	}
 }
 

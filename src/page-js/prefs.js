@@ -73,31 +73,45 @@ miaou(function(locals){
 		},
 		instagram:{
 			keyLabel: 'Instagram&nbsp;id'
-		},
+		}
+	}
+	for (var key in locals.pluginAvatars) {
+		avatarSources[key] = {
+			key: locals.pluginAvatars[key]
+		}
+		console.log("->",avatarSources[key]);
 	}
 	function avatarTry(){
-		var src = $('#avatar-src').val(),
-			key = $('#avatar-key').val().trim();
+		var srcname = $('#avatar-src').val(),
+			src = avatarSources[srcname],
+			key = src.key || $('#avatar-key').val().trim();
 		if (key.length<1){
 			$('#avatar-preview').empty();
 			return;
 		}
-		var url = "http://avatars.io/"+src+"/"+key+'?size=large';
+		var url = src.keyLabel ? "http://avatars.io/"+srcname+"/"+key+'?size=large' : key;
 		console.log("Try", url);
 		$('#avatar-preview').empty();
 		$('<img>').on('load', function(){
 			$(this).show();
-			avatarSources[src].key = key;
+			src.key = key;
+			$('#avatar-key').val(key);
 		}).on('error', function(){
 			$('#avatar-preview').html('<p>Image not found</p>');			
 		}).attr('src',url).appendTo('#avatar-preview').hide();
 	}
 	function onchangeAvatarSrc(){
+		$('#avatar-preview').empty();
 		var src = avatarSources[$('#avatar-src').val()];
 		if (src) {
-			$('#avatar-key-label').html(src.keyLabel+':');
+			if (src.keyLabel) {
+				$('#avatar-key-label').html(src.keyLabel+':');
+				$('#avatar-key').val(src.key||'').show();
+			} else {
+				$('#avatar-key-label').html('');
+				$('#avatar-key').val('').hide();
+			}
 			$('#avatar-src-description').html(src.description||'');
-			$('#avatar-key').val(src.key||'').show();
 		} else {
 			$('#avatar-key-label').html('');
 			$('#avatar-src-description').html('');
@@ -110,7 +124,12 @@ miaou(function(locals){
 	if (locals.avatarsrc) {
 		$('#avatar-src').val(locals.avatarsrc);
 		$('#avatar-key').val(locals.avatarkey);
-		avatarSources[locals.avatarsrc].key = locals.avatarkey;
+		var src = avatarSources[locals.avatarsrc];
+		if (src.keyLabel) {
+			src.key = locals.avatarkey;
+		} else {
+			$('#avatar-key').val('').hide();			
+		}
 		avatarTry();
 	} else {
 		onchangeAvatarSrc();

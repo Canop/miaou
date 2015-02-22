@@ -7,7 +7,9 @@ miaou(function(usr, ed, locals, mod, ws){
 	
 	// o is an object with avs and avk (may be a user or a message)
 	usr.avatarsrc = function(o){
-		if (o.avk) return 'http://avatars.io/'+o.avs+'/'+o.avk+'?size=large';
+		if (!o.avk) return;
+		if (/^https?:\/\//.test(o.avk)) return o.avk; // this is hacky...
+		return 'http://avatars.io/'+o.avs+'/'+o.avk+'?size=large';
 	}
 
 	function $user(user){

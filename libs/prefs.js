@@ -99,7 +99,7 @@ exports.appAllPrefs = function(req, res, db){
 				avatarsrc = req.param('avatar-src'),
 				avatarkey = req.param('avatar-key');
 			if (!naming.isValidUsername(name)) return;
-			if (naming.isUsernameForbidden(name)) {
+			if (name!==req.user.name && naming.isUsernameForbidden(name)) {
 				error = "Sorry, that username is reserved.";
 				return;
 			}
@@ -146,8 +146,13 @@ exports.appAllPrefs = function(req, res, db){
 	}).then(function(){
 		return this.getUserInfo(req.user.id);
 	}).then(function(userinfo){
+		var pluginAvatars = {};
 		externalProfileInfos.forEach(function(epi){
 			if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
+			if (epi.ppi && epi.ep.avatarUrl) {
+				var url = epi.ep.avatarUrl(epi.ppi);
+				if (url) pluginAvatars[epi.name] = url;
+			}
 		});
 		var hasValidName = naming.isValidUsername(req.user.name);
 		res.render('prefs.jade', {
@@ -163,7 +168,8 @@ exports.appAllPrefs = function(req, res, db){
 				userinfo: userinfo,
 				email: req.user.email,
 				avatarsrc: req.user.avatarsrc,
-				avatarkey: req.user.avatarkey
+				avatarkey: req.user.avatarkey,
+				pluginAvatars: pluginAvatars
 			}
 		});
 	}).catch(function(err){
