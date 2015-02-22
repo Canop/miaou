@@ -27,6 +27,8 @@ $slashme-color: #999;
 $side-message-even-background: none;
 
 $message-content-border-color: #333;
+$content-border-bottom-before-disrupt: none;
+$content-border-top-after-disrupt: thin solid #888;
 
 $decoration-color: $accent-minus;
 $decoration-clickable-color: $accent;
@@ -66,8 +68,6 @@ $input-text-color: #bbb;
 
 $message-normal-border-top: none;
 $message-normal-border-bottom: none;
-$message-border-bottom-before-bisrupt: none;
-$message-border-top-after-bisrupt: none;
 $message-decoration-button-box-shadow: none;
 
 $side-message-border-top: 4px solid $right-background;

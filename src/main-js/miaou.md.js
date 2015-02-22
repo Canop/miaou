@@ -331,7 +331,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 	}
 
 	md.showMessageFlowDisruptions = function(){
-		var	$messages = $('#messages > .message'),
+		var	$messages = $('#messages .message'),
 			lastMessage, $lastMessage;
 		$messages.find('.before-disrupt').removeClass('before-disrupt');
 		$messages.find('.after-disrupt').removeClass('after-disrupt');

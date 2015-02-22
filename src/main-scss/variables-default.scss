@@ -30,8 +30,9 @@ $message-normal-border-top: none !default;
 $message-normal-border-bottom: none !default;
 $message-me-normal-border-top: $message-normal-border-top !default;
 $message-me-normal-border-bottom: $message-normal-border-bottom !default;
-$message-border-top-after-bisrupt: thin solid #ddd !default;
-$message-border-bottom-before-bisrupt: none !default;
+
+$content-border-bottom-before-disrupt: none !default;
+$content-border-top-after-disrupt: thin dashed #ccc !default;
 
 $user-messages-vmargin: 4px !default;
 $user-in-messages-border-right: 2px solid #ccc !default;

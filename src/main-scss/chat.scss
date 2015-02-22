@@ -118,11 +118,11 @@ body.pad #me {
 			border-top: $message-me-normal-border-top;
 			border-bottom: $message-me-normal-border-bottom;		
 		}
-		&.before-disrupt {
-			border-bottom: $message-border-bottom-before-bisrupt;
+		&.before-disrupt .content {
+			border-bottom: $content-border-bottom-before-disrupt;
 		}
-		&.after-disrupt {
-			border-top: $message-border-top-after-bisrupt;
+		&.after-disrupt .content {
+			border-top: $content-border-top-after-disrupt;
 		}
 		&:hover .content {
 			background: $hovered-message-content-bg; // theme

@@ -52,8 +52,9 @@ $message-normal-border-top: none;
 $message-normal-border-bottom: none;
 $message-me-normal-border-top: none;
 $message-me-normal-border-bottom: none;
-$message-border-top-after-bisrupt: thin solid lighten( $mes-brown, 12% );
-$message-border-bottom-before-bisrupt: thin solid darken( $mes-brown, 12% );
+
+$content-border-bottom-before-disrupt: thin solid lighten( $mes-brown, 12% );
+$content-border-top-after-disrupt: thin solid darken( $mes-brown, 12% );
 
 $user-messages-vmargin: 0;
 
