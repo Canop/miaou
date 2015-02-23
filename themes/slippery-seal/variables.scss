@@ -147,3 +147,15 @@ $pad-room-last-message-border-top: solid thin #ddd;
 
 // miaou logo
 $miaou-logo-color: #111;
+
+// toning down images
+img {
+	-webkit-filter: grayscale(100%) contrast(40%) brightness(1.5);
+	filter: grayscale(100%) contrast(40%) brightness(1.5);
+}
+img.avatar {
+	max-width: 20px !important;
+	max-height: 20px !important;
+}
+
+
