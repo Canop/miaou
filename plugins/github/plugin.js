@@ -78,7 +78,12 @@ exports.externalProfile = {
 			{ name:'gist_url', label:'Gist URL', type:'url' }
 		],
 		create: createProfile
-	}, render: renderProfile
+	},
+	render: renderProfile,
+	avatarUrl: function(ppi){
+		return ppi.avatar;
+	}
+
 }
 
 
