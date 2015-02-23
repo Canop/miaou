@@ -123,7 +123,7 @@ miaou(function(hist, md, ws){
 	hist.showPage = function(){
 		if (!visible) return;
 		var $scroller = $('#message-scroller'), sh = $scroller.height();
-		var $messages = $('#messages > .message').filter(function(){
+		var $messages = $('#messages .message').filter(function(){
 			var y = $(this).offset().top;
 			return y<sh && y+$(this).height()>0;
 		});
