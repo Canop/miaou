@@ -32,6 +32,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 	
 	// goes to next ping in the room. Return true if there's still another one after that
 	notif.nextPing = function(){
+		lastUserAction = Date.now();
 		var done = false;
 		for (var i=0; i<notifications.length; i++) {
 			if (notifications[i].r==locals.room.id) {
@@ -40,7 +41,8 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 				} else {
 					md.focusMessage(notifications[i].mid);
 					ws.emit("rm_ping", notifications[i].mid);
-					notifications.splice(i++, 1);
+					//~ notifications.splice(i++, 1);
+					done = true;
 				}
 			}
 		}
@@ -70,7 +72,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 				).append(
 					$('<button>').text("Next ping").click(function(){
 						notif.nextPing();
-						notif.updatePingsList();
+						//~ notif.updatePingsList();
 					})
 				).appendTo($c)
 			}
@@ -100,6 +102,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 	
 	// add pings to the list and update the GUI
 	notif.pings = function(pings){
+		console.log("received pings", pings);
 		var	changed = false,
 			map = notifications.reduce(function(map,n){ map[n.mid]=1;return map; }, {});
 		pings.forEach(function(ping){
@@ -113,6 +116,8 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 		if (changed) notif.updatePingsList();
 	}
 	
+	// called by the server or (most often) in case of any action on a message
+	//  (so this is very frequently called on non pings)
 	notif.removePing = function(mid, forwardToServer, flash){
 		if (!mid) return;
 		// we assume here there's at most one notification to a given message
@@ -138,6 +143,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 	}
 	
 	// called in case of new message (or a new important event related to a message)
+	// FIXME : it's also called if the message isn't really new (loading old pages)
 	notif.touch = function(mid, ping, from, text, r, $md){
 		r = r || locals.room;
 		var	visible = vis(), lastUserActionAge = Date.now()-lastUserAction;

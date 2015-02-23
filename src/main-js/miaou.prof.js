@@ -5,9 +5,17 @@ miaou(function(prof, gui, locals){
 	var showTimer;
 	
 	prof.checkOverProfile = function(e){
-		if (!$(document.elementFromPoint(e.pageX, e.pageY)).closest('.profile,.profiled').length) {
-			prof.hide();
+		var elems = $('.profile,.profiled').get();
+		for (var i=0; i<elems.length; i++) {
+			var $o = $(elems[i]), off = $o.offset();
+			if (
+				e.pageX>=off.left && e.pageX<=off.left+$o.outerWidth()
+				&& e.pageY>=off.top && e.pageY<=off.top+$o.outerHeight()
+			) {
+				return;
+			}
 		}
+		prof.hide();
 	}
 	
 	prof.shownow = function(){

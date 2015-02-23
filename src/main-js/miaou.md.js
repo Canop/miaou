@@ -326,7 +326,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		}
 		resize($md, shouldStickToBottom);
 		resizeUser($md.siblings('.user'));
-		if (shouldStickToBottom && (!message.id || message.id==$('#messages > .message').last().attr('mid'))) gui.scrollToBottom($md);
+		if (shouldStickToBottom && (!message.id || message.id==$('#messages .message').last().attr('mid'))) gui.scrollToBottom($md);
 		return $md;
 	}
 
