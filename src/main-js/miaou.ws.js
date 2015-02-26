@@ -108,8 +108,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 				'You have been invited by <span class=user>'+invit.byname+'</span> in a private lounge.'
 			).addClass('notification').append(
 				$('<button>').addClass('openroom').text('Enter room').click(function(){
-					window.open(invit.room);
-					$(this).closest('.notification').remove();
+					location = invit.room;
 				})
 			).append(
 				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
