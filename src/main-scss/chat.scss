@@ -193,38 +193,41 @@ body.mobile #message-scroller {
 	.user.profiled, &:hover .user.profiled {
 		border-right: none;	
 	}
+	.avatar-wrapper .avatar {
+	
+	}
 	.user {
-		.avatar {
-			max-width: 16px;
-			max-height: 16px;
+		.avatar-wrapper {
+			width: 16px;
+			.avatar {
+				max-width: 100%;
+				height: auto;
+			}
 		}
 		flex-direction: row;
 	}
 	.user.size1 {
-		.avatar {
-			max-width: 20px;
-			max-height: 20px;
+		.avatar-wrapper {
+			width: 20px;
+			margin-right: 10px; // I don't really understand why I need this
 		}
 		flex-direction: row;
 	}
 	.user.size2 {
-		.avatar {
-			max-width: 26px;
-			max-height: 26px;
+		.avatar-wrapper {
+			width: 26px;
 		}
 		flex-direction: column;	
 	}
 	.user.size3 {
-		.avatar {
-			max-width: 40px;
-			max-height: 40px;
+		.avatar-wrapper {
+			width: 40px;
 		}
 		flex-direction: column;	
 	}
 	.user.size4 {
-		.avatar {
-			max-width: 56px;
-			max-height: 56px;
+		.avatar-wrapper {
+			width: 56px;
 		}
 		flex-direction: column;	
 	}

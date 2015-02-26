@@ -224,8 +224,13 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		var $usermessages = $('<div>').addClass('user-messages').data('user',user),
 			$user = $('<div>').addClass('user').append($('<span/>').text(user.name)).appendTo($usermessages);
 		var avsrc = usr.avatarsrc(user);
-		if (avsrc) $('<img>').attr('src',avsrc).addClass('avatar').prependTo($user);
-		else $('<div>').addClass('avatar').prependTo($user);
+		if (avsrc) {
+			$('<div>').addClass('avatar-wrapper').prependTo($user).append(
+				$('<img>').attr('src',avsrc).addClass('avatar')
+			);
+		} else {
+			$('<div>').addClass('avatar').prependTo($user);
+		}
 		if (user.bot) $user.addClass('bot');
 		if (user.id===locals.me.id) $usermessages.addClass('me');
 		return $usermessages;
