@@ -111,7 +111,7 @@ function defineAppRoutes(){
 	map('all', '/username', profile.appAllUsername, true);
 	map('all', '/prefs', prefs.appAllPrefs, true);
 	map('get', '/publicProfile', profile.appGetPublicProfile, true, true);
-	map('get', /^\/user\/(\d+)$/, profile.appGetUser, true, true);
+	map('get', /^\/user\/(\w+)$/, profile.appGetUser, true, true);
 	map('get', '/help', help.appGetHelp, true, true);
 	map('get', '/helpus', help.appGetHelpUs, true, true);
 	map('get', '/intro', intro.appGetIntro, true, true);

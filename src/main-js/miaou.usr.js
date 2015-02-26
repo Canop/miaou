@@ -36,16 +36,16 @@ miaou(function(usr, ed, locals, mod, ws){
 	usr.recentNamesStartingWith = function(s){
 		return recentUsers.filter(function(u){ return !u.name.lastIndexOf(s,0) }).map(function(u){ return u.name });
 	}
-	
+
 	usr.hideUserHoverButtons = function(){
 		$('#users .user .decorations button').remove();
 	}
-	
+
 	usr.insert = function(user, time){
 		usr.insertInUserList(user, time);
 		usr.insertAmongRecentUsers(user, time);
 	}
-	
+
 	usr.insertAmongRecentUsers = function(user, time){
 		user.mc = time;
 		for (var i=0; i<recentUsers.length; i++) {
@@ -62,7 +62,7 @@ miaou(function(usr, ed, locals, mod, ws){
 		}
 		recentUsers.push(user);
 	}
-	
+
 	usr.insertInUserList = function(user, time) {
 		var target, $u = $user(user);
 		if (!time) time = Date.now()/1000|0;

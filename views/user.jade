@@ -1,62 +1,48 @@
 doctype html
 html
 	head
-		title Miaou
+		title=vars.user.name + ' @ Miaou'
+		meta(name="viewport", content="initial-scale=1, maximum-scale=1")
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='../static/themes/'+theme+'/miaou.css')
-		script(src="static/jquery-2.1.3.min.js")
+		script(src="../static/jquery-2.1.3.min.js")
 		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
-		script(src="static/miaou.min.js")
-		script(src="static/user.min.js")
-		style.
-			#whatsmiaou {
-				background: #dc3535;
-				color: white;
-				font-size: 120%;
-				font-weight: bold;
-				position: fixed;
-				right: 30%;
-				top: 70px;
-				border: 2px solid #555;
-				opacity: 0;
-				z-index: 5;
-			}
-			#whatsmiaou.on {
-				opacity: 1;
-				transition: all 3s ease-in;
-			}
-			#whatsmiaou:hover {
-				border: 2px solid #222;
-				box-shadow: 1px 1px 5px #555;
-				transition: all 0.5s ease-in;
-			}
-	body.home
-		a(href="https://github.com/Canop/miaou",target="github")
-			img(style="position:absolute; top:0; right:0; border:0;",src="../static/gh_ribbon_right_gray.png",alt="Fork me on GitHub")
-		section#home-top
-			div.MP
-				a(href="..")
-					img(src="../static/Miaou-300-f.png")
-		button#whatsmiaou What's Miaou ?
-		section
-			div.thinMP
-				h2= vars.user.name
-		section#home-main
-			div#home-main-content
-				table#userinfo
-				h3
-					span.user= vars.user.name + ' '
-					case vars.rooms.length
-						when 0
-							| didn't post in any publicly listed room
-						when 1
-							| might be found in this room :
-						default
-							| can usually be found in these rooms :
-					br
-					br
-				table.list#recentRooms
-				div.dialog-buttons#buttons
-					button(onclick="location='..'") Miaou Home
-		
+		script(src="../static/miaou.min.js")
+		script(src="../static/user.min.js")
+	body.user
+		#user-miaou-logo-wrapper
+			a(href="../rooms")
+				img#user-miaou-logo(src="../static/Miaou.svg")
+		#user-box
+			section#user-main-profile
+				#user-fields
+					.user-field
+						.user-field-name name
+						.user-field-val= '@'+vars.user.name
+					if vars.userinfo.location
+						.user-field
+							.user-field-name location
+							.user-field-val= vars.userinfo.location
+					if vars.userinfo.description
+						.user-field
+							.user-field-name about me
+							.user-field-val= vars.userinfo.description
+					if vars.userinfo.url
+						.user-field
+							.user-field-name website
+							.user-field-val
+								a(href=vars.userinfo.url)= vars.userinfo.url.replace(/https?:\/\//,'')
+					#user-buttons
+						// button#user-pm='Dialog with @'+vars.user.name							
+						button#goto-home Go to Room List						
+				#user-avatar
+					if vars.avatar
+						img.avatar(src=vars.avatar)
+			section#user-external-identities
+				h2 Proven External Identities
+				each epi in externalProfileInfos
+					if (epi.html)
+						.external-identity
+							.externalProfileName= epi.name
+							.externalProfile !{epi.html}
 

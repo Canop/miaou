@@ -14,6 +14,12 @@ exports.configure = function(miaou){
 	return this;
 }
 
+var avatarsrc = exports.avatarsrc = function(source, key){
+	if (!key) return;
+	if (/^https?:\/\//.test(key)) return key; // this is hacky...
+	return 'http://avatars.io/'+source+'/'+key+'?size=large';
+}
+
 // Checks that the profile is complete enough to be used for the chat
 //  (a valid name is needed). If not, the user is redirected to the 
 //  page where he can set his name.
@@ -91,16 +97,33 @@ exports.appGetPublicProfile = function(req, res, db){
 }
 
 exports.appGetUser = function(req, res, db){
-	db.on(+req.params[0])
-	.then(function(uid){
+	var userIdOrName = req.params[0],
+		user;
+	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
+		return { name:p.name, ep:p.externalProfile }
+	});
+	db.on().then(function(){
+		return userIdOrName==+userIdOrName ? this.getUserById(userIdOrName) : this.getUserByName(userIdOrName)
+	}).then(function(u){
+		user = u;
+		if (!user) throw new db.NoRowError();
+		return externalProfileInfos;
+	}).map(function(epi){
+		return this.getPlayerPluginInfo(epi.name, user.id);
+	}).map(function(ppi, i){
+		if (ppi) externalProfileInfos[i].html = externalProfileInfos[i].ep.render(ppi.info);
+	}).then(function(){
 		return [
-			this.getUserById(uid),
-			this.getUserInfo(uid),
-			this.listRecentUserRooms(uid)
+			this.getUserInfo(user.id),
+			this.listRecentUserRooms(user.id)
 		]
-	}).spread(function(user, info, rooms){
+	}).spread(function(info, rooms){
 		rooms.forEach(function(r){ r.path = '../'+server.roomPath(r) });
-		res.render('user.jade', { vars:{user:user, userinfo:info, rooms:rooms} });
+		var vars = {
+			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
+			rooms:rooms
+		};
+		res.render('user.jade', { vars:vars, externalProfileInfos:externalProfileInfos });
 	}).catch(db.NoRowError, function(){
 		server.renderErr(res, "User not found", '../');
 	}).catch(function(err){
