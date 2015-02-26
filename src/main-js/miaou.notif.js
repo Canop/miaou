@@ -41,7 +41,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 				} else {
 					md.focusMessage(notifications[i].mid);
 					ws.emit("rm_ping", notifications[i].mid);
-					//~ notifications.splice(i++, 1);
+					notifications.splice(i++, 1);
 					done = true;
 				}
 			}
@@ -72,7 +72,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 				).append(
 					$('<button>').text("Next ping").click(function(){
 						notif.nextPing();
-						//~ notif.updatePingsList();
+						notif.updatePingsList();
 					})
 				).appendTo($c)
 			}
