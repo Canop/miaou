@@ -31,6 +31,8 @@ $message-normal-border-bottom: none !default;
 $message-me-normal-border-top: $message-normal-border-top !default;
 $message-me-normal-border-bottom: $message-normal-border-bottom !default;
 
+$message-margin: 0 !default;
+
 $content-border-bottom-before-disrupt: none !default;
 $content-border-top-after-disrupt: thin dashed #ccc !default;
 
@@ -68,6 +70,8 @@ $message-menu-link-color: #336 !default;
 
 $message-me-user-bg: inherit !default;
 $message-me-user-color: inherit !default;			
+
+$user-in-messages-bg: linear-gradient(to bottom left, rgba(240,234,214,0.7) 0%,rgba(0,0,0,0) 25px) !default;
 
 $message-link-color: Sienna !default;
 

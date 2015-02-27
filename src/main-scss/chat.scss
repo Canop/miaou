@@ -111,6 +111,7 @@ body.pad #me {
 	position: relative;
 	background: $message-list-bg;
 	.message {
+		margin: $message-margin;
 		transition: background 0.6s;
 		border-top: $message-normal-border-top;
 		border-bottom: $message-normal-border-bottom;
@@ -170,6 +171,7 @@ body.mobile #message-scroller {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background: $user-in-messages-bg;
 		span {
 			text-overflow: ellipsis;
 			overflow: hidden;

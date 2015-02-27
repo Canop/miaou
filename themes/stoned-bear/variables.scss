@@ -13,6 +13,8 @@ $message-me-bg: rgba(163, 83, 49, 0.08);
 $message-list-bg: #222;
 $user-text-color-in-user-list: $bear-green;
 
+$message-margin: 4px;
+
 $hovered-message-content-bg: rgba(100,200,0,.04);
 
 $connected-user-text-color-in-user-list: $bear-green;
@@ -53,6 +55,8 @@ $message-normal-border-bottom: none;
 $message-me-normal-border-top: none;
 $message-me-normal-border-bottom: none;
 
+$user-in-messages-bg: none;
+
 $content-border-bottom-before-disrupt: thin solid lighten( $mes-brown, 12% );
 $content-border-top-after-disrupt: thin solid darken( $mes-brown, 12% );
 
@@ -64,7 +68,6 @@ $user-messages-border-top: thin solid lighten( $mes-brown, 4% );
 $user-messages-border-bottom: thin solid darken( $mes-brown, 4% );
 $user-messages-me-border-top: thin solid lighten( $mes-me-brown, 3% );
 $user-messages-me-border-bottom: thin solid darken( $mes-me-brown, 3% );
-
 
 $goingto-bg: transparentize( brown, 0.2 );
 
