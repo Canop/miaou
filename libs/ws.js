@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 41,
+const apiversion = 42,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
 	path = require('path'),

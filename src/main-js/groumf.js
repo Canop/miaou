@@ -2,6 +2,8 @@
 // https://github.com/Canop/groumf
 
 (function(){
+
+	"use strict";
 	
 	var WordCharRegex = /[\d@A-Z_a-z~\xa1-\xac\xae-\xaf\xb5-\xba\xc0-\xfe]/; // something a little less bad than the \w of ES5
 
@@ -99,10 +101,12 @@
 					var r = cb.apply(null, res.concat(res.index, res.input)),
 						div=document.createElement('div');
 					div.innerHTML = r;
-					for (var k=0, newNodes=div.childNodes, nnl=newNodes.length; k<nnl; k++) {
-						element.insertBefore(newNodes[k], node);
+					var childNode;
+					while (childNode = div.firstChild) {
+						element.insertBefore(childNode, node);
 					}
 					copied = res.index+res[0].length;
+					if (!regex.global) break;
 				}
 				if (copied) {
 					element.insertBefore(document.createTextNode(input.slice(copied, input.length)), node);

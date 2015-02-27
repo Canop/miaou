@@ -82,7 +82,7 @@ page-css: ./build/page-scss $(PAGES_CSS_OUT)
 # 	and finally concat css of plugins
 ./build/themes/%:
 	mkdir -p $@
-./static/themes/%/miaou.css: ./build/themes/% ./themes/%/*.scss ./src/main-scss/*.scss
+./static/themes/%/miaou.css: ./build/themes/% ./themes/%/*.scss ./src/main-scss/*.scss ./plugins/*/css/*.css
 	mkdir -p $(@D)
 	cp ./src/main-scss/*.scss ./build/themes/$*/
 	cp ./themes/$*/*.scss ./build/themes/$*/
