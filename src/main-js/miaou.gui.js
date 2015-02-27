@@ -142,9 +142,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			.on('click', '.user,.profile', prof.toggle);
 			$(window).resize(gui.scrollToBottom);
 		} else {
-			$('#messages, #users, #notifications')
+			$('#messages, #notifications')
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
-			//~ .on('mouseleave', '.message', md.hideMessageHoverInfos)
 			.on('mouseleave', md.hideMessageHoverInfos)
 			.on('mouseenter', '.decorations', prof.show)
 			.on('mouseenter', '.decorations', md.hideNotHoveredMessageInfos);
@@ -153,7 +152,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			.on('mouseleave', '.user', prof.checkOverProfile);
 			$('#users')
 			.on('mouseenter', '.user', usr.showUserHoverButtons)
-			.on('mouseleave', '.user', usr.hideUserHoverButtons);
+			.on('mouseleave', '.user', usr.hideUserHoverButtons)
+			.on('mouseenter', '.user', prof.show);
 		}
 		
 		$('#notable-messages, #search-results').on('click', '.message', function(e){

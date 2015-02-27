@@ -44,6 +44,7 @@
 		if (c && !a.parentNode) c.appendChild(a);
 		return new U(a);
 	}
+	ù.fn = fn; // so that ù can be easily extended
 
 	// reverse camel case : "strokeOpacity" -> "stroke-opacity"
 	function rcc(n){
