@@ -13,6 +13,7 @@ function doStats(ct) {
 	var	match = ct.args.match(/([@\w\-]+)(\s+\d+)?/),
 		room = ct.shoe.room,
 		topic = 'server',
+		ranking = true,
 		n = 10;
 	if (match) {
 		topic = match[1];
@@ -29,6 +30,15 @@ function doStats(ct) {
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800)"},
 		];
 		title = "Server Statistics";
+	} else if (/^server-graph$/i.test(topic)) {
+		cols = [
+			{name:"Month", value:"extract(year from to_timestamp(created))*100+extract(month from to_timestamp(created))"},
+			{name:"Messages", value:"count(*)"},
+			{name:"Authors", value:"count(distinct author)"},
+		];
+		from = "from message group by c0 order by c0";
+		title = "Server Statistics #graph";
+		ranking = false;
 	} else if (/^users$/i.test(topic)) {
 		cols = [
 			{name:"Name", value:"name"},
@@ -99,7 +109,7 @@ function doStats(ct) {
 		if (!rows.length) {
 			c = "nothing found";
 		} else {
-			var ranking = rows.length>1;
+			ranking = ranking && rows.length>1;
 			c = title+"\n";
 			if (ranking) c += '#|';
 			c += cols.map(function(c){ return c.name }).join('|')+'\n';

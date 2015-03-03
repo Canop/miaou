@@ -24,20 +24,39 @@ miaou(function(md, plugins){
 		this.vals = vals;
 		this.valid = true;
 	}
+	TGCol.prototype.isAscending = function(){
+		for (var i=0, n=this.vals.length; i<n; i++) {
+			if ( !(this.vals[i][1]>this.vals[i][0]) || (i && (this.vals[i-1][1]>this.vals[i][0])) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+	TGCol.prototype.hasDifferentValues = function(){
+		var v = this.vals[0];
+		for (var i=1, n=this.vals.length; i<n; i++) {
+			if ( this.vals[i]!=v ) return true;
+		}
+		return false;
+	}
 
 	var m3 = {
 		jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12	
 	}
-	var parsers = {
-		number: Number,
-		month: function(s){
+	var xparsers = [ // todo use a proper date parser (but lighter than moment.js)
+		function(s){ // jun 2015
 			var m = s.match(/^(\w+)[\s\/\-]+(\d{4})$/);
-			console.log('m:',m, +m[2], m3[m[1].toLowerCase()]-1);
 			if (!m) return;
 			var month = m3[m[1].toLowerCase()];
 			return [(new Date(+m[2], month-1)).getTime(), (new Date(+m[2], month)).getTime()];
-		}
-	};
+		},
+		function(s){ // 201506
+			var m = s.match(/^(\d{4})\s*(\d{2})$/);
+			console.log('parsing ', s, '->', m);
+			if (!m) return;
+			return [(new Date(+m[1], m[2]-1)).getTime(), (new Date(+m[1], m[2])).getTime()];
+		},
+	];
 	//~ var colors = [
 		//~ '#d5bdab', '#98d1d1', '#fcdc9a',
 		 //~ '#fcf581', '#e7d7d7',
@@ -53,41 +72,46 @@ miaou(function(md, plugins){
 	
 	function render($c, m){
 		if (m.content && /(^|\s)#graph\b/.test(m.content)) {
-			console.log("#graph message");
+			console.log("#graph message z");
 			var $table = $c.find('table').eq(0);
 			if ($table.length!==1) return;
 			var	xcol = new TGCol($table, 0),
 				ycols = [];
-			xcol.parse(parsers.month);
+			for (var ip=0; ip<xparsers.length; ip++){
+				xcol.parse(xparsers[ip]);
+				if (xcol.valid) {
+					if (xcol.isAscending()) break;
+					else xcol.valid = false; // not valid as a x column
+				}
+			}
+			if (!xcol.valid) {
+				console.log("table : no valid x column");
+				return;
+			}
+			
 			for (var i=1, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
 				var ycol = new TGCol($table, i);
-				ycol.parse(parsers.number);
-				if (ycol.valid) ycols.push(ycol);
+				ycol.parse(Number);
+				if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
 			}
 			console.log(xcol, ycols);
+
+			var H = 150,
+				nbycols = ycols.length;
 			
-			if (!ycols.length) {
+			if (!nbycols) {
 				console.log("no value column for #graph");
 				return;
 			}
-			for (var i=0; i<n; i++) {
-				if ( !(xvals[i][1]>xmin) || (i && (xvals[i-1][1]>xvals[i][0])) ) {
-					console.log("table: xcol not ascending");
-					return;
-				}
-			}
-			
-			var H = 150,
-			nbycols = ycols.length,
-				ml = Math.min(70, nbycols*35),
+
+			var ml = Math.min(70, nbycols*35),
 				xvals = xcol.vals, 
 				n = xvals.length,
 				mt = 15, mr = 20, mb = 30, ml = 100; // margins top, right, bottom and left
 
-			var g = ù('<svg',$table[0]).css({ width:400, height:H }),
+			var g = ù('<svg',$c[0]).css({ width:600, height:H, background:'white' }),
 				gW = Math.max(50, Math.min(g.width()-mr-ml, 40*n*ycols.length)),
 				W = gW+mr+ml, oc = "black",
-				//~ W = 400,
 				xmin = xvals[0][0],
 				w = W-ml-mr, h = H-mt-mb;
 			var	rx = w / (xvals[n-1][1]-xvals[0][0]);
@@ -95,8 +119,7 @@ miaou(function(md, plugins){
 			var txtx, txty, barborder;
 
 			ycols.forEach(function(ycol, j){
-				var yvals = ycol.vals,
-					barcolor = colors[j%colors.length];
+				var yvals = ycol.vals;
 				ycol.max = Math.max.apply(0, ycol.vals);
 				ycol.min = Math.min.apply(0, ycol.vals);
 				if (ycol.min<.6*ycol.max) ycol.min = 0;

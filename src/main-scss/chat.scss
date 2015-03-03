@@ -368,9 +368,7 @@ body.mobile #message-scroller {
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-end;
-	//~ pointer-events: none;
 	button {
-		//~ pointer-events: auto;
 		text-align: center;
 		padding: 0 3px;
 		margin-right: 2px;
@@ -383,7 +381,6 @@ body.mobile #message-scroller {
 		line-height: 14px;
 	}
 	.decoration {
-		//~ pointer-events: auto;
 		font-family: "fontello";
 		margin: 2px;
 		flex: 0 0 15px;
