@@ -1,104 +1,10 @@
-(function(){
+miaou(function(fmt){
 	
-	var	coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
-		regularcoldefregex = /^\s*[:\-]*(\|[:\-]+)*\|?\s*$/,
-		rowchange = {},
-		nextId = 1;
-
-	function Table(cols){
-		this.coldefstr = cols;
-		this.regular = !/\+/.test(cols); // A "regular" table may accept multi-lines cells
-		var id = this.id = 'tbl'+nextId++;
-		this.multiline = false;
-		this.nbcols = 0;
-		if (/:/.test(cols)) {
-			this.style = (cols.match(/[:\-]+/g)||[]).map(function(c){ // the ||[] might be over defensive now
-				return c[c.length-1]!==':' ? 'left' : ( c[0]===':' ? 'center' : 'right' );
-			}).map(function(align, i){
-				return '#'+id+' td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
-			}).join('');
-		}
-		this.lines = [];
-	}
-	Table.prototype.push = function(row){
-		var cells = row.match(/[^|]+/g);
-		if (cells) {
-			this.lines.push(cells);
-			this.nbcols = Math.max(this.nbcols, cells.length);
-		} else {
-			this.lines.push([]);
-		}
-	}
-	// add to the table if it looks like part of it, and return true
-	// doesn't add if it's not compatible, and return false
-	Table.prototype.read = function(s){
-		if (regularcoldefregex.test(s)) {
-			if (this.regular) {
-				this.multiline = true;
-				this.lines.push(rowchange);
-			}
-			return true;
-		}
-		if (s===this.coldefstr) {
-			return true;
-		}
-		if (/\|/.test(s)) {
-			this.push(s);
-			return true;
-		}
-		return false;
-	}
-	// cc : cell content array
-	Table.prototype.toRow = function(cc, ishead){
-		if (!cc.length) return '';
-		var	h = '<tr>',
-			tag = ishead ? 'th' : 'td';
-		for (var i=0; i<cc.length; i++) {
-			h += '<'+tag;
-			if (i===cc.length-1 && i<this.nbcols-1) h += ' colspan='+(this.nbcols-i);
-			h += '>'+cc[i]+'</'+tag+'>';
-		}
-		return h+'</tr>';
-	}
-	Table.prototype.html = function(username){
-		var	h = '<div class=tablewrap>';
-		h += this.style ? '<table id='+this.id+'><style scoped>'+this.style+'</style>' : '<table>';
-		if (this.multiline) {
-			var currentRow;
-			this.lines.forEach(function(line, il){
-				if (line===rowchange) {
-					if (currentRow) h += this.toRow(currentRow, false);
-					currentRow = null;
-				} else {
-					var row = line.map(function(c){ return fmtStr(c.trim(), username) });
-					if (!il) {
-						h += this.toRow(row, true);
-					} else if (currentRow) {
-						for (var i=0; i<row.length; i++) {
-							if (i<currentRow.length) currentRow[i] += '<br>'+ row[i];
-							else currentRow[i] = row[i];
-						}
-						
-					} else {
-						currentRow = row;
-					}
-				}
-			}, this);
-			if (currentRow) h += this.toRow(currentRow, false);
-		} else {
-			h += this.lines.map(function(r, ir){
-				return this.toRow(
-					r.map(function(c){ return fmtStr(c.trim(), username) }),
-					!ir
-				);
-			}, this).join('');			
-		}
-		h += '</table></div>';
-		return h;
-	}
+	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/; // used for table recognition
 	
-	// does simple formatting of a string which may not be a complete line
-	function fmtStr(s, username) {
+	// does simple formatting of a string which may not be a complete line.
+	// Doesn't handle complex structures like lists, tables, images, code blocks, etc.
+	fmt.mdStringToHtml = function(s, username) {
 		return s.split('`').map(function(t,i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
@@ -128,7 +34,7 @@
 	}
 
 	// converts from the message exchange format (mainly a restricted set of Markdown) to HTML
-	miaou.mdToHtml = function(md, withGuiFunctions, username){
+	fmt.mdToHtml = function(md, withGuiFunctions, username){
 		var table,
 			ul, ol, code, // arrays : their elements make multi lines structures
 			lin = md
@@ -180,11 +86,11 @@
 				table = null;
 			} else if (/\|/.test(s) || /^\+\-[\-\+]*\+$/.test(s)) {
 				if (coldefregex.test(s)) {
-					table = new Table(s);
+					table = new fmt.Table(s);
 					table.push('');
 					continue;
 				} else if (l<lin.length-1 && coldefregex.test(lin[l+1])) {
-					table = new Table(lin[++l]);
+					table = new fmt.Table(lin[++l]);
 					table.push(s);
 					continue;
 				}
@@ -194,7 +100,7 @@
 				lout.push('<hr>');
 				continue;
 			}
-			s = fmtStr(s, username);
+			s = fmt.mdStringToHtml(s, username);
 			if (m=s.match(/^(?:&gt;\s*)(.*)$/)) {
 				lout.push('<span class=citation>'+m[1]+'</span>');
 				continue;
@@ -238,19 +144,7 @@
 		if (code) lout.push('<pre><code>'+code.join('\n')+'</code></pre>');
 		if (ol) lout.push('<ol>'+ol.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ol>');
 		if (ul) lout.push('<ul>'+ul.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ul>');
-		//~ var html = '';
-		//~ lout.forEach(function(line, index){
-			//~ if (index && !/(<\/pre>|<\/ul>|<\/ol>)$/.test(html)) html += '<br>';
-			//~ html += line;
-		//~ });
-		//~ return html;
 		return lout.join('<br>');
 	}
-	
-	// the only purpose of the reset function is to allow unit testing
-	miaou.mdToHtml.reset = function(){
-		nextId = 1;
-		return miaou.mdToHtml;
-	}
-	
-})();
+
+});

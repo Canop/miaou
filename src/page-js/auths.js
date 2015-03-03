@@ -26,7 +26,7 @@ miaou(function(gui, locals, prof){
 	})
 	$('td.rendered').each(function(){
 		var h = this.innerHTML;
-		if (h) this.innerHTML = miaou.mdToHtml(h);
+		if (h) this.innerHTML = miaou.fmt.mdToHtml(h);
 		else $(this).closest('tr').hide()
 	})
 });

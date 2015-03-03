@@ -1,10 +1,10 @@
-var fmt = require("./miaou.format.node.js").mdToHtml,
+var fmt = require("./miaou.format.node.js"),
 	buster = require("buster");
 	
 function t(s,r){
 	return function(){
 		try {
-			buster.assert.equals(fmt.reset()(s), r);		
+			buster.assert.equals(fmt.reset().mdToHtml(s), r);		
 		} catch (e) {
 			console.log("Erroring markdown :");
 			console.log(s);

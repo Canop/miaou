@@ -42,7 +42,7 @@ miaou(function(win, chat, md, ws){
 				title = tokens[0], i=1;
 			while (i<tokens.length && title.length+tokens[i].length<20) title += ' '+tokens[i++];
 			$('.mwincontainer.'+side).append(
-				$('<div/>').addClass('mwintab').html(miaou.mdToHtml(title)).attr('mid',message.id).click(function(){ win.add(message) })
+				$('<div/>').addClass('mwintab').html(miaou.fmt.mdToHtml(title)).attr('mid',message.id).click(function(){ win.add(message) })
 			)
 		} else {
 			var $mc = $('<div/>').addClass('content');

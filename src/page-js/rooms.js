@@ -23,7 +23,7 @@ miaou(function(locals){
 		if (rooms.length) {
 			var $t = $('<table>').addClass('list'), rex = /^<img[^>]*><br>/;
 			rooms.forEach(function(r){
-				var html = miaou.mdToHtml(r.description), floatImage = rex.test(html);
+				var html = miaou.fmt.mdToHtml(r.description), floatImage = rex.test(html);
 				if (floatImage) html = html.replace(/<br>/,'');
 				var $td = $('<td>').addClass('rendered').html(html);
 				if (floatImage) $td.find('img:eq(0)').css('float','left').css('margin-right','3px').click(function(){ location=r.path });

@@ -17,17 +17,17 @@ miaou(function(locals){
 			var t = "You have been denied access to the room";
 			if (outcome.message) {
 				t += ' with this message:';
-				$('#denyMessage').html(miaou.mdToHtml(outcome.message));
+				$('#denyMessage').html(miaou.fmt.mdToHtml(outcome.message));
 			}
 			$('#response').css('color','red').text(t);
 		}
 	});
 
-	$('.rendered').html(function(_,h){ return miaou.mdToHtml(h) });
+	$('.rendered').html(function(_,h){ return miaou.fmt.mdToHtml(h) });
 	$('#cancel').click(function(){ location="rooms" });
 	$('#request').click(function(){
 		socket.emit('request', {room:room.id, message:$('#request_speech').val() });
-		$('#request_speech').replaceWith($('<div>').addClass('rendered').html(miaou.mdToHtml($('#request_speech').val())));
+		$('#request_speech').replaceWith($('<div>').addClass('rendered').html(miaou.fmt.mdToHtml($('#request_speech').val())));
 		$('#cancel').hide();
 		$('#response').text("Your request is visible to the admins of the room. Don't close this window : You'll automaticaly enter the room as soon as one of them accepts it.");
 		$(this).hide();

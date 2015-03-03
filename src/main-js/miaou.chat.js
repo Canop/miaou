@@ -36,7 +36,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, ws){
 				$c.html(h).closest('.message').addClass('deleted');
 				return true;
 			}
-			$c.empty().append(message.content ? miaou.mdToHtml(message.content, !!$c.closest('#messages').length, message.authorname) : '')
+			$c.empty().append(message.content ? miaou.fmt.mdToHtml(message.content, !!$c.closest('#messages').length, message.authorname) : '')
 		});
 		locals.pluginsToStart.forEach(function(name){
 			if (!plugins[name]) {

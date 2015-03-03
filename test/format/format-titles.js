@@ -1,9 +1,9 @@
-var fmt = require("./miaou.format.node.js").mdToHtml,
+var fmt = require("./miaou.format.node.js"),
 	buster = require("buster");
 	
 function t(s,r){
 	return function(){
-		buster.assert.equals(fmt(s), r);		
+		buster.assert.equals(fmt.mdToHtml(s), r);		
 	}
 }
 

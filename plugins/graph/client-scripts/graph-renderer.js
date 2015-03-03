@@ -119,7 +119,6 @@ miaou(function(md, plugins){
 			var txtx, txty, barborder;
 
 			ycols.forEach(function(ycol, j){
-				var yvals = ycol.vals;
 				ycol.max = Math.max.apply(0, ycol.vals);
 				ycol.min = Math.min.apply(0, ycol.vals);
 				if (ycol.min<.6*ycol.max) ycol.min = 0;
