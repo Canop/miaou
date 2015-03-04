@@ -1,6 +1,9 @@
 miaou(function(fmt){
 	
-	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/; // used for table recognition
+	// format of the line, between the header and the body of a table,
+	//  defining the column alignements.
+	// This is how we recognize a table in Markdown 
+	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/;
 	
 	// does simple formatting of a string which may not be a complete line.
 	// Doesn't handle complex structures like lists, tables, images, code blocks, etc.
@@ -55,7 +58,14 @@ miaou(function(fmt){
 					code = null;
 				}
 			} else if (codeline) {
-				code = [s];
+				// we check we're not in fact at the start of a table ("    A    |     B    \n-----+----\n    a    |    b")
+				if (l<lin.length-2 && /\|/.test(s) && coldefregex.test(lin[l+1]) && /\|/.test(lin[l+2])) {
+					table = new fmt.Table(lin[++l]);
+					table.push(s);
+					table.push(lin[++l]);
+				} else {
+					code = [s];
+				}
 				continue;
 			}
 			
