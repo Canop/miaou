@@ -19,7 +19,7 @@ miaou(function(md, gui, notif, usr, ws){
 				$('<div>').addClass('access_request').append(
 					$('<div>').addClass('user').text(ar.user.name)
 				).append(
-					$('<div>').addClass('content').append(miaou.fmt.mdToHtml(ar.request_message))
+					$('<div>').addClass('content').append(miaou.fmt.mdTextToHtml(ar.request_message))
 				).appendTo($p);
 			}
 		});

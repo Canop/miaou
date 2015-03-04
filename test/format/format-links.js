@@ -3,7 +3,7 @@ var fmt = require("./miaou.format.node.js"),
 	
 function t(s,r){
 	return function(){
-		buster.assert.equals(fmt.mdToHtml(s), r);		
+		buster.assert.equals(fmt.mdTextToHtml(s), r);		
 	}
 }
 

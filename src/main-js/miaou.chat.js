@@ -36,7 +36,13 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, ws){
 				$c.html(h).closest('.message').addClass('deleted');
 				return true;
 			}
-			$c.empty().append(message.content ? miaou.fmt.mdToHtml(message.content, !!$c.closest('#messages').length, message.authorname) : '')
+			if (message.content) {
+				$c.html(miaou.fmt[ $c.closest('#messages').length ? 'mdMcToHtml' : 'mdTextToHtml' ](
+					message.content, message.authorname
+				));
+			} else {
+				$c.empty();				
+			}
 		});
 		locals.pluginsToStart.forEach(function(name){
 			if (!plugins[name]) {

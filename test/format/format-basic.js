@@ -4,7 +4,7 @@ var fmt = require("./miaou.format.node.js"),
 function t(s,r){
 	return function(){
 		try {
-			buster.assert.equals(fmt.reset().mdToHtml(s), r);		
+			buster.assert.equals(fmt.reset().mdTextToHtml(s), r);		
 		} catch (e) {
 			console.log("Erroring markdown :");
 			console.log(s);

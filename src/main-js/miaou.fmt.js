@@ -1,3 +1,12 @@
+// Handles conversion from Markdown to HTML
+//
+// There are 3 nested levels of conversion:
+// 1. mdStringToHtml : conversion of a simple string without structural elements
+//                     like tables, lists, images, code blocks, etc.
+// 2. mdTextToHtml   : conversion of a text which may or not contain structural
+//                     elements
+// 3. mdMcToHtml     : conversion of a message content. #messages related elements
+//                     like the reply mark may be added at this level
 miaou(function(fmt){
 	
 	// format of the line, between the header and the body of a table,
@@ -5,8 +14,6 @@ miaou(function(fmt){
 	// This is how we recognize a table in Markdown 
 	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/;
 	
-	// does simple formatting of a string which may not be a complete line.
-	// Doesn't handle complex structures like lists, tables, images, code blocks, etc.
 	fmt.mdStringToHtml = function(s, username) {
 		return s.split('`').map(function(t,i){
 			if (i%2) return '<code>'+t+'</code>';
@@ -35,18 +42,14 @@ miaou(function(fmt){
 		}).join('')
 		.replace(/^\/me(.*)$/g, '<span class=slashme>'+(username||'/me')+'$1</span>')
 	}
-
-	// converts from the message exchange format (mainly a restricted set of Markdown) to HTML
-	fmt.mdToHtml = function(md, withGuiFunctions, username){
+	
+	function _mdTextToHtml(md, username){
 		var table,
 			ul, ol, code, // arrays : their elements make multi lines structures
-			lin = md
-			.replace(/^(--(?!-)|\+\+(?=\s*\S+))/,'') // should only happen when previewing messages
-			.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
+			lin = md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
-			var m, s = lin[l].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-				.replace(/^@\w[\w\-]{2,}#(\d+)/, withGuiFunctions ? '<span class=reply to=$1>&#xe81a;</span>' : '');
+			var m, s = lin[l].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 			
 			var codeline = /^(    |\t)/.test(s) && !(table && /\|/.test(s));
 			if (code) {
@@ -154,7 +157,17 @@ miaou(function(fmt){
 		if (code) lout.push('<pre><code>'+code.join('\n')+'</code></pre>');
 		if (ol) lout.push('<ol>'+ol.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ol>');
 		if (ul) lout.push('<ul>'+ul.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ul>');
-		return lout.join('<br>');
+		return lout.join('<br>');		
+	}
+	
+	fmt.mdTextToHtml = function(md, username){
+		return _mdTextToHtml(md.replace(/^@\w[\w\-]{2,}#\d+/,''), username);
+	}
+
+	fmt.mdMcToHtml = function(md, username){
+		return md.replace(/^(?:@\w[\w\-]{2,}#(\d+))?([\s\S]*)/, function(_,num,text){
+			return (num ? '<span class=reply to='+num+'>&#xe81a;</span>' : '') + _mdTextToHtml(text, username);
+		});
 	}
 
 });

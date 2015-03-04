@@ -357,7 +357,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 
 	// replaces one line of a message
 	md.box = function(args){
-		var $from = $('<div>'+miaou.fmt.mdToHtml(args.from)+'</div>'),
+		var $from = $('<div>'+miaou.fmt.mdTextToHtml(args.from)+'</div>'),
 			$m = $('.message[mid='+args.mid+']'),
 			wab = gui.isAtBottom();
 		$m.find('.content').html(function(_, h){

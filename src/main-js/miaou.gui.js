@@ -43,7 +43,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			var $content = $('<div>').append(
 				$('<p>').text('Do you want to delete this message ?')
 			).append(
-				$('<p>').addClass('rendered').html(miaou.fmt.mdToHtml(message.content||''))
+				$('<p>').addClass('rendered').html(miaou.fmt.mdTextToHtml(message.content||''))
 			).append(
 				$('<p>').text("This can't be undone.")
 			);
@@ -187,7 +187,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			return false;
 		});
 		$('#input').on('change keyup', function(){
-			$('#preview').html(miaou.fmt.mdToHtml(this.value, false, locals.me.name));
+			$('#preview').html(miaou.fmt.mdTextToHtml(this.value, locals.me.name));
 		});
 			
 		// When the window is resized, all the messages have to be resized too.

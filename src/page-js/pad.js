@@ -24,7 +24,7 @@ miaou(function(chat, locals, watch, ws){
 				$rm = $('<div>').addClass('last-message').appendTo($r),
 				iswatched = watch.watched(r.id);
 			$('<a>').attr('href', r.path).addClass('room-title').text(r.name).appendTo($rl);
-			var html = miaou.fmt.mdToHtml(r.description), floatImage = /^<img[^>]*><br>/.test(html);
+			var html = miaou.fmt.mdTextToHtml(r.description), floatImage = /^<img[^>]*><br>/.test(html);
 			if (floatImage) html = html.replace(/<br>/,'');
 			var $desc = $('<div>').addClass('rendered room-desc').html(html).appendTo($rl);
 			if (floatImage) $desc.find('img:eq(0)').css('float','left').css('margin-right','3px').click(function(){ location=r.path });
@@ -211,7 +211,7 @@ miaou(function(chat, locals, watch, ws){
 	watch.enabled = true;
 	chat.start();
 	$(window).keyup(function(e){
-		if ($('#room-and-rooms').hasClass('open')) {
+		if (!$('#room-and-rooms').hasClass('open')) {
 			if (e.which===35) miaou.gui.scrollToBottom();
 		}
 	});

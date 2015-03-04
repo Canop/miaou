@@ -37,7 +37,7 @@ miaou(function(locals){
 		}
 	});
 	function format(){
-		$('#roomdescription').html(miaou.fmt.mdToHtml($('#description').val()));
+		$('#roomdescription').html(miaou.fmt.mdTextToHtml($('#description').val()));
 	}
 	$('#description').keyup(format);
 	format();

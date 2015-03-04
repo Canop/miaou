@@ -96,7 +96,7 @@ If you need more title levels in a chat comment... There might be a problem.
 function format(){
 	var md = $('#test_input').val();
 	console.log(JSON.stringify(md));
-	var html = miaou.fmt.reset().mdToHtml(md);
+	var html = miaou.fmt.reset().mdTextToHtml(md);
 	console.log(JSON.stringify(html));
 	$('#html').text(html);
 	$('#result').html(html);
