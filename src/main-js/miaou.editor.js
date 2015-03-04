@@ -205,6 +205,10 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 					if (sp===ep) this.selectionStart = this.selectionEnd;
 					return false;
 				case 76: // ctrl - L : make link
+					if (/^\s*https?:\/\/\S+\s*$/i.test($input.selectedText())) {
+						alert("It's already an URL, you don't need to make it a link.");
+						return;
+					}
 					miaou.dialog({
 						title: 'Insert Hyperlink',
 						content: 'URL : <input id=newlinkhref style="width:82%">',

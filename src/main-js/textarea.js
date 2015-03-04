@@ -13,6 +13,12 @@ $.fn.replaceSelection = function(rep){
 	})
 }
 
+// returns the currently selected text
+$.fn.selectedText = function(){
+	var input = this.get(0);
+	return input.value.slice(input.selectionStart, input.selectionEnd);
+}
+
 // changes the selection so that it covers entire line(s)
 $.fn.selectLines = function(){
 	return this.each(function(i,s){
