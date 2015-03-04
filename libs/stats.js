@@ -44,7 +44,7 @@ function doStats(ct) {
 			{name:"Name", value:"name"},
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
-			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star')"},
+			{name:"Stars", value:"(select sum(star) from message where author=player.id)"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
 		from = "from player where bot is false order by c1 desc limit "+n;
