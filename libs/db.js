@@ -736,7 +736,7 @@ exports.init = function(miaouConfig, cb){
 		console.log("Using NOT native driver to connect to PostgreSQL");
 	}
 	var conString = config.database.url;
-	pg.defaults.parseInt8 = true;
+	//~ pg.defaults.parseInt8 = true;
 	pg.connect(conString, function(err, client, done){
 		if (err) return console.log('Connection to PostgreSQL database failed');
 		done();
