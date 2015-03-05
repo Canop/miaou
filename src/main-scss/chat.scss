@@ -524,7 +524,8 @@ body.mobile .message-menu .vote {
 	}
 }
 pre {
-	white-space: pre-wrap;
+	white-space: pre;
+	word-wrap: normal;
 	overflow-x: auto;
 }
 code {
