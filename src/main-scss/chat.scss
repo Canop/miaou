@@ -328,6 +328,11 @@ body.mobile #message-scroller {
 		// border-color: red; doesn't work...
 	}
 }
+
+.message.has-opener .content {
+	padding-bottom: 12px;
+}
+
 #messages, .messages {
 	.message, .error, .access_request {
 		min-height: $message-min-height;

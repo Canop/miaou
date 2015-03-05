@@ -154,10 +154,11 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		var $content = $md.find('.content');
 		var resize = function(){
 			$content.removeClass("closed");
+			$md.removeClass('has-opener');
 			$md.find('.opener,.closer').remove();
 			if ($content.height()>158) {
 				$content.addClass("closed");
-				$md.append('<div class=opener>');
+				$md.addClass("has-opener").append('<div class=opener>');
 				$md.reflow();
 			}
 			if (wasAtBottom) gui.scrollToBottom();
