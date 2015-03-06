@@ -45,5 +45,5 @@
 		"clientID": "someID - remove the imgur object if you don't want to use this feature"
 	},
 	"langs": ["en", "fr"],
-	"forbiddenUsernames": ["miaou","^server"] 
+	"forbiddenUsernames": ["miaou","^server", "^all"] 
 }
