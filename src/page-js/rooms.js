@@ -97,7 +97,7 @@ miaou(function(locals){
 					table(
 						rooms.filter(function(r){
 							return !r.private
-						}).sort(function(a,b){ return b.messagecount-a.messagecount }),
+						}).sort(function(a,b){ return b.lastcreated-a.lastcreated }),
 						"There doesn't seem to be any public room on this server."
 					)
 				)
@@ -111,7 +111,7 @@ miaou(function(locals){
 					table(
 						rooms.filter(function(r){
 							return r.private && !r.dialog
-						}).sort(function(a,b){ return b.messagecount-a.messagecount }),
+						}).sort(function(a,b){ return b.lastcreated-a.lastcreated }),
 						"There doesn't seem to be any listed private room on this server."
 					)
 				)

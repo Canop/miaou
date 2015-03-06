@@ -83,13 +83,13 @@ miaou(function(chat, locals, watch, ws){
 		case 1:
 			listRooms(
 				rooms.filter(function(r){ return !r.private })
-				.sort(function(a,b){ return b.messagecount-a.messagecount })
+				.sort(function(a,b){ return b.lastcreated-a.lastcreated })
 			);
 			break;
 		case 2:
 			listRooms(
 				rooms.filter(function(r){ return r.private && !r.dialog })
-				.sort(function(a,b){ return b.messagecount-a.messagecount })
+				.sort(function(a,b){ return b.lastcreated-a.lastcreated })
 			);
 			break;
 		case 3:

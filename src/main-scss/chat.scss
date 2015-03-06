@@ -35,11 +35,19 @@
 	height: 100%;
 	flex-grow: 1;
 	flex-basis: 0;
+	//~ overflow: hidden;
+	max-width: 100%;
 }
+//~ @-moz-document url-prefix() {
+	//~ #vert-center {
+		//~ max-width: 100%;
+	//~ }
+//~ }
 
 #message-scroller {
 	width: 100%;
 	overflow-y: scroll;
+	overflow-x: hidden;
 	flex-grow: 1;
 	flex-basis: 0;
 }
@@ -268,7 +276,7 @@ body.mobile #message-scroller {
 		&.closed {
 			max-height: 132px;
 		}
-		pre, ul, ol {
+		ul, ol {
 			margin: 0;
 		}
 		input[type=checkbox] {
@@ -281,6 +289,7 @@ body.mobile #message-scroller {
 }
 
 .message .content, .rendered {
+	overflow: hidden;
 	.box {
 		background: $box-background;
 		color: black;
@@ -356,9 +365,7 @@ body.mobile #message-scroller {
 		}
 		.mdate {
 			align-self: flex-start;
-			flex-basis: 90px;
-			flex-shrink: 0;
-			flex-grow: 0;
+			flex: 0 1 90px;
 			text-align: right;
 			font-size: 80%;
 			padding: 2px;
@@ -529,10 +536,18 @@ body.mobile .message-menu .vote {
 	}
 }
 pre {
+	overflow-x: auto;
 	white-space: pre;
 	word-wrap: normal;
-	overflow-x: auto;
+	margin: 5px;
 }
+//~ @-moz-document url-prefix() {
+	//~ pre {
+		//~ white-space: pre-wrap;
+		//~ word-wrap: inherit;
+		//~ max-width: 500px;
+	//~ }
+//~ }
 code {
 	font-family: monospace;
 	color: $code-text-color;

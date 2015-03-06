@@ -107,11 +107,17 @@ proto.getUserInfo = function(id){
 }
 
 proto.listRecentUsers = function(roomId, N){
+	//~ return this.queryRows(
+		//~ "select message.author as id, min(player.name) as name,"+
+		//~ " min(player.avatarsrc) as avs, min(player.avatarkey) as avk,"+
+		//~ " max(message.created) as mc from message join player on player.id=message.author"+
+		//~ " where message.room=$1 and bot is false group by message.author order by mc desc limit $2", [roomId, N]
+	//~ );
 	return this.queryRows(
-		"select message.author as id, min(player.name) as name,"+
-		" min(player.avatarsrc) as avs, min(player.avatarkey) as avk,"+
-		" max(message.created) as mc from message join player on player.id=message.author"+
-		" where message.room=$1 and bot is false group by message.author order by mc desc limit $2", [roomId, N]
+		"select a.id, a.mc, player.name, avatarsrc as avs, avatarkey as avk from"+
+		" (select message.author as id, max(message.created) as mc from message where room=$1"+
+		" group by message.author order by mc desc limit $2) a"+
+		" join player on player.id=a.id and player.bot is false", [roomId, N]
 	);
 }
 
@@ -237,11 +243,10 @@ proto.listAccessibleRooms = function(userId){
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+
-		" (select count(*) from message m where m.room = r.id) as messageCount,"+
 		" (select max(created) from message m where m.room = r.id and m.author=$1) as lastcreated"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  
 		" where listed is true or auth is not null"+
-		" order by lastcreated desc, private desc, messageCount desc limit 200", [userId]
+		" order by lastcreated desc, private desc limit 200", [userId]
 	);
 }
 
