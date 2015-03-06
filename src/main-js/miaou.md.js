@@ -220,11 +220,25 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		}
 	}
 	
+	var stringToColour = function(str) {
+		var hash = 0;
+		for (var i = 0; i < str.length; i++) {
+			hash = str.charCodeAt(i) + ((hash << 5) - hash);
+		}
+		var colour = '#';
+		for (var i = 0; i < 3; i++) {
+			var value = (hash >> (i * 8)) & 0xFF;
+			colour += ('00' + value.toString(16)).substr(-2);
+		}
+		return colour;
+	}
+	
 	// builds a new .user-messages div for the passed user)
 	function usermessagesdiv(user){
 		var $usermessages = $('<div>').addClass('user-messages').data('user',user),
-			$user = $('<div>').addClass('user').append($('<span/>').text(user.name)).appendTo($usermessages);
-		var avsrc = usr.avatarsrc(user);
+			$user = $('<div>').addClass('user').appendTo($usermessages),
+			avsrc = usr.avatarsrc(user);
+		$user.css('color', stringToColour(user.name)).append($('<span/>').text(user.name));
 		if (avsrc) {
 			$('<div>').addClass('avatar-wrapper').prependTo($user).append(
 				$('<img>').attr('src',avsrc).addClass('avatar')

@@ -173,18 +173,20 @@ body.mobile #message-scroller {
 		top:0;
 		bottom:0;
 		padding: $user-padding-in-message;
-		color: $user-text-color-in-message;
 		width: 110px;
 		z-index: 6;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		background: $user-in-messages-bg;
+		box-shadow: $user-color-shadow-in-messages;
+		transition: box-shadow .3s;
 		span {
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
 			min-height: 18px;
+			color: $user-text-color-in-message;
 		}
 		&.bot {
 			font-style: italic;
@@ -199,6 +201,8 @@ body.mobile #message-scroller {
 	}
 	&:hover .user {
 		border-right: $hovered-user-in-messages-border-right;	
+		box-shadow: $hovered-user-color-shadow-in-messages;
+		transition: box-shadow .3s;
 	}
 	.user.profiled, &:hover .user.profiled {
 		border-right: none;	

@@ -22,6 +22,9 @@ $connected-user-bg-color-in-user-list: rgba(0,0,0,0.1);
 
 $user-text-color-in-message: $bear-green;
 $code-text-color: #999;
+
+$user-color-shadow-in-messages: none;
+
 $input-bg: lighten($bg-color, 6%);
 $input-text-color: white;
 $notification-text-color: #A0522D;
@@ -57,8 +60,8 @@ $message-me-normal-border-bottom: none;
 
 $user-in-messages-bg: none;
 
-$content-border-bottom-before-disrupt: thin solid lighten( $mes-brown, 12% );
-$content-border-top-after-disrupt: thin solid darken( $mes-brown, 12% );
+$content-border-bottom-before-disrupt: none;
+$content-border-top-after-disrupt: none;
 
 $user-messages-vmargin: 0;
 

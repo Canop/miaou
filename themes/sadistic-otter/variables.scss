@@ -50,8 +50,12 @@ $connected-user-bg-color-in-user-list: rgba(0,0,0,0.4);
 $user-text-color-in-user-list: #666;
 $message-me-user-color: $accent-minus;			
 
-$user-text-color-in-message: #888;
+$user-text-color-in-message: inherit; // gives to the username the color of the user
 $code-text-color: #888;
+$user-color-shadow-in-messages: none;
+$user-color-shadow-in-messages: -105px 0 1px;
+$hovered-user-color-shadow-in-messages: -6px 0 3px;
+
 
 $citation-border-color: #666;
 $h3-underline-color: #666;

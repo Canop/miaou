@@ -22,6 +22,9 @@ $user-text-color-in-user-list: #444 !default;
 $user-text-color-in-message: #555 !default;
 $code-text-color: #444 !default;
 
+$user-color-shadow-in-messages: 1px 0 0 !default;
+$hovered-user-color-shadow-in-messages: 3px 0 0 !default;
+
 $input-panel-bg-color: $bg-color !default;
 $input-bg: white !default;
 $input-text-color: black !default;
@@ -37,8 +40,8 @@ $content-border-bottom-before-disrupt: none !default;
 $content-border-top-after-disrupt: thin dashed #ccc !default;
 
 $user-messages-vmargin: 4px !default;
-$user-in-messages-border-right: 2px solid #ccc !default;
-$hovered-user-in-messages-border-right: 2px solid #999 !default;
+$user-in-messages-border-right: none !default;
+$hovered-user-in-messages-border-right: none !default;
 $user-messages-border-top: none !default;
 $user-messages-border-bottom: none !default;
 $user-messages-me-border-top: none !default;
