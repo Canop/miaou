@@ -2,11 +2,15 @@
 // A shoe embeds a socket and is provided to controlers and plugins.
 // It's kept in memory by the closures of the socket event handlers
 
-var io, db;
+var io, db, onSendMessagePlugins;
 	
 exports.configure = function(miaou){
 	io = miaou.io;
 	db = miaou.db;
+}
+
+exports.setOnSendMessagePlugins = function(ps){
+	onSendMessagePlugins = ps;
 }
 
 function Shoe(socket, completeUser){

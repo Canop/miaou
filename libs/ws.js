@@ -43,6 +43,10 @@ exports.configure = function(_miaou){
 	return this;
 }
 
+exports.getOnSendMessagePlugins = function(){
+	return onSendMessagePlugins;
+}
+
 // removes all useless properties from an object
 // A typical not lighted message is like this :
 //  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801,"changed":null,"pin":0,"star":0,"up":0,"down":0,"vote":null,"score":0}
@@ -611,6 +615,7 @@ function handleUserInRoom(socket, completeUser){
 exports.listen = function(server, sessionStore, cookieParser){
 	io = miaou.io = socketio(server);
 	shoes.configure(miaou);
+	shoes.setOnSendMessagePlugins(onSendMessagePlugins);
 	io.use(function(socket, next){
 		cookieParser(socket.handshake, {}, function(err){
 			if (err) {
