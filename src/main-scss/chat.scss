@@ -631,9 +631,10 @@ body.mobile #input-panel button {
 	text-align: center;
 }
 #upload-wait {
-	img {
-		margin-top: 20px;
-	}
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
 }
 h1 {
 	color: $title-text-color;

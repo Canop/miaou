@@ -180,6 +180,34 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 	}
 	
+	function uploadFile(file){
+		console.log("uploadFile", file);
+		var fd = new FormData(); // todo: do I really need a formdata ?
+		fd.append("file", file);
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", "upload");
+		function finish(){
+			$('#upload-controls,#input-panel').show();
+			$('#upload-wait,#upload-panel').hide();
+		}
+		xhr.onload = function() {
+			var ans = JSON.parse(xhr.responseText);
+			finish();
+			if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
+			else alert("Hu? didn't exactly work, I think...");
+			console.log("Image upload result:", ans);
+			document.getElementById('file').value = null;
+		}
+		xhr.onerror = function(){
+			alert("Something didn't work as expected :(");
+			document.getElementById('file').value = null;
+			finish();
+		}
+		$('#upload-controls,#input-panel').hide();
+		$('#upload-wait,#upload-panel').show();
+		xhr.send(fd);
+	}
+	
 	// prepare #input to emit on the provided socket
 	ed.init = function(){
 		$input = $('#input');
@@ -300,36 +328,25 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		$('#send').on('click', sendInput);
 
 		$('#cancelEdit').on('click', ed.cancelEdit);
+		
+		document.addEventListener('paste', function(e){
+			for (var i=0; i<e.clipboardData.items.length; i++) {
+				var item = e.clipboardData.items[i];
+				console.log("Item: " + item.type);
+				if (/^image\//i.test(item.type)) {
+					uploadFile(item.getAsFile());
+					return false;
+				}
+			}
+		});
 
 		$('#uploadSend').click(function(){
 			var file = document.getElementById('file').files[0];
-			if (!file || !/^image\//.test(file.type)) {
+			if (!file || !/^image\/i/.test(file.type)) {
 				alert('not a valid image');
 				return;
 			}
-			var fd = new FormData();
-			fd.append("file", file);
-			var xhr = new XMLHttpRequest();
-			xhr.open("POST", "upload");
-			function finish(){
-				$('#upload-controls,#input-panel').show();
-				$('#upload-wait,#upload-panel').hide();
-			}
-			xhr.onload = function() {
-				var ans = JSON.parse(xhr.responseText);
-				finish();
-				if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
-				else alert("Hu? didn't exactly work, I think...");
-				document.getElementById('file').value = null;
-			}
-			xhr.onerror = function(){
-				alert("Something didn't work as expected :(");
-				document.getElementById('file').value = null;
-				finish();
-			}
-			$('#upload-controls').hide();
-			$('#upload-wait').show();
-			xhr.send(fd);
+			uploadFile(file);
 		});
 	}
 	
