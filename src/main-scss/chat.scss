@@ -4,7 +4,6 @@
 
 #left, #right, #center {
 	position: fixed;
-	overflow-x: hidden;
 }
 #left {
 	top:0; left:0; bottom:0;
@@ -27,7 +26,6 @@
 	bottom: 0;
 	box-shadow: $center-shadow;
 	z-index: 2;
-	overflow-x: visible;
 }
 #vert-center {
 	display:flex;
@@ -35,19 +33,12 @@
 	height: 100%;
 	flex-grow: 1;
 	flex-basis: 0;
-	//~ overflow: hidden;
-	max-width: 100%;
+	min-width: 0;
 }
-//~ @-moz-document url-prefix() {
-	//~ #vert-center {
-		//~ max-width: 100%;
-	//~ }
-//~ }
 
 #message-scroller {
-	width: 100%;
 	overflow-y: scroll;
-	overflow-x: hidden;
+	overflow-x: hidden; // prevents Chrome from having an horizontal scrollbar here
 	flex-grow: 1;
 	flex-basis: 0;
 }
@@ -207,9 +198,6 @@ body.mobile #message-scroller {
 	.user.profiled, &:hover .user.profiled {
 		border-right: none;	
 	}
-	.avatar-wrapper .avatar {
-	
-	}
 	.user {
 		.avatar-wrapper {
 			width: 16px;
@@ -249,34 +237,11 @@ body.mobile #message-scroller {
 
 .message, #messages .error, .access_request {
 	position: relative;
-    .user { // FIXME obsolète, à virer
-		position: relative;
-		padding: $user-padding-in-message;
-		color: $user-text-color-in-message;
-		max-width: 300px;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-		z-index: 6;
-		&.bot {
-			font-style: italic;
-		}
-		.avbox { // avatar wrapper
-			flex: 0 0 24px;
-			text-align: center;
-			img {
-				width: 20px;
-				height: 20px;
-			}
-		}
-	}
 	.content, .rendered {
 		border-radius: $message-content-border-radius;
 		padding: $message-content-padding;
 		background: $message-content-bg; 
 		word-wrap: break-word;
-		overflow-y: hidden;
-		overflow-x: hidden;
 		&.closed {
 			max-height: 132px;
 		}
@@ -293,7 +258,7 @@ body.mobile #message-scroller {
 }
 
 .message .content, .rendered {
-	overflow: hidden;
+	min-width: 0;
 	.box {
 		background: $box-background;
 		color: black;
@@ -336,9 +301,8 @@ body.mobile #message-scroller {
 		border-top: none;
 		border-left: none;
 		border-right: none;
-		border-bottom: $message-normal-border-bottom; // FIXME bof...
+		border-bottom: $message-normal-border-bottom;
 		display: inline-block;
-		// border-color: red; doesn't work...
 	}
 }
 
@@ -488,7 +452,7 @@ table.list .rendered img, .rooms-list .rendered img {
 	}
 }
 body.mobile .message-menu .vote {
-	margin: 0 10px; // I have fat fingers, yes
+	margin: 0 10px;
 }
 .message-votes {
 	position: absolute;
@@ -545,13 +509,6 @@ pre {
 	word-wrap: normal;
 	margin: 5px;
 }
-//~ @-moz-document url-prefix() {
-	//~ pre {
-		//~ white-space: pre-wrap;
-		//~ word-wrap: inherit;
-		//~ max-width: 500px;
-	//~ }
-//~ }
 code {
 	font-family: monospace;
 	color: $code-text-color;
@@ -901,7 +858,7 @@ div#notifs {
 	font-style:italic;
 	font-size: 95%;
 	opacity: 0.7;
-	padding: 5px 0;
+	padding: 12px 0;
 }
 .newerLoader + .olderLoader {
 	border-top:solid 7px #ccc;	
