@@ -357,7 +357,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (acname) {
 			input.value = val.slice(0, e-acname.length) + username + val.slice(e);
 			input.selectionStart = input.selectionEnd = e + username.length - acname.length;
-		} else if (new RegExp('\s?@'+username+'\\s*$').test(val)) {
+		} else if (new RegExp('\s?@'+username+'\\s*$','i').test(val)) {
 			input.value = val.replace(r, '');
 		} else {
 			var insert = ' @'+username+' ';

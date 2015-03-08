@@ -427,7 +427,7 @@ function handleUserInRoom(socket, completeUser){
 			return this.getAuthLevelByUsername(shoe.room.id, unsentping).then(function(oauth){
 				if (oauth) return true;
 				if (commandTask.cmd) return commandTask.alwaysPing;
-				shoe.error(unsentping+" has no right to this room and wasn't pinged");
+				shoe.error(unsentping+" has no right to this room and wasn't pinged"); // todo different message for no user
 			});
 		}).then(function(remainingpings){
 			if (remainingpings.length) {
@@ -440,8 +440,6 @@ function handleUserInRoom(socket, completeUser){
 						}
 					}
 				}
-				console.log("Pinging",remainingpings,"in room",shoe.room.name,"for message");
-				console.log(m);
 				return this.storePings(shoe.room.id, remainingpings, m.id);
 			}
 		}).catch(function(e) {

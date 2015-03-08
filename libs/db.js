@@ -75,12 +75,12 @@ proto.getUserById = function(id){
 	);
 }
 
-// returns an existing user found by his name
+// returns an existing user found by his name with a case insensitive search
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
 	return this.queryRow(
-		'select id, name, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where name=$1',
-		[username], true
+		'select id, name, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where lower(name)=$1',
+		[username.toLowerCase()], true
 	);
 }
 
@@ -107,12 +107,6 @@ proto.getUserInfo = function(id){
 }
 
 proto.listRecentUsers = function(roomId, N){
-	//~ return this.queryRows(
-		//~ "select message.author as id, min(player.name) as name,"+
-		//~ " min(player.avatarsrc) as avs, min(player.avatarkey) as avk,"+
-		//~ " max(message.created) as mc from message join player on player.id=message.author"+
-		//~ " where message.room=$1 and bot is false group by message.author order by mc desc limit $2", [roomId, N]
-	//~ );
 	return this.queryRows(
 		"select a.id, a.mc, player.name, avatarsrc as avs, avatarkey as avk from"+
 		" (select message.author as id, max(message.created) as mc from message where room=$1"+
@@ -364,10 +358,11 @@ proto.getAuthLevel = function(roomId, userId){
 	);
 }
 
+// look for the user's authorization with a case insensitive search
 proto.getAuthLevelByUsername = function(roomId, username){
 	return this.queryRow(
-		"select auth from room_auth,player where name=$1 and room=$2 and room_auth.player=player.id;",
-		[username, roomId], true
+		"select auth from room_auth,player where lower(name)=$1 and room=$2 and room_auth.player=player.id;",
+		[username.toLowerCase(), roomId], true
 	);
 }
 
@@ -567,7 +562,7 @@ proto.storePings = function(roomId, users, messageId){
 	return this.execute(
 		"insert into ping (room, player, message, created) select " +
 		roomId + ", id, " + messageId + ", " + now() +
-		" from player where name in (" + users.map(function(n){ return "'"+n+"'" }).join(',') + ")"
+		" from player where lower(name) in (" + users.map(function(n){ return "'"+n.toLowerCase()+"'" }).join(',') + ")"
 	);
 }
 
@@ -789,7 +784,7 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	var start = Date.now();
 	this.client.query(sql, args, function(err, res){
-		//~ logQuery(sql, args);
+		logQuery(sql, args);
 		var end = Date.now();
 		if (end-start>50) {
 			console.log("Slow query (" + (end-start) + " ms) :");
