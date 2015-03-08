@@ -2,7 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 9);
+insert into db_version (component, version) values('core', 12);
 
 CREATE TABLE room (
 	id serial primary key,
@@ -48,6 +48,8 @@ create index message_room_created on message (room, created);
 create index message_author_created_room on message (author, created, room);
 create index message_fts on message using GIN(to_tsvector('english', content));
 create index message_score on message (score);
+create index message_star on message (star);
+
 CREATE OR REPLACE FUNCTION message_score() RETURNS trigger AS '
 	BEGIN
 		NEW.score := 25*NEW.pin + 5*NEW.star + NEW.up - NEW.down;
@@ -121,3 +123,8 @@ CREATE TABLE pref (
 	primary key(player,name)
 );
 
+create table watch (
+	player integer references player(id),
+	room integer references room(id),
+	primary key(player, room)
+);
