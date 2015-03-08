@@ -330,9 +330,9 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		$('#cancelEdit').on('click', ed.cancelEdit);
 		
 		document.addEventListener('paste', function(e){
-			for (var i=0; i<e.clipboardData.items.length; i++) {
-				var item = e.clipboardData.items[i];
-				console.log("Item: " + item.type);
+			var items = e.clipboardData.items || e.clipboardData.files;
+			for (var i=0; i<items.length; i++) {
+				var item = items[i];
 				if (/^image\//i.test(item.type)) {
 					uploadFile(item.getAsFile());
 					return false;
