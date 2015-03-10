@@ -931,8 +931,10 @@ div#notifs {
 	display: none;
 	&.selected {
 		display: block;
-		background: $chat-page-selected-bg;		
 	}
+}
+.pad .page.selected {
+	background: $chat-page-selected-bg;
 }
 
 #searchInput {
