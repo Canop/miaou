@@ -18,7 +18,6 @@ miaou(function(md, plugins){
 		var vals = new Array(this.rawvals.length);
 		for (var i=0; i<this.rawvals.length; i++){
 			vals[i]=parser(this.rawvals[i]);
-			console.log(this.rawvals[i], '=>', vals[i]);
 			if (vals[i]===undefined) return;
 		}
 		this.vals = vals;
@@ -52,7 +51,6 @@ miaou(function(md, plugins){
 		},
 		function(s){ // 201506
 			var m = s.match(/^(\d{4})\s*(\d{2})$/);
-			console.log('parsing ', s, '->', m);
 			if (!m) return;
 			return [(new Date(+m[1], m[2]-1)).getTime(), (new Date(+m[1], m[2])).getTime()];
 		},
@@ -72,7 +70,6 @@ miaou(function(md, plugins){
 	
 	function render($c, m){
 		if (m.content && /(^|\s)#graph\b/.test(m.content)) {
-			console.log("#graph message z");
 			var $table = $c.find('table').eq(0);
 			if ($table.length!==1) return;
 			var	xcol = new TGCol($table, 0),
@@ -94,7 +91,6 @@ miaou(function(md, plugins){
 				ycol.parse(Number);
 				if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
 			}
-			console.log(xcol, ycols);
 
 			var H = 150,
 				nbycols = ycols.length;
@@ -109,13 +105,12 @@ miaou(function(md, plugins){
 				n = xvals.length,
 				mt = 15, mr = 20, mb = 30, ml = 100; // margins top, right, bottom and left
 
-			var g = ù('<svg',$c[0]).css({ width:600, height:H, background:'white' }),
+			var g = ù('<svg',$c[0]).css({ height:H, width:600 }),
 				gW = Math.max(50, Math.min(g.width()-mr-ml, 40*n*ycols.length)),
 				W = gW+mr+ml, oc = "black",
 				xmin = xvals[0][0],
 				w = W-ml-mr, h = H-mt-mb;
 			var	rx = w / (xvals[n-1][1]-xvals[0][0]);
-			console.log('w:',w,'xvals[n-1][1]:',xvals[n-1][1],'xvals[0][0]:',xvals[0][0]);
 			var txtx, txty, barborder;
 
 			ycols.forEach(function(ycol, j){
@@ -131,7 +126,6 @@ miaou(function(md, plugins){
 					ù('<text', g).textpos(ycol.max, x, 8, "middle", .8).attr('fill', ycol.color);
 				}
 			});
-				console.log("xvals, xmin, rx:", xvals, xmin, rx);
 			xvals.forEach(function(xval, i){
 				var x1 = Math.floor(ml+(xvals[i][0]-xmin)*rx),
 					x2 = ml+(xvals[i][1]-xmin)*rx-1,
@@ -163,7 +157,9 @@ miaou(function(md, plugins){
 
 			ù('<text', g).textpos(xcol.rawvals[0], ml+2, H-5, "start", .8);
 			ù('<text', g).textpos(xcol.rawvals[n-1], W-2-mr, H-5, "end", .8);
-
+			var $tablewrap = $table.closest('.tablewrap');
+			$('<div>').addClass('graph-tbl-wrapper').insertBefore($tablewrap)
+			.append($tablewrap).append(g.n);
 		}
 	}
 	

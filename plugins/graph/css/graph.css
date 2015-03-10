@@ -1,0 +1,10 @@
+.graph-tbl-wrapper {
+	display: flex;
+	flex-wrap: wrap-reverse;
+	align-items: flex-end;
+}
+
+.graph-tbl-wrapper > svg {
+	background: white;
+	margin: 2px;
+}
