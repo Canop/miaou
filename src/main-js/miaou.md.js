@@ -193,7 +193,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 	}
 	
 	md.updateLoaders = function(){
-		$('.loader').remove();
+		$('.olderLoader,.newerLoader').remove();
 		var idmap = {}, $messages = $('#messages .message'), messages = [], m;
 		for (var i=0; i<$messages.length; i++) {
 			messages.push(m = $messages.eq(i).data('message'));
@@ -205,7 +205,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 				if (idmap[m.prev]) {
 					m.prev = 0;
 				} else {
-					$('<div>').addClass('olderLoader loader').attr('mid', m.prev).text("load older messages")
+					$('<div>').addClass('olderLoader').attr('mid', m.prev).text("load older messages")
 					.insertBefore($messages.eq(i).closest('.user-messages'));
 				}
 			}
@@ -213,7 +213,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 				if (idmap[m.next]) {
 					m.next = 0;
 				} else {
-					$('<div>').addClass('newerLoader loader').attr('mid', m.next).text("load newer messages")
+					$('<div>').addClass('newerLoader').attr('mid', m.next).text("load newer messages")
 					.insertAfter($messages.eq(i).closest('.user-messages'));
 				}
 			}
@@ -282,8 +282,8 @@ miaou(function(md, chat, gui, hist, locals, usr){
 					};
 				}
 			}
-		}		
-		delete message.repliesTo;
+		}
+		message.repliesTo = 0;
 		if (message.content) {
 			// Updates the link (as reply) to upwards messages
 			// To make things simpler, we consider only one link upwards
@@ -295,6 +295,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			$md.addClass('me');
 			$('.error').remove();
 		}
+		var noEndOfBatch =  !message.prev && !message.next;
 		if (~insertionIndex) {
 			if (oldMessage) {
 				if (message.vote === '?') {
@@ -309,21 +310,29 @@ miaou(function(md, chat, gui, hist, locals, usr){
 				$('#messages .message').eq(insertionIndex).replaceWith($md);
 			} else {
 				var $previousmessageset = $('#messages .message').eq(insertionIndex).closest('.user-messages');
-				if ($previousmessageset.data('user').id===user.id) {
+				if (
+					$previousmessageset.data('user').id===user.id && noEndOfBatch
+					&& !$previousmessageset.find('> .message').last().data('message').next
+				) {
 					$previousmessageset.append($md);
 				} else {
 					var $nextmessageset = $('#messages .message').eq(insertionIndex+1).closest('.user-messages');
-					if ($nextmessageset.length && $nextmessageset.data('user').id===user.id) {
+					if (
+						$nextmessageset.length && $nextmessageset.data('user').id===user.id && noEndOfBatch
+						&& !$nextmessageset.find('> .message').first().data('message').prev
+					) {
 						$nextmessageset.prepend($md);
 					} else {
-						var $newmessageset = usermessagesdiv(user).append($md);
-						$previousmessageset.after($newmessageset);
+						$previousmessageset.after(usermessagesdiv(user).append($md));
 					}
 				}
 			}
 		} else {
 			var $nextmessageset = $('#messages .user-messages').first();
-			if ($nextmessageset.length && $nextmessageset.data('user').id===user.id) {
+			if (
+				$nextmessageset.length && $nextmessageset.data('user').id===user.id && noEndOfBatch
+				&& !$nextmessageset.find('> .message').first().data('message').prev
+			) {
 				$nextmessageset.prepend($md);
 			} else {
 				usermessagesdiv(user).append($md).prependTo('#messages');				
@@ -375,7 +384,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		var $from = $('<div>'+miaou.fmt.mdTextToHtml(args.from)+'</div>'),
 			$m = $('.message[mid='+args.mid+']'),
 			wab = gui.isAtBottom();
-		$m.find('.content').html(function(_, h){
+		$m.find('.content').addClass('wide').html(function(_, h){
 			return h.replace($from.html(), '<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>')
 		});
 		resize($m, wab);
