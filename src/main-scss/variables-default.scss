@@ -106,13 +106,14 @@ $mwin-shadow: 0 0 5px black !default;
 
 $first-not-seen-top-border: 6px dotted rgba(0,0,0,0.1) !default;
 
-
-
 // side tabs
 $chat-tabs-border-color: #655 !default;
 $chat-tabs-border-width: 1px !default;
 $chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.01),rgba(0,0,0,0.07)) !default;
-$chat-tabs-selected-bg-image: none !default; 
+$chat-tabs-selected-bg-image: none !default;
+$chat-tabs-unselected-bg-color: transparent !default;
+$chat-tabs-selected-bg-color: white !default; 
+$chat-page-selected-bg: white !default;
 
 // message sizing
 $message-min-height: 30px !default;
@@ -141,8 +142,8 @@ $small-button-box-shadow: 1px 1px 2px #999 !default;
 
 // chat layout
 $input-height: 83px !default; // height of input
-$left-panel-width: 150px !default;
-$right-panel-width: 350px !default;
+$left-panel-width: 140px !default;
+$right-panel-width: 400px !default;
 $hist-width: 200px !default;
 
 // mobile chat layout

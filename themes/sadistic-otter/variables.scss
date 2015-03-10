@@ -84,6 +84,11 @@ $reply-box-color: #999;
 
 $goingto-bg: rgba(128, 0, 128, 0.7);
 
+// right tabs
+$chat-tabs-unselected-bg-color: transparent;
+$chat-tabs-selected-bg-color: transparent;
+$chat-page-selected-bg: $chat-tabs-selected-bg-color;
+
 // profile in chat
 $profile-bg: rgba(20,0,10,0.94);
 $profile-box-shadow: none;

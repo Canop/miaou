@@ -74,12 +74,15 @@ $user-messages-me-border-bottom: thin solid darken( $mes-me-brown, 3% );
 
 $goingto-bg: transparentize( brown, 0.2 );
 
+
 // side tabs
 $chat-tabs-border-color: rgba(0,0,0,0.2);
 $chat-tabs-border-width: 1px;
 $chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.08));
 $chat-tabs-selected-bg-image: none; 
-
+$chat-tabs-unselected-bg-color: transparent;
+$chat-tabs-selected-bg-color: transparent;
+$chat-page-selected-bg: $chat-tabs-selected-bg-color;
 
 // message sizing
 $message-min-height: 30px;

@@ -784,7 +784,7 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	var start = Date.now();
 	this.client.query(sql, args, function(err, res){
-		logQuery(sql, args);
+		//~ logQuery(sql, args);
 		var end = Date.now();
 		if (end-start>50) {
 			console.log("Slow query (" + (end-start) + " ms) :");

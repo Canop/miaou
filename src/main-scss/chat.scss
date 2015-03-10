@@ -14,9 +14,10 @@
 #right {
 	top:0; right:0; bottom:0;
 	width: $right-panel-width;
-	overflow-y: auto;
 	background: $right-background;
+	overflow-y: auto;	
 }
+
 #center {
 	display:flex;
 	flex-direction: row;
@@ -910,9 +911,11 @@ div#notifs {
 			color: transparentize($title-text-color, 0.2);
 		}
 		background-image: $chat-tabs-unselected-bg-image;
+		background-color: $chat-tabs-unselected-bg-color;
 		&.selected {
 			color: $title-text-color;
 			background-image: $chat-tabs-selected-bg-image;
+			background-color: $chat-tabs-selected-bg-color;
 			border-width: $chat-tabs-border-width $chat-tabs-border-width 0 $chat-tabs-border-width;
 			&:first-child {
 				border-width: $chat-tabs-border-width $chat-tabs-border-width 0 0;
@@ -928,6 +931,7 @@ div#notifs {
 	display: none;
 	&.selected {
 		display: block;
+		background: $chat-page-selected-bg;		
 	}
 }
 
