@@ -6,5 +6,6 @@ trap 'cd "$cwd"' EXIT
 cd "$cwd/benchmark"
 
 node tribo.bench.js
+node naming.bench.js
 
 exit 0

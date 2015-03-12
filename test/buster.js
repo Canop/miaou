@@ -12,6 +12,7 @@ config["all"] = {
         "format/format-quotes.js",
         "format/format-tables.js",
         "ludogene/tribo.js",
-        "stackoverflow/url.js"
+        "stackoverflow/url.js",
+        "naming/name-cleaning.js"
     ]	
 };
