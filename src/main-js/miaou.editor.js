@@ -342,7 +342,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 		$('#uploadSend').click(function(){
 			var file = document.getElementById('file').files[0];
-			if (!file || !/^image\/i/.test(file.type)) {
+			if (!file || !/^image\//i.test(file.type)) {
 				alert('not a valid image');
 				return;
 			}
