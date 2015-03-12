@@ -504,6 +504,16 @@ body.mobile .message-menu .vote {
 		max-height: 48px;
 	}
 }
+#notable-messages:empty:after {
+	font-family: "fontello";
+	content: "\e813 Pin or \e808 Star a message to move it here";
+	font-size: 85%;
+	opacity: .5;
+	text-align: center;
+	display: block;
+	padding: 20px 0;
+}
+
 pre {
 	overflow-x: auto;
 	white-space: pre;
@@ -936,6 +946,7 @@ div#notifs {
 .pad .page.selected {
 	background: $chat-page-selected-bg;
 }
+
 
 #searchInput {
 	width: calc(100% - 12px);
