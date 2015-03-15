@@ -17,7 +17,7 @@ miaou(function(wz, skin){
 			cid = $message.data('message').id;
 		if (!cid) return;
 		var $messages = $('#messages .message'),
-			messages = $messages.map(function(i){ var m = $(this).data('message'); if (m.id===cid) ci = i; return m }).get();
+			messages = $messages.map(function(i){ var m=$(this).data('message'); if (m.id===cid) ci=i; return m }).get();
 		while (w=wzins.pop()) w.remove();
 		for (var ui=ci, i=ci; i-- && messages[ui].repliesTo;) {
 			if (messages[i].id===messages[ui].repliesTo) {

@@ -38,6 +38,7 @@ exports.registerCommands = function(registerCommand){
 			});
 		},
 		help:"bring a user in the room : `!!summon @some_user_name`",
-		detailedHelp:"If you're an admin of the room, this is the best way to invite a user."
+		detailedHelp:"If you're an admin of the room, this is the best way to invite a user.",
+		filter:function(room){ return !room.dialog }	
 	});
 }

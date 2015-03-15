@@ -48,7 +48,7 @@ exports.updateNotables = function(memroom){
 
 // room admin page GET
 exports.appGetRoom = function(req, res, db){
-	db.on([+req.param('id'), +req.user.id])
+	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
 		if (!auths.checkAtLeast(room.auth, 'admin')) {
@@ -64,21 +64,28 @@ exports.appGetRoom = function(req, res, db){
 
 // room admin page POST
 exports.appPostRoom = function(req, res, db){
-	var roomId = +req.param('id'), name = req.param('name').trim(), room;
-	if (!/^.{2,50}$/.test(name)) {
+	console.log("req.body:");
+	console.dir(req.body);
+	var roomId = +req.query.id, room;
+	if (req.body.name && !/^.{2,50}$/.test(req.body.name)) {
 		return server.renderErr(res, "invalid room name");
 	}
-	db.on([roomId, req.user.id, 'admin'])
-	.spread(db.checkAuthLevel)
-	.then(function(auth){
+	db.on([roomId, req.user.id])
+	.spread(db.fetchRoomAndUserAuth)
+	.then(function(oldroom){
+		if (oldroom.auth!=='admin' && oldroom.auth!=='own') {
+			throw "Unauthorized user";
+		}
 		room = {
-			id:roomId, name:name, dialog:false,
-			private:req.param('private')==="on",
-			listed:req.param('listed')==="on",
-			description:req.param('description').replace(/\r\n?/g, '\n'),
-			lang:req.param('lang')
+			id: roomId,
+			name: req.body.name||oldroom.name,
+			dialog: oldroom.dialog,
+			private: oldroom.dialog || (req.body.private==="on"),
+			listed: oldroom.dialog ? false : req.body.listed==="on",
+			description: req.body.description.replace(/\r\n?/g, '\n'),
+			lang: req.body.lang
 		};
-		return [room, req.user, auth];
+		return [room, req.user, oldroom.auth];
 	}).spread(db.storeRoom)
 	.then(function(){
 		res.redirect(server.roomUrl(room));	// executes the room get
@@ -134,7 +141,7 @@ exports.appGetJsonRooms = function(req, res, db){
 exports.appPostRooms = function(req, res, db){
 	db.on()
 	.then(function(){
-		if (req.param('clear_pings')) return this.deleteAllUserPings(req.user.id)
+		if (req.body.clear_pings) return this.deleteAllUserPings(req.user.id)
 	})
 	.then(function(){
 		res.redirect("rooms");	// executes the rooms list get

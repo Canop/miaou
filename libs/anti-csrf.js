@@ -18,12 +18,13 @@ module.exports = function(options){
 		if (!session.secret) session.secret = (Math.random()*Math.pow(36,5)|0).toString(36);
 		if (req.method==='POST' && !whitemap.has(req.path)) {
 			var refererHost = (req.headers.referer||'').match(/^https?:\/\/([^\/\:]+)/)[1];
-			if (req.param('secret')!==session.secret || refererHost!=req.hostname) {
+			if (req.body.secret!==session.secret || refererHost!=req.hostname) {
 				console.log('Anti-csrf rejects this form');
-				console.log('req.host:', req.hostname);
+				console.log('req.hostname:', req.hostname);
 				console.log('referer:', req.headers.referer);
+				console.log('req.body.secret:', req.body.secret);
 				console.log('Session:', session);
-				res.send(403, "There was a security problem, this request can't be processed.");
+				res.status(403).send("There was a security problem, this request can't be processed.");
 				return;
 			}
 		}

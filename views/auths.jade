@@ -71,7 +71,7 @@ html
 						if requests.length
 							table.list
 								each r, i in requests
-									tr.userLine(data-user={id:r.player})
+									tr.user-line(data-user={id:r.player})
 										th
 											span.user= r.name
 										td.date= r.requested
@@ -83,12 +83,12 @@ html
 											div
 												input(type="radio", _name=name, id="d"+i, value="deny")
 												label(for="d"+i) Deny Access
-									tr.userLine
+									tr.user-line
 										td
 											span= r.name+' '
 											| says
 										td.rendered(colspan="2")= r.request_message
-									tr.userLine.denyMessageTr(style="display:none")
+									tr.user-line.denyMessageTr(style="display:none")
 										td(colspan="3")
 											input(type="text",style="width:100%",_name="deny_message_"+r.player,placeholder="optional message")
 						else
@@ -97,7 +97,7 @@ html
 						if unauthorizedUsers.length
 							table.list
 								each u in unauthorizedUsers
-									tr.userLine(data-user={id:u.id})
+									tr.user-line(data-user={id:u.id})
 										th
 											span.user= u.name
 										if rol>=2
@@ -113,7 +113,7 @@ html
 						h2 Existing Authorizations
 						table.list
 							each ua in auths
-								tr.userLine(data-user={id:ua.player})
+								tr.user-line(data-user={id:ua.player})
 									th
 										span.user= ua.name
 									- ual = authLevels.indexOf(ua.auth)

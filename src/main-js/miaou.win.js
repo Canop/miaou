@@ -9,15 +9,14 @@ miaou(function(win, chat, md, ws){
 		$('<div/>').addClass('mwincontainer').addClass(side).appendTo(document.body);
 	});
 	chat.on('incoming_message', function(message){
-		var $mwin = $('#mwin[mid='+message.id+']');
-		if ($mwin.length) {
+		$('.mwintab').filter(function(){ return $(this).attr('mid')==message.id }).addClass('new');
+		var $mwin = $('#mwin');
+		if ($mwin.length && $mwin.attr('mid')==message.id) {
 			$mwin.data('message', message);
 			md.render(
 				$mwin.find('.content').empty().css('max-height', $(window).height()*.85), // sadly didn't find a pure css solution
 				message
 			);
-		} else {
-			$('.mwintab[mid='+message.id+']').addClass('new');
 		}
 	});
 

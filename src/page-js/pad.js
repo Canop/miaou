@@ -155,7 +155,7 @@ miaou(function(chat, locals, watch, ws){
 		$('#roomname').addClass('private').attr('title', 'This room is private');
 	}
 	if (locals.room.dialog) {
-		$('#auths,#editroom').hide();
+		$('#auths').hide();
 	}
 	$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
 

@@ -89,7 +89,7 @@ proto.updateUser = function(user){
 	return this.queryRow(
 		'update player set name=$1, avatarsrc=$2, avatarkey=$3 where id=$4',
 		[user.name, user.avatarsrc, user.avatarkey, user.id]
-	);
+	).then(this.fixAllDialogRoomNames);
 }
 
 // saves the additional optional user info (location, description, lang, website)
@@ -181,8 +181,19 @@ proto.createRoom = function(r, owners){
 	})
 }
 
+// ensures the name of every dialog room is correct according to user names 
+proto.fixAllDialogRoomNames = function(){
+	console.log("Fixing all dialog room names");
+	return this.execute(
+		"update room set name=concat(u1.name,' & ',u2.name) from player u1, room_auth a1, player u2, room_auth a2"+
+		" where a1.room=room.id and a1.player=u1.id and a1.auth>='admin'"+
+		" and a2.room=room.id and a2.player>a1.player and a2.player=u2.id and a2.auth>='admin'"+
+		" and dialog is true"
+	);
+}
+
 // obtains a lounge : a room initially made for a private discussion between two users
-proto.getLounge = function(userA, userB) {
+proto.getLounge = function(userA, userB){
 	var con = this, resolver = Promise.defer();
 	this.client.query(
 		"select * from room r, room_auth aa, room_auth ab"+
@@ -194,17 +205,10 @@ proto.getLounge = function(userA, userB) {
 	{
 		if (err) return resolver.reject(err);
 		if (res.rows.length) return resolver.resolve(res.rows[0]);		
-		var baseName = userA.name.slice(0,20) + ' & ' + userB.name.slice(0,20), i=0, 
-			description = 'A private lounge for '+userA.name+' and '+userB.name;
-		(function tryName(){
-			var name = i++ ? baseName + ' - ' + i : baseName;
-			con.client.query("select id from room where name=$1", [name], function(err, res){
-				if (err) return resolver.reject(err);
-				if (res.rows.length) return tryName();
-				var room = {name:name, description:description, private:true, listed:false, dialog:true, lang:'en'};
-				con.createRoom(room, [userA,userB]).then(function(){ resolver.resolve(room) });
-			});			
-		})();
+		var name = userA.name + ' & ' + userB.name,
+			description = 'A private lounge for '+userA.name+' and '+userB.name,
+			room = {name:name, description:description, private:true, listed:false, dialog:true, lang:'en'};
+		con.createRoom(room, [userA,userB]).then(function(){ resolver.resolve(room) });
 	});
 	return resolver.promise.bind(this);
 }
@@ -784,7 +788,7 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	var start = Date.now();
 	this.client.query(sql, args, function(err, res){
-		//~ logQuery(sql, args);
+		logQuery(sql, args);
 		var end = Date.now();
 		if (end-start>50) {
 			console.log("Slow query (" + (end-start) + " ms) :");

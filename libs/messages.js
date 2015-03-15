@@ -5,8 +5,8 @@ const auths = require('./auths.js'),
 
 // params : n, room
 exports.appGetJsonLastMessages = function(req, res, db){
-	var n = Math.min(+req.param('n')||1, 20),
-		roomId = +req.param('room');
+	var n = Math.min(+req.query.n||1, 20),
+		roomId = +req.query.room;
 	db.on([roomId, req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){

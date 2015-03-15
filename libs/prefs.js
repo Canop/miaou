@@ -72,14 +72,14 @@ exports.appAllPrefs = function(req, res, db){
 		if (epi.ppi) epi.html = epi.ep.render(epi.ppi);
 		if (req.method==='POST') {
 			if (epi.html) {
-				if (req.param('remove_'+epi.name)) {
+				if (req.body['remove_'+epi.name]) {
 					epi.ppi = null;
 					return this.deletePlayerPluginInfo(epi.name, req.user.id);
 				}
 			} else {
 				var vals = {}, allFilled = true;
 				epi.fields.forEach(function(f){
-					if (!(vals[f.name] = req.param(f.name))) allFilled = false;
+					if (!(vals[f.name] = req.body[f.name])) allFilled = false;
 				});
 				if (allFilled) return epi.ep.creation.create(req.user, epi.ppi||{}, vals);
 			}
@@ -95,9 +95,9 @@ exports.appAllPrefs = function(req, res, db){
 		}
 	}).then(function(){
 		if (req.method==='POST') {
-			var	name = req.param('name').trim(),
-				avatarsrc = req.param('avatar-src'),
-				avatarkey = req.param('avatar-key');
+			var	name = req.body.name.trim(),
+				avatarsrc = req.body['avatar-src'],
+				avatarkey = req.body['avatar-key'];
 			if (!naming.isValidUsername(name)) return;
 			if (name!==req.user.name && naming.isUsernameForbidden(name)) {
 				error = "Sorry, that username is reserved.";
@@ -115,17 +115,17 @@ exports.appAllPrefs = function(req, res, db){
 	}).then(function(){
 		if (req.method==='POST') {
 			return this.updateUserInfo(req.user.id, {
-				description: req.param('description')||null,
-				location: req.param('location')||null,
-				url: req.param('url')||null,
-				lang: req.param('lang')||null
+				description: req.body.description||null,
+				location: req.body.location||null,
+				url: req.body.url||null,
+				lang: req.body.lang||null
 			});
 		}
 	}).then(function(){
 		if (req.method==='POST') {
 			var dbops = [];
 			for (var key in defaultPrefs) {
-				var val = req.param(key);
+				var val = req.body[key];
 				if (!val || val===userPrefs[key]) continue;
 				if (val.length>VALUE_MAX_LENGTH) {
 					console.log("pref value too long :", val);

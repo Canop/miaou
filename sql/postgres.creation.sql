@@ -2,11 +2,11 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 12);
+insert into db_version (component, version) values('core', 14);
 
 CREATE TABLE room (
 	id serial primary key,
-	name varchar(50) UNIQUE NOT NULL,
+	name varchar(50) NOT NULL,
 	private boolean NOT NULL default false,
 	listed boolean NOT NULL default true,
 	dialog boolean NOT NULL default false,
@@ -16,7 +16,7 @@ CREATE TABLE room (
 
 CREATE TABLE player (
 	id serial primary key,
-	name varchar(30) UNIQUE,
+	name varchar(20) UNIQUE,
 	email varchar(254),
 	oauthprovider varchar(50),
 	oauthid varchar(150),

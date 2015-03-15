@@ -17,7 +17,7 @@ exports.checkAtLeast = function(auth, neededAuth) {
 
 // handles GET of the auths /page
 exports.appGetAuths = function(req, res, db){
-	db.on([+req.param('id'), +req.user.id])
+	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
 		room.path = server.roomPath(room);
@@ -49,14 +49,17 @@ exports.appGetAuths = function(req, res, db){
 
 // handles POST of the auths /page
 exports.appPostAuths = function(req, res, db){
-	var room; // todo find more elegant than storing as a variable in this scope
-	db.on([+req.param('room'), +req.user.id])
+	var room;
+	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(r){
 		room = r;
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);
 		if (!exports.checkAtLeast(room.auth, 'admin')) {
 			return server.renderErr(res, "Admin auth is required");
+		}
+		if (r.dialog) {
+			return server.renderErr(res, "You can't change authorizations of a dialog room");			
 		}
 		var m, actions = [];
 		for (var key in req.body){

@@ -22,7 +22,7 @@ miaou(function(prof, gui, locals){
 		if ($('.dialog').length) return;
 		var $user = $(this).closest('.user');
 		if (!$user.length) $user = $(this).closest('.user-messages').find('.user');
-		var user = $user.data('user') || $user.closest('.notification,.user-messages').data('user'),
+		var user = $user.data('user') || $user.closest('.notification,.user-messages,.user-line').data('user'),
 			uo = $user.offset(),
 			uh = $user.outerHeight(), uw = $user.width(),
 			wh = $(window).height();

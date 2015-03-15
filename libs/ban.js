@@ -34,6 +34,7 @@ exports.registerCommands = function(registerCommand){
 			})
 		},
 		help:"Temporarily ban a user from the room : `!!ban @some_user_name`",
-		detailedHelp:"A dialog will open to ask you the ban duration"
+		detailedHelp:"A dialog will open to ask you the ban duration",
+		filter:function(room){ return !room.dialog }	
 	});
 }

@@ -37,7 +37,7 @@ var openPmRoom = exports.openPmRoom = function (shoe, otherUserId, otherUserName
 		if (socket) {
 			socket.emit('invitation', {room:lounge.id, byname:shoe.publicUser.name, message:m.id});
 		} else {
-			return this.storePing(lounge.id, otherUserId, m.id);
+			return this.storePing(lounge.id, otherUser.id, m.id);
 		}
 	})
 	.then(function(){
@@ -54,6 +54,7 @@ exports.registerCommands = function(registerCommand){
 			ct.nostore = true;
 			return openPmRoom.call(this, ct.shoe, 0, m[1]);
 		},
-		help:"open a dialog room to discuss with a specific user. Usage : `!!pm @someuser`"
+		help:"open a dialog room to discuss with a specific user. Usage : `!!pm @someuser`",
+		filter:function(room){ return !room.dialog }	
 	});
 }

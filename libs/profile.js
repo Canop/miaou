@@ -34,7 +34,7 @@ exports.appAllUsername = function(req, res, db){
 	db.on()
 	.then(function(){
 		if (req.method==='POST') {
-			var name = req.param('name');
+			var name = req.body.name;
 			if (naming.isUsernameForbidden(name)) {
 				error = "Sorry, that username is reserved.";
 				return;
@@ -63,7 +63,7 @@ exports.appAllUsername = function(req, res, db){
 // handles GET on '/publicProfile'
 exports.appGetPublicProfile = function(req, res, db){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
-	var userId = +req.param('user'), roomId = +req.param('room');
+	var userId = +req.query.user, roomId = +req.query.room;
 	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
 		return { name:p.name, ep:p.externalProfile }
 	});
