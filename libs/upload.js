@@ -39,7 +39,13 @@ exports.appPostUpload = function(req, res){
 				console.log('Error while uploading to imgur', err);
 				return res.send({error:'Error while uploading to imgur'});
 			}
-			var data = JSON.parse(body).data;
+			var data = {error:'imgur answer parsing'};
+			try {
+				data = JSON.parse(body).data;
+			} catch (e) {
+				console.log("Error while parsing imgur answer:" , e);
+				console.log(body);
+			}
 			if (data && data.error) return res.send({error:"Imgur answered : "+data.error});
 			if (!data || !data.id) return res.send({error:"Miaou didn't understand imgur's answer"});
 			res.send({image:data});

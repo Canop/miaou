@@ -11,6 +11,7 @@
 	"maxAgeForMessageEdition": 3600,
 	"maxAgeForMessageTotalDeletion": 180,
 	"secret": "a string here",
+	"botAvatar": {"src":"url", "key":"http://dystroy.org/miaou/static/M-150.png"},
 	"database": {
 		"url": "postgres://database_user:database_pwd@localhost/miaou",
 		"native_pg": false

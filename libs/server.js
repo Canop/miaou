@@ -196,7 +196,16 @@ exports.start = function(config){
 		db.on("miaou")
 		.then(db.getBot)
 		.then(function(b){
-			miaou.bot = b
+			miaou.bot = b;
+ 			if (config.botAvatar.src!==b.avatarsrc || config.botAvatar.key!==b.avatarkey) {
+				console.log("config.botAvatar.src:",config.botAvatar.src);
+				console.log("b.avatarsrc:",b.avatarsrc);
+				console.log("config.botAvatar.key:",config.botAvatar.key);
+				console.log("b.avatarkey:",b.avatarkey);
+				b.avatarsrc = config.botAvatar.src;
+				b.avatarkey = config.botAvatar.key;
+				return this.updateUser(b)
+			}
 		})
 		.finally(db.off)
 		.then(function(){

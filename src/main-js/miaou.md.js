@@ -233,6 +233,10 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		return colour;
 	}
 	
+	function selfHide(){
+		this.style.visibility="hidden";
+	}
+	
 	// builds a new .user-messages div for the passed user)
 	function usermessagesdiv(user){
 		var $usermessages = $('<div>').addClass('user-messages').data('user',user),
@@ -241,7 +245,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		$user.css('color', stringToColour(user.name)).append($('<span/>').text(user.name));
 		if (avsrc) {
 			$('<div>').addClass('avatar-wrapper').prependTo($user).append(
-				$('<img>').attr('src',avsrc).addClass('avatar')
+				$('<img>').attr('src',avsrc).addClass('avatar').on('error', selfHide)
 			);
 		} else {
 			$('<div>').addClass('avatar').prependTo($user);

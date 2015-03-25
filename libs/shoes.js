@@ -20,7 +20,6 @@ function Shoe(socket, completeUser){
 	if (completeUser.avatarkey) {
 		this.publicUser.avs = completeUser.avatarsrc;
 		this.publicUser.avk = completeUser.avatarkey;
-		//~ this.publicUser.avatar = "http://avatars.io/"+completeUser.avatarsrc+"/"+completeUser.avatarkey+"?size=large";
 	}
 	this.room;
 	this.lastMessageTime;

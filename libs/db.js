@@ -129,7 +129,7 @@ proto.usersStartingWith = function(str, roomId, limit){
 // returns a bot, creates it if necessary
 proto.getBot = function(botname){
 	return this.queryRow(
-		'select id, name, bot from player where name=$1 and bot is true', [botname], true
+		'select id, name, bot, avatarsrc, avatarkey from player where name=$1 and bot is true', [botname], true
 	).then(function(player){
 		return player || this.queryRow(
 			'insert into player (name, bot) values ($1, true) returning id, name, bot',	[botname]
@@ -151,21 +151,6 @@ proto.getPrefs = function(userId){
 
 ///////////////////////////////////////////// #rooms
 
-proto.storeRoom = function(r, author, authlevel) {
-	if (!r.id) return this.createRoom(r, [author]);
-	if (authlevel==="own") {
-		return this.queryRow(
-			"update room set name=$1, private=$2, listed=$3, dialog=$4, description=$5, lang=$6 where id=$7",
-			[r.name, r.private, r.listed, r.dialog, r.description||'', r.lang, r.id]
-		);
-	} else { // implied : "admin"
-		return this.queryRow(
-			"update room set name=$1, listed=$2, description=$3, lang=$4 where id=$5",
-			[r.name, r.listed, r.description||'', r.lang, r.id]
-		);			
-	}
-}
-
 proto.createRoom = function(r, owners){
 	return this.queryRow(
 		'insert into room (name, private, listed, dialog, description, lang) values ($1, $2, $3, $4, $5, $6) returning id',
@@ -179,6 +164,20 @@ proto.createRoom = function(r, owners){
 			[r.id, user.id, 'own', now()]
 		);
 	})
+}
+
+proto.updateRoom = function(r, author, authlevel) {
+	if (authlevel==="own") {
+		return this.queryRow(
+			"update room set name=$1, private=$2, listed=$3, dialog=$4, description=$5, lang=$6 where id=$7",
+			[r.name, r.private, r.listed, r.dialog, r.description||'', r.lang, r.id]
+		);
+	} else { // implied : "admin"
+		return this.queryRow(
+			"update room set name=$1, listed=$2, description=$3, lang=$4 where id=$5",
+			[r.name, r.listed, r.description||'', r.lang, r.id]
+		);			
+	}
 }
 
 // ensures the name of every dialog room is correct according to user names 
@@ -788,7 +787,7 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var resolver = Promise.defer();
 	var start = Date.now();
 	this.client.query(sql, args, function(err, res){
-		logQuery(sql, args);
+		//~ logQuery(sql, args);
 		var end = Date.now();
 		if (end-start>50) {
 			console.log("Slow query (" + (end-start) + " ms) :");

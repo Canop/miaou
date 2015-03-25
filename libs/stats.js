@@ -39,7 +39,7 @@ function doStats(ct) {
 		from = "from message group by c0 order by c0";
 		title = "Server Statistics #graph";
 		ranking = false;
-	} else if (/^users$/i.test(topic)) {
+	} else if (/^(active-)?users$/i.test(topic)) {
 		cols = [
 			{name:"Name", value:"name"},
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
@@ -47,7 +47,8 @@ function doStats(ct) {
 			{name:"Stars", value:"(select sum(star) from message where author=player.id)"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
-		from = "from player where bot is false order by c1 desc limit "+n;
+		var orderingCol = /^active-/i.test(topic) ? 2 : 1;
+		from = "from player where bot is false order by c"+orderingCol+" desc limit "+n;
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
 		cols = [
@@ -72,7 +73,7 @@ function doStats(ct) {
 		from = "from player where name=$1";
 		args.push(topic.slice(1), room.id);
 		title = "Statistics for user "+topic;
-	} else if (/^rooms$/i.test(topic)) {
+	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
 			{name:"Id", value:"id"},
 			{name:"Name", value:"name"},		
@@ -82,7 +83,8 @@ function doStats(ct) {
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
-		from = "from room order by c4 desc limit "+n;
+		var orderingCol = /^active-/i.test(topic) ? 5 : 4;
+		from = "from room order by c"+orderingCol+" desc limit "+n;
 		title = "Rooms Statistics (top "+n+")";
 	} else if (/^room$/i.test(topic)) {
 		cols = [
@@ -129,9 +131,16 @@ function doStats(ct) {
 exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name:'stats', fun:doStats,
-		help:"Usage : `!!stats [server|me|@user|users|room|roomusers|rooms|votes] [n]`",
+		help:"Usage : `!!stats [server|me|@user|users|room|roomusers|rooms|votes|...] [n]`",
 		detailedHelp: "Examples:"+
-			"\n* `!!stats me` : give some stats about you"+
-			"\n* `!!stats rooms 100` : list the 100 rooms having the most messages"
+			"\n* `!!stats me` : some stats about you"+
+			"\n* `!!stats users` : list of the users having posted the most messages"+
+			"\n* `!!stats rooms 100` : list of the 100 rooms having the most messages"+
+			"\n* `!!stats @someuser` : some stats about that user"+
+			"\n* `!!stats active-rooms` : list of the rooms having the most messages in the two last days"+
+			"\n* `!!stats active-users 20` : list of the 20 users having posted the most messages in the two last days"+
+			"\n* `!!stats` : basic stats"+
+			"\n* `!!stats server-graph` : monthly histogram"
+			
 	});
 }

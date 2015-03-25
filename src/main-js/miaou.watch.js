@@ -40,7 +40,8 @@ miaou(function(watch, locals, md, notif, ws){
 			.appendTo('#watches')
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){
-			return $(a).data('watch').name.localeCompare($(b).data('watch').name);
+			var wa = $(a).data('watch'), wb = $(b).data('watch');
+			return (interlocutor(wa)||wa.name).localeCompare((interlocutor(wb)||wb.name));
 		}));
 	}
 

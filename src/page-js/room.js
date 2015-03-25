@@ -26,7 +26,7 @@ miaou(function(locals){
 	if (error) {
 		$('#err').text(error);
 	}
-	if (room.dialog) {
+	if (room && room.dialog) {
 		$('#name,#private,#listed').prop('disabled', true);
 	}
 	$('form')[0].action = location;

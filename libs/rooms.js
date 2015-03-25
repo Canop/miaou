@@ -64,30 +64,40 @@ exports.appGetRoom = function(req, res, db){
 
 // room admin page POST
 exports.appPostRoom = function(req, res, db){
-	console.log("req.body:");
-	console.dir(req.body);
-	var roomId = +req.query.id, room;
+	var roomId = +req.query.id;
 	if (req.body.name && !/^.{2,50}$/.test(req.body.name)) {
 		return server.renderErr(res, "invalid room name");
 	}
-	db.on([roomId, req.user.id])
-	.spread(db.fetchRoomAndUserAuth)
-	.then(function(oldroom){
-		if (oldroom.auth!=='admin' && oldroom.auth!=='own') {
-			throw "Unauthorized user";
+	var room = {
+		name: req.body.name,
+		private: req.body.private==="on",
+		listed: req.body.listed==="on",
+		dialog: false,
+		description: req.body.description.replace(/\r\n?/g, '\n'),
+		lang: req.body.lang
+	};
+	db.on().then(function(){		
+		if (!roomId) {
+			// room creation
+			return this.createRoom(room, [req.user]);
+		} else {
+			// room edition
+			return this.fetchRoomAndUserAuth(roomId, req.user.id)
+			.then(function(oldroom){
+				if (oldroom.auth!=='admin' && oldroom.auth!=='own') {
+					throw "Unauthorized user";
+				}
+				room.id = roomId;
+				if (oldroom.dialog) {
+					room.name = oldroom.name;
+					room.dialog = true;
+					room.private = true;
+					room.listed = false;
+				}
+				return this.updateRoom(room, req.user, oldroom.auth);
+			})
 		}
-		room = {
-			id: roomId,
-			name: req.body.name||oldroom.name,
-			dialog: oldroom.dialog,
-			private: oldroom.dialog || (req.body.private==="on"),
-			listed: oldroom.dialog ? false : req.body.listed==="on",
-			description: req.body.description.replace(/\r\n?/g, '\n'),
-			lang: req.body.lang
-		};
-		return [room, req.user, oldroom.auth];
-	}).spread(db.storeRoom)
-	.then(function(){
+	}).then(function(){
 		res.redirect(server.roomUrl(room));	// executes the room get
 	}).catch(function(err){
 		res.render('room.jade', {vars:{ room:room, error:err.toString() }});
