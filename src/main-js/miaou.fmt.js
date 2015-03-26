@@ -43,21 +43,38 @@ miaou(function(fmt){
 		.replace(/^\/me(.*)$/g, '<span class=slashme>'+(username||'/me')+'$1</span>')
 	}
 	
+	function wrapCode(code, lang){
+		var s = '<pre class="prettyprint';
+		if (lang) s += " lang-"+lang;
+		s += '">';
+		s += code.join('\n');
+		s += '</pre>';
+		return s;
+	}
+	
 	function _mdTextToHtml(md, username){
 		var table,
+			lang, // current code language, set with a #lang-* pragma
 			ul, ol, code, // arrays : their elements make multi lines structures
 			lin = md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
 			var m, s = lin[l].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 			
-			var codeline = /^(    |\t)/.test(s) && !(table && /\|/.test(s));
+			var langPragmaMatch = s.match(/^\s*#lang-(\w+)\s*$/);
+			if (langPragmaMatch) {
+				lang = langPragmaMatch[1];
+				console.log("pragma lang:", lang);
+				continue;
+			}
+			
+			var codeline = ((/^\s*$/.test(s) && code) || /^(    |\t)/.test(s)) && !(table && /\|/.test(s));
 			if (code) {
 				if (codeline) {
-					code.push(s);
+					code.push(s.replace(/^(    |\t)/,''));
 					continue;
 				} else {
-					lout.push('<pre><code>'+code.join('\n')+'</code></pre>');
+					lout.push(wrapCode(code, lang));
 					code = null;
 				}
 			} else if (codeline) {
@@ -67,7 +84,7 @@ miaou(function(fmt){
 					table.push(s);
 					table.push(lin[++l]);
 				} else {
-					code = [s];
+					code = [s.replace(/^(    |\t)/,'')];
 				}
 				continue;
 			}
@@ -154,10 +171,10 @@ miaou(function(fmt){
 			lout.push(s);
 		}
 		if (table) lout.push(table.html(username));
-		if (code) lout.push('<pre><code>'+code.join('\n')+'</code></pre>');
+		if (code) lout.push(wrapCode(code, lang));
 		if (ol) lout.push('<ol>'+ol.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ol>');
 		if (ul) lout.push('<ul>'+ul.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ul>');
-		return lout.join('<br>');		
+		return lout.join('<br>');
 	}
 	
 	fmt.mdTextToHtml = function(md, username){

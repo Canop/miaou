@@ -1,10 +1,9 @@
 "use strict";
 
 
-const path = require('path'),
-	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
-
-var blacklist = [];
+var	path = require('path'),
+	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+	blacklist = [];
 
 exports.configure = function(miaou){
 	if (miaou.config.forbiddenUsernames) {

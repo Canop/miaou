@@ -14,7 +14,7 @@ buster.testCase("Formatting - Code", {
 	),
 	"Code bloc with tabs": t(
 		"A code block :\n\t#html, #result {\n\tpadding: 1%;\n\tmargin : 0.5%;\n\tbackground: white;\n\t}",
-		'A code block :<br><pre><code>\t#html, #result {\n\tpadding: 1%;\n\tmargin : 0.5%;\n\tbackground: white;\n\t}</code></pre>'
+		'A code block :<br><pre class="prettyprint">#html, #result {\npadding: 1%;\nmargin : 0.5%;\nbackground: white;\n}</pre>'
 	),
 	"Code bloc with spaces": t(
 		"    function t(s,r){\n"+
@@ -22,7 +22,17 @@ buster.testCase("Formatting - Code", {
 		"            buster.assert.equals(fmt(s), r);\n"+
 		"        }\n"+
 		"    }",
-		'<pre><code>    function t(s,r){\n        return function(){\n            buster.assert.equals(fmt(s), r);\n        }\n    }</code></pre>'
+		'<pre class="prettyprint">function t(s,r){\n    return function(){\n        buster.assert.equals(fmt(s), r);\n    }\n}</pre>'
+	),
+	"Code bloc with language pragma":t(
+		"Here's some SQL code:\n"+
+		"#lang-sql\n"+
+		"    CREATE TABLE db_version (\n"+
+		"    	component varchar(30) primary key,\n"+
+		"    	version integer NOT NULL\n"+
+		"    );\n"+
+		"    insert into db_version (component, version) values('core', 14);\n",
+		'Here\'s some SQL code:<br><pre class=\"prettyprint lang-sql\">CREATE TABLE db_version (\n\tcomponent varchar(30) primary key,\n\tversion integer NOT NULL\n);\ninsert into db_version (component, version) values(\'core\', 14);</pre>'
 	),
 });
 

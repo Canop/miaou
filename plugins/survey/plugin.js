@@ -82,6 +82,7 @@ exports.registerCommands = function(cb){
 		name:'survey', fun:onCommand,
 		help:"starts a survey. Type `!!help !!survey` for detailed information",
 		detailedHelp: "Example:"
+			+"\n#lang-md"
 			+ "\n    !!survey What's your favorite colour?"
 			+ "\n    * Red"
 			+ "\n    * Dark Red"

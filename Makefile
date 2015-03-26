@@ -14,6 +14,8 @@ RSC_FILES:=$(patsubst ./src/rsc/%, ./static/%, $(shell find ./src/rsc/* -type f)
 JS2_FILES:=$(addprefix ./static/, $(addsuffix .min.js2, miaou login rooms chat.mob jquery-2.1.3 socket.io))
 
 MAIN_JS_SOURCES:=$(sort $(wildcard ./src/main-js/*.js))
+PRETTIFY_JS_MAIN_SOURCE:=./src/main-js/prettify/prettify.js
+PRETTIFY_JS_LANG_SOURCES:=$(sort $(wildcard ./src/main-js/prettify/lang-*.js))
 PLUGIN_JS_SOURCES:=$(wildcard ./plugins/*/client-scripts/*.js)
 MIAOU_MODULES:="chat,ed,fmt,gui,hist,links,locals,md,mh,mod,ms,notif,prof,skin,usr,watch,win,ws,wz,games,plugins,mountyhall"
 UGLIFY_OPTIONS:=--screw-ie8 -cmt --reserved $(MIAOU_MODULES)
@@ -28,10 +30,12 @@ clean:
 
 # main js file : static/miaou.min.js
 # There's a cd static; because I didn't find another way to have a correctly linked source map
-./static/miaou.concat.js: $(MAIN_JS_SOURCES) $(PLUGIN_JS_SOURCES)
+./static/miaou.concat.js: $(MAIN_JS_SOURCES) $(PLUGIN_JS_SOURCES) $(PRETTIFY_JS_MAIN_SOURCE) $(PRETTIFY_JS_LANG_SOURCES)
 	@echo "\"use strict\";" > $@
 	cat $(MAIN_JS_SOURCES) >> $@
 	cat $(PLUGIN_JS_SOURCES) >> $@
+	cat $(PRETTIFY_JS_MAIN_SOURCE) >> $@
+	cat $(PRETTIFY_JS_LANG_SOURCES) >> $@
 ./static/miaou.min.js: ./static/miaou.concat.js
 	cd static; uglifyjs miaou.concat.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $(@F).map
 	@echo $@ gzipped : `cat $@ | gzip -9f | wc -c` bytes

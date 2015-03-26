@@ -35,6 +35,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 			});
 			md.updateLoaders();
 			md.showMessageFlowDisruptions();
+			if (typeof prettyPrint !== 'undefined') prettyPrint();
 		}
 
 		function setEnterTime(serverTime){
