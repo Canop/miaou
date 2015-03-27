@@ -3,6 +3,7 @@
 miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	var $input, input,
+		stateBeforePaste, // {selectionStart,selectionEnd,value}
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
 		stash, // save of the unsent message edition, if any
 		editedMessage, // currently edited message, if any (if you cycle through messages, their edited content is saved in a property stash)
@@ -181,7 +182,6 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	}
 	
 	function uploadFile(file){
-		console.log("uploadFile", file);
 		var fd = new FormData(); // todo: do I really need a formdata ?
 		fd.append("file", file);
 		var xhr = new XMLHttpRequest();
@@ -219,9 +219,15 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 				var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;
 				switch(e.which){
 				case 75: // ctrl - K : toggle code
+					if (sp===ep && stateBeforePaste) {
+						// some code was just pasted
+						console.log("Doing ctrl-K on pasted code");
+						this.selectionStart = sp = stateBeforePaste.selectionStart;
+					}
+					console.log(sp, ep, ~val.slice(sp, ep+1).indexOf('\n'));
 					if (sp===ep) {
 						$input.selectLines().replaceSelection(toggleLinesCode);
-						this.selectionStart = this.selectionEnd;
+						this.selectionStart = this.selectionEnd;							
 					} else if (~val.slice(sp, ep+1).indexOf('\n')) {
 						$input.selectLines().replaceSelection(toggleLinesCode);
 					} else {
@@ -317,6 +323,12 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			}
 		})
 		.on('keyup', function(e){
+			if ((e.which===86 && e.ctrlKey) || e.which===17) { // end of ctrl-V
+				console.log('up from ctrl-v');				
+			} else {
+				console.log('clearing sbp on e.which=',e.which);
+				stateBeforePaste = null;
+			}
 			if (e.which===9) return false; // tab
 		})
 		.on('input', function(){
@@ -330,6 +342,10 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		$('#cancelEdit').on('click', ed.cancelEdit);
 		
 		document.addEventListener('paste', function(e){
+			stateBeforePaste = {
+				selectionStart:input.selectionStart, selectionEnd:input.selectionEnd, value:input.value
+			};
+			console.log("before paste:", stateBeforePaste);
 			var items = e.clipboardData.items || e.clipboardData.files;
 			for (var i=0; i<items.length; i++) {
 				var item = items[i];
