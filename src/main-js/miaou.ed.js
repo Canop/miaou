@@ -1,24 +1,22 @@
-// Handles the message editor
+// ed is the message editor, managing the user input
 
 miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	var $input, input,
-		stateBeforePaste, // {selectionStart,selectionEnd,value}
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
 		stash, // save of the unsent message edition, if any
 		editedMessage, // currently edited message, if any (if you cycle through messages, their edited content is saved in a property stash)
 		savedValue, $autocompleter, editwzin, replywzin;
 
-	function toggleLines(s,r,insert){
+	ed.stateBeforePaste = null; // {selectionStart,selectionEnd,value}
+
+	ed.toggleLines = function(s,r,insert){
 		var lines = s.split('\n'),
 			on = lines.reduce(function(b,l){ return b && r.test(l) }, true);
 		return lines.map(function(l){ return on ? l.replace(r,'') : insert+l }).join('\n');
 	}
-	function toggleLinesCode(s){
-		return toggleLines(s, /^(    |\t)/, '\t');
-	}
 	function toggleLinesCitation(s){
-		return toggleLines(s, /^>\s*/, '> ');
+		return ed.toggleLines(s, /^>\s*/, '> ');
 	}
 
 	function sendInput(){
@@ -181,34 +179,6 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 	}
 	
-	function uploadFile(file){
-		var fd = new FormData(); // todo: do I really need a formdata ?
-		fd.append("file", file);
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", "upload");
-		function finish(){
-			$('#upload-controls,#input-panel').show();
-			$('#upload-wait,#upload-panel').hide();
-		}
-		xhr.onload = function() {
-			var ans = JSON.parse(xhr.responseText);
-			finish();
-			if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
-			else alert("Hu? didn't exactly work, I think...");
-			console.log("Image upload result:", ans);
-			document.getElementById('file').value = null;
-		}
-		xhr.onerror = function(){
-			alert("Something didn't work as expected :(");
-			document.getElementById('file').value = null;
-			finish();
-		}
-		$('#upload-controls,#input-panel').hide();
-		$('#upload-wait,#upload-panel').show();
-		xhr.send(fd);
-	}
-	
-	// prepare #input to emit on the provided socket
 	ed.init = function(){
 		$input = $('#input');
 		input = $input[0];
@@ -216,23 +186,10 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			notif.userAct();
 			if (miaou.dialog.has()) return false;
 			if (e.ctrlKey && !e.shiftKey) {
-				var sp = this.selectionStart, ep = this.selectionEnd, val = this.value;
+				var sp = this.selectionStart, ep = this.selectionEnd;
 				switch(e.which){
 				case 75: // ctrl - K : toggle code
-					if (sp===ep && stateBeforePaste) {
-						// some code was just pasted
-						console.log("Doing ctrl-K on pasted code");
-						this.selectionStart = sp = stateBeforePaste.selectionStart;
-					}
-					console.log(sp, ep, ~val.slice(sp, ep+1).indexOf('\n'));
-					if (sp===ep) {
-						$input.selectLines().replaceSelection(toggleLinesCode);
-						this.selectionStart = this.selectionEnd;							
-					} else if (~val.slice(sp, ep+1).indexOf('\n')) {
-						$input.selectLines().replaceSelection(toggleLinesCode);
-					} else {
-						$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
-					}
+					ed.onCtrlK.call(this);
 					return false;
 				case 81: // ctrl - Q : toggle citation
 					$input.selectLines().replaceSelection(toggleLinesCitation);
@@ -324,46 +281,22 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		})
 		.on('keyup', function(e){
 			if ((e.which===86 && e.ctrlKey) || e.which===17) { // end of ctrl-V
-				console.log('up from ctrl-v');				
 			} else {
-				console.log('clearing sbp on e.which=',e.which);
-				stateBeforePaste = null;
+				ed.stateBeforePaste = null;
 			}
+			ed.onMove();
 			if (e.which===9) return false; // tab
 		})
 		.on('input', function(){
 			tryautocomplete();
 			updateReplyWzin();				
-		})			
+		})
+		.on('click', ed.onMove)
 		.focus();
 
 		$('#send').on('click', sendInput);
 
 		$('#cancelEdit').on('click', ed.cancelEdit);
-		
-		document.addEventListener('paste', function(e){
-			stateBeforePaste = {
-				selectionStart:input.selectionStart, selectionEnd:input.selectionEnd, value:input.value
-			};
-			console.log("before paste:", stateBeforePaste);
-			var items = e.clipboardData.items || e.clipboardData.files;
-			for (var i=0; i<items.length; i++) {
-				var item = items[i];
-				if (/^image\//i.test(item.type)) {
-					uploadFile(item.getAsFile());
-					return false;
-				}
-			}
-		});
-
-		$('#uploadSend').click(function(){
-			var file = document.getElementById('file').files[0];
-			if (!file || !/^image\//i.test(file.type)) {
-				alert('not a valid image');
-				return;
-			}
-			uploadFile(file);
-		});
 	}
 	
 	// adds or remove a ping to that username
@@ -403,6 +336,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		input.selectionEnd = e + dl;
 		input.focus();
 		updateReplyWzin($message);
+		ed.onMove();
 	}
 	
 	// toggle edition of an existing message
@@ -425,6 +359,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			zIndex:5, fill:skin.wzincolors.edit, scrollable:'#message-scroller', parent:document.body, changeElementBackground:true
 		});
 		updateReplyWzin();
+		ed.onMove();
 	}
 	
 	// cancels replying
@@ -434,6 +369,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			replywzin.remove();
 			replywzin = null;
 		}
+		ed.onMove();
 	}
 	
 	// cancels edition
@@ -447,6 +383,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			editwzin.remove();
 			editwzin = null;
 			updateReplyWzin();
+			ed.onMove();
 		}
 	}
 	

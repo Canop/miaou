@@ -518,7 +518,7 @@ pre {
 	overflow-x: auto;
 	white-space: pre;
 	word-wrap: normal;
-	margin: 5px;
+	margin: 4px 4px 13px 4px;
 }
 code {
 	font-family: monospace;
@@ -562,7 +562,7 @@ code {
 	flex-grow: 0;
 	z-index: 10;
 }
-#autocompleter,  {
+#autocompleter {
 	position: absolute;
 	top: -12px;
 	left: 0;
@@ -576,6 +576,36 @@ code {
 		cursor: pointer;
 		&.selected {
 			font-weight: bold;
+		}
+	}
+}
+#code-controls {
+	position: absolute;
+	font-size: 90%;
+	top: -31px;
+	left: 0;
+	right: 0;
+	height: 29px;
+	z-index: 9;
+	background: $bg-color;
+	box-shadow: 0 -1px 1px black;
+	padding: 2px 0 0 5px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	overflow: hidden;
+	span.lang {
+		margin: 4px;
+		padding: 2px;
+		border: thin dashed #888;
+		white-space: nowrap;
+		cursor: pointer;
+		&.selected {
+			background: rgba(255,255,255,.4);
+			border: thin solid #666;
+		}
+		&:hover {
+			background: rgba(255,255,255,.4);		
 		}
 	}
 }
