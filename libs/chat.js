@@ -6,7 +6,8 @@ const fs = require('fs'),
 	prefs = require('./prefs.js'),
 	server = require('./server.js');
 
-var	clientSidePluginNames;
+var	clientSidePluginNames,
+	db;
 
 exports.configure = function(miaou){
 	clientSidePluginNames = (miaou.config.plugins||[]).filter(function(n){
@@ -14,10 +15,11 @@ exports.configure = function(miaou){
 	}).map(function(p) {
 		return p.split('/').slice(-2,-1)[0]
 	});
+	db = miaou.db;
 	return this;
 }
 
-exports.appGet = function(req, res, db){
+exports.appGet = function(req, res){
 	db.on()
 	.then(function(){
 		var roomId = +req.params[0],

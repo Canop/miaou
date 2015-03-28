@@ -5,11 +5,13 @@ const path = require('path'),
 	server = require('./server.js');
 
 var langs,
+	db,
 	plugins;
 
 exports.configure = function(miaou){
-	var conf = miaou.config;
+	db = miaou.db;
 	langs = require('./langs.js').configure(miaou);
+	var conf = miaou.config;
 	plugins = (conf.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
 	return this;
 }
@@ -29,7 +31,7 @@ exports.ensureComplete = function(req, res, next){
 }
 
 // handles get and post of the simple profile creation/edition ('/username' requests)
-exports.appAllUsername = function(req, res, db){
+exports.appAllUsername = function(req, res){
 	var error = '';
 	db.on()
 	.then(function(){
@@ -61,7 +63,7 @@ exports.appAllUsername = function(req, res, db){
 }
 
 // handles GET on '/publicProfile'
-exports.appGetPublicProfile = function(req, res, db){
+exports.appGetPublicProfile = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 	var userId = +req.query.user, roomId = +req.query.room;
 	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
@@ -96,7 +98,7 @@ exports.appGetPublicProfile = function(req, res, db){
 	}).finally(db.off);
 }
 
-exports.appGetUser = function(req, res, db){
+exports.appGetUser = function(req, res){
 	var userIdOrName = req.params[0],
 		user;
 	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){

@@ -177,7 +177,7 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	})
 	.on('ban', function(ban){
-		auths.wsOnBan(shoe, db, ban);
+		auths.wsOnBan(shoe, ban);
 	})
 	.on('rm_ping', function(mid){ // remove the ping(s) related to that message and propagate to other sockets of same user
 		db.on([mid, shoe.publicUser.id])

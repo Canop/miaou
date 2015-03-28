@@ -3,8 +3,15 @@
 const auths = require('./auths.js'),
 	server = require('./server.js');
 
+var db;
+
+exports.configure = function(miaou){
+	db = miaou.db;
+	return this;
+}
+
 // params : n, room
-exports.appGetJsonLastMessages = function(req, res, db){
+exports.appGetJsonLastMessages = function(req, res){
 	var n = Math.min(+req.query.n||1, 20),
 		roomId = +req.query.room;
 	db.on([roomId, req.user.id])

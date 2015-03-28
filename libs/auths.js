@@ -6,6 +6,13 @@ const levels = ['read', 'write', 'admin', 'own'],
 	naming = require('./naming.js'),
 	server = require('./server.js'),
 	ws = require('./ws.js');
+	
+var db;
+
+exports.configure = function(miaou){
+	db = miaou.db;
+	return this;
+}
 
 exports.checkAtLeast = function(auth, neededAuth) {
 	for (var i=levels.length; i-->0;) {
@@ -16,7 +23,7 @@ exports.checkAtLeast = function(auth, neededAuth) {
 }
 
 // handles GET of the auths /page
-exports.appGetAuths = function(req, res, db){
+exports.appGetAuths = function(req, res){
 	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
@@ -48,7 +55,7 @@ exports.appGetAuths = function(req, res, db){
 }
 
 // handles POST of the auths /page
-exports.appPostAuths = function(req, res, db){
+exports.appPostAuths = function(req, res){
 	var room;
 	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
@@ -103,7 +110,7 @@ exports.appPostAuths = function(req, res, db){
 	}).finally(db.off);
 }
 
-exports.wsOnBan = function(shoe, db, o){
+exports.wsOnBan = function(shoe, o){
 	if (!shoe.room) return console.log('No room in wsOnBan');
 	o.banner = shoe.publicUser.id;
 	o.bannername = shoe.publicUser.name;

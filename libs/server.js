@@ -68,9 +68,9 @@ function configureOauth2Strategies(){
 
 // defines the routes to be taken by GET and POST requests
 function defineAppRoutes(){
-	var auths = require('./auths.js'),
+	var auths = require('./auths.js').configure(miaou),
 		rooms = require('./rooms.js').configure(miaou),
-		messages = require('./messages.js'),
+		messages = require('./messages.js').configure(miaou),
 		upload = require('./upload.js').configure(miaou),
 		clienterrors = require('./clienterrors.js').configure(miaou),
 		profile = require('./profile.js').configure(miaou),
@@ -91,7 +91,7 @@ function defineAppRoutes(){
 		var args = [path];
 		if (!noNeedForLogin) args.push(ensureAuthenticated);
 		if (!noNeedForCompleteProfile) args.push(ensureCompleteProfile);
-		args.push(fun.length<=2 ? fun : function(req, res){ fun(req, res, db) });
+		args.push(fun);
 		app[verb].apply(app, args);
 	}
 	for (var key in oauth2Strategies){

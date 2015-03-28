@@ -50,7 +50,7 @@ var getUserPrefs = exports.get = function(userId){
 }
 
 // user prefs page GET & POST
-exports.appAllPrefs = function(req, res, db){
+exports.appAllPrefs = function(req, res){
 	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
 		return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
 	});

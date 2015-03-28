@@ -7,10 +7,12 @@ const auths = require('./auths.js'),
 	clean = require('./ws.js').clean;
 
 var langs,
+	db,
 	welcomeRoomIds;
 	
 exports.configure = function(miaou){
 	langs = require('./langs.js').configure(miaou);
+	db = miaou.db;
 	welcomeRoomIds = miaou.config.welcomeRooms || [];
 	return this;
 }
@@ -47,7 +49,7 @@ exports.updateNotables = function(memroom){
 }
 
 // room admin page GET
-exports.appGetRoom = function(req, res, db){
+exports.appGetRoom = function(req, res){
 	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
@@ -63,7 +65,7 @@ exports.appGetRoom = function(req, res, db){
 }
 
 // room admin page POST
-exports.appPostRoom = function(req, res, db){
+exports.appPostRoom = function(req, res){
 	var roomId = +req.query.id;
 	if (req.body.name && !/^.{2,50}$/.test(req.body.name)) {
 		return server.renderErr(res, "invalid room name");
@@ -105,7 +107,7 @@ exports.appPostRoom = function(req, res, db){
 }
 
 // rooms list GET
-exports.appGetRooms = function(req, res, db){
+exports.appGetRooms = function(req, res){
 	db.on(welcomeRoomIds)
 	.map(function(roomId){
 		return this.fetchRoomAndUserAuth(roomId, req.user.id)
@@ -132,7 +134,7 @@ exports.appGetRooms = function(req, res, db){
 	.finally(db.off);
 }
 
-exports.appGetJsonRooms = function(req, res, db){
+exports.appGetJsonRooms = function(req, res){
 	db.on(req.user.id)
 	.then(db.listFrontPageRooms)
 	.then(function(rooms){
@@ -148,7 +150,7 @@ exports.appGetJsonRooms = function(req, res, db){
 }
 
 // rooms list POST
-exports.appPostRooms = function(req, res, db){
+exports.appPostRooms = function(req, res){
 	db.on()
 	.then(function(){
 		if (req.body.clear_pings) return this.deleteAllUserPings(req.user.id)
