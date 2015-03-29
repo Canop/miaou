@@ -1,19 +1,4 @@
-miaou(function(plugins, chat, gui, locals, md, ws){
-	
-	"use strict";
-	
-	// FIXME ensure there's only one VD running at most
-	
-	// I'll make this configurable as soon as somebody asks for it
-	var pc_config = webrtcDetectedBrowser === 'firefox' ?
-	  {'iceServers':[{'url':'stun:23.21.150.121'}]} :
-	  {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]
-	};
-	var pc_constraints = {
-	  'optional': [
-		{'DtlsSrtpKeyAgreement': true},
-		{'RtpDataChannels': true}
-	]};
+miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 
 	// The video descriptor, one per displayed miaou !!video message
 	// medias : something like {video:true, audio:true}
@@ -94,7 +79,7 @@ miaou(function(plugins, chat, gui, locals, md, ws){
 	}
 	VD.prototype.on = function(){
 		var vd = this;
-		getUserMedia(this.medias, function(stream){
+		webrtc.getUserMedia(this.medias, function(stream){
 			vd.localStream = stream;
 			vd.localVideo.src = window.URL.createObjectURL(stream);
 			vd.localVideo.play();
@@ -125,7 +110,7 @@ miaou(function(plugins, chat, gui, locals, md, ws){
 		if (this.started || !this.localStream) return;
 		var vd = this;
 		try {
-			this.pc = new RTCPeerConnection(pc_config, pc_constraints);
+			this.pc = new RTCPeerConnection(webrtc.config, webrtc.constraints);
 			this.pc.onicecandidate = function(event){
 				console.log('handleIceCandidate event: ', event);
 				if (event.candidate) {
@@ -167,7 +152,7 @@ miaou(function(plugins, chat, gui, locals, md, ws){
 	}
 	VD.prototype.setLocalAndSendMessage = function(sessionDescription){
 		console.log('setLocalAndSendMessage sending message' , sessionDescription);
-		sessionDescription.sdp = preferOpus(sessionDescription.sdp);
+		sessionDescription.sdp = webrtc.preferOpus(sessionDescription.sdp);
 		this.pc.setLocalDescription(sessionDescription);
 		this.sendMsg(sessionDescription);
 	}

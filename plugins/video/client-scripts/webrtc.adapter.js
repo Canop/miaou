@@ -1,135 +1,20 @@
-// Mostly from https://bitbucket.org/webrtc/codelab
+// deals with webrtc variants and prefixes
 
-var RTCPeerConnection = null;
-var RTCSessionDescription = null;
-var RTCIceCandidate = null;
-var getUserMedia = null;
-var attachMediaStream = null;
-var createIceServer = null;
-var reattachMediaStream = null;
-var webrtcDetectedBrowser = null;
-var webrtcDetectedVersion = null;
+miaou(function(webrtc){
+				
+	["RTCPeerConnection", "RTCSessionDescription", "RTCIceCandidate"].forEach(function(k){
+		window[k] = window[k] || window['moz'+k] || window['webkit'+k];
+	});
 
-if (navigator.mozGetUserMedia) {
-	webrtcDetectedBrowser = "firefox";
-
-	webrtcDetectedVersion = parseInt(navigator.userAgent.match(/Firefox\/([0-9]+)\./)[1]);
-
-	// The RTCPeerConnection object.
-	RTCPeerConnection = mozRTCPeerConnection;
-
-	// The RTCSessionDescription object.
-	RTCSessionDescription = mozRTCSessionDescription;
-
-	// The RTCIceCandidate object.
-	RTCIceCandidate = mozRTCIceCandidate;
-
-	// Get UserMedia (only difference is the prefix).
-	// Code from Adam Barth.
-	getUserMedia = navigator.mozGetUserMedia.bind(navigator);
-
-	// Creates iceServer from the url for FF.
-	createIceServer = function(url, username, password) {
-		var iceServer = null;
-		var url_parts = url.split(':');
-		if (url_parts[0].indexOf('stun') === 0) {
-			// Create iceServer with stun url.
-			iceServer = { 'url': url };
-		} else if (url_parts[0].indexOf('turn') === 0 &&
-							 (url.indexOf('transport=udp') !== -1 ||
-								url.indexOf('?transport') === -1)) {
-			// Create iceServer with turn url.
-			// Ignore the transport parameter from TURN url.
-			var turn_url_parts = url.split("?");
-			iceServer = { 'url': turn_url_parts[0],
-										'credential': password,
-										'username': username };
-		}
-		return iceServer;
-	};
-
-	// Attach a media stream to an element.
-	attachMediaStream = function(element, stream) {
-		console.log("Attaching media stream");
-		element.mozSrcObject = stream;
-		element.play();
-	};
-
-	reattachMediaStream = function(to, from) {
-		console.log("Reattaching media stream");
-		to.mozSrcObject = from.mozSrcObject;
-		to.play();
-	};
-
-	// Fake get{Video,Audio}Tracks
-	MediaStream.prototype.getVideoTracks = function() {
-		return [];
-	};
-
-	MediaStream.prototype.getAudioTracks = function() {
-		return [];
-	};
-} else if (navigator.webkitGetUserMedia) {
-
-	webrtcDetectedBrowser = "webkit";
-
-	// Creates iceServer from the url for Chrome.
-	createIceServer = function(url, username, password) {
-		var iceServer = null;
-		var url_parts = url.split(':');
-		if (url_parts[0].indexOf('stun') === 0) {
-			// Create iceServer with stun url.
-			iceServer = { 'url': url };
-		} else if (url_parts[0].indexOf('turn') === 0) {
-			iceServer = { url: url, credential: password, username: username };
-		}
-		return iceServer;
-	};
-
-	// The RTCPeerConnection object.
-	RTCPeerConnection = webkitRTCPeerConnection;
-
-	// Get UserMedia (only difference is the prefix).
-	// Code from Adam Barth.
-	getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
-
-	// Attach a media stream to an element.
-	attachMediaStream = function(element, stream) {
-		if (typeof element.srcObject !== 'undefined') {
-			element.srcObject = stream;
-		} else if (typeof element.mozSrcObject !== 'undefined') {
-			element.mozSrcObject = stream;
-		} else if (typeof element.src !== 'undefined') {
-			element.src = URL.createObjectURL(stream);
-		} else {
-			console.log('Error attaching stream to element.');
-		}
-	};
-
-	reattachMediaStream = function(to, from) {
-		to.src = from.src;
-	};
-
-	// The representation of tracks in a stream is changed in M26.
-	// Unify them for earlier Chrome versions in the coexisting period.
-	if (!webkitMediaStream.prototype.getVideoTracks) {
-		webkitMediaStream.prototype.getVideoTracks = function() {
-			return this.videoTracks;
-		};
-		webkitMediaStream.prototype.getAudioTracks = function() {
-			return this.audioTracks;
-		};
+	if (navigator.mozGetUserMedia) {
+		webrtc.getUserMedia = navigator.mozGetUserMedia.bind(navigator);
+		webrtc.config = {'iceServers':[{'url':'stun:23.21.150.121'}]};
+	} else if (navigator.webkitGetUserMedia) {
+		webrtc.getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
+		webrtc.config = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
+	} else {
+		console.log("webrtc: navigator not detected");
 	}
 
-	// New syntax of getXXXStreams method in M26.
-	if (!webkitRTCPeerConnection.prototype.getLocalStreams) {
-		webkitRTCPeerConnection.prototype.getLocalStreams = function() {
-			return this.localStreams;
-		};
-		webkitRTCPeerConnection.prototype.getRemoteStreams = function() {
-			return this.remoteStreams;
-		};
-	}
-} else {
-	console.log("Browser does not appear to be WebRTC-capable");
-}
+	webrtc.constraints = { 'optional': [ {'DtlsSrtpKeyAgreement': true}, {'RtpDataChannels': true} ]};
+});
