@@ -64,7 +64,6 @@ miaou(function(fmt){
 			var langPragmaMatch = s.match(/^\s*#lang-(\w+)\s*$/);
 			if (langPragmaMatch) {
 				lang = langPragmaMatch[1];
-				console.log("pragma lang:", lang);
 				continue;
 			}
 			

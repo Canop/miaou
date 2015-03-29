@@ -1,7 +1,7 @@
 // ed is the message editor, managing the user input
 // ed.code handles code edition
 
-miaou(function(ed, gui){
+miaou(function(ed){
 
 	var langs = ['auto','bsh','c','cpp','css','erlang','go','hs','html','java','js','lisp','md','perl','r','sql','tcl','tex','xml'];
 
