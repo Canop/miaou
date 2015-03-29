@@ -42,7 +42,6 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, usr, ws, wz){
 			$md = $(this).removeClass('closer').addClass('opener').closest('.message');
 		$md.find('.content').addClass('closed');
 		notif.userAct($md.data('message').id);
-		$md.reflow();
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
 		wz.updateAll();		

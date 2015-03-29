@@ -77,7 +77,6 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		if ($content.height()>80) {
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
-			$md.reflow();
 		}
 	}
 
@@ -159,7 +158,6 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			if ($content.height()>158) {
 				$content.addClass("closed");
 				$md.addClass("has-opener").append('<div class=opener>');
-				$md.reflow();
 			}
 			if (wasAtBottom) gui.scrollToBottom();
 		}
@@ -184,7 +182,6 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		todo.forEach(function(t){
 			t.$md.append('<div class=opener>');
 			t.$content.addClass("closed").height();
-			t.$md.reflow();
 		});
 		$messages.find('.user').each(function(){
 			resizeUser($(this));
@@ -347,7 +344,8 @@ miaou(function(md, chat, gui, hist, locals, usr){
 			if (message.previous) $pen.addClass('clickable').attr('title', 'Click for message history');
 		}
 		if (!message.id) {
-			$('<div>&#xe826;</div>').addClass('decoration snap').appendTo($decorations).attr('title', "Flake : only sent to people currently in the room, and will disappear if you refresh the page.");
+			$('<div>&#xe826;</div>').addClass('decoration snap').appendTo($decorations)
+			.attr('title', "Flake : only sent to people currently in the room, and will disappear if you refresh the page.");
 		}
 		if (votesHtml.length) $md.append($('<div/>').addClass('message-votes').html(votesHtml));
 		if (!$mc) $mc = $('<div>').addClass('content');
