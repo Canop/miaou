@@ -21,7 +21,7 @@ miaou(function(ed){
 		if (sp===ep) {
 			$input.selectLines().replaceSelection(toggleLinesCode);
 			this.selectionStart = this.selectionEnd;			
-		} else if (~val.slice(sp, ep+1).indexOf('\n') || ep===val.length) {
+		} else if (~val.slice(sp, ep+1).indexOf('\n') || (ep===val.length && sp===ep)) {
 			$input.selectLines().replaceSelection(toggleLinesCode);
 		} else {
 			$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
