@@ -1,0 +1,47 @@
+// flex mixins for compatibility with Safari
+
+// examples :
+//		@include flexbox(row)
+//		@include flexbox(column, stretch)
+//		@include flexbox(row, center, null, wrap);
+@mixin flexbox($direction, $alignitems: null, $justifycontent: null, $wrap: null) {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: $direction;
+	flex-direction: $direction;
+	@if ($alignitems) {
+		-webkit-align-items: $alignitems;
+		align-items: $alignitems;
+	}
+	@if ($justifycontent) {
+		-webkit-justify-content: $alignitems;
+		justify-content: $alignitems;
+	}
+	@if ($wrap) {
+		-webkit-flex-wrap: $wrap;
+		flex-wrap: $wrap;
+	}
+}
+
+// examples :
+//		@include flex(1)
+//		@include flex(1 0 25%)
+@mixin flex($values) {
+	-webkit-flex: $values;
+	flex: $values;
+}
+
+@mixin flex-direction($value) {
+	-webkit-flex-direction: $value;
+	flex-direction: $value;
+}
+
+@mixin flex-grow($value) {
+	-webkit-flex-grow: $value;
+	flex-grow: $value;
+}
+
+@mixin align-self($value) {
+	-webkit-align-self: $value;
+	align-self: $value;
+}

@@ -15,8 +15,7 @@
 }
 
 #hist {
-	flex-basis: $hist-width;
-	flex-grow: 0;
+	@include flex(0 0 $hist-width);
 	background: rgba($bg-color,.8);
 	display: none;
 	overflow-y: scroll;

@@ -19,8 +19,7 @@
 }
 
 #center {
-	display:flex;
-	flex-direction: row;
+	@include flexbox(row);
 	top:0;
 	left: $left-panel-width;
 	right: $right-panel-width;
@@ -29,22 +28,19 @@
 	z-index: 2;
 }
 #vert-center {
-	display:flex;
-	flex-direction: column;
+	@include flexbox(column);
 	height: 100%;
-	flex-grow: 1;
-	flex-basis: 0;
+	@include flex(1 0 0);
 	min-width: 0;
 }
 
 #message-scroller {
 	overflow-y: scroll;
 	overflow-x: hidden; // prevents Chrome from having an horizontal scrollbar here
-	flex-grow: 1;
-	flex-basis: 0;
+	@include flex(1 0 0);
 }
 #notifications {
-	flex-grow: 0;
+	@include flex(0);
 }
 
 .table {
@@ -167,9 +163,7 @@ body.mobile #message-scroller {
 		padding: $user-padding-in-message;
 		width: 110px;
 		z-index: 6;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		@include flexbox(row, center, center);
 		background: $user-in-messages-bg;
 		box-shadow: $user-color-shadow-in-messages;
 		transition: box-shadow .3s;
@@ -207,32 +201,30 @@ body.mobile #message-scroller {
 				height: auto;
 			}
 		}
-		flex-direction: row;
 	}
 	.user.size1 {
 		.avatar-wrapper {
 			width: 20px;
 			margin-right: 10px; // I don't really understand why I need this
 		}
-		flex-direction: row;
 	}
 	.user.size2 {
 		.avatar-wrapper {
 			width: 26px;
 		}
-		flex-direction: column;	
+		@include flex-direction(colum);
 	}
 	.user.size3 {
 		.avatar-wrapper {
 			width: 40px;
 		}
-		flex-direction: column;	
+		@include flex-direction(colum);
 	}
 	.user.size4 {
 		.avatar-wrapper {
 			width: 56px;
 		}
-		flex-direction: column;	
+		@include flex-direction(colum);
 	}
 }
 
@@ -314,27 +306,23 @@ body.mobile #message-scroller {
 #messages, .messages {
 	.message, .error, .access_request {
 		min-height: $message-min-height;
-		display: flex;
-		align-items: stretch;
+		@include flexbox(row, stretch);
 		.user {
-			align-self: stretch;
-			flex-basis: 120px;
-			flex-grow: 0;
-			flex-shrink: 0;
-			display: flex;
-			align-items: center;
+			@include align-self(stretch);
+			@include flex(0 0 120px);
+			@include flexbox(row, center);
 		}
 		.content {
 			margin: $message-content-margin;
 			line-height: $message-content-line-height;
-			flex-grow: $message-content-flex-grow;
+			@include flex-grow($message-content-flex-grow);
 			&.wide {
-				flex-grow: $message-wide-content-flex-grow;			
+				@include flex-grow($message-wide-content-flex-grow);			
 			}
 		}
 		.mdate {
-			align-self: flex-start;
-			flex: 0 1 90px;
+			@include align-self(flex-start);
+			@include flex(0 1 90px);
 			text-align: right;
 			font-size: 80%;
 			padding: 2px;
@@ -344,11 +332,8 @@ body.mobile #message-scroller {
 
 .decorations {
 	z-index: 7;
-	flex: 0 0 120px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-end;
+	@include flex(0 0 120px);
+	@include flexbox(row, center, flex-end);
 	button {
 		text-align: center;
 		padding: 0 3px;
@@ -364,7 +349,7 @@ body.mobile #message-scroller {
 	.decoration {
 		font-family: "fontello";
 		margin: 2px;
-		flex: 0 0 15px;
+		@include flex(0 0 15px);
 		cursor: default;
 		color: $decoration-color;
 		&.clickable {
@@ -558,8 +543,7 @@ code {
 #input-panel {
 	position: relative;
 	background: $input-panel-bg-color;
-	flex-basis:  $input-height + 8px;
-	flex-grow: 0;
+	@include flex(0 0 ($input-height + 8px) );
 	z-index: 10;
 }
 #autocompleter {
@@ -590,9 +574,7 @@ code {
 	background: $bg-color;
 	box-shadow: 0 -1px 1px black;
 	padding: 2px 0 0 5px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
+	@include flexbox(row, center);
 	overflow: hidden;
 	span.lang {
 		margin: 4px;
@@ -659,7 +641,7 @@ body.mobile #input-panel button {
 	background: $bg-color;
 	width:100%;
 	height: $input-height + 8px;
-	flex-grow: 0;
+	@include flex(0);
 	display: none;
 }
 #upload-panel {
@@ -672,10 +654,7 @@ body.mobile #input-panel button {
 	text-align: center;
 }
 #upload-wait {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-around;
-	align-items: center;
+	@include flexbox(column, center, space-around);
 }
 h1 {
 	color: $title-text-color;

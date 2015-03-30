@@ -1,9 +1,6 @@
 #watches {
-	flex: 1 1;
-	display:flex;
-	flex-wrap: wrap;
-	flex-direction: row;	
-	align-items: center;
+	@include flex(1 1);
+	@include flexbox(row, center, null, wrap);
 }
 .watch {
 	padding: 1px 2px;
@@ -12,7 +9,7 @@
 	font-size: 0.8em;
 	cursor: pointer;
 	box-shadow: 0 0 2px black;
-	display: flex;
+	@include flexbox(row);
 	text-decoration: none;
 	color: inherit;
 	position: relative;
@@ -64,12 +61,10 @@
 	}
 	.watch-panel-top { // inside watch-panel
 		height: 25px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		@include flexbox(row, center, space-between);
 		margin-bottom: 5px;
 		span {
-			flex: 1;
+			@include flex(1);
 			text-align: center;
 			font-weight: bold;
 		}

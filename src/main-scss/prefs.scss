@@ -82,9 +82,7 @@ body.prefs {
 	#prefs-main {
 		position: absolute;
 		left:0; right:0;
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
+		@include flexbox(row, center, center);
 		&.hastabs {
 			margin-top: 26px;
 		}
@@ -142,29 +140,22 @@ body.prefs {
 }
 
 #avatar-edit {
-	display: flex;
-	flex-direction: row;
-	align-items: stretch;
+	@include flexbox(row, stretch);
 }
 #avatar-fields {
 	flex: 1;
-	display: flex;
-	flex-direction: column;
+	@include flexbox(column);
 }
 .avatar-fields-row {
-	display: flex;
-	align-items: center;
-	flex-direction: row;
+	@include flexbox(row, center);
 	input, select, label, p {
 		margin: 10px;
 	}
 }
 #avatar-preview {
-	flex: 1 0 220px;
+	@include flex(1 0 220px);
+	@include flexbox(row, center, center);
 	height: 220px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	img {
 		max-height: 220px;
 		max-width: 220px;

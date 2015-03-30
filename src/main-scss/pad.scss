@@ -12,8 +12,7 @@
 	}
 }
 #stripe-top {
-	display: flex;
-	flex-direction: row;
+	@include flexbox(row);
 	height: 40px;
 }
 
@@ -107,9 +106,7 @@
 	opacity: 0.6;
 }
 #room-panel {
-	display:flex;
-	flex-direction: row;
-	align-items: center;
+	@include flexbox(row, center);
 	height: 40px;
 	padding: 0 4px;
 	button {
@@ -124,7 +121,7 @@
 	z-index: 2;
 }
 #room-title {
-	flex: 1;
+	@include flex(1);
 	#roomname {
 		color: inherit;
 		text-decoration: none;
@@ -134,8 +131,7 @@
 }
 
 #rooms-panel {
-	display:flex;
-	align-items: stretch;
+	@include flexbox(row, stretch);
 	&.closed {
 		height: 0;
 		transition: height .5s;	
@@ -146,27 +142,22 @@
 	}
 }
 #rooms {
-	display:flex;
-	align-items: stretch;
+	@include flexbox(row, stretch);
 	max-width: 1200px;
 }
 #rooms-spinner, #rooms-content {
-	flex: 1;
-	display:flex;
+	@include flex(1);
 }
 #rooms-spinner {
-	justify-content: center;
-	align-items: center;
+	@include flexbox(row, center, center);
 }
 #rooms-content {
-	align-items: stretch;
-	flex-direction: column;
+	@include flexbox(column, stretch);
 	padding: 5px;
 }
 
 #rooms-tabs {
-	display: flex;
-	flex-direction: row;
+	@include flexbox(row);
 	.tab {
 		text-align: center;
 		padding: 5px 10px;
@@ -186,31 +177,29 @@
 		}
 	}
 	.aftertabs {
-		flex: 1
+		@include flex(1);
 	}
 }
 #rooms-page {
-	flex: 1;
+	@include flex(1);
 	border-style:solid;
 	border-color: $chat-tabs-border-color;
 	border-width: 0 $chat-tabs-border-width $chat-tabs-border-width $chat-tabs-border-width;	
 	padding: 5px;
 	overflow-y: auto;
-	display: flex;
-	flex-direction: row;
+	@include flexbox(row);
 	min-width: 1000px;
 	.rooms-list {
 		flex: 0 1 800px;
 		.room {
-			display: flex;
-			flex-direction: row;
+			@include flexbox(row);
 			position: relative;
 			&:hover {
 				background: $pad-room-hover-bg;
 				transition: background .5s;
 			}
 			.room-left {
-				flex: 1;
+				@include flex(1);
 				a.room-title {
 					color: inherit;
 					margin: 4px 0;
@@ -225,12 +214,10 @@
 				}			
 			}
 			.room-right {
-				flex: 0 0 80px;
+				@include flex(0 0 80px);
 				visibility: hidden;
 				padding: 4px;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
+				@include flexbox(column, center, center);
 				span {
 					margin: 8px 0;
 					text-align: center;				
