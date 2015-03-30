@@ -40,7 +40,7 @@
 	@include flex(1 0 0);
 }
 #notifications {
-	@include flex(0);
+	@include flex-grow(0);
 }
 
 .table {
@@ -641,7 +641,7 @@ body.mobile #input-panel button {
 	background: $bg-color;
 	width:100%;
 	height: $input-height + 8px;
-	@include flex(0);
+	@include flex-grow(0);
 	display: none;
 }
 #upload-panel {
