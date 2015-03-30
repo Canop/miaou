@@ -34,6 +34,10 @@ buster.testCase("Formatting - Code", {
 		"    insert into db_version (component, version) values('core', 14);\n",
 		'Here\'s some SQL code:<br><pre class=\"prettyprint lang-sql\">CREATE TABLE db_version (\n\tcomponent varchar(30) primary key,\n\tversion integer NOT NULL\n);\ninsert into db_version (component, version) values(\'core\', 14);</pre>'
 	),
+	"A table in code":t(
+		"	a|b↵	-|-↵	a|b",
+		'<pre class="prettyprint">a|b↵	-|-↵	a|b</pre>'
+	)
 });
 
 

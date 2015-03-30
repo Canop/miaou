@@ -2,7 +2,7 @@
 //
 // There are 3 nested levels of conversion:
 // 1. mdStringToHtml : conversion of a simple string without structural elements
-//                     like tables, lists, images, code blocks, etc.
+//                     (tables, lists, images, code blocks, etc.)
 // 2. mdTextToHtml   : conversion of a text which may or not contain structural
 //                     elements
 // 3. mdMcToHtml     : conversion of a message content. #messages related elements
@@ -12,7 +12,8 @@ miaou(function(fmt){
 	// format of the line, between the header and the body of a table,
 	//  defining the column alignements.
 	// This is how we recognize a table in Markdown 
-	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/;
+	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
+		coderegex = /^(    |\t)/;
 	
 	fmt.mdStringToHtml = function(s, username) {
 		return s.split('`').map(function(t,i){
@@ -20,7 +21,7 @@ miaou(function(fmt){
 			return t
 			.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d+)\)/g, function(s,t,r,_,m){ // exemple : [lien interne miaou](7#123456)
-				r = r||(miaou&&miaou.locals&&miaou.locals.room.id);
+				r = r || (miaou && miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
 			})
@@ -67,10 +68,10 @@ miaou(function(fmt){
 				continue;
 			}
 			
-			var codeline = ((/^\s*$/.test(s) && code) || /^(    |\t)/.test(s)) && !(table && /\|/.test(s));
+			var codeline = ((/^\s*$/.test(s) && code) || coderegex.test(s)) && !(table && /\|/.test(s));
 			if (code) {
 				if (codeline) {
-					code.push(s.replace(/^(    |\t)/,''));
+					code.push(s.replace(coderegex,''));
 					continue;
 				} else {
 					lout.push(wrapCode(code, lang));
@@ -78,12 +79,12 @@ miaou(function(fmt){
 				}
 			} else if (codeline) {
 				// we check we're not in fact at the start of a table ("    A    |     B    \n-----+----\n    a    |    b")
-				if (l<lin.length-2 && /\|/.test(s) && coldefregex.test(lin[l+1]) && /\|/.test(lin[l+2])) {
+				if (l<lin.length-2 && /\|/.test(s) && coldefregex.test(lin[l+1]) && !coderegex.test(lin[l+1])  && /\|/.test(lin[l+2])) {
 					table = new fmt.Table(lin[++l]);
 					table.push(s);
 					table.push(lin[++l]);
 				} else {
-					code = [s.replace(/^(    |\t)/,'')];
+					code = [s.replace(coderegex,'')];
 				}
 				continue;
 			}
