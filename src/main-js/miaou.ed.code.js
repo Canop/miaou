@@ -3,7 +3,7 @@
 
 miaou(function(ed){
 
-	var langs = ['auto','bsh','c','cpp','css','erlang','go','hs','html','java','js','lisp','md','perl','r','sql','tcl','tex','xml'];
+	var langs = ['auto','bsh','c','cpp', 'cs', 'css','erlang','go','hs','html','java','js','lisp','md','perl','r','sql','tcl','tex','xml'];
 
 	function toggleLinesCode(s){
 		return ed.toggleLines(s, /^(    |\t)/, '\t');
