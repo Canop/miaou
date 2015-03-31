@@ -14,8 +14,8 @@
 		align-items: $alignitems;
 	}
 	@if ($justifycontent) {
-		-webkit-justify-content: $alignitems;
-		justify-content: $alignitems;
+		-webkit-justify-content: $justifycontent;
+		justify-content: $justifycontent;
 	}
 	@if ($wrap) {
 		-webkit-flex-wrap: $wrap;
