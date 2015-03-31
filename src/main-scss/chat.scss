@@ -212,19 +212,19 @@ body.mobile #message-scroller {
 		.avatar-wrapper {
 			width: 26px;
 		}
-		@include flex-direction(colum);
+		@include flex-direction(column);
 	}
 	.user.size3 {
 		.avatar-wrapper {
 			width: 40px;
 		}
-		@include flex-direction(colum);
+		@include flex-direction(column);
 	}
 	.user.size4 {
 		.avatar-wrapper {
 			width: 56px;
 		}
-		@include flex-direction(colum);
+		@include flex-direction(column);
 	}
 }
 
