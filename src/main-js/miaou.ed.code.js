@@ -65,7 +65,6 @@ miaou(function(ed){
 		}
 	}
 
-	//
 	BlockAnalysis.prototype.setLang = function(lang){
 		if (lang===this.selectedLang) return;
 		$('#code-controls .lang').filter(function(){ return $(this).text()===lang }).addClass('selected')

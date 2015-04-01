@@ -24,7 +24,7 @@ var code = function(){
 	var IAmPingedRegex = new RegExp('@'+me.name+'(\\s|$)');
 	// when a message comes in, let's handle it
 	miaou.chat.on('incoming_message', function(m){
-		if (!(m.created > miaou.chat.enterTime)) return; // we only handle new messages
+		if (!miaou.time.isNew(m)) return; // we only handle new messages
 		if (IAmPingedRegex.test(m.content) && m.author!==me.id) {
 			// we've been pinged, let's pong, maybe
 			var delay = 5000*Math.random();

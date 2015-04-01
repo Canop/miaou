@@ -1,6 +1,6 @@
 // ws : handles the connection to the server over socket.io (websocket whenever possible)
 
-miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
+miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch){
 
 	ws.init = function(){
 		var pingRegex = new RegExp('@'+locals.me.name+'(\\b|$)', 'i'),
@@ -28,7 +28,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 				var ping = pingRegex.test(message.content);
 				if (message.id) md.updateNotableMessage(message);
 				if (
-					(message.id||ping) && (message.changed||message.created)>chat.enterTime && message.content
+					(message.id||ping) && time.isNew(message) && message.content
 				) {
 					notif.touch(message.id, ping, message.authorname, message.content, locals.room, $md);
 				}
@@ -36,11 +36,6 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 			md.updateLoaders();
 			md.showMessageFlowDisruptions();
 			if (typeof prettyPrint !== 'undefined') prettyPrint();
-		}
-
-		function setEnterTime(serverTime){
-			chat.enterTime = serverTime;
-			chat.timeOffset = Date.now()/1000 - serverTime;
 		}
 
 		socket
@@ -57,7 +52,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, usr, watch){
 		.on('config', function(serverConfig){
 			for (var key in serverConfig) chat.config[key] = serverConfig[key];
 		})
-		.on('set_enter_time', setEnterTime)
+		.on('set_enter_time', time.setRoomEnterTime)
 		.on('server_commands', function(commands){
 			for (var key in commands) chat.commands[key] = commands[key];
 		})

@@ -1,5 +1,5 @@
 
-miaou(function(chat, locals, watch, ws){
+miaou(function(chat, locals, time, watch, ws){
 	var	rooms = [];
 
 	// ROOMS MANAGEMENT
@@ -44,11 +44,11 @@ miaou(function(chat, locals, watch, ws){
 				$('<button>').addClass('small').text('enter').click(function(){ location = r.path; }).appendTo($rr);
 			}
 			if (r.lastcreated) {
-				var $lc = $('<span>').addClass('lastcreated').text('Last message: '+miaou.formatRelativeTime(r.lastcreated)).appendTo($rr);
+				var $lc = $('<span>').addClass('lastcreated').html('Last message:<br>'+time.formatRelativeTime(r.lastcreated)).appendTo($rr);
 				$lc.mouseenter(function(){
 					$.get('json/messages/last?room='+r.id, function(data){
 						var m = data.messages[0];
-						$lc.text('Last message: '+miaou.formatRelativeTime(m.created));
+						$lc.html('Last message:<br>'+time.formatRelativeTime(m.created));
 						$rm.empty().css('top',$r.height()+'px').show().append(
 							$('<i>').text(m.authorname+': ')
 						).append(

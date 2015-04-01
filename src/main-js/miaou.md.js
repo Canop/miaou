@@ -1,7 +1,7 @@
 // md is short for "message display"
 // Here are functions related to the display of messages in the chat and to the various message element lists
 
-miaou(function(md, chat, gui, hist, locals, usr){
+miaou(function(md, chat, gui, hist, locals, time, usr){
 	
 	var renderers = [], unrenderers = [];
 	
@@ -66,7 +66,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 	md.addSideMessageDiv = function(m, $div, $repl){
 		var	$content = $('<div>').addClass('content');
 		var $md = $('<div>').addClass('message').data('message',m).append($content).append(
-			$('<div>').addClass('nminfo').html(md.votesAbstract(m) + ' ' + miaou.formatDate((m.created+chat.timeOffset)*1000) + ' by ' + m.authorname)
+			$('<div>').addClass('nminfo').html(md.votesAbstract(m) + ' ' + time.formatTime(m.created) + ' by ' + m.authorname)
 		);
 		if (m.author===locals.me.id) $md.addClass('me');
 		if ($repl) $repl.replaceWith($md);
@@ -352,7 +352,7 @@ miaou(function(md, chat, gui, hist, locals, usr){
 		$mc.appendTo($md);
 		md.render($mc, message, oldMessage);
 		if (!gui.mobile && locals.userPrefs.datdpl!=="hover") {
-			var $mdate = $('<div>').addClass('mdate').text(miaou.formatTime(message.created)).appendTo($md);
+			var $mdate = $('<div>').addClass('mdate').text(time.formatTime(message.created)).appendTo($md);
 			if (locals.userPrefs.datdpl!=="always") $mdate.hide();
 		}
 		resize($md, shouldStickToBottom);

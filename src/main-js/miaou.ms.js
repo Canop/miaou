@@ -8,7 +8,7 @@
 //  - editable    : boolean
 //  - deletable   : boolean
 
-miaou(function(ms, chat, locals, usr){
+miaou(function(ms, chat, locals, time, usr){
 
 	// functions building the status which is needed on some actions
 	//   like menu display
@@ -27,11 +27,11 @@ miaou(function(ms, chat, locals, usr){
 			status.answerable = status.deletable = status.editable = false;
 			return;
 		}
-		var	created = message.created+chat.timeOffset,
+		var	created = time.local(message.created+time.offsetWithServer),
 			deleted = !message.content,
 			modDeleted = /^!!deleted/.test(message.content);
 		status.answerable = !deleted && message.author!==locals.me.id;
-		status.old =  Date.now()/1000 - created > chat.config.maxAgeForMessageEdition;
+		status.old =  time.now() - created > chat.config.maxAgeForMessageEdition;
 		status.deletable = status.editable = !deleted && message.author===locals.me.id && !status.old && message.content && !modDeleted;
 		status.mod_deletable = !deleted && usr.checkAuth('admin') && message.content && !modDeleted;
 	});

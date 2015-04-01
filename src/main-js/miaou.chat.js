@@ -1,5 +1,5 @@
 
-miaou(function(chat, horn, links, locals, md, notif, gui, plugins, ws){
+miaou(function(chat, horn, links, locals, md, notif, gui, plugins, time, ws){
 	
 	chat.config = { // may be changed by server later
 		maxMessageContentSize: 8000,
@@ -9,8 +9,6 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, ws){
 	};
 	chat.DELAY_BEFORE_PROFILE_POPUP= 300; // ms
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
-	chat.timeOffset = 0;
-	chat.enterTime = 0; // both in seconds since epoch, server time
 	chat.commands = {}; // all known commands issued with !! (value=description)
 	chat.voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
 
@@ -32,7 +30,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, ws){
 			if (delmatch) {
 				var h = '';
 				if (delmatch[1]) h += ' by <a href=user/'+delmatch[1].slice(3)+' target=profile>an admin</a>'; 
-				if (delmatch[2]) h += ' on ' + miaou.formatTime(+delmatch[2].slice(3)); 
+				if (delmatch[2]) h += ' on ' + time.formatTime(+delmatch[2].slice(3)); 
 				$c.html(h).closest('.message').addClass('deleted');
 				return true;
 			}

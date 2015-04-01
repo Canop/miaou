@@ -1,6 +1,6 @@
 // "mh" : message history
 
-miaou(function(mh){
+miaou(function(mh, time){
 	mh.show = function(message){
 		var $content = $('<div>').addClass('message-history'),
 			current = message;
@@ -8,8 +8,8 @@ miaou(function(mh){
 			$('<div>').addClass('item').append(
 				$('<span>').addClass('mtime').text(
 					current.changed
-					? ("edition : " + miaou.formatTime(current.changed))
-					: ("creation : " + miaou.formatTime(current.created))
+					? ("edition : " + time.formatTime(current.changed))
+					: ("creation : " + time.formatTime(current.created))
 				)
 			).append(
 				$('<div>').append(current.content.split('\n').map(function(t){ return $('<div>').text(t) }))
@@ -19,7 +19,7 @@ miaou(function(mh){
 		}
 		if (current.changed) {
 			$('<span>').addClass('mtime').text(
-				"Message creation : " + miaou.formatTime(current.created) + ". " +
+				"Message creation : " + time.formatTime(current.created) + ". " +
 				"Original content is unknown."
 			).prependTo($content);
 		}

@@ -29,7 +29,6 @@ miaou(function(ed){
 		$('#upload-wait,#upload-panel').show();
 		xhr.send(fd);
 	}
-	
 		
 	document.addEventListener('paste', function(e){
 		ed.stateBeforePaste = {

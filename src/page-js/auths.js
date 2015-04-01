@@ -3,11 +3,11 @@ $(function(){
 		/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
 	);
 });
-miaou(function(gui, locals, prof){
+miaou(function(gui, locals, prof, time){
 	var room = locals.room;
 		
 	$('.date').text(function(_,t){
-		return Date.now()/1000-t<15*60 ? "just now" : miaou.formatRelativeDate(t*1000);
+		return Date.now()/1000-t<15*60 ? "just now" : time.formatRelativeTime(t);
 	});
 	$('input,select').change(function(){ this.name = this.getAttribute('_name') });
 	if (!(room.auth==='own'||room.auth==='admin')) {

@@ -160,14 +160,13 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 		if (!visible || locals.userPrefs.nifvis==="yes") {
 			if (
 				( locals.userPrefs.notif==="on_message" || (ping && locals.userPrefs.notif==="on_ping") )
-				 && lastUserActionAge>500
+				&& lastUserActionAge>500
 			) {
 				horn.show(mid, r||locals.room, from, text);					
 			}
 		}
 		if (!visible) notif.updateTab(!!notifications.length, ++nbUnseenMessages);
 	}
-
 
 	notif.updateTab = function(hasPing, nbUnseenMessages){
 		var title = locals.room.name,
