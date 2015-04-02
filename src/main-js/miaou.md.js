@@ -162,7 +162,7 @@ miaou(function(md, chat, gui, hist, locals, time, usr){
 			if (wasAtBottom) gui.scrollToBottom();
 		}
 		resize();
-		$content.find('img').load(resize);
+		$content.find('img').imgOn('load', resize);
 	}
 	
 	// resizes all messages. This must be called each time a container of
@@ -233,7 +233,7 @@ miaou(function(md, chat, gui, hist, locals, time, usr){
 	function selfHide(){
 		this.style.visibility="hidden";
 	}
-	
+
 	// builds a new .user-messages div for the passed user)
 	function usermessagesdiv(user){
 		var $usermessages = $('<div>').addClass('user-messages').data('user',user),
@@ -242,7 +242,7 @@ miaou(function(md, chat, gui, hist, locals, time, usr){
 		$user.css('color', stringToColour(user.name)).append($('<span/>').text(user.name));
 		if (avsrc) {
 			$('<div>').addClass('avatar-wrapper').prependTo($user).append(
-				$('<img>').attr('src',avsrc).addClass('avatar').on('error', selfHide)
+				$('<img>').attr('src',avsrc).addClass('avatar').imgOn('error', selfHide)
 			);
 		} else {
 			$('<div>').addClass('avatar').prependTo($user);

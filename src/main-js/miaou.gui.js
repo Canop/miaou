@@ -17,7 +17,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 	gui.scrollToBottom = function($m){
 		_scrollToBottom();
 		if ($m && $m.find) { // FIXME : cleaner API
-			$m.find('img').load(_scrollToBottom);
+			$m.find('img').imgOn('load', _scrollToBottom);
 		}
 	}
 
