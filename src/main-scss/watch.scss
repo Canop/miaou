@@ -1,14 +1,15 @@
 #watches {
 	@include flex(1 1);
 	@include flexbox(row, center, null, wrap);
+	padding: 2px;
 }
 .watch {
 	padding: 1px 2px;
 	min-width: 25px;
-	margin: 0 4px;
+	margin: 2px 4px;
 	font-size: 0.8em;
 	cursor: pointer;
-	box-shadow: 0 0 2px black;
+	box-shadow: $unselected-watch-bg;
 	@include flexbox(row);
 	text-decoration: none;
 	color: inherit;
@@ -38,8 +39,8 @@
 	}
 	.name {
 		padding: 0 3px;
-		max-width: 72px;
 		overflow: hidden;
+		max-width: 75px;
 		display: inline-block;
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -49,6 +50,9 @@
 			content: "\e82f";
 			margin-right: 2px;
 			margin-top: -2px;
+		}
+		&.compact {
+			max-width: 40px;
 		}
 	}
 	.watch-panel {

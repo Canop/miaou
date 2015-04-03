@@ -102,7 +102,6 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 	
 	// add pings to the list and update the GUI
 	notif.pings = function(pings){
-		console.log("received pings", pings);
 		var	changed = false,
 			map = notifications.reduce(function(map,n){ map[n.mid]=1;return map; }, {});
 		pings.forEach(function(ping){
