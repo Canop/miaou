@@ -55,7 +55,7 @@ miaou(function(usr, ed, locals, mod, time, ws){
 			}
 		}
 		for (var i=0; i<recentUsers.length; i++) {
-			if (time>recentUsers[i].mc) {
+			if (enterTime>recentUsers[i].mc) {
 				recentUsers.splice(i, 0, user);
 				return;
 			}
