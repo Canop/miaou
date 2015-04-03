@@ -5,11 +5,19 @@
 #left, #right, #center {
 	position: fixed;
 }
+
 #left {
 	top:0; left:0; bottom:0;
 	width: $left-panel-width;
 	background: $left-background;
 	overflow-y: auto;
+}
+#center {
+	@include flexbox(row);
+	top:0;
+	bottom: 0;
+	box-shadow: $center-shadow;
+	z-index: 2;
 }
 #right {
 	top:0; right:0; bottom:0;
@@ -18,15 +26,32 @@
 	overflow-y: auto;	
 }
 
-#center {
-	@include flexbox(row);
-	top:0;
-	left: $left-panel-width;
-	right: $right-panel-width;
-	bottom: 0;
-	box-shadow: $center-shadow;
-	z-index: 2;
+@media (max-width: 1300px) {
+	#left {
+		width: 110px;
+	}
+	#right {
+		width: 280px;
+	}
+	#center {
+		left: 110px;
+		right: 280px;
+	}
 }
+@media (min-width: 1300px) {
+	#left {
+		width: $left-panel-width;
+	}
+	#right {
+		width: $right-panel-width;
+	}
+	#center {
+		left: $left-panel-width;
+		right: $right-panel-width;
+	}
+}
+
+
 #vert-center {
 	@include flexbox(column);
 	height: 100%;
@@ -147,6 +172,7 @@ body.mobile #message-scroller {
 	margin-bottom: $user-messages-vmargin;
 	border-top: $user-messages-border-top;
 	border-bottom: $user-messages-border-bottom;
+	padding: $user-messages-padding;
 	&.me {
 		background: $message-me-bg;
 		border-top: $user-messages-me-border-top;
