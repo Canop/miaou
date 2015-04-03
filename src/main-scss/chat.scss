@@ -110,6 +110,10 @@ section {
 			box-shadow: $connected-user-bg-color-in-user-list 200px 0 0 0 inset;
 			transition: box-shadow 3s;
 		}
+		&.connected:hover {
+			box-shadow: $profile-bg 200px 0 0 0 inset;
+			transition: box-shadow 0;
+		}
 		box-shadow: $connected-user-bg-color-in-user-list 0 0 0 0 inset;
 		transition: box-shadow 4s;
 	}
