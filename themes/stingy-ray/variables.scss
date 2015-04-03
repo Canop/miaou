@@ -1,0 +1,62 @@
+
+
+$bg-color: white;
+$left-background: #222;
+$pad-background: rgba(9,30,90,.7);
+$right-background: #e5e7eb;
+$box-background: white;
+
+
+$title-text-color: black;
+
+// #users
+$user-text-color-in-user-list: #999;
+$connected-user-text-color-in-user-list: white;
+$connected-user-bg-color-in-user-list: #444;
+
+// user in message
+$user-color-shadow-in-messages: 2px 0 0;
+$hovered-user-color-shadow-in-messages: 4px 0 0 !default;
+
+// profile
+$user-profile-title-color: white;
+$user-def-color: rgba(255,255,255,.75);
+$profile-text-color: white;
+$profile-bg: rgba(9,30,90,1);
+$profile-box-shadow: none;
+
+// buttons
+$button-box-shadow: none;
+$small-button-box-shadow: none;
+
+// top stripe & drawer
+$roomname-color: white;
+$roomname-text-shadow: 0 0 2px black;
+$pad-room-hover-bg: $right-background;
+$pad-room-desc-bg: $right-background;
+$pad-room-last-message-bg: #eee;
+$pad-room-last-message-border-top: #aaa;
+$room-tab-bg-color: white;
+$selected-room-tab-color: black;
+$hovered-room-tab-color: #eee;
+$unselected-room-tab-color: #ccc;
+$opacity-behind-open-top: 1;
+
+// watches
+$watch-bg: rgba(255,255,255,.8);
+$unselected-watch-bg: none;
+
+// wzins
+$wzin-conv-bg: ( rgba(139, 69, 19, .4), rgba(42, 18, 234, .4), rgba(180, 237, 228, .7), rgba(192, 169, 244, .7) );
+$wzin-edit-bg: rgba(208, 120, 16, .35);
+$wzin-reply-bg: rgba(71, 71, 249, .44);
+$wzin-link-bg: rgba(222, 1, 80, .35);
+
+// M-Menu
+$menu-item-color: white;
+$menu-background: rgba(9,30,90,.89);
+$menu-item-hover-bg: rgba(9,30,90,.95);
+
+// miaou logo
+$miaou-logo-color: #e5e7eb;
+

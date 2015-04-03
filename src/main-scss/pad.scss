@@ -13,13 +13,13 @@
 }
 #stripe-top {
 	@include flexbox(row);
-	height: 40px;
+	min-height: 40px;
 }
 
 #non-top {
 	opacity: 1;
 	&.behind {
-		opacity: .45;
+		opacity: $opacity-behind-open-top;
 		transition: opacity .4s;
 	}
 }
@@ -28,8 +28,9 @@
 	position: fixed;
 	top: 0;
 	z-index: 70;
+	color: $menu-item-color;
 	a.menu-item {
-		color: inherit;
+		color: $menu-item-color;
 		text-decoration: none;
 		display: block;
 		padding: 10px;
@@ -39,7 +40,7 @@
 		}
 	}
 	&.open {
-		width: 260px;	
+		width: 260px;
 		box-shadow: 0 0 2px black;
 		background: $menu-background;
 	}
@@ -93,7 +94,7 @@
 #room-panel-wrapper {
 	margin-left: 40px;
 	position: relative;
-	flex: 0 1 500px;
+	flex: 0 1 430px;
 }
 #room-panel-bg, #room-panel {
 	position:absolute;
@@ -107,13 +108,13 @@
 }
 #room-panel {
 	@include flexbox(row, center);
-	height: 40px;
+	//~ height: 40px;
 	padding: 0 4px;
 	button {
 		opacity: 0;
 		transition: opacity 1s;
 	}
-	position: relative;
+	//~ position: relative;
 }
 #room-panel:hover button {
 	opacity: 1;
@@ -123,7 +124,7 @@
 #room-title {
 	@include flex(1);
 	#roomname {
-		color: inherit;
+		color: $roomname-color;
 		text-decoration: none;
 		text-shadow: $roomname-text-shadow;
 		font-size:115%;
@@ -164,15 +165,16 @@
 		border-style:solid;
 		border-color:  $chat-tabs-border-color;
 		border-width: 0 0 $chat-tabs-border-width 0;
-		color: transparentize($title-text-color, 0.5);
+		color: $unselected-room-tab-color;
 		cursor: pointer;
 		background-image: $chat-tabs-unselected-bg-image;
 		&:hover {
-			color: transparentize($title-text-color, 0.2);
+			color: $hovered-room-tab-color;
 		}
 		&.selected {
-			color: $title-text-color;
+			color: $selected-room-tab-color;
 			background-image: $chat-tabs-selected-bg-image;
+			background-color: $room-tab-bg-color;
 			border-width: $chat-tabs-border-width $chat-tabs-border-width 0 $chat-tabs-border-width;	
 		}
 	}
@@ -185,6 +187,7 @@
 	border-style:solid;
 	border-color: $chat-tabs-border-color;
 	border-width: 0 $chat-tabs-border-width $chat-tabs-border-width $chat-tabs-border-width;	
+	background-color: $room-tab-bg-color;
 	padding: 5px;
 	overflow-y: auto;
 	@include flexbox(row);

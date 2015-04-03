@@ -22,6 +22,7 @@ $user-text-color-in-user-list: #444 !default;
 $user-text-color-in-message: #555 !default;
 $code-text-color: #444 !default;
 
+// bar at the right of the user and holding his color
 $user-color-shadow-in-messages: 1px 0 0 !default;
 $hovered-user-color-shadow-in-messages: 3px 0 0 !default;
 
@@ -116,9 +117,10 @@ $chat-tabs-selected-bg-color: white !default;
 $chat-page-selected-bg: white !default;
 
 // message sizing
+$user-messages-padding: 2px !default;
 $message-min-height: 30px !default;
 $user-padding-in-message: 1px 3px !default;
-$message-content-padding: 4px !default;
+$message-content-padding: 6px !default;
 $message-content-line-height: 1.5 !default;
 $message-content-flex-grow: 1 !default;
 $message-wide-content-flex-grow: 1 !default;
@@ -126,9 +128,11 @@ $message-content-border-radius : inherit !default;
 $message-content-margin: 0 !default;
 
 // profile in chat
+$user-profile-title-color: $title-text-color !default;
 $profile-bg: #fffcc5 !default;
 $profile-box-shadow: 2px 2px 2px #999 !default;
 $profile-text-color: black !default;
+$user-def-color: $title-text-color !default;
 
 // buttons
 $button-bg-color: #E3DAC9 !default;
@@ -162,10 +166,13 @@ $wzin-reply-bg: rgba(71, 71, 249, .14) !default;
 $wzin-link-bg: rgba(222, 1, 80, .25) !default;
 
 // pad (non mobile chat)
+$roomname-color: inherit !default;
 $pad-background: $left-background !default;
+$menu-item-color: inherit !default;
 $menu-background: $left-background !default;
 $menu-item-hover-bg: rgba(255,255,255,.7) !default;
 $roomname-text-shadow: 0 0 2px rgba(255,255,255,1) !default;
+$unselected-watch-bg: 0 0 2px black !default;
 $watch-bg: rgba(255,255,255,.3) !default;
 $watch-panel-bg: white !default;
 $watch-count-new-bg: rgba(255,255,0,.3) !default;
@@ -174,6 +181,12 @@ $pad-room-hover-bg: rgba(255,255,255,.9) !default;
 $pad-room-desc-bg: rgba(255,255,255,.5) !default;
 $pad-room-last-message-bg: white !default;
 $pad-room-last-message-border-top: solid thin #ddd !default;
+$room-tab-bg-color: transparent !default;
+$selected-room-tab-color: $title-text-color !default;
+$hovered-room-tab-color: transparentize($title-text-color, 0.2) !default;
+$unselected-room-tab-color: transparentize($title-text-color, 0.5) !default;
+
+$opacity-behind-open-top: .45 !default;
 
 // miaou logo
 $miaou-logo-color: black !default;

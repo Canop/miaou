@@ -12,8 +12,7 @@ $box-background: rgba(255, 255, 255, 0.8);
 
 $general-text-color: #bbb;
 $title-text-color: #bbb;
-$message-content-bg: #0a0a0a;
-$hovered-message-content-bg: #333;
+$hovered-message-content-bg: black;
 
 $input-border: none;
 $chat-tabs-border-color: $accent-minus;
@@ -97,7 +96,6 @@ $profile-text-color: #ccc;
 // message sizing
 $message-min-height: 34px;
 $message-content-padding: 6px 10px;
-$message-content-flex-grow: 0;
 $message-content-border-radius: 5px;
 $message-content-margin: 4px;
 

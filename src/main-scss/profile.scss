@@ -53,10 +53,12 @@ div.externalProfile {
 		width: 100%;
 		text-align: center;
 		font-size: 110%;
+		color: $user-profile-title-color;
 	}
 	h2 {
 		margin-top: 4px;
 		font-size: 100%;
+		color: $user-profile-title-color;
 	}
 	p {
 		padding: 0;
@@ -66,6 +68,9 @@ div.externalProfile {
 	box-shadow: $profile-box-shadow;
 	background: $profile-bg;
 	z-index: 6;
+	span {
+		color: $profile-text-color;	
+	}
 }
 
 #userinfo {
@@ -79,7 +84,7 @@ div.externalProfile {
 		span.def {
 			margin: 3px;
 			display: inline-block;
-			color: $title-text-color; // set own color
+			color: $user-def-color;
 			&::after {
 				content: " :";
 			}

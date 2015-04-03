@@ -164,8 +164,11 @@ img {
 	filter: grayscale(100%) contrast(40%) brightness(1.5);
 }
 img.avatar {
-	max-width: 20px !important;
-	max-height: 20px !important;
+	display: none;
 }
 
+// fading the room specific background image
+#room-panel {
+	background: rgba( $left-background , .8);
+}
 

@@ -10,6 +10,13 @@ miaou(function(watch, locals, md, notif, ws){
 		return $('#watches .watch[rid='+roomId+']').length>0;
 	}
 	
+	function updateDimensions(){
+		$('.watch .name').toggleClass('compact', $('#stripe-top').height()>60);
+		$('#left, #right, #center').css('top', $('#stripe-top').height());
+	}
+	
+	if ($('#non-top').length) $(window).resize(updateDimensions);
+	
 	// if the room is a dialog room and we guess the name of the other user, return this name
 	function interlocutor(w){
 		if (!w.dialog) return;
@@ -43,12 +50,14 @@ miaou(function(watch, locals, md, notif, ws){
 			var wa = $(a).data('watch'), wb = $(b).data('watch');
 			return (interlocutor(wa)||wa.name).localeCompare((interlocutor(wb)||wb.name));
 		}));
+		updateDimensions();
 	}
 
 	watch.remove = function(roomId){
 		$('#watches .watch[rid='+roomId+']').remove();
 		if (roomId===locals.room.id) locals.room.watched = false;
 		$('#watch').text('watch');
+		updateDimensions();
 	}
 
 	watch.incr = function(roomId){
@@ -56,11 +65,13 @@ miaou(function(watch, locals, md, notif, ws){
 		if (!$wc.length) return console.log('no watch!');
 		$wc.text((+$wc.text()||0)+1);
 		notif.setHasWatchUnseen(true);
+		updateDimensions();
 	}
 
 	watch.raz = function(roomId){
 		 $('#watches .watch[rid='+roomId+'] .count').empty();
 		 if (!$('.watch .count:not(:empty)').length) notif.setHasWatchUnseen(false);
+		updateDimensions();
 	}
 
 	var requiredrid;
