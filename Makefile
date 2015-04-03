@@ -17,7 +17,7 @@ MAIN_JS_SOURCES:=$(sort $(wildcard ./src/main-js/*.js))
 PRETTIFY_JS_MAIN_SOURCE:=./src/main-js/prettify/prettify.js
 PRETTIFY_JS_LANG_SOURCES:=$(sort $(wildcard ./src/main-js/prettify/lang-*.js))
 PLUGIN_JS_SOURCES:=$(wildcard ./plugins/*/client-scripts/*.js)
-MIAOU_MODULES:="chat,ed,fmt,gui,hist,links,locals,md,mh,mod,ms,notif,prof,skin,usr,watch,win,ws,wz,games,plugins,mountyhall"
+MIAOU_MODULES:="chat,ed,fmt,gui,hist,links,locals,md,mh,mod,ms,notif,prof,skin,time,usr,watch,win,ws,wz,games,plugins,mountyhall"
 UGLIFY_OPTIONS:=--screw-ie8 -cmt --reserved $(MIAOU_MODULES)
 
 .PHONY: clean page-js page-js-map page-css themes rsc main-js js2-files
