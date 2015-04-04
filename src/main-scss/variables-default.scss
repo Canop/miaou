@@ -107,6 +107,15 @@ $mwin-shadow: 0 0 5px black !default;
 
 $first-not-seen-top-border: 6px dotted rgba(0,0,0,0.1) !default;
 
+// home
+$home-top-bg: $bg-color !default;
+$home-top-color: #222 !default;
+$home-hover-link-color: black !default;
+$home-bg: darken( $bg-color, 5% ) !default;
+$notif-color: #222 !default;
+$notif-hover-link-color: black !default;
+$home-tab-bg: $bg-color !default;
+
 // side tabs
 $chat-tabs-border-color: #655 !default;
 $chat-tabs-border-width: 1px !default;

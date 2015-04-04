@@ -32,7 +32,7 @@ miaou(function(skin){
 		link: getCssValue(/^\.wzin-link$/, "background-color")
 	}
 
-	$('#Miaou-logo').on('load', function(){
+	$('.Miaou-logo').on('load', function(){
 		$('path',this.getSVGDocument()).css('stroke', getCssValue('#Miaou-logo', 'color'));
 	});
 

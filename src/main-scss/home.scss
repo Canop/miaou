@@ -1,22 +1,42 @@
+#Home-logo {
+	height: 130px;
+}
 body.home {
 	overflow-y: scroll;
-	background: darken( $bg-color, 5% ) ;
+	background: $home-bg;
 	a {
 		color: black;
 	}
 	#home-top {
-		background: $bg-color ;
+		background: $home-top-bg;
 		box-shadow: 0 0 10px black;
 		padding: 3px;
+		color: $home-top-color;
+		a {
+			color: $home-top-color;
+			&:hover {
+				color: $home-hover-link-color;
+			}
+		}
 	}
 	#home-notifs {
+		color: $notif-color;
+		h2 {
+			color: $notif-color;		
+		}
+		a {
+			color: $notif-color;
+			&:hover {
+				color: $notif-hover-link-color;
+			}
+		}
 	}
 	#home-tabs, #home-tab-shadows {
 		.tab {
 			height: 30px;
 			position: absolute;
 			width: 140px;
-			background: $bg-color ;
+			background: $home-tab-bg;
 			&:nth-child(2) {
 				margin-left:180px;
 			}
@@ -80,7 +100,7 @@ body.home {
 			margin-top: 26px;
 		}
 		z-index: 3;
-		background: $bg-color ;
+		background: $home-tab-bg;
 		box-shadow: 0 0 10px black;
 		padding: 15px;
 		h3 {

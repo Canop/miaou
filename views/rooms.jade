@@ -28,7 +28,7 @@ html
 					each lang, key in vars.langs
 						div.lang.off(id=key)
 							img(src="static/langs/"+key+".png")
-				img(src="static/Miaou-300-f.png")
+				object.Miaou-logo#Home-logo(type="image/svg+xml",data="static/Miaou.svg")
 				p.links
 					| You're logged as
 					a.username(href="prefs",title="edit profile")= user.name

@@ -46,6 +46,11 @@ div.externalProfile {
 	min-height: 100px;
 	color: $profile-text-color;
 	background: $profile-bg;
+	.avatar {
+		display: block;
+		margin: auto;
+		max-width: 150px;
+	}
 	a {
 		color: $profile-text-color;	
 	}
@@ -64,6 +69,23 @@ div.externalProfile {
 		padding: 0;
 	}
 }
+
+@media (max-height: 500px) {
+	.profile .avatar {
+		display: none;
+	}
+}
+@media (min-height: 500px) and (max-height: 750px) {
+	.profile .avatar {
+		max-height: 60px;
+	}
+}
+@media (min-height: 750px) {
+	.profile .avatar {
+		max-height: 150px;
+	}
+}
+
 .user.profiled {
 	box-shadow: $profile-box-shadow;
 	background: $profile-bg;
