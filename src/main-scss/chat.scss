@@ -427,10 +427,14 @@ table.list .rendered img, .rooms-list .rendered img {
 	max-width: 220px;
 }
 
-#roomdescription {
+#room-description {
 	padding: 5px;
 	img {
 		max-height: 75vh;
+		&:first-child {
+			display: block;
+			margin: auto;
+		}
 	}
 	font-size: 13px;
 }

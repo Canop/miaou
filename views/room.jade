@@ -10,7 +10,7 @@ html
 		script(src="static/miaou.min.js")
 		script(src="static/room.min.js")
 		style.
-			#roomdescription {
+			#room-description {
 				padding: 2px;
 				background: #F0EAD6;
 			}
@@ -52,12 +52,13 @@ html
 							th Description
 							td
 								textarea#description(name="description")
-						tr
-							td Description Preview
-							td
-								div.rendered.input#roomdescription
 					p#err.error
 					div.dialog-buttons
 						input#cancel(type="button", value="Cancel")
 						input#submit(type='submit', value='Save')
+					table.form
+						tr
+							td Description Preview
+							td
+								div.rendered.input#room-description
 		

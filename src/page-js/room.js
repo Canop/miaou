@@ -40,7 +40,7 @@ miaou(function(locals){
 		}
 	});
 	function format(){
-		$('#roomdescription').html(miaou.fmt.mdTextToHtml($('#description').val()));
+		$('#room-description').html(miaou.fmt.mdTextToHtml($('#description').val()));
 	}
 	$('#description').keyup(format);
 	format();

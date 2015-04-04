@@ -255,14 +255,14 @@
 		padding-top: 15px;
 	}
 }
-#roomdescription {
+#room-description {
 	max-height: 60px;
 	overflow-y: hidden;
 	margin-bottom: 10px;
 	position: relative;
 	-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0,0,0,1)), color-stop(0.6, rgba(0,0,0,1)), color-stop(0.8, rgba(0,0,0,.8)), color-stop(1, rgba(0,0,0,0)));
 }
-#roomdescription:hover {
+#room-description:hover {
 	max-height: none;
 	-webkit-mask-image: none;
 	transition: max-height .3s; // doesn't work

@@ -15,25 +15,25 @@ html
 			div.mtab.closed#me(page="left") pre-loading...
 			div.mtab.closed#roomname(page="right") loading...
 		div.mpages
-			div.mpage
+			.mpage
 				section#prefs
 					button.small#editProfile Edit Profile
 				section
 					button.small#auths authorizations
 					h2 Users
 					div#users
-			div.mpage
+			.mpage
 				section#roomButtons
 					button.small#editroom Edit Room
 					button.small#changeroom Change Room
 				section#room-info
-					div#roomdescription.rendered
-				div.tabs
+					#room-description.rendered
+				.tabs
 					span.tab.selected(page="notablemessagespage") Notable
 					span.tab(page="search") Search
-				div.page.selected#notablemessagespage
+				.page.selected#notablemessagespage
 					div#notable-messages
-				div.page#search
+				.page#search
 					input#searchInput
 					div#search-results
 						i
