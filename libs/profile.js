@@ -92,7 +92,10 @@ exports.appGetPublicProfile = function(req, res){
 		return this.getUserInfo(userId);
 	}).then(function(info){
 		externalProfileInfos = externalProfileInfos.filter(function(epi){ return epi.html });
-		res.render('publicProfile.jade', {user:user, userinfo:info, auth:auth, externalProfileInfos:externalProfileInfos});
+		res.render('publicProfile.jade', {
+			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
+			auth:auth, externalProfileInfos:externalProfileInfos
+		});
 	}).catch(function(err){
 		server.renderErr(res, err)
 	}).finally(db.off);
