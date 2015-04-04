@@ -29,8 +29,8 @@ miaou(function(prof, gui, locals){
 			mintop = 0, maxbot = wh,
 			$ms = $('#message-scroller');
 		if ($ms.length) {
-			mintop = $ms.offset().top+5 ;
-			maxbot = wh-($ms.offset().top+$ms.height()-5);
+			mintop = $ms.offset().top;
+			maxbot = wh-($ms.offset().top+$ms.height());
 		}
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
 		if (uo.top<wh/2) css.top = Math.max(uo.top, mintop);
