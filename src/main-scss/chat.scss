@@ -378,7 +378,7 @@ body.mobile #message-scroller {
 	}
 	.decoration {
 		font-family: "fontello";
-		margin: 2px;
+		margin: 1px;
 		@include flex(0 0 15px);
 		cursor: default;
 		color: $decoration-color;
@@ -387,6 +387,9 @@ body.mobile #message-scroller {
 			cursor: pointer;
 		}
 	}
+}
+.message .decorations .decoration:last-child{
+	margin-right: 10px;
 }
 
 #users .decorations {
