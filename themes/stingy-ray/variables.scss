@@ -16,7 +16,11 @@ $connected-user-bg-color-in-user-list: #444;
 
 // user in message
 $user-color-shadow-in-messages: 2px 0 0;
-$hovered-user-color-shadow-in-messages: 4px 0 0 !default;
+$hovered-user-color-shadow-in-messages: 4px 0 0;
+
+// message
+$message-me-bg: rgba(229,231,235,0.45);
+
 
 // profile
 $user-profile-title-color: white;
