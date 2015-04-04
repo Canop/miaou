@@ -627,13 +627,13 @@ $input-buttons-width: 74px;
 #input {
 	width: calc(100% - 16px - #{$input-buttons-width}); 
 	height: $input-height;
-	margin-top: 2px;
+	margin-top: 1px;
 	margin-left: 2px;
 	resize: none; 
 	float: left;
 	background: $input-bg;
 	color: $input-text-color;
-	border: $input-border;
+	//~ border: $input-border;
 }
 body.mobile #input {
 	height: $minput-height;
