@@ -25,9 +25,10 @@ miaou(function(prof, gui, locals){
 		var user = $user.data('user') || $user.closest('.notification,.user-messages,.user-line').data('user'),
 			uo = $user.offset(),
 			uh = $user.outerHeight(), uw = $user.width(),
-			wh = $(window).height();
+			wh = $(window).height(),
+			mintop = $('#message-scroller').length ? $('#message-scroller').offset().top+5 : 0;
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
-		if (uo.top<wh/2) css.top = uo.top;
+		if (uo.top<wh/2) css.top = Math.max(uo.top, mintop);
 		else css.bottom = wh-uo.top-uh;
 		css.left = uo.left + uw;
 		$p.load('publicProfile?user='+user.id+'&room='+locals.room.id);
