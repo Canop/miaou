@@ -12,7 +12,7 @@ miaou(function(plugins, chat, locals, md, ms){
 			md.registerRenderer(function($c, m){
 				if (r.test(m.content)) {
 					Groumf.replaceTextWithTextInHTML($c[0], r, '');
-					$c.closest('#messages .message').find('.user .decorations').prepend(
+					$c.closest('#messages .message').find('.decorations').prepend(
 						$('<div>&#xe824;</div>').addClass('decoration')
 					);
 					m.whiteboard = true;
