@@ -9,13 +9,17 @@ body.mobile {
 	.message .user {
 		width: 75px;
 	}
+	#me {
+		color: $mtab-color;	
+	}
 }
 
 .mtabs {
 	background: none;
 }
 .mtab {
-	background: rgba($bg-color, .9);
+	background: $mtab-bg;
+	color: $mtab-color;
 	text-align: center;
 	height: $mtab-height;
 	line-height: $mtab-height;
@@ -74,7 +78,12 @@ body.mobile {
 	bottom: $minput-height + 20px;
 	overflow-y: auto;
 	padding-top: $mtab-height + 4px;
-	background: rgba($bg-color, .9);
+	background: $mpage-bg;
+	color: $mpage-color;
+	h2 {
+		color: $mpage-color;
+	}
+	box-shadow: $mpage-shadow;
 	&:first-child {
 		width: 39%;
 		left: 0;
@@ -84,5 +93,21 @@ body.mobile {
 		width: 53%;
 		right: 0;
 		border-radius: 0 0 0 10px;
+	}
+}
+
+body.mobile {
+	.tabs {
+		.tab {
+			color: $mobile-tab-color;
+			&.selected {
+				background-color: $mobile-tab-page-bg;
+				color: $mobile-tab-selected-color;
+			}
+		}
+	}
+	.page {
+		background-color: $mobile-tab-page-bg;
+		color: $mobile-tab-page-color;
 	}
 }

@@ -116,6 +116,12 @@ $notif-color: #222 !default;
 $notif-hover-link-color: black !default;
 $home-tab-bg: $bg-color !default;
 
+// user page
+$user-page-bg: $bg-color !default;
+
+// dialog pages (login, error)
+$logo-bg-color: $bg-color !default;
+
 // side tabs
 $chat-tabs-border-color: #655 !default;
 $chat-tabs-border-width: 1px !default;
@@ -159,14 +165,26 @@ $left-panel-width: 140px !default;
 $right-panel-width: 400px !default;
 $hist-width: 200px !default;
 
-// mobile chat layout
+// mobile chat
 $minput-height: 50px !default; // height of input in mobile interface
 $mtab-height: 39px !default;   // height of the top tabs in mobile interface
+$mtab-bg: rgba($bg-color, .9) !default;
+$mtab-color: black !default;
+$mpage-bg: rgba($bg-color, .9) !default;
+$mpage-color: black !default;
+$mpage-shadow: 0 0 4px black !default;
+
+// notables & search tabs on mobile
+$mobile-tab-page-bg: white !default;
+$mobile-tab-page-color: transparentize($title-text-color, 0.5) !default;
+$mobile-tab-color: transparentize($title-text-color, 0.5) !default;
+$mobile-tab-selected-color: $title-text-color !default;
 
 // dialog
 $dialog-bg: white !default; 
 $dialog-color: black !default;
 $dialog-title-bg: #E3DAC9 !default;
+$dialog-title-color: black !default;
 
 // wzins
 $wzin-conv-bg: ( rgba(139, 69, 19, .2), rgba(42, 18, 234, .17), rgba(180, 237, 228, .4), rgba(192, 169, 244, .4) ) !default;

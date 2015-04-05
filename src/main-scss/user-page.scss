@@ -1,5 +1,5 @@
 body.user {
-
+	background: $user-page-bg;
 }
 #user-box {
 	background-color: white;
@@ -10,13 +10,10 @@ body.user {
 	padding-top: 60px;
 	max-width: 600px;
 	margin: auto;
+	cursor: pointer;
 }
-#user-miaou-logo {
+#User-logo {
 	width: 150px;
-	//~ &:hover {
-		//~ -webkit-filter: drop-shadow(0 0 4px #222);
-		//~ filter: drop-shadow(0 0 4px #222);
-	//~ }
 }
 #user-box {
 	width: 600px;

@@ -1,20 +1,19 @@
+#Prefs-logo {
+	height: 60px;
+}
 body.prefs {
+	// note : some parts are shared and defined in home.scss
 	overflow-y: auto;
-	background: darken( $bg-color, 5% ) ;
+	background: $home-bg;
 	a {
 		color: black;
-	}
-	#prefs-top {
-		background: $bg-color ;
-		box-shadow: 0 0 10px black;
-		padding: 3px;
 	}
 	#prefs-tabs, #prefs-tab-shadows {
 		.tab {
 			height: 30px;
 			position: absolute;
 			width: 100px;
-			background: $bg-color ;
+			background: $home-tab-bg;
 			&:nth-child(2) {
 				margin-left:140px;
 			}
@@ -87,7 +86,7 @@ body.prefs {
 			margin-top: 26px;
 		}
 		z-index: 3;
-		background: $bg-color ;
+		background: $home-tab-bg;
 		box-shadow: 0 0 10px black;
 		padding: 15px;
 		#prefs-main-content {
@@ -159,6 +158,14 @@ body.prefs {
 	img {
 		max-height: 220px;
 		max-width: 220px;
+	}
+}
+body.mobile #avatar-preview {
+	@include flex(1 0 100px);
+	height: 100px;
+	img {
+		max-height: 100px;
+		max-width: 100px;
 	}
 }
 

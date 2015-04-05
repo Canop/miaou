@@ -1,3 +1,7 @@
+.Miaou-logo {
+	pointer-events: none;
+}
+
 #prefs, #room-info {
 	margin: 5px;
 }
@@ -928,7 +932,7 @@ div#notifs {
 		top: 170px;
 	}
 	body.logo {
-		background: $bg-color url(../../Miaou-300-f.png) center no-repeat;
+		background: $logo-bg-color url(../../Miaou-300-f.png) center no-repeat;
 		background-position: 50% 1px;
 	}
 }
@@ -937,7 +941,7 @@ div#notifs {
 		top: 35%;
 	}
 	body.logo {
-		background: $bg-color url(../../Miaou-300-f.png) center no-repeat;
+		background: $logo-bg-color url(../../Miaou-300-f.png) center no-repeat;
 		background-position: 50% 100px;
 	}
 }

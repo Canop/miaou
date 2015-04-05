@@ -45,17 +45,17 @@ miaou(function(chat, locals, time, watch, ws){
 			}
 			if (r.lastcreated) {
 				var $lc = $('<span>').addClass('lastcreated').html('Last message:<br>'+time.formatRelativeTime(r.lastcreated)).appendTo($rr);
-				$lc.mouseenter(function(){
-					$.get('json/messages/last?room='+r.id, function(data){
-						var m = data.messages[0];
-						$lc.html('Last message:<br>'+time.formatRelativeTime(m.created));
-						$rm.empty().css('top',$r.height()+'px').show().append(
-							$('<i>').text(m.authorname+': ')
-						).append(
-							$('<span>').text(m.content.match(/^[^\n]{0,100}/)[0])
-						);
-					});
-				});
+				//~ $lc.mouseenter(function(){
+					//~ $.get('json/messages/last?room='+r.id, function(data){
+						//~ var m = data.messages[0];
+						//~ $lc.html('Last message:<br>'+time.formatRelativeTime(m.created));
+						//~ $rm.empty().css('top',$r.height()+'px').show().append(
+							//~ $('<i>').text(m.authorname+': ')
+						//~ ).append(
+							//~ $('<span>').text(m.content.match(/^[^\n]{0,100}/)[0])
+						//~ );
+					//~ });
+				//~ });
 			}
 			return $r;
 		}));

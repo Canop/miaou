@@ -6,17 +6,40 @@ $pad-background: rgba(9,30,90,.7);
 $right-background: #e5e7eb;
 $box-background: white;
 
-
 $title-text-color: black;
 
 // home
-$home-top-bg: rgba(9,30,90,1);
+$home-top-bg: #51608a;
 $home-top-color: #ccc;
 $home-hover-link-color: white;
-$home-bg: #222;
+$home-bg: #333;
 $notif-color: #ccc;
 $notif-hover-link-color: white;
 $home-tab-bg: #e5e7eb;
+
+// dialog pages (login, error)
+$logo-bg-color: #e5e7eb;
+
+// dialogs
+$dialog-bg: white; 
+$dialog-color: #222;
+$dialog-title-bg: #51608a;
+$dialog-title-color: #eee;
+
+// user page
+$user-page-bg: #51608a;
+
+// mobile chat
+$mtab-bg: rgba(9,30,90,.85);
+$mtab-color: #ccc;
+$mpage-bg: rgba(9,30,90,.95);
+$mpage-color: #ccc;
+
+// notables & search tabs on mobile
+$mobile-tab-page-bg: #e5e7eb;
+$mobile-tab-page-color: #222;
+$mobile-tab-selected-color: black;
+$mobile-tab-color: #444;
 
 // #users
 $user-text-color-in-user-list: #999;
@@ -29,7 +52,6 @@ $hovered-user-color-shadow-in-messages: 4px 0 0;
 
 // message
 $message-me-bg: rgba(229,231,235,0.45);
-
 
 // profile
 $user-profile-title-color: white;
@@ -73,5 +95,6 @@ $menu-background: rgba(9,30,90,.89);
 $menu-item-hover-bg: rgba(9,30,90,.95);
 
 // miaou logo
+//~ $miaou-logo-color: orange;
 $miaou-logo-color: #e5e7eb;
 

@@ -26,16 +26,15 @@ html
 	body.prefs
 		section#prefs-top
 			div.MP
-				a(href="rooms")
-					img(src="static/Miaou-300-f.png",width="180px",hspace="5px")
+				object.Miaou-logo#Prefs-logo(type="image/svg+xml",data="static/Miaou.svg")
 				p.links
 					| You're logged as
-					a.username(href="prefs",title="edit profile")= user.name
+					span.username= user.name
 					| -
 					a(id="logout",href="#") Log Out
 					| -
 					a(href="help#About",target=help) Help
-		section
+		section#prefs-notifs
 			div.MP
 				h2 Preferences
 				p#err.error= error
