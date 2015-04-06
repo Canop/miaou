@@ -108,6 +108,8 @@ $mwin-shadow: 0 0 5px black !default;
 $first-not-seen-top-border: 6px dotted rgba(0,0,0,0.1) !default;
 
 // home
+$home-main-shadows: 0 0 10px black !default;
+$home-mi-shadows: 0 0 5px black !default;
 $home-top-bg: $bg-color !default;
 $home-top-color: #222 !default;
 $home-hover-link-color: black !default;
@@ -118,6 +120,7 @@ $home-tab-bg: $bg-color !default;
 $list-odd-cell-bg: white !default;
 $list-even-cell-bg: #faf7d5 !default;
 $list-cell-color: black !default;
+$list-cell-hover-link-color: $list-cell-color !default;
 
 // user page
 $user-page-bg: $bg-color !default;

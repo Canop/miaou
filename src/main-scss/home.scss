@@ -3,7 +3,7 @@
 }
 #home-top, #prefs-top {
 	background: $home-top-bg;
-	box-shadow: 0 0 10px black;
+	box-shadow: $home-main-shadows;
 	padding: 3px;
 	color: $home-top-color;
 	a {
@@ -88,9 +88,9 @@ body.home {
 		margin-top: -30px;
 		.tab {
 			z-index: 1;
-			box-shadow: 0 0 5px black;
+			box-shadow: $home-mi-shadows;
 			&.selected {
-				box-shadow: 0 0 10px black;
+				box-shadow: $home-main-shadows;
 			}
 		}
 	}
@@ -103,7 +103,7 @@ body.home {
 		}
 		z-index: 3;
 		background: $home-tab-bg;
-		box-shadow: 0 0 10px black;
+		box-shadow: $home-main-shadows;
 		padding: 15px;
 		h3 {
 			margin-left: 8px;

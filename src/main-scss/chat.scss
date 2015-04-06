@@ -824,6 +824,9 @@ body.home .list, .list {
 		color: $list-cell-color;
 		a {
 			color: $list-cell-color;		
+			&:hover {
+				color: $list-cell-hover-link-color;
+			}
 		}
 	}
 	tr:nth-child(even) {

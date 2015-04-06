@@ -52,8 +52,8 @@ $message-me-user-color: $accent-minus;
 $user-text-color-in-message: inherit; // gives to the username the color of the user
 $code-text-color: #888;
 $user-color-shadow-in-messages: none;
-$user-color-shadow-in-messages: -105px 0 1px;
-$hovered-user-color-shadow-in-messages: -6px 0 3px;
+$user-color-shadow-in-messages: inset 1px 0 1px;
+$hovered-user-color-shadow-in-messages: inset 35px 0 70px;
 
 
 $citation-border-color: #666;
@@ -82,6 +82,18 @@ $reply-box-hover-bg: #333;
 $reply-box-color: #999;
 
 $goingto-bg: rgba(128, 0, 128, 0.7);
+
+// home
+$home-main-shadows: 0 0 10px $accent-plus;
+$home-mi-shadows: 0 0 5px $accent;
+$home-top-color: #ccc;
+$home-hover-link-color: $accent-plus;
+$notif-color: #ccc;
+$notif-hover-link-color: $accent-plus;
+$list-odd-cell-bg: #050505;
+$list-even-cell-bg: #090909;
+$list-cell-color: #ccc;
+$list-cell-hover-link-color: $accent-plus;
 
 // right tabs
 $chat-tabs-unselected-bg-color: transparent;
@@ -158,4 +170,4 @@ $pad-room-last-message-bg: $pad-room-hover-bg;
 $pad-room-last-message-border-top: solid thin PaleVioletRed;
 
 // miaou logo
-$miaou-logo-color: $general-text-color;
+$miaou-logo-color: $accent;
