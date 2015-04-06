@@ -115,6 +115,9 @@ $home-bg: darken( $bg-color, 5% ) !default;
 $notif-color: #222 !default;
 $notif-hover-link-color: black !default;
 $home-tab-bg: $bg-color !default;
+$list-odd-cell-bg: white !default;
+$list-even-cell-bg: #faf7d5 !default;
+$list-cell-color: black !default;
 
 // user page
 $user-page-bg: $bg-color !default;

@@ -814,17 +814,21 @@ span.warning {
 	}
 }
 
-.list {
+body.home .list, .list {
 	width: 100%;
 	margin-bottom: 30px;
 	th, td {
 		padding: 8px;
-		background: white;
+		background: $list-odd-cell-bg;
 		text-align: left;
+		color: $list-cell-color;
+		a {
+			color: $list-cell-color;		
+		}
 	}
 	tr:nth-child(even) {
 		th, td {
-			background: #faf7d5;
+			background: $list-even-cell-bg;
 		}
 	} 
 	td.role {
