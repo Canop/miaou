@@ -644,7 +644,7 @@ $input-buttons-width: 74px;
 	float: left;
 	background: $input-bg;
 	color: $input-text-color;
-	//~ border: $input-border;
+	border: $input-border;
 }
 body.mobile #input {
 	height: $minput-height;
