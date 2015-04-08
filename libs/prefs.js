@@ -159,7 +159,7 @@ exports.appAllPrefs = function(req, res){
 			user: req.user,
 			error: error,
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			themes: themes,
+			themes: themes, theme:exports.theme(userPrefs, req.query.theme),
 			externalProfileInfos: externalProfileInfos,
 			vars:{
 				userPrefs: userPrefs,
