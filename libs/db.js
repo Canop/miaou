@@ -49,7 +49,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
 	var con = this, resolver = Promise.defer(),
-		email = null, returnedCols = 'id, name, oauthdisplayname, email';
+		email = null, returnedCols = 'id, name, oauthprovider, oauthdisplayname, email';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google, github
 	con.client.query('select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2', [provider, oauthid], function(err, result){
 		if (err) {
@@ -71,7 +71,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 // Private fields are included in the returned object
 proto.getUserById = function(id){
 	return this.queryRow(
-		'select id, name, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where id=$1', [id]
+		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where id=$1', [id]
 	);
 }
 
@@ -79,7 +79,7 @@ proto.getUserById = function(id){
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
 	return this.queryRow(
-		'select id, name, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where lower(name)=$1',
+		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where lower(name)=$1',
 		[username.toLowerCase()], true
 	);
 }

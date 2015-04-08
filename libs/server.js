@@ -142,13 +142,18 @@ function startServer(){
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
+
+	miaou.plugins.forEach(function(p){
+		if (p.appuse) app.use(p.appuse);
+	});
+
 	app.use(require('./anti-csrf.js')({ whitelist:['/upload', '/error'] }));
 	
-	app.use(function(req, res, next) {
+	app.use(function(req, res, next){
 		res.set("X-Frame-Options", "deny");
 		res.set("Content-Security-Policy", "script-src 'self'");
 		res.set("Cache-Control", "no-transform");
-		return next();
+		next();
 	});
 	
 	app.locals.theme = miaou.config.themes[0]; // default theme
@@ -179,10 +184,11 @@ exports.renderErr = function(res, err, base){
 }
 
 function initPlugins(){
-	(miaou.config.plugins||[]).forEach(function(n){
+	miaou.plugins = (miaou.config.plugins||[]).map(function(n){
 		var	pluginfilepath = path.resolve(__dirname, '..', n),
 			plugin = require(pluginfilepath);
 		if (plugin.init) plugin.init(miaou, path.dirname(pluginfilepath));
+		return plugin;
 	});
 }
 
@@ -198,10 +204,6 @@ exports.start = function(config){
 		.then(function(b){
 			miaou.bot = b;
  			if (config.botAvatar.src!==b.avatarsrc || config.botAvatar.key!==b.avatarkey) {
-				console.log("config.botAvatar.src:",config.botAvatar.src);
-				console.log("b.avatarsrc:",b.avatarsrc);
-				console.log("config.botAvatar.key:",config.botAvatar.key);
-				console.log("b.avatarkey:",b.avatarkey);
 				b.avatarsrc = config.botAvatar.src;
 				b.avatarkey = config.botAvatar.key;
 				return this.updateUser(b)
@@ -210,8 +212,8 @@ exports.start = function(config){
 		.finally(db.off)
 		.then(function(){
 			configureOauth2Strategies();
-			startServer();
 			initPlugins();
+			startServer();
 		});		
 	});
 }
