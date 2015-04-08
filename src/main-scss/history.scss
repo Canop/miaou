@@ -16,14 +16,14 @@
 
 #hist {
 	@include flex(0 0 $hist-width);
-	background: rgba($bg-color,.8);
+	background: $hist-bg;
 	display: none;
 	overflow-y: scroll;
 	font-size: 70%;
-	color: #655;
+	color: $hist-color;
 	.month {
 		position: relative;
-		border-bottom: thin dotted rgba(#655,0.4);
+		border-bottom: $hist-month-border-bottom;
 		.label {
 			position: absolute;
 			height: 100%;
@@ -37,13 +37,14 @@
 			width: 100%;
 			height: 4px;
 			text-align: right;
+			background: $hist-normal-day-background;
 			&[m] {
 				cursor: pointer;
 			}	
 			.bar {
 				position: absolute;
 				right: 0;
-				background-color: #655;
+				background-color: $hist-bar-color;
 				opacity: 0.4;
 				height: 100%;
 				&.hit {
@@ -56,13 +57,13 @@
 				left: 30px;
 				text-align: left;
 				z-index: 3;
-				background: rgba(255,255,255,0.6);
+				background: $hist-bubble-background;
 			}
 			&.vis {
-				background: white;
+				background: $hist-vis-day-background;
 			}
 			&.vis:hover, &:hover {
-				background: #d5cba6;
+				background: $hist-hover-day-background;
 			}
 		}
 	}

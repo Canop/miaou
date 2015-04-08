@@ -2,6 +2,7 @@
 
 const auths = require('./auths.js'),
 	server = require('./server.js'),
+	prefs = require('./prefs.js'),
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
 	memobjects = new Map,
 	clean = require('./ws.js').clean;
@@ -50,15 +51,24 @@ exports.updateNotables = function(memroom){
 
 // room admin page GET
 exports.appGetRoom = function(req, res){
-	db.on([+req.query.id, +req.user.id])
-	.spread(db.fetchRoomAndUserAuth)
+	var theme;
+	db.on().then(function(){
+		return prefs.get.call(this, req.user.id);
+	}).then(function(userPrefs){
+		theme = prefs.theme(userPrefs, req.query.theme);
+		return this.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
+	})
 	.then(function(room){
 		if (!auths.checkAtLeast(room.auth, 'admin')) {
 			return server.renderErr(res, "Admin level is required to manage the room");
 		}
-		res.render('room.jade', {vars:{ room:room, error:null, langs:langs.legal }});
+		res.render('room.jade', {
+			vars:{ room:room, error:null, langs:langs.legal }, theme:theme
+		});
 	}).catch(db.NoRowError, function(){
-		res.render('room.jade', {vars:{ room:null, error:null, langs:langs.legal }});
+		res.render('room.jade', { // TODO ???
+			vars:{ room:room, error:null, langs:langs.legal }, theme:theme
+		});
 	}).catch(function(err){
 		server.renderErr(res, err);
 	}).finally(db.off);
@@ -116,16 +126,17 @@ exports.appGetRooms = function(req, res){
 		return [
 			this.listFrontPageRooms(req.user.id),
 			this.fetchUserPingRooms(req.user.id, 0),
-			welcomeRooms
+			welcomeRooms,
+			prefs.get.call(this, req.user.id)
 		]
 	})
-	.spread(function(rooms, pings, welcomeRooms){
+	.spread(function(rooms, pings, welcomeRooms, userPrefs){
 		rooms.forEach(function(r){ r.path = server.roomPath(r) });
 		welcomeRooms.forEach(function(r){ r.path = server.roomPath(r) });
 		var mobile = server.mobile(req);
 		res.render(mobile ? 'rooms.mob.jade' : 'rooms.jade', {
 			vars:{rooms:rooms, langs:langs.legal, mobile:mobile, welcomeRooms:welcomeRooms},
-			user:req.user, pings:pings
+			user:req.user, pings:pings, theme:prefs.theme(userPrefs, req.query.theme)
 		});
 	})
 	.catch(function(err){

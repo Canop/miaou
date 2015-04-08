@@ -69,6 +69,12 @@ $button-box-shadow: none;
 $small-button-box-shadow: none;
 $message-decoration-button-box-shadow: none;
 $small-button-box-shadow: none;
+$button-bg-color: rgba(255,255,255,.9);
+$button-text-color: #111;
+$button-hover-bg-color: white;
+$button-hover-text-color: #003;
+$button-hover-border-color: #003;
+$decoration-button-border-radius: 2px;
 
 // top stripe & drawer
 $roomname-color: white;
@@ -86,6 +92,17 @@ $opacity-behind-open-top: 1;
 // watches
 $watch-bg: rgba(255,255,255,.8);
 $unselected-watch-bg: none;
+
+// history
+$hist-bg: $left-background;
+$hist-color: #ddd;
+$hist-month-border-bottom: thin solid #444;
+$hist-normal-day-background: transparent;
+$hist-vis-day-background: #444;
+$hist-hover-day-background: #51608a;
+$hist-bar-color: $right-background;
+$hist-bubble-background: #51608a;
+
 
 // wzins
 $wzin-conv-bg: ( rgba(139, 69, 19, .4), rgba(42, 18, 234, .4), rgba(180, 237, 228, .7), rgba(192, 169, 244, .7) );

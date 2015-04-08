@@ -375,7 +375,7 @@ body.mobile #message-scroller {
 		&:last-child {
 			margin-right: 12px;		
 		}
-		border-radius: 3px;
+		border-radius: $decoration-button-border-radius;
 		box-shadow: $message-decoration-button-box-shadow;		
 		font-size: 10px;
 		line-height: 14px;
@@ -817,6 +817,7 @@ span.warning {
 body.home .list, .list {
 	width: 100%;
 	margin-bottom: 30px;
+	border-spacing: 0;
 	th, td {
 		padding: 8px;
 		background: $list-odd-cell-bg;

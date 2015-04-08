@@ -22,6 +22,9 @@ $hovered-user-in-messages-border-right: none;
 $user-in-messages-bg: rgba(5,5,5,.4);
 
 $user-color-shadow-in-messages: 1px 0 0;
+//~ $user-color-shadow-in-messages: none;
+//~ $user-text-color-in-message: inherit; // gives to the username the color of the user
+$user-text-color-in-message: #888;
 
 $input-border: none;
 $chat-tabs-border-color: rgba(PaleVioletRed,.5);
@@ -56,7 +59,6 @@ $connected-user-bg-color-in-user-list: rgba(0,0,0,0.4);
 $user-text-color-in-user-list: #666;
 $message-me-user-color: PaleVioletRed;			
 
-$user-text-color-in-message: #888;
 $code-text-color: #888;
 
 $message-content-table-border-color: #555;
@@ -141,13 +143,16 @@ $right-panel-width: 450px;
 // dialog
 $dialog-bg: #1a1a1a;
 $dialog-color: #bbb;
-$dialog-title-bg: #333;
+$dialog-title-bg: $accent;
+$dialog-title-color: white;
 
 $mwin-bg: rgba(30,30,30,0.7);
 $mwin-content-bg: #111;
 $mwin-shadow: none;
 
 // home
+$home-main-shadows: 0 0 3px $accent-plus;
+$home-mi-shadows: 0 0 1px $accent;
 $home-top-color: #bbb;
 $home-hover-link-color: #eee;
 $notif-color: #aaa;

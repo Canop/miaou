@@ -197,6 +197,7 @@
 		.room {
 			@include flexbox(row);
 			position: relative;
+			margin: 1px 0;
 			&:hover {
 				background: $pad-room-hover-bg;
 				transition: background .5s;

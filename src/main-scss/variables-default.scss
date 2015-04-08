@@ -164,6 +164,7 @@ $button-hover-bg-color: #E3DAC9 !default;
 $button-hover-text-color: black !default;
 $button-hover-border-color: #666 !default;
 $small-button-box-shadow: 1px 1px 2px #999 !default;
+$decoration-button-border-radius: 3px !default;
 
 // chat layout
 $input-height: 83px !default; // height of input
@@ -218,8 +219,18 @@ $room-tab-bg-color: transparent !default;
 $selected-room-tab-color: $title-text-color !default;
 $hovered-room-tab-color: transparentize($title-text-color, 0.2) !default;
 $unselected-room-tab-color: transparentize($title-text-color, 0.5) !default;
-
 $opacity-behind-open-top: .45 !default;
+
+// history
+$hist-bg: rgba($bg-color,.8) !default;
+$hist-color: #655 !default;
+$hist-month-border-bottom: thin dotted rgba(#655,0.4) !default;
+$hist-normal-day-background: transparent !default;
+$hist-vis-day-background: white !default;
+$hist-hover-day-background: #d5cba6 !default;
+$hist-bar-color: #655 !default;
+$hist-bubble-background: rgba(255,255,255,0.6) !default;
+
 
 // miaou logo
 $miaou-logo-color: black !default;

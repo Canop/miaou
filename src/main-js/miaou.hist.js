@@ -30,8 +30,11 @@ miaou(function(hist, md, time, ws){
 	$('#hist').on('click', '[m]', function(){
 		md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
 	}).on('mouseenter', '[m]', function(){
-		var sn = +$(this).attr('sn'), d = +$(this).attr('d'),
+		var	sn = +$(this).attr('sn'),
+			n = +$(this).attr('n'),
+			d = +$(this).attr('d'),
 			h = time.formatDateDDMMM(new Date(d*24*60*60*1000));
+		if (n) h += ' - ' + n + ' messages';
 		if (sn) h += '<br>' + sn + ' match';
 		if (sn>1) h += 'es';
 		$(this).append($('<div>').addClass('bubble').html(h));
@@ -108,7 +111,7 @@ miaou(function(hist, md, time, ws){
 			}
 			var $bar = $('<div/>').addClass('bar').css('width', Math.log(n)*80/logmaxn+'%');
 			if (sm) $bar.addClass('hit');
-			var $day = $('<div/>').addClass('day').append($bar).attr('d',d).appendTo($month);
+			var $day = $('<div/>').addClass('day').append($bar).attr('d',d).attr('n',n).appendTo($month);
 			if (m) $day.attr('m',m);
 			if (sm) $day.attr('sm',sm).attr('sn',sn);
 		}
