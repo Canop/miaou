@@ -26,7 +26,9 @@
 		"./plugins/survey/plugin.js"
 	],
 	"themes": [
+		"stingy-ray",
 		"boring-goose",
+		"perverse-otter",
 		"sadistic-otter",
 		"stoned-bear"
 	],
