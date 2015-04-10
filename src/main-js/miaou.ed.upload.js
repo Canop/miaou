@@ -2,9 +2,7 @@
 // ed.upload handles image upload
 
 miaou(function(ed){
-	
-	if (!$('#input').length) return;
-	
+		
 	function uploadFile(file){
 		var fd = new FormData(); // todo: do I really need a formdata ?
 		fd.append("file", file);
@@ -33,6 +31,8 @@ miaou(function(ed){
 	}
 		
 	document.addEventListener('paste', function(e){
+		var input = document.getElementById('input');
+		if (!input) return;
 		ed.stateBeforePaste = {
 			selectionStart:input.selectionStart, selectionEnd:input.selectionEnd, value:input.value
 		};
