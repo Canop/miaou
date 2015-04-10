@@ -67,7 +67,7 @@ exports.appGetRoom = function(req, res){
 		});
 	}).catch(db.NoRowError, function(){
 		res.render('room.jade', { // TODO ???
-			vars:{ room:room, error:null, langs:langs.legal }, theme:theme
+			vars:{ error:null, langs:langs.legal }, theme:theme
 		});
 	}).catch(function(err){
 		server.renderErr(res, err);
