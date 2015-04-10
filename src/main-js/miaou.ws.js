@@ -36,6 +36,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			md.updateLoaders();
 			md.showMessageFlowDisruptions();
 			if (typeof prettyPrint !== 'undefined') prettyPrint();
+			hist.showPage();
 		}
 
 		socket
