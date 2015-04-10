@@ -56,5 +56,7 @@ exports.appGet = function(req, res){
 	}).catch(db.NoRowError, function(){
 		// not an error as it happens when there's no room id in url
 		res.redirect(server.url('/rooms'));
+	}).catch(function(err){
+		server.renderErr(res, err);
 	}).finally(db.off);
 }
