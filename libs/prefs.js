@@ -6,6 +6,7 @@ const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 	path = require('path'),
 	naming = require('./naming.js'),
 	server = require('./server.js'),
+	crypto = require('crypto'),
 	cache = require('bounded-cache')(5),
 	defaultPrefs = { // also defines the valid keys
 		notif: 'on_ping',	// when to raise a desktop notification
@@ -98,6 +99,14 @@ exports.appAllPrefs = function(req, res){
 			var	name = req.body.name.trim(),
 				avatarsrc = req.body['avatar-src'],
 				avatarkey = req.body['avatar-key'];
+				
+			// in the very specific case of a user having choosed gravatar and
+			//  having given a clear email, we hash it so that it's never displayed
+			//  to other users through the URL of the avatar
+			if (avatarsrc==='gravatar' && /@/.test(avatarkey)) {
+				avatarkey = crypto.createHash('md5').update(avatarkey.trim().toLowerCase()).digest('hex');
+			}
+			
 			if (!naming.isValidUsername(name)) return;
 			if (name!==req.user.name && naming.isUsernameForbidden(name)) {
 				error = "Sorry, that username is reserved.";

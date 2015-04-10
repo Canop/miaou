@@ -59,7 +59,7 @@ miaou(function(locals){
 	// Avatar preferences management
 	avatarSources = {
 		gravatar:{
-			keyLabel: 'email',
+			keyLabel: 'hash or email',
 			description: 'Gravatar is a free service'+
 				' providing avatars globally identified by your email. You can upload your portrait'+
 				' at <a href=http://gravatar.com target=gravatar>gravatar.com</a>.',
@@ -121,12 +121,15 @@ miaou(function(locals){
 	$('#avatar-src').append(Object.keys(avatarSources).map(function(key){
 		return $('<option>').text(key).val(key);
 	})).on('change', onchangeAvatarSrc);
+	
 	if (locals.avatarsrc) {
 		$('#avatar-src').val(locals.avatarsrc);
 		$('#avatar-key').val(locals.avatarkey);
 		var src = avatarSources[locals.avatarsrc];
 		if (src.keyLabel) {
 			src.key = locals.avatarkey;
+			$('#avatar-key-label').html(src.keyLabel+':');
+			$('#avatar-src-description').html(src.description||'');
 		} else {
 			$('#avatar-key').val('').hide();			
 		}
