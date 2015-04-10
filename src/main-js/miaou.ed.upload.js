@@ -3,6 +3,8 @@
 
 miaou(function(ed){
 	
+	if (!$('#input').length) return;
+	
 	function uploadFile(file){
 		var fd = new FormData(); // todo: do I really need a formdata ?
 		fd.append("file", file);
