@@ -10,14 +10,17 @@ exports.configure = function(miaou){
 }
 
 function doStats(ct) {
-	var	match = ct.args.match(/([@\w\-]+)(\s+\d+)?/),
+	// this regex must be changed with care : it prevents injections
+	var	match = ct.args.match(/([@\w\-]+)(\s+[a-zA-Z]+)?(\s+\d+)?/),
 		room = ct.shoe.room,
 		topic = 'server',
+		subtopic,
 		ranking = true,
 		n = 10;
 	if (match) {
 		topic = match[1];
-		n = Math.min(+match[2] || n, 500);
+		subtopic = match[2]; 
+		n = Math.min(+match[3] || n, 500);
 	}
 	if (/^me$/i.test(topic)) topic = '@'+ct.username();
 	var cols, from, title, args=[], c;
@@ -96,15 +99,26 @@ function doStats(ct) {
 		title = "Statistics of the room *"+room.name+"*";		
 	} else if (/^votes$/i.test(topic)) {
 		cols = [
-			{name:"vote", value:"vote"},
-			{name:"number", value:"count(*)"},
+			{name:"Vote", value:"vote"},
+			{name:"Number", value:"count(*)"},
 		];
 		from = "from message_vote group by vote order by c1 desc";
-		title = "Voting Statistics";		
+		title = "Voting Statistics";
+	} else if (/^prefs$/i.test(topic)) {
+		cols = [
+			{name:"Name", value:"name"},
+			{name:"Value", value:"value"},
+			{name:"Number", value:"count(*)"},
+		];
+		from = "from pref"
+		if (subtopic) from += " where name='"+subtopic.trim()+"'";
+		else ranking=false;
+		from += " group by name, value order by name, c2 desc limit "+n;
+		title = "Preferences Statistics";
 	} else {
 		throw "Wrong statistics request. Use `!!stats [server|me|@user|users|room|rooms] [n]`.";
 	}
-	var sql = "select " + cols.map(function(col, i){ return col.value+' c'+i }).join(',');
+	var sql = "select " + cols.map(function(col, i){ return (col.value||col.name)+' c'+i }).join(',');
 	if (from) sql += ' '+from;
 	return this.queryRows(sql, args, true).then(function(rows){
 		var c;
@@ -139,6 +153,8 @@ exports.registerCommands = function(registerCommand){
 			"\n* `!!stats @someuser` : some stats about that user"+
 			"\n* `!!stats active-rooms` : list of the rooms having the most messages in the two last days"+
 			"\n* `!!stats active-users 20` : list of the 20 users having posted the most messages in the two last days"+
+			"\n* `!!stats prefs` : stats of user preferences"+
+			"\n* `!!stats prefs theme` : stats of user preferences regarding themes"+
 			"\n* `!!stats` : basic stats"+
 			"\n* `!!stats server-graph` : monthly histogram"
 			
