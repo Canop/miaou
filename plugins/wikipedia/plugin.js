@@ -78,7 +78,7 @@ function onCommand(ct){
 		done = false;
 	m.content = m.content.replace(/!!wiki\s+([^\s\n][^\n]+)/, function(_, searched, pos){
 		done = true;
-		var r = 'http://en.wikipedia.org/wiki/'+encodeURIComponent(searched.trim());
+		var r = 'http://'+ct.shoe.room.lang+'.wikipedia.org/wiki/'+encodeURIComponent(searched.trim());
 		if (pos>3) r = '\n'+r; // due to how commands are parsed, it can only be after a ping or a reply
 		return r;
 	});
@@ -88,7 +88,7 @@ function onCommand(ct){
 exports.registerCommands = function(cb){
 	cb({
 		name:'wiki', fun:onCommand,
-		help:"displays the relevant Wikipedia page (English site). Example : `!!wiki Neil Armstrong`",
+		help:"displays the relevant Wikipedia page in the language of the room. Example : `!!wiki Neil Armstrong`",
 		detailedHelp:"You may also simply paste the URL of a wikipedia page to have it abstracted for you.\n"+
 			"Example: `http://fr.wikipedia.org/wiki/Chat`"
 	});
