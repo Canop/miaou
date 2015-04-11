@@ -64,7 +64,8 @@ Shoes.allSocketsOfUser = function(){
 }
 Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
 	io.sockets.in(roomId||this.room.id).emit('message', {
-		author:bot.id, authorname:bot.name, created:Date.now()/1000|0, bot:true, content:content
+		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
+		created:Date.now()/1000|0, bot:true, content:content
 	});
 }
 Shoes.pluginTransformAndSend = function(m, sendFun){
@@ -102,6 +103,8 @@ Shoes.botMessage = function(bot, content){
 	.then(db.storeMessage)
 	.then(function(m){
 		m.authorname = bot.name;
+		m.avs = bot.avatarsrc;
+		m.avk = bot.avatarkey;
 		m.bot = true;
 		shoe.emitToRoom('message', m);
 	}).finally(this.db.off);

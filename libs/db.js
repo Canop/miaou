@@ -495,6 +495,7 @@ proto.messageHistogram = function(roomId, pattern, lang) {
 }
 
 // fetches one message. Votes of the passed user are included if user is provided
+// avatar isn't given (now)
 proto.getMessage = function(messageId, userId){
 	if (userId) {
 		return this.queryRow(
