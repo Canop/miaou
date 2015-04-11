@@ -246,17 +246,29 @@ body.mobile #message-scroller {
 		.avatar-wrapper {
 			width: 26px;
 		}
+		span {
+			width: 100%;
+			text-align: center;
+		}
 		@include flex-direction(column);
 	}
 	.user.size3 {
 		.avatar-wrapper {
 			width: 40px;
 		}
+		span {
+			width: 100%;
+			text-align: center;
+		}
 		@include flex-direction(column);
 	}
 	.user.size4 {
 		.avatar-wrapper {
 			width: 56px;
+		}
+		span {
+			width: 100%;
+			text-align: center;
 		}
 		@include flex-direction(column);
 	}
