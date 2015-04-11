@@ -203,7 +203,7 @@ miaou(function(chat, locals, time, watch, ws){
 	});
 
 	$(window).on('keydown', function(e){
-		if (e.which===70 && e.ctrlKey && $('#room-and-rooms').hasClass('open')) {
+		if (e.which===70 && e.ctrlKey && !$('#room-and-rooms').hasClass('open')) {
 			righttab("search");
 			return false;
 		}
