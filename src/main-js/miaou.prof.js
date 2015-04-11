@@ -1,6 +1,6 @@
 // functions related to user profile displaying on hover
 
-miaou(function(prof, gui, locals){
+miaou(function(prof, gui, locals, skin){
 	
 	var showTimer;
 	
@@ -36,7 +36,9 @@ miaou(function(prof, gui, locals){
 		if (uo.top<wh/2) css.top = Math.max(uo.top, mintop);
 		else css.bottom = Math.max(wh-uo.top-uh, maxbot);
 		css.left = uo.left + uw;
-		$p.load('publicProfile?user='+user.id+'&room='+locals.room.id);
+		$p.load('publicProfile?user='+user.id+'&room='+locals.room.id, function(){
+			$p.find('.avatar').css('color', skin.stringToColour(user.name));
+		});
 		$p.css(css).appendTo('body');
 		$user.addClass('profiled');
 		$(window).on('mousemove', prof.checkOverProfile);

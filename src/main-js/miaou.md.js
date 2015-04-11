@@ -1,7 +1,7 @@
 // md is short for "message display"
 // Here are functions related to the display of messages in the chat and to the various message element lists
 
-miaou(function(md, chat, gui, hist, locals, time, usr){
+miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	
 	var renderers = [], unrenderers = [];
 	
@@ -216,20 +216,7 @@ miaou(function(md, chat, gui, hist, locals, time, usr){
 			}
 		}
 	}
-	
-	var stringToColour = function(str) {
-		var hash = 0;
-		for (var i = 0; i < str.length; i++) {
-			hash = str.charCodeAt(i) + ((hash << 5) - hash);
-		}
-		var colour = '#';
-		for (var i = 0; i < 3; i++) {
-			var value = (hash >> (i * 8)) & 0xFF;
-			colour += ('00' + value.toString(16)).substr(-2);
-		}
-		return colour;
-	}
-	
+		
 	function selfHide(){
 		this.style.visibility="hidden";
 	}
@@ -239,7 +226,7 @@ miaou(function(md, chat, gui, hist, locals, time, usr){
 		var $usermessages = $('<div>').addClass('user-messages').data('user',user),
 			$user = $('<div>').addClass('user').appendTo($usermessages),
 			avsrc = usr.avatarsrc(user);
-		$user.css('color', stringToColour(user.name)).append($('<span/>').text(user.name));
+		$user.css('color', skin.stringToColour(user.name)).append($('<span/>').text(user.name));
 		if (avsrc) {
 			$('<div>').addClass('avatar-wrapper').prependTo($user).append(
 				$('<img>').attr('src',avsrc).addClass('avatar').imgOn('error', selfHide)
