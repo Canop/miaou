@@ -50,6 +50,8 @@ div.externalProfile {
 		display: block;
 		margin: auto;
 		max-width: 150px;
+		-webkit-filter: $profile-avatar-filter;
+		filter: $profile-avatar-filter;
 	}
 	a {
 		color: $profile-text-color;	
@@ -68,6 +70,11 @@ div.externalProfile {
 	p {
 		padding: 0;
 	}
+}
+
+.profiled .avatar {
+	-webkit-filter: $profiled-avatar-filter;
+	filter: $profiled-avatar-filter;
 }
 
 @media (max-height: 500px) {

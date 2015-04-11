@@ -180,6 +180,10 @@ $pad-room-last-message-border-top: solid thin PaleVioletRed;
 // miaou logo
 $miaou-logo-color: $general-text-color;
 
+// profile avatar rendering
+$profiled-avatar-filter: drop-shadow(0 0 1px PaleVioletRed);
+$profile-avatar-filter: drop-shadow(0 0 2px PaleVioletRed);
+
 // customizations
 #messages .user {
 	border-radius: 4px;

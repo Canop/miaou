@@ -105,6 +105,9 @@ $profile-bg: rgba(20,0,10,0.94);
 $profile-box-shadow: none;
 $profile-text-color: #ccc;
 
+// profile avatar rendering
+$profile-avatar-filter: drop-shadow(0 0 2px);
+
 // message sizing
 $message-min-height: 34px;
 $message-content-padding: 6px 10px;
@@ -122,6 +125,7 @@ $button-hover-border-color: none;
 $small-button-box-shadow: none;
 
 $right-panel-width: 450px;
+
 
 
 ::-webkit-scrollbar {

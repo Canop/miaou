@@ -54,9 +54,6 @@ $hovered-message-content-bg: #eee !default;
 
 $no-avatar-bg: #eee !default;
 
-$side-message-border-top: thin solid rgba(255,255,255,0.1) !default;
-$side-message-border-bottom: thin solid rgba(0,0,0,0.1) !default;
-$side-message-even-background: rgba(0,0,0,0.03) !default;
 
 $input-border: "" !default;
 
@@ -136,6 +133,13 @@ $chat-tabs-selected-bg-image: none !default;
 $chat-tabs-unselected-bg-color: transparent !default;
 $chat-tabs-selected-bg-color: white !default; 
 $chat-page-selected-bg: white !default;
+
+// side messages
+$side-message-border-top: thin solid rgba(255,255,255,0.1) !default;
+$side-message-border-bottom: thin solid rgba(0,0,0,0.1) !default;
+$side-message-even-background: rgba(0,0,0,0.03) !default;
+$side-message-hover-bg: lighten($bg-color, 10%) !default;
+$side-message-selected-bg: lighten($bg-color, 24%) !default;
 
 // message sizing
 $user-messages-padding: 2px !default;
@@ -221,6 +225,7 @@ $hovered-room-tab-color: transparentize($title-text-color, 0.2) !default;
 $unselected-room-tab-color: transparentize($title-text-color, 0.5) !default;
 $opacity-behind-open-top: .45 !default;
 
+
 // history
 $hist-bg: rgba($bg-color,.8) !default;
 $hist-color: #655 !default;
@@ -231,6 +236,9 @@ $hist-hover-day-background: #d5cba6 !default;
 $hist-bar-color: #655 !default;
 $hist-bubble-background: rgba(255,255,255,0.6) !default;
 
+// profile avatar rendering
+$profile-avatar-filter: none !default;
+$profiled-avatar-filter: none !default;
 
 // miaou logo
 $miaou-logo-color: black !default;

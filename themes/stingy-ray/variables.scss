@@ -103,6 +103,12 @@ $hist-hover-day-background: #51608a;
 $hist-bar-color: $right-background;
 $hist-bubble-background: #51608a;
 
+// side messages
+$side-message-border-top: thin solid rgba(255,255,255,0.1);
+$side-message-border-bottom: thin solid rgba(0,0,0,0.1);
+$side-message-even-background: rgba(0,0,0,0.03);
+$side-message-hover-bg: rgba(9,30,90,.2);
+$side-message-selected-bg: rgba(9,30,90,.4);
 
 // wzins
 $wzin-conv-bg: ( rgba(139, 69, 19, .4), rgba(42, 18, 234, .4), rgba(180, 237, 228, .7), rgba(192, 169, 244, .7) );
@@ -118,4 +124,13 @@ $menu-item-hover-bg: rgba(9,30,90,.95);
 // miaou logo
 //~ $miaou-logo-color: orange;
 $miaou-logo-color: #e5e7eb;
+
+// profile avatar rendering
+$profiled-avatar-filter: drop-shadow(0 0 1px white);
+$profile-avatar-filter: drop-shadow(0 0 2px white);
+
+
+// ---------------
+// specific things
+
 

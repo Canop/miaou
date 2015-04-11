@@ -510,11 +510,11 @@ body.mobile .message-menu .vote {
 			background: $side-message-even-background;
 		}
 		&:hover {
-			background: lighten($bg-color, 10%);
+			background: $side-message-hover-bg;
 			transition: background 0.2s;
 		}
 		&.selected {
-			background: lighten($bg-color, 24%);		
+			background: $side-message-selected-bg;		
 			transition: background 0.2s;
 		}
 		cursor: pointer;

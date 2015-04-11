@@ -148,7 +148,7 @@ body.prefs {
 .avatar-fields-row {
 	@include flexbox(row, center);
 	input, select, label, p {
-		margin: 10px;
+		margin: 8px 4px;
 	}
 }
 #avatar-preview {
