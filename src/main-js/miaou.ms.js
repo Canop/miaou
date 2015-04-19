@@ -27,7 +27,7 @@ miaou(function(ms, chat, locals, time, usr){
 			status.answerable = status.deletable = status.editable = false;
 			return;
 		}
-		var	created = time.local(message.created+time.offsetWithServer),
+		var	created = time.local(message.created),
 			deleted = !message.content,
 			modDeleted = /^!!deleted/.test(message.content);
 		status.answerable = !deleted && message.author!==locals.me.id;
