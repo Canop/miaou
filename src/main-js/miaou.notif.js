@@ -1,6 +1,6 @@
 // manages the list and dispatching of notifications
 
-miaou(function(notif, chat, horn, locals, md, watch, ws){
+miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
@@ -76,7 +76,8 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 					})
 				).appendTo($c)
 			}
-			var nbotherrooms = Object.keys(otherRooms).length;
+			var	otherRoomIds = Object.keys(otherRooms),
+				nbotherrooms = otherRoomIds.length;
 			if (nbotherrooms) {
 				var t = "You've been pinged in room";
 				if (nbotherrooms>1) t += 's';
@@ -96,6 +97,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 						notif.updatePingsList();
 					}).appendTo($brs);
 				});
+				watch.setPings(otherRoomIds);
 			}	
 		});
 	}
@@ -194,7 +196,7 @@ miaou(function(notif, chat, horn, locals, md, watch, ws){
 		// we go to the last notification message, highlight it and remove the ping
 		var ln = lastNotificationInRoom();
 		if (ln) notif.removePing(ln.mid, true, true);
-		$('#input').focus();
+		if (!gui.mobile) $('#input').focus();
 		notif.userAct();
 	}
 

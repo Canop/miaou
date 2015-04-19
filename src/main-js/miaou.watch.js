@@ -67,6 +67,14 @@ miaou(function(watch, locals, md, notif, ws){
 		notif.setHasWatchUnseen(true);
 		updateDimensions();
 	}
+	
+	
+	watch.setPings = function(roomIds){
+		$('#watches .watch .count').removeClass('ping');
+		roomIds.forEach(function(rid){
+			$('#watches .watch[rid='+rid+'] .count').addClass('ping');
+		});
+	}
 
 	watch.raz = function(roomId){
 		 $('#watches .watch[rid='+roomId+'] .count').empty();
