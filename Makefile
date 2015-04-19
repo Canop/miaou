@@ -1,7 +1,7 @@
 # Makes all the client side things which go in /static
 
 PAGES_SCSS_SOURCES:=$(wildcard ./src/page-scss/*.scss)
-PAGES_CSS_OUT:=$(patsubst %.scss, ./build/page-scss/%.css, $(notdir $(PAGES_SCSS_SOURCES)))
+PAGES_CSS_OUT:=$(patsubst %.scss, ./static/%.css, $(notdir $(PAGES_SCSS_SOURCES)))
 
 PAGES_JS_SOURCES:=$(wildcard ./src/page-js/*.js)
 PAGES_JS_OUT:=$(patsubst %.js, ./static/%.min.js, $(notdir $(PAGES_JS_SOURCES)))
@@ -27,6 +27,7 @@ all: page-js page-js-map page-css themes rsc main-js js2-files
 clean:
 	rm -rf ./static/*
 	rm -rf ./build
+	echo $(PAGES_CSS_OUT)
 
 # main js file : static/miaou.min.js
 # There's a cd static; because I didn't find another way to have a correctly linked source map
