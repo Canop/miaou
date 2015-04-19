@@ -1,9 +1,22 @@
 "use strict";
 
-var config = require('./config.json'),
+var	fs = require('fs'),
+	config,
 	server = require('./libs/server.js');
 
 console.log("Running on "+process.title+" "+process.version);
+
+// config may be in a js or json file
+try {
+	config = require('./config.js');
+} catch(err) {
+	if (err.code==='MODULE_NOT_FOUND') {
+		config = require('./config.json');
+	} else {
+		console.error('config.js loading failed');
+		throw err;
+	}
+}
 
 server.start(config);
 

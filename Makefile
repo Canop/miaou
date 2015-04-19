@@ -27,7 +27,6 @@ all: page-js page-js-map page-css themes rsc main-js js2-files
 clean:
 	rm -rf ./static/*
 	rm -rf ./build
-	echo $(PAGES_CSS_OUT)
 
 # main js file : static/miaou.min.js
 # There's a cd static; because I didn't find another way to have a correctly linked source map

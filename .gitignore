@@ -3,12 +3,13 @@ node_modules
 
 # running configuration
 config.json
+config.js
 
 # dystroy's scripts, config & utilities
 deploy.sh
 autopgbackup.sh
-config-dys-tour.json
 config-dystroy.json
+config-dystroy.js
 
 # personal notes & work files
 notes.dev
