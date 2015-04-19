@@ -21,6 +21,7 @@ plugins/mountyhall
 
 # compilation byproducts
 .sass-cache
+build
 
 # compiled files
 main.css

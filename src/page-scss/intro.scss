@@ -79,15 +79,15 @@ header {
 .try-it:hover { box-shadow: 0 5px 8px $dark; }
 
 section {
-	min-height:100%;
+	height:100%;
 	padding:50px 100px;
 	position:relative;
 	text-align:center;
-	> * { max-width:1200px; max-height: 65%; margin:0 auto; }
+	> * { max-width:1400px; max-height: 65%; margin:0 auto; }
 	> a {	display:block; margin:20px auto; }
-	h1 { font-size:3em; margin-bottom:20px; }
-	p { font-size:1.45em; }
-	img { max-width: 90%; max-height: 65%; }
+	h1 { font-size:2.8em; margin-bottom:20px; }
+	p { font-size:1.3em; }
+	img { max-width: 90%; max-height: 70%; }
 }
 kbd {
 	font-size: 100%;
@@ -111,6 +111,7 @@ kbd {
 	overflow: hidden;
 	padding:20px;
 	white-space: nowrap;
+	position: relative;
 	ul {
 		padding:0 50px;
 		white-space: nowrap;
@@ -122,7 +123,7 @@ kbd {
 		transition:.5s;
 		&:nth-of-type(2) { opacity:0; }
 		&:nth-of-type(2).active { opacity:1; }
-		
+				
 		li {
 			width:33%;
 			margin:0;
@@ -130,10 +131,9 @@ kbd {
 			display:inline-block;
 			list-style:none;
 			white-space:normal;
-			vertical-align: top;
-			
+			vertical-align: top;			
 			p { text-align: left; padding:0 15px; }
-			h2 { font-size:2em; margin:.3em 0; }
+			h2 { font-size:1.5em; margin:.3em 0; }
 			.image {
 				width:250px;
 				height:250px;
@@ -141,26 +141,6 @@ kbd {
 				background-repeat:no-repeat;
 				background-size:cover;
 				margin:0 auto;
-			}
-			.video {
-				background-image:url(pub/video.png);
-				background-size:220%;
-				background-position:60%;
-			}
-			.notifications {
-				background-image:url(pub/pinged.png);
-			}
-			.pins {
-				background-image:url(pub/pins.png);
-			}
-			.private {
-				background-image:url(pub/private-rooms.png);
-			}
-			.auth {
-				background-image:url(pub/profile_florian_cut.png);
-			}
-			.search {
-				background-image:url(pub/search.png);
 			}
 		}		
 	}
@@ -175,31 +155,90 @@ kbd {
 		-webkit-transform-origin:50% 60%;
 		-moz-transform-origin:50% 60%;
 		transform-origin:50% 60%;
-		
-		&:hover { cursor:pointer; }
+		cursor:pointer;
 	}
 }
+
+section > img.small {
+	max-width: 45%;
+	max-height: 35%;
+}
+
+li .image, .zoomable {
+	position: relative; // doesn't work for section>img, it seems
+	cursor: pointer;
+	&:hover::after {
+		position: absolute;
+		height: 40px;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		content: "click to zoom";
+		background: rgba(0,0,0,.9);
+		color: white;
+		line-height: 40px;
+		border-radius: 0 0 5px 5px;
+	}
+}
+
+#zoom {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 4;
+	background: rgba(0,0,0,.8);
+	.image {
+		position: fixed;
+		top: 10px;
+		right: 10px;
+		bottom: 10px;
+		left: 10px;
+		background-repeat:no-repeat;
+		background-size: contain;
+		background-position: center;
+		background-color: black;
+	}
+	display: -webkit-flex;
+	display: flex;	
+	-webkit-align-items: center;
+	align-items: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	img {
+		max-width: 90%;
+		max-height: 90%;
+	}
+}
+
+li, #zoom {
+	.private {
+		background-image:url(pub/201504-screen-rooms.png);
+	}
+	.auth {
+		background-image:url(pub/201504-screen-profil-florian.png);
+	}
+	.search {
+		background-image:url(pub/search.png);
+	}
+	.video {
+		background-image:url(pub/video-in-dialog-room-gael.png);
+		background-position:60%;
+	}
+	.notifications {
+		background-image:url(pub/pinged.png);
+	}
+	.pins {
+		background-image:url(pub/pins.png);
+	}
+}
+
 #markdown { 
 	clear:both; 
 	img { max-width:90%; }
 }
-#customizable {
-	.feature {
-		margin-top:50px;
-		margin-right:40px;
-		width:400px;
-		height:400px;
-		background-size:cover;
-		display:inline-block;
-		border-radius:5px;
-	}
-	.user-script {
-		background-image:url(pub/user-script.png);
-	}
-	.api {
-		background-image:url(pub/api.png);
-	}
-}
+
 #ready {	
 	.vert-center {
 		position: absolute;
