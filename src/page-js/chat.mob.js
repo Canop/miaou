@@ -1,5 +1,5 @@
 
-miaou(function(chat, locals){
+miaou(function(chat, locals, prof){
 	var	me = locals.me,
 		room = locals.room;
 
@@ -25,6 +25,20 @@ miaou(function(chat, locals){
 	});
 	$('#editProfile').click(function(){
 		location = 'prefs';
+	});
+	
+	// profile opening
+	$('#messages').on('click', '.decorations', function(e){
+		if ($(e.target).hasClass('decorations')) {
+			prof.toggle.call(this);
+			return false; // prevent message buttons
+		}
+	});
+	// profile closing
+	$(document.body).click(function(e){
+		if (prof.displayed()) {
+			prof.hide();
+		}
 	});
 
 	chat.start();

@@ -38,6 +38,9 @@ miaou(function(prof, gui, locals, skin){
 		css.left = uo.left + uw;
 		$p.load('publicProfile?user='+user.id+'&room='+locals.room.id, function(){
 			$p.find('.avatar').css('color', skin.stringToColour(user.name));
+			if ($p.offset().top+$p.height()>wh) {
+				$p.css('bottom', '0').css('top','auto');
+			}
 		});
 		$p.css(css).appendTo('body');
 		$user.addClass('profiled');
@@ -57,7 +60,11 @@ miaou(function(prof, gui, locals, skin){
 		$(window).off('mousemove', prof.checkOverProfile);
 	};
 
+	prof.displayed = function(){
+		return !!$('.profile').length;
+	}
+
 	prof.toggle = function(){
-		prof[$('.profile').length ? 'hide' : 'show'].call(this);
+		prof[prof.displayed() ? 'hide' : 'show'].call(this);
 	};
 });
