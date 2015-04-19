@@ -44,18 +44,7 @@ miaou(function(chat, locals, time, watch, ws){
 				$('<button>').addClass('small').text('enter').click(function(){ location = r.path; }).appendTo($rr);
 			}
 			if (r.lastcreated) {
-				var $lc = $('<span>').addClass('lastcreated').html('Last message:<br>'+time.formatRelativeTime(r.lastcreated)).appendTo($rr);
-				//~ $lc.mouseenter(function(){
-					//~ $.get('json/messages/last?room='+r.id, function(data){
-						//~ var m = data.messages[0];
-						//~ $lc.html('Last message:<br>'+time.formatRelativeTime(m.created));
-						//~ $rm.empty().css('top',$r.height()+'px').show().append(
-							//~ $('<i>').text(m.authorname+': ')
-						//~ ).append(
-							//~ $('<span>').text(m.content.match(/^[^\n]{0,100}/)[0])
-						//~ );
-					//~ });
-				//~ });
+				$('<span>').addClass('lastcreated').html('Last message:<br>'+time.formatRelativeTime(r.lastcreated)).appendTo($rr);
 			}
 			return $r;
 		}));
@@ -81,22 +70,13 @@ miaou(function(chat, locals, time, watch, ws){
 			);
 			break;
 		case 1:
-			listRooms(
-				rooms.filter(function(r){ return !r.private })
-				.sort(function(a,b){ return b.lastcreated-a.lastcreated })
-			);
+			listRooms(rooms.filter(function(r){ return !r.private }));
 			break;
 		case 2:
-			listRooms(
-				rooms.filter(function(r){ return r.private && !r.dialog })
-				.sort(function(a,b){ return b.lastcreated-a.lastcreated })
-			);
+			listRooms(rooms.filter(function(r){ return r.private && !r.dialog }));
 			break;
 		case 3:
-			listRooms(
-				rooms.filter(function(r){ return r.dialog })
-				.sort(function(a,b){ return b.lastcreated-a.lastcreated })
-			);
+			listRooms(rooms.filter(function(r){ return r.dialog }));
 			break;
 		}
 	}
