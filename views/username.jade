@@ -9,25 +9,21 @@ html
 		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js")
 		script(src="static/username.min.js")
-		style.
-			#username-main {
-				width:330px;
-				margin:auto;
-				padding:40px 4px;
-			}
-	body
+	body.username
 		form(method="post")
 			input(type="hidden", name="secret", value=secret)
 			div#username-main
-				img(src="static/Miaou-300-f.png",vspace="20px")
+				#user-miaou-logo-wrapper
+					object.Miaou-logo#User-logo(type="image/svg+xml",data="../static/Miaou.svg")
 				p Pick a name by which you will be recognized.
 				p Choose wisely (not &quot;wisely&quot;).
 				p
 					label.label Name&thinsp;:&nbsp;
 					input#name(type="text", name="name", value=suggestedName, pattern="[a-zA-Z][\\w_\\-]{2,19}")
 				p#err.error= error
-				button#submit Save
-				button#gotochat Go to chat
-				button#gotoextendedprofile Add more info to my profile
+				#buttons
+					button#submit Save
+					button#gotochat Go to chat
+					button#gotoextendedprofile Add more info to my profile
 		
 

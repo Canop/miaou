@@ -2,6 +2,7 @@
 
 const path = require('path'),
 	naming = require('./naming.js'),
+	prefs = require('./prefs.js'),
 	server = require('./server.js');
 
 var langs,
@@ -50,11 +51,14 @@ exports.appAllUsername = function(req, res){
 		console.log('Err...', err);
 		error = err;
 	}).then(function(){
-		var hasValidName = naming.isValidUsername(req.user.name);
+		return prefs.get.call(this, req.user.id)
+	}).then(function(userPrefs){
+		var hasValidName = naming.isValidUsername(req.user.name),
+			theme = prefs.theme(userPrefs, req.query.theme);
 		res.render('username.jade', {
 			vars: {valid : hasValidName},
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			error: error
+			error: error, theme:theme
 		});
 	}).catch(function(err){
 		console.log('err in appAllUsername');
