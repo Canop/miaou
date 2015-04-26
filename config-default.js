@@ -13,6 +13,12 @@ module.exports = {
 	// 		server: "http://dystroy.org/miaou",
 	// 		base: "/miaou/",
 	// 		port: 8204,
+	
+	// If you're installing locally in order to develop,
+	//  here's a recommended configuration:
+	//		server: "http://127.0.0.1:8204",
+	//		base: "/",
+	//		port: 8204,
 
 	maxMessageContentSize:			5000,	// in characters
 	minDelayBetweenMessages:		500,	// in milliseconds
