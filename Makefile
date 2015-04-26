@@ -31,6 +31,7 @@ clean:
 # main js file : static/miaou.min.js
 # There's a cd static; because I didn't find another way to have a correctly linked source map
 ./static/miaou.concat.js: $(MAIN_JS_SOURCES) $(PLUGIN_JS_SOURCES) $(PRETTIFY_JS_MAIN_SOURCE) $(PRETTIFY_JS_LANG_SOURCES)
+	@mkdir -p $(@D)
 	@echo "\"use strict\";" > $@
 	cat $(MAIN_JS_SOURCES) >> $@
 	cat $(PLUGIN_JS_SOURCES) >> $@
@@ -43,19 +44,20 @@ main-js: ./static/miaou.min.js
 
 #js and maps of specific pages : static/[somepage].js
 # FIXME 2 uglify... this is really not DRY...
-./build/page-js: 
-	mkdir -p $@
 ./build/page-js/%.js: ./src/page-js/%.js
+	@mkdir -p $(@D)
 	cp $< $@
 ./build/page-js/%.min.js: ./build/page-js/%.js
 	cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $*.min.js.map
 ./build/page-js/%.min.js.map: ./build/page-js/%.js
 	cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $*.min.js.map
 ./static/%.min.js: ./build/page-js/%.min.js
+	@mkdir -p $(@D)
 	cp $< $@
 ./static/%.min.js.map: ./build/page-js/%.min.js.map
+	@mkdir -p $(@D)
 	cp $< $@
-page-js: ./build/page-js $(PAGES_JS_OUT)
+page-js: $(PAGES_JS_OUT)
 page-js-map: page-js $(PAGES_JS_MAP_OUT)
 
 # constant resource files
@@ -65,15 +67,14 @@ page-js-map: page-js $(PAGES_JS_MAP_OUT)
 rsc: $(RSC_FILES)
 
 # CSS of specific pages : static/[somepage].css
-./build/page-scss:
-	mkdir -p $@
-	cp ./src/main-scss/*.scss ./build/page-scss/
 ./build/page-scss/%.css: ./src/page-scss/%.scss 
+	@mkdir -p $(@D)
+	cp ./src/main-scss/*.scss ./build/page-scss/
 	cp $< ./build/page-scss/
 	sass -t compressed ./build/page-scss/$*.scss > $@
 ./static/%.css: ./build/page-scss/%.css
 	cp $< $@
-page-css: ./build/page-scss $(PAGES_CSS_OUT)
+page-css: $(PAGES_CSS_OUT)
 
 # Themes : static/themes/[sometheme]/main.css
 # theme : $*
