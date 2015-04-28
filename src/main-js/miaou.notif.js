@@ -107,10 +107,12 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		var	changed = false,
 			map = notifications.reduce(function(map,n){ map[n.mid]=1;return map; }, {});
 		pings.forEach(function(ping){
-			if (!ping.mid) console.log("ERROR MISSING ID");// temp assert
 			if (!map[ping.mid]) {
 				notifications.push(ping);
 				changed = true;
+				if (locals.userPrefs.notif!=="never") {
+					horn.show(ping.mid, ping.rname);
+				}
 			}
 		});
 		notifications.sort(function(a,b){ return a.mid-b.mid }); // this isn't perfect as some notifications are related to flakes
@@ -158,6 +160,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				else if ($md) md.goToMessageDiv($md);
 			}
 		}
+		console.log("TOU", arguments);
 		if (!visible || locals.userPrefs.nifvis==="yes") {
 			if (
 				( locals.userPrefs.notif==="on_message" || (ping && locals.userPrefs.notif==="on_ping") )

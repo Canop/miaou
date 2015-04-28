@@ -22,7 +22,7 @@ exports.configure = function(miaou){
 exports.appGet = function(req, res){
 	db.on()
 	.then(function(){
-		var roomId = +req.params[0],
+		var	roomId = +req.params[0],
 			userId = req.user.id;
 		return [
 			this.fetchRoomAndUserAuth(roomId, userId),
