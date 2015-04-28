@@ -160,7 +160,6 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				else if ($md) md.goToMessageDiv($md);
 			}
 		}
-		console.log("TOU", arguments);
 		if (!visible || locals.userPrefs.nifvis==="yes") {
 			if (
 				( locals.userPrefs.notif==="on_message" || (ping && locals.userPrefs.notif==="on_ping") )
