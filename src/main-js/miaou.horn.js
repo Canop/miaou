@@ -48,7 +48,7 @@ miaou(function(horn, locals, md){
 			localStorage.lastnotif = mid;
 		}
 		if (authorname) title = authorname + ' in ' + title;
-		var n = new Notification(title, {body: content||''});
+		var n = new Notification(title, {icon:'static/M-64.png', body: content||''});
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
 		if (audio) {
