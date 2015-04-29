@@ -1,6 +1,6 @@
 // manages desktop notifications and sounds
 
-miaou(function(horn, locals, md){
+miaou(function(horn, gui, locals, md){
 
 	var sounds = {
 		quiet:    'ping-quiet.wav',
@@ -48,7 +48,10 @@ miaou(function(horn, locals, md){
 			localStorage.lastnotif = mid;
 		}
 		if (authorname) title = authorname + ' in ' + title;
-		var n = new Notification(title, {icon:'static/M-64.png', body: content||''});
+		var dsk = {};
+		if (!gui.mobile) dsk.icon = 'static/M-64.png';
+		if (content && locals.userPrefs.connot==="yes") dsk.body = content.replace(/^@\w[\w\-]{2,}#\d+/,'');
+		var n = new Notification(title, dsk);
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
 		if (audio) {

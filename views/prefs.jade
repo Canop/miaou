@@ -133,6 +133,12 @@ html
 									input#notif_on_message(type="radio", name="notif", value="on_message")
 									label(for="notif_on_message") Whenever a message is posted in an open room
 							tr
+								th Show Message Content in Desktop Notification
+								td
+									select#connot(name="connot")
+										option(value="yes") yes
+										option(value="no") no
+							tr
 								th Notification Sound
 								td
 									select#sound(name="sound")

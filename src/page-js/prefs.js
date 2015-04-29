@@ -50,11 +50,18 @@ miaou(function(locals){
 	$('#location').val(userinfo.location||'');
 	$('#url').val(userinfo.url||'');
 	$('#lang').val(userinfo.lang);
-	$('input[name=notif][value='+userPrefs.notif+']').prop('checked', true);
-	$('#sound').val(userPrefs.sound);
-	$('#nifvis').val(userPrefs.nifvis);
-	$('#theme').val(userPrefs.theme);
-	$('input[name=datdpl][value='+userPrefs.datdpl+']').prop('checked', true);
+	
+	// preferences
+	['notif', 'datdpl', 'sound', 'nifvis', 'theme', 'connot']
+	.forEach(function(key){
+		var $input = $('#'+key);
+		if ($input.length) {
+			$input.val(userPrefs[key]);
+		} else {
+			// must be radio button based
+			$('input[name='+key+'][value='+userPrefs[key]+']').prop('checked', true);
+		}
+	});
 
 	// Avatar preferences management
 	avatarSources = {

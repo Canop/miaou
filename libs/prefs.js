@@ -13,7 +13,8 @@ const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 		sound: 'standard', 	// sound on notification
 		datdpl: 'hover',	// date display 
 		nifvis: 'no',		// notifies even if the tab is visible
-		theme: 'default'	//
+		connot: 'yes',		// message content displayed in desktop notif
+		theme: 'default',	// theme
 	};
 
 var	db,
