@@ -104,14 +104,16 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	
 	// add pings to the list and update the GUI
 	notif.pings = function(pings){
+		//~ console.log("PINGS", pings);
 		var	changed = false,
+			visible = vis(),
 			map = notifications.reduce(function(map,n){ map[n.mid]=1;return map; }, {});
 		pings.forEach(function(ping){
 			if (!map[ping.mid]) {
 				notifications.push(ping);
 				changed = true;
-				if (locals.userPrefs.notif!=="never") {
-					horn.show(ping.mid, ping.rname);
+				if (locals.userPrefs.notif!=="never" && (!visible || locals.userPrefs.nifvis==="yes")) {
+					horn.show(ping.mid, ping.rname, ping.authorname, ping.content);
 				}
 			}
 		});
@@ -148,6 +150,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	// called in case of new message (or a new important event related to a message)
 	// FIXME : it's also called if the message isn't really new (loading old pages)
 	notif.touch = function(mid, ping, from, text, r, $md){
+		//~ console.log("TOUCH", arguments);
 		r = r || locals.room;
 		var	visible = vis(), lastUserActionAge = Date.now()-lastUserAction;
 		if (ping && (mid||$md)) {
@@ -156,7 +159,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				return;
 			}
 			if (lastUserActionAge>1500 && !$('#mwin[mid='+mid+']').length) {
-				if (mid) notif.pings([{r:r.id, rname:r.name, mid:mid}]);
+				if (mid) notif.pings([{r:r.id, rname:r.name, mid:mid, authorname:from, content:text}]);
 				else if ($md) md.goToMessageDiv($md);
 			}
 		}

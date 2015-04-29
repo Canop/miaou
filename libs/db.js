@@ -588,14 +588,21 @@ proto.deleteAllUserPings = function(userId){
 }
 
 proto.fetchUserPings = function(userId){
-	return this.queryRows("select room r, name rname, message mid from ping left join room on room.id=ping.room where player=$1", [userId]);
+	return this.queryRows(
+		"select message.room r, room.name rname, player.name authorname, ping.message mid, content from ping"+
+		" inner join message on message=message.id"+
+		" inner join player on author=player.id"+
+		" inner join room on room.id=ping.room"+
+		" where player=$1", [userId]
+	);
 }
 
 // returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
 // fixme : this query is slow (50ms for no record)
 proto.fetchUserPingRooms = function(userId, after){
 	return this.queryRows(
-		"select room, max(name) as roomname, min(created) as first, max(created) as last from ping, room where player=$1 and room.id=ping.room and created>$2 group by room",
+		"select room, max(name) as roomname, min(created) as first, max(created) as last from ping, room"+
+		" where player=$1 and room.id=ping.room and created>$2 group by room",
 		[userId, after]
 	);
 }

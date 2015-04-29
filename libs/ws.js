@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 43,
+const apiversion = 44,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
 	path = require('path'),
@@ -398,7 +398,7 @@ function handleUserInRoom(socket, completeUser){
 			commandTask = ct;
 			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
 		}).spread(function(m, commandTask){
-			var remainingpings = []; // names of pinged users that weren't in the room or watching
+			var remainingpings = []; // names of pinged users that weren't in the room
 			if (commandTask.silent) return remainingpings;
 			if (m.changed) m.vote = '?';
 			for (var p of onSendMessagePlugins) {
@@ -436,7 +436,10 @@ function handleUserInRoom(socket, completeUser){
 					for (var clientId in io.sockets.connected) {
 						var socket = io.sockets.connected[clientId];
 						if (socket && socket.publicUser && socket.publicUser.name===username) {
-							socket.emit('pings', [{r:shoe.room.id, rname:shoe.room.name, mid:m.id}]);
+							socket.emit('pings', [{
+								r:shoe.room.id, rname:shoe.room.name, mid:m.id,
+								authorname:m.authorname, content:m.content
+							}]);
 						}
 					}
 				}
