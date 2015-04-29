@@ -42,14 +42,14 @@ NoRowError.prototype = Object.create(Error.prototype);
 
 // fetches a user found by the OAuth profile, creates it if it doesn't exist
 // Important private fields are included in the returned object
-//  but not the secondary info (location, description, lang, website)
+//  but not all the secondary info (location, description, website)
 proto.getCompleteUserFromOAuthProfile = function(profile){
 	var oauthid = profile.id || profile.user_id, // id for google, github and reddit, user_id for stackexchange
 		displayName = profile.displayName || profile.display_name || profile.name, // displayName for google and github, display_name for stackexchange, name for reddit
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
 	var con = this, resolver = Promise.defer(),
-		email = null, returnedCols = 'id, name, oauthprovider, oauthdisplayname, email';
+		email = null, returnedCols = 'id, name, lang, oauthprovider, oauthdisplayname, email';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google, github
 	con.client.query('select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2', [provider, oauthid], function(err, result){
 		if (err) {
@@ -89,7 +89,7 @@ proto.updateUser = function(user){
 	return this.queryRow(
 		'update player set name=$1, avatarsrc=$2, avatarkey=$3 where id=$4',
 		[user.name, user.avatarsrc, user.avatarkey, user.id]
-	).then(this.fixAllDialogRoomNames);
+	).then(this.fixAllDialogRooms);
 }
 
 // saves the additional optional user info (location, description, lang, website)
@@ -97,7 +97,7 @@ proto.updateUserInfo = function(id, info){
 	return this.queryRow(
 		"update player set description=$1, location=$2, url=$3, lang=$4 where id=$5",
 		[info.description, info.location, info.url, info.lang, id]
-	);
+	).then(this.fixAllDialogRooms);
 }
 proto.getUserInfo = function(id){
 	return this.queryRow(
@@ -180,11 +180,12 @@ proto.updateRoom = function(r, author, authlevel) {
 	}
 }
 
-// ensures the name of every dialog room is correct according to user names 
-proto.fixAllDialogRoomNames = function(){
+// ensures the name and lang of every dialog room is correct according to user names and lang 
+proto.fixAllDialogRooms = function(){
 	console.log("Fixing all dialog room names");
 	return this.execute(
-		"update room set name=concat(u1.name,' & ',u2.name) from player u1, room_auth a1, player u2, room_auth a2"+
+		"update room set name=concat(u1.name,' & ',u2.name), lang=coalesce(u1.lang,u2.lang,'en')"+
+		" from player u1, room_auth a1, player u2, room_auth a2"+
 		" where a1.room=room.id and a1.player=u1.id and a1.auth>='admin'"+
 		" and a2.room=room.id and a2.player>a1.player and a2.player=u2.id and a2.auth>='admin'"+
 		" and dialog is true"
@@ -206,7 +207,8 @@ proto.getLounge = function(userA, userB){
 		if (res.rows.length) return resolver.resolve(res.rows[0]);		
 		var name = userA.name + ' & ' + userB.name,
 			description = 'A private lounge for '+userA.name+' and '+userB.name,
-			room = {name:name, description:description, private:true, listed:false, dialog:true, lang:'en'};
+			room = {name:name, description:description, private:true, listed:false, dialog:true};
+			room.lang = userA.lang || userB.lang || 'en'; // userA usually is a "completeUser"
 		con.createRoom(room, [userA,userB]).then(function(){ resolver.resolve(room) });
 	});
 	return resolver.promise.bind(this);
