@@ -1,0 +1,24 @@
+body.username {
+	background: $username-page-bg;
+	color: $usename-page-color;
+	#user-miaou-logo-wrapper {
+		border-bottom: thin solid $usename-page-color;
+		padding-bottom: 15px;	
+		margin-bottom: 15px;
+		cursor: auto;
+	}
+}
+
+#username-main {
+	width:330px;
+	margin:auto;
+	padding:40px 4px;
+}
+
+#buttons {
+	@include flexbox(row, center, center);
+	border-top: thin solid $usename-page-color;
+	padding-top: 15px;
+}
+
+
