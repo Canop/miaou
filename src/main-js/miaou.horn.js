@@ -10,7 +10,7 @@ miaou(function(horn, gui, locals, md){
 		audio;
 	
 	horn.init = function(){
-		if (!locals.userPrefs || !window.Notification) {
+		if (!locals.userPrefs || /*!window.Notification*/ gui.mobile) {
 			// covers two cases :
 			// - a page with miaou.min.js but no prefs
 			// - a browser without Notification (Chrome/Android) 
@@ -49,7 +49,7 @@ miaou(function(horn, gui, locals, md){
 		}
 		if (authorname) title = authorname + ' in ' + title;
 		var dsk = {};
-		if (!gui.mobile) dsk.icon = 'static/M-64.png';
+		dsk.icon = 'static/M-64.png';
 		if (content && locals.userPrefs.connot==="yes") dsk.body = content.replace(/^@\w[\w\-]{2,}#\d+/,'');
 		var n = new Notification(title, dsk);
 		setTimeout(function(){ n.close() }, 15000);

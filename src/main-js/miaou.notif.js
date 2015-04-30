@@ -104,7 +104,6 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	
 	// add pings to the list and update the GUI
 	notif.pings = function(pings){
-		//~ console.log("PINGS", pings);
 		var	changed = false,
 			visible = vis(),
 			map = notifications.reduce(function(map,n){ map[n.mid]=1;return map; }, {});
@@ -150,7 +149,6 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	// called in case of new message (or a new important event related to a message)
 	// FIXME : it's also called if the message isn't really new (loading old pages)
 	notif.touch = function(mid, ping, from, text, r, $md){
-		//~ console.log("TOUCH", arguments);
 		r = r || locals.room;
 		var	visible = vis(), lastUserActionAge = Date.now()-lastUserAction;
 		if (ping && (mid||$md)) {
