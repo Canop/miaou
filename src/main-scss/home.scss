@@ -171,3 +171,10 @@ body.home {
 		}
 	}
 }
+
+body.mobile #home-main-content {
+	th, td {
+		max-width: 60px; // hack...
+		overflow: hidden;
+	}
+}
