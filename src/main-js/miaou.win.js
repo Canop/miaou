@@ -1,7 +1,9 @@
 // Support for message windows : dockable floating dialogs that
 //   can display a message
 
-miaou(function(win, chat, md, ws){
+miaou(function(win, chat, gui, md, ws){
+	
+	if (gui.mobile) return;
 
 	var sides = ['left', 'bottom', 'right', 'top'];
 
