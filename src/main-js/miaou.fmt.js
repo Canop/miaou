@@ -132,7 +132,7 @@ miaou(function(fmt){
 			}
 			s = fmt.mdStringToHtml(s, username);
 			if (m=s.match(/^(?:&gt;\s*)(.*)$/)) {
-				lout.push('<span class=citation>'+m[1]+'</span>');
+				lout.push('<span class=citation>'+(m[1]||'&nbsp;')+'</span>');
 				continue;
 			}
 			
