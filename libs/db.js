@@ -241,7 +241,8 @@ proto.listAccessibleRooms = function(userId){
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+
-		" (select max(created) from message m where m.room = r.id) as lastcreated"+
+		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
+		" (select max(created) from message m where m.room = r.id and m.author=$1) as lastselfcreated"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  
 		" where listed is true or auth is not null"+
 		" order by lastcreated desc nulls last limit 200", [userId]

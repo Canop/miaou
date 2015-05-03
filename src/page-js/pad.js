@@ -21,7 +21,6 @@ miaou(function(chat, locals, time, watch, ws){
 			var $r = $('<div>').addClass('room'),
 				$rl = $('<div>').addClass('room-left').appendTo($r),
 				$rr = $('<div>').addClass('room-right').appendTo($r),
-				$rm = $('<div>').addClass('last-message').appendTo($r),
 				iswatched = watch.watched(r.id);
 			$('<a>').attr('href', r.path).addClass('room-title').text(r.name).appendTo($rl);
 			var html = miaou.fmt.mdTextToHtml(r.description), floatImage = /^<img[^>]*><br>/.test(html);
@@ -61,7 +60,7 @@ miaou(function(chat, locals, time, watch, ws){
 		switch (i){
 		case 0:
 			listRooms(
-				rooms.filter(function(r){ return !r.private && (r.lastcreated || r.auth)})
+				rooms.filter(function(r){ return !r.private && (r.lastselfcreated || r.auth)})
 				, 'Your Public Rooms'
 			);
 			listRooms(
