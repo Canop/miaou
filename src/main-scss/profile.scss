@@ -102,6 +102,13 @@ div.externalProfile {
 	}
 }
 
+.user.profiled {
+	span, .avatar {
+		opacity: 0;
+		transition: opacity .3s;
+	}
+}
+
 #userinfo {
 	th {
 		font-weight: normal;

@@ -4,7 +4,8 @@
 body.mobile {
 	font-size: 12px;
 	#users .user {
-		line-height: 30px;
+		@include flex(1 0 24px);
+		max-height: 36px;
 	}
 	.message .user {
 		width: 75px;

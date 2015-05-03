@@ -94,23 +94,30 @@ section {
 }
 #users {
 	padding-top: 2px;
-	.user {
+	height: 95%;
+	@include flexbox(column);
+	.user, .user.profiled {
 		position: relative;
+		@include flex(1 0 18px);
+		max-height: 30px;
 		cursor: pointer;
+		@include flexbox(row, center);
 		padding: 1px 5px;
-		display: block;
 		text-overflow: ellipsis;
 		overflow: hidden;
-		line-height: 18px;
 		font-style: italic;
-		color: $user-text-color-in-user-list;
 		font-size: 95%;
+		span {
+			color: $user-text-color-in-user-list;		
+		}
 		&:hover {
 			background: $profile-bg;
 		}
 		&.connected {
-			font-style: normal;
-			color: $connected-user-text-color-in-user-list;
+			span {
+				font-style: normal;
+				color: $connected-user-text-color-in-user-list;
+			}
 			box-shadow: $connected-user-bg-color-in-user-list 200px 0 0 0 inset;
 			transition: box-shadow 3s;
 		}
@@ -419,6 +426,7 @@ body.mobile #message-scroller {
 	position: absolute;
 	top: 0;
 	right: 0;
+	height: 100%;
 }
 
 .rendered {

@@ -70,7 +70,8 @@ miaou(function(usr, ed, locals, mod, time, ws){
 			if (enterTime <= $u.data('time')) return $u;
 			$u.detach();
 		} else {
-			$u = $('<span class=user/>').text(user.name).data('user',user);
+			$u = $('<div>').addClass('user').data('user', user);
+			$('<span>').text(user.name).appendTo($u);
 			$('<div>').addClass('decorations').appendTo($u);
 		}
 		$u.data('time', enterTime);
