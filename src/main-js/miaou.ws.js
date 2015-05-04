@@ -141,6 +141,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('wat', watch.add)
 		.on('watch_incr', watch.incr)
 		.on('watch_raz', watch.raz)
+		.on('watch_started', watch.started)
 		.on('unwat', watch.remove)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect

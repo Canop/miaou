@@ -7,15 +7,15 @@ const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 	naming = require('./naming.js'),
 	server = require('./server.js'),
 	crypto = require('crypto'),
-	cache = require('bounded-cache')(5),
+	cache = require('bounded-cache')(500),
 	defaultPrefs = { // also defines the valid keys (max length: 6 chars)
-		notif: 'on_ping',	// when to raise a desktop notification 		: on_ping|on_message|none
-		sound: 'standard', 	// sound on notification 						: standard|quiet|none
-		datdpl: 'hover',	// date display 								: hover|on_breaks|always
-		nifvis: 'no',		// notifies even if the tab is visible 			: yes|no
-		connot: 'yes',		// message content displayed in desktop notif	: yes|no
-		theme: 'default',	// theme
-		otowat: 'never',	// autowatch									: on_posting|on_visiting|never
+		notif:	'on_ping',	// when to raise a desktop notification : on_ping|on_message|none
+		sound:	'standard',	// sound on notification : standard|quiet|none
+		datdpl:	'hover',	// date display : hover|on_breaks|always
+		nifvis:	'no',		// notifies even if the tab is visible : yes|no
+		connot:	'yes',		// message content displayed in desktop notif : yes|no
+		theme:	'default',	// theme
+		otowat:	'on_post',	// autowatch : on_visit|on_post|never
 	};
 
 var	db,

@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 44,
+const apiversion = 45,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
 	path = require('path'),
@@ -269,7 +269,8 @@ function handleUserInRoom(socket, completeUser){
 					io.sockets.in(w.id).emit('enter', shoe.publicUser);
 				}
 				watchset.add(w.id);
-			}			
+			}
+			socket.emit('watch_started');
 		})
 		.catch(function(err){
 			shoe.error(err);

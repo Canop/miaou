@@ -52,8 +52,7 @@ miaou(function(locals){
 	$('#lang').val(userinfo.lang);
 	
 	// preferences
-	['notif', 'datdpl', 'sound', 'nifvis', 'theme', 'connot']
-	.forEach(function(key){
+	Object.keys(userPrefs).forEach(function(key){
 		var $input = $('#'+key);
 		if ($input.length) {
 			$input.val(userPrefs[key]);

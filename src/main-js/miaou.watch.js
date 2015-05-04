@@ -1,6 +1,6 @@
 // functions related to user watching other rooms
 
-miaou(function(watch, locals, md, notif, ws){
+miaou(function(watch, chat, locals, md, notif, ws){
 	
 	// this is false for mobile users
 	watch.enabled = false;
@@ -26,12 +26,18 @@ miaou(function(watch, locals, md, notif, ws){
 		if (names[2]===locals.me.name) return names[1];
 	}
 	
+	watch.addLocalRoom = function(){
+		$('#watch').text('unwatch');
+		ws.emit('wat', locals.room.id);
+		locals.room.watched = true;
+	}
+	
 	// w must be {id:roomId,name:roomname}
 	watch.add = function(watches){
 		watches.forEach(function(w){
 			if (w.id===locals.room.id) {
-				locals.room.watched = true;
 				$('#watch').text('unwatch');
+				locals.room.watched = true;
 				return;
 			}
 			if (watch.watched(w.id)) return;
@@ -51,6 +57,23 @@ miaou(function(watch, locals, md, notif, ws){
 			return (interlocutor(wa)||wa.name).localeCompare((interlocutor(wb)||wb.name));
 		}));
 		updateDimensions();
+	}
+	
+	// called when the initial watches are passed by the server (i.e. The local state
+	//  is the persisted one)
+	watch.started = function(){
+		if (locals.room.watched) return;
+		if (locals.userPrefs.otowat==="on_visit") {
+			console.log("autowatching visited room");
+			watch.addLocalRoom();
+		} else if (locals.userPrefs.otowat==="on_post") {
+			chat.on('sending_message', function(){
+				if (!locals.room.watched) {
+					console.log("autowatching room on post");
+					watch.addLocalRoom();
+				}
+			});
+		}
 	}
 
 	watch.remove = function(roomId){

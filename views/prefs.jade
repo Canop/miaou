@@ -45,6 +45,7 @@ html
 			.home-tab Avatar
 			.home-tab Notifications
 			.home-tab Display
+			.home-tab Watch
 			
 		section#prefs-main.hastabs
 			#prefs-main-content
@@ -145,14 +146,13 @@ html
 									select#nifvis(name="nifvis")
 										option(value="no") no notification
 										option(value="yes") notify too
-
 					.home-page
 						table.form
 							tr
 								th Message Chat Theme
 								td
 									select#theme(name="theme")
-										option(value="default") default (let the server or room choose the theme)
+										option(value="default") default
 										each theme in themes
 											option(value=theme)= theme
 							tr
@@ -166,6 +166,15 @@ html
 									br
 									input#date_display_always(type="radio", name="datdpl", value="always")
 									label(for="date_display_always") Always
+					.home-page
+						table.form
+							tr
+								th Auto-watch rooms
+								td
+									select#otowat(name="otowat")
+										option(value="on_visit") When visiting the room
+										option(value="on_post") When posting in the room
+										option(value="never") Never
 					.dialog-buttons
 						button#submit Save
 						button#close Home
