@@ -166,12 +166,11 @@ exports.appAllPrefs = function(req, res){
 			}
 		});
 		var hasValidName = naming.isValidUsername(req.user.name);
-		res.render('prefs.jade', {
+		var data = {
 			user: req.user,
 			error: error,
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			themes: themes, theme:exports.theme(userPrefs, req.query.theme),
-			externalProfileInfos: externalProfileInfos,
+			themes: themes, externalProfileInfos: externalProfileInfos,
 			vars:{
 				userPrefs: userPrefs,
 				valid : hasValidName,
@@ -182,7 +181,11 @@ exports.appAllPrefs = function(req, res){
 				avatarkey: req.user.avatarkey,
 				pluginAvatars: pluginAvatars
 			}
-		});
+		};
+		if (!server.mobile(req)) {
+			data.theme = exports.theme(userPrefs, req.query.theme);
+		}
+		res.render('prefs.jade', data);
 	}).catch(function(err){
 		server.renderErr(res, err);
 	}).finally(db.off)

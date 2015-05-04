@@ -133,11 +133,17 @@ exports.appGetRooms = function(req, res){
 	.spread(function(rooms, pings, welcomeRooms, userPrefs){
 		rooms.forEach(function(r){ r.path = server.roomPath(r) });
 		welcomeRooms.forEach(function(r){ r.path = server.roomPath(r) });
-		var mobile = server.mobile(req);
-		res.render(mobile ? 'rooms.mob.jade' : 'rooms.jade', {
+		var mobile = server.mobile(req),
+			data = {
 			vars:{rooms:rooms, langs:langs.legal, mobile:mobile, welcomeRooms:welcomeRooms},
-			user:req.user, pings:pings, theme:prefs.theme(userPrefs, req.query.theme)
-		});
+			user:req.user, pings:pings
+		};
+		if (mobile) {
+			res.render('rooms.mob.jade', data);
+		} else {
+			data.theme = prefs.theme(userPrefs, req.query.theme);
+			res.render('rooms.jade', data);
+		}
 	})
 	.catch(function(err){
 		server.renderErr(res, err);

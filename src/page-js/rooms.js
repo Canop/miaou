@@ -30,7 +30,7 @@ miaou(function(locals){
 				var $tr = $('<tr>').addClass(r.lang).append(
 					$('<td>').addClass(r.private?'private':'public').append($('<a>').attr('href',r.path).text(r.name))
 				).append($td).appendTo($t);
-				if (r.auth && !r.dialog) $tr.append($('<td>').addClass('role').text(r.auth).attr('title', authDescriptions[r.auth]));
+				//~ if (r.auth && !r.dialog) $tr.append($('<td>').addClass('role').text(r.auth).attr('title', authDescriptions[r.auth]));
 			});
 			return $t;
 		} else {
@@ -39,7 +39,7 @@ miaou(function(locals){
 	}			
 
 	function selectTab(i) {
-		$('.tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
+		$('.home-tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
 		var $container = $('#home-main-content > .table').empty();
 		switch(i){
 		case 0:
@@ -135,8 +135,7 @@ miaou(function(locals){
 		if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
 	}
 	selectTab(0);
-	//~ if (!$('#home-main-content tr').length) selectTab(1);
-	$('.tab').click(function(){
+	$('.home-tab').click(function(){
 		selectTab($(this).index());
 	});			
 	$('#logout').click(function(){

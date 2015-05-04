@@ -41,15 +41,15 @@ html
 						button.small#hidePreview Hide
 				#hist
 			#right
-				div#room-description.rendered
-				div.tabs
+				#room-description.rendered
+				.tabs
 					span.tab.selected(page="notablemessagespage") Notable Messages
 					span.tab(page="search") Search
-				div.page.selected#notablemessagespage
-					div#notable-messages
-				div.page#search
+				.page.selected#notablemessagespage
+					#notable-messages
+				.page#search
 					input#searchInput(autocomplete="off")
-					div#search-results
+					#search-results
 						i
 							p Type anything to search it (common English words are ignored)
 							p Hit <code>esc</code> to clear

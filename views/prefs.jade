@@ -25,7 +25,7 @@ html
 			}
 	body.prefs
 		section#prefs-top
-			div.MP
+			.MP
 				object.Miaou-logo#Prefs-logo(type="image/svg+xml",data="static/Miaou.svg")
 				p.links
 					| You're logged as
@@ -35,28 +35,22 @@ html
 					| -
 					a(href="help#About",target=help) Help
 		section#prefs-notifs
-			div.MP
+			.MP
 				h2 Preferences
 				p#err.error= error
 
-		#prefs-tabs.MP
-			span.tab.selected Profile
-			span.tab Identities
-			span.tab Avatar
-			span.tab Notifications
-			span.tab Display
-		#prefs-tab-shadows.MP
-			span.tab.selected 
-			span.tab 
-			span.tab 
-			span.tab 
-			span.tab 
+		.home-tabs.MP
+			.home-tab.selected Profile
+			.home-tab Identities
+			.home-tab Avatar
+			.home-tab Notifications
+			.home-tab Display
 			
 		section#prefs-main.hastabs
 			#prefs-main-content
 				form(method="post")
 					input(type="hidden", name="secret", value=secret)
-					.page.selected
+					.home-page.selected
 						table.form
 							tr
 								th Name
@@ -78,7 +72,7 @@ html
 								th Web Site
 								td
 									input#url(type="url", name="url", value="", maxlength="250")
-					.page.externalProfiles
+					.home-page.externalProfiles
 						p If you have an account on one of those sites, you may display it in your Miaou profile by proving ownership below.
 						table.form
 							each ep in externalProfileInfos
@@ -104,7 +98,7 @@ html
 															td= field.notice
 											if ep.creationDescription
 												p !{ep.creationDescription}
-					.page.avatar
+					.home-page.avatar
 						#avatar-edit.MP
 							#avatar-fields
 								.avatar-fields-row
@@ -119,7 +113,7 @@ html
 								.avatar-fields-row
 									button(type="button")#avatar-try Try
 							#avatar-preview
-					.page
+					.home-page
 						table.form
 							tr
 								th Desktop Notification
@@ -152,7 +146,7 @@ html
 										option(value="no") no notification
 										option(value="yes") notify too
 
-					.page
+					.home-page
 						table.form
 							tr
 								th Message Chat Theme
