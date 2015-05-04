@@ -23,8 +23,8 @@ html
 		a(href="https://github.com/Canop/miaou",target="github")
 			img(style="position:absolute; top:0; right:0; border:0;",src="static/gh_ribbon_right_gray.png",alt="Fork me on GitHub")
 		section#home-top
-			div.MP
-				div#langfilter
+			.MP
+				#langfilter
 					each lang, key in vars.langs
 						div.lang.off(id=key)
 							img(src="static/langs/"+key+".png")
@@ -39,7 +39,7 @@ html
 					| -
 					a(href="help#About",target=help) Help
 		section#home-notifs
-			div.MP
+			.MP
 				h2
 					form(method="post")
 						| Notifications
@@ -59,16 +59,11 @@ html
 								a(href=ping.room)= ping.roomname
 				else
 					p None
-		#home-tabs.MP
-			span.tab.selected Your Main Rooms
-			span.tab Public Rooms
-			span.tab Private Rooms
-			span.tab Dialog Rooms
-		#home-tab-shadows.MP
-			span.tab.selected 
-			span.tab 
-			span.tab 
-			span.tab 
+		.home-tabs.MP
+			.home-tab.selected Your Main Rooms
+			.home-tab Public Rooms
+			.home-tab Private Rooms
+			.home-tab Dialog Rooms
 			
 		section#home-main.hastabs
 			div#home-main-content

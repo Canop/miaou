@@ -113,11 +113,15 @@ $home-hover-link-color: black !default;
 $home-bg: darken( $bg-color, 5% ) !default;
 $notif-color: #222 !default;
 $notif-hover-link-color: black !default;
-$home-tab-bg: $bg-color !default;
 $list-odd-cell-bg: white !default;
 $list-even-cell-bg: #faf7d5 !default;
 $list-cell-color: black !default;
 $list-cell-hover-link-color: $list-cell-color !default;
+
+// home-tabs (tabs of the home page and similarly built pages)
+$home-tab-bg: $bg-color !default;
+$home-tab-selected-color: $general-text-color !default;
+$home-tab-unselected-color: transparentize( $general-text-color, .25) !default;
 
 // user page
 $user-page-bg: $bg-color !default;

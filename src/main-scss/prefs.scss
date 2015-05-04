@@ -8,83 +8,61 @@ body.prefs {
 	a {
 		color: black;
 	}
-	#prefs-tabs, #prefs-tab-shadows {
-		.tab {
-			height: 30px;
-			position: absolute;
-			width: 100px;
-			background: $home-tab-bg;
-			&:nth-child(2) {
-				margin-left:140px;
-			}
-			&:nth-child(3) {
-				margin-left:280px;
-			}
-			&:nth-child(4) {
-				margin-left:420px;
-			}
-			&:nth-child(5) {
-				margin-left:560px;
-			}
-			text-align: center;
-			padding: 8px;				
-		}		
-	}
 	&.mobile {
-		#prefs-tabs, #prefs-tab-shadows {
+		#prefs-tabs {
 			.tab {
 				white-space: nowrap;
 				text-overflow: ellipsis;
 				overflow: hidden;
-				width: 50px;
-				&:nth-child(1) {
-					margin-left:10px;				
-				}
-				&:nth-child(2) {
-					margin-left:75px;
-				}
-				&:nth-child(3) {
-					margin-left:150px;
-				}
-				&:nth-child(4) {
-					margin-left:225px;
-				}
-				&:nth-child(5) {
-					margin-left:300px;
-				}
 				padding: 4px;				
 			}		
 		}
 	}
 
 	#prefs-tabs {
+		@include flexbox(row, stretch);
 		height: 30px;
 		.tab {
+			background: $home-tab-bg;
+			text-align: center;
+			padding: 8px;
+			margin-right: 10px;	
 			z-index: 2;
 			cursor: pointer;
+			box-shadow: $home-mi-shadows;
+			position: relative;
 			&.selected {
 				z-index: 4;
 				cursor: inherit;
-			}
-		}
-	}
-	#prefs-tab-shadows {
-		margin-top: -30px;
-		.tab {
-			z-index: 1;
-			box-shadow: $home-mi-shadows;
-			&.selected {
 				box-shadow: $home-main-shadows;
+				&::after {
+					position: absolute;
+					top: 25px;
+					left: 0;
+					width: 100%;
+					height: 10px;
+					background: $home-tab-bg;
+					z-index: 5;
+					content: ' ';
+				}
+				&::before {
+					position: absolute;
+					top: 30px;
+					left: -10px;
+					width: 130%;
+					height: 15px;
+					background: $home-tab-bg;
+					z-index: 6;
+					content: ' ';
+				}
+				
 			}
 		}
 	}
+
 	#prefs-main {
-		position: absolute;
-		left:0; right:0;
+		position: relative;
 		@include flexbox(row, center, center);
-		&.hastabs {
-			margin-top: 26px;
-		}
 		z-index: 3;
 		background: $home-tab-bg;
 		box-shadow: $home-main-shadows;
@@ -125,10 +103,12 @@ body.prefs {
 	}
 	&.mobile {
 		#logo {
-			margin-top: 6px;
+			margin-top: 0;
 			text-align: center;
 		}
-		line-height: 25px;
+		#home-main-content {
+			line-height: 25px;
+		}
 		p.links a {
 			margin-right: 15px;
 		}

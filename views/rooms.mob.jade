@@ -10,24 +10,9 @@ html
 		script(src="static/miaou.min.js")
 		script(src="static/rooms.min.js")
 		style.
-			body.mobile {
+			body {
 				padding: 0;
 				overflow-x: hidden;
-			}
-			a {
-				color: black;
-			}
-			#mobtop {
-				position: absolute;
-				z-index: 4;
-				width: 100%;
-				top: 0;
-				overflow-x: hidden;
-			}
-			#logo {
-				text-align: center;
-				line-height: 25px;
-				box-shadow: 0 0 10px black;
 			}
 			#logo img {
 				margin-top: 10px;
@@ -36,47 +21,16 @@ html
 			#logo a {
 				margin: 0 10px;
 			}
-			#notifs {
-				width: 100%;
-				background: #F0EAD6 ;
-				box-shadow: inset 0 0 5px black;
-				padding: 3px;
-			}
-			#mobstrip {
-				position: fixed;
-				top: 0;
-				background: #F0EAD6 ;
-				z-index: 3;
-				right: 0;
-				left: 0;
-			}
-			.mobtabs {
-				display: flex;
-				align-items: stretch;
-				width: 100%;
-				background: #F0EAD6 ;
-				box-shadow: 0 0 10px black;
-				padding: 3px;
-			}
-			.mobtabs .tab {
-				padding: 5px;
-				flex-grow: 1;
-				text-align: center;
-				color: #777;
-			}
-			.mobtabs .tab.selected {
-				color: black;
-			}
-			body.mobile #home-main-content {
+			#home-main-content {
 				position: relative;
-				margin-top: 250px;
+				margin-top: 245px;
 			}
 			h3 {
 				text-align: center;
 			}
-	body.mobile
-		div#mobtop
-			div#logo
+	body.home.mobile
+		#mobtop
+			#logo
 				img(src="static/Miaou-300-f.png")
 				p.links
 					| You're logged as
@@ -87,7 +41,7 @@ html
 					a(href="room") Create a room
 					| -
 					a(href="help#About",target=help) Help
-			div#notifs
+			#home-notifs
 				if pings.length==1
 					p
 						| You've been pinged in room&nbsp;
@@ -101,16 +55,16 @@ html
 				else
 					p No notification
 			div.mobtabs
-				div.tab Your<br>Rooms
-				div.tab Public<br>Rooms
-				div.tab Private<br>Rooms
-				div.tab Dialog<br>Rooms
+				.home-tab Your<br>Rooms
+				.home-tab Public<br>Rooms
+				.home-tab Private<br>Rooms
+				.home-tab Dialog<br>Rooms
 		div#mobstrip
 			div.mobtabs
-				div.tab Your<br>Rooms
-				div.tab Public<br>Rooms
-				div.tab Private<br>Rooms
-				div.tab Dialog<br>Rooms
+				.home-tab Your<br>Rooms
+				.home-tab Public<br>Rooms
+				.home-tab Private<br>Rooms
+				.home-tab Dialog<br>Rooms
 		div#home-main-content
 			div.table
 

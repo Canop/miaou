@@ -12,14 +12,14 @@ miaou(function(locals){
 	);
 
 	function selectTab(i){
-		$('.tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
+		$('.home-tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
 		var $container = $('#prefs-main-content');
-		$container.find('.page').removeClass('selected').eq(i).addClass('selected');
+		$container.find('.home-page').removeClass('selected').eq(i).addClass('selected');
 		if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
 	}
 	if (location.hash==="#notifs") selectTab(2);
 	else selectTab(0);
-	$('.tab').click(function(){
+	$('.home-tab').click(function(){
 		selectTab($(this).index());
 	});			
 	$('#logout').click(function(){
