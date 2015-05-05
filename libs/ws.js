@@ -413,12 +413,9 @@ function handleUserInRoom(socket, completeUser){
 			}
 			io.sockets.in('w'+roomId).emit('watch_incr', roomId);
 			if (m.content && m.id) {
-				var pings = m.content.match(/(?:^|\W)@\w[\w\-]{2,}\b/g);
-				if (pings) {
-					for (var ping of pings) {
-						var username = ping.slice(1);
-						if (!shoe.userSocket(username)) remainingpings.push(username);
-					}
+				var r = /(?:^|\W)@(\w[\w\-]{2,})\b/g, ping;
+				while (ping=r.exec(m.content)){
+					if (!shoe.userSocket(ping[1])) remainingpings.push(ping[1]);
 				}
 			}
 			return remainingpings;
