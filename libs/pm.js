@@ -51,6 +51,7 @@ exports.registerCommands = function(registerCommand){
 		name:"pm", fun:function(ct){
 			var m = ct.args.match(/@([\w-]{3,})/);
 			if (!m) throw "missing username in !!pm command";
+			ct.silent = true;
 			ct.nostore = true;
 			return openPmRoom.call(this, ct.shoe, 0, m[1]);
 		},
