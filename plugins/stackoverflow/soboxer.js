@@ -13,7 +13,7 @@ var	http = require('http'),
 	tasks = new Deque(2000), currentTask;
 	
 function logoCDN(task){
-	var img = '<img src=http://cdn.sstatic.net/'+task.site;
+	var img = '<img src=http://cdn.sstatic.net/'+task.site.split('.')[0];
 	if (task.meta) img += 'meta';
 	img += '/img/apple-touch-icon.png width=40>';
 	return img;
@@ -158,7 +158,7 @@ exports.addTask = function(task){
 // read the text to find and analyze SE URL
 exports.rawTasks = function(text){
 	var	tasks = [],
-		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|stackexchange|superuser).com\/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/gm,
+		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|(?:dba\.)?stackexchange|superuser).com\/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/gm,
 		match;
 	while (match=r.exec(text)) {
 		var	path = match[5], submatch,
