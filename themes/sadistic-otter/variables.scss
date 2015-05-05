@@ -53,7 +53,8 @@ $user-text-color-in-message: inherit; // gives to the username the color of the 
 $code-text-color: #888;
 $user-color-shadow-in-messages: none;
 $user-color-shadow-in-messages: inset 1px 0 1px;
-$hovered-user-color-shadow-in-messages: inset 35px 0 70px;
+$hovered-user-color-shadow-in-messages: inset 1px 0 1px;
+//~ $hovered-user-color-shadow-in-messages: inset 35px 0 70px;
 
 
 $citation-border-color: #666;
@@ -102,7 +103,7 @@ $chat-page-selected-bg: $chat-tabs-selected-bg-color;
 
 // profile in chat
 $profile-bg: rgba(20,0,10,0.94);
-$profile-box-shadow: none;
+$profile-box-shadow: 3px 0 3px $accent-minus;
 $profile-text-color: #ccc;
 
 // profile avatar rendering
