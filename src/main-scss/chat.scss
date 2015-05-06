@@ -221,9 +221,9 @@ body.mobile #message-scroller {
 		div.avatar { // no avatar available
 			background: $no-avatar-bg;
 		}
-		.avatar {
-			margin: 4px;
-		}
+		//~ .avatar {
+			//~ margin: 4px;
+		//~ }
 		border-right: $user-in-messages-border-right;
 	}
 	&:hover .user {
@@ -238,7 +238,6 @@ body.mobile #message-scroller {
 		.avatar-wrapper {
 			width: 16px;
 			height: 16px;
-			margin-bottom: 2px;
 			.avatar {
 				max-width: 100%;
 				max-height: 100%;
@@ -250,13 +249,14 @@ body.mobile #message-scroller {
 		.avatar-wrapper {
 			width: 20px;
 			height: 20px;
-			margin-right: 10px; // I don't really understand why I need this
+			margin-right: 2px;
 		}
 	}
 	.user.size2 {
 		.avatar-wrapper {
 			width: 26px;
 			height: 26px;
+			margin-bottom: 2px;
 		}
 		span {
 			width: 100%;
@@ -268,6 +268,7 @@ body.mobile #message-scroller {
 		.avatar-wrapper {
 			width: 40px;
 			height: 40px;
+			margin-bottom: 2px;
 		}
 		span {
 			width: 100%;
@@ -279,6 +280,7 @@ body.mobile #message-scroller {
 		.avatar-wrapper {
 			width: 56px;
 			height: 56px;
+			margin-bottom: 2px;
 		}
 		span {
 			width: 100%;

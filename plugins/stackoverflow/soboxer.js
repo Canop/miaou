@@ -81,24 +81,24 @@ var handlers = {
 // SO API always answers with gzipped content (even if your headers forbid it, it seems)
 // callback is given an error and a js object
 function getFromSO(url, callback){
-    var buffer = [];
-    http.get(url, function(res) {
-        var gunzip = zlib.createGunzip();            
-        res.pipe(gunzip);
-        gunzip.on('data', function(data){
-            buffer.push(data.toString())
-        }).on("end", function(){
+	var buffer = [];
+	http.get(url, function(res) {
+		var gunzip = zlib.createGunzip();			
+		res.pipe(gunzip);
+		gunzip.on('data', function(data){
+			buffer.push(data.toString())
+		}).on("end", function(){
 			try {
 				callback(null, JSON.parse(buffer.join('')));
 			} catch (e) {
 				callback(e);
 			}
-        }).on("error", function(e){
-            callback(e);
-        });
-    }).on('error', function(e){
-        callback(e)
-    });
+		}).on("error", function(e){
+			callback(e);
+		});
+	}).on('error', function(e){
+		callback(e)
+	});
 }
 
 function dequeue(){
