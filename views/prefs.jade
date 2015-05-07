@@ -136,10 +136,13 @@ html
 							tr
 								th Notification Sound
 								td
-									select#sound(name="sound")
-										option(value="none") none
-										option(value="quiet") very quiet
-										option(value="standard") standard (recommended)
+									select#volume(name="volume")
+										option(value="0") none
+										option(value=".1") very quiet
+										option(value=".4") quiet
+										option(value=".7") standard
+										option(value="1") strong
+									button(type="button")#try-sound Try
 							tr
 								th When Tab Is Visible 
 								td

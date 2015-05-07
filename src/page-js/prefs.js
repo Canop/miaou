@@ -10,6 +10,8 @@ miaou(function(locals){
 	$(document.body).addClass(
 		/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
 	);
+	
+	miaou.horn.init();
 
 	function selectTab(i){
 		$('.home-tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
@@ -144,6 +146,10 @@ miaou(function(locals){
 		onchangeAvatarSrc();
 	}
 	$('#avatar-try').click(avatarTry);
+	
+	$('#try-sound').click(function(){
+		miaou.horn.honk($('#volume').val());
+	});
 
 	if (!valid) $('#close').hide();
 

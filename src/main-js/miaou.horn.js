@@ -3,10 +3,9 @@
 miaou(function(horn, gui, locals, md){
 
 	var sounds = {
-		quiet:    'ping-quiet.wav',
 		standard: 'ping-standard.wav'
 	};
-	var sound = locals.userPrefs ? sounds[locals.userPrefs.sound] : null,
+	var sound = locals.userPrefs ? sounds[locals.userPrefs.sound] || sounds.standard : null,
 		audio;
 	
 	horn.init = function(){
@@ -16,7 +15,7 @@ miaou(function(horn, gui, locals, md){
 			// - a browser without Notification (Chrome/Android) 
 			horn.show = function(){};
 			return;
-		}		
+		}
 			
 		if (sound) audio = new Audio('static/'+sound);
 		if (locals.userPrefs.notif !== "never" && Notification.permission !== "granted") {
@@ -38,6 +37,15 @@ miaou(function(horn, gui, locals, md){
 		}
 	}
 	
+	horn.honk = function(volume){
+		volume = +volume;
+		if (!(volume>=0 && volume<=1)) volume = +locals.userPrefs.volume;
+		if (audio && volume) {
+			audio.volume = +volume;
+			audio.play();
+		}
+	}
+	
 	horn.show = function(mid, room, authorname, content){
 		mid = mid||0;
 		var title = typeof room === "string" ? room : (room || locals.room).name;
@@ -54,9 +62,7 @@ miaou(function(horn, gui, locals, md){
 		var n = new Notification(title, dsk);
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function() { window.focus(); n.close(); };
-		if (audio) {
-			audio.play();
-		}
+		horn.honk();
 	}
 	
 });
