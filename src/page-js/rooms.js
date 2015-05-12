@@ -13,12 +13,6 @@ miaou(function(locals){
 	}
 	delete localStorage['room'];
 
-	var authDescriptions = {
-		read: 'You can only read in this room',
-		write: 'You can read and write in this room',
-		admin: "You're an administrator of this room : you can change its name and description, give or revoke writing rights, and give admin rights.",
-		own: "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights."
-	}
 	function table(rooms,alt){
 		if (rooms.length) {
 			var $t = $('<table>').addClass('list'), rex = /^<img[^>]*><br>/;
@@ -27,10 +21,9 @@ miaou(function(locals){
 				if (floatImage) html = html.replace(/<br>/,'');
 				var $td = $('<td>').addClass('rendered').html(html);
 				if (floatImage) $td.find('img:eq(0)').css('float','left').css('margin-right','3px').click(function(){ location=r.path });
-				var $tr = $('<tr>').addClass(r.lang).append(
+				$('<tr>').addClass(r.lang).append(
 					$('<td>').addClass(r.private?'private':'public').append($('<a>').attr('href',r.path).text(r.name))
 				).append($td).appendTo($t);
-				//~ if (r.auth && !r.dialog) $tr.append($('<td>').addClass('role').text(r.auth).attr('title', authDescriptions[r.auth]));
 			});
 			return $t;
 		} else {

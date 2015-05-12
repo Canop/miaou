@@ -35,7 +35,7 @@ miaou(function(chat, locals, prof){
 		}
 	});
 	// profile closing
-	$(document.body).click(function(e){
+	$(document.body).click(function(){
 		if (prof.displayed()) {
 			prof.hide();
 		}

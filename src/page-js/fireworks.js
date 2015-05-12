@@ -64,7 +64,7 @@ miaou(function(){
 			fw.dx = speed * (0.5-Math.random());
 			fw.dy = speed * (0.5-Math.random()) + 1;
 		},
-		explodeFirework : function(fw, speed) {
+		explodeFirework : function(fw) {
 			fw.status = this.FIREWORK_EXPLODED;
 			fw.r = (Math.random() /2) + 0.5;
 			fw.g = (Math.random() /2) + 0.5;
@@ -87,7 +87,7 @@ miaou(function(){
 		destroyFirework : function(fw) {
 			this.fireworks[fw.index] = null;
 		},
-		displayFirework : function(fw, speed) {
+		displayFirework : function(fw) {
 			if (fw.y<0) this.destroyFirework(fw);
 			if (fw.status==this.FIREWORK_EXPLODED) {
 				this.ctx.beginPath();

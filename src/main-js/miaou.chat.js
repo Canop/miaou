@@ -42,13 +42,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, time, ws){
 				$c.empty();				
 			}
 		});
-		locals.pluginsToStart.forEach(function(name){
-			if (!plugins[name]) {
-				console.log("Missing plugin : ", name);
-				return;
-			}
-			plugins[name].start();
-		});
+		plugins.start();
 	}	
 
 	// Registers for an event ("incoming_message", "sending_message")

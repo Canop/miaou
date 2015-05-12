@@ -1,4 +1,4 @@
-miaou(function(locals){
+miaou(function(){
 
 	$('#goto-home,#user-miaou-logo-wrapper').click(function(){ location = '../rooms' });
 	
