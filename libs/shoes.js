@@ -1,5 +1,5 @@
 
-// A shoe embeds a socket and is provided to controlers and plugins.
+// A shoe wraps a socket and is provided to controlers and plugins.
 // It's kept in memory by the closures of the socket event handlers
 
 var io, db, onSendMessagePlugins;
@@ -65,7 +65,7 @@ Shoes.allSocketsOfUser = function(){
 Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
 	io.sockets.in(roomId||this.room.id).emit('message', {
 		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
-		created:Date.now()/1000|0, bot:true, content:content
+		created:Date.now()/1000|0, bot:true, room:this.room.id, content:content
 	});
 }
 Shoes.pluginTransformAndSend = function(m, sendFun){
@@ -106,6 +106,7 @@ Shoes.botMessage = function(bot, content){
 		m.avs = bot.avatarsrc;
 		m.avk = bot.avatarkey;
 		m.bot = true;
+		m.room = shoe.room.id;
 		shoe.emitToRoom('message', m);
 	}).finally(this.db.off);
 }

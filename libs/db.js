@@ -429,7 +429,7 @@ proto.getMessages = function(roomId, userId, N, asc, c1, s1, c2, s2){
 	var args = [roomId, userId, N], messages,
 		sql = 'select message.id, author, player.name as authorname, player.bot,'+
 		' player.avatarsrc as avs, player.avatarkey as avk,'+
-		' content, message.created as created, message.changed,'+
+		' room, content, message.created as created, message.changed,'+
 		' pin, star, up, down, vote, score from message'+
 		' left join message_vote on message.id=message and message_vote.player=$2'+
 		' inner join player on author=player.id where room=$1';
@@ -462,7 +462,7 @@ proto.getNextMessageId = function(roomId, mid, asc){
 
 proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
-		'select message.id, author, player.name as authorname, player.bot, content, created, pin, star, up, down, score from message'+
+		'select message.id, author, player.name as authorname, player.bot, room, content, created, pin, star, up, down, score from message'+
 		' inner join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
 		' order by pin desc, created desc, score desc limit 20', [roomId, createdAfter]
 	);
@@ -470,7 +470,7 @@ proto.getNotableMessages = function(roomId, createdAfter){
 
 proto.search = function(roomId, pattern, lang, N){
 	return this.queryRows(
-		"select message.id, author, player.name as authorname, content, created, pin, star, up, down, score from message"+
+		"select message.id, author, player.name as authorname, room, content, created, pin, star, up, down, score from message"+
 		" inner join player on author=player.id"+
 		" where to_tsvector($1, content) @@ plainto_tsquery($1,$2) and room=$3 order by message.id desc limit $4",
 		[lang, pattern, roomId, N]
@@ -480,7 +480,7 @@ proto.search = function(roomId, pattern, lang, N){
 // accepts a tsquery for example 'dog&!cat' (find dogs but filter out cats)
 proto.search_tsquery = function(roomId, tsquery, lang, N){
 	return this.queryRows(
-		"select message.id, author, player.name as authorname, content, created, pin, star, up, down, score from message"+
+		"select message.id, author, player.name as authorname, room, content, created, pin, star, up, down, score from message"+
 		" inner join player on author=player.id"+
 		" where to_tsvector($1, content) @@ to_tsquery($1,$2) and room=$3 order by message.id desc limit $4",
 		[lang, tsquery, roomId, N]
@@ -501,14 +501,16 @@ proto.messageHistogram = function(roomId, pattern, lang) {
 proto.getMessage = function(messageId, userId){
 	if (userId) {
 		return this.queryRow(
-			'select message.id, author, player.name as authorname, player.bot, content, message.created as created, message.changed, pin, star, up, down, vote, score from message'+
+			'select message.id, author, player.name as authorname, player.bot, room, content,'+
+			' message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 			' left join message_vote on message.id=message and message_vote.player=$2'+
 			' inner join player on author=player.id'+
 			' where message.id=$1', [messageId, userId]
 		)
 	} else {
 		return this.queryRow(
-			'select message.id, author, player.name as authorname, player.bot, content, message.created as created, message.changed, pin, star, up, down, score from message'+
+			'select message.id, author, player.name as authorname, player.bot, room, content,'+
+			' message.created as created, message.changed, pin, star, up, down, score from message'+
 			' inner join player on author=player.id'+
 			' where message.id=$1', [messageId]
 		)
