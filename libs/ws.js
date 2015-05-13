@@ -47,23 +47,16 @@ exports.getOnSendMessagePlugins = function(){
 	return onSendMessagePlugins;
 }
 
-// removes all useless properties from an object
+// clones the message, removing all useless properties and the deleted content
 // A typical not lighted message is like this :
 //  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801,"changed":null,"pin":0,"star":0,"up":0,"down":0,"vote":null,"score":0}
 // lighted :
 //  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801}
-// FIXME : this function might be slow and, more importantly, it makes the object slower to iterate (hash table mode)
-//            (confirmed for the iteration : http://jsperf.com/lightenings)
-//         Is the solution to clone the object ?
-function lighten(obj){
-	for (var k in obj) {
-		if (!obj[k]) delete obj[k];
+var clean = exports.clean = function(src){
+	var m = {};
+	for (var k in src) {
+		if (src[k]) m[k] = src[k];
 	}
-	return obj;
-}
-
-var clean = exports.clean = function(m){
-	lighten(m);
 	if (m.content && /^!!deleted /.test(m.content)) {
 		m.content = m.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/)[0];
 	}
@@ -421,7 +414,7 @@ function handleUserInRoom(socket, completeUser){
 			return remainingpings;
 		}).filter(function(unsentping){
 			if (!shoe.room.private) return true;
-			// user isn't in the room, we check he can enter the room (TODO check he's not banned ? or don't care ?)
+			// user isn't in the room, we check he can enter the room
 			return this.getAuthLevelByUsername(shoe.room.id, unsentping).then(function(oauth){
 				if (oauth) return true;
 				if (commandTask.cmd) return commandTask.alwaysPing;
@@ -435,6 +428,7 @@ function handleUserInRoom(socket, completeUser){
 						var socket = io.sockets.connected[clientId];
 						if (socket && socket.publicUser && socket.publicUser.name===username) {
 							socket.emit('pings', [{
+								// TODO rename r to room in pings
 								r:shoe.room.id, rname:shoe.room.name, mid:m.id,
 								authorname:m.authorname, content:m.content
 							}]);
@@ -498,7 +492,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, search.pattern, 'english', 50])
 		.spread(db.search)
 		.filter(function(m){ return !/^!!deleted /.test(m.content) })
-		.map(function(m){ return lighten(m) })
+		.map(clean)
 		.then(function(results){
 			socket.emit('found', {results:results, search:search});
 		}).finally(db.off);
