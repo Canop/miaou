@@ -15,9 +15,14 @@ config-dystroy.js
 notes.dev
 sql/postgres.alter.sql
 trav
+pub
 graphics/*.png
 plugins/miaou.bot
 plugins/mountyhall
+plugins/miaou.static-user-list/
+
+# edition byproducts
+*.swp
 
 # compilation byproducts
 .sass-cache
