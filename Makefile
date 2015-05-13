@@ -36,7 +36,7 @@ debug: ./build/miaou_modules.txt
 #  note: a $ in a regular expression here must be escaped as $$
 ./build/miaou_modules.txt: $(MIAOU_JS_SOURCES)
 	@mkdir -p $(@D)
-	@echo "$(MIAOU_JS_SOURCES)" | sed -r -e 's/\s\S*miaou\.(\w+)\.js\b/ \1/g' -e 's/\s*\S*\.\S*\s*|^\s+|\s+$$//g' -e 's/\b\s+\b/,/g' > $@
+	@echo "$(MIAOU_JS_SOURCES)" | sed -r -e 's/\s\S*miaou\.(\w+)\.js\b/ \1/g' -e 's/\S*\.\S*//g' -e 's/^\s+|\s+$$//g' -e 's/\b\s+\b/,/g' > $@
 
 # main js file : static/miaou.min.js
 # There's a cd static; because I didn't find another way to have a correctly linked source map
@@ -57,7 +57,7 @@ main-js: ./build/miaou_modules.txt ./static/miaou.min.js
 	@mkdir -p $(@D)
 	@cp $< $@
 ./build/page-js/%.min.js: ./build/page-js/%.js 
-	@cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $(@F) --source-map $*.min.js.map
+	@cd build/page-js; uglifyjs $*.js $(UGLIFY_OPTIONS) --output $(@F)
 ./static/%.min.js: ./build/page-js/%.min.js
 	@mkdir -p $(@D)
 	@cp $< $@
