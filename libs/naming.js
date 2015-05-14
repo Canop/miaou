@@ -3,11 +3,13 @@
 
 var	path = require('path'),
 	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
-	blacklist = [];
+	blacklist = [/^all$/, /^here$/];
 
 exports.configure = function(miaou){
 	if (miaou.config.forbiddenUsernames) {
-		blacklist = miaou.config.forbiddenUsernames.map(function(s){ return new RegExp(s,'i') }); 
+		miaou.config.forbiddenUsernames.forEach(function(s){
+			blacklist.push(new RegExp(s,'i'));
+		});
 	}
 	return this;
 }
