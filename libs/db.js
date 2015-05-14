@@ -106,6 +106,7 @@ proto.getUserInfo = function(id){
 	);
 }
 
+// optm: this is somewhat slow, as a full scan on players in used
 proto.listRecentUsers = function(roomId, N){
 	return this.queryRows(
 		"select a.id, a.mc, player.name, avatarsrc as avs, avatarkey as avk from"+
@@ -116,7 +117,7 @@ proto.listRecentUsers = function(roomId, N){
 }
 
 // returns the name to use in ping autocompletion.
-// note : use index message_author_created_room on message (author, created, room)
+// note: use index message_author_created_room on message (author, created, room)
 proto.usersStartingWith = function(str, roomId, limit){
 	return this.queryRows(
 		"select name, (select max(created) from message where p.id=author and room=$1) lir," +
@@ -237,12 +238,11 @@ proto.listAccessibleRooms = function(userId){
 }
 
 // lists the rooms that should make it to the front page
-// Note : this query is very heavy (about 50ms for a user in many rooms)
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
-		" (select max(created) from message m where m.room = r.id and m.author=$1) as lastselfcreated"+
+		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself"+ // use index message_room_author
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  
 		" where listed is true or auth is not null"+
 		" order by lastcreated desc nulls last limit 200", [userId]

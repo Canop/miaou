@@ -60,7 +60,7 @@ miaou(function(chat, locals, time, watch, ws){
 		switch (i){
 		case 0:
 			listRooms(
-				rooms.filter(function(r){ return !r.private && (r.lastselfcreated || r.auth)})
+				rooms.filter(function(r){ return !r.private && (r.hasself || r.auth)})
 				, 'Your Public Rooms'
 			);
 			listRooms(

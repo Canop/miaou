@@ -43,7 +43,7 @@ miaou(function(locals){
 					).append(
 						table(
 							rooms.filter(function(r){
-								return (r.lastselfcreated || r.auth) && !r.dialog
+								return (r.hasself || r.auth) && !r.dialog
 							}),
 							"You didn't participate in any non dialog room."
 						)
@@ -51,7 +51,7 @@ miaou(function(locals){
 				);		
 			} else {
 				var userPublicRooms = rooms.filter(function(r){
-					return !r.private && (r.lastselfcreated || r.auth)
+					return !r.private && (r.hasself || r.auth)
 				});
 				var userPrivateRooms = rooms.filter(function(r){
 					return r.private && r.auth && !r.dialog
