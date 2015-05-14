@@ -7,7 +7,7 @@ A different aventure every time. Basically it should be something like
 
 but it might be a little harder...
 
-# Creating the database and user
+# Creating the Miaou database and user
 
 First create the DB and user, and grant the rights.
 
@@ -51,7 +51,7 @@ The easiest solution is to copy-paste the content of /sql/postgres-creation.sql 
 
 # Configure miaou
 
-In the config.json file, set up the required configuration :
+In the config.js file, set up the required configuration :
 
 	"database": {
 		"url": "postgres://miaou:chooseanotherpwdplease@localhost/miaou",
