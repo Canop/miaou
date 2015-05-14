@@ -2,11 +2,11 @@
 
 # Introduction
 
-This documentation describes the long installation process. There is an alternative: you may also use vagrant (see [related documentation](vagrant/vagrant.md)).
+This documentation describes the long installation process. There is an alternative: you may use vagrant instead (see [related documentation](vagrant/vagrant.md)).
 
 It also assumes you're on a recent Ubuntu *(help needed for the doc on other distributions)*.
 
-It's also a work in progress and you're invited to come chat with other developers on Miaou before and while installing.
+It's a work in progress and you're invited to come chat with other developers on Miaou before and while installing.
 
 # Standard Tools
 
@@ -25,16 +25,23 @@ Installing it from the sources rather than from binaries is easier and make upda
 
 	git clone git@github.com:iojs/io.js.git
 	cd io.js/
-	 ./configure 
+	./configure 
 	make
 	sudo make install
+	
+*TODO: is something missing for npm?*
 
-Note that make may take a while (about 10 to 20 minutes)
+Note that `make` may take a while (about 10 to 20 minutes)
 
 # redis
 
-You must install and start redis. There's no specific configuration to do for Miaou.
+You must install and start redis. There's no specific configuration to do for Miaou (it's preferable to configure redis to *not* save on disk, as we only use it as a session cache making it possible to restart miaou without the users noticing).
 
+	sudo apt-get install redis-server
+	
+There's several ways to start it. Here's the simplest one:
+
+	redis-server &
 
 ## sass
 
@@ -45,12 +52,7 @@ Reference: http://sass-lang.com/install
 
 ## uglify 
 
-
 	sudo npm install -g uglify-js
-
-# Compilation of Miaou
-
-Make
 
 # Installing Miaou
 
@@ -156,6 +158,8 @@ You need to set up at least one OAuth provider.
 
 With Google at least the same account can be used both for your local tests and for the deployement on a public server. Don't forget to register the callback with adresss `127.0.0.1`, not `localhost`.
 
+Fill the relevant parts of the configuration `config.js`.
+
 
 # start, stop, restart the application
 
@@ -165,9 +169,13 @@ Use the script:
 
 # Configure a reverse proxy with nginx (optional)
 
-This makes it easy to share the 80 port with other applications and to Let nginx serve static resources for better performances.
+This makes it easy to share the 80 port with other applications and to let nginx serve static resources for better performances.
 
 Be careful that most servers aren't able to proxy websockets, which results in Miaou falling back to slow protocols. Don't try to use another server than nginx unless you really know what you do and how to check websockets correcly pass trough.
+
+Installation is done with
+
+	sudo apt-get install nginx
 
 ## Exemple configuration
 
