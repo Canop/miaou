@@ -28,6 +28,12 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		unrenderers.unshift(fun);
 	}
 	md.render = function($content, message, oldMessage){
+		
+		// DEBUG
+		if (!message.room) {
+			console.log("missing room in", message);
+		}
+		
 		for (var i=0; i<renderers.length; i++) {
 			if (renderers[i]($content, message, oldMessage)) break;
 		}
