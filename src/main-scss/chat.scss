@@ -384,7 +384,7 @@ body.mobile #message-scroller {
 		}
 		.mdate {
 			@include align-self(flex-start);
-			@include flex(0 1 90px);
+			@include flex(0 0 90px);
 			text-align: right;
 			font-size: 80%;
 			padding: 2px;
