@@ -59,14 +59,14 @@ Reference: http://sass-lang.com/install
 ## Get the repository
 You need to fetch the repository from github, either directly of after a fork.
 
-For example:
+For example if not forking:
 
 	git clone https://githup.com/Canop/miaou.git
 	cd miaou
 
 When you'll want to update Miaou later, you'll do
 
-	git pull upstream
+	git pull origin
 
 *TODO: explain how to deal with tagged stable releases*
 
