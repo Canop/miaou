@@ -88,7 +88,7 @@ function onCommand(ct){
 exports.registerCommands = function(cb){
 	cb({
 		name:'wiki', fun:onCommand,
-		help:"displays the relevant Wikipedia page in the language of the room. Example : `!!wiki Neil Armstrong`",
+		help:"display the relevant Wikipedia page in the language of the room. Example : `!!wiki Neil Armstrong`",
 		detailedHelp:"You may also simply paste the URL of a wikipedia page to have it abstracted for you.\n"+
 			"Example: `http://fr.wikipedia.org/wiki/Chat`"
 	});

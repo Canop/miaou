@@ -116,6 +116,16 @@ proto.listRecentUsers = function(roomId, N){
 	);
 }
 
+// lists the users of the room (watching users + users having posted)
+proto.listRoomUsers = function(roomId){
+	return this.queryRows(
+		"select player.id, player.name from"+
+		" (select distinct author from message where room=$1"+
+		" union select player from watch where room=$1) a"+
+		" join player on player.id=a.author and player.bot is false", [roomId]
+	);
+}
+
 // returns the name to use in ping autocompletion.
 // note: use index message_author_created_room on message (author, created, room)
 proto.usersStartingWith = function(str, roomId, limit){
@@ -263,6 +273,7 @@ proto.listRecentUserRooms = function(userId){
 		" order by m.last_created desc limit 10", [userId]
 	);
 }
+
 
 ///////////////////////////////////////////// #auths
 

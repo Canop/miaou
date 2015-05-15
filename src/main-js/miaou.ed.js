@@ -393,6 +393,9 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			currentlySelectedName = $autocompleter ? $autocompleter.find('.selected').text() : null;
 		savedValue = input.value;
 		if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
+		if (!'room'.lastIndexOf(acname,0) && ( locals.room.private||usr.checkAuth('admin'))) {
+			names.unshift('room');
+		}
 		if ($autocompleter) $autocompleter.remove();
 		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
 		names.forEach(function(name){

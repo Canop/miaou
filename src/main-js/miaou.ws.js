@@ -3,7 +3,7 @@
 miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch){
 
 	ws.init = function(){
-		var pingRegex = new RegExp('@'+locals.me.name+'(\\b|$)', 'i'),
+		var pingRegex = new RegExp('@(room|'+locals.me.name+')\\b', 'i'),
 			info = { state:'connecting', start:Date.now() },
 			socket = io.connect(location.origin);
 

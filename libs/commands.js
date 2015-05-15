@@ -1,12 +1,12 @@
 "use strict";
 
-const path = require('path'),
+const	path = require('path'),
 	Promise = require("bluebird"),
 	server = require('./server.js'),
 	botname = "miaou.help",
 	commands = {}
 
-var bot,
+var	bot,
 	all = [];
 	
 function CommandTask(cmd, args, shoe, message){
@@ -60,8 +60,8 @@ exports.configure = function(miaou){
 		help:'get help about commands. Usage : `!!help !!commandname`',
 		detailedHelp:"You can also get a list of all commands with just `!!help`"
 	});
-	['afk','ban','flake','pm','stats','summon'].forEach(function(cmd){
-		require('./'+cmd+'.js').configure(miaou).registerCommands(registerCommand);
+	['afk','ban','flake','list-users','pm','stats','summon'].forEach(function(module){
+		require('./'+module+'.js').configure(miaou).registerCommands(registerCommand);
 	});
 	all.sort(function(a,b){ return a.name>b.name ? 1 : -1 });
 }

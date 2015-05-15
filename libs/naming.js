@@ -3,7 +3,7 @@
 
 var	path = require('path'),
 	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
-	blacklist = [/^all$/, /^here$/];
+	blacklist = [/^all$/, /^here$/, /^room$/];
 
 exports.configure = function(miaou){
 	if (miaou.config.forbiddenUsernames) {

@@ -392,8 +392,8 @@ function handleUserInRoom(socket, completeUser){
 			commandTask = ct;
 			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
 		}).spread(function(m, commandTask){
-			var remainingpings = []; // names of pinged users that weren't in the room
-			if (commandTask.silent) return remainingpings;
+			var pings = []; // names of pinged users that weren't in the room
+			if (commandTask.silent) return pings;
 			if (m.changed) m.vote = '?';
 			for (var p of onSendMessagePlugins) {
 				p.onSendMessage(this, m, send);
@@ -408,11 +408,30 @@ function handleUserInRoom(socket, completeUser){
 			if (m.content && m.id) {
 				var r = /(?:^|\W)@(\w[\w\-]{2,})\b/g, ping;
 				while (ping=r.exec(m.content)){
-					if (!shoe.userSocket(ping[1])) remainingpings.push(ping[1]);
+					pings.push(ping[1]);
 				}
 			}
-			return remainingpings;
+			return pings;
+		}).reduce(function(pings, ping){ // expanding special pings (i.e. @room)
+			if (ping==='room') {
+				if (!shoe.room.private && shoe.room.auth!=='admin' && shoe.room.auth!=='own') {
+					shoe.error("Only an admin can ping @room in a public room");
+					return pings;
+				}
+				return this.listRoomUsers(shoe.room.id).then(function(users){
+					return pings.concat(users.map(function(u){ return u.name }));
+				});
+			}
+			pings.push(ping);
+			return pings;
+		}, []).reduce(function(pings, ping){ // removing duplicates
+			if (!~pings.indexOf(ping)) pings.push(ping);
+			return pings;
+		}, []).then(function(pings){
+			console.log("expanded list of pings:", pings);	
+			return pings
 		}).filter(function(unsentping){
+			if (shoe.userSocket(unsentping)) return false; // no need to ping
 			if (!shoe.room.private) return true;
 			// user isn't in the room, we check he can enter the room
 			return this.getAuthLevelByUsername(shoe.room.id, unsentping).then(function(oauth){

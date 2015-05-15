@@ -2,7 +2,7 @@
 
 // handles !!afk and !!back
 
-var bot,
+var	bot,
 	ws = require('./ws.js');
 
 exports.configure = function(miaou){
