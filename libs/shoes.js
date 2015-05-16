@@ -91,7 +91,10 @@ Shoes.userSocket = function(userIdOrName, includeWatchers) {
 	clients = io.sockets.adapter.rooms['w'+this.room.id];
 	for (var clientId in clients) {
 		var socket = io.sockets.connected[clientId];
-		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
+		if (
+			socket && socket.publicUser
+			&& (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
+		) {
 			return socket;
 		}		
 	}

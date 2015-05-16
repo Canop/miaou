@@ -1,6 +1,6 @@
 "use strict";
 
-const apiversion = 45,
+const	apiversion = 45,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
 	path = require('path'),
@@ -65,7 +65,7 @@ var clean = exports.clean = function(src){
 
 // returns all the sockets of the given roomId
 var roomSockets = exports.roomSockets = function(roomId){
-	var clients = io.sockets.adapter.rooms[roomId],
+	var	clients = io.sockets.adapter.rooms[roomId],
 		sockets = [];
 	for (var clientId in clients) {
 		var s = io.sockets.connected[clientId];
@@ -215,7 +215,10 @@ function handleUserInRoom(socket, completeUser){
 			]
 		})
 		.spread(function(r, ban){
-			if (r.private && !r.auth) throw new Error('Unauthorized user'); // FIXME don't fill the logs with those errors that can come very fast in case of pulling
+			if (r.private && !r.auth) {
+				// FIXME don't fill the logs with those errors that can come very fast in case of pulling
+				throw new Error('Unauthorized user'); 
+			}
 			if (ban) throw new Error('Banned user');
 			r.path = server.roomPath(r);
 			shoe.room = r;
@@ -421,6 +424,9 @@ function handleUserInRoom(socket, completeUser){
 				return this.listRoomUsers(shoe.room.id).then(function(users){
 					return pings.concat(users.map(function(u){ return u.name }));
 				});
+			} else if (ping==='here') {
+				return roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))
+				.map(function(s){ return s.publicUser.name });
 			}
 			pings.push(ping);
 			return pings;

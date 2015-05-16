@@ -627,6 +627,9 @@ code {
 		&.selected {
 			font-weight: bold;
 		}
+		&.special {
+			font-style: italic;
+		}
 	}
 }
 #code-controls {

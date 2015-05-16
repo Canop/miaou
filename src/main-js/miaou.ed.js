@@ -2,16 +2,18 @@
 
 miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
-	var $input, input,
+	var	$input, input,
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
 		stash, // save of the unsent message edition, if any
-		editedMessage, // currently edited message, if any (if you cycle through messages, their edited content is saved in a property stash)
+		editedMessage, 	// currently edited message, if any
+				// (if you cycle through messages, their edited content
+				// is saved in a property stash)
 		savedValue, $autocompleter, editwzin, replywzin;
 
 	ed.stateBeforePaste = null; // {selectionStart,selectionEnd,value}
 
 	ed.toggleLines = function(s,r,insert){
-		var lines = s.split('\n'),
+		var	lines = s.split('\n'),
 			on = lines.reduce(function(b,l){ return b && r.test(l) }, true);
 		return lines.map(function(l){ return on ? l.replace(r,'') : insert+l }).join('\n');
 	}
@@ -67,8 +69,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		// should we display the name autocompleting menu ?
 		var acname = getacname();
 		if (acname) {
-			var recentNames = usr.recentNamesStartingWith(acname);
-			if (recentNames.length) ed.proposepings(recentNames);
+			ed.proposepings(usr.recentNamesStartingWith(acname));
 			return ws.emit('autocompleteping', acname);
 		}
 		// should we display the command autocompleting menu ?
@@ -218,10 +219,14 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 					});
 					return false;
 				case 66: // ctrl - B : toggle bold
-					$input.replaceSelection(function(s){ return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2, -2) : '**'+s+'**' });
+					$input.replaceSelection(function(s){
+						return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2,-2) : '**'+s+'**'
+					});
 					return false;
 				case 73: // ctrl - I : toggle italic
-					$input.replaceSelection(function(s){ return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*' });
+					$input.replaceSelection(function(s){
+						return /^\*[\s\S]*\*$/.test(s) ? s.slice(1,-1) : '*'+s+'*'
+					});
 					return false;
 				case 13: // ctrl - enter : insert new line
 					$input.replaceSelection(function(s){ return s+'\n' });
@@ -356,7 +361,9 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		$('#help').hide();
 		if (editwzin) editwzin.remove();
 		editwzin = wzin($message, $('#input'), {
-			zIndex:5, fill:skin.wzincolors.edit, scrollable:'#message-scroller', parent:document.body, changeElementBackground:true
+			zIndex:5, fill:skin.wzincolors.edit,
+			scrollable:'#message-scroller', parent:document.body,
+			changeElementBackground:true
 		});
 		updateReplyWzin();
 		ed.onMove();
@@ -387,15 +394,20 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 	}
 	
-	// receives list of pings
+	// displays the list of autocomplete pings
 	ed.proposepings = function(names){
 		var	acname = getacname(),
 			currentlySelectedName = $autocompleter ? $autocompleter.find('.selected').text() : null;
 		savedValue = input.value;
-		if (!acname || names[0].toLowerCase().indexOf(acname)!==0) return console.log('bad list'); // too late, probably
+		if (!acname || (names[0] && names[0].toLowerCase().indexOf(acname)!==0)) {
+			return console.log('bad list'); // too late, probably
+		}
 		if (!'room'.lastIndexOf(acname,0) && ( locals.room.private||usr.checkAuth('admin'))) {
 			names.unshift('room');
+		} else if (!'here'.lastIndexOf(acname,0)) {
+			names.unshift('here');
 		}
+		if (!names.length) return;
 		if ($autocompleter) $autocompleter.remove();
 		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
 		names.forEach(function(name){
@@ -405,6 +417,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 				$autocompleter = null;
 			});
 			if (name===currentlySelectedName) $span.addClass('selected');
+			if (name==='here'||name==='room') $span.addClass('special');
 		});
 	}
 });
