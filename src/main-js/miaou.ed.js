@@ -17,9 +17,6 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			on = lines.reduce(function(b,l){ return b && r.test(l) }, true);
 		return lines.map(function(l){ return on ? l.replace(r,'') : insert+l }).join('\n');
 	}
-	function toggleLinesCitation(s){
-		return ed.toggleLines(s, /^>\s*/, '> ');
-	}
 
 	function sendInput(){
 		notif.userAct();
@@ -188,7 +185,8 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 				$scroller.scrollTop(Math.min(mtop+$scroller.scrollTop()-25, $scroller[0].scrollHeight));
 			}			
 			replywzin = wzin($message, $('#input'), {
-				zIndex:5, fill:skin.wzincolors.reply, scrollable:'#message-scroller', parent:document.body
+				zIndex:5, fill:skin.wzincolors.reply,
+				scrollable:'#message-scroller', parent:document.body
 			});
 		}
 	}
@@ -200,14 +198,12 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			notif.userAct();
 			if (miaou.dialog.has()) return false;
 			if (e.ctrlKey && !e.shiftKey) {
-				var sp = this.selectionStart, ep = this.selectionEnd;
 				switch(e.which){
 				case 75: // ctrl - K : toggle code
 					ed.onCtrlK.call(this);
 					return false;
 				case 81: // ctrl - Q : toggle citation
-					$input.selectLines().replaceSelection(toggleLinesCitation);
-					if (sp===ep) this.selectionStart = this.selectionEnd;
+					ed.onCtrlQ.call(this);
 					return false;
 				case 76: // ctrl - L : make link
 					if (/^\s*https?:\/\/\S+\s*$/i.test($input.selectedText())) {
