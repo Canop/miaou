@@ -1,6 +1,6 @@
 "use strict";
 
-const	apiversion = 45,
+const	apiversion = 46,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
 	path = require('path'),
@@ -393,7 +393,10 @@ function handleUserInRoom(socket, completeUser){
 		.spread(commands.onMessage)
 		.then(function(ct){
 			commandTask = ct;
-			return [commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition), commandTask]
+			return [
+				commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition),
+				commandTask
+			]
 		}).spread(function(m, commandTask){
 			var pings = []; // names of pinged users that weren't in the room
 			if (commandTask.silent) return pings;
@@ -409,7 +412,7 @@ function handleUserInRoom(socket, completeUser){
 			}
 			io.sockets.in('w'+roomId).emit('watch_incr', roomId);
 			if (m.content && m.id) {
-				var r = /(?:^|\W)@(\w[\w\-]{2,})\b/g, ping;
+				var r = /(?:^|\s)@(\w[\w\-]{2,})\b/g, ping;
 				while (ping=r.exec(m.content)){
 					pings.push(ping[1]);
 				}
@@ -434,7 +437,6 @@ function handleUserInRoom(socket, completeUser){
 			if (!~pings.indexOf(ping)) pings.push(ping);
 			return pings;
 		}, []).then(function(pings){
-			console.log("expanded list of pings:", pings);	
 			return pings
 		}).filter(function(unsentping){
 			if (shoe.userSocket(unsentping)) return false; // no need to ping
