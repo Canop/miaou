@@ -88,6 +88,19 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			});
 		}
 	}
+
+	function tabautocomplete(){
+		var	index = ($autocompleter.find('.selected').index()+1) % $autocompleter.find('span').length,
+			name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected').text(),
+			accmd = getaccmd();
+		if (accmd) {
+			input.selectionStart = input.selectionEnd - accmd.length;
+			$input.replaceSelection(name);
+			input.selectionStart = input.selectionEnd;
+		} else {
+			ed.ping(name);
+		}
+	}
 	
 	function insertLink(){
 		$input.replaceSelection(function(s){
@@ -239,23 +252,23 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 					return false;
 				}
 			} else if (e.altKey || e.shiftKey) {
-				if (e.which==13) { // alt|shift - return
+				if (e.which===13) { // alt|shift - return
 					$input.replaceSelection(function(s){ return s+'\n' });
 					return false;
 				}
-			} else if (e.which==38) { // up arrow
+			} else if (e.which===38) { // up arrow
 				var isInFirstLine = $input.taliner().caretOnFirstLine;
 				if (isInFirstLine || (editedMessage && input.selectionStart===input.value.length)) {
 					editPreviousOrNext(-1);
 					return false;
 				}
-			} else if (e.which==40) { // down arrow
+			} else if (e.which===40) { // down arrow
 				var isInLastLine = $input.taliner().caretOnLastLine;
 				if (isInLastLine && editedMessage) {
 					editPreviousOrNext(+1);
 					return false;
 				}
-			} else if (e.which==27) { // esc
+			} else if (e.which===27) { // esc
 				if ($autocompleter && $autocompleter.length && input.value!=savedValue) {
 					input.value = savedValue;
 					tryautocomplete();
@@ -265,21 +278,12 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 				} else {
 					ed.cancelEdit();
 				}
-			} else if (e.which==13) { // enter
+			} else if (e.which===13) { // enter
 				sendInput();
 				return false;
-			} else if (e.which==9) { // tab
+			} else if (e.which===9) { // tab
 				if ($autocompleter && $autocompleter.length) {
-					var index = ($autocompleter.find('.selected').index()+1) % $autocompleter.find('span').length,
-						name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected').text(),
-						accmd = getaccmd();
-					if (accmd) {
-						input.selectionStart = input.selectionEnd - accmd.length;
-						$input.replaceSelection(name);
-						input.selectionStart = input.selectionEnd;
-					} else {
-						ed.ping(name);
-					}
+					tabautocomplete();
 					return false;
 				}
 			}
