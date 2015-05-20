@@ -3,13 +3,17 @@ html
 	head
 		title Miaou Help
 		link(rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/help.css')
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
 		script(src="static/jquery-2.1.3.min.js")
 		script(src="static/help.min.js")
-	body
-		div#summary
-			h1 Summary
-		div#content
+		script(src="static/miaou.min.js")
+	body#help-body
+		#help-nav
+			a#help-miaou-logo-wrapper(href="rooms")
+				object.Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
+			h1 Help
+			#help-summary
+		#help-content
 			h1 Miaou Help
 			h2 About
 			div
@@ -19,7 +23,7 @@ html
 			div
 				p You send a message by typing in the text area at the bottom of the screen and then hitting <kbd>⏎</kbd>.
 				p When you want to start a new line without immediately sending your message, hit <kbd>ctrl</kbd><kbd>⏎</kbd> or <kbd>alt</kbd><kbd>⏎</kbd> or <kbd>⇧</kbd><kbd>⏎</kbd>.
-				p Miaou uses a limited set of Markdown features in order to allow a better formatting without being too flashy or distracting. The following sections mostly detail that syntax and the related shortcuts.
+				p Miaou uses a specific flavour of Markdown in order to allow a better formatting without being too flashy or distracting. The following sections mostly detail that syntax and the related shortcuts.
 				h3 Italic and Bold
 				div
 					p You can set some text in italic or in bold by writing it between stars or double stars.
@@ -72,14 +76,33 @@ html
 								});
 							}
 					p You don't have to manually put the backtick quotes or the tabulations : you may also use <kbd>ctrl</kbd><kbd>K</kbd>.
+					p When you hit <kbd>ctrl</kbd><kbd>K</kbd> just after having pasted some code, you don't have to select it, it will automatically apply to the pasted text.
+					p When the cursor is in a block of code, a menu appears and let you choose the coding language, which will be used for syntactic coloration.
 				h3 Ping and reply
 				div
-					p You can alert another user by typing an arobase followed by his/her username in a message, as in
+					p You can alert another user by typing an arobase followed by her username in a message, as in
 					pre Hello @dystroy !
-					p If the user checked the "Be notified on ping" checkbox, he'll see a silent notification.
+					p If the user checked the "Be notified on ping" checkbox, she'll see a silent notification.
 					p By hovering the name of a user in the list at the left, you reveal a <i>ping</i> button which inserts the related ping in the message area.
-					p If you choose to type the name instead of using the button, it's autocompleted. Hit the <kbd>tab</kbd> and <kbd>esc</kbd> keys to navigate through proposals. Users having been seen recently in the room are listed first but you can also ping somebody who never came to the room, (s)he will get an invitation to join it.
+					p If you choose to type the name instead of using the button, it's autocompleted. Hit the <kbd>tab</kbd> and <kbd>esc</kbd> keys to navigate through proposals. Users having been seen recently in the room are listed first but you can also ping somebody who never came to the room, she will get an invitation to join it.
 					p By hovering the message of another user, you reveal a reply button. Replying inserts a specific type of ping, including a link to that message.
+				h3 Content Automatic Boxing
+				div
+					p Some links are automatically rendered in Miaou messages:
+					ul
+						li links to wikipedia pages are rendered as abstracts with links
+						li links to many Stack Exchange sites (including Stack Overflow) are rendered in place
+						li links to YouTube videos are replaced with a player
+						li links to images
+				h3 Other Formatting Features
+				div
+					p The special formatting of Miaou messages allow other features. Some of them are even introduced by plugins. 
+					p Some examples:
+					ul
+						li tables (like the one you get if you type the <code>!!stats rooms</code> command
+						li lists
+						li graphs
+					p The best to discover them is usually to ask other users.
 				h3 Keyboard Shortcuts
 				div
 					table.indent
@@ -103,10 +126,10 @@ html
 							td sets the selection in bold
 						tr
 							td <kbd>ctrl</kbd><kbd>Q</kbd>
-							td converts the selection to citation
+							td converts the selection or the just pasted text to citation
 						tr
 							td <kbd>ctrl</kbd><kbd>K</kbd>
-							td converts the selection to code (extend it to whole lines if there's a new line inside)
+							td converts the selection or the just pasted text to code (extend it to whole lines if there's a new line inside)
 						tr
 							td <kbd>ctrl</kbd><kbd>L</kbd>
 							td makes a link from the selected text
@@ -114,12 +137,15 @@ html
 							td <kbd>↑</kbd>
 							td lets you edit your previous message, if it's not too old. Use <kbd>↓</kbd> to get back
 						tr
+							td <kbd>ctrl</kbd><kbd>↑</kbd>
+							td select a message to reply to
+						tr
 							td <kbd>tab</kbd>
 							td navigates through autocompletion proposals
 						tr
 							td <kbd>esc</kbd>
 							td gets you out of an autocompletion proposal, or out of a message editing
-					p Most often, the effect of a shorctut is reversed by redoing it. 
+					p Most often, the effect of a shorctut is reversed by redoing it. Some actions like replying or editing can be cancelled with the <kbd>esc</kbd> key
 			h2 Actions on messages
 			div
 				p By hovering a message you reveal its date and a few buttons buttons allowing various actions.
@@ -169,40 +195,36 @@ html
 						code !!whiteboard
 			h2 Rooms
 			div
-				p Any user can create a new room, by clicking the relevant link on the home page. By creating a room you become his owner. You can then nominate admins or even owners.
+				p Any user can create a new room, by clicking the relevant link on the home page. By creating a room you become its owner. You can then nominate admins or even owners.
 				p A room is either
 				ul
 					li public : Anybody can enter.
 					li private : Users must be granted access by a room owner or admin. If you click the link to a private room, you'll be proposed to request access.
 				p For both types of room, authorization levels can be managed using the <kbd>Authorizations</kbd> button.
 				p A room can also be made "not listed" to prevent it to appear listed to people who don't have access to it.
-				p If you want to invite in your room a user who's already connected and in another room, the simplest solution is to ping him by typing <code>@hisusername</code>.
-				p If you want to invite somebody's who's not connected or maybe not even a user, simply give him the URL of the room.
-				p When a user wants to enter a private room before he has the right, he's offered the opportunity to request access. Users in the room see the requests and the room admins may accept or deny it.
-				h3 Private Messaging and Dialog Rooms
+				p If you want to invite in your room a user who's already connected and in another room, the simplest solution is to ping her by typing <code>@hisusername</code>.
+				p If the room is private and you're one of the admins, then you may type <code>!!summon @hisusername</code>: not only will the user be invited but you'll also have a dialog offering you to grant that user the right to enter, with the opportunity to see her profile.
+				p If you want to invite somebody's who's not connected or maybe not even a user, simply give her the URL of the room.
+				p When a user wants to enter a private room before he has the right, she's offered the opportunity to request access. Users in the room see the requests and the room admins may accept or deny the request.
+				h3 Dialog Rooms
 				div
 					p When you hover the name of a user in the left column of the window, you see a <kbd>PM</kbd> button. This button lets you enter a special room created for you and the other user and in which you can discuss privately.
 					p You'll be able to get back to this room later, either by using the same <kbd>PM</kbd> button or by looking in the <i>Dialog Rooms</i> tab of Miaou's home page.
-			h2 Video/Audio
-			div
-				p You may launch a video chat with another connected user. Simply type
-				p
-					code !!video @somebody
-				p Note that both the command (<code>video</code>) and the user name (<code>somebody</code>) are autocompleted as you type (hit <kbd>tab</kbd> to navigate through proposals).
-				p If you don't want to see or being seen, you may launch a simple audio chat using
-				p
-					code !!audio @somebody
-				p In both case, no plugin is needed in the browser, it also works on most mobile phones.
-				p Some enterprise proxies block streaming. In that case you'll only see a black rectangle instead of the other chatter.
 			h2 Commands
 			div
 				p
 					| Some commands can be issued by typing their name after <code>!!</code>. They have various effects. To get the complete list, type
 					code !!help
 				p Here are some examples of commands :
+				h3 !!afk and !!back
+				div
+					p Those commands are used to notify connected users in all the rooms you're in (including the ones you watch) that you're leaving ("away from keyboard") or that you're back. You may add a few words.
+				h3 !!pm
+				div
+					p Use <code>!!pm @someotheruser</code> to start discussing privately with another user.
 				h3 !!wiki
 				div
-					p adds to your message an abstract of a <i>en.wikipedia.org page</i>. For example :
+					p adds to your message an abstract of the <i>wikipedia.org page</i> in the language of the room. For example :
 					p
 						code !!wiki Albert Einstein
 					p Note that you may also directly insert in a message a link to a wikipedia page (in the language of your choice).
@@ -210,12 +232,23 @@ html
 				p This lets you make a message that anybody can edit.
 				h3 !!tribo
 				p <code>!!tribo @someuser</code> lets you start a game of Tribo. Just try it.
+				h3 !!video
+				div
+					p You may launch a video chat with another connected user. Simply type
+					p
+						code !!video @somebody
+					p Note that both the command (<code>video</code>) and the user name (<code>somebody</code>) are autocompleted as you type (hit <kbd>tab</kbd> to navigate through proposals).
+					p If you don't want to see or being seen, you may launch a simple audio chat using
+					p
+						code !!audio @somebody
+					p In both case, no plugin is needed in the browser, it also works on most mobile phones.
+					p Some enterprise proxies block streaming. In that case you'll only see a black rectangle instead of the other chatter.
 			h2 Miaou Development
 			div
 				h3 Technical Stack
-				p Miaou is mostly coded in JavaScript. Stuff includes node.js, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Jade, Passport.js, jQuery, sass/scss, Redis, hu.js, and nginx.
+				p Miaou is mostly coded in JavaScript. Stuff includes io.js, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Jade, Passport.js, jQuery, sass/scss, Redis, hu.js, and nginx.
 				h3 Contribute
-				p Miaou has a small source code simply structured and should remain so. You may easily dive into the code which is shared on GitHub : <a href=https://github.com/Canop/miaou target=_blank>Canop/miaou</a>. If you'd like to help, contact me in the Miaou chat or in the StackOverflow JavaScript room where I often hang out. 
+				p Miaou has a clean and organized source code and should remain so. You may easily dive into the code which is shared on GitHub : <a href=https://github.com/Canop/miaou target=_blank>Canop/miaou</a>. If you'd like to help, contact <code>@dystroy</code> in the Miaou chat room. 
 				h3 Plugins
 				p Miaou accepts server-side plugins. If you want to contribute a new feature, it probably should be done as a plugin, especially if it doesn't feel like a core feature.
 				h3 Use the software on your server

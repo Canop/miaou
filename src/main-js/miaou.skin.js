@@ -47,7 +47,7 @@ miaou(function(skin){
 
 
 	$('.Miaou-logo').on('load', function(){
-		$('path',this.getSVGDocument()).css('stroke', getCssValue('#Miaou-logo', 'color'));
+		$('path',this.getSVGDocument()).css('stroke', getCssValue(/^\.Miaou-logo$/, 'color'));
 	});
 
 });

@@ -17,6 +17,11 @@ body {
 	}
 }
 
+.Miaou-logo {
+	pointer-events: none;
+	color: $miaou-logo-color;
+}
+
 button, input[type=button], input[type=submit], input[type=reset] {
 	background-color: $button-bg-color;
     color: $button-text-color;
