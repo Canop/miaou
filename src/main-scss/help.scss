@@ -8,7 +8,7 @@ h1 {
 	@include flex(0 0 20px);
 }
 #help-nav {
-	background: $pad-background;
+	background: rgba(9,30,90,.84); //rgba(9,15,60,.8); //$pad-background;
 	position: fixed;
 	top: 0;
 	left: 0;
