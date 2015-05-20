@@ -2,7 +2,7 @@ $(function(){
 	$('h2, h3').each(function(){
 		var hash = '#' + $(this).text().replace(/\W+/g, '_');
 		if (hash==location.hash) {
-			$('body').scrollTop($(this).offset().top);
+			$('html,body').scrollTop($(this).offset().top);
 		}
 		$(this).attr('hash',hash).clone().appendTo('#help-summary');
 	});
@@ -15,7 +15,7 @@ $(function(){
 	$('h2, h3').click(function(){
 		var hash = $(this).attr('hash');
 		location.hash = hash;
-		$('body').animate({
+		$('html,body').animate({
 			scrollTop: $('#help-content [hash='+hash+']').offset().top
 		}, 500);
 	});
