@@ -121,7 +121,7 @@
 	z-index: 2;
 }
 #room-title {
-	@include flex(1);
+	@include flex(1 0);
 	#roomname {
 		color: $roomname-color;
 		text-decoration: none;
@@ -146,7 +146,7 @@
 	max-width: 1200px;
 }
 #rooms-spinner, #rooms-content {
-	@include flex(1);
+	@include flex(1 0);
 }
 #rooms-spinner {
 	@include flexbox(row, center, center);
@@ -158,6 +158,7 @@
 
 #rooms-tabs {
 	@include flexbox(row);
+	@include flex(0 0 34px);
 	.tab {
 		text-align: center;
 		padding: 5px 10px;
@@ -178,11 +179,11 @@
 		}
 	}
 	.aftertabs {
-		@include flex(1);
+		@include flex(1 0);
 	}
 }
 #rooms-page {
-	@include flex(1);
+	@include flex(1 1);
 	border-style:solid;
 	border-color: $chat-tabs-border-color;
 	border-width: 0 $chat-tabs-border-width $chat-tabs-border-width $chat-tabs-border-width;	
@@ -202,7 +203,7 @@
 				transition: background .5s;
 			}
 			.room-left {
-				@include flex(1);
+				@include flex(1 0);
 				a.room-title {
 					color: inherit;
 					margin: 4px 0;

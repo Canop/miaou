@@ -24,7 +24,7 @@
 }
 
 // examples :
-//		@include flex(1)
+//		@include flex(1 1)
 //		@include flex(1 0 25%)
 @mixin flex($values) {
 	-webkit-flex: $values;

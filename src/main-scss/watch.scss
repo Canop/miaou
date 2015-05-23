@@ -68,7 +68,7 @@
 		@include flexbox(row, center, space-between);
 		margin-bottom: 5px;
 		span {
-			@include flex(1);
+			@include flex(1 0);
 			text-align: center;
 			font-weight: bold;
 		}
