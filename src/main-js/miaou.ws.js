@@ -95,8 +95,11 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('welcome', function(){
 			info.state = 'connected';
 			gui.entered = true;
-			if (location.hash) md.focusMessage(+location.hash.slice(1));
-			else gui.scrollToBottom();
+			gui.scrollToBottom();
+			location.hash = location.hash.replace(/^#?(\d+)/, function(s,d,n){
+				md.focusMessage(+n);
+				return '';
+			});
 			usr.showEntry(locals.me);
 			if (watch.enabled) socket.emit('start_watch');
 		})
