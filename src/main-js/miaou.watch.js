@@ -46,7 +46,6 @@ miaou(function(watch, chat, locals, md, notif, ws){
 			if (otherusername) $name.text(otherusername).addClass('dialog-room');
 			else $name.text(w.name);
 			$('<a>').addClass('watch').attr('rid', w.id)
-			.attr('href', w.id) // TODO better links with room name
 			.data('watch', w)
 			.append($('<span>').addClass('count'))
 			.append($name)
@@ -54,7 +53,8 @@ miaou(function(watch, chat, locals, md, notif, ws){
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){
 			var wa = $(a).data('watch'), wb = $(b).data('watch');
-			return (interlocutor(wa)||wa.name).localeCompare((interlocutor(wb)||wb.name));
+			return	(wa.dialog-wb.dialog) ||
+				(interlocutor(wa)||wa.name).localeCompare((interlocutor(wb)||wb.name));
 		}));
 		updateDimensions();
 	}
@@ -62,6 +62,16 @@ miaou(function(watch, chat, locals, md, notif, ws){
 	// called when the initial watches are passed by the server (i.e. The local state
 	//  is the persisted one)
 	watch.started = function(){
+		location.hash = location.hash.replace(/(#|&)u=([^?&]+)/, function(snv,s,v){
+			var m = JSON.parse(decodeURIComponent(v)); 
+			for (var rid in m)  {
+				watch.incr(rid, m[rid]);
+			}
+			return s;
+		});
+		if (/#$/.test(location)) {
+			history.replaceState('', document.title, location.pathname+location.search);
+		}
 		if (locals.room.watched) return;
 		if (locals.userPrefs.otowat==="on_visit") {
 			console.log("autowatching visited room");
@@ -83,10 +93,10 @@ miaou(function(watch, chat, locals, md, notif, ws){
 		updateDimensions();
 	}
 
-	watch.incr = function(roomId){
+	watch.incr = function(roomId, n){
 		var $wc =  $('#watches .watch[rid='+roomId+'] .count');
 		if (!$wc.length) return console.log('no watch!');
-		$wc.text((+$wc.text()||0)+1);
+		$wc.text((+$wc.text()||0)+(n||1));
 		notif.setHasWatchUnseen(true);
 		updateDimensions();
 	}
@@ -103,6 +113,16 @@ miaou(function(watch, chat, locals, md, notif, ws){
 		 $('#watches .watch[rid='+roomId+'] .count').empty();
 		 if (!$('.watch .count:not(:empty)').length) notif.setHasWatchUnseen(false);
 		updateDimensions();
+	}
+
+	watch.unseens = function(){
+		var m = {};
+		$('#watches .watch').each(function(){
+			var	rid = $(this).attr('rid'),
+				count = +$('.count', this).text();
+			if (count) m[rid] = count;
+		});
+		return m;
 	}
 
 	var requiredrid;
@@ -146,5 +166,7 @@ miaou(function(watch, chat, locals, md, notif, ws){
 		requiredrid = 0;
 		$('.watch').removeClass('open').find('.watch-panel').remove();
 		ws.emit('watch_raz');
+	}).on('click', '.watch', function(){
+		location = $(this).attr('rid') + '#u=' + encodeURIComponent(JSON.stringify(watch.unseens()));	
 	});
 });
