@@ -775,17 +775,18 @@ exports.init = function(miaouConfig, cb){
 // returns a promise bound to a connection, available to issue queries
 //  The connection must be released using off
 var on = exports.on = function(val){
-	var con = new Con(), resolver = Promise.defer();
-	pool.connect(function(err, client, done){
-		if (err) {
-			resolver.reject(err);
-		} else {
-			con.client = client;
-			con.done = done;
-			resolver.resolve(val);
-		}
-	});
-	return resolver.promise.bind(con);
+	var con = new Con();
+	return new Promise(function(resolve, reject){
+		pool.connect(function(err, client, done){
+			if (err) {
+				reject(err);
+			} else {
+				con.client = client;
+				con.done = done;
+				resolve(val);
+			}
+		});
+	}).bind(con);
 }
 
 // releases the connection which returns to the pool
@@ -807,32 +808,34 @@ proto.off = function(v){
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
 //  apart if noErrorOnNoRow
 proto.queryRow = function(sql, args, noErrorOnNoRow){
-	var resolver = Promise.defer();
-	var start = Date.now();
-	this.client.query(sql, args, function(err, res){
-		//~ logQuery(sql, args);
-		var end = Date.now();
-		if (end-start>50) {
-			console.log("Slow query (" + (end-start) + " ms) :");
-			logQuery(sql, args);
-		}
-		if (err) {
-			console.log('Error in query:');
-			logQuery(sql, args);
-			resolver.reject(err);
-		} else if (res.rows.length) {
-			resolver.resolve(res.rows[0]);
-		} else if (res.rowCount) {
-			resolver.resolve(res.rowCount);
-		} else {
-			if (noErrorOnNoRow) resolver.resolve(null);
-			else resolver.reject(new NoRowError());
-		}
-	});
-	return resolver.promise.bind(this);
+	var	con = this,
+		start = Date.now();
+	return new Promise(function(resolve, reject){
+		con.client.query(sql, args, function(err, res){
+			//~ logQuery(sql, args);
+			var end = Date.now();
+			if (end-start>50) {
+				console.log("Slow query (" + (end-start) + " ms) :");
+				logQuery(sql, args);
+			}
+			if (err) {
+				console.log('Error in query:');
+				logQuery(sql, args);
+				reject(err);
+			} else if (res.rows.length) {
+				resolve(res.rows[0]);
+			} else if (res.rowCount) {
+				resolve(res.rowCount);
+			} else {
+				if (noErrorOnNoRow) resolve(null);
+				else reject(new NoRowError());
+			}
+		});
+	}).bind(this);
 }
 
 // exemple : upsert('pref', 'value', 'normal', 'player', 3, 'name', 'notif')
+// This code will be removed as soon as postgresql 9.5 is available...
 proto.upsert = function(table, changedColumn, newValue, conditions){
 	var	con = this,
 		resolver = Promise.defer(),
@@ -875,24 +878,25 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 }
 
 proto.queryRows = proto.execute = function(sql, args){
-	var resolver = Promise.defer();
-	var start = Date.now();
-	this.client.query(sql, args, function(err, res){
-		//~ logQuery(sql, args);
-		var end = Date.now();
-		if (end-start>50) {
-			console.log("Slow query (" + (end-start) + " ms) :");
-			logQuery(sql, args);
-		}
-		if (err) {
-			console.log('Error in query:');
-			logQuery(sql, args);
-			resolver.reject(err);
-		} else {
-			resolver.resolve(res.rows);
-		}
-	});
-	return resolver.promise.bind(this);
+	var	con = this,
+		start = Date.now();
+	return new Promise(function(resolve, reject){
+		con.client.query(sql, args, function(err, res){
+			//~ logQuery(sql, args);
+			var end = Date.now();
+			if (end-start>50) {
+				console.log("Slow query (" + (end-start) + " ms) :");
+				logQuery(sql, args);
+			}
+			if (err) {
+				console.log('Error in query:');
+				logQuery(sql, args);
+				reject(err);
+			} else {
+				resolve(res.rows);
+			}
+		});
+	}).bind(this);
 }
 
 ;['begin','rollback','commit'].forEach(function(s){
