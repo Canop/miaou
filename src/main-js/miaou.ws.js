@@ -87,10 +87,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('notableIds', md.updateNotableMessages)
 		.on('request', md.showRequestAccess)
 		.on('reconnect', function(){
-			console.log('RECONNECT, sending room again');
-			setTimeout(function(){
+			ws.notif.onOn();
+			//setTimeout(function(){
 				socket.emit('enter', locals.room.id);
-			}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
+			//}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
 		})
 		.on('welcome', function(){
 			info.state = 'connected';
@@ -133,7 +133,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('hist', hist.show)
 		.on('pings', notif.pings)
 		.on('rm_ping', notif.removePing)
-		.on('disconnect', function(){ console.log('DISCONNECT') })
+		.on('disconnect', ws.notif.onOff)
 		.on('enter',usr.showEntry)
 		.on('leave', usr.showLeave)
 		.on('miaou.error', md.showError)
@@ -148,10 +148,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('unwat', watch.remove)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect
-			socket.disconnect();
 			console.log('ERROR', err);
-			md.showError(err);
-			md.showError("A fatal error occurred, you're disconnected from the server (you might try refreshing the page)");
+			console.log("A fatal error occurred, you're disconnected from the server (you might try refreshing the page)");
+			socket.disconnect();
 		});
 	}
 });

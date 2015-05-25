@@ -131,13 +131,14 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		var	notification = {closelisteners:[]},
 			wab = gui.isAtBottom(),
 			$md = notification.$md = $('<div>').addClass('notification').appendTo('#notifications').data('notification', notification);
-		notification.remove = function(){
-			var f;
-			while (f = notification.closelisteners.shift()) f();
-			$md.remove();
-		}
-		notification.onclose = function(f){
-			notification.closelisteners.push(f);
+		notification.remove = function(f){
+			if (f) {
+				notification.closelisteners.push(f);
+			} else {
+				while (f = notification.closelisteners.shift()) f();
+				$md.remove();
+			}
+			return this;
 		}
 		$md.append($('<button>').addClass('remover').text('X').click(notification.remove));
 		fill($md, notification.remove);
