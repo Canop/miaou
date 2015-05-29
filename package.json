@@ -39,5 +39,12 @@
   },
   "devDependencies": {
     "stackvis": "^0.2.0"
+  },
+  "jshintConfig": {
+	"asi": true,
+	"node": true,
+	"esnext": true,
+	"laxcomma": true,
+	"-W058": true
   }
 }
