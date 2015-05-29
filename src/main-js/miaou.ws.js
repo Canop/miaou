@@ -96,7 +96,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			info.state = 'connected';
 			gui.entered = true;
 			gui.scrollToBottom();
-			location.hash = location.hash.replace(/^#?(\d+)/, function(s,d,n){
+			location.hash = location.hash.replace(/^#?(\d+)/, function(s,n){
 				md.focusMessage(+n);
 				return '';
 			});
