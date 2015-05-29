@@ -96,7 +96,7 @@ function table(cols, rows){
 
 function ratingsTable(data, userId){
 	return "## Ratings:\n" + table(
-		["Rank", "Global Rating", "Player", "Games", "Opponents", "Wins", "Losses", "Drops", "Elo 1st player", "Elo 2nd player"],
+		["Rank", "Player", "Games", "Opponents", "Wins", "Losses", "Drops", "Elo 1st player", "Elo 2nd player", "Global Rating"],
 		data.ratings
 		.filter(function(r,i){
 			r.rank = i+1;
@@ -105,7 +105,6 @@ function ratingsTable(data, userId){
 		.map(function(r){
 			return [
 				'**'+r.rank+'**',
-				'**'+Math.round(r.r)+'**',
 				r.name,
 				r.n,
 				r.nbOpponents(),
@@ -113,7 +112,8 @@ function ratingsTable(data, userId){
 				r.l,
 				r.d,
 				Math.round(r.e0),
-				Math.round(r.e1)
+				Math.round(r.e1),
+				'**'+Math.round(r.r)+'**'
 			];
 		})
 	);
