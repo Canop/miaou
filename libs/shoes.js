@@ -21,8 +21,8 @@ function Shoe(socket, completeUser){
 		this.publicUser.avs = completeUser.avatarsrc;
 		this.publicUser.avk = completeUser.avatarkey;
 	}
-	this.room;
-	this.lastMessageTime;
+	this.room = null; // will be set later
+	this.lastMessageTime = 0;
 	this.db = db;
 	socket.publicUser = this.publicUser;
 	this.emit = socket.emit.bind(socket);
@@ -92,8 +92,8 @@ Shoes.userSocket = function(userIdOrName, includeWatchers) {
 	for (var clientId in clients) {
 		var socket = io.sockets.connected[clientId];
 		if (
-			socket && socket.publicUser
-			&& (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
+			socket && socket.publicUser &&
+			(socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
 		) {
 			return socket;
 		}		

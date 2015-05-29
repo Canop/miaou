@@ -154,7 +154,7 @@ function messageWithoutUserVote(message){
 //  - the socket join the sio room whose id is the id of the room (a number)
 //     and a sio room for every watched room, with id 'w'+room.id
 function handleUserInRoom(socket, completeUser){
-	var shoe = new shoes.Shoe(socket, completeUser),
+	var	shoe = new shoes.Shoe(socket, completeUser),
 		memroom,
 		watchset = new Set, // set of watched rooms ids (if any)
 		lastmmisreply, lastmmisatleastfivelines,
@@ -308,7 +308,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on(userId)
 		.then(db.getUserById)
 		.then(function(user){
-			if (!user) throw 'User "'+username+'" not found';
+			if (!user) throw 'User "'+userId+'" not found';
 			return [user, this.getAuthLevel(shoe.room.id, user.id)]
 		})
 		.spread(function(user, authLevel){
@@ -335,7 +335,6 @@ function handleUserInRoom(socket, completeUser){
 			]
 		}).spread(function(hist, shist){
 			if (shist){
-				var ih = 0, ish = 0;
 				for (var ih=0, ish=0; ish<shist.length; ish++) {
 					var sh = shist[ish];
 					while (hist[ih].d<sh.d) ih++;
@@ -413,7 +412,7 @@ function handleUserInRoom(socket, completeUser){
 			io.sockets.in('w'+roomId).emit('watch_incr', roomId);
 			if (m.content && m.id) {
 				var r = /(?:^|\s)@(\w[\w\-]{2,})\b/g, ping;
-				while (ping=r.exec(m.content)){
+				while ((ping=r.exec(m.content))){
 					pings.push(ping[1]);
 				}
 			}

@@ -6,11 +6,10 @@ const langs = exports.all = {
 	it: { pgname:'italian' }
 };
 
-exports.legal; // codes of the languages proposed in room creation / filtering
+exports.legal = {}; // codes of the languages proposed in room creation / filtering
 
 exports.configure = function(miaou){
 	var conf = miaou.config;
-	exports.legal = {};
 	for (var key in langs) {
 		var lang = langs[key];
 		lang.name = lang.pgname[0].toUpperCase() + lang.pgname.slice(1);

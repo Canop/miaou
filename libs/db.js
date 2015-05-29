@@ -21,11 +21,11 @@
 //      this.rollback();
 //   }).finally(db.off);
 
-const Promise = require("bluebird"),
+const	Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
 	path = require("path");
 
-var pg = require('pg'),
+var	pg = require('pg'),
 	config,
 	pool;
 
@@ -396,8 +396,8 @@ proto.listUserWatches = function(userId){
 	return this.queryRows(
 		"select w.room id, r.name, r.private, r.dialog from watch w join room r on w.room=r.id"+
 		" left join room_auth a on a.room=r.id and a.player=$1"+
-		" where w.player=$1 and (r.private is false or a.auth is not null)"
-		, [userId]
+		" where w.player=$1 and (r.private is false or a.auth is not null)",
+		[userId]
 	);
 }
 

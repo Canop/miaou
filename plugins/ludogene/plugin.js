@@ -2,8 +2,9 @@
 // A valid game (even before accept) is always stored like this :
 // maybeAPingOrReply !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
-var cache = require('bounded-cache')(300),
+var	cache = require('bounded-cache')(300),
 	tribostats = require('./tribostats.js');
+	elo = require('./elo.js');
 
 var gametypes = {
 	Tribo: require('./client-scripts/Tribo.js'),
@@ -115,6 +116,10 @@ exports.registerCommands = function(cb){
 	cb({
 		name:'tribostats', fun:tribostats.onCommand,
 		help:"compute Tribo related stats for the room. Type `!!tribostats [games|players|twc|twc-final|matrix]`"
+	});
+	cb({
+		name:'triboladder', fun:elo.onCommand,
+		help:"compute an ELO based global Tribo ladder"
 	});
 }
 

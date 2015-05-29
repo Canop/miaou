@@ -68,11 +68,12 @@ exports.appPostAuths = function(req, res){
 		if (r.dialog) {
 			return server.renderErr(res, "You can't change authorizations of a dialog room");			
 		}
-		var m, actions = [];
+		var m, modifiedUserId, actions = [];
 		for (var key in req.body){
 			if (m = key.match(/^answer_request_(\d+)$/)) {
-				var accepted = req.body[key]==='grant', modifiedUserId = +m[1],
+				var	accepted = req.body[key]==='grant',
 					denyMessage = req.body['deny_message_'+m[1]];
+				modifiedUserId = +m[1];
 				if (accepted) {
 					actions.push({cmd:'insert_auth', auth:'write', user:modifiedUserId});
 					actions.push({cmd:'delete_ar', user:modifiedUserId});
@@ -83,7 +84,8 @@ exports.appPostAuths = function(req, res){
 			} else if (m = key.match(/^insert_auth_(\d+)$/)) {
 				if (req.body[key]!='none') actions.push({cmd:'insert_auth', auth:req.body[key], user:+m[1]});
 			} else if (m = key.match(/^change_auth_(\d+)$/)) {
-				var new_auth = req.body[key], modifiedUserId = +m[1];
+				var new_auth = req.body[key];
+				modifiedUserId = +m[1];
 				if (new_auth==='none') {
 					actions.push({cmd:'delete_auth', user:modifiedUserId});
 					if (r.private) {
