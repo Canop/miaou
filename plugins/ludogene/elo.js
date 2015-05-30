@@ -1,5 +1,3 @@
-// TODO:
-// - compensate the drop malus by a distribution to all other players 
 const	K = 30,
 	NB_OPPONENTS_MIN = 3;
 
@@ -43,16 +41,15 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1; 
 		this.p = 1 / ( 1 + Math.pow(10, -this.D/400)); // in ]0,1[
-		var d = K * (this.v - this.p);
-		this.d0 = d;
-		this.d1 = -d;
+		this.d0 = K * (this.v - this.p);
+		this.d1 = -this.d0;
 	} else if ( m.changed < (Date.now()/1000|0) - 2*60*60 ) {
 		if (g.current===undefined) {
 			console.log("unfinished game without current", m.id);
 			return;
 		}
 		r[g.current].d++;
-		this[g.current?'d1':'d0'] = -2*K; // yeah, it means there's some inflation, we'll see if it matters
+		this[g.current?'d1':'d0'] = -2*K; 
 		this.t = "User dropped the game.";
 	} else {
 		this.t = "Game in progress";
@@ -61,7 +58,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	r[1].e1 += this.d1;
 }
 function compute(messages){
-	var	ratingsMap = Object.create(null),	
+	var	ratingsMap = Object.create(null),
 		ratings = [],
 		log = [];
 	messages.forEach(function(m){
@@ -77,7 +74,17 @@ function compute(messages){
 			r[i].name = g.players[i].name;
 			r[i].n++;
 		}
-		log.push(new GameImpact(m, r));
+		var	gi = new GameImpact(m, r),
+			s = gi.d0 + gi.d1;
+		if (s != 0) {
+			console.log("Elo: redistributing", -s);
+			s /= -2*ratings.length;
+			for (var i=0; i<ratings.length; i++) {
+				ratings[i].e0 += s;
+				ratings[i].e1 += s;
+			}
+		}
+		log.push(gi);
 	});
 	ratings.forEach(function(r){
 		r.r = r.e0+r.e1;
