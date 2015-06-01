@@ -346,6 +346,9 @@ body.mobile #message-scroller {
 			border: 1px solid $message-content-table-border-color;
 			padding: 0 3px;
 		}
+		tr:nth-child(even) {
+			background: rgba(120,120,120,.09);
+		}
 	}
 	hr {
 		width: 100%;
