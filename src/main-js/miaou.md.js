@@ -72,7 +72,8 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	md.addSideMessageDiv = function(m, $div, $repl){
 		var	$content = $('<div>').addClass('content');
 		var $md = $('<div>').addClass('message').data('message',m).append($content).append(
-			$('<div>').addClass('nminfo').html(md.votesAbstract(m) + ' ' + time.formatTime(m.created) + ' by ' + m.authorname)
+			$('<div>').addClass('nminfo')
+			.html(md.votesAbstract(m) + ' ' + time.formatTime(m.created) + ' by ' + m.authorname)
 		);
 		if (m.author===locals.me.id) $md.addClass('me');
 		if ($repl) $repl.replaceWith($md);
@@ -130,9 +131,10 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	md.notificationMessage = function(fill){
 		var	notification = {closelisteners:[]},
 			wab = gui.isAtBottom(),
-			$md = notification.$md = $('<div>').addClass('notification').appendTo('#notifications').data('notification', notification);
+			$md = notification.$md = $('<div>').addClass('notification')
+			.appendTo('#notifications').data('notification', notification);
 		notification.remove = function(f){
-			if (f) {
+			if (typeof f === "function") {
 				notification.closelisteners.push(f);
 			} else {
 				while (f = notification.closelisteners.shift()) f();
