@@ -94,7 +94,7 @@ page-css: $(PAGES_CSS_OUT)
 	@mkdir -p $(@D)
 	@cp ./src/main-scss/*.scss ./build/themes/$*/
 	@cp ./themes/$*/*.scss ./build/themes/$*/
-	@sass -t compressed  ./build/themes/$*/main.scss > $(@D)/miaou.css
+	@sass -E utf-8 -t compressed ./build/themes/$*/main.scss > $(@D)/miaou.css
 	@cat ./plugins/*/css/*.css >> $(@D)/miaou.css
 themes: $(THEME_OUT_CSS)
 
