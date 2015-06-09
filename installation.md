@@ -188,14 +188,14 @@ Copy (and maybe complete) this:
 		listen 80;
 		root /var/www/miaou;
 		index index.html;
-		server_name www.www.yourdomain;
+		server_name www.yourdomain;
 		error_page 404 /404.html;	  	  
 	  
 		# a reverse proxy for miaou, apart static which can be directly served
 		#  (assuming the deploy script copies the static directory in /var/www/miaou/static)
 		location / {
 			access_log off;	
-			proxy_pass http://www.www.yourdomain:8204/;
+			proxy_pass http://www.yourdomain:8204/;
 			proxy_http_version 1.1;
 			proxy_set_header Upgrade $http_upgrade;
 			proxy_set_header Connection "upgrade";
