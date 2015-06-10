@@ -1,0 +1,5 @@
+# Let .git choose the correct line endings for all text files
+*           text=auto
+
+# Force .sh files to have specifics line endings
+*.sh        eol=lf
