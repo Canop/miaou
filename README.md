@@ -8,17 +8,24 @@ You can see it in action or use it on http://dystroy.org/miaou (anybody can crea
 
 To discuss the code and feature of Miaou, please come to [the dedicated room](http://dystroy.org/miaou/1?Miaou).
 
-# Contributing
-
-As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes io.js, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Jade, Passport.js, hu.js, jQuery, sass/scss, Uglify-js and nginx.
+# Installing a server
 
 A [vagrant](http://www.vagrantup.com/) configuration is available to help you set up a development environment quickly. See more information at its [documentation](vagrant/vagrant.md).
 
 If you prefer to install Miaou without vagrant, here's the [installation documentation](installation.md).
 
-If you have the ability and will to contribute, come and discuss with us. The best landing place is usually the [Miaou room](http://dystroy.org/miaou/1?Miaou) where you can ping @dystroy or @Florian. We'll show you where we manage ideas, reports, tasks and you'll see the list of tasks waiting for a volunteer.
+And if you run your own server, please tell us.
 
-And, last thing, **always test before doing a pull request**.
+# Contributing
+
+As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes io.js, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Jade, Passport.js, hu.js, jQuery, sass/scss, Uglify-js and nginx.
+
+If you have the ability and will to contribute, come and discuss with us. The best landing place is usually the [Miaou room](http://dystroy.org/miaou/1?Miaou) where you can ping @dystroy or @Florian. We'll show you where we manage ideas, reports, [tasks](https://trello.com/b/s4adghOI/miaou-tasks) and you'll see the list of tasks waiting for a volunteer.
+
+Help is welcome but remember:
+
+1. Come and discuss with us before to code
+2. And, **always test before doing a pull request**.
 
 ## License
 
