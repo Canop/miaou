@@ -13,11 +13,11 @@ function Rating(playerId){ // rating of a player
 	this.r = 0; // global rating
 	this.w = 0; // wins
 	this.l = 0; // losses
-	this.name = ''; // updated at every games
 }
 Rating.prototype.nbOpponents = function(){
 	return Object.keys(this.op).length;
 }
+
 function GameImpact(m, r){ // impact of a game (note: the constructor has side effects on r)
 	var g = m.g;
 	r[0].op[r[1].id] = (r[0].op[r[1].id] || 0) + 1;
@@ -44,19 +44,21 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		this.d0 = K * (this.v - this.p);
 		this.d1 = -this.d0;
 	} else if ( m.changed < (Date.now()/1000|0) - 2*60*60 ) {
-		if (g.current===undefined) {
-			console.log("unfinished game without current", m.id);
-			return;
-		}
 		r[g.current].d++;
 		this[g.current?'d1':'d0'] = -2*K; 
-		this.t = "User dropped the game.";
+		this.t = "User leaved";
 	} else {
 		this.t = "Game in progress";
 	}
 	r[0].e0 += this.d0;
 	r[1].e1 += this.d1;
 }
+GameImpact.prototype.gameLink = function(data){
+	return "["+data.ratingsMap[this.p0].name+" ("+(this.s||'')
+		+") - "+data.ratingsMap[this.p1].name
+		+" ("+((100-this.s)||'')+")]("+this.r+"#"+this.m+")";
+}
+
 function compute(messages){
 	var	ratingsMap = Object.create(null),
 		ratings = [],
@@ -76,7 +78,7 @@ function compute(messages){
 		}
 		var	gi = new GameImpact(m, r),
 			s = gi.d0 + gi.d1;
-		if (s != 0) {
+		if (s !== 0) {
 			console.log("Elo: redistributing", -s);
 			s /= -2*ratings.length;
 			for (var i=0; i<ratings.length; i++) {
@@ -103,7 +105,8 @@ function table(cols, rows){
 
 function ratingsTable(data, userId){
 	return "## Ratings:\n" + table(
-		["Rank", "Player", "Games", "Opponents", "Wins", "Losses", "Drops", "Elo 1st player", "Elo 2nd player", "Global Rating"],
+		["Rank", "Player", "Games", "Opponents", "Wins", "Losses", "Drops",
+		"Elo 1st player", "Elo 2nd player", "Global Rating"],
 		data.ratings
 		.filter(function(r,i){
 			r.rank = i+1;
@@ -139,7 +142,7 @@ function logTable(data, userId){
 		})
 		.map(function(e){
 			return [
-				"["+data.ratingsMap[e.p0].name+" ("+(e.s||'')+") - "+data.ratingsMap[e.p1].name+" ("+((100-e.s)||'')+")]("+e.r+"#"+e.m+")",
+				e.gameLink(data),
 				dbl(e.v), dbl(e.D), dbl(e.p),
 				dbl(e.d0), dbl(e.d1),
 				e.t || ' '	
@@ -174,7 +177,7 @@ exports.onCommand = function(ct, id){
 		return [compute(messages), userMatch ? this.getUserByName(userMatch[0].slice(1)) : null];
 	})
 	.spread(function(data, user){
-		var	c = "ELO BASED TRIBO LADDER - ALPHA TESTS" + ':\n'
+		var	c = "ELO BASED TRIBO LADDER" + ':\n'
 			showLog = /\bgames\b/.test(ct.args);
 		if (user) {
 			var r = data.ratingsMap[user.id];

@@ -268,13 +268,20 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 				}
 			}
 			if (!oldMessage) {
-				if (messages.length===0 || message.id<messages[0].id || message.created<messages[0].created) {
+				if (
+					messages.length===0
+					|| message.id<messages[0].id
+					|| message.created<messages[0].created
+				) {
 					insertionIndex = -1;
 					// the following line because of the possible special case of a
 					//  pin vote being removed by somebody's else 
 					if (message.vote && !message[message.vote]) delete message.vote; // fixme ???
 				} else {
-					while ( insertionIndex && (messages[insertionIndex].id>message.id || messages[insertionIndex].created>message.created) ){
+					while ( insertionIndex && (
+						messages[insertionIndex].id>message.id
+						|| messages[insertionIndex].created>message.created
+					) ){
 						insertionIndex--;
 					};
 				}
