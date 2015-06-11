@@ -1,11 +1,4 @@
-
-var bot;
-
 exports.name = "Dices";
-
-exports.init = function(miaou){
-	bot = miaou.bot;
-}
 
 function rollDices(ct){
 	var m = ct.args.match(/^\s*(\d+)?\s*d\s*(\d+)\s*([+-]\s*\d+)?/i);
