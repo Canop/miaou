@@ -35,7 +35,9 @@ Promise.longStackTraces(); // this will be removed in production in the future
 function Con(){}
 var proto = Con.prototype;
 
-var NoRowError = exports.NoRowError = function(){};
+var NoRowError = exports.NoRowError = function(){
+	this.message = "No Row";
+};
 NoRowError.prototype = Object.create(Error.prototype);
 
 //////////////////////////////////////////////// #users
@@ -231,11 +233,13 @@ proto.fetchRoom = function(id){
 }
 
 // returns an existing room found by its id and the user's auth level
-proto.fetchRoomAndUserAuth = function(roomId, userId){
+proto.fetchRoomAndUserAuth = function(roomId, userId, dontThrowIfNoRow){
 	if (!roomId) throw new NoRowError();
 	return this.queryRow(
-		"select id, name, description, private, listed, dialog, lang, auth from room left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2",
-		[userId, roomId]
+		"select id, name, description, private, listed, dialog, lang, auth from room"+
+		" left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2",
+		[userId, roomId],
+		dontThrowIfNoRow
 	);
 }
 

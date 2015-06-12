@@ -1,13 +1,13 @@
 "use strict";
 
-const auths = require('./auths.js'),
+const	auths = require('./auths.js'),
 	server = require('./server.js'),
 	prefs = require('./prefs.js'),
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
 	memobjects = new Map,
 	clean = require('./ws.js').clean;
 
-var langs,
+var	langs,
 	db,
 	welcomeRoomIds;
 	
@@ -120,7 +120,11 @@ exports.appPostRoom = function(req, res){
 exports.appGetRooms = function(req, res){
 	db.on(welcomeRoomIds)
 	.map(function(roomId){
-		return this.fetchRoomAndUserAuth(roomId, req.user.id)
+		return this.fetchRoomAndUserAuth(roomId, req.user.id, true)
+	})
+	.filter(function(welcomeRoom, i){
+		if (welcomeRoom) return true;
+		console.log("WARNING: missing welcome room (id is "+welcomeRoomIds[i]+")");
 	})
 	.then(function(welcomeRooms){
 		return [

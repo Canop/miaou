@@ -1,6 +1,6 @@
 "use strict";
 
-const fs = require("fs"),
+const	fs = require("fs"),
 	http = require('http'),
 	path = require('path'),
 	express = require('express'),
@@ -34,7 +34,10 @@ function configureOauth2Strategies(){
 	var impls = {
 		google: {
 			strategyConstructor: require('passport-google-oauth').OAuth2Strategy,
-			scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
+			scope: [
+				'https://www.googleapis.com/auth/userinfo.profile',
+				'https://www.googleapis.com/auth/userinfo.email'
+			]
 		}, stackexchange: {
 			strategyConstructor: require('./passport-stackexchange.js').Strategy
 		}, github: {
@@ -52,7 +55,7 @@ function configureOauth2Strategies(){
 			continue;
 		}
 		params.callbackURL = url("/auth/"+key+"/callback"); 
-		passport.use(new (impl.strategyConstructor)(params, function(accessToken, refreshToken, profile, done) {			
+		passport.use(new (impl.strategyConstructor)(params, function(accessToken, refreshToken, profile, done) {
 			db.on(profile)
 			.then(db.getCompleteUserFromOAuthProfile)
 			.then(function(user){ done(null, user) })
@@ -66,9 +69,9 @@ function configureOauth2Strategies(){
 	login.setOauth2Strategies(oauth2Strategies);
 }
 
-// defines the routes to be taken by GET and POST requests
+// define the routes to be taken by GET and POST requests
 function defineAppRoutes(){
-	var auths = require('./auths.js').configure(miaou),
+	var	auths = require('./auths.js').configure(miaou),
 		rooms = require('./rooms.js').configure(miaou),
 		messages = require('./messages.js').configure(miaou),
 		upload = require('./upload.js').configure(miaou),
@@ -96,8 +99,15 @@ function defineAppRoutes(){
 	}
 	for (var key in oauth2Strategies){
 		var s = oauth2Strategies[key];
-		app.get('/auth/'+key, passport.authenticate(key, {scope:s.scope, state:'Ohio', duration:'permanent'}));
-		app.get('/auth/'+key+'/callback', passport.authenticate(key, { failureRedirect: '/login' }), function(req, res) { res.redirect(url()) });		
+		app.get(
+			'/auth/'+key,
+			passport.authenticate(key, {scope:s.scope, state:'Ohio', duration:'permanent'})
+		);
+		app.get(
+			'/auth/'+key+'/callback',
+			passport.authenticate(key, { failureRedirect: '/login' }),
+			function(req, res) { res.redirect(url()) }
+		);
 	}
 	map('get', '/login', login.appGetLogin, true, true);
 	map('get', '/logout', login.appGetLogout, true, true);
@@ -138,7 +148,8 @@ function startServer(){
 	app.use(bodyParser.urlencoded({ extended:false }));
 	app.use(cookieParser);
 	app.use(session({
-		store: sessionStore, secret: miaou.config.secret, saveUninitialized: true, resave: true /* todo test resave false */
+		store: sessionStore, secret: miaou.config.secret,
+		saveUninitialized: true, resave: false 
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
