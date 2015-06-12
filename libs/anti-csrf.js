@@ -15,6 +15,11 @@ module.exports = function(options){
 		
 	return function(req, res, next){
 		var session = req.session;
+		if (!session) {
+			console.log("No session found. Check Redis is running")
+			res.status(500).send("Session Management Problem. Please retry later.");
+			return;
+		}
 		if (!session.secret) session.secret = (Math.random()*Math.pow(36,5)|0).toString(36);
 		if (req.method==='POST' && !whitemap.has(req.path)) {
 			var refererHost = (req.headers.referer||'').match(/^https?:\/\/([^\/\:]+)/)[1];
