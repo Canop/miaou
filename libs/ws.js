@@ -132,6 +132,7 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 			for (var j=0; j<onSendMessagePlugins.length; j++) {
 				onSendMessagePlugins[j].onSendMessage(shoe, messages[i], shoe.emit);
 			}
+			miaou.pageBoxer.onSendMessage(shoe, messages[i], shoe.emit);
 		}
 		shoe.emit('messages', messages);
 	});
@@ -403,6 +404,7 @@ function handleUserInRoom(socket, completeUser){
 			for (var p of onSendMessagePlugins) {
 				p.onSendMessage(this, m, send);
 			}
+			miaou.pageBoxer.onSendMessage(this, m, send);
 			send('message', m);
 			if (commandTask.replyContent) {
 				var txt = commandTask.replyContent;

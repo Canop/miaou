@@ -207,7 +207,8 @@ exports.start = function(config){
 	baseURL = config.server;
 	miaou = {
 		db:db,
-		config:config
+		config:config,
+		pageBoxer:require('./page-boxers.js')
 	};
 	db.init(config, function(){
 		db.on("miaou")
