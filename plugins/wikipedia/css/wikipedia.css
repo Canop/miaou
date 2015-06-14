@@ -1,10 +1,14 @@
 .box .wikipedia {
 	padding-top: 4px;
 }
+.box .wikipedia .wikipedia-icon {
+	margin: 5px;
+	max-height: 40px;
+}
 .box .wikipedia h1.firstHeading {
 	text-align: left;
-	margin-left: 10px;
+	margin-left: 60px;
 }
 .box .wikipedia .abstract {
-	margin-top: -20px;
+	margin-top: -25px;
 }

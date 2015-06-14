@@ -7,7 +7,7 @@ function abstract($, line){
 		$abstract = $('<div/>').addClass('abstract');
 	$box.append(
 		$('<a>').attr('href', line).css('text-decoration','none').attr('title',"Click here to jump to the whole article")
-		.append('<img class=miaou style="margin:3px;max-height:40px" src=static/plugins/wikipedia/rsc/Wikipedia-globe-icon.png align=left>')
+		.append('<img class=wikipedia-icon src=static/plugins/wikipedia/rsc/Wikipedia-globe-icon.png align=left>')
 		.append($('h1'))
 	);
 	$box.append($('<hr style="clear:both">'));
@@ -37,7 +37,7 @@ function abstract($, line){
 	$box.find('a[href]').attr('href', function(_,u){
 		return url.resolve(line, u)
 	}).attr('target','_blank');
-	$box.find('img:not(.miaou)').attr('src', function(_,u){
+	$box.find('img:not(.wikipedia-icon)').attr('src', function(_,u){
 		return url.resolve(line, u)
 	});
 	$box.append('<div style="clear:both"/>');
