@@ -1,0 +1,53 @@
+.box .twitter {
+	padding: 5px;
+}
+.box .twitter .tweet-first-line {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.box .twitter .twitter-icon {
+	width: 50px;
+	height: 50px;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-decoration: none;
+}
+.box .twitter .twitter-icon span {
+	color: #55acee;
+	font-family: "fontello";
+	font-size: 24px;
+}
+.box .twitter .avatar {
+	margin-right: 5px;
+	flex-shrink: 0;
+	max-width: 50px;
+	max-height: 50px;
+	border-radius: 5px;
+}
+.box .twitter .tweet-core {
+	flex-grow: 1;
+}
+.box .twitter .fullname {
+	margin-left: 10px;
+}
+.box .twitter .fullname span {
+	display: none;
+}
+.box .twitter .username, .box .twitter .time {
+	font-size: 90%;
+	opacity: .8;
+	padding: 10px;
+	text-decoration: none;
+}
+.box .twitter s {
+	text-decoration: none;
+}
+.box .twitter .cards-media-container {
+	text-align: center;
+}
+
+
