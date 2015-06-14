@@ -3,11 +3,11 @@ var	url = require('url');
 // from the jquery-like context of the input page
 // build and return the html to send to the clients
 function abstract($, line){
-	var	$box = $('<div/>'),
+	var	$box = $('<div/>').addClass('wikipedia'),
 		$abstract = $('<div/>').addClass('abstract');
 	$box.append(
-		$('<a>').attr('href', url).css('text-decoration','none').attr('title',"Click here to jump to the whole article")
-		.append('<img style="margin:3px;max-height:40px" src=http://en.wikipedia.org/favicon.ico align=left>')
+		$('<a>').attr('href', line).css('text-decoration','none').attr('title',"Click here to jump to the whole article")
+		.append('<img class=miaou style="margin:3px;max-height:40px" src=static/plugins/wikipedia/rsc/Wikipedia-globe-icon.png align=left>')
 		.append($('h1'))
 	);
 	$box.append($('<hr style="clear:both">'));
@@ -37,11 +37,11 @@ function abstract($, line){
 	$box.find('a[href]').attr('href', function(_,u){
 		return url.resolve(line, u)
 	}).attr('target','_blank');
-	$box.find('img').attr('src', function(_,u){
+	$box.find('img:not(.miaou)').attr('src', function(_,u){
 		return url.resolve(line, u)
 	});
 	$box.append('<div style="clear:both"/>');
-	return $box.html();
+	return $('<div>').append($box).html();
 }
 
 exports.init = function(miaou){

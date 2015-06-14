@@ -11,6 +11,8 @@ THEME_SRC_DIRS:=$(wildcard ./themes/*)
 THEME_OUT_CSS:=$(patsubst %, ./static/themes/%/miaou.css, $(notdir $(THEME_SRC_DIRS)))
 
 RSC_FILES:=$(patsubst ./src/rsc/%, ./static/%, $(shell find ./src/rsc/* -type f))
+PLUGIN_RSC_FILES:=$(patsubst ./%, ./static/%, $(shell find ./plugins/*/rsc/* -type f))
+
 JS2_FILES:=$(addprefix ./static/, $(addsuffix .min.js2, miaou login rooms chat.mob jquery-2.1.3 socket.io))
 
 MAIN_JS_SOURCES:=$(sort $(wildcard ./src/main-js/*.js))
@@ -21,16 +23,16 @@ MIAOU_JS_SOURCES:=$(MAIN_JS_SOURCES$) $(PLUGIN_JS_SOURCES)
 MIAOU_MODULES="$(shell cat ./build/miaou_modules.txt)"
 UGLIFY_OPTIONS=--screw-ie8 -cmt --reserved $(MIAOU_MODULES)
 
-.PHONY: clean page-js page-css themes rsc main-js js2-files debug
+.PHONY: clean page-js page-css themes rsc main-js js2-files plugins-rsc debug
 
-all: page-js page-css themes rsc main-js js2-files
+all: page-js page-css themes rsc main-js js2-files plugins-rsc
 
 clean:
 	rm -rf ./static/*
 	rm -rf ./build
 	
 debug: ./build/miaou_modules.txt
-	@echo $(UGLIFY_OPTIONS)
+	@echo $(PLUGIN_RSC_FILES)
 	
 # list of client miaou modules
 #  note: a $ in a regular expression here must be escaped as $$
@@ -68,6 +70,12 @@ page-js: ./build/miaou_modules.txt $(PAGES_JS_OUT)
 	@mkdir -p $(@D)
 	@cp $< $@
 rsc: $(RSC_FILES)
+
+# constant resource files of plugins
+./static/plugins/%: ./plugins/%
+	@mkdir -p $(@D)
+	@cp $< $@
+plugins-rsc: $(PLUGIN_RSC_FILES)
 
 # CSS of specific pages : static/[somepage].css
 ./build/page-scss/%.css: ./src/page-scss/%.scss 
