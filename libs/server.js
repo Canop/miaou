@@ -11,7 +11,6 @@ const	fs = require("fs"),
 	naming = require('./naming.js'),
 	session = require('express-session'),
 	RedisStore = require('connect-redis')(session),
-	sessionStore = new RedisStore({}),
 	oauth2Strategies = {},
 	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i;
 
@@ -136,6 +135,7 @@ function startServer(){
 	naming.configure(miaou);
 
 	var cookieParser = require('cookie-parser')(miaou.config.secret);
+	var sessionStore = new RedisStore(miaou.config.redisStore || {});
 	app = express();
 	server = http.createServer(app);
 	app.disable('x-powered-by');
@@ -215,7 +215,7 @@ exports.start = function(config){
 		.then(db.getBot)
 		.then(function(b){
 			miaou.bot = b;
- 			if (config.botAvatar.src!==b.avatarsrc || config.botAvatar.key!==b.avatarkey) {
+			if (config.botAvatar.src!==b.avatarsrc || config.botAvatar.key!==b.avatarkey) {
 				b.avatarsrc = config.botAvatar.src;
 				b.avatarkey = config.botAvatar.key;
 				return this.updateUser(b)
