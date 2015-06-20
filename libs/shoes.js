@@ -1,6 +1,7 @@
-
 // A shoe wraps a socket and is provided to controlers and plugins.
 // It's kept in memory by the closures of the socket event handlers
+
+'use strict';
 
 var io, db, onSendMessagePlugins;
 	

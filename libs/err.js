@@ -1,3 +1,4 @@
+'use strict';
 
 function ClientError(message) {
     this.message = message;

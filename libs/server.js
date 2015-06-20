@@ -134,8 +134,9 @@ function defineAppRoutes(){
 function startServer(){
 	naming.configure(miaou);
 
-	var cookieParser = require('cookie-parser')(miaou.config.secret);
-	var sessionStore = new RedisStore(miaou.config.redisStore || {});
+	var	cookieParser = require('cookie-parser')(miaou.config.secret),
+		RedisStore = require('connect-redis')(session),
+		sessionStore = new RedisStore(miaou.config.redisStore || {});
 	app = express();
 	server = http.createServer(app);
 	app.disable('x-powered-by');

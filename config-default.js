@@ -43,10 +43,8 @@ module.exports = {
 		native_pg: false // let it to false unless you're a wizard
 	},
 
-	// connect-redis RedisStore options. Leave empty to use default ones
+	// connect-redis session store options. Leave empty to use default ones 
 	redisStore: {
-		//host: yourdomain,
-		//port: 6379
 	},
 
 	// list of the plugins you want to activate. You may add your ones
