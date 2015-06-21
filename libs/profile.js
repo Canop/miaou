@@ -20,7 +20,7 @@ exports.configure = function(miaou){
 var avatarsrc = exports.avatarsrc = function(source, key){
 	if (!key) return;
 	if (/^https?:\/\//.test(key)) return key; // this is hacky...
-	return 'http://avatars.io/'+source+'/'+key+'?size=large';
+	return 'https://avatars.io/'+source+'/'+key+'?size=large';
 }
 
 // Checks that the profile is complete enough to be used for the chat

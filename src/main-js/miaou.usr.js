@@ -9,7 +9,10 @@ miaou(function(usr, ed, locals, mod, time, ws){
 	usr.avatarsrc = function(o){
 		if (!o.avk) return;
 		if (/^https?:\/\//.test(o.avk)) return o.avk; // this is hacky...
-		return 'http://avatars.io/'+o.avs+'/'+o.avk+'?size=large';
+		if (o.avs==="gravatar") { // because avatars.io redirects https to http, I try to avoid it
+			return "https://www.gravatar.com/avatar/"+o.avk+"?s=200";
+		}
+		return 'https://avatars.io/'+o.avs+'/'+o.avk+'?size=large';
 	}
 
 	function $user(user){

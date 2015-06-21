@@ -15,7 +15,7 @@ miaou(function(ed){
 		xhr.onload = function() {
 			var ans = JSON.parse(xhr.responseText);
 			finish();
-			if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link);
+			if (ans.image && ans.image.link) $('#input').insertLine(ans.image.link.replace(/^http:/,'https:'));
 			else alert("Hu? didn't exactly work, I think...");
 			console.log("Image upload result:", ans);
 			document.getElementById('file').value = null;

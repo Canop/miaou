@@ -13,7 +13,7 @@ var	http = require('http'),
 	tasks = new Deque(2000), currentTask;
 	
 function logoCDN(task){
-	var img = '<img src=http://cdn.sstatic.net/'+task.site.split('.')[0];
+	var img = '<img src=https://cdn.sstatic.net/'+task.site.split('.')[0];
 	if (task.meta) img += 'meta';
 	img += '/img/apple-touch-icon.png width=40>';
 	return img;
@@ -49,7 +49,7 @@ var handlers = {
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 
 			main += '<a target=_blank class=so-title href="'+task.line+'">'+
-				'<img src=http://cdn.sstatic.net/'+task.site+'/img/apple-touch-icon.png width=40>'+
+				'<img src=https://cdn.sstatic.net/'+task.site+'/img/apple-touch-icon.png width=40>'+
 				item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
