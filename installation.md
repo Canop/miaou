@@ -186,6 +186,13 @@ Copy (and maybe complete) this:
 
 	 server {
 		listen 80;
+		
+		# remove the 4 following lines if you don't want to serve miaou over https
+		listen 443 ssl;
+		if ($ssl_protocol = "") {
+            rewrite ^ https://$host$request_uri? permanent;
+        }
+		
 		root /var/www/miaou;
 		index index.html;
 		server_name www.yourdomain;
