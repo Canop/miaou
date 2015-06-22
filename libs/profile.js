@@ -17,9 +17,13 @@ exports.configure = function(miaou){
 	return this;
 }
 
+// Problem: the exact same code is duplicated here and in src/main-js/miaou.usr.js 
 var avatarsrc = exports.avatarsrc = function(source, key){
 	if (!key) return;
 	if (/^https?:\/\//.test(key)) return key; // this is hacky...
+	if (source==="gravatar") { // because avatars.io redirects https to http, I try to avoid it
+		return "https://www.gravatar.com/avatar/"+key+"?s=200";
+	}
 	return 'https://avatars.io/'+source+'/'+key+'?size=large';
 }
 
@@ -70,7 +74,7 @@ exports.appAllUsername = function(req, res){
 exports.appGetPublicProfile = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 	var userId = +req.query.user, roomId = +req.query.room;
-	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
+	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile }).map(function(p){
 		return { name:p.name, ep:p.externalProfile }
 	});
 	if (!userId || !roomId) return server.renderErr(res, 'room and user must be provided');
