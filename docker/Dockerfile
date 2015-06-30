@@ -20,20 +20,11 @@ RUN \
 	apt-get -y upgrade
 
 
-# Install Ubuntu miscellaneous packages (mostly used to build dependencies)
+
+# Install Ubuntu miscellaneous packages
 RUN \
 	apt-get install -y \
-		build-essential \
-		software-properties-common \
-		curl apt-transport-https
-
-
-
-# Install Python (used to build NPM dependencies)
-RUN \
-	apt-get install -y \
-		python python-dev \
-		python-pip python-virtualenv
+		make curl apt-transport-https
 
 
 
@@ -41,7 +32,8 @@ RUN \
 RUN \
 	apt-get install -y \
 		ruby ruby-dev ruby-bundler && \
-	gem install sass
+	gem install \
+		sass
 
 
 
@@ -50,14 +42,17 @@ RUN \
 	echo 'deb https://deb.nodesource.com/iojs_2.x trusty main' > /etc/apt/sources.list.d/nodesource.list && \
 	curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
 	apt-get update && \
-	apt-get install -y iojs && \
-	npm install -g nodemon uglify-js buster
+	apt-get install -y \
+		iojs && \
+	npm install -g \
+		nodemon uglify-js buster
 
 
 
-# Clean apt-get cache
+# Clean apt-get (it's worth nothing)
 RUN \
-	apt-get clean
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
 
 
 
