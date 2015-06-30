@@ -65,7 +65,7 @@ Select `Web application` as *Application type*, set `http://miaou.dev` as *Autho
 Now you'll be given a *Client ID* and a *Client secret* that you'll have to copy/paste in the `config.js` file.
  
  8. At this point, you should be able to start Miaou. 
-Go back to the Miaou container (see step 4. if you exited the container) and run the application with `nodemon main.js` (thanks to nodemon, the server will restart automatically after each file modification).
+Go back to the Miaou container (see step 4. if you exited the container), run `make` to build all Miaou assets, then run the application with `nodemon main.js` (thanks to nodemon, the server will restart automatically after each file modification).
  
  9. Finally, update your own **hosts file** (e.g. `C:\Windows\System32\drivers\etc\hosts` on Windows) to bind the VM IP address to `miaou.dev`.
 You can check the VM IP by running `docker-machine ip dev` in your host terminal. Typically, it should be `192.168.99.100`.
