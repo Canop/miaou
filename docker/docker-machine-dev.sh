@@ -19,11 +19,11 @@ eval "$(docker-machine env dev)"
 # alias dstop-all='docker stop $(docker ps -q)'
 docker-machine ssh dev "echo \"alias dstop-all='docker stop \$(docker ps -q)'\" >> ~/.ashrc"
 
-# alias drm-all='docker rm $(docker ps -a -q)'
-docker-machine ssh dev "echo \"alias drm-all='docker rm \$(docker ps -a -q)'\" >> ~/.ashrc"
+# alias drm-all='docker rm $(docker ps -q --filter status=exited)'
+docker-machine ssh dev "echo \"alias drm-all='docker rm \$(docker ps -q --filter status=exited)'\" >> ~/.ashrc"
 
-# alias drmi-notag='docker rmi $(docker images -q --filter "dangling=true")'
-docker-machine ssh dev "echo \"alias drmi-notag='docker rmi \$(docker images -q --filter \"dangling=true\")'\" >> ~/.ashrc"
+# alias drmi-notag='docker rmi $(docker images -q --filter dangling=true)'
+docker-machine ssh dev "echo \"alias drmi-notag='docker rmi \$(docker images -q --filter dangling=true)'\" >> ~/.ashrc"
 
 # alias dclean-volumes='docker run --rm -v /var/run/docker.sock:/var/run/docker.sock:ro -v /var/lib/docker:/var/lib/docker martin/docker-cleanup-volumes:1.6.2'
 docker-machine ssh dev "echo \"alias dclean-volumes='docker run --rm -v /var/run/docker.sock:/var/run/docker.sock:ro -v /var/lib/docker:/var/lib/docker martin/docker-cleanup-volumes:1.6.2'\" >> ~/.ashrc"
