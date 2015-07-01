@@ -169,7 +169,7 @@ Use the script:
 
 # Configure a reverse proxy with nginx (optional)
 
-This makes it easy to share the 80 port with other applications and to let nginx serve static resources for better performances.
+This makes it easy to share the 80 port with other applications and to let nginx serve static resources for better performances. It's also the recommended solution to serve Miaou in HTTPS.
 
 Be careful that most servers aren't able to proxy websockets, which results in Miaou falling back to slow protocols. Don't try to use another server than nginx unless you really know what you do and how to check websockets correcly pass trough.
 
@@ -187,11 +187,13 @@ Copy (and maybe complete) this:
 	 server {
 		listen 80;
 		
-		# remove the 4 following lines if you don't want to serve miaou over https
+		# remove the following lines if you don't want to serve miaou over https
 		listen 443 ssl;
 		if ($ssl_protocol = "") {
-            rewrite ^ https://$host$request_uri? permanent;
-        }
+			rewrite ^ https://$host$request_uri? permanent;
+		}
+		ssl_certificate some-path.crt;
+		ssl_certificate_key some-other-path.key; 
 		
 		root /var/www/miaou;
 		index index.html;
