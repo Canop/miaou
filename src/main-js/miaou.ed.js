@@ -18,33 +18,53 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		return lines.map(function(l){ return on ? l.replace(r,'') : insert+l }).join('\n');
 	}
 
+	function _send(txt){
+		$input.val('');
+		var m = {content: txt};
+		if (editedMessage) {
+			m.id = editedMessage.id;
+			$('#cancelEdit').hide();
+			$('#help').show();
+			if (stash) $input.val(stash);
+			ed.cancelEdit();
+		}
+		if ($autocompleter) $autocompleter.remove();
+		ed.cancelReply();
+		stash = null;
+		chat.sendMessage(m);
+		$('#preview').html('');
+		if (!gui.mobile) $input.focus();
+	}
+
 	function sendInput(){
 		notif.userAct();
 		var txt = $input.val().replace(/\s+$/,'');
 		if (txt.length > chat.config.maxMessageContentSize) {		
 			miaou.dialog({
 				title: "Message too big",
-				content: "Messages can't be more than "+chat.config.maxMessageContentSize+" characters long.\nYour message is "+txt.length+" characters long."
+				content: "Messages can't be more than "+chat.config.maxMessageContentSize+
+					" characters long.\nYour message is "+txt.length+" characters long."
 			});
 			return;
 		}
-		if (txt.replace(replyRegex,'').length){
-			$input.val('');
-			var m = {content: txt};
-			if (editedMessage) {
-				m.id = editedMessage.id;
-				$('#cancelEdit').hide();
-				$('#help').show();
-				if (stash) $input.val(stash);
-				ed.cancelEdit();
-			}
-			if ($autocompleter) $autocompleter.remove();
-			ed.cancelReply();
-			stash = null;
-			chat.sendMessage(m);
-			$('#preview').html('');
-			if (!gui.mobile) $input.focus();
+		if (!txt.replace(replyRegex,'').length) return;
+		if (/(^|\W)@room\b/.test(txt) && usr.nbRecentUsers()>9) {
+			miaou.dialog({
+				title: "@room ping",
+				content: "Do you really want to ping every users of this room, even the not"+
+					" connected ones ?",
+				buttons: {
+					"Yes":function(){ _send(txt) },
+					"Change it to @here":function(){
+						_send(txt.replace(/(^|\W)@room\b/g,'$1@here'))
+					},
+					"Wait. No!":null
+				}
+			});
+			return;
 		}
+		_send(txt);
+
 	}
 
 	// returns the currently autocompletable typed name, if any
