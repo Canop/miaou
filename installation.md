@@ -156,10 +156,16 @@ You need to set up at least one OAuth provider.
 * StackExchange: create an OAuth account on http://stackapps.com/apps/oauth/
 * Github: create an OAuth account on https://github.com/settings/applications
 
-With Google at least the same account can be used both for your local tests and for the deployement on a public server. Don't forget to register the callback with adresss `127.0.0.1`, not `localhost`.
-
 Fill the relevant parts of the configuration `config.js`.
 
+With Google at least the same account can be used both for your local tests and for the deployement on a public server. Don't forget to register the callback with adresss `127.0.0.1`, not `localhost`.
+
+For example with Google OAuth2, the registered callbacks used for the dystroy Miaou server are
+
+	http://127.0.0.1:8204/auth/google/callback
+	https://dystroy.org/miaou/auth/google/callback
+
+The first one is for the local tests, the second one for the public server.
 
 # start, stop, restart the application
 
