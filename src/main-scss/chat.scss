@@ -553,7 +553,7 @@ body.mobile .message-menu .vote {
 		}
 	}
 	.content {
-		opacity: 0.8;
+		opacity: 0.9;
 	}
 	.closed {
 		max-height: 48px;
@@ -995,7 +995,7 @@ div#notifs {
 	.tab {
 		display: table-cell;
 		text-align: center;
-		padding: 5px;
+		padding: 8px;
 		border-style:solid;
 		border-color:  $chat-tabs-border-color;
 		border-width: 0 0 $chat-tabs-border-width 0;

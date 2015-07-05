@@ -8,7 +8,7 @@ $left-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%
 $right-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) ) !default;
 $box-background: white !default;
 
-$general-text-color: black !default;
+$general-text-color: #222 !default;
 $title-text-color: #655 !default;
 $message-list-bg: white !default;
 $message-me-bg: rgba(240,234,214,0.5) !default;
@@ -134,7 +134,7 @@ $usename-page-color: black !default;
 $logo-bg-color: $bg-color !default;
 
 // side tabs
-$chat-tabs-border-color: #655 !default;
+$chat-tabs-border-color: #988 !default;
 $chat-tabs-border-width: 1px !default;
 $chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.01),rgba(0,0,0,0.07)) !default;
 $chat-tabs-selected-bg-image: none !default;

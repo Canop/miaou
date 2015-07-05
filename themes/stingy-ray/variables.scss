@@ -2,11 +2,13 @@
 
 $bg-color: white;
 $left-background: #222;
-$pad-background: rgba(9,30,90,.7);
+$pad-background: rgb(81, 96, 139);
+//$pad-background: rgba(9,30,90,.7);
 $right-background: #e5e7eb;
 $box-background: white;
 
-$title-text-color: black;
+$general-text-color: #222;
+$title-text-color: #333;
 
 // home
 $home-top-bg: #51608a;
@@ -56,7 +58,7 @@ $mobile-tab-color: #444;
 
 // #users
 $user-text-color-in-user-list: #999;
-$connected-user-text-color-in-user-list: white;
+$connected-user-text-color-in-user-list: #eee;
 $connected-user-bg-color-in-user-list: #444;
 
 // user in message
@@ -67,9 +69,9 @@ $hovered-user-color-shadow-in-messages: 4px 0 0;
 $message-me-bg: rgba(229,231,235,0.45);
 
 // profile
-$user-profile-title-color: white;
+$user-profile-title-color: rgba(255,255,255,.9);
 $user-def-color: rgba(255,255,255,.75);
-$profile-text-color: white;
+$profile-text-color: rgba(255,255,255,.9);
 $profile-bg: rgba(9,30,90,1);
 $profile-box-shadow: none;
 
@@ -93,7 +95,7 @@ $pad-room-desc-bg: $right-background;
 $pad-room-last-message-bg: #eee;
 $pad-room-last-message-border-top: #aaa;
 $room-tab-bg-color: white;
-$selected-room-tab-color: black;
+$selected-room-tab-color: #222;
 $hovered-room-tab-color: #eee;
 $unselected-room-tab-color: #ccc;
 $opacity-behind-open-top: 1;
@@ -111,6 +113,14 @@ $hist-vis-day-background: #444;
 $hist-hover-day-background: #51608a;
 $hist-bar-color: $right-background;
 $hist-bubble-background: #51608a;
+
+// side tabs
+$chat-tabs-border-color: #bbc;
+$chat-tabs-border-width: 1px;
+$chat-tabs-selected-bg-image: none;
+$chat-tabs-unselected-bg-color: transparent;
+$chat-tabs-selected-bg-color: white; 
+$chat-page-selected-bg: white;
 
 // side messages
 $side-message-border-top: thin solid rgba(255,255,255,0.1);
