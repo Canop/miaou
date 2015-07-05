@@ -2,7 +2,7 @@
 
 # Introduction
 
-This documentation describes the long installation process. There is an alternative: you may use vagrant instead (see [related documentation](vagrant/vagrant.md)).
+This documentation describes the long installation process. There is an alternative: you may use [vagrant](vagrant/vagrant.md) or [docker](docker/README.md) instead.
 
 It also assumes you're on a recent Ubuntu *(help needed for the doc on other distributions)*.
 

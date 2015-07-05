@@ -43,3 +43,9 @@ miaou.pid
 # vagrant
 .vagrant/
 vagrant/manifests/modules/*
+
+# docker
+!docker/config.js
+
+# IDE metadata
+.idea/

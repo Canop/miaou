@@ -1,0 +1,6 @@
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-machine-dev.*
+README.md
+config.js

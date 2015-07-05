@@ -1,0 +1,37 @@
+miaou:
+  build: .
+  ports:
+    - "8204"
+  volumes:
+    - ..:/var/www/html
+  links:
+    - proxy
+    - postgres
+    - redis
+  environment:
+    # Proxy configuration
+    VIRTUAL_HOST: miaou.dev
+    VIRTUAL_PORT: 8204
+
+proxy:
+  image: jwilder/nginx-proxy
+  ports:
+    - "80:80"
+  volumes:
+    - /var/run/docker.sock:/tmp/docker.sock:ro
+
+postgres:
+  image: postgres
+  ports:
+    - "5432"
+  volumes:
+    - /var/lib/postgresql/data
+  environment:
+    POSTGRES_USER: miaou
+    POSTGRES_PASSWORD: miaou
+    PGPASSWORD: miaou
+
+redis:
+  image: redis
+  ports:
+    - "6379"
