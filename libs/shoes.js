@@ -3,9 +3,10 @@
 
 'use strict';
 
-var io, db, onSendMessagePlugins;
+var miaou, io, db, onSendMessagePlugins;
 	
-exports.configure = function(miaou){
+exports.configure = function(_miaou){
+	miaou = _miaou;
 	io = miaou.io;
 	db = miaou.db;
 }
@@ -111,6 +112,7 @@ Shoes.botMessage = function(bot, content){
 		m.avk = bot.avatarkey;
 		m.bot = true;
 		m.room = shoe.room.id;
+		miaou.pageBoxer.onSendMessage(this, m, shoe.emitToRoom.bind(shoe));
 		shoe.emitToRoom('message', m);
 	}).finally(this.db.off);
 }

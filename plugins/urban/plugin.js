@@ -28,15 +28,9 @@ exports.init = function(miaou){
 }
 
 function onCommand(ct){
-	var	m = ct.message,
-		done = false;
-	m.content = m.content.replace(/!!urban\s+([^\s\n][^\n]+)/, function(_, searched, pos){
-		done = true;
-		var r = 'http://www.urbandictionary.com/define.php?term='+encodeURIComponent(searched.trim());
-		if (pos>3) r = '\n'+r; 
-		return r;
-	});
-	if (!done) throw 'Bad syntax. Use `!!urban what you want to search on urban dictionary`';
+	var	m = ct.message.content.match(/!!urban\s+([^\s\n][^\n]+)/);
+	if (!m) throw 'Bad syntax. Use `!!wiki what you want to search on Urban Dictionary`';
+	ct.reply('\nhttp://www.urbandictionary.com/define.php?term='+encodeURIComponent(m[1].trim()))
 }
 
 exports.registerCommands = function(cb){

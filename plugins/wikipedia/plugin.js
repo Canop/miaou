@@ -6,7 +6,8 @@ function abstract($, line){
 	var	$box = $('<div/>').addClass('wikipedia'),
 		$abstract = $('<div/>').addClass('abstract');
 	$box.append(
-		$('<a>').attr('href', line).css('text-decoration','none').attr('title',"Click here to jump to the whole article")
+		$('<a>').attr('href', line).css('text-decoration','none')
+		.attr('title',"Click here to jump to the whole article")
 		.append('<img class=wikipedia-icon src=static/plugins/wikipedia/rsc/Wikipedia-globe-icon.png align=left>')
 		.append($('h1'))
 	);
@@ -52,15 +53,9 @@ exports.init = function(miaou){
 }
 
 function onCommand(ct){
-	var	m = ct.message,
-		done = false;
-	m.content = m.content.replace(/!!wiki\s+([^\s\n][^\n]+)/, function(_, searched, pos){
-		done = true;
-		var r = 'http://'+ct.shoe.room.lang+'.wikipedia.org/wiki/'+encodeURIComponent(searched.trim());
-		if (pos>3) r = '\n'+r; // due to how commands are parsed, it can only be after a ping or a reply
-		return r;
-	});
-	if (!done) throw 'Bad syntax. Use `!!wiki what you want to search on wikipedia`';
+	var	m = ct.message.content.match(/!!wiki\s+([^\s\n][^\n]+)/);
+	if (!m) throw 'Bad syntax. Use `!!wiki what you want to search on wikipedia`';
+	ct.reply('\nhttps://'+ct.shoe.room.lang+'.wikipedia.org/wiki/'+encodeURIComponent(m[1].trim()));
 }
 
 exports.registerCommands = function(cb){
