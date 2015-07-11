@@ -53,9 +53,7 @@ exports.init = function(miaou){
 }
 
 function onCommand(ct){
-	var	m = ct.message.content.match(/!!wiki\s+([^\s\n][^\n]+)/);
-	if (!m) throw 'Bad syntax. Use `!!wiki what you want to search on wikipedia`';
-	ct.reply('\nhttps://'+ct.shoe.room.lang+'.wikipedia.org/wiki/'+encodeURIComponent(m[1].trim()));
+	ct.reply('\nhttps://'+ct.shoe.room.lang+'.wikipedia.org/wiki/'+encodeURIComponent(ct.args));
 }
 
 exports.registerCommands = function(cb){

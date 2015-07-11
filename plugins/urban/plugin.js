@@ -28,9 +28,7 @@ exports.init = function(miaou){
 }
 
 function onCommand(ct){
-	var	m = ct.message.content.match(/!!urban\s+([^\s\n][^\n]+)/);
-	if (!m) throw 'Bad syntax. Use `!!wiki what you want to search on Urban Dictionary`';
-	ct.reply('\nhttp://www.urbandictionary.com/define.php?term='+encodeURIComponent(m[1].trim()))
+	ct.reply('\nhttp://www.urbandictionary.com/define.php?term='+encodeURIComponent(ct.args))
 }
 
 exports.registerCommands = function(cb){
