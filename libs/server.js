@@ -128,6 +128,9 @@ function defineAppRoutes(){
 	map('post', '/error', clienterrors.appPostError, true, true);
 	map('get', '/json/rooms', rooms.appGetJsonRooms);
 	map('get', '/json/messages/last', messages.appGetJsonLastMessages, true, true);
+	miaou.plugins.forEach(function(p){
+		if (p.registerRoutes) p.registerRoutes(map);
+	});
 }
 
 // starts the whole server, both regular http and websocket
@@ -159,7 +162,10 @@ function startServer(){
 		if (p.appuse) app.use(p.appuse);
 	});
 
-	app.use(require('./anti-csrf.js')({ whitelist:['/upload', '/error'] }));
+	var anticsrf = require('./anti-csrf.js');
+	anticsrf.whitelist('/upload');
+	anticsrf.whitelist('/error');
+	app.use(anticsrf.filter);
 	
 	app.use(function(req, res, next){
 		res.set("X-Frame-Options", "deny");
