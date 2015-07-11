@@ -95,7 +95,9 @@ function eventToMarkdown(data){
 	var txt = '';
 	if (data.commits) {
 	       txt += "## Commits:\n-|-|-\n"+data.commits.map(function(c){
-		       return '['+c.timestamp+']('+c.url+')|'+c.committer.name+'|'+c.message+'\n';
+			return '['+c.timestamp+']('+c.url+')|'
+			+c.committer.name+'|'
+			+c.message.split('\n',1)[0]+'\n';
 	       }).join('');
 	}
 	if (data.compare) {
