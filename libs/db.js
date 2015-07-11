@@ -881,7 +881,13 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 	return resolver.promise.bind(this);	
 }
 
-proto.queryRows = proto.execute = function(sql, args){
+proto.queryRows = function(sql, args){
+	return this.execute(sql, args).then(function(res){
+		return res.rows;
+	});
+}
+
+proto.execute = function(sql, args){
 	var	con = this,
 		start = Date.now();
 	return new Promise(function(resolve, reject){
@@ -897,7 +903,7 @@ proto.queryRows = proto.execute = function(sql, args){
 				logQuery(sql, args);
 				reject(err);
 			} else {
-				resolve(res.rows);
+				resolve(res);
 			}
 		});
 	}).bind(this);

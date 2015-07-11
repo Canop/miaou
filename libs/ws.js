@@ -138,6 +138,24 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 	});
 }
 
+// to be used by bots, creates a message, store it in db and emit it to the room
+exports.botMessage = function(bot, roomId, content){
+	if (!roomId) throw "missing room Id";
+	db.on({content:content, author:bot.id, room:roomId, created:Date.now()/1000|0})
+	.then(db.storeMessage)
+	.then(function(m){
+		m.authorname = bot.name;
+		m.avs = bot.avatarsrc;
+		m.avk = bot.avatarkey;
+		m.bot = true;
+		m.room = roomId;
+		miaou.pageBoxer.onSendMessage(this, m, function(t,c){
+			emitToRoom(roomId, t, c);	
+		});
+		emitToRoom(roomId, 'message', m);
+	}).finally(db.off);
+}
+
 // builds an unpersonnalized message. This avoids requerying the DB for the user
 //  (messages are normally sent with the vote of the user)
 function messageWithoutUserVote(message){

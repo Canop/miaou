@@ -3,7 +3,11 @@
 
 'use strict';
 
-var miaou, io, db, onSendMessagePlugins;
+var	miaou,
+	io,
+	db,
+	ws = require('./ws.js'),
+	onSendMessagePlugins;
 	
 exports.configure = function(_miaou){
 	miaou = _miaou;
@@ -103,18 +107,7 @@ Shoes.userSocket = function(userIdOrName, includeWatchers) {
 }
 // to be used by bots, creates a message, store it in db and emit it to the room
 Shoes.botMessage = function(bot, content){
-	var shoe = this;
-	this.db.on({content:content, author:bot.id, room:this.room.id, created:Date.now()/1000|0})
-	.then(db.storeMessage)
-	.then(function(m){
-		m.authorname = bot.name;
-		m.avs = bot.avatarsrc;
-		m.avk = bot.avatarkey;
-		m.bot = true;
-		m.room = shoe.room.id;
-		miaou.pageBoxer.onSendMessage(this, m, shoe.emitToRoom.bind(shoe));
-		shoe.emitToRoom('message', m);
-	}).finally(this.db.off);
+	ws.botMessage(bot, this.room.id, content);
 }
 
 // gives the ids of the rooms to which the user is currently connected (either directly or via a watch)

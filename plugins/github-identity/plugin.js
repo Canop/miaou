@@ -1,4 +1,5 @@
-
+// the github-identity plugin lets user prove what GitHub user
+// they are in Miaou
 var	Promise = require("bluebird"),
 	config,
 	request = require('request');
