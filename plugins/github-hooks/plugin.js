@@ -69,6 +69,23 @@ function unwatchRepo(ct, repo){
 		ct.reply("The room is unhooked from "+repo);
 	}).finally(db.off);
 }
+function listRepos(ct){
+	return db.on()
+	.then(function(){
+		return this.queryRows("select repo from github_hook_room where room=$1", [ct.shoe.room.id]);
+	})
+	.then(function(rows){
+		if (rows.length) {
+			ct.reply(
+				"Watched repositories:\n"+rows.map(function(row){
+					return "* ["+row.repo+"](https://github.com/"+row.repo+")";
+				}).join('\n')
+			);
+		} else {
+			ct.reply("No repository is watched in this room");
+		}
+	}).finally(db.off);
+}
 
 function checkAdmin(ct){
 	if (!(ct.shoe.room.auth==='admin'||ct.shoe.room.auth==='own')) {
@@ -84,6 +101,9 @@ function onCommand(ct){
 	if (m=ct.args.match(/^unwatch ([\w-]+\/[\w-]+)/)) {
 		checkAdmin(ct);
 		return unwatchRepo.call(this, ct, m[1]);
+	}
+	if (ct.args==="list") {
+		return listRepos.call(this, ct);
 	}
 	ct.reply("Command not understood", true);
 }
@@ -210,7 +230,7 @@ function githubCalling(req, res){
 }
 exports.registerRoutes = function(map){
 	require('../../libs/anti-csrf.js').whitelist(webhookroute);
-	map('get', webhookroute, githubCalling, true, true);
+	// map('get', webhookroute, githubCalling, true, true);
 	map('post', webhookroute, githubCalling, true, true);
 }
 
