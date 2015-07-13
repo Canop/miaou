@@ -92,7 +92,7 @@ function link(o, label, url){
 	return "["
 	+ (label||o.full_name||o.name||o.title||o.page_name||o.login||o.timestamp||o.id)
 	+ "]("
-	+ (url||o.html_url||o.url)
+	+ (url||o.html_url||o.url||("https://github.com/"+o.login))
 	+ ")";
 }
 
@@ -127,12 +127,12 @@ function eventToMarkdown(event, data){
 	}
 	if (event==='issue_comment') {
 		big.push(link(data.sender) + " commented an issue in " + link(repo));
-		small.push("Issue: " + link(data.issue));
+		small.push("Issue #" + data.issue.number + ": " + link(data.issue));
 		pushComment(small, data.comment);
 	}
 	if (event==='issues') {
 		big.push("Issue " + data.action + " in " + link(repo));
-		small.push("Issue: " + link(data.issue));
+		small.push("Issue #" + data.issue.number + ": " + link(data.issue));
 	}
 	if (event==='pull_request') {
 		big.push("Pull Request " + data.action + " by " + link(data.sender) + " in " + link(repo));
