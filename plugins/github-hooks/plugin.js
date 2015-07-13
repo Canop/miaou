@@ -92,7 +92,7 @@ function link(o, label, url){
 	return "["
 	+ (label||o.full_name||o.name||o.title||o.page_name||o.login||o.timestamp||o.id)
 	+ "]("
-	+ (url||o.html_url||o.url||("https://github.com/"+o.login))
+	+ (url||o.html_url||o.url||("https://github.com/"+(o.login||o.name)))
 	+ ")";
 }
 
@@ -169,8 +169,8 @@ function eventToMarkdown(event, data){
 		small.push("|Commit|Committer|Message|\n"
 		+ "|:-:|:-:|:-|\n"
 		+ data.commits.map(function(c){
-			return '|'+link(c)+'|'
-			+ c.committer.name+'|'
+			return '|'+link(c, Date(c))+'|'
+			+ link(c.committer.name)+'|' 
 			+ c.message.split('\n',1)[0]+'|\n';
 	       }).join(''));
 	}
