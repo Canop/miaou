@@ -89,7 +89,7 @@ function listRepos(ct){
 
 function checkAdmin(ct){
 	if (!(ct.shoe.room.auth==='admin'||ct.shoe.room.auth==='own')) {
-		throw "Only an admin can do that";
+		throw new Error("Only an admin can do that");
 	}
 }
 function onCommand(ct){
@@ -131,7 +131,6 @@ function pushComment(arr, comment){
 //  - https://developer.github.com/v3/activity/events/types/#publicevent
 //  - https://developer.github.com/v3/activity/events/types/#statusevent
 function eventToMarkdown(event, data){
-	console.log("EVENT:", event);
 	var	repo = data.repository,
 		big = [],
 		small = [];
@@ -202,7 +201,6 @@ function eventToMarkdown(event, data){
 function githubCalling(req, res){
 	console.log("GITHUB CALLING");
 	console.log("headers:", req.headers);
-	console.log("query:", req.query);
 	console.log("body:", req.body);
 	var	data = req.body;
 	if (!data.repository) {
@@ -210,7 +208,6 @@ function githubCalling(req, res){
 		return res.status(400).send('Hu?');
 	}
 	var	repo = data.repository.full_name;
-	console.log("REPO:", repo);
 	res.send('Okey');
 	db.on().then(function(){
 		return this.execute("update github_hook set nb_calls=nb_calls+1 where repo=$1", [repo]); 
@@ -230,7 +227,6 @@ function githubCalling(req, res){
 }
 exports.registerRoutes = function(map){
 	require('../../libs/anti-csrf.js').whitelist(webhookroute);
-	// map('get', webhookroute, githubCalling, true, true);
 	map('post', webhookroute, githubCalling, true, true);
 }
 
