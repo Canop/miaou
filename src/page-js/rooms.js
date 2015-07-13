@@ -76,7 +76,8 @@ miaou(function(locals){
 						).append(table(
 							userPrivateRooms,
 							"You have access to no private room for now.<br>"+
-							"To enter a private room, click on its link (<a href=# onclick='selectTab(2)'>see them</a>) and request an access"
+							"To enter a private room, click on its link (<a href=# onclick='selectTab(2)'>see them</a>)"+
+							" and request an access"
 						))
 					);					
 				}
@@ -126,6 +127,7 @@ miaou(function(locals){
 			break;
 		}
 		if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
+		applyLangs();
 	}
 	selectTab(0);
 	$('.home-tab').click(function(){
