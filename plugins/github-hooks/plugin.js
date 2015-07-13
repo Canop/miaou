@@ -170,7 +170,7 @@ function eventToMarkdown(event, data){
 		+ "|:-:|:-:|:-|\n"
 		+ data.commits.map(function(c){
 			return '|'+link(c, Date(c))+'|'
-			+ link(c.committer.name)+'|' 
+			+ link(c.committer)+'|' 
 			+ c.message.split('\n',1)[0]+'|\n';
 	       }).join(''));
 	}
