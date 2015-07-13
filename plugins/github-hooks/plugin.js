@@ -88,25 +88,96 @@ function onCommand(ct){
 	ct.reply("Command not understood", true);
 }
 
-function eventToMarkdown(data){
-	var repo = data.repository.full_name;
-	var title = "["+repo+"](https://github.com/"+repo+")\n";
-	if (data.pusher) title = data.pusher.name + " pushed in "+title;
-	var txt = '';
+function link(o, label, url){
+	return "["
+	+ (label||o.full_name||o.name||o.title||o.page_name||o.login||o.timestamp||o.id)
+	+ "]("
+	+ (url||o.html_url||o.url)
+	+ ")";
+}
+
+function pushComment(arr, comment){
+	arr.push(link(comment, "Comment")+":");
+	arr.push.apply(arr, comment.body.replace(/\s*$/,'').split(/\r?\n/).map(function(line){
+		return "> "+line;
+	}));
+}
+
+// Builds the markdown from the received data
+// Not (yet) done:
+//  - https://developer.github.com/v3/activity/events/types/#deploymentevent
+//  - https://developer.github.com/v3/activity/events/types/#deploymentstatusevent
+//  - https://developer.github.com/v3/activity/events/types/#memberevent
+//  - https://developer.github.com/v3/activity/events/types/#publicevent
+//  - https://developer.github.com/v3/activity/events/types/#statusevent
+function eventToMarkdown(event, data){
+	console.log("EVENT:", event);
+	var	repo = data.repository,
+		big = [],
+		small = [];
+	if (event==='watch' && data.sender) {
+		small.push('★ ' + link(data.sender) + " starred " + link(repo));
+	}
+	if (data.pusher) { // event: push
+		big.push(link(data.pusher) + " pushed in " + link(repo));
+	}
+	if (event==='commit_comment') {
+		big.push(link(data.comment.user) + " commented a commit in " + link(repo));
+		pushComment(small, data.comment);
+	}
+	if (event==='issue_comment') {
+		big.push(link(data.sender) + " commented an issue in " + link(repo));
+		small.push("Issue: " + link(data.issue));
+		pushComment(small, data.comment);
+	}
+	if (event==='issues') {
+		big.push("Issue " + data.action + " in " + link(repo));
+		small.push("Issue: " + link(data.issue));
+	}
+	if (event==='pull_request') {
+		big.push("Pull Request " + data.action + " by " + link(data.sender) + " in " + link(repo));
+		small.push("Pull Request: " + link(data.pull_request));
+	}
+	if (event==='pull_request_review_comment') {
+		big.push(link(data.sender) + " commented a pull request in " + link(repo));
+		small.push("Pull Request: " + link(data.pull_request));
+		pushComment(small, data.comment);
+	}
+	if (event==='release') {
+		big.push("Release " + link(data.release) + " " + data.action + " in " + link(repo));
+	}
+	if (data.ref_type && data.sender) { 
+		var verb = event==='create' ? " added a " : " deleted a ";
+		var s = link(data.sender) + verb + data.ref_type;
+		if (data.ref) s += " ("+data.ref+")";
+		s += " in " + link(repo);
+		big.push(s);
+	}
+	if (data.forkee) {
+		big.push(link(repo) + " forked into " + link(data.forkee));
+	}
+	if (data.pages) {
+		big.push("Wiki of " + link(repo) + " updated");
+		data.pages.forEach(function(page){
+			small.push(link(page)+" "+page.action);
+		});
+	}
 	if (data.compare) {
-		txt += '[Comparison]('+data.compare+')\n';
+		small.push('[Comparison]('+data.compare+')');
 	}
 	if (data.commits) {
-		txt += "|Commit|Committer|Message|\n"
+		small.push("|Commit|Committer|Message|\n"
 		+ "|:-:|:-:|:-|\n"
 		+ data.commits.map(function(c){
-			return '|['+c.timestamp+']('+c.url+')|'
+			return '|'+link(c)+'|'
 			+ c.committer.name+'|'
 			+ c.message.split('\n',1)[0]+'|\n';
-	       }).join('');
+	       }).join(''));
 	}
-	return '# '+ title + txt;
+	return big.map(function(t){ return "**"+t+"**\n" })
+	+ small.join('\n');
 }
+
 // called by the GitHub API
 function githubCalling(req, res){
 	console.log("GITHUB CALLING");
@@ -131,7 +202,7 @@ function githubCalling(req, res){
 	}).then(function(){
 		return this.queryRows("select room from github_hook_room where repo=$1", [repo]); 
 	}).then(function(rows){
-		var content = eventToMarkdown(data);
+		var content = eventToMarkdown(req.headers['x-github-event'], data);
 		rows.forEach(function(row){
 			ws.botMessage(me, row.room, content);
 		});
