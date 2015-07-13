@@ -535,6 +535,9 @@ proto.getMessage = function(messageId, userId){
 // if id is set, updates the message if the author & room matches
 // else stores a message and sets its id
 proto.storeMessage = function(m, dontCheckAge){
+	if (!m.room||!m.author) {
+		throw new Error("invalid message");
+	}
 	if (m.id) {
 		var savedAuthorname = m.authorname,
 			sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
