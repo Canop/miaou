@@ -77,11 +77,11 @@ function checkAdmin(ct){
 }
 function onCommand(ct){
 	var m;
-	if (m=ct.args.match(/^add (\w+\/\w+)/)) {
+	if (m=ct.args.match(/^add ([\w-]+\/[\w-]+)/)) {
 		checkAdmin(ct);
 		return addRepo.call(this, ct, m[1]);
 	}
-	if (m=ct.args.match(/^remove (\w+\/\w+)/)) {
+	if (m=ct.args.match(/^remove ([\w-]+\/[\w-]+)/)) {
 		checkAdmin(ct);
 		return removeRepo.call(this, ct, m[1]);
 	}
@@ -93,15 +93,15 @@ function eventToMarkdown(data){
 	var title = "["+repo+"](https://github.com/"+repo+")\n";
 	if (data.pusher) title = data.pusher.name + " pushed in "+title;
 	var txt = '';
+	if (data.compare) {
+		txt += '[Comparison]('+data.compare+')\n';
+	}
 	if (data.commits) {
 	       txt += "## Commits:\n-|-|-\n"+data.commits.map(function(c){
 			return '['+c.timestamp+']('+c.url+')|'
 			+c.committer.name+'|'
 			+c.message.split('\n',1)[0]+'\n';
 	       }).join('');
-	}
-	if (data.compare) {
-		txt += '[Comparison]('+data.compare+')';
 	}
 	return '# '+ title + txt;
 }
@@ -117,10 +117,6 @@ function githubCalling(req, res){
 		return res.status(400).send('Hu?');
 	}
 	var	repo = data.repository.full_name;
-	if (!/\w+\/\w+/.test(repo)) { 
-		console.log('Bad repo name:', repo);
-		return res.status(400).send('Bad repo name');
-	}
 	console.log("REPO:", repo);
 	res.send('Okey');
 	db.on().then(function(){
