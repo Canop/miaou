@@ -105,7 +105,7 @@ function onCommand(ct){
 	if (ct.args==="list") {
 		return listRepos.call(this, ct);
 	}
-	ct.reply("Command not understood", true);
+	ct.reply("Command not understood. Try `!!help !!github` for more information.", true);
 }
 
 function link(o, label, url){
@@ -237,7 +237,10 @@ exports.registerRoutes = function(map){
 exports.registerCommands = function(cb){
 	cb({
 		name:'github', fun:onCommand,
-		help:"interact with the GitHub API",
-		detailedHelp:"bla bla"
+		help:"interact with GitHub",
+		detailedHelp:"Examples:\n"
+		+"* `!!github watch Canop/miaou` : watch the repository\n"
+		+"* `!!github unwatch Canop/miaou` : stop watching the repository\n"
+		+"* `!!github list` : list the watched repositories"
 	});
 }
