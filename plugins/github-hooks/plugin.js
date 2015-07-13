@@ -31,7 +31,7 @@ exports.init = function(miaou, pluginpath){
 	}).finally(db.off);
 }
 
-function addRepo(ct, repo){
+function watchRepo(ct, repo){
 	return db.on()
 	.then(function(){
 		return this.queryRow(
@@ -57,7 +57,7 @@ function addRepo(ct, repo){
 		);
 	}).finally(db.off);
 }
-function removeRepo(ct, repo){
+function unwatchRepo(ct, repo){
 	return db.on()
 	.then(function(){
 		return this.execute(
@@ -77,13 +77,13 @@ function checkAdmin(ct){
 }
 function onCommand(ct){
 	var m;
-	if (m=ct.args.match(/^add ([\w-]+\/[\w-]+)/)) {
+	if (m=ct.args.match(/^watch ([\w-]+\/[\w-]+)/)) {
 		checkAdmin(ct);
-		return addRepo.call(this, ct, m[1]);
+		return watchRepo.call(this, ct, m[1]);
 	}
-	if (m=ct.args.match(/^remove ([\w-]+\/[\w-]+)/)) {
+	if (m=ct.args.match(/^unwatch ([\w-]+\/[\w-]+)/)) {
 		checkAdmin(ct);
-		return removeRepo.call(this, ct, m[1]);
+		return unwatchRepo.call(this, ct, m[1]);
 	}
 	ct.reply("Command not understood", true);
 }
