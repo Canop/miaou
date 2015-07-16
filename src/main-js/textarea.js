@@ -52,6 +52,14 @@ $.fn.insertLine = function(s){
 	});
 }
 
+$.fn.insertTextAtPos = function(txt, pos){
+	return this.each(function(){
+		if (this.selectionStart>=pos) this.selectionStart += txt.length;
+		if (this.selectionEnd>=pos) this.selectionEnd += txt.length;
+		this.value = this.value.slice(0, pos) + txt + this.value.slice(pos);
+	});
+}
+
 // replaces what matches the regex, keeping the selection, not doing anything if there's no match
 // The second argument can be a string or a function
 $.fn.replaceInVal = function(r, rep){

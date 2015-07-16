@@ -10,23 +10,69 @@ miaou(function(ed){
 	}
 
 	ed.onCtrlK = function(){
-		var	sp = this.selectionStart,
-			ep = this.selectionEnd,
+		var	sbp = ed.stateBeforePaste,
 			val = this.value,
 			$input = $(this);
-		if (sp===ep && ed.stateBeforePaste) {
+		$('#code-controls').remove();
+		if (this.selectionStart===this.selectionEnd && sbp) {
 			// some code was just pasted
-			this.selectionStart = sp = ed.stateBeforePaste.selectionStart;
-		}
-		if (sp===ep) {
+			var pasted = val.slice(sbp.selectionEnd, this.selectionEnd);
+			if (sbp.selectionEnd>0 && val[sbp.selectionEnd-1]!=='\n') {
+				// the code wasn't inserted on a new line
+				if (val[sbp.selectionEnd-1]===' ' && !~pasted.indexOf('\n') && pasted.length<50) {
+					// it's some short code after a space, let's inline it
+					$input.insertTextAtPos("`", this.selectionEnd);
+					$input.insertTextAtPos("`", sbp.selectionEnd);
+					return;
+				}
+				// let's add a new line
+				$input.insertTextAtPos("\n", sbp.selectionEnd);
+			}
 			$input.selectLines().replaceSelection(toggleLinesCode);
-			this.selectionStart = this.selectionEnd;			
-		} else if (~val.slice(sp, ep+1).indexOf('\n') || (ep===val.length && sp===ep)) {
+			ed.onMove();
+			return;
+		}
+		if ((
+			this.selectionStart===this.selectionEnd
+		) || (
+			~val.slice(this.selectionStart, this.selectionEnd+1).indexOf('\n')
+		) || (
+			this.selectionEnd===val.length && this.selectionStart===this.selectionEnd
+		) || (
+			this.selectionEnd===val.length && (this.selectionStart===0||val[this.selectionEnd-1]==='\n')
+		)) {
 			$input.selectLines().replaceSelection(toggleLinesCode);
 		} else {
 			$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
 		}
-		ed.onMove.call(this);
+		ed.onMove();
+	}
+
+	ed.onCtrlV = function(){
+		var	sp = this.selectionStart,
+			ep = this.selectionEnd,
+			sbp = ed.stateBeforePaste,
+			val = this.value,
+			$input = $(this);
+		if (
+			sp!==val.length || !sbp
+			|| sbp.selectionStart!==sbp.selectionEnd
+			|| val.indexOf(sbp.value)!==0
+		) {
+			ed.onMove();
+			return;
+		}
+		var	pasted = this.value.slice(sbp.selectionEnd),
+			looksLikeCode = /^<|^\$|}$|;$/m.test(pasted),
+			notIndented = /^(?! {4}|\t)/m.test(pasted);
+		if (looksLikeCode && notIndented) {
+			$('<div id=code-controls>').appendTo('#input-panel').html(
+				"This looks like code.<br>Hit ctrl-K to have it indented"
+				+ " and properly rendered in Miaou"
+			);
+		 } else {
+		 	ed.onMove();
+		 }
 	}
 	
 	// analyse du code sous le curseur

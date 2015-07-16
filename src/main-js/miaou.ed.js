@@ -305,11 +305,13 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			}
 		})
 		.on('keyup', function(e){
-			if ((e.which===86 && e.ctrlKey) || e.which===17) { // end of ctrl-V
+			if ((e.which===86 && e.ctrlKey)) { // end of ctrl-V
+				ed.onCtrlV.call(input);
+			} else if (e.which===17) { // ctrl-
 			} else {
 				ed.stateBeforePaste = null;
+				ed.onMove();
 			}
-			ed.onMove();
 			if (e.which===9) return false; // tab
 		})
 		.on('input', function(){
