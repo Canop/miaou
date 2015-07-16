@@ -94,11 +94,11 @@ function checkAdmin(ct){
 }
 function onCommand(ct){
 	var m;
-	if (m=ct.args.match(/^watch ([\w-]+\/[\w-]+)/)) {
+	if (m=ct.args.match(/^watch ([\w-]+\/[\w-.]+)/)) {
 		checkAdmin(ct);
 		return watchRepo.call(this, ct, m[1]);
 	}
-	if (m=ct.args.match(/^unwatch ([\w-]+\/[\w-]+)/)) {
+	if (m=ct.args.match(/^unwatch ([\w-]+\/[\w-.]+)/)) {
 		checkAdmin(ct);
 		return unwatchRepo.call(this, ct, m[1]);
 	}
