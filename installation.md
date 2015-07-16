@@ -234,5 +234,3 @@ Restart nginx:
 	
 	service nginx restart
 	  
-
-*TODO: SSL*
