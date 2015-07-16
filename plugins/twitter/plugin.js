@@ -26,7 +26,9 @@ function abstract($, line){
 		)
 	)
 	.append($media)
-	$box.find('a').attr('target','_blank');
+	$box.find('a').attr('target', '_blank').attr('href', function(_,href){
+		return href[0]==='/' ? 'https://twitter.com'+href : href;
+	});
 	return $('<div>').append($box).html();
 }
 
