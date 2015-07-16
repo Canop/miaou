@@ -63,6 +63,14 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"** bold sentence with ---striken *italicized words*---**",
 		"<b> bold sentence with <strike>striken <i>italicized words</i></strike></b>"
 	),
+	"links with dash in an italicized sentence":t(
+		"*[ralt](https://github.com/ralt) pushed in [ralt/deb-packager](https://github.com/ralt/deb-packager)*",
+		"<i><a target=_blank href=\"https://github.com/ralt\">ralt</a> pushed in <a target=_blank href=\"https://github.com/ralt/deb-packager\">ralt/deb-packager</a></i>"
+	),
+	"links with dash in a bold sentence":t(
+		"**[ralt](https://github.com/ralt) pushed in [ralt/deb-packager](https://github.com/ralt/deb-packager)**",
+		"<b><a target=_blank href=\"https://github.com/ralt\">ralt</a> pushed in <a target=_blank href=\"https://github.com/ralt/deb-packager\">ralt/deb-packager</a></b>"
+	),
 	"orphan stars":t(
 		"**start is bold** but here are some stars : ** (*not boldening*)",
 		"<b>start is bold</b> but here are some stars : ** (<i>not boldening</i>)"
