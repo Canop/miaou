@@ -141,7 +141,7 @@ function eventToMarkdown(event, data){
 	// If there is no commit, it means it pushes a tag. This will be caught
 	// by "if (data.ref_type && data.sender)", so there is no need to repeat
 	// the information.
-	if (data.pusher && data.commits.length !== 0) {
+	if (data.pusher && data.commits.length > 0) {
 		big.push(link(data.pusher) + " pushed in " + link(repo));
 	}
 	if (event==='commit_comment') {
