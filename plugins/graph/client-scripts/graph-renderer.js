@@ -61,7 +61,7 @@ miaou(function(md, plugins){
 			return {
 				start: (new Date(+m[1], m[2]-1)).getTime(),
 				end: (new Date(+m[1], m[2])).getTime(),
-				label: nm3[(new Date(+m[1], m[2])).getMonth()]+' '+m[1]
+				label: nm3[(new Date(+m[1], m[2]-1)).getMonth()]+' '+m[1]
 			};
 		},
 	];
@@ -131,7 +131,7 @@ miaou(function(md, plugins){
 				var	x1 = Math.floor(ml+(xvals[i].start-xmin)*rx)+2,
 					x2 = ml+(xvals[i].end-xmin)*rx-3,
 					xm = (x1+x2)/2,
-					barWidth = Math.floor((x2-x1-5)/nbycols)-2;
+					barWidth = Math.floor((x2-x1-5)/nbycols);
 				var showPop = function(){
 					var l = 70;
 					if (xm-l<10) l = 10;
