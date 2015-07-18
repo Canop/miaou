@@ -4,7 +4,6 @@ var	url = require('url');
 // from the jquery-like context of the input page
 // build and return the html to send to the clients
 function abstract($, line, id){
-	console.log("abstracting SO chat message", id);
 	var	$box = $('<div/>').addClass('so-chat-message'),
 		$abstract = $('<div/>').addClass('abstract'),
 		$username = $('.username').eq(0),
@@ -14,16 +13,14 @@ function abstract($, line, id){
 	$abstract.append($("<span class=username>").text($username.text()));
 	$abstract.append($("<img>").attr("src","https://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png"));
 	$abstract.append($("<a>").attr("href",line).append($timestamp));
-	$abstract.append($message);
+	$abstract.append($message).find("a").attr("target","_blank");
 	return $('<div>').append($box).html();
 }
 
 exports.init = function(miaou){
 	miaou.pageBoxer.register({
-		//pattern:/^\s*https?:\/\/chat\.stackoverflow\.com\/transcript\/message\/(\d+)/,
 		pattern:/^\s*https?:\/\/chat\.stackoverflow\.com\/transcript\/(?:\d+\?m=|message\/)(\d+)\S*\s*$/,
 		urler:function(line, id){
-			console.log("in hurler", arguments);
 			return "http://chat.stackoverflow.com/messages/"+id+"/history";
 		},
 		box:abstract
