@@ -87,19 +87,14 @@ function listRepos(ct){
 	}).finally(db.off);
 }
 
-function checkAdmin(ct){
-	if (!(ct.shoe.room.auth==='admin'||ct.shoe.room.auth==='own')) {
-		throw new Error("Only an admin can do that");
-	}
-}
 function onCommand(ct){
 	var m;
 	if (m=ct.args.match(/^watch ([\w-]+\/[\w-.]+)/)) {
-		checkAdmin(ct);
+		ct.shoe.checkAuth("admin");
 		return watchRepo.call(this, ct, m[1]);
 	}
 	if (m=ct.args.match(/^unwatch ([\w-]+\/[\w-.]+)/)) {
-		checkAdmin(ct);
+		ct.shoe.checkAuth("admin");
 		return unwatchRepo.call(this, ct, m[1]);
 	}
 	if (ct.args==="list") {

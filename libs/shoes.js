@@ -6,6 +6,7 @@
 var	miaou,
 	io,
 	db,
+	auths = require('./auths.js'),
 	ws = require('./ws.js'),
 	onSendMessagePlugins;
 	
@@ -82,6 +83,11 @@ Shoes.pluginTransformAndSend = function(m, sendFun){
 }
 Shoes.io = function(){
 	return io;
+}
+Shoes.checkAuth = function(requiredLevel){
+	if (!auths.checkAtLeast(this.room.auth, requiredLevel)) {
+		throw new Error("This action requires the " + requiredLevel + " right");
+	}
 }
 
 // returns the socket of the passed user if he's in the same room

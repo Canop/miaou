@@ -48,7 +48,6 @@ exports.onSendMessage = function(shoe, m, send){
 	m.content.split('\n').forEach(function(line){
 		for (var i=0; i<boxers.length; i++) {
 			if (boxers[i].pattern.test(line)) {
-				console.log("new task");
 				tasks.push({line:line.trim(), mid:m.id, send:send, boxer:boxers[i]});
 				dequeue();
 				return;
