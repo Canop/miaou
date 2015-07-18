@@ -1,4 +1,5 @@
 // replaces URL to SO questions, answers and comments with the relevant extract
+//   using the StackExchange API.
 // The filter parameter passed to SO API can be edited here :
 //   https://api.stackexchange.com/docs/questions#order=desc&sort=activity&filter=!9YdnSJrC1&site=stackoverflow&run=true
 
