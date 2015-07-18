@@ -179,7 +179,7 @@ function eventToMarkdown(event, data){
 	if (data.compare) {
 		small.push('[Comparison]('+data.compare+')');
 	}
-	if (data.commits) {
+	if (data.commits && data.commits.length) {
 		small.push("|Commit|Committer|Message|\n"
 		+ "|:-:|:-:|:-|\n"
 		+ data.commits.map(function(c){
