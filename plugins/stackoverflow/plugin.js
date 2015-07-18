@@ -1,6 +1,6 @@
 
 var Promise = require("bluebird"),
-	soboxer = require("./soboxer.js"),
+	seboxer = require("./se-boxer.js"),
 	config,
 	request = require('request');
 	
@@ -73,14 +73,14 @@ exports.externalProfile = {
 // As it is done each time a message is sent, performances are critical
 exports.onSendMessage = function(shoe, m, send){
 	if (!m.content || !m.id) return;
-	soboxer.rawTasks(m.content).forEach(function(task){
+	seboxer.rawTasks(m.content).forEach(function(task){
 		task.mid = m.id;
 		task.send = send;
-		soboxer.addTask(task);
+		seboxer.addTask(task);
 	});
 }
 
 exports.init = function(miaou){
 	config = miaou.config;
-	soboxer.init(miaou);
+	seboxer.init(miaou);
 }
