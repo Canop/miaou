@@ -82,3 +82,21 @@ a.so-title img {
 	line-height: 1.1;
 	font-size: 95%;
 }
+
+.so-chat-message .abstract {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	background: white;
+}
+.so-chat-message .abstract > img {
+	max-height: 24px;
+}
+.so-chat-message .abstract > .username {
+	flex: 0 0 auto;
+	margin: 0 5px;
+}
+.so-chat-message .abstract > a {
+	margin: 0 10px;
+	flex: 0 0 auto;
+}

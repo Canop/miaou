@@ -83,4 +83,5 @@ exports.onSendMessage = function(shoe, m, send){
 exports.init = function(miaou){
 	config = miaou.config;
 	seboxer.init(miaou);
+	require('./sochat-boxer.js').init(miaou);
 }
