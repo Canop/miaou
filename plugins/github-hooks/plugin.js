@@ -110,7 +110,7 @@ function onCommand(ct){
 
 function link(o, label, url){
 	return "["
-	+ (label||o.full_name||o.name||o.title||o.page_name||o.login||o.timestamp||o.id)
+	+ (label||o.full_name||o.name||o.title||o.page_name||o.login||o.tag_name||o.timestamp||o.id)
 	+ "]("
 	+ (url||o.html_url||o.url||("https://github.com/"+(o.username||o.login||o.name)))
 	+ ")";
