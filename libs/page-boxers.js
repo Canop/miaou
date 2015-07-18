@@ -4,7 +4,7 @@ var	request = require('request'),
 	cache = require('bounded-cache')(300),
 	Deque = require("double-ended-queue"),
 	TTL = 30*60*1000,
-	boxers = [], // boxers: {pattern,box(function),TTL}
+	boxers = [], // boxers: {pattern,box(function),TTL,urler(function)}
 	tasks = new Deque(200),
 	currentTask;
 
@@ -27,17 +27,25 @@ function dequeue(){
 			dequeue();
 		}, 50);
 	}
-	request(task.line, function(error, res, body){
-		console.log('box', task.line, 'fetched');
+	var	line = task.line,
+		url = line,
+		args = line.match(task.boxer.pattern);
+	if (task.boxer.urler) {
+		url = task.boxer.urler.apply(null, args);
+	}
+	request(url, function(error, res, body){
+		console.log('box', url, 'fetched');
 		currentTask = null;
 		setTimeout(dequeue, 0);
 		if (error || res.statusCode!==200) {
-			cache.set(task.line, null, TTL);
+			cache.set(line, null, TTL);
+			console.log("Error in box fetching", url, error, res.statusCode);
 			return;
 		}
-		var box = task.boxer.box($$.load(body),task.line);
-		cache.set(task.line, box, task.boxer.TTL);
-		task.send('box', {mid:task.mid, from:task.line, to:box});
+		args.unshift($$.load(body));
+		var box = task.boxer.box.apply(null, args);
+		cache.set(line, box, task.boxer.TTL);
+		task.send('box', {mid:task.mid, from:line, to:box});
 	});
 }
 
