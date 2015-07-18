@@ -158,7 +158,7 @@ function eventToMarkdown(event, data){
 		pushComment(small, data.comment);
 	}
 	if (event==='release') {
-		big.push("Release " + link(data.release) + " " + data.action + " in " + link(repo));
+		big.push("Release " + link(data.release, data.release.name) + " " + data.action + " in " + link(repo));
 	}
 	if (data.ref_type && data.sender) { 
 		var verb = event==='create' ? " added a " : " deleted a ";
