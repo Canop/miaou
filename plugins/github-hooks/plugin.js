@@ -199,7 +199,7 @@ function githubCalling(req, res){
 	// console.log("body:", req.body);
 	var	data = req.body,
 		queryRooms = req.query.rooms || req.query.room || "",
-		rooms = queryRooms.split(/\D+/).map(Number);
+		rooms = queryRooms.split(/\D+/).filter(Boolean).map(Number);
 	console.log("ROOMS:", rooms);
 	if (!data.repository) {
 		console.log('bad github request');
