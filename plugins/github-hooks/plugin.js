@@ -195,9 +195,12 @@ function eventToMarkdown(event, data){
 // called by the GitHub API
 function githubCalling(req, res){
 	console.log("GITHUB CALLING");
-	console.log("headers:", req.headers);
-	console.log("body:", req.body);
-	var	data = req.body;
+	// console.log("headers:", req.headers);
+	// console.log("body:", req.body);
+	var	data = req.body,
+		queryRooms = req.query.rooms || req.query.room || "",
+		rooms = queryRooms.split(/\D+/).map(Number);
+	console.log("ROOMS:", rooms);
 	if (!data.repository) {
 		console.log('bad github request');
 		return res.status(400).send('Hu?');
@@ -215,7 +218,15 @@ function githubCalling(req, res){
 		return this.queryRows("select room from github_hook_room where repo=$1", [repo]); 
 	}).then(function(rows){
 		var content = eventToMarkdown(req.headers['x-github-event'], data);
+		if (!content) {
+			console.log("empty message not sent");
+			return;
+		}
 		rows.forEach(function(row){
+			if (rooms.length && rooms.indexOf(row.room)===-1) {
+				console.log("Not in white list:", row.room);
+				return;
+			}
 			ws.botMessage(me, row.room, content);
 		});
 	}).finally(db.off);
