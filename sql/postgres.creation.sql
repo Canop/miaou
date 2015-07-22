@@ -2,7 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 15);
+insert into db_version (component, version) values('core', 18);
 
 CREATE TABLE room (
 	id serial primary key,
@@ -46,9 +46,10 @@ CREATE TABLE message (
 );
 create index message_room_created on message (room, created);
 create index message_author_created_room on message (author, created, room);
-create index message_room_author on message (room, author);
+create index message_room_author_created on message (room,author,created);
 create index message_fts on message using GIN(to_tsvector('english', content));
 create index message_score on message (score);
+create index message_room_id on message (room, id);
 
 CREATE OR REPLACE FUNCTION message_score() RETURNS trigger AS '
 	BEGIN
@@ -128,3 +129,34 @@ create table watch (
 	room integer references room(id),
 	primary key(player, room)
 );
+
+ALTER TABLE message SET (autovacuum_vacuum_scale_factor = 0.0);  
+ALTER TABLE message SET (autovacuum_vacuum_threshold = 5000);  
+ALTER TABLE message SET (autovacuum_analyze_scale_factor = 0.0);  
+ALTER TABLE message SET (autovacuum_analyze_threshold = 5000);
+
+ALTER TABLE room SET (autovacuum_vacuum_scale_factor = 0.0);  
+ALTER TABLE room SET (autovacuum_vacuum_threshold = 50);  
+ALTER TABLE room SET (autovacuum_analyze_scale_factor = 0.0);  
+ALTER TABLE room SET (autovacuum_analyze_threshold = 50);
+
+ALTER TABLE player SET (autovacuum_vacuum_scale_factor = 0.0);  
+ALTER TABLE player SET (autovacuum_vacuum_threshold = 100);  
+ALTER TABLE player SET (autovacuum_analyze_scale_factor = 0.0);  
+ALTER TABLE player SET (autovacuum_analyze_threshold = 100);
+
+ALTER TABLE room_auth SET (autovacuum_vacuum_scale_factor = 0.0);  
+ALTER TABLE room_auth SET (autovacuum_vacuum_threshold = 500);  
+ALTER TABLE room_auth SET (autovacuum_analyze_scale_factor = 0.0);  
+ALTER TABLE room_auth SET (autovacuum_analyze_threshold = 500);
+
+ALTER TABLE ping SET (autovacuum_vacuum_scale_factor = 0.0);  
+ALTER TABLE ping SET (autovacuum_vacuum_threshold = 100);  
+ALTER TABLE ping SET (autovacuum_analyze_scale_factor = 0.0);  
+ALTER TABLE ping SET (autovacuum_analyze_threshold = 100);
+
+ALTER TABLE message_vote SET (autovacuum_vacuum_scale_factor = 0.0);  
+ALTER TABLE message_vote SET (autovacuum_vacuum_threshold = 100);  
+ALTER TABLE message_vote SET (autovacuum_analyze_scale_factor = 0.0);  
+ALTER TABLE message_vote SET (autovacuum_analyze_threshold = 100);
+

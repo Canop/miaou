@@ -108,7 +108,7 @@ proto.getUserInfo = function(id){
 	);
 }
 
-// optm: this is somewhat slow, as a full scan on players in used
+// uses index message_room_author_created (but still not lighning fast)
 proto.listRecentUsers = function(roomId, N){
 	return this.queryRows(
 		"select a.id, a.mc, player.name, avatarsrc as avs, avatarkey as avk from"+
@@ -129,7 +129,7 @@ proto.listRoomUsers = function(roomId){
 }
 
 // returns the name to use in ping autocompletion.
-// note: use index message_author_created_room on message (author, created, room)
+// uses index message_author_created_room
 proto.usersStartingWith = function(str, roomId, limit){
 	return this.queryRows(
 		"select name, (select max(created) from message where p.id=author and room=$1) lir," +
@@ -466,6 +466,7 @@ proto.getMessages = function(roomId, userId, N, asc, c1, s1, c2, s2){
 	});
 }
 
+// uses index message_room_id
 proto.getNextMessageId = function(roomId, mid, asc){
 	return this.queryRow(
 		asc?
