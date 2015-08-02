@@ -2,8 +2,8 @@
 // A valid game (even before accept) is always stored like this :
 // maybeAPingOrReply !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
-var	cache = require('bounded-cache')(300),
-	tribostats = require('./tribostats.js');
+const	cache = require('bounded-cache')(300),
+	tribostats = require('./tribostats.js'),
 	elo = require('./elo.js');
 
 var gametypes = {
