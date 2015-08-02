@@ -2,6 +2,9 @@ if avatar
 	img.avatar(src=avatar)
 h1= user.name
 div#userinfo
+	if isServerAdmin
+		.user-title
+			span.val Server Admin
 	if auth != 'no access' && auth != 'none'
 		div
 			span.def role in this room

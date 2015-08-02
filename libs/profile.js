@@ -1,11 +1,12 @@
 "use strict";
 
-const path = require('path'),
+const	auths = require('./auths.js'),
+	path = require('path'),
 	naming = require('./naming.js'),
 	prefs = require('./prefs.js'),
 	server = require('./server.js');
 
-var langs,
+var	langs,
 	db,
 	plugins;
 
@@ -71,6 +72,7 @@ exports.appAllUsername = function(req, res){
 }
 
 // handles GET on '/publicProfile'
+// used to fill the popup seen when hovering a user name
 exports.appGetPublicProfile = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 	var userId = +req.query.user, roomId = +req.query.room;
@@ -102,6 +104,7 @@ exports.appGetPublicProfile = function(req, res){
 		externalProfileInfos = externalProfileInfos.filter(function(epi){ return epi.html });
 		res.render('publicProfile.jade', {
 			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
+			isServerAdmin:auths.isServerAdmin(user),
 			auth:auth, externalProfileInfos:externalProfileInfos
 		});
 	}).catch(function(err){

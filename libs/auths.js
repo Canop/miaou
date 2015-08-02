@@ -7,17 +7,27 @@ const	levels = ['read', 'write', 'admin', 'own'],
 	server = require('./server.js'),
 	ws = require('./ws.js');
 	
-var db;
+var	config,
+	db;
 
 exports.configure = function(miaou){
+	config = miaou.config;
 	db = miaou.db;
 	return this;
 }
 
-exports.checkAtLeast = function(auth, neededAuth) {
+exports.checkAtLeast = function(auth, neededAuth){
 	for (var i=levels.length; i-->0;) {
 		if (levels[i]===auth) return true;
 		if (levels[i]===neededAuth) return false;
+	}
+	return false;
+}
+
+exports.isServerAdmin = function(user){
+	if (!config.serverAdmins) return false;
+	for (let idOrName of config.serverAdmins) {
+		if (idOrName===user.id || idOrName===user.name) return true;
 	}
 	return false;
 }

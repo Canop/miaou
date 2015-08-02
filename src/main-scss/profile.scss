@@ -116,20 +116,23 @@ div.externalProfile {
 		padding-right: 10px;
 		color: $title-text-color;
 	}
-	div {
-		span.def {
-			margin: 3px;
-			display: inline-block;
-			color: $user-def-color;
-			&::after {
-				content: " :";
-			}
+	span.def {
+		margin: 3px;
+		display: inline-block;
+		color: $user-def-color;
+		&::after {
+			content: " :";
 		}
-		span.val {
-			margin: 3px;
-			padding-left: 3px;
-			display: inline-block;
-			word-break: break-word;
-		}
+	}
+	span.val {
+		margin: 3px;
+		padding-left: 3px;
+		display: inline-block;
+		word-break: break-word;
+	}
+	.user-title {
+		margin: 3px;
+		padding-left: 3px;
+		text-align: center;
 	}
 }

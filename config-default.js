@@ -108,5 +108,10 @@ module.exports = {
 	// identifiants of the rooms that are proposed as entry point to new users
 	// (regular users of the server should be invited to watch those rooms)
 	// Don't fill this array until you created the rooms
-	welcomeRooms: [688, 689]
+	welcomeRooms: [688, 689],
+
+	// Server admins may have access to specific server wide admin commands
+	// They can be specified using their id (which is constant)
+	// or their name (which is easier)
+	serverAdmins: []
 }
