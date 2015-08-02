@@ -79,6 +79,7 @@ var emitToRoom = exports.emitToRoom = function(roomId, key, m){
 	io.sockets.in(roomId).emit(key, clean(m));
 }
 
+// returns an array of all the Miaou rooms to which at least one user is connected
 var roomIds = exports.roomIds = function(){
 	return Object.keys(io.sockets.adapter.rooms).filter(function(n){ return n==+n });
 }
@@ -126,6 +127,7 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
 	});
 }
 
+// fetch a page of messages in DB and send them to the shoe socket
 function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 	return this.getMessages(shoe.room.id, shoe.publicUser.id, N, asc, c1, s1, c2, s2).then(function(messages){
 		for (var i=0; i<messages.length; i++) {

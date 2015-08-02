@@ -38,6 +38,13 @@ CommandTask.prototype.text = function(s){
 	if (s!==undefined) this.message.content = s;
 	return this.message.content;
 }
+// returns all the text after the command (and the ping or reply
+//  if there's one before the command). The difference with ct.args
+//  is that ct.args stops at end of first line
+CommandTask.prototype.textAfterCommand = function(s){
+	var index = this.message.content.indexOf("\n");
+	return index>0 ? this.args+this.message.content.slice(index) : this.args;
+}
 
 exports.configure = function(miaou){
 	var config = miaou.config, db = miaou.db,
