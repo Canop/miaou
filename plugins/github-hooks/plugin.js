@@ -239,10 +239,30 @@ exports.registerRoutes = function(map){
 exports.registerCommands = function(cb){
 	cb({
 		name:'github', fun:onCommand,
-		help:"interact with GitHub",
-		detailedHelp:"Examples:\n"
-		+"* `!!github watch Canop/miaou` : watch the repository\n"
-		+"* `!!github unwatch Canop/miaou` : stop watching the repository\n"
-		+"* `!!github list` : list the watched repositories"
+		help:"interact with GitHub. Type `!!help !!github` to learn more.",
+		detailedHelp:
+		 "In order to receive in a Miaou room all events related to a GitHub repository, you must\n"
+		+"1. set up a webhook in GitHub\n"
+		+"2. call the `!!github watch` command in the room\n"
+		+"To achieve that you must have admin rights both on the GitHub repository and in the room.\n"
+		+"\n"
+		+"To set up the webhook, go to the *Settings* of your repository on GitHub, select *Webhooks & Services*,\n"
+		+"then click *Add webhook*.\n"
+		+"You'll have to provide a callback to the webhook.\n"
+		+"In case there's nothing secret in your repository, simply give\n"
+		+"    "+config.server+webhookroute+"\n"
+		+"If you want to ensure only one room (say the room 5) or several rooms (say 5 and 15) have acces\n"
+		+"to those GitHub events, specify the rooms in the callback as in\n"
+		+"    "+config.server+webhookroute+"?room=5\n"
+		+"or\n"
+		+"    "+config.server+webhookroute+"?rooms=5,15\n"
+		+"\n"
+		+"After you've set up the webhook GitHub side, issue the relevant command in the Miaou room,\n"
+		+"for example\n"
+		+"     !!github watch Canop/miaou\n"
+		+"To see what repositories are watched, use	    \n"
+		+"     !!github list\n"
+		+"To stop watching a repository, use\n"
+		+"     !!github unwatch Canop/miaou\n"
 	});
 }
