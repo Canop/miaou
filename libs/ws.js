@@ -452,7 +452,7 @@ function handleUserInRoom(socket, completeUser){
 				return roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))
 				.map(function(s){ return s.publicUser.name });
 			}
-			pings.push(ping);
+			pings.push(ping.toLowerCase());
 			return pings;
 		}, []).reduce(function(pings, ping){ // removing duplicates
 			if (!~pings.indexOf(ping)) pings.push(ping);
