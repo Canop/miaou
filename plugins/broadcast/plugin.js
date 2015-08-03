@@ -29,6 +29,6 @@ exports.registerCommands = function(registerCommand){
 		name:'broadcast',
 		fun:broadcast,
 		help:"send a flake to all rooms",
-		detailedHelp:""
+		detailedHelp:"Only server admins can do that"
 	});
 }
