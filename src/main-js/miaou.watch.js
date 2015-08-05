@@ -46,11 +46,13 @@ miaou(function(watch, chat, locals, md, notif, ws){
 			var otherusername = interlocutor(w);
 			if (otherusername) $name.text(otherusername).addClass('dialog-room');
 			else $name.text(w.name);
+			var href = ''+w.id;// TODO add the room name
+			if (watch.last_seen) href += '#'+watch.last_seen;
 			$('<a>').addClass('watch').attr('rid', w.id)
 			.data('watch', w)
 			.append($('<span>').addClass('count').text(w.nbunseen||''))
 			.append($name)
-			.attr('href', w.id) // TODO add the room name
+			.attr('href', href) 
 			.appendTo('#watches');
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){
