@@ -13,8 +13,6 @@ THEME_OUT_CSS:=$(patsubst %, ./static/themes/%/miaou.css, $(notdir $(THEME_SRC_D
 RSC_FILES:=$(patsubst ./src/rsc/%, ./static/%, $(shell find ./src/rsc/* -type f))
 PLUGIN_RSC_FILES:=$(patsubst ./%, ./static/%, $(shell find ./plugins/*/rsc/* -type f))
 
-JS2_FILES:=$(addprefix ./static/, $(addsuffix .min.js2, miaou login rooms chat.mob jquery-2.1.3 socket.io))
-
 MAIN_JS_SOURCES:=$(sort $(wildcard ./src/main-js/*.js))
 PRETTIFY_JS_MAIN_SOURCE:=./src/main-js/prettify/prettify.js
 PRETTIFY_JS_LANG_SOURCES:=$(sort $(wildcard ./src/main-js/prettify/lang-*.js))
@@ -23,9 +21,9 @@ MIAOU_JS_SOURCES:=$(MAIN_JS_SOURCES$) $(PLUGIN_JS_SOURCES)
 MIAOU_MODULES="$(shell cat ./build/miaou_modules.txt)"
 UGLIFY_OPTIONS=--screw-ie8 -cmt --reserved $(MIAOU_MODULES)
 
-.PHONY: clean page-js page-css themes rsc main-js js2-files plugins-rsc debug
+.PHONY: clean page-js page-css themes rsc main-js plugins-rsc debug
 
-all: page-js page-css themes rsc main-js js2-files plugins-rsc
+all: page-js page-css themes rsc main-js plugins-rsc
 
 clean:
 	rm -rf ./static/*
@@ -106,7 +104,3 @@ page-css: $(PAGES_CSS_OUT)
 	@cat ./plugins/*/css/*.css >> $(@D)/miaou.css
 themes: $(THEME_OUT_CSS)
 
-# Build the JS2 files needed for mobile pages
-./static/%.js2: ./static/%.js
-	@cp $< $@
-js2-files: page-js main-js rsc $(JS2_FILES)
