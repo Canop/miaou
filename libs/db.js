@@ -389,16 +389,36 @@ proto.getAuthLevelByUsername = function(roomId, username){
 //////////////////////////////////////////////// #watch
 
 proto.insertWatch = function(roomId, userId){
-	return this.execute("insert into watch(room, player) values($1,$2)", [roomId, userId]);
+	return this.execute(
+		"insert into watch(room, player, last_seen)"+
+		" values($1, $2, select max(id) from message where room=$1)",
+		[roomId, userId]
+	);
 }
-
+proto.updateWatch = function(roomId, userId, lastUnseen){
+	return this.execute(
+		"update watch set last_seen=$3"+
+		" where room=$1 and player=$2",
+		[roomId, userId, lastUnseen]
+	);
+}
+proto.watchRaz = function(roomId, userId){
+	return this.execute(
+		"update watch set last_seen=(select max(id) from message where message.room=$1)"+
+		" where room=$1 and player=$2",
+		[roomId, userId]
+	);
+}
 proto.deleteWatch = function(roomId, userId){
 	return this.execute("delete from watch where room=$1 and player=$2", [roomId, userId]);
 }
 
 proto.listUserWatches = function(userId){
 	return this.queryRows(
-		"select w.room id, r.name, r.private, r.dialog from watch w join room r on w.room=r.id"+
+		"select w.room id, w.last_seen, r.name, r.private, r.dialog,"+
+		" (select count(*) from message m where m.room=w.room and m.id>w.last_seen) as nbunseen"+
+		" from watch w"+
+		" join room r on w.room=r.id"+
 		" left join room_auth a on a.room=r.id and a.player=$1"+
 		" where w.player=$1 and (r.private is false or a.auth is not null)",
 		[userId]

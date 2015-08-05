@@ -32,8 +32,9 @@ miaou(function(watch, chat, locals, md, notif, ws){
 		locals.room.watched = true;
 	}
 	
-	// w must be {id:roomId,name:roomname}
+	// w must be {id:roomId,name:roomname,nbunseen}
 	watch.add = function(watches){
+		console.log("watches", watches);
 		watches.forEach(function(w){
 			if (w.id===locals.room.id) {
 				$('#watch').text('unwatch');
@@ -47,9 +48,10 @@ miaou(function(watch, chat, locals, md, notif, ws){
 			else $name.text(w.name);
 			$('<a>').addClass('watch').attr('rid', w.id)
 			.data('watch', w)
-			.append($('<span>').addClass('count'))
+			.append($('<span>').addClass('count').text(w.nbunseen||''))
 			.append($name)
-			.appendTo('#watches')
+			.attr('href', w.id) // TODO add the room name
+			.appendTo('#watches');
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){
 			var wa = $(a).data('watch'), wb = $(b).data('watch');
@@ -62,13 +64,6 @@ miaou(function(watch, chat, locals, md, notif, ws){
 	// called when the initial watches are passed by the server (i.e. The local state
 	//  is the persisted one)
 	watch.started = function(){
-		location.hash = location.hash.replace(/(#|&)u=([^?&]+)/, function(snv,s,v){
-			var m = JSON.parse(decodeURIComponent(v)); 
-			for (var rid in m)  {
-				watch.incr(rid, m[rid]);
-			}
-			return s;
-		});
 		if (/#$/.test(location)) {
 			history.replaceState('', document.title, location.pathname+location.search);
 		}
@@ -135,6 +130,9 @@ miaou(function(watch, chat, locals, md, notif, ws){
 		requiredrid = w.id;
 		function display(data){
 			if (requiredrid!==w.id) return;
+			if (nbunseen) {
+				ws.emit('watch_raz', requiredrid);
+			}
 			var	dr = Math.max(Math.min(200, ww-off.left-$w.width()-30), 0),
 				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
@@ -165,8 +163,5 @@ miaou(function(watch, chat, locals, md, notif, ws){
 	}).on('mouseleave', '.watch', function(){
 		requiredrid = 0;
 		$('.watch').removeClass('open').find('.watch-panel').remove();
-		ws.emit('watch_raz');
-	}).on('click', '.watch', function(){
-		location = $(this).attr('rid') + '#u=' + encodeURIComponent(JSON.stringify(watch.unseens()));	
 	});
 });

@@ -178,6 +178,7 @@ function handleUserInRoom(socket, completeUser){
 	var	shoe = new shoes.Shoe(socket, completeUser),
 		memroom,
 		watchset = new Set, // set of watched rooms ids (if any)
+		welcomed = false, 
 		lastmmisreply, lastmmisatleastfivelines,
 		send;
 	socket
@@ -202,6 +203,12 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('disconnect', function(){
 		if (shoe.room) {
+			if (welcomed) {
+				console.log("watch raz on disconnect", shoe.room.name, shoe.publicUser.name);
+				db.on([shoe.room.id, shoe.publicUser.id])
+				.spread(db.watchRaz)
+				.finally(db.off);
+			}
 			if (!shoe.userSocket(shoe.completeUser.id, true)) {
 				socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
 				for (var wid of watchset) {
@@ -262,6 +269,7 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
 			socket.emit('welcome');
+			welcomed = true;
 			for (var s of roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))) {
 				socket.emit('enter', s.publicUser);
 			}
@@ -436,6 +444,10 @@ function handleUserInRoom(socket, completeUser){
 				var r = /(?:^|\s)@(\w[\w\-]{2,})\b/g, ping;
 				while ((ping=r.exec(m.content))){
 					pings.push(ping[1]);
+				}
+				if (!(m.id<=memroom.lastMessageId)) {
+					// not yet used, might allow less watch_raz
+					memroom.lastMessageId = m.id;
 				}
 			}
 			return pings;
@@ -641,9 +653,17 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.finally(db.off);
 	})
-	.on('watch_raz', function(){
+	.on('watch_raz', function(roomId){
 		if (!shoe.room) return;
-		shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
+		if (!roomId) {
+			roomId = shoe.room.id;
+			console.log("watch raz salle courante");
+		}
+		console.log("watch raz", roomId, shoe.publicUser.name);
+		shoe.emitToAllSocketsOfUser('watch_raz', roomId);
+		db.on([roomId, shoe.publicUser.id])
+		.spread(db.watchRaz)
+		.finally(db.off);
 	});
 
 	for (let plugin of onNewShoePlugins) {
