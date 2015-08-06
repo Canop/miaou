@@ -151,7 +151,7 @@ function miaou(f){
 			return;
 		}
 		$.post("/error", {
-			user:locals.me?locals.me.name:"?", // not always defined
+			user:miaou.locals.me ? miaou.locals.me.name : "?",
 			page:location.href,
 			message:message,
 			url:url, line:line, col:col,
