@@ -183,7 +183,7 @@ function eventToMarkdown(event, data){
 		small.push("|Commit|Committer|Message|\n"
 		+ "|:-:|:-:|:-|\n"
 		+ data.commits.map(function(c){
-			return '|'+link(c, Date(c))+'|'
+			return '|'+link(c, c.timestamp.replace("T"," "))+'|'
 			+ link(c.committer)+'|' 
 			+ c.message.split('\n',1)[0]+'|\n';
 	       }).join(''));
