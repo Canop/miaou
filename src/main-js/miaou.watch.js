@@ -47,7 +47,7 @@ miaou(function(watch, chat, locals, md, notif, ws){
 			if (otherusername) $name.text(otherusername).addClass('dialog-room');
 			else $name.text(w.name);
 			var href = ''+w.id;// TODO add the room name
-			if (watch.last_seen) href += '#'+watch.last_seen;
+			// if (watch.last_seen) href += '#'+watch.last_seen;
 			$('<a>').addClass('watch').attr('rid', w.id)
 			.data('watch', w)
 			.append($('<span>').addClass('count').text(w.nbunseen||''))
@@ -165,5 +165,10 @@ miaou(function(watch, chat, locals, md, notif, ws){
 	}).on('mouseleave', '.watch', function(){
 		requiredrid = 0;
 		$('.watch').removeClass('open').find('.watch-panel').remove();
+	}).on('click', '.watch', function(){
+		var w = $(this).data('watch');	
+		if (w.last_seen) {
+			localStorage.destMessage = w.last_seen;
+		}
 	});
 });

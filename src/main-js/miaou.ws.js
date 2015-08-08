@@ -96,10 +96,14 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			info.state = 'connected';
 			gui.entered = true;
 			gui.scrollToBottom();
-			location.hash = location.hash.replace(/^#?(\d+)/, function(s,n){
-				md.focusMessage(+n);
-				return '';
-			});
+			var m = location.hash.match(/^#?(\d+)$/);
+			if (m) {
+				md.focusMessage(+m[1]);
+				location.hash = '';
+			} else if (localStorage.destMessage) {
+				md.focusMessage(localStorage.destMessage);
+				delete localStorage.destMessage;
+			}
 			usr.showEntry(locals.me);
 			if (watch.enabled) socket.emit('start_watch');
 		})
