@@ -391,7 +391,7 @@ proto.getAuthLevelByUsername = function(roomId, username){
 proto.insertWatch = function(roomId, userId){
 	return this.execute(
 		"insert into watch(room, player, last_seen)"+
-		" values($1, $2, select max(id) from message where room=$1)",
+		" select $1, $2, (select max(id) from message where room=$1)",
 		[roomId, userId]
 	);
 }
