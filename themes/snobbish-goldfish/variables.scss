@@ -1,0 +1,186 @@
+
+
+$bg-color: #1a1a1a;
+$left-background: #111;
+$pad-background: #444;
+$right-background: #111;
+$box-background: #aaa;
+
+$general-text-color: #bbb;
+$title-text-color: #fb0;
+$message-list-bg: linear-gradient(#444, #111);
+
+// home
+$home-top-bg: #444;
+$home-top-color: #aaa;
+$home-hover-link-color: white;
+$home-bg: #1a1a1a;
+$notif-color: #ccc;
+$notif-hover-link-color: white;
+$list-odd-cell-bg: #444;
+$list-even-cell-bg: #333;
+$list-cell-color: #aaa;
+$list-cell-hover-link-color: #973;
+
+// home-tabs (tabs of the home page and similarly built pages)
+$home-tab-bg: #222;
+$home-tab-selected-color: #fb0;
+$home-tab-unselected-color: #751;
+
+// dialog pages (login, error)
+$logo-bg-color: #fb0;
+
+// dialogs
+$dialog-bg: #222; 
+$dialog-color: #aaa;
+$dialog-title-bg: #444;
+$dialog-title-color: #750;
+
+// user page
+$user-page-bg: #51608a;
+
+// username page
+$username-page-bg: $pad-background;
+$usename-page-color: #e5e7eb;
+
+// mobile chat
+$mtab-bg: rgba(9,30,90,.85);
+$mtab-color: #ccc;
+$mpage-bg: rgba(9,30,90,.95);
+$mpage-color: #ccc;
+
+// notables & search tabs on mobile
+$mobile-tab-page-bg: #222;
+$mobile-tab-page-color: #ccc;
+$mobile-tab-selected-color: #ddd;
+$mobile-tab-color: #ccc;
+
+// #users
+$user-text-color-in-user-list: #999;
+$connected-user-text-color-in-user-list: #eee;
+$connected-user-bg-color-in-user-list: #444;
+
+// user in message
+$user-text-color-in-message: #aaa;
+$user-color-shadow-in-messages: 2px 0 0;
+$hovered-user-color-shadow-in-messages: 4px 0 0;
+$user-in-messages-bg: none;
+
+// messages
+$message-me-bg: transparent;
+$hovered-message-content-bg: transparent;
+
+// table
+$message-content-table-border-color: #777;
+
+// profile
+$user-profile-title-color: rgba(255,255,255,.9);
+$user-def-color: rgba(255,255,255,.75);
+$profile-text-color: rgba(255,255,255,.9);
+$profile-bg: #555;
+$profile-box-shadow: none;
+
+// buttons
+$button-box-shadow: none;
+$small-button-box-shadow: none;
+$message-decoration-button-box-shadow: none;
+$small-button-box-shadow: none;
+$button-bg-color: rgba(50,50,50,.9);
+$button-text-color: #ea0;
+$button-hover-bg-color: #666;
+$button-hover-text-color: #fb0;
+$button-border: 1px solid #320;
+$button-hover-border-color: #640;
+$decoration-button-border-radius: 2px;
+
+// top stripe & drawer
+$roomname-color: #fb0;
+$roomname-text-shadow: 0 0 2px #000;
+$pad-room-hover-bg: #333;
+$pad-room-desc-bg: #333;
+$pad-room-last-message-bg: #eee;
+$pad-room-last-message-border-top: #aaa;
+$room-tab-bg-color: #222;
+$selected-room-tab-color: #222;
+$hovered-room-tab-color: #eee;
+$unselected-room-tab-color: #ccc;
+$opacity-behind-open-top: 1;
+$selected-room-tab-color: #fb0;
+$hovered-room-tab-color: #ea0;
+$unselected-room-tab-color: #aaa;
+
+// watches
+$watch-bg: rgba(0,0,0,.8);
+$unselected-watch-bg: none;
+$watch-panel-bg: #555;
+
+// history
+$hist-bg: $left-background;
+$hist-color: #ddd;
+$hist-month-border-bottom: thin solid #444;
+$hist-normal-day-background: transparent;
+$hist-vis-day-background: #444;
+$hist-hover-day-background: #51608a;
+$hist-bar-color: $right-background;
+$hist-bubble-background: #51608a;
+
+// side tabs
+$chat-tabs-border-color: #750; // #fb0;
+$chat-tabs-border-width: 1px;
+$chat-tabs-selected-bg-image: none;
+$chat-tabs-unselected-bg-color: transparent;
+$chat-tabs-selected-bg-color: #151515; 
+$chat-page-selected-bg: #151515;
+
+// side messages
+$side-message-border-top: thin solid rgba(255,255,255,0.1);
+$side-message-border-bottom: thin solid rgba(0,0,0,0.1);
+$side-message-even-background: rgba(0,0,0,0.03);
+$side-message-hover-bg: rgba(9,30,90,.2);
+$side-message-selected-bg: rgba(9,30,90,.4);
+
+// wzins
+$wzin-conv-bg: ( rgba(139, 69, 19, .4), rgba(42, 18, 234, .4), rgba(180, 237, 228, .7), rgba(192, 169, 244, .7) );
+$wzin-edit-bg: rgba(208, 120, 16, .35);
+$wzin-reply-bg: rgba(71, 71, 249, .44);
+$wzin-link-bg: rgba(222, 1, 80, .35);
+
+// M-Menu
+$menu-item-color: #aaa;
+$menu-background: #444;
+$menu-item-hover-bg: #333;
+
+// miaou logo
+$miaou-logo-color: #fb0;
+
+// profile avatar rendering
+$profiled-avatar-filter: drop-shadow(0 0 1px white);
+$profile-avatar-filter: drop-shadow(0 0 2px white);
+
+
+// ---------------
+// specific things
+
+#home-top, #stripe {
+	border-bottom: 4px solid #fb0;
+}
+
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+::-webkit-scrollbar-track {
+	border-radius: 1px;
+	background: #111;
+}
+::-webkit-scrollbar-track:hover {
+	background: #000;
+}
+::-webkit-scrollbar-thumb {
+	border-radius: 1px;
+	background: #430;
+	cursor: pointer;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: #fb0;
+}

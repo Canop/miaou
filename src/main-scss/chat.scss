@@ -138,11 +138,14 @@ body.pad #me {
 	font-style: italic;
 }
 
+#messages {
+	background: $message-list-bg;
+}
+
 #messages, .messages {
   	margin-top:0;
 	vertical-align: top;
 	position: relative;
-	background: $message-list-bg;
 	.message {
 		margin: $message-margin;
 		transition: background 0.6s;
