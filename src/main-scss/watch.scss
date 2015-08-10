@@ -9,14 +9,13 @@
 	margin: 2px 4px;
 	font-size: 0.8em;
 	cursor: pointer;
-	box-shadow: $unselected-watch-bg;
 	@include flexbox(row);
 	text-decoration: none;
 	color: inherit;
 	position: relative;
 	background: $watch-bg;
 	&:hover {
-		background: $watch-panel-bg;
+		background: $open-watch-bg;
 	}
 	&.open {
 		box-shadow: 0 0 5px black;
@@ -25,7 +24,7 @@
 		position: absolute;
 		left:0; top: 13px; right: 0;
 		height: 12px; // hack dégueulasse
-		background: $watch-panel-bg;
+		background: $open-watch-bg;
 		z-index: 60;
 		content: "";
 	}

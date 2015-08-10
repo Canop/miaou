@@ -4,9 +4,9 @@ $bg-color: #1a1a1a;
 $left-background: #111;
 $pad-background: #444;
 $right-background: #111;
-$box-background: #aaa;
+$box-background: #eee;
 
-$general-text-color: #bbb;
+$general-text-color: #aaa;
 $title-text-color: #fb0;
 $message-list-bg: linear-gradient(#444, #111);
 
@@ -23,9 +23,9 @@ $list-cell-color: #aaa;
 $list-cell-hover-link-color: #973;
 
 // home-tabs (tabs of the home page and similarly built pages)
-$home-tab-bg: #222;
+$home-tab-bg: #333;
 $home-tab-selected-color: #fb0;
-$home-tab-unselected-color: #751;
+$home-tab-unselected-color: #970;
 
 // dialog pages (login, error)
 $logo-bg-color: #fb0;
@@ -69,9 +69,18 @@ $user-in-messages-bg: none;
 // messages
 $message-me-bg: transparent;
 $hovered-message-content-bg: transparent;
+$message-link-color: rgb(178, 139, 121);
+$code-text-color: #888;
+$goingto-bg: #000;
+
+// input
+$input-panel-bg-color: $bg-color;
+$input-bg: #111;
+$input-text-color: #bbb;
+$input-border-color: #333; 
 
 // table
-$message-content-table-border-color: #777;
+$message-content-table-border-color: #555;
 
 // profile
 $user-profile-title-color: rgba(255,255,255,.9);
@@ -111,8 +120,8 @@ $unselected-room-tab-color: #aaa;
 
 // watches
 $watch-bg: rgba(0,0,0,.8);
-$unselected-watch-bg: none;
-$watch-panel-bg: #555;
+$watch-panel-bg: linear-gradient(#111, #111, #444); // #444;
+$open-watch-bg: #111;
 
 // history
 $hist-bg: $left-background;
@@ -120,8 +129,8 @@ $hist-color: #ddd;
 $hist-month-border-bottom: thin solid #444;
 $hist-normal-day-background: transparent;
 $hist-vis-day-background: #444;
-$hist-hover-day-background: #51608a;
-$hist-bar-color: $right-background;
+$hist-hover-day-background: #fb0;
+$hist-bar-color: #970;
 $hist-bubble-background: #51608a;
 
 // side tabs
