@@ -66,13 +66,13 @@ page-js: ./build/miaou_modules.txt $(PAGES_JS_OUT)
 # constant resource files
 ./static/%: ./src/rsc/%
 	@mkdir -p $(@D)
-	@cp $< $@
+	@cp -r $< $@
 rsc: $(RSC_FILES)
 
 # constant resource files of plugins
 ./static/plugins/%: ./plugins/%
 	@mkdir -p $(@D)
-	@cp $< $@
+	@cp -r $< $@
 plugins-rsc: $(PLUGIN_RSC_FILES)
 
 # CSS of specific pages : static/[somepage].css
