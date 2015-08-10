@@ -1,7 +1,6 @@
 .stackexchangebox {
 	display: table-row;
 	padding: 15px;
-	background: white;
 	color: black;
 	font-size: 95%;
 }
@@ -87,7 +86,6 @@ a.so-title img {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	background: white;
 }
 .so-chat-message .abstract > img {
 	max-height: 24px;
