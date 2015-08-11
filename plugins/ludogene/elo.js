@@ -46,7 +46,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	} else if ( m.changed < (Date.now()/1000|0) - 2*60*60 ) {
 		r[g.current].d++;
 		this[g.current?'d1':'d0'] = -2*K; 
-		this.t = "User leaved";
+		this.t = "User forfeited";
 	} else {
 		this.t = "Game in progress";
 	}
