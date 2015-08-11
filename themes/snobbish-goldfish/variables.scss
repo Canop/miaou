@@ -25,7 +25,7 @@ $list-cell-hover-link-color: #973;
 // home-tabs (tabs of the home page and similarly built pages)
 $home-tab-bg: #333;
 $home-tab-selected-color: #fb0;
-$home-tab-unselected-color: #970;
+$home-tab-unselected-color: #a80;
 
 // dialog pages (login, error)
 $logo-bg-color: #fb0;
@@ -72,6 +72,16 @@ $hovered-message-content-bg: transparent;
 $message-link-color: rgb(178, 139, 121);
 $code-text-color: #888;
 $goingto-bg: #000;
+$slashme-color: #777;
+
+// message menu
+$message-menu-bg: #444;
+$message-menu-color: #aaa;
+$message-menu-txt-color: #aaa;
+$message-menu-vote-color: #999;
+$message-menu-vote-hover-color: #970;
+$message-menu-link-color: #b28b79;
+$message-votes-color: #970;
 
 // input
 $input-panel-bg-color: $bg-color;
@@ -120,7 +130,7 @@ $unselected-room-tab-color: #aaa;
 
 // watches
 $watch-bg: rgba(0,0,0,.8);
-$watch-panel-bg: linear-gradient(#111, #111, #444); // #444;
+$watch-panel-bg: linear-gradient(#111, #111, #222); // #444;
 $open-watch-bg: #111;
 
 // history
