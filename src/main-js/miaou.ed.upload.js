@@ -40,7 +40,12 @@ miaou(function(ed){
 		for (var i=0; i<items.length; i++) {
 			var item = items[i];
 			if (/^image\//i.test(item.type)) {
-				uploadFile(item.getAsFile());
+				if(item.getAsFile){
+					uploadFile(item.getAsFile());
+				}else{
+					//firefox compatibility (items are already typed as file)
+					uploadFile(item);
+				}
 				return false;
 			}
 		}
