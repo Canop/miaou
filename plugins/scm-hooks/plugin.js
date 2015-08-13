@@ -1,4 +1,4 @@
-// do the dirty work for !!scm and !!bitbucket commands enabling
+// do the dirty work for !!github and !!bitbucket commands enabling
 // the publication of bot messages on repository events sent through
 // webhooks to Miaou
 // Providers are objects {
