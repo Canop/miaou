@@ -17,7 +17,6 @@ It's also used to set some useful aliases in the VM (such as`docker-compose` whi
 
 ### Dockerfile
  - Miscellaneous useful Ubuntu packages
- - Python (needed to build some `npm` dependencies)
  - Ruby and `sass`
  - IOJS with `nodemon`, `uglify-js` and `buster` globally installed
 
