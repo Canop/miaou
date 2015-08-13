@@ -51,7 +51,8 @@ module.exports = {
 	plugins: [
 		"./plugins/stackoverflow/plugin.js",
 		"./plugins/wikipedia/plugin.js",
-		"./plugins/github/plugin.js",
+		"./plugins/github-identity/plugin.js",
+		"./plugins/scm-hooks/plugin.js",
 		"./plugins/video/plugin.js",
 		"./plugins/whiteboard/plugin.js",
 		"./plugins/youtube/plugin.js",
