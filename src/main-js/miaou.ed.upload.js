@@ -36,11 +36,16 @@ miaou(function(ed){
 		ed.stateBeforePaste = {
 			selectionStart:input.selectionStart, selectionEnd:input.selectionEnd, value:input.value
 		};
-		var items = e.clipboardData.items || e.clipboardData.files;
-		for (var i=0; i<items.length; i++) {
-			var item = items[i];
-			if (/^image\//i.test(item.type)) {
-				uploadFile(item.getAsFile());
+		var files = e.clipboardData.files;
+		if (!files && e.clipboardData.items) {
+			files = e.clipboardData.items.map(function(item){
+				return item.getAsFile();
+			});
+		}
+		if (!files) return;
+		for (var i=0; i<files.length; i++) {
+			if (/^image\//i.test(files[i].type)) {
+				uploadFile(files[i]);
 				return false;
 			}
 		}
