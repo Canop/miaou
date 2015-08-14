@@ -43,6 +43,7 @@ miaou(function(ed){
 			});
 		}
 		for (var i=0; i<files.length; i++) {
+			if (!files[i]) continue;
 			if (/^image\//i.test(files[i].type)) {
 				uploadFile(files[i]);
 				return false;
