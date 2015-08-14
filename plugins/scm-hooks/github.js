@@ -14,7 +14,7 @@ function analyzeIncomingData(headers, data){
 	};
 }
 
-function detailledHelp(config){
+function detailedHelp(config){
 	return "In order to receive in a Miaou room all events related to a GitHub repository, you must\n"
 	+"1. set up a webhook in GitHub\n"
 	+"2. call the `!!github watch` command in the room\n"
@@ -138,6 +138,6 @@ exports.provider = {
 	repoURL: function(repo){ return "https://github.com/"+repo },
 	analyzeIncomingData: analyzeIncomingData,
 	help: "interact with GitHub. Type `!!help !!github` to learn more.",
-	detailledHelp: detailledHelp
+	detailedHelp: detailedHelp
 }
 

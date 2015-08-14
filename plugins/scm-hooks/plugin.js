@@ -4,7 +4,7 @@
 // Providers are objects {
 // 	key: scm|bitbucket
 // 	doc(): returns the simple !!help documentation
-// 	detailledDoc(): returns the detailled !!help documentation
+// 	detailedDoc(): returns the detailed !!help documentation
 
 const	providers = [require("./github.js").provider],
 	ws = require('../../libs/ws.js'),
@@ -175,7 +175,7 @@ exports.registerCommands = function(cb){
 			name: p.command,
 			fun: function(ct){ return onCommand.call(this, ct, p) },
 			help: p.help,
-			detailledHelp: p.detailledHelp(config)
+			detailedHelp: p.detailedHelp(config)
 		});
 	});
 }
