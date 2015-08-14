@@ -37,12 +37,11 @@ miaou(function(ed){
 			selectionStart:input.selectionStart, selectionEnd:input.selectionEnd, value:input.value
 		};
 		var files = e.clipboardData.files;
-		if (!files && e.clipboardData.items) {
-			files = e.clipboardData.items.map(function(item){
+		if (!files.length && e.clipboardData.items) {
+			files = [].map.call(e.clipboardData.items, function(item){
 				return item.getAsFile();
 			});
 		}
-		if (!files) return;
 		for (var i=0; i<files.length; i++) {
 			if (/^image\//i.test(files[i].type)) {
 				uploadFile(files[i]);
