@@ -20,8 +20,7 @@ Rating.prototype.nbOpponents = function(){
 
 function GameImpact(m, r){ // impact of a game (note: the constructor has side effects on r)
 	var g = m.g;
-	r[0].op[r[1].id] = (r[0].op[r[1].id] || 0) + 1;
-	r[1].op[r[0].id] = (r[1].op[r[0].id] || 0) + 1;
+	var nb = r[0].op[r[1].id] = r[1].op[r[0].id] = (r[0].op[r[1].id] || 0) + 1; // nb games between those players
 	this.r = m.room;
 	this.m = m.id;
 	this.p0 = r[0].id;
@@ -32,20 +31,26 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	if (g.status==="finished") {
 		r[0].f++;
 		r[1].f++;
-		// todo ignore if too many games between those players (> 50% of one of the players games ?)
 		var winnerIndex = +(g.scores[1]>=50);
 		r[winnerIndex].w++;
 		r[+!winnerIndex].l++;
-		var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
 		this.s = g.scores[0];
+		if (
+			(nb>50 && nb>.2*Math.min(r[0].n, r[1].n))
+			|| (nb>10 && nb>.5*Math.min(r[0].n, r[1].n))
+		) {
+			this.t = "Game ignored";
+			return;	
+		}
+		var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1; 
-		this.p = 1 / ( 1 + Math.pow(10, -this.D/400)); // in ]0,1[
+		this.p = 1 / ( 1 + Math.pow(10, - this.D/400)); // in ]0,1[
 		this.d0 = K * (this.v - this.p);
 		this.d1 = -this.d0;
-	} else if ( m.changed < (Date.now()/1000|0) - 2*60*60 ) {
+	} else if ( m.changed < Date.now()/1000 - 2*60*60 ) {
 		r[g.current].d++;
-		this[g.current?'d1':'d0'] = -2*K; 
+		//this[g.current?'d1':'d0'] = -2*K; 
 		this.t = "User forfeited";
 	} else {
 		this.t = "Game in progress";
@@ -90,6 +95,7 @@ function compute(messages){
 	});
 	ratings.forEach(function(r){
 		r.r = r.e0+r.e1;
+		r.r -= r.d*K;
 	});
 	ratings = ratings
 	.filter(function(r){ return r.nbOpponents() >= NB_OPPONENTS_MIN })
@@ -177,7 +183,7 @@ exports.onCommand = function(ct, id){
 		return [compute(messages), userMatch ? this.getUserByName(userMatch[0].slice(1)) : null];
 	})
 	.spread(function(data, user){
-		var	c = "ELO BASED TRIBO LADDER" + ':\n'
+		var	c = "Elo based Tribo ladder" + ':\n'
 			showLog = /\bgames\b/.test(ct.args);
 		if (user) {
 			var r = data.ratingsMap[user.id];
