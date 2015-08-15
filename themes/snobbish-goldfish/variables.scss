@@ -130,7 +130,10 @@ $unselected-room-tab-color: #aaa;
 
 // watches
 $watch-bg: rgba(0,0,0,.8);
+$watch-count-color: #222;
 $watch-panel-bg: linear-gradient(#111, #111, #222); // #444;
+$watch-count-new-bg: rgba(255,255,0,.6) !default;
+$watch-count-ping-bg: rgba(255,0,0,.6) !default;
 $open-watch-bg: #111;
 
 // history

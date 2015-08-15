@@ -13,17 +13,34 @@ miaou(function(locals){
 	}
 	delete localStorage['room'];
 
-	function table(rooms,alt){
+	function roomWatch(roomId){
+		for (var i=0; i<locals.watches.length; i++) {
+			if (locals.watches[i].id===roomId) return locals.watches[i];
+		}
+	}
+	function table(rooms, alt){
 		if (rooms.length) {
 			var $t = $('<table>').addClass('list'), rex = /^<img[^>]*><br>/;
 			rooms.forEach(function(r){
+				var $roomName = $('<td>').addClass(r.private?'private':'public').append(
+					$('<a>').addClass("room-name").attr('href',r.path).text(r.name)
+				).addClass('room-title-cell');
 				var html = miaou.fmt.mdTextToHtml(r.description), floatImage = rex.test(html);
 				if (floatImage) html = html.replace(/<br>/,'');
-				var $td = $('<td>').addClass('rendered').html(html);
-				if (floatImage) $td.find('img:eq(0)').css('float','left').css('margin-right','3px').click(function(){ location=r.path });
-				$('<tr>').addClass(r.lang).append(
-					$('<td>').addClass(r.private?'private':'public').append($('<a>').attr('href',r.path).text(r.name))
-				).append($td).appendTo($t);
+				var $description = $('<td>').addClass('rendered').html(html);
+				if (floatImage) {
+					$description.find('img:eq(0)').css('float','left').css('margin-right','3px')
+					.click(function(){ location=r.path });
+				}
+				var w = roomWatch(r.id);
+				if (w && w.nbunseen) {
+					var $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
+					if (w.nbunseen) $unseen.addClass('has-unseen');
+					$unseen.appendTo($roomName);
+				}
+				$('<tr>').addClass(r.lang).addClass('room')
+				.append($roomName).append($description)
+				.appendTo($t);
 			});
 			return $t;
 		} else {

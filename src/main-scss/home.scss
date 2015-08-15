@@ -171,3 +171,30 @@ body.mobile {
 	right: 0;
 	left: 0;
 }
+.room-title-cell {
+	position: relative;
+	.room-name {
+		a {
+			text-decoration: none;
+		}
+	}
+	.watch-count { 
+		background: rgba(255,255,255,.4);
+		color: $watch-count-color;
+		opacity: .8;
+		padding: 0 5px;
+		display: inline-block;
+		position: absolute;
+		z-index: 2;
+		border-radius: 4px;
+		left: 100%;
+		top: 5px;
+		&.has-unseen {
+			opacity: 1;
+			background: $watch-count-new-bg;
+			&.has-ping {
+				background: $watch-count-ping-bg;
+			}
+		}
+	}
+}
