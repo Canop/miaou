@@ -26,8 +26,9 @@ miaou(function(ed){
 					return;
 				}
 				// let's add a new line
-				$input.insertTextAtPos("\n", sbp.selectionEnd);
+				$input.insertTextAtPos("\n", sbp.selectionEnd++);
 			}
+			this.selectionStart = sbp.selectionEnd;
 			$input.selectLines().replaceSelection(toggleLinesCode);
 			ed.onMove();
 			return;
