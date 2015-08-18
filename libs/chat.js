@@ -35,6 +35,9 @@ exports.appGet = function(req, res){
 		req.session.room = room;
 		var theme = prefs.theme(userPrefs, req.query.theme);
 		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
+			if (room.dialog) {
+				return server.renderErr(res, "You can't enter this room");
+			}
 			return this.getLastAccessRequest(room.id, req.user.id).then(function(ar){
 				res.render('request.jade', {
 					vars:{ room:room },
