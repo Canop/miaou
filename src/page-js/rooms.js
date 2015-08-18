@@ -18,6 +18,11 @@ miaou(function(locals){
 			if (locals.watches[i].id===roomId) return locals.watches[i];
 		}
 	}
+	function hasPings(roomId){
+		for (var i=0; i<locals.pings.length; i++) {
+			if (locals.pings[i].room===roomId) return true;
+		}
+	}
 	function list(rooms, alt){
 		if (rooms.length) {
 			var $t = $('<div>').addClass('room-list'), rex = /^<img[^>]*><br>/;
@@ -47,7 +52,10 @@ miaou(function(locals){
 						txt += " There's "+w.nbunseen+" new message";
 						if (w.nbunseen>1) txt += "s";
 						txt += ".";
-
+						if (hasPings(r.id)) {
+							$unseen.addClass('has-ping');
+							txt += " You were also pinged here.";
+						}
 					} else {
 						txt += " There's no new message.";
 					}

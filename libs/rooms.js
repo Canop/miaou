@@ -142,7 +142,7 @@ exports.appGetRooms = function(req, res){
 			data = {
 			vars:{
 				rooms:rooms, langs:langs.legal, mobile:mobile,
-				welcomeRooms:welcomeRooms, watches:watches
+				welcomeRooms:welcomeRooms, watches:watches, pings:pings
 			},
 			user:req.user, pings:pings
 		};
