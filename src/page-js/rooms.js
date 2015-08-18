@@ -18,6 +18,50 @@ miaou(function(locals){
 			if (locals.watches[i].id===roomId) return locals.watches[i];
 		}
 	}
+	function list(rooms, alt){
+		if (rooms.length) {
+			var $t = $('<div>').addClass('room-list'), rex = /^<img[^>]*><br>/;
+			rooms.forEach(function(r){
+				var $room = $("<div>").addClass("room").addClass(r.lang).addClass(r.private?'private':'public');
+				var $roomHead = $("<div>").addClass("room-head").appendTo($room);
+				$("<div>").addClass("room-privacy").appendTo($roomHead);
+				// var $roomTitle = $("<div>").addClass("room-title").appendTo($roomHead);
+				$('<a>').addClass("room-title").attr('href', r.path).text(r.name).appendTo($roomHead);
+				var	html = miaou.fmt.mdTextToHtml(r.description),
+					floatImage = rex.test(html);
+				if (floatImage) html = html.replace(/<br>/,'');
+				var $underDescription = $('<div>').addClass('under-room-description')
+				.appendTo($room);
+				var $description = $('<div>').addClass('room-description rendered').html(html)
+				.appendTo($underDescription);
+				if (floatImage) {
+				 	var bgsrc = $description.find('img:eq(0)').remove().attr('src');
+					$underDescription.css('background-image', 'url("'+bgsrc+'")');
+				 }
+				var w = roomWatch(r.id);
+				if (w) {
+					var $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
+					var txt = "You're watching this room.";
+					if (w.nbunseen) {
+						$unseen.addClass('has-unseen');
+						txt += " There's "+w.nbunseen+" new message";
+						if (w.nbunseen>1) txt += "s";
+						txt += ".";
+
+					} else {
+						txt += " There's no new message.";
+					}
+					$unseen.attr('title', txt).appendTo($roomHead);
+				}
+				$room.appendTo($t).click(function(){
+					location = r.path;
+				});
+			});
+			return $t;
+		} else {
+			return $('<p>').html(alt);
+		}
+	}
 	function table(rooms, alt){
 		if (rooms.length) {
 			var $t = $('<table>').addClass('list'), rex = /^<img[^>]*><br>/;
@@ -46,66 +90,28 @@ miaou(function(locals){
 		} else {
 			return $('<p>').html(alt);
 		}
-	}			
+	}
 
 	function selectTab(i) {
 		$('.home-tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
 		var $container = $('#home-main-content > .table').empty();
 		switch(i){
 		case 0:
-			if (mobile) {
-				$container.append(
-					$('<div>').addClass('CL').append(
-						$('<h3>').text('Your Rooms')
-					).append(
-						table(
-							rooms.filter(function(r){
-								return (r.hasself || r.auth) && !r.dialog
-							}),
-							"You didn't participate in any non dialog room."
-						)
+			$container.append(
+				$('<div>').addClass('CC').append(
+					(mobile? table : list)(
+						rooms.filter(function(r){
+							return (r.hasself || r.auth) && !r.dialog
+						}),
+						"You didn't participate in any non dialog room."
 					)
-				);		
-			} else {
-				var userPublicRooms = rooms.filter(function(r){
-					return !r.private && (r.hasself || r.auth)
-				});
-				var userPrivateRooms = rooms.filter(function(r){
-					return r.private && r.auth && !r.dialog
-				});
-				
-				if (userPublicRooms.length+userPrivateRooms.length===0) {
-					$container.append(
-						$('<div>').addClass('CC').addClass('welcome-rooms').append(
-							table(locals.welcomeRooms)
-						)
-					);
-				} else {
-					$container.append(
-						$('<div>').addClass('CL').append(
-							$('<h3>').text('Your Public Rooms')
-						).append(table(
-							userPublicRooms,
-							"You didn't participate in any public room for now."
-						))
-					).append($('<div>').addClass('CR').append(
-							$('<h3>').text('Your Private Rooms')
-						).append(table(
-							userPrivateRooms,
-							"You have access to no private room for now.<br>"+
-							"To enter a private room, click on its link (<a href=# onclick='selectTab(2)'>see them</a>)"+
-							" and request an access"
-						))
-					);					
-				}
-			}
+				)
+			);
 			break;
 		case 1:
 			$container.append(
 				$('<div>').addClass('CC').append(
-					$('<h3>').text('Main Public Rooms')
-				).append(
-					table(
+					(mobile? table : list)(
 						rooms.filter(function(r){
 							return !r.private
 						}).sort(function(a,b){ return b.lastcreated-a.lastcreated }),
@@ -117,9 +123,7 @@ miaou(function(locals){
 		case 2:
 			$container.append(
 				$('<div>').addClass('CC').append(
-					$('<h3>').text('Main Private Rooms')
-				).append(
-					table(
+					(mobile? table : list)(
 						rooms.filter(function(r){
 							return r.private && !r.dialog
 						}).sort(function(a,b){ return b.lastcreated-a.lastcreated }),
@@ -158,11 +162,13 @@ miaou(function(locals){
 	function applyLangs(trans){
 		$.each(langs, function(key, lang){
 			var $lang = $(document.getElementById(key));
-			$('tr.'+key)[lang.on ? 'show' : 'hide'](trans*800);
+			$('.room.'+key)[lang.on ? 'show' : 'hide'](trans*800);
 			if (lang.on) {
-				$lang.addClass('on').attr('title', 'Rooms in '+lang.name+' are displayed. Click to hide them.');
+				$lang.addClass('on').removeClass('off')
+				.attr('title', 'Rooms in '+lang.name+' are displayed. Click to hide them.');
 			} else {
-				$lang.removeClass('on').attr('title', 'Rooms in '+lang.name+' are hidden. Click to display them.');				
+				$lang.removeClass('on').addClass('off')
+				.attr('title', 'Rooms in '+lang.name+' are hidden. Click to display them.');				
 			}
 		});
 	}

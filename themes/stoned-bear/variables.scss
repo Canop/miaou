@@ -5,7 +5,6 @@ $bear-text: #FFFACD;
 $mes-brown: #222222;
 $mes-me-brown: #2c2523;
 
-
 // chat colors
 $bg-color: #2F4F4F;
 $general-text-color: transparentize( $bear-text , 0.14 );
@@ -13,7 +12,6 @@ $title-text-color: $bear-green;
 $message-me-bg: rgba(163, 83, 49, 0.08);
 $message-list-bg: #222;
 $user-text-color-in-user-list: $bear-green;
-
 
 // home
 $home-top-color: $general-text-color;
@@ -24,6 +22,15 @@ $list-odd-cell-bg: $mes-me-brown;
 $list-even-cell-bg: $mes-brown;
 $list-cell-color: $general-text-color;
 $list-cell-hover-link-color: $title-text-color;
+
+// square rooms in list
+$square-room-bg: $mes-brown;
+$square-description-opacifier-bg: rgba(0,0,0,.45);
+$square-room-description-text-shadow: 0 0 1px black;
+$square-room-name-color: $title-text-color;
+$square-room-box-shadow: 0px 0px 2px black;
+$square-room-hover-box-shadow: 0px 0px 4px black;
+$square-description-color: #aaa;
 
 // dialogs
 $dialog-bg: white; 

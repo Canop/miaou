@@ -902,14 +902,14 @@ div#notifs {
 	font-family: "fontello";
 }
 
-.private::before {
-	font-family: "fontello";
-	content:"\e814";
-	margin-right: 3px;
-	opacity: 0.7;
-	padding-right: 1px;
-	font-size: 70%;
-}
+// .private::before {
+// 	font-family: "fontello";
+// 	content:"\e814";
+// 	margin-right: 3px;
+// 	opacity: 0.7;
+// 	padding-right: 1px;
+// 	font-size: 70%;
+// }
 .notification {
 	padding: 5px;
 	background-color: $notifications-bg-color;

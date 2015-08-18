@@ -1,0 +1,83 @@
+.room-list {
+	display: flex;
+	flex-wrap: wrap;
+	.room {
+		width: 188px;
+		height: 188px;
+		margin: 5px;
+		cursor: pointer;
+		background: $square-room-bg;
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		box-shadow: $square-room-box-shadow;
+		overflow: hidden;
+		&:hover {
+			box-shadow: $square-room-hover-box-shadow;
+			transition: box-shadow .2s;
+		}
+		.room-head {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			height: 40px;
+			a.room-title {
+				flex-grow: 1;
+				text-align: center;
+				color: $square-room-name-color;
+				font-size: 95%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				text-decoration: none;
+			}
+		}
+		&:hover a.room-title {	
+			text-decoration: underline;
+		}
+		.under-room-description {
+			background-size: cover;
+			background-position: center center;
+			flex-grow: 1;
+			position: relative;
+		}
+		.room-description {
+			background: $square-description-opacifier-bg;
+			color: $square-description-color;
+			overflow: hidden;
+			font-size: 90%;
+			text-overflow: ellipsis;
+			padding: 4px;
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			text-shadow: $square-room-description-text-shadow;
+			a, a:visited {
+				color: $square-description-color;
+			}
+		}
+	}
+}
+.watch-count { 
+	background: rgba(255,255,255,.4);
+	color: $watch-count-color;
+	opacity: .8;
+	padding: 0 5px;
+	display: inline-block;
+	z-index: 2;
+	border-radius: 4px;
+	left: 100%;
+	top: 5px;
+	margin-right: 4px;
+	&.has-unseen {
+		opacity: 1;
+		background: $watch-count-new-bg;
+		&.has-ping {
+			background: $watch-count-ping-bg;
+		}
+	}
+}
+.room-title-cell .watch-count {
+	position: absolute;
+}

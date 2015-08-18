@@ -15,6 +15,15 @@ $message-me-bg: rgba(240,234,214,0.5) !default;
 $notifications-bg-color: #fffa9e !default;
 $notification-text-color: black !default;
 
+// square rooms in list
+$square-room-bg: lighten($bg-color, 5%) !default;
+$square-description-opacifier-bg: rgba(243, 243, 245, .35) !default;
+$square-room-description-text-shadow: 0 0 1px white !default;
+$square-room-name-color: #222 !default;
+$square-room-box-shadow: 1px 1px 2px #999 !default;
+$square-room-hover-box-shadow: 2px 2px 4px #555 !default;
+$square-description-color: $general-text-color !default;
+
 $connected-user-bg-color-in-user-list: rgba(255,255,255,0.55) !default;
 $connected-user-text-color-in-user-list: black !default;
 
@@ -117,6 +126,10 @@ $list-odd-cell-bg: white !default;
 $list-even-cell-bg: #faf7d5 !default;
 $list-cell-color: black !default;
 $list-cell-hover-link-color: $list-cell-color !default;
+
+// lang filter
+$lang-filter-bg-off: $bg-color !default;
+$lang-filter-bg-on: lighten( $bg-color, 15% ) !default;
 
 // home-tabs (tabs of the home page and similarly built pages)
 $home-tab-bg: $bg-color !default;
