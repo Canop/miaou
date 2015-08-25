@@ -247,6 +247,7 @@ $hovered-room-tab-color: transparentize($title-text-color, 0.2) !default;
 $unselected-room-tab-color: transparentize($title-text-color, 0.5) !default;
 $opacity-behind-open-top: .45 !default;
 
+$unseen-message-bg: $watch-count-new-bg !default;
 
 // history
 $hist-bg: rgba($bg-color,.8) !default;

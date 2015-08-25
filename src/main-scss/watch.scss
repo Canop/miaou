@@ -87,7 +87,7 @@
 			opacity: 1;
 		}
 		.message.unseen {
-			background: $watch-count-new-bg;
+			background: $unseen-message-bg; 
 		}
 	}
 }
