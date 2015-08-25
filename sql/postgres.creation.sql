@@ -2,7 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 18);
+insert into db_version (component, version) values('core', 19);
 
 CREATE TABLE room (
 	id serial primary key,
@@ -127,6 +127,7 @@ CREATE TABLE pref (
 create table watch (
 	player integer references player(id),
 	room integer references room(id),
+	last_seen bigint,
 	primary key(player, room)
 );
 
