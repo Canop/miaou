@@ -40,6 +40,8 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 			|| (nb>10 && nb>.5*Math.min(r[0].n, r[1].n))
 		) {
 			this.t = "Game ignored";
+			r[0].op[r[1].id]--;
+			r[1].op[r[0].id]--;
 			return;	
 		}
 		var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
