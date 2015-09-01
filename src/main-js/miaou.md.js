@@ -391,7 +391,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			wab = gui.isAtBottom();
 		$m.find('.content').addClass('wide').html(function(_, h){
 			return h.replace($from.html(), '<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>')
-		});
+		}).find('a[href]').attr('target','_blank');
 		resize($m, wab);
 	}
 		
