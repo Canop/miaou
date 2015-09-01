@@ -4,6 +4,7 @@ const	K = 30,
 function Rating(playerId){ // rating of a player
 	this.id = playerId;
 	this.n = 0; // total number of games
+	this.c = 0; // number of counted games (finished, not ignored)
 	this.f = 0; // number of finished games
 	this.op = Object.create(null); // map opponent Id -> nb finished games in common
 	this.d = 0; // number of dropped games
@@ -35,15 +36,15 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		r[winnerIndex].w++;
 		r[+!winnerIndex].l++;
 		this.s = g.scores[0];
-		if (
-			(nb>50 && nb>.2*Math.min(r[0].n, r[1].n))
-			|| (nb>10 && nb>.5*Math.min(r[0].n, r[1].n))
-		) {
+		var minc = Math.min(r[0].c, r[1].c) + 1;
+		if ( (nb>50 && nb>.2*minc) || (nb>10 && nb>.5*minc) ) {
 			this.t = "Game ignored";
 			r[0].op[r[1].id]--;
 			r[1].op[r[0].id]--;
 			return;	
 		}
+		r[0].c++;
+		r[1].c++;
 		var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1; 
@@ -53,7 +54,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	} else if ( m.changed < Date.now()/1000 - 2*60*60 ) {
 		r[g.current].d++;
 		//this[g.current?'d1':'d0'] = -2*K; 
-		this.t = "User forfeited";
+		this.t = r[g.current].name + " forfeited";
 	} else {
 		this.t = "Game in progress";
 	}
