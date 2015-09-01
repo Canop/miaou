@@ -250,7 +250,8 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 
 	// inserts or updates a message in the main #messages div
 	md.addMessage = function(message, shouldStickToBottom){
-		var messages = md.getMessages(), oldMessage,
+		var	messages = md.getMessages(),
+			oldMessage,
 			insertionIndex = messages.length - 1, // -1 : insert at begining, i>=0 : insert after i
 			//~ wasAtBottom = gui.isAtBottom(),
 			$md = $('<div>').addClass('message').data('message', message),

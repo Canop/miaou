@@ -38,7 +38,7 @@ miaou(function(win, chat, gui, md, ws){
 		closeMWin();
 		$('.mwintab[mid='+message.id+']').remove();
 		if (side) {
-			var line = (message.content||message.authorname).split("\n")[0],
+			var	line = (message.content||message.authorname).split("\n")[0],
 				tokens = line.split(/\s+/),
 				title = tokens[0], i=1;
 			while (i<tokens.length && title.length+tokens[i].length<20) title += ' '+tokens[i++];

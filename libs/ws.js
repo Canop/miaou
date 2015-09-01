@@ -318,6 +318,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on(+mid)
 		.then(db.getMessage)
 		.then(function(m){
+			m.vote = '?';
 			shoe.pluginTransformAndSend(m, function(v,m){
 				shoe.emit(v, clean(m));
 			});
