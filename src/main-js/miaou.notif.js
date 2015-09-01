@@ -151,12 +151,12 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	notif.touch = function(mid, ping, from, text, r, $md){
 		r = r || locals.room;
 		var	visible = vis(), lastUserActionAge = Date.now()-lastUserAction;
-		if (ping && (mid||$md)) {
+		if (ping && (mid||$md) && !$('#mwin[mid='+mid+']').length) {
 			if (visible  && lastUserActionAge<2000) {
 				md.goToMessageDiv(mid||$md);
 				return;
 			}
-			if (lastUserActionAge>1500 && !$('#mwin[mid='+mid+']').length) {
+			if (lastUserActionAge>1500) {
 				if (mid) notif.pings([{r:r.id, rname:r.name, mid:mid, authorname:from, content:text}]);
 				else if ($md) md.goToMessageDiv($md);
 			}
