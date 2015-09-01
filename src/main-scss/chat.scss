@@ -492,7 +492,7 @@ table.list .rendered img, .rooms-list .rendered img {
 		margin: 0 4px;
 		cursor: pointer;
 		&.on {
-			color: $general-text-color;
+			color: $message-menu-vote-on-color;
 		}
 		&:hover {
 			color: $message-menu-vote-hover-color;
