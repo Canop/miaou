@@ -44,7 +44,7 @@ function doStats(ct) {
 		ranking = false;
 	} else if (/^(active-)?users$/i.test(topic)) {
 		cols = [
-			{name:"Name", value:"name"},
+			{name:"Name", value:"name", fmt:function(row){ return "["+row.c0+"](u/"+row.c0+")" }},		
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
 			{name:"Stars", value:"(select sum(star) from message where author=player.id)"},
@@ -79,7 +79,7 @@ function doStats(ct) {
 	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
 			{name:"Id", value:"id"},
-			{name:"Name", value:"name"},		
+			{name:"Name", value:"name", fmt:function(row){ return "["+row.c1+"]("+row.c0+"#)" }},		
 			{name:"Language", value:"lang"},		
 			{name:"Private", value:"private"},		
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
@@ -134,7 +134,9 @@ function doStats(ct) {
 			c += rows.map(function(row, l){
 				var line='';
 				if (ranking) line += l+1+'|';
-				for (var i=0; i<cols.length; i++) line += row['c'+i]+'|';
+				for (var i=0; i<cols.length; i++) {
+					line += ( cols[i].fmt ? cols[i].fmt(row) : row['c'+i] ) + '|';
+				}
 				return line;
 			}).join('\n');
 		}
