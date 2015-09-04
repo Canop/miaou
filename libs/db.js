@@ -314,6 +314,14 @@ proto.listUserAuths = function(userId){
 	return this.queryRows("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId]);
 }
 
+// get the id of the other user of the room (supposed a dialog room 
+proto.getOtherDialogRoomUser = function(roomId, userId){
+	return this.queryRow(
+		"select id from player p, room_auth a where a.player=p.id and a.room=$1 and p.id!=$2",
+		[roomId, userId], true
+	);
+}
+
 // lists the authorizations of the room
 proto.listRoomAuths = function(roomId){
 	return this.queryRows(
@@ -394,6 +402,18 @@ proto.insertWatch = function(roomId, userId){
 		" select $1, $2, (select max(id) from message where room=$1)",
 		[roomId, userId]
 	);
+}
+// inserts a watch if there's none. Return true if an insert was done
+proto.tryInsertWatch = function(roomId, userId){
+	return this.execute(
+		"insert into watch(room, player, last_seen) ("+
+		" select $1, $2, (select max(id) from message where room=$1)"+
+		" where not exists ( select * from watch where room=$1 and player=$2 )"+
+		")",
+		[roomId, userId]
+	).then(function(res){
+		return !!res.rowCount;	
+	});
 }
 proto.updateWatch = function(roomId, userId, lastUnseen){
 	return this.execute(

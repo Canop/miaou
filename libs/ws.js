@@ -1,6 +1,6 @@
 "use strict";
 
-const	apiversion = 47,
+const	apiversion = 48,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
 	path = require('path'),
@@ -84,8 +84,19 @@ var roomIds = exports.roomIds = function(){
 	return Object.keys(io.sockets.adapter.rooms).filter(function(n){ return n==+n });
 }
 
+var userSockets = exports.userSockets = function(userIdOrName) {
+	var sockets = [];
+	for (var clientId in io.sockets.connected) {
+		var socket = io.sockets.connected[clientId];
+		if (socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
+			sockets.push(socket);
+		}
+	}
+	return sockets;
+}
+
 // returns the first found socket of the passed user (may be in another room)
-exports.anyUserSocket = function(userIdOrName) {
+var anyUserSocket = exports.anyUserSocket = function(userIdOrName) {
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
 		if (socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
@@ -169,13 +180,13 @@ function messageWithoutUserVote(message){
 }
 
 // handles the socket, whose life should be the same as the presence of the user in a room without reload.
-// Implementation details :
-//  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
+// Implementation details : //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
 //     different rooms and there's a reconnect
 //  - the socket join the sio room whose id is the id of the room (a number)
 //     and a sio room for every watched room, with id 'w'+room.id
 function handleUserInRoom(socket, completeUser){
 	var	shoe = new shoes.Shoe(socket, completeUser),
+		otherDialogRoomUser, // defined only in a dialog room
 		memroom,
 		watchset = new Set, // set of watched rooms ids (if any)
 		welcomed = false, 
@@ -265,6 +276,15 @@ function handleUserInRoom(socket, completeUser){
 			for (var o of socketWaitingApproval) {
 				if (o.roomId===shoe.room.id && o.ar) socket.emit('request', o.ar);
 			}
+			if (shoe.room.dialog) {
+				for (var i=0; i<recentUsers.length; i++) {
+					if (recentUsers[i].id!==shoe.publicUser.id) {
+						otherDialogRoomUser = recentUsers[i];
+						break;
+					}
+				}
+				console.log("otherDialogRoomUser:", otherDialogRoomUser);
+			}
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
@@ -285,7 +305,7 @@ function handleUserInRoom(socket, completeUser){
 		db.on(completeUser.id)
 		.then(db.listUserWatches)
 		.then(function(watches){
-			//~ console.log("watches of user "+shoe.publicUser.name+":", watches);
+			// console.log("watches of user "+shoe.publicUser.name+":", watches);
 			socket.emit('wat', watches);
 			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
 			for (var w of watches) {
@@ -418,9 +438,31 @@ function handleUserInRoom(socket, completeUser){
 		} else {
 			m.created = seconds;
 		}
-		db.on([shoe, m])
-		.spread(commands.onMessage)
-		.then(function(ct){
+
+		db.on().then(function(){
+			if (otherDialogRoomUser) {
+				var r = shoe.room;
+				// we must ensure the other dialog room user is watching
+				var otherUserSockets = userSockets(otherDialogRoomUser.id);
+				if (otherUserSockets.length) {
+					var otherUserRooms = Object.keys(otherUserSockets[0].adapter.rooms);
+					var isAlreadyWatching = otherUserRooms.indexOf('w'+r.id)!==-1;
+					console.log("isAlreadyWatching:",isAlreadyWatching);
+					if (!isAlreadyWatching) {
+						otherUserSockets.forEach(function(s){
+							s.join('w'+r.id);
+							s.emit('wat', [{id:r.id, name:r.name, private:r.private, dialog:r.dialog}]);
+						});
+						return this.insertWatch(r.id, otherDialogRoomUser.id);
+					}
+				} else {
+					console.log("other dialog user not connected");
+					return this.tryInsertWatch(r.id, otherDialogRoomUser.id);
+				}
+			}
+		}).then(function(){
+			return commands.onMessage.call(this, shoe, m);
+		}).then(function(ct){
 			commandTask = ct;
 			return [
 				commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition),

@@ -34,7 +34,6 @@ miaou(function(watch, chat, locals, md, notif, ws){
 	
 	// w must be {id:roomId,name:roomname,nbunseen}
 	watch.add = function(watches){
-		console.log("watches", watches);
 		watches.forEach(function(w){
 			if (w.id===locals.room.id) {
 				$('#watch').text('unwatch');
@@ -91,6 +90,7 @@ miaou(function(watch, chat, locals, md, notif, ws){
 	}
 
 	watch.incr = function(roomId, n){
+		console.log("watch.incr", roomId, n);
 		var $wc =  $('#watches .watch[rid='+roomId+'] .count');
 		if (!$wc.length) return console.log('no watch!');
 		$wc.text((+$wc.text()||0)+(n||1));
