@@ -12,7 +12,7 @@ miaou(function(fmt){
 	// format of the line, between the header and the body of a table,
 	//  defining the column alignements.
 	// This is how we recognize a table in Markdown 
-	var coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
+	var	coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
 		coderegex = /^(    |\t)/;
 	
 	fmt.mdStringToHtml = function(s, username) {
@@ -20,10 +20,13 @@ miaou(function(fmt){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
 			.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
-			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // exemple : [lien interne miaou](7#123456)
+			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // exemples : [a message](7#123456), [a room](7#)
 				r = r || (miaou && miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
+			})
+			.replace(/\[([^\]]+)\]\(u\/(\w+)\)/g, function(s,t,u){ // exemple : [some user](u/1234)
+				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
 			// fixme : the following replacement should not happen inside a link ( exemple :  [http://some.url](http://some.url) )
 			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig, '$1<a target=_blank href="$2">$2</a>') // exemple : http://dystroy.org
@@ -54,7 +57,7 @@ miaou(function(fmt){
 	}
 	
 	function _mdTextToHtml(md, username){
-		var table,
+		var	table,
 			lang, // current code language, set with a #lang-* pragma
 			ul, ol, code, // arrays : their elements make multi lines structures
 			lin = md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),

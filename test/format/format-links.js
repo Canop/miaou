@@ -16,6 +16,22 @@ buster.testCase("Formatting - Links", {
 		"[dystroy](http://dystroy.org)",
 		'<a target=_blank href="http://dystroy.org">dystroy</a>'
 	),
+	"markdown link to room": t(
+		"[room #123](123#)",
+		'<a target=_blank href=123#>room #123</a>'
+	),
+	"markdown link to room to message": t(
+		"[message #456 in room #123](123#456)",
+		'<a target=_blank href=123#456>message #456 in room #123</a>'
+	),
+	"markdown link to user by num": t(
+		"[dystroy](u/1)",
+		'<a target=_blank href=user/1>dystroy</a>'
+	),
+	"markdown link to user by name": t(
+		"[dystroy](u/dystroy)",
+		'<a target=_blank href=user/dystroy>dystroy</a>'
+	),
 	"markdown link with commas": t(
 		"[dystroy](http://dystroy.org/bla,bla,bla)",
 		'<a target=_blank href="http://dystroy.org/bla,bla,bla">dystroy</a>'
