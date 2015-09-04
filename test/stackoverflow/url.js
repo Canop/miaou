@@ -1,5 +1,5 @@
 var	buster = require("buster"),
-	boxer = require('../../plugins/stackoverflow/soboxer.js');
+	boxer = require('../../plugins/stackoverflow/se-boxer.js');
 
 
 function c(text, site, meta, type, num){
