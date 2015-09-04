@@ -1,14 +1,17 @@
 const	K = 30,
+	R = 800, // 500 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
 	NB_OPPONENTS_MIN = 3;
 
 function Rating(playerId){ // rating of a player
 	this.id = playerId;
 	this.n = 0; // total number of games
-	this.c = 0; // number of counted games (finished, not ignored)
 	this.f = 0; // number of finished games
+	this.c = 0; // number of counted games (finished, not ignored)
+	this.cly = 0; // number of counted games last year
 	this.op = Object.create(null); // map opponent Id -> nb finished games in common
 	this.d = 0; // number of dropped games
-	this.malus = 0; // dropping games malus
+	this.malus = []; // array [[text,value],...]
+	this.ms = 0; // sum of all malus
 	this.e0 = 1000; // elo rating as first player
 	this.e1 = 1000; // elo rating as second player
 	this.r = 0; // global rating
@@ -17,6 +20,23 @@ function Rating(playerId){ // rating of a player
 }
 Rating.prototype.nbOpponents = function(){
 	return Object.keys(this.op).length;
+}
+// compute this.malus and this.malusDetails
+Rating.prototype.computeMalus = function(){
+	var	m = this.malus = [];
+	
+	if (this.d) m.push([this.d+" dropped game"+(this.d>1?'s':''), this.d*40]);
+	if (this.c < 10) m.push(["Less than 10 counted games", 150]);
+	if (this.c < 50) m.push(["Less than 50 counted games", 50]);
+	if (this.c < 100) m.push(["Less than 100 counted games", 20]);
+	if (this.cly < 10) m.push(["Less than 10 counted games since a year", 40]);
+	if (this.cly < 20) m.push(["Less than 20 counted games since a year", 10]);
+	var nbOpponents = this.nbOpponents(); 
+	if (nbOpponents < 5) m.push(["Less than 5 opponents", 150]);
+	if (nbOpponents < 10) m.push(["Less than 10 opponents", 50]);
+	if (nbOpponents < 15) m.push(["Less than 15 opponents", 20]);
+
+	this.ms = m.reduce(function(s,e){ return s+e[1] }, 0);
 }
 
 function GameImpact(m, r){ // impact of a game (note: the constructor has side effects on r)
@@ -37,26 +57,29 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		r[+!winnerIndex].l++;
 		this.s = g.scores[0];
 		var minc = Math.min(r[0].c, r[1].c) + 1;
-		if ( (nb>50 && nb>.2*minc) || (nb>10 && nb>.5*minc) ) {
-			this.t = "Game ignored";
+		if ( (nb>50 && nb-50>.2*(minc-50)) || (nb>10 && nb-10>.5*(minc-10)) ) {
+			this.t = "ignored";
 			r[0].op[r[1].id]--;
 			r[1].op[r[0].id]--;
 			return;	
 		}
 		r[0].c++;
 		r[1].c++;
+		if (m.created+365*24*60*60>Date.now()/1000) {
+			r[0].cly++;
+			r[1].cly++;
+		}
 		var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1; 
-		this.p = 1 / ( 1 + Math.pow(10, - this.D/400)); // in ]0,1[
+		this.p = 1 / ( 1 + Math.pow(10, - this.D/R)); // in ]0,1[
 		this.d0 = K * (this.v - this.p);
 		this.d1 = -this.d0;
-	} else if ( m.changed < Date.now()/1000 - 2*60*60 ) {
+	} else if ( m.changed < Date.now()/1000 - 24*60*60 ) {
 		r[g.current].d++;
-		//this[g.current?'d1':'d0'] = -2*K; 
 		this.t = r[g.current].name + " forfeited";
 	} else {
-		this.t = "Game in progress";
+		this.t = "in progress";
 	}
 	r[0].e0 += this.d0;
 	r[1].e1 += this.d1;
@@ -98,7 +121,8 @@ function compute(messages){
 	});
 	ratings.forEach(function(r){
 		r.r = r.e0+r.e1;
-		r.r -= r.d*K;
+		r.computeMalus();
+		r.r -= r.ms;
 	});
 	ratings = ratings
 	.filter(function(r){ return r.nbOpponents() >= NB_OPPONENTS_MIN })
@@ -107,15 +131,19 @@ function compute(messages){
 }
 
 function table(cols, rows){
-	return	cols.join('|')+'\n'+
-		cols.map(function(){ return ':-:' }).join('|')+'\n'+
-		rows.map(function(r){ return r.join('|')+'|' }).join('\n')+'\n';
+	var t = '';
+	if (cols) t += cols.join('|')+'\n';
+	t += (cols||rows[0]||[]).map(function(){ return ':-:' }).join('|')+'\n';
+	t += rows.map(function(r){ return r.join('|')+'|' }).join('\n')+'\n';
+	return t;
 }
 
+// builds the ratings table in markdown
+// If userId is provided, the table contains only the relevant line
 function ratingsTable(data, userId){
-	return "## Ratings:\n" + table(
+	return "## Rating"+(userId?'':'s')+":\n" + table(
 		["Rank", "Player", "Games", "Opponents", "Wins", "Losses", "Drops",
-		"Elo 1st player", "Elo 2nd player", "Global Rating"],
+		"Elo 1st player", "Elo 2nd player", "Malus", "Global Rating"],
 		data.ratings
 		.filter(function(r,i){
 			r.rank = i+1;
@@ -132,6 +160,7 @@ function ratingsTable(data, userId){
 				r.d,
 				Math.round(r.e0),
 				Math.round(r.e1),
+				r.ms||' ',
 				'**'+Math.round(r.r)+'**'
 			];
 		})
@@ -164,7 +193,7 @@ exports.onCommand = function(ct, id){
 	console.log("==========================\nELO COMPUTING "+ct.args);
 	var st = Date.now();
 	return this.queryRows(
-		"select message.id, room, content, changed from message join room on message.room=room.id"+
+		"select message.id, room, content, created, changed from message join room on message.room=room.id"+
 		" where room.private is false and content like '!!game %' order by message.id"
 	)
 	.map(function(m){
@@ -199,6 +228,8 @@ exports.onCommand = function(ct, id){
 					+ Object.keys(r.op).map(function(uid){ return '* '+data.ratingsMap[uid].name }).join('\n');
 			} else {
 				c += ratingsTable(data, r.id);
+				c += "Counted games: "+r.c+"\n";
+				if (r.ms) c += "## Malus:\n" + table(null, r.malus);
 				if (showLog) c += logTable(data, r.id);
 			}
 		} else {
