@@ -20,7 +20,7 @@ miaou(function(fmt){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
 			.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
-			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d+)\)/g, function(s,t,r,_,m){ // exemple : [lien interne miaou](7#123456)
+			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // exemple : [lien interne miaou](7#123456)
 				r = r || (miaou && miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
