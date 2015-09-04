@@ -326,6 +326,7 @@ body.mobile #message-scroller {
 		}
 		img {
 			max-width: 40%;
+			height: auto;
 		}
 		.mainimg {
 			margin: 5px;
@@ -340,6 +341,9 @@ body.mobile #message-scroller {
 	}
 	div.tablewrap {
 		overflow-x: auto;		
+		overflow-y: auto;
+		display: inline-block;
+		max-height: 55vh;
 	}
 	table {
 		border-collapse: collapse;
@@ -455,6 +459,7 @@ body.mobile #message-scroller {
 	border: none;
 	max-width: 100%;
 	max-height: 130px;
+	width: auto;
 	cursor: pointer;
 }
 #search-results .content img, #notable-messages .content img, .messages .content img,
