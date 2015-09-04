@@ -48,6 +48,10 @@ miaou(function(usr, ed, locals, mod, time, ws){
 		usr.insertInUserList(user, time);
 		usr.insertAmongRecentUsers(user, time);
 	}
+	
+	usr.nbRecentUsers = function(){
+		return recentUsers.length;
+	}
 
 	usr.insertAmongRecentUsers = function(user, enterTime){
 		user.mc = enterTime;
