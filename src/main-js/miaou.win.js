@@ -5,7 +5,7 @@ miaou(function(win, chat, gui, md, ws){
 	
 	if (gui.mobile) return;
 
-	var sides = ['left', 'bottom', 'right', 'top'];
+	var sides = ['left', 'bottom', 'right'];
 
 	sides.forEach(function(side){
 		$('<div/>').addClass('mwincontainer').addClass(side).appendTo(document.body);
@@ -48,8 +48,8 @@ miaou(function(win, chat, gui, md, ws){
 			)
 		} else {
 			var $mc = $('<div/>').addClass('content');
-			var $mwin = $('<div id=mwin/>').attr('mid',message.id).addClass('message').append($mc).appendTo(document.body);
-			$mwin.append($('<div class=remover/>').text('X').click(closeMWin));
+			var $mwin = $('<div id=mwin/>').attr('mid',message.id).addClass('message').append($mc);
+			$mwin.append($('<div class=remover/>').text('X').click(closeMWin)).appendTo(document.body);
 			sides.forEach(function(side){
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
 			});
