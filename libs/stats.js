@@ -2,10 +2,12 @@
 
 // !!stats command
 
-var	bot;
+const	siostats = require('./stats-sockets.js');
 
-exports.configure = function(miaou){
-	bot = miaou.bot;
+var	miaou;
+
+exports.configure = function(_miaou){
+	miaou = _miaou;
 	return this;
 }
 
@@ -21,6 +23,9 @@ function doStats(ct) {
 		topic = match[1];
 		subtopic = match[2]; 
 		n = Math.min(+match[3] || n, 500);
+	}
+	if (/^socket/i.test(topic)) {
+		return siostats.doStats(ct, miaou.io);
 	}
 	if (/^me$/i.test(topic)) topic = '@'+ct.username();
 	var cols, from, title, args=[], c;
@@ -158,7 +163,8 @@ exports.registerCommands = function(registerCommand){
 			"\n* `!!stats prefs` : stats of user preferences"+
 			"\n* `!!stats prefs theme` : stats of user preferences regarding themes"+
 			"\n* `!!stats` : basic stats"+
-			"\n* `!!stats server-graph` : monthly histogram"
+			"\n* `!!stats server-graph` : monthly histogram"+
+			"\n* `!!stats sockets` : stats about current connections"
 			
 	});
 }

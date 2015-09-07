@@ -396,6 +396,8 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);
 	})
 	.on('message', function(message){
+		console.log(Object.keys(socket.conn));
+		console.log(socket.conn.transport.name);
 		if (!shoe.room) {
 			console.log('no room. Asking client');
 			return socket.emit('get_room', message);
