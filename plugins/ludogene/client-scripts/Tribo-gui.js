@@ -167,7 +167,7 @@ miaou(function(games, locals, notif, ws){
 		}
 		function playMove(){
 			if (savedMoves.length===p.g.moves.length) return stop();
-			var cm = savedMoves[p.g.moves.length],
+			var	cm = savedMoves[p.g.moves.length],
 				move = Tribo.decodeMove(cm);
 			p.g.moves += cm;
 			Tribo.apply(p.g, move);
@@ -203,7 +203,7 @@ miaou(function(games, locals, notif, ws){
 		render: function($c, m, g, abstract){
 			Tribo.restore(g);
 			$c.empty().addClass('wide').css('background', bg).closest('.message').removeClass('edited');
-			var s = ù('<svg', $c),
+			var	s = ù('<svg', $c),
 				p = new Panel(m, g, s, $c.width(), abstract);
 			s.width(p.W).height(p.H);
 			$c.data('ludo-panel', p);
@@ -220,7 +220,7 @@ miaou(function(games, locals, notif, ws){
 			// moves, like messages, can be received more than once
 			// so game implementations must detect that.
 			// move returns true if the player should be notified
-			var panel = $c.data('ludo-panel'),
+			var	panel = $c.data('ludo-panel'),
 				movechar = Tribo.encodeMove(move),
 				newmove = panel.g.moves.slice(-1) !== movechar;
 			m.locked = true;

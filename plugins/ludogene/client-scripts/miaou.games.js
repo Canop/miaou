@@ -38,7 +38,8 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 		}).appendTo($c).hover(
 			function(){
 				$helpDiv = $('<div/>').css({
-					position:'absolute', top:0, left:0, height:'120px', right:'10px', borderRadius:'0 0 10px 0', zIndex:2
+					position:'absolute', top:0, left:0, height:'120px',
+					right:'10px', borderRadius:'0 0 10px 0', zIndex:2
 				}).appendTo($c.width()>300 ? $c : $c.closest('.message'));
 				games[game.type].fillHelp($helpDiv);
 			}, function(){
@@ -54,7 +55,7 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 		if (!gt) return $c.text('Game type not available');
 		gt.render($c, m, game);
 		renderHelp($c, game);
-		$c.closest('.message').find('.pen').remove(); // TODO find something cleaner, not involving having an element being put then removed
+		$c.closest('.message').find('.pen').remove();
 	}
 
 	function messageGame(m){
@@ -87,12 +88,15 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 			ws.on('ludo.move', function(arg){
 				$('.mwintab[mid='+arg.mid+']').addClass('new');
 				$('.message[mid='+arg.mid+']').each(function(){
-					var $message = $(this),
+					var	$message = $(this),
 						m = $message.data('message'),
 						game = messageGame(m);
 					if (!game) return;
 					var playername = game.players[arg.move.p].name;
-					if (games[game.type].move($message.find('.content'), m, game, arg.move) && game.players[+!arg.move.p].id===locals.me.id) {
+					if (
+						games[game.type].move($message.find('.content'), m, game, arg.move)
+						&& game.players[+!arg.move.p].id===locals.me.id
+					) {
 						notif.touch(m.id, true, playername, playername + ' made a move in your Tribo game');
 					}
 				});
