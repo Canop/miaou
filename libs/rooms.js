@@ -37,6 +37,20 @@ exports.mem = function(roomId){
 	return mo;
 }
 
+// called in case of a possibly cached message being changed
+exports.updateMessage = function(message){
+	if (!message.id || !message.room) return;
+	var mo = memobjects.get(message.room);
+	if (!mo) return;
+	for (var i=0; i<mo.notables.length; i++) {
+		if (mo.notables[i].id===message.id) {
+			mo.notables[i] = message;
+			console.log("updated notable", message.id);
+			return;
+		}
+	}
+}
+
 // updates the list and resolves the closure with it
 // context of the call must be a db con
 exports.updateNotables = function(memroom){

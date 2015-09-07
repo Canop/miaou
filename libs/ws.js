@@ -630,7 +630,7 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	})
 	.on('vote', function(vote){
-		var changedMessageIsInNotables,
+		var	changedMessageIsInNotables,
 			updatedMessage,
 			strIds = memroom.notables.map(function(m){ return m.id }).join(' ');
 		if (!shoe.room) return;

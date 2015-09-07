@@ -4,6 +4,7 @@
 // The state of a game isn't sent at each move : clients update it themselves using the moves
 const	cache = require('bounded-cache')(300),
 	tribostats = require('./tribostats.js'),
+	rooms = require('../../libs/rooms.js'),
 	elo = require('./elo.js');
 
 var gametypes = {
@@ -78,7 +79,7 @@ exports.accept = function(shoe, arg, accepter){
 
 exports.move = function(shoe, arg){
 	dbGetGame(shoe, arg.mid).spread(function(m, game){
-		var gametype = gametypes[game.type],
+		var	gametype = gametypes[game.type],
 			move = gametype.decodeMove(arg.move);
 		if (gametype.isValid(game, move)) {
 			game.moves += arg.move;
@@ -86,6 +87,7 @@ exports.move = function(shoe, arg){
 			shoe.emitToRoom('ludo.move', {mid:m.id, move:move});
 			storeInMess(m, game ,shoe);
 			m.changed = Date.now()/1000|0;
+			rooms.updateMessage(m);
 			return this.storeMessage(m, true);
 		} else {
 			console.log('ludo : illegal move', move);
