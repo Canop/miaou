@@ -91,7 +91,7 @@ exports.appGetRoom = function(req, res){
 // room admin page POST
 exports.appPostRoom = function(req, res){
 	var roomId = +req.query.id;
-	if (req.body.name && !/^.{2,50}$/.test(req.body.name)) {
+	if (req.body.name && !/^[^\[\]]{2,50}$/.test(req.body.name)) {
 		return server.renderErr(res, "invalid room name");
 	}
 	var room = {
