@@ -166,6 +166,7 @@ miaou(function(watch, chat, locals, md, notif, ws){
 		requiredrid = 0;
 		$('.watch').removeClass('open').find('.watch-panel').remove();
 	}).on('click', '.watch', function(){
+		notif.userAct();
 		var w = $(this).data('watch');	
 		if (w.last_seen) {
 			localStorage.destMessage = w.last_seen;

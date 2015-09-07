@@ -24,7 +24,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	notif.userAct = function(mid){
 		lastUserAction = Date.now();
 		// we assume the user sees the most recent messages if he acts
-		$('#messages .message:gt(-4)').each(function(){
+		$('#messages .message:gt(-10)').each(function(){
 			notif.removePing($(this).attr('mid'), true, true);
 		});
 		notif.removePing(mid, true, true);
@@ -127,6 +127,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		// we assume here there's at most one notification to a given message
 		for (var i=0; i<notifications.length; i++) {
 			if (notifications[i].mid==mid) {
+				console.log('removePing', mid);
 				if (flash) {
 					var $md = $('#messages .message[mid='+mid+']');
 					if ($md.length) {
@@ -173,7 +174,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	}
 
 	notif.updateTab = function(hasPing, nbUnseenMessages){
-		var title = locals.room.name,
+		var	title = locals.room.name,
 			icon = 'static/M-32';
 		if (hasPing) {
 			title = '*'+title;
