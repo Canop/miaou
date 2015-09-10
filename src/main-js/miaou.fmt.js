@@ -25,7 +25,7 @@ miaou(function(fmt){
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
 			})
-			.replace(/\[([^\]]+)\]\(u\/(\w+)\)/g, function(s,t,u){ // exemple : [some user](u/1234)
+			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s,t,u){ // exemple : [some user](u/1234)
 				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
 			// fixme : the following replacement should not happen inside a link ( exemple :  [http://some.url](http://some.url) )
