@@ -155,6 +155,10 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 exports.botMessage = function(bot, roomId, content){
 	if (!roomId) throw "missing room Id";
 	db.on({content:content, author:bot.id, room:roomId, created:Date.now()/1000|0})
+	.then(function(m){
+		commands.onBotMessage(bot, m);
+		return m;
+	})
 	.then(db.storeMessage)
 	.then(function(m){
 		m.authorname = bot.name;
@@ -447,6 +451,7 @@ function handleUserInRoom(socket, completeUser){
 					var otherUserRooms = Object.keys(otherUserSockets[0].adapter.rooms);
 					var isAlreadyWatching = otherUserRooms.indexOf('w'+r.id)!==-1;
 					console.log("isAlreadyWatching:",isAlreadyWatching);
+					// FIXME it seems that isAlreadyWatching isn't always correct
 					if (!isAlreadyWatching) {
 						otherUserSockets.forEach(function(s){
 							s.join('w'+r.id);

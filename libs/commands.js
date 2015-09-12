@@ -47,7 +47,7 @@ CommandTask.prototype.textAfterCommand = function(s){
 }
 
 exports.configure = function(miaou){
-	var config = miaou.config, db = miaou.db,
+	var	config = miaou.config, db = miaou.db,
 		plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
 	db.on(botname).then(db.getBot).then(function(b){ bot = b }).finally(db.off);
 	function registerCommand(cmd){
@@ -103,3 +103,13 @@ exports.onMessage = function(shoe, m){
 	if (cmd.filter && !cmd.filter(shoe.room)) throw 'Command "'+cmd.name+'" not available in this room';
 	return (new CommandTask(cmd, cmdMatch[3], shoe, m)).exec(this);	
 }
+// may return a promise
+// called with context being a db connection
+exports.onBotMessage = function(bot, m){
+	var cmdMatch = m.content.match(/^\s*(@\w[\w\-]{2,}#?\d*\s+)?!!(\w+)\s*([^\n]*)/);
+	if (!cmdMatch) return {};
+	var cmd = commands[cmdMatch[2]];
+	if (!cmd || !cmd.botfun) return;
+	return cmd.botfun.call(this, cmd, cmdMatch[3], bot, m);
+}
+
