@@ -16,6 +16,9 @@ html
 			section#user-main-profile
 				#user-fields
 					.user-field
+						.user-field-name id
+						.user-field-val= vars.user.id
+					.user-field
 						.user-field-name name
 						.user-field-val= '@'+vars.user.name
 					if vars.userinfo.location
