@@ -10,6 +10,7 @@ const	apiversion = 48,
 	auths = require('./auths.js'),
 	commands = require('./commands.js'),
 	pm  = require('./pm.js'),
+	botMgr = require('./bots.js'),
 	server = require('./server.js'),
 	rooms = require('./rooms.js'),
 	shoes = require('./shoes.js');
@@ -519,6 +520,7 @@ function handleUserInRoom(socket, completeUser){
 		}, []).then(function(pings){
 			return pings
 		}).filter(function(unsentping){
+			if (botMgr.onPing(unsentping, shoe, m)) return false; // it's a bot
 			if (shoe.userSocket(unsentping)) return false; // no need to ping
 			if (!shoe.room.private) return true;
 			// user isn't in the room, we check he can enter the room
