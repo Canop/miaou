@@ -37,9 +37,9 @@ function dequeue(){
 		console.log('box', url, 'fetched');
 		currentTask = null;
 		setTimeout(dequeue, 0);
-		if (error || res.statusCode!==200) {
+		if (error || !res || res.statusCode!==200) {
 			cache.set(line, null, TTL);
-			console.log("Error in box fetching", url, error, res.statusCode);
+			console.log("Error in box fetching", url, error, res);
 			return;
 		}
 		args.unshift($$.load(body));
