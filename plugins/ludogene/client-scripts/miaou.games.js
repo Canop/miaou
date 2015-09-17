@@ -7,6 +7,7 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 	}
 
 	function renderAsk($c, m, game){
+		$c.empty();
 		var $p = $('<div>').addClass('game-proposal').appendTo($c);
 		if (game.players[0].name===locals.me.name) {
 			$p.append("<i>"+game.players[1].name+"</i> wants to play a game of "+game.type+" with you. ");
@@ -20,6 +21,7 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 	
 	// renders the message when it's in small or side containers
 	function renderAbstract($c, m, game){
+		$c.empty();
 		if (game.status === "ask") {
 			$c.text(game.type + ' not yet started');
 			return;
