@@ -88,11 +88,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('request', md.showRequestAccess)
 		.on('reconnect', function(){
 			ws.notif.onOn();
-			//setTimeout(function(){
-				socket.emit('enter', locals.room.id);
-			//}, 500); // first message after reconnect not always received by server if I don't delay it (todo : elucidate and clean)
+			socket.emit('enter', locals.room.id);
 		})
 		.on('welcome', function(){
+			console.log("received welcome");
 			info.state = 'connected';
 			gui.entered = true;
 			gui.scrollToBottom();
@@ -106,6 +105,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			}
 			usr.showEntry(locals.me);
 			if (watch.enabled) socket.emit('start_watch');
+			notif.userAct();
 		})
 		.on('invitation', function(invit){
 			var $md = $('<div>').html(

@@ -22,9 +22,11 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	//  we should not ping him
 	// If the user action is related to a message, its mid is passed
 	notif.userAct = function(mid){
+		console.log('userAct');
 		lastUserAction = Date.now();
 		// we assume the user sees the most recent messages if he acts
 		$('#messages .message:gt(-10)').each(function(){
+			console.log("recent message:", $(this).attr("mid"));
 			notif.removePing($(this).attr('mid'), true, true);
 		});
 		notif.removePing(mid, true, true);
@@ -85,7 +87,8 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				$.each(otherRooms, function(r, rname){
 					var $brs = $('<div>').addClass('pingroom').appendTo($otherrooms);
 					$('<button>').addClass('openroom').text(rname).click(function(){
-						location = r;
+						ws.emit('watch_raz');
+						setTimeout(function(){	location = r; }, 150); // timeout so that the raz is sent
 					}).appendTo($brs);
 					$('<button>').addClass('clearpings').text('clear').click(function(){
 						for (var i=notifications.length; i--;) {
@@ -107,6 +110,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		var	changed = false,
 			visible = vis(),
 			map = notifications.reduce(function(map,n){ map[n.mid]=1;return map; }, {});
+		console.log("received pings:", pings);
 		pings.forEach(function(ping){
 			if (!map[ping.mid]) {
 				notifications.push(ping);
@@ -117,6 +121,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 			}
 		});
 		notifications.sort(function(a,b){ return a.mid-b.mid }); // this isn't perfect as some notifications are related to flakes
+		console.log("notifications:", notifications);
 		if (changed) notif.updatePingsList();
 	}
 	
@@ -157,7 +162,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				md.goToMessageDiv(mid||$md);
 				return;
 			}
-			if (lastUserActionAge>1500) {
+			if (lastUserActionAge>15000) {
 				if (mid) notif.pings([{r:r.id, rname:r.name, mid:mid, authorname:from, content:text}]);
 				else if ($md) md.goToMessageDiv($md);
 			}

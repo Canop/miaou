@@ -1,7 +1,7 @@
 "use strict";
 
-const	apiversion = 48,
-	nbMessagesAtLoad = 50, nbMessagesPerPage = 20, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
+const	apiversion = 49,
+	nbMessagesAtLoad = 50, nbMessagesPerPage = 15, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
 	Promise = require("bluebird"),
 	path = require('path'),
 	socketio = require('socket.io'),
@@ -294,10 +294,12 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('recent_users', recentUsers);
 			socket.emit('welcome');
 			welcomed = true;
-			for (var s of roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))) {
+			// FIXME why send the enter to watchers ?
+			//for (var s of roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))) {
+			for (var s of roomSockets(shoe.room.id)) {
 				socket.emit('enter', s.publicUser);
 			}
-			return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
+			if (pings.length) return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
 		})
@@ -445,25 +447,7 @@ function handleUserInRoom(socket, completeUser){
 
 		db.on().then(function(){
 			if (otherDialogRoomUser) {
-				var r = shoe.room;
-				// we must ensure the other dialog room user is watching
-				var otherUserSockets = userSockets(otherDialogRoomUser.id);
-				if (otherUserSockets.length) {
-					var otherUserRooms = Object.keys(otherUserSockets[0].adapter.rooms);
-					var isAlreadyWatching = otherUserRooms.indexOf('w'+r.id)!==-1;
-					console.log("isAlreadyWatching:",isAlreadyWatching);
-					// FIXME it seems that isAlreadyWatching isn't always correct
-					if (!isAlreadyWatching) {
-						otherUserSockets.forEach(function(s){
-							s.join('w'+r.id);
-							s.emit('wat', [{id:r.id, name:r.name, private:r.private, dialog:r.dialog}]);
-						});
-						return this.insertWatch(r.id, otherDialogRoomUser.id);
-					}
-				} else {
-					console.log("other dialog user not connected");
-					return this.tryInsertWatch(r.id, otherDialogRoomUser.id);
-				}
+				return this.tryInsertWatch(shoe.room.id, otherDialogRoomUser.id);
 			}
 		}).then(function(){
 			return commands.onMessage.call(this, shoe, m);
@@ -710,8 +694,8 @@ function handleUserInRoom(socket, completeUser){
 		}
 		console.log("watch raz", roomId, shoe.publicUser.name);
 		shoe.emitToAllSocketsOfUser('watch_raz', roomId);
-		db.on([roomId, shoe.publicUser.id])
-		.spread(db.watchRaz)
+		db.on([roomId, shoe.publicUser.id, memroom.lastMessageId])
+		.spread(db.updateWatch)
 		.finally(db.off);
 	});
 
