@@ -1,6 +1,6 @@
 const	ludodb = require('./db.js'),
-	K = 30,
-	R = 800, // 500 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
+	K = 40,
+	R = 700, // 300 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
 	NB_OPPONENTS_MIN = 3;
 
 function Rating(playerId){ // rating of a player
@@ -9,7 +9,7 @@ function Rating(playerId){ // rating of a player
 	this.f = 0; // number of finished games
 	this.c = 0; // number of counted games (finished, not ignored)
 	this.cly = 0; // number of counted games last year
-	this.op = new Map(); // map opponent Id -> nb finished games in common
+	this.op = new Map(); // map opponent Id -> shared object {n,f,c,cly} 
 	this.d = 0; // number of dropped games
 	this.malus = []; // array [[text,value],...]
 	this.ms = 0; // sum of all malus
@@ -20,26 +20,37 @@ function Rating(playerId){ // rating of a player
 	this.l = 0; // losses
 }
 
+// key in ["n","c","f","cly"], "c" being the default
+Rating.prototype.nbOpponents = function(key){
+	if (!key) key = "c";
+	var sum = 0;
+	this.op.forEach(function(opo){
+		if (opo[key]) sum++;
+	});
+	return sum;
+}
+
 // compute this.malus and this.malusDetails
 Rating.prototype.computeMalus = function(){
 	var	m = this.malus = [];
-	
-	if (this.d) m.push([this.d+" dropped game"+(this.d>1?'s':''), this.d*40]);
-	if (this.c < 5) m.push(["Less than 5 counted games", 100]);
-	if (this.c < 10) m.push(["Less than 10 counted games", 150]);
+	if (this.d) m.push([this.d+" dropped game"+(this.d>1?'s':''), this.d*50]);
+	if (this.c < 5) m.push(["Less than 5 counted games", 130]);
+	if (this.c < 10) m.push(["Less than 10 counted games", 160]);
 	if (this.c < 50) m.push(["Less than 50 counted games", 50]);
 	if (this.c < 100) m.push(["Less than 100 counted games", 20]);
 	if (this.c < 150) m.push(["Less than 150 counted games", 10]);
-	if (this.cly < 10) m.push(["Less than 10 counted games since a year", 50]);
-	if (this.cly < 20) m.push(["Less than 20 counted games since a year", 20]);
+	if (this.cly < 10) m.push(["Less than 10 counted games since a year", 70]);
+	if (this.cly < 20) m.push(["Less than 20 counted games since a year", 30]);
 	if (this.cly < 50) m.push(["Less than 50 counted games since a year", 10]);
-	var nbOpponents = this.op.size;
-	if (nbOpponents < 5) m.push(["Less than 5 opponents", 150]);
-	if (nbOpponents < 10) m.push(["Less than 10 opponents", 60]);
+	var	nbOpponents = this.nbOpponents(),
+		nbOpponentsLastYear = this.nbOpponents('cly');
+	if (nbOpponents < 5) m.push(["Less than 5 opponents", 170]);
+	if (nbOpponents < 10) m.push(["Less than 10 opponents", 80]);
 	if (nbOpponents < 15) m.push(["Less than 15 opponents", 25]);
 	if (nbOpponents < 20) m.push(["Less than 20 opponents", 10]);
 	if (nbOpponents < 50) m.push(["Less than 50 opponents", 10]);
-
+	if (nbOpponentsLastYear < 3) m.push(["Less than 3 opponents since a year", 30]);
+	if (nbOpponentsLastYear < 10) m.push(["Less than 10 opponents since a year", 20]);
 	this.ms = m.reduce(function(s,e){ return s+e[1] }, 0);
 }
 
@@ -47,35 +58,53 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	var g = m.g;
 	this.p0 = r[0].id;
 	this.p1 = r[1].id;
-	var nb = (r[0].op.get(this.p1) || 0) + 1; // nb games between those players
+	var opo = r[0].op.get(this.p1); // informations common to those two players 
+	if (!opo) {
+		opo = {c:0, n:0, f:0, cly:0};
+		r[0].op.set(this.p1, opo);
+		r[1].op.set(this.p0, opo);
+	}
 	this.r = m.room;
 	this.m = m.id;
 	this.d0 = 0; // impact on the first player's Elo 0
 	this.d1 = 0; // impact on the second player's Elo 1
+	this.coef = 0;
 	this.t = "";
+	opo.n++;
 	if (g.status==="finished") {
 		r[0].f++;
 		r[1].f++;
+		opo.f++;
 		var winnerIndex = +(g.scores[1]>=50);
 		r[winnerIndex].w++;
 		r[+!winnerIndex].l++;
 		this.s = g.scores[0];
 		var minc = Math.min(r[0].c, r[1].c) + 1;
-		if ( (nb>50 && nb-50>.2*(minc-50)) || (nb>10 && nb-10>.5*(minc-10)) ) {
+		if ( (opo.c>50 && opo.c-50>.2*(minc-50)) || (opo.c>10 && opo.c-10>.5*(minc-10)) ) {
 			this.t = "ignored";
 			return;	
 		}
 		r[0].c++;
 		r[1].c++;
+		opo.c++;
 		if (m.created+365*24*60*60>Date.now()/1000) {
 			r[0].cly++;
 			r[1].cly++;
+			opo.cly++;
 		}
-		var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
+		if (r[0].c<5 || r[1].c<5) {
+			this.coef = .2;
+		} else if (r[0].c<10 || r[1].c<10) {
+			this.coef = .5;
+		} else {
+			this.coef = 1;
+		}
+		// var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
+		var v = .6 + (g.scores[winnerIndex]-50)*.0084; // in ].6,1[
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1; 
 		this.p = 1 / ( 1 + Math.pow(10, - this.D/R)); // in ]0,1[
-		this.d0 = K * (this.v - this.p);
+		this.d0 = this.coef * K * (this.v - this.p);
 		this.d1 = -this.d0;
 	} else if ( m.changed < Date.now()/1000 - 24*60*60 ) {
 		r[g.current].d++;
@@ -83,8 +112,6 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	} else {
 		this.t = "in progress";
 	}
-	r[0].op.set(this.p1, nb);
-	r[1].op.set(this.p0, nb);
 	r[0].e0 += this.d0;
 	r[1].e1 += this.d1;
 }
@@ -122,7 +149,7 @@ function compute(messages){
 		r.r -= r.ms;
 	});
 	ratings = ratings
-	.filter(function(r){ return r.op.size >= NB_OPPONENTS_MIN })
+	.filter(function(r){ return r.nbOpponents() >= NB_OPPONENTS_MIN })
 	.sort(function(a,b){ return b.r-a.r });
 	return { log:log, ratings:ratings, ratingsMap:ratingsMap };
 }
@@ -150,8 +177,8 @@ function ratingsTable(data, userId){
 			return [
 				'**'+r.rank+'**',
 				'['+r.name+'](u/'+r.id+')',
-				r.n,
-				r.op.size,
+				r.f,
+				r.nbOpponents(),
 				r.w,
 				r.l,
 				r.d,
@@ -165,17 +192,13 @@ function ratingsTable(data, userId){
 }
 
 function dbl(v){
-	return v ? v.toFixed(3) : ' ';
+	return v ? v.toFixed(1) : ' ';
 }
 
-function logTable(data, userId){
+function gamesTable(data){
 	return "## Games:\n" + table(
 		["Game", /* "v", "D", "p", */ "ΔElo 1st player", "ΔElo 2nd player", "Comments"],
-		data.log
-		.filter(function(e){
-			return !userId || e.p0===userId || e.p1===userId
-		})
-		.map(function(e){
+		data.log.map(function(e){
 			return [
 				e.gameLink(data),
 				// dbl(e.v), dbl(e.D), dbl(e.p),
@@ -185,14 +208,31 @@ function logTable(data, userId){
 		})
 	);
 }
+function userGamesTable(data, r){
+	return "## Games:\n" + table(
+		["Game", "Coef", "ΔElo ["+r.name+"](u/"+r.id+")", "Comments"],
+		data.log
+		.filter(function(e){
+			return e.p0===r.id || e.p1===r.id
+		})
+		.map(function(e){
+			return [
+				e.gameLink(data),
+				e.coef || ' ',
+				dbl(e.p0===r.id ? e.d0 : e.d1),
+				e.t || ' '
+			];
+		})
+	);
+}
 
 function opponentsTable(data, r) {
 	var	s = "## Opponents:\n",
 		rows = [];
-	r.op.forEach(function(n, uid){
-		rows.push([userLink(data, uid), n]);
+	r.op.forEach(function(opo, uid){
+		rows.push([userLink(data, uid), opo.n, opo.c, opo.cly]);
 	});
-	s += table(["Opponent", "Games"], rows);
+	s += table(["Opponent", "Games", "Counted Games", "Recent Counted Games"], rows);
 	return s;
 }
 
@@ -217,21 +257,21 @@ exports.onCommand = function(ct){
 			var r = data.ratingsMap.get(user.id);
 			if (!r) {
 				c += 'No game found for @'+user.name+' in public rooms';
-			} else if (r.op.size<NB_OPPONENTS_MIN) {
+			} else if (r.nbOpponents("c")<NB_OPPONENTS_MIN) {
 				c += "You must have played against at least " + NB_OPPONENTS_MIN +
 					" different players to be ranked.\n";
-				c += '@'+user.name+" played against " + r.op.size + " other players:\n";
+				c += '@'+user.name+" played against " + r.nbOpponents("c") + " other players:\n";
 				c += opponentsTable(data, r);
 			} else {
 				c += ratingsTable(data, r.id);
 				c += "Counted games: "+r.c+"\n";
 				if (r.ms) c += "## Malus:\n" + table(null, r.malus);
 				if (showOppenents) c += opponentsTable(data, r);
-				if (showLog) c += logTable(data, r.id);
+				if (showLog) c += userGamesTable(data, r);
 			}
 		} else {
 			c += ratingsTable(data);
-			if (showLog) c += logTable(data);
+			if (showLog) c += gamesTable(data);
 		}
 		console.log("ELO COMPUTING done in " + (Date.now()-st) + "ms");
 		ct.reply(c, ct.nostore = c.length>3000);
