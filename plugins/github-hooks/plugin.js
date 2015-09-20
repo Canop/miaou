@@ -150,11 +150,11 @@ function eventToMarkdown(event, data){
 	}
 	if (event==='pull_request') {
 		big.push("Pull Request " + data.action + " by " + link(data.sender) + " in " + link(repo));
-		small.push("Pull Request: " + link(data.pull_request));
+		small.push("Pull Request #" + data.pull_request.number + ": " + link(data.pull_request));
 	}
 	if (event==='pull_request_review_comment') {
 		big.push(link(data.sender) + " commented a pull request in " + link(repo));
-		small.push("Pull Request: " + link(data.pull_request));
+		small.push("Pull Request #" + data.pull_request.number + ": " + link(data.pull_request));
 		pushComment(small, data.comment);
 	}
 	if (event==='release') {
