@@ -12,7 +12,7 @@ function doCommand(ct){
 		var c;
 		if (!bans.length) {
 			c = "nothing found";
-		} else {		
+		} else {
 			c =	"Room bans:"+bans.map(function(b){ return "\n* **"+b.bannedname+"** was banned by "+b.bannername+" until "+new Date(b.expires*1000)+
 					" - Reason : "+(b.reason == '' ? "No reason" : b.reason) }).join('');
 		}
