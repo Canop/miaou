@@ -2,9 +2,10 @@
 // the publication of bot messages on repository events sent through
 // webhooks to Miaou
 // Providers are objects {
-// 	key: scm|bitbucket
+// 	key: "github"|"bitbucket"
 // 	doc(): returns the simple !!help documentation
 // 	detailedDoc(): returns the detailed !!help documentation
+// }
 
 const	providers = [require("./github.js").provider],
 	ws = require('../../libs/ws.js'),
