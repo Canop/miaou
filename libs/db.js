@@ -46,7 +46,7 @@ NoRowError.prototype = Object.create(Error.prototype);
 // Important private fields are included in the returned object
 //  but not all the secondary info (location, description, website)
 proto.getCompleteUserFromOAuthProfile = function(profile){
-	var oauthid = profile.id || profile.user_id, // id for google, github and reddit, user_id for stackexchange
+	var	oauthid = profile.id || profile.user_id, // id for google, github and reddit, user_id for stackexchange
 		displayName = profile.displayName || profile.display_name || profile.name, // displayName for google and github, display_name for stackexchange, name for reddit
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
@@ -854,7 +854,7 @@ proto.off = function(v){
 }
 
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
-//  apart if noErrorOnNoRow
+//  unless noErrorOnNoRow is true
 proto.queryRow = function(sql, args, noErrorOnNoRow){
 	var	con = this,
 		start = Date.now();
