@@ -181,7 +181,7 @@ function ratingsTable(data, userId){
 				r.nbOpponents(),
 				r.w,
 				r.l,
-				r.d,
+				r.d||' ',
 				Math.round(r.e0),
 				Math.round(r.e1),
 				r.ms||' ',
@@ -258,7 +258,7 @@ exports.onCommand = function(ct){
 			if (!r) {
 				c += 'No game found for @'+user.name+' in public rooms';
 			} else if (r.nbOpponents("c")<NB_OPPONENTS_MIN) {
-				c += "You must have played against at least " + NB_OPPONENTS_MIN +
+				c += "You must have finished a game against at least " + NB_OPPONENTS_MIN +
 					" different players to be ranked.\n";
 				c += '@'+user.name+" played against " + r.nbOpponents("c") + " other players:\n";
 				c += opponentsTable(data, r);
