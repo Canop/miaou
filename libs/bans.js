@@ -13,8 +13,11 @@ function doCommand(ct){
 		if (!bans.length) {
 			c = "nothing found";
 		} else {
-			c =	"Room bans:"+bans.map(function(b){ return "\n* **"+b.bannedname+"** was banned by "+b.bannername+" until "+new Date(b.expires*1000)+
-					" - Reason : "+(b.reason == '' ? "No reason" : b.reason) }).join('');
+			c = "Room bans:\n";
+			c += "Name | Banned by | Expiration | Reason\n";
+			c += "-|-|-|-";
+			c += bans.map(function(b){ return '\n'+["["+b.bannedname+"](u/"+b.bannedname+")", b.bannername, new Date(b.expires*1000),
+				(b.reason == '' ? 'No reason' : b.reason)].join('|') }).join('');
 		}
 		ct.noStore = true;
 		ct.reply(c, true);
