@@ -1,7 +1,7 @@
-// from the jquery-like context of the input page
-// build and return the html to send to the clients
+// box xkcd links
+
 function abstract($, line){
-	var $box = $('<div/>').addClass('xkcd'),
+	var	$box = $('<div/>').addClass('xkcd'),
 		$abstract = $('<div/>').addClass('abstract'),
 		$comic = $('#middleContainer');
 	if (!$comic.length) {
