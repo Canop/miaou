@@ -2,12 +2,10 @@
 
 // !!ban command : just asks the browser to open the moderation dialog
 
-var db;
-
 exports.configure = function(miaou){
-	db = miaou.db;
 	return this;
 }
+
 exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name:'ban',
