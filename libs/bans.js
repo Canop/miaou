@@ -1,9 +1,7 @@
 "use strict";
 
-var bot;
 
 exports.configure = function(miaou){
-	bot = miaou.bot;
 	return this;
 }
 
@@ -15,9 +13,15 @@ function doCommand(ct){
 		} else {
 			c = "Room bans:\n";
 			c += "Name | Banned by | Expiration | Reason\n";
-			c += "-|-|-|-";
-			c += bans.map(function(b){ return '\n'+["["+b.bannedname+"](u/"+b.bannedname+")", b.bannername, new Date(b.expires*1000),
-				(b.reason == '' ? 'No reason' : b.reason)].join('|') }).join('');
+			c += "-|-|-|-\n";
+			c += bans.map(function(b){
+				return [
+					"["+b.bannedname+"](u/"+b.bannedname+")",
+					b.bannername,
+					new Date(b.expires*1000),
+					b.reason || '*no reason*'
+				].join('|')
+			}).join('\n');
 		}
 		ct.noStore = true;
 		ct.reply(c, true);
