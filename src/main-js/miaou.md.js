@@ -28,12 +28,6 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		unrenderers.unshift(fun);
 	}
 	md.render = function($content, message, oldMessage){
-		
-		// DEBUG
-		if (!message.room) {
-			console.log("missing room in", message);
-		}
-		
 		for (var i=0; i<renderers.length; i++) {
 			if (renderers[i]($content, message, oldMessage)) break;
 		}
@@ -62,8 +56,12 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	// used for notable messages and search results
 	md.showMessages = function(messages, $div){
 		$div.empty();
+		var notable = $div[0].id==="notable-messages"; // not very pretty...
 		for (var i=0; i<messages.length; i++) {
-			md.addSideMessageDiv(messages[i], $div);
+			var $md = md.addSideMessageDiv(messages[i], $div);
+			if (notable) {
+				chat.trigger("notable", messages[i], $md);
+			}
 		}
 	}
 	
@@ -85,6 +83,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			$content.addClass("closed");
 			$md.append('<div class=opener>');
 		}
+		return $md;
 	}
 
 	// if the message is present among notable ones, we replace the div
