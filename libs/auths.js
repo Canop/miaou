@@ -128,7 +128,8 @@ exports.wsOnBan = function(shoe, o){
 	o.bannername = shoe.publicUser.name;
 	db.on([shoe.room.id, o.banned])
 	.spread(db.getAuthLevel)
-	.then(function(bannedAuth){
+	.then(function(obj){
+		var bannedAuth = obj ? obj.auth : null;
 		if (bannedAuth==="own") throw "A room owner cannot be banned";
 		var bannerAuth = shoe.room.auth;
 		if (bannedAuth==="admin" && bannerAuth!=="own") throw "Only a room owner can ban an admin";

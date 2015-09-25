@@ -123,7 +123,7 @@ exports.throwOut = function(userId, roomId, text){
 	var clients = io.sockets.adapter.rooms[roomId];
 	for (var clientId in clients) {
 		var socket = io.sockets.connected[clientId];
-		if (socket.publicUser && socket.publicUser.id===userId) {
+		if (socket && socket.publicUser && socket.publicUser.id===userId) {
 			if (text) socket.emit('miaou.error', text);
 			socket.disconnect('unauthorized');
 		}
@@ -208,6 +208,7 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	})
 	.on('ban', function(ban){
+		console.log('ban event', ban);
 		auths.wsOnBan(shoe, ban);
 	})
 	.on('rm_ping', function(mid){ // remove the ping(s) related to that message and propagate to other sockets of same user
