@@ -26,6 +26,9 @@
 	font-weight: normal;
 	padding: 20px 0;
 }
+.attention-menu p {
+	font-style: italic;
+}
 .attention-menu-article {
 	white-space: nowrap;
 	padding: 4px;

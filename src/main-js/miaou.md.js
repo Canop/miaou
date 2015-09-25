@@ -109,7 +109,8 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		upd.ids.forEach(function(id){
 			var m = mmap[id];
 			if (!m) return console.log("No message in notables for id ", id);
-			md.addSideMessageDiv(m, $container);
+			var $md = md.addSideMessageDiv(m, $container);
+			chat.trigger("notable", m, $md);
 		});
 	}
 
