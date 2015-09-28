@@ -3,7 +3,10 @@
 
 miaou(function(ed){
 		
-	function uploadFile(file){
+	var input = document.getElementById('input');
+	if (!input) return;
+
+	ed.uploadFile = function(file){
 		var fd = new FormData(); // todo: do I really need a formdata ?
 		fd.append("file", file);
 		var xhr = new XMLHttpRequest();
@@ -30,34 +33,13 @@ miaou(function(ed){
 		xhr.send(fd);
 	}
 		
-	document.addEventListener('paste', function(e){
-		var input = document.getElementById('input');
-		if (!input) return;
-		ed.stateBeforePaste = {
-			selectionStart:input.selectionStart, selectionEnd:input.selectionEnd, value:input.value
-		};
-		var files = e.clipboardData.files;
-		if (!files.length && e.clipboardData.items) {
-			files = [].map.call(e.clipboardData.items, function(item){
-				return item.getAsFile();
-			});
-		}
-		for (var i=0; i<files.length; i++) {
-			if (!files[i]) continue;
-			if (/^image\//i.test(files[i].type)) {
-				uploadFile(files[i]);
-				return false;
-			}
-		}
-	});
-
 	$('#uploadSend').click(function(){
 		var file = document.getElementById('file').files[0];
 		if (!file || !/^image\//i.test(file.type)) {
 			alert('not a valid image');
 			return;
 		}
-		uploadFile(file);
+		ed.uploadFile(file);
 	});
 	
 });

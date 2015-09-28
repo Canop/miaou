@@ -3,13 +3,18 @@
 
 miaou(function(ed){
 
-	var langs = ['auto','bsh','c','cpp', 'cs', 'css','erlang','go','hs','html','java','js','lisp','md','perl','r','sql','tcl','tex','xml'];
+	var langs = [
+		'auto','bsh','c','cpp', 'cs', 'css','erlang','go','hs','html','java'
+		,'js','lisp','md','perl','r','sql','tcl','tex','xml'
+	];
 
 	function toggleLinesCode(s){
 		return ed.toggleLines(s, /^(    |\t)/, '\t');
 	}
 
-	ed.onCtrlK = function(){
+	ed.code = {};
+
+	ed.code.onCtrlK = function(){
 		var	sbp = ed.stateBeforePaste,
 			val = this.value,
 			$input = $(this);
@@ -30,7 +35,7 @@ miaou(function(ed){
 			}
 			this.selectionStart = sbp.selectionEnd;
 			$input.selectLines().replaceSelection(toggleLinesCode);
-			ed.onMove();
+			ed.code.onMove();
 			return;
 		}
 		if ((
@@ -46,34 +51,22 @@ miaou(function(ed){
 		} else {
 			$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
 		}
-		ed.onMove();
+		ed.code.onMove();
 	}
 
-	ed.onCtrlV = function(){
-		var	sp = this.selectionStart,
-			ep = this.selectionEnd,
-			sbp = ed.stateBeforePaste,
-			val = this.value,
-			$input = $(this);
-		if (
-			sp!==val.length || !sbp
-			|| sbp.selectionStart!==sbp.selectionEnd
-			|| val.indexOf(sbp.value)!==0
-		) {
-			ed.onMove();
-			return;
-		}
-		var	pasted = this.value.slice(sbp.selectionEnd),
-			looksLikeCode = /^<|^\$|}$|;$/m.test(pasted),
-			notIndented = /^(?! {4}|\t)/m.test(pasted);
-		if (looksLikeCode && notIndented) {
+	// returns true when it's code
+	ed.code.onPasted = function(pasted){
+		var looksLikeCode = /^<|^\$|}$|;$/m.test(pasted);
+		console.log("in ed.code.onCtrlV, looksLieCode=", looksLikeCode);
+		if (!looksLikeCode) return;
+		var notIndented = /^(?! {4}|\t)/m.test(pasted);
+		if (notIndented) {
 			$('<div id=code-controls>').appendTo('#input-panel').html(
 				"This looks like code.<br>Hit ctrl-K to have it indented"
 				+ " and properly rendered in Miaou"
 			);
-		 } else {
-		 	ed.onMove();
 		 }
+		return true;
 	}
 	
 	// analyse du code sous le curseur
@@ -144,7 +137,7 @@ miaou(function(ed){
 		ba.setLang(lang);
 	});
 	
-	ed.onMove = function(){
+	ed.code.onMove = function(){
 		var ba = new BlockAnalysis();
 		ba.showHideControls();
 	}

@@ -220,7 +220,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			if (e.ctrlKey && !e.shiftKey) {
 				switch(e.which){
 				case 75: // ctrl - K : toggle code
-					ed.onCtrlK.call(this);
+					ed.code.onCtrlK.call(this);
 					return false;
 				case 81: // ctrl - Q : toggle citation
 					ed.onCtrlQ.call(this);
@@ -305,20 +305,19 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			}
 		})
 		.on('keyup', function(e){
+			if (e.which===17) return; // ctrl-
 			if ((e.which===86 && e.ctrlKey)) { // end of ctrl-V
-				ed.onCtrlV.call(input);
-			} else if (e.which===17) { // ctrl-
-			} else {
-				ed.stateBeforePaste = null;
-				ed.onMove();
+				return;
 			}
+			ed.stateBeforePaste = null;
+			ed.code.onMove();
 			if (e.which===9) return false; // tab
 		})
 		.on('input', function(){
 			tryautocomplete();
 			updateReplyWzin();				
 		})
-		.on('click', ed.onMove)
+		.on('click', ed.code.onMove)
 		.focus();
 
 		$('#send').on('click', sendInput);
@@ -328,7 +327,8 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	
 	// adds or remove a ping to that username
 	ed.ping = function(username){
-		var val = input.value, s = input.selectionStart, e = input.selectionEnd,
+		var	val = input.value,
+			s = input.selectionStart, e = input.selectionEnd,
 			acname = getacname();
 		if (acname) {
 			input.value = val.slice(0, e-acname.length) + username + val.slice(e);
@@ -343,7 +343,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 		input.focus();
 	}
-	
+
 	// toggle reply to an existing message
 	ed.replyToMessage = function($message){
 		var message = $message.data('message'),
@@ -363,7 +363,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		input.selectionEnd = e + dl;
 		input.focus();
 		updateReplyWzin($message);
-		ed.onMove();
+		ed.code.onMove();
 	}
 	
 	// toggle edition of an existing message
@@ -388,7 +388,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			changeElementBackground:true
 		});
 		updateReplyWzin();
-		ed.onMove();
+		ed.code.onMove();
 	}
 	
 	// cancels replying
@@ -398,7 +398,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			replywzin.remove();
 			replywzin = null;
 		}
-		ed.onMove();
+		ed.code.onMove();
 	}
 	
 	// cancels edition
@@ -412,7 +412,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			editwzin.remove();
 			editwzin = null;
 			updateReplyWzin();
-			ed.onMove();
+			ed.code.onMove();
 		}
 	}
 	
