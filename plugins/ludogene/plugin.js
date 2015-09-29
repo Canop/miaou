@@ -13,7 +13,6 @@ var gametypes = {
 	Flore: require('./client-scripts/Flore.js')
 };
 
-
 // returns a bound promise opening a connection to the db
 //  and returning both the message and the game whose id is passed
 // The caller **must** end the promise chain with off
@@ -38,7 +37,7 @@ function storeInMess(m, game, shoe){
 	if (game.scores) saved.scores = game.scores;
 	if (game.current>=0) saved.current = game.current; // current is -1, 0 or 1
 	gametype.store(game, saved);
-	m.content = m.content.match(/^(.*?)!!/)[1] + "!!game @"+game.players[0].name+" "+JSON.stringify(saved);
+	m.content = m.content.match(/^(.*?)!!/)[1] + "!!game @"+game.players[0].name + " " + JSON.stringify(saved);
 	m.changed = 0;
 	if (!shoe) return; // bot command
 	if (gametype.observers) {
