@@ -414,6 +414,7 @@ body.mobile #message-scroller {
 		box-shadow: $message-decoration-button-box-shadow;		
 		font-size: 10px;
 		line-height: 14px;
+		overflow: hidden;
 	}
 	.decoration {
 		font-family: "fontello";
