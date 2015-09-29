@@ -642,6 +642,10 @@ proto.deleteRoomPings = function(roomId, userId){
 	return this.execute("delete from ping where room=$1 and player=$2", [roomId, userId]);
 }
 
+proto.deleteLastRoomPings = function(roomId, userId, messageId){
+	return this.execute("delete from ping where room=$1 and player=$2 and message>=$3", [roomId, userId, messageId]);
+}
+
 proto.deleteRoomsPings = function(roomIds, userId){
 	if (roomIds.length===1) return this.deleteRoomPings(roomIds[0], userId);
 	return this.execute("delete from ping where room in ("+roomIds.join(',')+") and player=$1", [userId]);
