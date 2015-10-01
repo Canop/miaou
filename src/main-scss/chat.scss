@@ -1048,3 +1048,10 @@ div#notifs {
 	width: calc(100% - 12px);
 	margin: 4px;
 }
+
+.ping {
+	background: $ping-bg;
+	padding: 2px;
+	border-radius: 3px;
+}
+

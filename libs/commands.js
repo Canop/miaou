@@ -16,6 +16,7 @@ function CommandTask(cmd, args, shoe, message){
 	this.shoe = shoe;
 	this.nostore = false; // commands can set it to true to prevent source message to be stored
 	this.silent = false; // commands can set it to true to prevent source message to be distributed
+	// (nostore should usually be set too)
 	this.replyContent = null;
 	this.replyAsFlake = false;
 	this.alwaysPing = false; // do cross room pings even if the user has no authorization
