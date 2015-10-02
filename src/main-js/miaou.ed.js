@@ -121,7 +121,8 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	
 	function insertLink(){
 		$input.replaceSelection(function(s){
-			return '['+s+']('+$('#newlinkhref').val()+')';
+			var url = $('#newlinkhref').val().replace(/\(/g,'%28').replace(/\)/g,'%29');
+			return '['+s+']('+url+')';
 		});
 	}
 	
