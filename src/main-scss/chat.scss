@@ -1049,10 +1049,12 @@ div#notifs {
 	margin: 4px;
 }
 
-.ping {
+.message .ping {
 	background: $ping-bg;
 	padding: 2px;
 	border-radius: 3px;
 	cursor: pointer;
+	border-left-width: 2px;
+	border-left-style: solid;
 }
 

@@ -1,5 +1,5 @@
 
-miaou(function(chat, horn, links, locals, md, notif, gui, plugins, time, ws){
+miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, ws){
 	
 	chat.config = { // may be changed by server later
 		maxMessageContentSize: 8000,
@@ -38,6 +38,10 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, time, ws){
 				$c.html(miaou.fmt[ $c.closest('#messages').length ? 'mdMcToHtml' : 'mdTextToHtml' ](
 					message.content, message.authorname
 				));
+				// ping colorization
+				$c.find('.ping').css('border-color', function(){
+					return skin.stringToColour(this.textContent.trim().slice(1));
+				});
 			} else {
 				$c.empty();				
 			}
