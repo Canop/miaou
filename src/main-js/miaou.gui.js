@@ -24,7 +24,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 	gui.init = function(){
 		var	timer;
 					
-		$('#messages').on('click', '.message .content img', function(e){
+		$('#messages')
+		.on('click', '.message .content img', function(e){
 			window.open(this.getAttribute('href')||this.src);
 			e.stopPropagation();
 		})
@@ -123,6 +124,10 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$this.remove();
 			md.getMessages().reverse().forEach(function(m){ if (m.id>mid) newerPresent=m.id });
 			ws.emit('get_newer', {from:mid, until:newerPresent});
+			return false;
+		})
+		.on('click', '.ping', function(){
+			window.open('user/'+this.textContent.trim().slice(1));
 			return false;
 		})
 		.on('click', '.pen', function(){
