@@ -840,10 +840,17 @@ span.warning {
 	border-radius: 2px;
 	background: $reply-box-bg;
 	opacity: 0.75;
+	border-left-width: 1px;
+	border-left-style: solid;
+	margin-left: 1px;
 	&:hover {
 		background: $reply-box-hover-bg;
 		opacity: 1;
 	}
+}
+.message:hover .reply {
+	margin-left: 0;
+	border-width: 2px;
 }
 
 .message.goingto, .message.me.goingto {

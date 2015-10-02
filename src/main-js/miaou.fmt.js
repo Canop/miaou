@@ -199,8 +199,8 @@ miaou(function(fmt){
 	}
 
 	fmt.mdMcToHtml = function(md, username){
-		return md.replace(/^(?:@\w[\w\-]{2,}#(\d+))?([\s\S]*)/, function(_,num,text){
-			return (num ? '<span class=reply to='+num+'>&#xe81a;</span>' : '') + _mdTextToHtml(text, username);
+		return md.replace(/^(?:@(\w[\w\-]{2,})#(\d+))?([\s\S]*)/, function(_,name,num,text){
+			return (num ? '<span class=reply rn="'+name+'" to='+num+'>&#xe81a;</span>' : '') + _mdTextToHtml(text, username);
 		});
 	}
 

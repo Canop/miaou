@@ -38,9 +38,12 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 				$c.html(miaou.fmt[ $c.closest('#messages').length ? 'mdMcToHtml' : 'mdTextToHtml' ](
 					message.content, message.authorname
 				));
-				// ping colorization
+				// ping and reply colorization
 				$c.find('.ping').css('border-color', function(){
 					return skin.stringToColour(this.textContent.trim().slice(1));
+				});
+				$c.find('.reply').css('border-color', function(){
+					return skin.stringToColour(this.getAttribute("rn"));
 				});
 			} else {
 				$c.empty();				

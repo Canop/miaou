@@ -26,7 +26,6 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		lastUserAction = Date.now();
 		// we assume the user sees the most recent messages if he acts
 		$('#messages .message:gt(-10)').each(function(){
-			console.log("recent message:", $(this).attr("mid"));
 			notif.removePing($(this).attr('mid'), true, true);
 		});
 		notif.removePing(mid, true, true);
