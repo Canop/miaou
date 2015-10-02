@@ -23,12 +23,12 @@ miaou(function(fmt){
 				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
 			)
-			.replace( // ping 
-				/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g,
-				'$1<span class=ping>$2</span>'
-			)
+			.replace(/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g, function(_,sp,ping){ // ping
+				var isme = miaou.locals && miaou.locals.me && miaou.locals.me.name===ping.slice(1);
+				return sp+'<span class="ping'+(isme?' ping-me':'')+'">'+ping+'</span>';
+			})
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // exemples : [a message](7#123456), [a room](7#)
-				r = r || (miaou && miaou.locals && miaou.locals.room.id);
+				r = r || (miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
 			})
