@@ -19,8 +19,14 @@ miaou(function(fmt){
 		return s.split('`').map(function(t,i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
-			.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig, '<a target=_blank href="$2">$1</a>') // exemple : [dystroy](http://dystroy.org)
-			.replace(/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g, '$1<span class=ping>$2</span>') // ping 
+			.replace( // exemple : [dystroy](http://dystroy.org)
+				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
+				'<a target=_blank href="$2">$1</a>'
+			)
+			.replace( // ping 
+				/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g,
+				'$1<span class=ping>$2</span>'
+			)
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // exemples : [a message](7#123456), [a room](7#)
 				r = r || (miaou && miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
@@ -29,8 +35,10 @@ miaou(function(fmt){
 			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s,t,u){ // exemple : [some user](u/1234)
 				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
-			// fixme : the following replacement should not happen inside a link ( exemple :  [http://some.url](http://some.url) )
-			.replace(/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig, '$1<a target=_blank href="$2">$2</a>') // exemple : http://dystroy.org
+			.replace( // exemple : http://dystroy.org
+				/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig,
+				'$1<a target=_blank href="$2">$2</a>'
+			)
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
 				return a
 				+ b.replace(/(^|\W)\*\*(.+?)\*\*(?=[^\w\/]|$)/g, "$1<b>$2</b>")
@@ -40,10 +48,15 @@ miaou(function(fmt){
 				.replace(/(^|[^\w\/])---(.+?)---(?=[^\w\/]|$)/g, "$1<strike>$2</strike>")
 				+ c;
 			})
-			// the following 3 replacements are only here for very specific cases
-			.replace(/---[^<>]*?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){ return s.length>6 ? '<strike>'+s.slice(3,-3)+'</strike>' : s })
-			.replace(/\*\*[^<>]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*\*/g, function(s){ return s.length>4 ? '<b>'+s.slice(2,-2)+'</b>' : s })
-			.replace(/\*[^<>\*]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*(?=[^\*]|$)/g, function(s){ return s.length>2 ? '<i>'+s.slice(1,-1)+'</i>' : s })
+			.replace(/---[^<>]*?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){
+					return s.length>6 ? '<strike>'+s.slice(3,-3)+'</strike>' : s
+			})
+			.replace(/\*\*[^<>]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*\*/g, function(s){
+				return s.length>4 ? '<b>'+s.slice(2,-2)+'</b>' : s
+			})
+			.replace(/\*[^<>\*]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*(?=[^\*]|$)/g, function(s){
+				return s.length>2 ? '<i>'+s.slice(1,-1)+'</i>' : s
+			})
 		}).join('')
 		.replace(/^\/me(.*)$/g, '<span class=slashme>'+(username||'/me')+'$1</span>')
 	}
@@ -109,7 +122,7 @@ miaou(function(fmt){
 				continue;
 			}
 			if (m=s.match(/^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/)) {
-				// exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&modified_at=1384796271&ratio_x=03&ratio_y=02&width=900
+				// exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&ratio_x=03&ratio_y=02&width=900
 				lout.push('<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">');
 				continue;
 			}
