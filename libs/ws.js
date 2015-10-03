@@ -455,7 +455,7 @@ function handleUserInRoom(socket, completeUser){
 		}).then(function(ct){
 			commandTask = ct;
 			return [
-				commandTask.nostore ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition),
+				commandTask.nostore && !m.id ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition),
 				commandTask
 			]
 		}).spread(function(m, commandTask){
