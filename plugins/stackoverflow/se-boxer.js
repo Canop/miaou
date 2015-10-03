@@ -49,9 +49,7 @@ var handlers = {
 			side += '<img class=so-owner-img src="'+item.owner.profile_image+'">';
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 
-			main += '<a target=_blank class=so-title href="'+task.line+'">'+
-				'<img src=https://cdn.sstatic.net/'+task.site+'/img/apple-touch-icon.png width=40>'+
-				item.title+'</a>';
+			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
 			
