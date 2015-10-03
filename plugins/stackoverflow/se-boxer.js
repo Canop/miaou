@@ -159,26 +159,26 @@ exports.addTask = function(task){
 // read the text to find and analyze SE URL
 exports.rawTasks = function(text){
 	var	tasks = [],
-		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|(?:dba\.)?stackexchange|superuser).com\/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/gm,
+		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|([^.]+\.)?stackexchange|superuser).com\/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/gm,
 		match;
 	while (match=r.exec(text)) {
-		var	path = match[5], submatch,
-			hash = match[6],
+		var	path = match[6], submatch,
+			hash = match[7],
 			task = { line:match[0], meta:!!match[1], site:match[2] };
 		if ( hash && (submatch=hash.match(/^#comment(\d+)_\d+$/)) ) {
 			task.type = "comments";
 			task.num = +submatch[1];			
-		} else if ( match[3]==='a' ) {
+		} else if ( match[4]==='a' ) {
 			task.type = "answers";
-			task.num = +match[4];
+			task.num = +match[5];
 		} else if ( path && (submatch=path.match(/^\/[^\/]+\/(\d+)$/)) ) {
 			task.type = "answers";
 			task.num = +submatch[1];			
 		} else {
 			task.type = "questions";
-			task.num = +match[4];
+			task.num = +match[5];
 		}
-		tasks.push(task);
+		if (match[3] !== 'chat.') tasks.push(task);
 	}
 	return tasks;
 }
