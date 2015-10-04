@@ -62,15 +62,15 @@ buster.testCase("Formatting - Links", {
 	),
 	"markdown link in a striken sentence": t( // bug : http://dystroy.org/miaou/3?Code_Croissants#525888
 		"@Florian ---c'est quel langage ton fichier de provisionning vagrant https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1 ?--- ok > Puppet",
-		"<span class=ping>@Florian</span> <strike>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</strike> ok &gt; Puppet"
+		"<span class=\"ping\">@Florian</span> <strike>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</strike> ok &gt; Puppet"
 	),
 	"markdown link in a bold sentence": t(
 		"@Florian **c'est quel langage ton fichier de provisionning vagrant https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1 ?** ok > Puppet",
-		"<span class=ping>@Florian</span> <b>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</b> ok &gt; Puppet"
+		"<span class=\"ping\">@Florian</span> <b>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</b> ok &gt; Puppet"
 	),
 	"markdown link in a italicized sentence": t(
 		"@Florian *c'est quel langage ton fichier de provisionning vagrant https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1 ?* ok > Puppet",
-		"<span class=ping>@Florian</span> <i>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</i> ok &gt; Puppet"
+		"<span class=\"ping\">@Florian</span> <i>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</i> ok &gt; Puppet"
 	),
 	"markdown link in title": t(
 		"# [link](http://some.com/link) here !",

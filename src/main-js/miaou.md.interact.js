@@ -6,7 +6,7 @@
 
 miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz){
 
-	// o : mid, level, diff, self, voter
+	// o : {mid, level, diff, self, voter}
 	// diff  : +1 or -1
 	// level : up, down, star, pin
 	md.applyVote = function(o){

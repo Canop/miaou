@@ -597,6 +597,8 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, shoe.publicUser.id, mid])
 		.spread(db.unpin)
 		.then(function(updatedMessage){
+			// FIXME message isn't removed|moved from notables -> a complete update of notables is needed
+			// Maybe send the index among notables ?
 			var lm = clean(updatedMessage);
 			socket.emit('message', lm);
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
