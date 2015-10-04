@@ -132,9 +132,10 @@ exports.appPostRoom = function(req, res){
 
 // rooms list GET
 exports.appGetRooms = function(req, res){
+	var userId = req.user.id;
 	db.on(welcomeRoomIds)
 	.map(function(roomId){
-		return this.fetchRoomAndUserAuth(roomId, req.user.id, true)
+		return this.fetchRoomAndUserAuth(roomId, userId, true)
 	})
 	.filter(function(welcomeRoom, i){
 		if (welcomeRoom) return true;
@@ -142,11 +143,11 @@ exports.appGetRooms = function(req, res){
 	})
 	.then(function(welcomeRooms){
 		return [
-			this.listFrontPageRooms(req.user.id),
-			this.fetchUserPingRooms(req.user.id, 0),
+			this.listFrontPageRooms(userId),
+			this.fetchUserPingRooms(userId),
 			welcomeRooms,
-			prefs.get.call(this, req.user.id),
-			this.listUserWatches(req.user.id)
+			prefs.get.call(this, userId),
+			this.listUserWatches(userId)
 		]
 	})
 	.spread(function(rooms, pings, welcomeRooms, userPrefs, watches){

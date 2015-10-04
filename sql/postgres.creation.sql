@@ -2,7 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 19);
+insert into db_version (component, version) values('core', 20);
 
 CREATE TABLE room (
 	id serial primary key,
@@ -83,8 +83,7 @@ create index access_request_idx on access_request (room, requested);
 CREATE TABLE ping (
 	player integer references player(id),
 	room integer references room(id),
-	message bigint references message(id),
-	created integer NOT NULL
+	message bigint references message(id)
 );
 create index ping_idx on ping (player, room);
 

@@ -621,14 +621,14 @@ proto.updateGetMessage = function(messageId, expr, userId){
 //////////////////////////////////////////////// #pings
 
 proto.storePing = function(roomId, userId, messageId){
-	return this.queryRow("insert into ping(room, player, message, created) values ($1,$2,$3,$4)", [roomId, userId, messageId, now()]);
+	return this.queryRow("insert into ping(room, player, message) values ($1,$2,$3,$4)", [roomId, userId, messageId]);
 }
 
 // users must be a sanitized array of usernames
 proto.storePings = function(roomId, users, messageId){
 	return this.execute(
-		"insert into ping (room, player, message, created) select " +
-		roomId + ", id, " + messageId + ", " + now() +
+		"insert into ping (room, player, message) select " +
+		roomId + ", id, " + messageId +
 		" from player where lower(name) in (" + users.map(function(n){ return "'"+n.toLowerCase()+"'" }).join(',') + ")"
 	);
 }
@@ -665,13 +665,12 @@ proto.fetchUserPings = function(userId){
 	);
 }
 
-// returns the id and name of the rooms where the user has been pinged since a certain time (seconds since epoch)
-// fixme : this query is slow (50ms for no record)
-proto.fetchUserPingRooms = function(userId, after){
+// returns the id and name of the rooms where the user has been pinged
+proto.fetchUserPingRooms = function(userId){
 	return this.queryRows(
-		"select room, max(name) as roomname, min(created) as first, max(created) as last from ping, room"+
-		" where player=$1 and room.id=ping.room and created>$2 group by room",
-		[userId, after]
+		"select room, max(name) as roomname from ping, room"+
+		" where player=$1 and room.id=ping.room group by room",
+		[userId]
 	);
 }
 
