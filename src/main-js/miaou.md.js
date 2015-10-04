@@ -74,7 +74,10 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			.html(md.votesAbstract(m) + ' ' + time.formatTime(m.created) + ' by ' + m.authorname)
 		);
 		if (m.author===locals.me.id) $md.addClass('me');
-		if ($repl) $repl.replaceWith($md);
+		if ($repl) {
+			$repl.replaceWith($md);
+			chat.trigger("notable", m, $md);
+		}
 		else $md.appendTo($div);
 		if (m.id) $md.attr('mid',m.id);
 		$md.addClass(m.pin ? 'pin' : 'star');
