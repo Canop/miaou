@@ -11,7 +11,7 @@ module.exports = function(ct, gameType){
 	return ludodb.getGameMessages(this)
 	.filter(function(m){
 		return	m.g.type===gameType && m.g.status!=="finished"
-			&& (m.g.players[0].name===p.name || m.g.players[1].name===p.name);
+			&& (m.g.players[0].name===p.name || m.g.players[1].id===p.id);
 	})
 	.then(function(messages){
 		var	c = 'To invite somebody to a game of '+gameType+' type\n'+
