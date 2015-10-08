@@ -57,6 +57,9 @@ function onCommand(ct){
 		match = ct.args.match(/^@(\w[\w_\-\d]{2,})/);
 	if (!match) return suggest.call(this, ct, gameType);
 	if (match[1]===shoe.publicUser.name) throw "You can't play against yourself";
+	if (/\[Tournament\]/i.test(shoe.room.description)) {
+		throw "You can't propose a game in a Tournament room";
+	}
 	storeInMess(m, {
 		players: [
 			{name:match[1]}, // id will be resolved later
