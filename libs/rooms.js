@@ -22,19 +22,17 @@ exports.configure = function(miaou){
 // the context of the call must be a db con
 exports.mem = function(roomId){
 	var mo = memobjects.get(roomId);
-	if (!mo) {
-		mo = { id:roomId };
-		memobjects.set(roomId, mo);
-		var now = Date.now()/1000|0;
-		return this
-		.getNotableMessages(roomId, now-maxAgeForNotableMessages)
-		.then(function(notables){
-			for (var i=0; i<notables.lenght; i++) clean(notables[i]);
-			mo.notables = notables;
-			return mo;
-		});
-	}
-	return mo;
+	if (mo) return mo;
+	mo = { id:roomId };
+	memobjects.set(roomId, mo);
+	var now = Date.now()/1000|0;
+	return this
+	.getNotableMessages(roomId, now-maxAgeForNotableMessages)
+	.then(function(notables){
+		for (var i=0; i<notables.lenght; i++) clean(notables[i]);
+		mo.notables = notables;
+		return mo;
+	});
 }
 
 // called in case of a possibly cached message being changed
