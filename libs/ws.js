@@ -170,8 +170,13 @@ exports.botMessage = function(bot, roomId, content){
 		miaou.pageBoxer.onSendMessage(this, m, function(t,c){
 			emitToRoom(roomId, t, c);	
 		});
+		return [rooms.mem.call(this, roomId), m];
+	})
+	.spread(function(memroom, m){
+		memroom.lastMessageId = m.id;
 		emitToRoom(roomId, 'message', m);
-	}).finally(db.off);
+	})
+	.finally(db.off);
 }
 
 // builds an unpersonnalized message. This avoids requerying the DB for the user
