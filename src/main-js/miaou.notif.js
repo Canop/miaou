@@ -50,6 +50,16 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		return false;
 	}
 
+	notif.clearPings = function(roomId){
+		for (var i=notifications.length; i--;) {
+			if (!roomId || notifications[i].r==roomId) {
+				ws.emit('rm_ping', notifications[i].mid);
+				notifications.splice(i, 1);
+			}
+		}
+		notif.updatePingsList();
+	}
+
 	notif.updatePingsList = function(){
 		if (!vis()) notif.updateTab(!!notifications.length, nbUnseenMessages);
 		if (!notifications.length) {
@@ -68,12 +78,16 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		});
 		notifMessage = md.notificationMessage(function($c){
 			if (localPings.length) {
-				$('<div>').append(
+				$('<div>').addClass('pingroom').append(
 					$('<span>').text(localPings.length + (localPings.length>1 ? ' pings' : ' ping') + ' in this room.')
 				).append(
-					$('<button>').text("Next ping").click(function(){
+					$('<button>').addClass('nextping').text("Next ping").click(function(){
 						notif.nextPing();
 						notif.updatePingsList();
+					})
+				).append(
+					$('<button>').addClass('clearpings').text('clear').click(function(){
+						notif.clearPings(locals.room.id);
 					})
 				).appendTo($c)
 			}
@@ -87,16 +101,10 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 					var $brs = $('<div>').addClass('pingroom').appendTo($otherrooms);
 					$('<button>').addClass('openroom').text(rname).click(function(){
 						ws.emit('watch_raz');
-						setTimeout(function(){	location = r; }, 150); // timeout so that the raz is sent
+						setTimeout(function(){	location = r; }, 250); // timeout so that the raz is sent
 					}).appendTo($brs);
 					$('<button>').addClass('clearpings').text('clear').click(function(){
-						for (var i=notifications.length; i--;) {
-							if (notifications[i].r==r) {
-								ws.emit('rm_ping', notifications[i].mid);
-								notifications.splice(i, 1);
-							}
-						}
-						notif.updatePingsList();
+						notif.clearPings(r);
 					}).appendTo($brs);
 				});
 				watch.setPings(otherRoomIds);
