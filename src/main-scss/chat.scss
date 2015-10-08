@@ -949,10 +949,11 @@ div#notifs {
 	&:hover button {
 		border-color: $button-hover-border-color;
 	}
-	.openroom {
+	.openroom, .nextping {
 		z-index:2;
 	}
-	&:hover .openroom {
+	&:hover .openroom,
+	&:hover .nextping {
 		border-radius: 2px 0 0 2px;
 	}
 	.clearpings {
