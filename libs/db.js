@@ -557,7 +557,7 @@ proto.messageHistogram = function(roomId, pattern, lang) {
 proto.getMessage = function(messageId, userId){
 	if (userId) {
 		return this.queryRow(
-			'select message.id, author, player.name as authorname, player.bot, room, content,'+
+			'select message.id, message.room, author, player.name as authorname, player.bot, room, content,'+
 			' message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 			' left join message_vote on message.id=message and message_vote.player=$2'+
 			' inner join player on author=player.id'+
@@ -565,7 +565,7 @@ proto.getMessage = function(messageId, userId){
 		)
 	} else {
 		return this.queryRow(
-			'select message.id, author, player.name as authorname, player.bot, room, content,'+
+			'select message.id, message.room, author, player.name as authorname, player.bot, room, content,'+
 			' message.created as created, message.changed, pin, star, up, down, score from message'+
 			' inner join player on author=player.id'+
 			' where message.id=$1', [messageId]
