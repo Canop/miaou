@@ -6,22 +6,33 @@ const	cache = require('bounded-cache')(300),
 	suggest = require('./suggest.js'),
 	tribostats = require('./tribostats.js'),
 	rooms = require('../../libs/rooms.js'),
+	ws = require('../../libs/ws.js'),
 	elo = require('./elo.js');
+
+var	db,
+	bot;
 
 var gametypes = {
 	Tribo: require('./client-scripts/Tribo.js'),
 	Flore: require('./client-scripts/Flore.js')
 };
 
+exports.init = function(miaou, pluginpath){
+	bot = miaou.bot;
+	db = miaou.db;
+	setTimeout(function(){
+		require('./db.js').cleanOldInvitations(db, 50*24*60*60);
+	}, 5*60*1000);
+}
+
 // returns a bound promise opening a connection to the db
 //  and returning both the message and the game whose id is passed
 // The caller **must** end the promise chain with off
-function dbGetGame(shoe, mid){
-	return shoe.db.on().then(function(){
+function dbGetGame(mid){
+	return db.on().then(function(){
 		return cache.get(mid) || this.getMessage(mid).then(function(m){
 			var	json = m.content.match(/!!game @\S{3,} (.*)$/)[1],
 				g = JSON.parse(json);
-			m.room = shoe.room.id; // db.getMessage doesn't provide the room, we must set it before saving
 			gametypes[g.type].restore(g);
 			var data = [m, g];
 			cache.set(mid, data);
@@ -30,8 +41,28 @@ function dbGetGame(shoe, mid){
 	});
 }
 
+
+exports.startGame = function(roomId, type, players){
+	var	gametype = gametypes[type],
+		game = { type:type, status:"ask"};
+	if (!gametype) throw "unknown game type: "+type;
+	game.players = players.map(function(p){
+		var gp = {name:p.name};
+		if (p.id) gp.id = p.id;
+		return gp;
+	});
+	var	content = '!!game @' + players[0].name + " " + JSON.stringify(game);
+	ws.botMessage(bot, roomId, content, function(m){
+		if (gametype.observers) {
+			gametype.observers.forEach(function(fun){
+				setTimeout(fun, 500, m, game);
+			});
+		}
+	});
+}
+
 // serializes the game in the message and asynchronously notifies observers
-function storeInMess(m, game, shoe){
+function storeInMess(m, game){
 	var	saved = {type:game.type, status:game.status, players:game.players},
 		gametype = gametypes[game.type];
 	if (game.scores) saved.scores = game.scores;
@@ -39,12 +70,11 @@ function storeInMess(m, game, shoe){
 	gametype.store(game, saved);
 	m.content = m.content.match(/^(.*?)!!/)[1] + "!!game @"+game.players[0].name + " " + JSON.stringify(saved);
 	m.changed = 0;
-	if (!shoe) return; // bot command
 	if (gametype.observers) {
 		 // warning : at this point it's still possible the message has no id
 		 // we should provide a way for the observer to be notified after the message has been saved
 		gametype.observers.forEach(function(fun){
-			setTimeout(fun, 300, m, game, shoe);
+			setTimeout(fun, 500, m, game);
 		});
 	}
 }
@@ -67,7 +97,7 @@ function onCommand(ct){
 		],
 		type: gameType,
 		status:'ask'
-	}, shoe);
+	});
 }
 
 // experimental bot command API for internally launched command messages
@@ -88,40 +118,42 @@ function onBotCommand(cmd, args, bot, m){
 	});
 }
 
-exports.accept = function(shoe, arg, accepter){
-	dbGetGame(shoe, arg.mid).spread(function(m, game){
-		game.players[0].id = (accepter||shoe.publicUser).id;
+exports.accept = function(mid, accepter){
+	dbGetGame(mid).spread(function(m, game){
+		game.players[0].id = accepter.id;
 		game.status = 'running';
 		m.changed = Date.now()/1000|0;
-		storeInMess(m, game, shoe);
+		storeInMess(m, game);
 		return this.storeMessage(m, true);
 	}).then(function(m){
-		shoe.emitToRoom('message', m);
-	}).finally(shoe.db.off);
+		ws.emitToRoom(m.room, 'message', m);
+	}).finally(db.off);
 }
 
-exports.move = function(shoe, arg){
-	dbGetGame(shoe, arg.mid).spread(function(m, game){
-		var	gametype = gametypes[game.type],
-			move = gametype.decodeMove(arg.move);
+// todo: for a greater security we should pass a checked playerId
+exports.move = function(mid, encodedMove){
+	dbGetGame(mid).spread(function(m, game){
+		var	gametype = gametypes[game.type]
+			move = gametype.decodeMove(encodedMove);
 		if (gametype.isValid(game, move)) {
-			game.moves += arg.move;
+			game.moves += encodedMove;
 			gametype.apply(game, move);
-			shoe.emitToRoom('ludo.move', {mid:m.id, move:move});
-			storeInMess(m, game ,shoe);
+			ws.emitToRoom(m.room, 'ludo.move', {mid:m.id, move:move});
+			storeInMess(m, game);
 			m.changed = Date.now()/1000|0;
 			rooms.updateMessage(m);
 			return this.storeMessage(m, true);
 		} else {
 			console.log('ludo : illegal move', move);
 		}
-	}).finally(shoe.db.off);
+	}).finally(db.off);
 }
 
 exports.onNewShoe = function(shoe){
+	// todo: pass the shoe player id to functions
 	shoe.socket
-	.on('ludo.accept', function(arg){ exports.accept(shoe, arg) })
-	.on('ludo.move', function(arg){ exports.move(shoe, arg) });
+	.on('ludo.accept', function(arg){ exports.accept(arg.mid, shoe.publicUser) })
+	.on('ludo.move', function(arg){ exports.move(arg.mid, arg.move) });
 }
 
 // Checking the message isn't a started game
@@ -162,7 +194,6 @@ exports.registerGameObserver = function(type, cb){
 // This function is just on for a temporary time.
 // Its goal is to let the AI see games again when some of them
 // were forgotten
-/*
 exports.onSendMessage = function(shoe, m, send){
 	if (/^!!game /.test(m.content)) {
 		var match = m.content.match(/!!game @\S{3,} (.*)$/);
@@ -173,13 +204,12 @@ exports.onSendMessage = function(shoe, m, send){
 				console.log("re-observing game ", m.id);
 				gametype.restore(g);
 				gametype.observers.forEach(function(fun){
-					setTimeout(fun, 200, m, g, shoe);
+					setTimeout(fun, 200, m, g);
 				});
 			}
 		}
 	}
 }
-*/
 
 // This function is just on for a temporary time.
 // Its goal is to cure messages containing games with the old saving format

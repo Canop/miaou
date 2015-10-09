@@ -19,3 +19,16 @@ exports.getGameMessages = function(con){
 		return m && m.g;
 	});
 }
+
+exports.cleanOldInvitations = function(db, age){
+	db.on().then(function(){
+		return this.execute(
+			"update message set content = replace(content, '\"ask\"', '\"refused\"')"
+			+ " where content ~ '!!game @\\w[\\w-]{2,19} \\{\"type\":\"\\w+\",\"status\":\"ask\"'"
+			+ " and created<$1",
+			[(Date.now()/1000-age)|0]
+		);
+	}).then(function(res){
+		console.log("Removed", res.rowCount, "old invitation(s)");
+	}).finally(db.off);
+}
