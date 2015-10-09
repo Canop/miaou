@@ -19,11 +19,21 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 		}
 	}
 	
+	function renderRefused($c, m, game){
+		$c.empty();
+		var $p = $('<div>').addClass('game-proposal').appendTo($c);
+		$p.append("<i>"+game.players[0].name+"</i> refused a game of "+game.type+" proposed by <i>"+game.players[1].name+"</i>.");
+	}
+	
 	// renders the message when it's in small or side containers
 	function renderAbstract($c, m, game){
 		$c.empty();
 		if (game.status === "ask") {
 			$c.text(game.type + ' not yet started');
+			return;
+		}
+		if (game.status === "refused") {
+			renderRefused($c, m, game);
 			return;
 		}
 		if (!games[game.type]) return;
@@ -53,6 +63,7 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 	function renderMessage($c, m, game){
 		if (!$c.closest('#messages,#mwin').length) return renderAbstract($c, m, game);
 		if (game.status === "ask") return renderAsk($c, m, game);
+		if (game.status === "refused") return renderRefused($c, m, game);
 		var gt = games[game.type];
 		if (!gt) return $c.text('Game type not available');
 		gt.render($c, m, game);
