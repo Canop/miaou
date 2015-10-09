@@ -18,7 +18,7 @@ module.exports = function(ct, gameType){
 		       	'`!!'+gameType.toLowerCase()+' @someUser`';
 		if (messages.length) {
 			c += '\n## Pending Games:';
-			messages.forEach(function(m){
+			messages.reverse().forEach(function(m){
 				if (m.g.status==="ask") {
 					if (m.g.players[0].name===p.name) {
 						c += link(m, '@'+m.g.players[1].name+' is waiting for **your** accept');
