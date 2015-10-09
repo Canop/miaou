@@ -153,7 +153,7 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 }
 
 // to be used by bots, creates a message, store it in db and emit it to the room
-exports.botMessage = function(bot, roomId, content){
+exports.botMessage = function(bot, roomId, content, cb){
 	if (!roomId) throw "missing room Id";
 	db.on({content:content, author:bot.id, room:roomId, created:Date.now()/1000|0})
 	.then(function(m){
@@ -173,8 +173,11 @@ exports.botMessage = function(bot, roomId, content){
 		return [rooms.mem.call(this, roomId), m];
 	})
 	.spread(function(memroom, m){
-		memroom.lastMessageId = m.id;
+		if (!(m.id<=memroom.lastMessageId)) {
+			memroom.lastMessageId = m.id;
+		}
 		emitToRoom(roomId, 'message', m);
+		if (cb) return cb.call(this, m);
 	})
 	.finally(db.off);
 }
@@ -459,6 +462,7 @@ function handleUserInRoom(socket, completeUser){
 			return commands.onMessage.call(this, shoe, m);
 		}).then(function(ct){
 			commandTask = ct;
+			commandTask.nostore |= commandTask.silent;
 			return [
 				commandTask.nostore && !m.id ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition),
 				commandTask

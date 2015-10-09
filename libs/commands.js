@@ -15,8 +15,7 @@ function CommandTask(cmd, args, shoe, message){
 	this.args = args ? args.trim() : '';
 	this.shoe = shoe;
 	this.nostore = false; // commands can set it to true to prevent source message to be stored
-	this.silent = false; // commands can set it to true to prevent source message to be distributed
-	// (nostore should usually be set too)
+	this.silent = false; // commands can set it to true to prevent source message to be distributed (and stored)
 	this.replyContent = null;
 	this.replyAsFlake = false;
 	this.alwaysPing = false; // do cross room pings even if the user has no authorization
@@ -85,7 +84,7 @@ var getHelpText = exports.getHelpText = function(room, cmdname){
 	} else {
 		return 'For a detailed help on Miaou, see the [help page]('+server.url('/help')+').\nCommands :'+
 		all.filter(function(cmd){
-			return cmd.filter===undefined || cmd.filter(room)
+			return cmd.help && (cmd.filter===undefined || cmd.filter(room))
 		}).map(function(cmd){
 			return '\n* `!!' + cmd.name + '` : ' + cmd.help
 		}).join('');
