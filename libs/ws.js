@@ -1,7 +1,7 @@
 "use strict";
 
 const	apiversion = 52,
-	nbMessagesAtLoad = 50, nbMessagesPerPage = 15, nbMessagesBeforeTarget = 5, nbMessagesAfterTarget = 5,
+	nbMessagesAtLoad = 50, nbMessagesPerPage = 15, nbMessagesBeforeTarget = 8, nbMessagesAfterTarget = 6,
 	Promise = require("bluebird"),
 	path = require('path'),
 	socketio = require('socket.io'),

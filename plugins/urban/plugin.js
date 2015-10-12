@@ -13,6 +13,7 @@ function abstract($, line){
 				"Urban Dictionary: " + $def.find(".def-header").text()
 			)
 		));
+		console.log($def.find(".meaning").html());
 		$abstract.append($("<p>").text($def.find(".meaning").text()));
 	} else {
 		$box.append("no definition found on Urban");

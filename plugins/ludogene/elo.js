@@ -1,6 +1,6 @@
 const	ludodb = require('./db.js'),
 	K = 40,
-	R = 700, // 300 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
+	R = 750, // 300 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
 	NB_OPPONENTS_MIN = 3;
 
 function Rating(playerId){ // rating of a player
@@ -103,6 +103,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		var v = .6 + (g.scores[winnerIndex]-50)*.0084; // in ].6,1[
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1; 
+		if (this.D>100) this.D = 100 + (this.D-100)*.7;
 		this.p = 1 / ( 1 + Math.pow(10, - this.D/R)); // in ]0,1[
 		this.d0 = this.coef * K * (this.v - this.p);
 		this.d1 = -this.d0;

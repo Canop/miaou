@@ -4,6 +4,7 @@
 // The state of a game isn't sent at each move : clients update it themselves using the moves
 const	cache = require('bounded-cache')(300),
 	suggest = require('./suggest.js'),
+	tournament = require('./tournament.js'),
 	tribostats = require('./tribostats.js'),
 	rooms = require('../../libs/rooms.js'),
 	ws = require('../../libs/ws.js'),
@@ -20,6 +21,7 @@ var gametypes = {
 exports.init = function(miaou, pluginpath){
 	bot = miaou.bot;
 	db = miaou.db;
+	tournament.init(miaou);
 	setTimeout(function(){
 		require('./db.js').cleanOldInvitations(db, 50*24*60*60);
 	}, 5*60*1000);
@@ -85,7 +87,12 @@ function onCommand(ct){
 		shoe = ct.shoe,
 		gameType = cmd==='game' ? 'Tribo' : cmd[0].toUpperCase()+cmd.slice(1),
 		match = ct.args.match(/^@(\w[\w_\-\d]{2,})/);
-	if (!match) return suggest.call(this, ct, gameType);
+	if (!match) {
+		if (/tournament/i.test(ct.args)) {
+			return tournament.handle.call(this, ct, gameType);
+		}
+		return suggest.call(this, ct, gameType);
+	}
 	if (match[1]===shoe.publicUser.name) throw "You can't play against yourself";
 	if (/\[Tournament\]/i.test(shoe.room.description)) {
 		throw "You can't propose a game in a Tournament room";
