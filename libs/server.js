@@ -7,6 +7,7 @@ const	fs = require("fs"),
 	bodyParser = require('body-parser'),
 	passport = require('passport'),
 	login = require('./login.js'),
+	util = require('util'),
 	db = require('./db.js'),
 	naming = require('./naming.js'),
 	session = require('express-session'),
@@ -128,6 +129,8 @@ function defineAppRoutes(){
 	map('post', '/error', clienterrors.appPostError, true, true);
 	map('get', '/json/rooms', rooms.appGetJsonRooms);
 	map('get', '/json/messages/last', messages.appGetJsonLastMessages, true, true);
+
+
 	miaou.plugins.forEach(function(p){
 		if (p.registerRoutes) p.registerRoutes(map);
 	});
