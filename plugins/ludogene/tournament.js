@@ -18,12 +18,18 @@ exports.init = function(miaou){
 	bot = miaou.bot;
 }
 
+function write(roomId, content){
+	setTimeout(function(){
+		ws.botMessage(bot, roomId, content);
+	}, 400);
+}
 function listPlayers(ct, gameType){
+	var roomId = ct.shoe.room.id;
 	db.on().then(function(){
 		return this.queryRows(
 			"select author id, (select name from player where player.id=author) from message"+
 			" where star>0 and room=$1 and content not like '!!deleted%' group by author",
-			[ct.shoe.room.id]
+			[roomId]
 		);
 	}).then(function(players){
 		var lines = [];
@@ -33,7 +39,7 @@ function listPlayers(ct, gameType){
 		players.forEach(function(p){
 			lines.push(p.id+'|'+p.name);
 		});
-		ws.botMessage(bot, ct.shoe.room.id, lines.join('\n'));
+		write(roomId, lines.join('\n'));
 	}).finally(db.off);
 }
 
@@ -60,7 +66,7 @@ function startTournament(ct, gameType){
 		if (players.length<2) {
 			return ct.reply("At least 2 players are needed for a tournament");
 		}
-		ws.botMessage(bot, roomId, titles.start);
+		write(roomId, titles.start);
 		for (var i=0; i<players.length; i++) {
 			for (var j=0; j<players.length; j++) {
 				if (i==j) continue;
@@ -147,7 +153,7 @@ function writeScore(ct, gameType){
 				p.twcScore
 			].join('|');
 		}));
-		ws.botMessage(bot, roomId, lines.join('\n'));
+		write(roomId, lines.join('\n'));
 	})
 	.catch(db.NoRowError, function(){
 		ct.reply("Tournament not started");
