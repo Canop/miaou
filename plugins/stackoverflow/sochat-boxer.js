@@ -10,10 +10,14 @@ function abstract($, line, id){
 		$message = $('#message-'+id+' .content').eq(0),
 		$timestamp = $('.timestamp').eq(0);
 	$box.append($abstract);
+	$abstract.append(
+		$("<img>").attr("src","https://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png")
+		.addClass("so-small-icon")
+	);
 	$abstract.append($("<span class=username>").text($username.text()));
-	$abstract.append($("<img>").attr("src","https://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png"));
 	$abstract.append($("<a>").attr("href",line).append($timestamp));
 	$abstract.append($message).find("a").attr("target","_blank");
+	$abstract.find('.content').removeClass('content');
 	return $('<div>').append($box).html();
 }
 

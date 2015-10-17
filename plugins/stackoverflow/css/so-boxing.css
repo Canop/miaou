@@ -88,8 +88,9 @@ a.so-title img {
 	flex-direction: row;
 	align-items: center;
 }
-.so-chat-message .abstract > img {
-	max-height: 24px;
+.so-chat-message img.so-small-icon {
+	height: 24px;
+	width: 24px;
 }
 .so-chat-message .abstract > .username {
 	flex: 0 0 auto;
