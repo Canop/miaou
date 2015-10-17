@@ -1,12 +1,22 @@
 // returns a promise solved with messages, each of them
 // containing a valid loaded game (g)
 // con must be an open connection to the DB
-exports.getGameMessages = function(con){
-	return con.queryRows(
-		"select message.id, room, content, created, changed from message join room on message.room=room.id"+
-		" where room.private is false and content like '!!game %' order by message.id"
-	)
-	.map(function(m){
+// roomId is optional (if not provided, all public rooms are searched)
+exports.getGameMessages = function(con, roomId){
+	var query;
+	if (roomId) {
+		query = con.queryRows(
+			"select message.id, room, content, created, changed from message join room on message.room=room.id"+
+			" where room=$1 and content like '!!game %' order by message.id",
+			[roomId]
+		);
+	} else {
+		query = con.queryRows(
+			"select message.id, room, content, created, changed from message join room on message.room=room.id"+
+			" where room.private is false and content like '!!game %' order by message.id"
+		);
+	}
+	return query.map(function(m){
 		try {
 			m.g = JSON.parse(m.content.match(/{.*$/)[0]);
 			return m;

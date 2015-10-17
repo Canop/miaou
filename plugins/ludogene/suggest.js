@@ -7,17 +7,22 @@ function link(m, s){
 // called when a user just typed !!tribo (or another game)
 // context of the call must be an open connection
 module.exports = function(ct, gameType){
-	var	p = ct.shoe.publicUser;
-	return ludodb.getGameMessages(this)
+	var	c = 'To invite somebody to a game of '+gameType+' type\n'+
+		'`!!'+gameType.toLowerCase()+' @someUser`';
+	var	p = ct.shoe.publicUser,
+		local = ct.shoe.room.private || /\[tournament\]/i.test(ct.shoe.room.description);
+	return ludodb.getGameMessages(this,  local ? ct.shoe.room.id : 0)
 	.filter(function(m){
 		return	m.g.type===gameType && m.g.status!=="finished"
 			&& (m.g.players[0].name===p.name || m.g.players[1].id===p.id);
 	})
 	.then(function(messages){
-		var	c = 'To invite somebody to a game of '+gameType+' type\n'+
-		       	'`!!'+gameType.toLowerCase()+' @someUser`';
-		if (messages.length) {
+		if (local) {
+			c += '\n## Pending Games in this room:';
+		} else {
 			c += '\n## Pending Games:';
+		}
+		if (messages.length) {
 			messages.reverse().forEach(function(m){
 				if (m.g.status==="ask") {
 					if (m.g.players[0].name===p.name) {
@@ -35,6 +40,8 @@ module.exports = function(ct, gameType){
 					console.log("strange game state. mid:", m.id);
 				}
 			});
+		} else {
+			ct += '\n*none*';
 		}
 		ct.reply(c, ct.nostore=true);
 	});

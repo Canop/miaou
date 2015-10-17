@@ -15,7 +15,7 @@ const	fs = require("fs"),
 	oauth2Strategies = {},
 	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i;
 
-var	miaou, // properties : db, config, bot
+var	miaou, // properties : db, config, bot, io
 	baseURL,
 	app, server;
 

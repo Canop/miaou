@@ -22,7 +22,6 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	//  we should not ping him
 	// If the user action is related to a message, its mid is passed
 	notif.userAct = function(mid){
-		console.log('userAct');
 		lastUserAction = Date.now();
 		// we assume the user sees the most recent messages if he acts
 		$('#messages .message:gt(-10)').each(function(){

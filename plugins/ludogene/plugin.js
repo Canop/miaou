@@ -44,9 +44,9 @@ function dbGetGame(mid){
 }
 
 
-exports.startGame = function(roomId, type, players){
+exports.startGame = function(roomId, type, players, running){
 	var	gametype = gametypes[type],
-		game = { type:type, status:"ask"};
+		game = { type:type, status:running?"running":"ask"};
 	if (!gametype) throw "unknown game type: "+type;
 	game.players = players.map(function(p){
 		var gp = {name:p.name};
@@ -107,7 +107,6 @@ function onCommand(ct){
 	});
 }
 
-// experimental bot command API for internally launched command messages
 function onBotCommand(cmd, args, bot, m){
 	var	gameType = cmd.name==='game' ? 'Tribo' : cmd.name[0].toUpperCase()+cmd.name.slice(1),
 		match = args.match(/^@(\w[\w_\-\d]{2,})/);

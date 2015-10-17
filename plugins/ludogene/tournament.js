@@ -4,6 +4,7 @@ const	titles = {
 	list : '# Tournament Players:',
 	start: '# Tournament Starts!',
 	score: '# Tournament Score:',
+	games: '# Tournament Games:',
 	end  : '# Tournament Ends!'
 };
 
@@ -19,9 +20,7 @@ exports.init = function(miaou){
 }
 
 function write(roomId, content){
-	setTimeout(function(){
-		ws.botMessage(bot, roomId, content);
-	}, 400);
+	ws.botMessage(bot, roomId, content);
 }
 function listPlayers(ct, gameType){
 	var roomId = ct.shoe.room.id;
@@ -78,16 +77,14 @@ function startTournament(ct, gameType){
 	}).finally(db.off);
 }
 
-function writeScore(ct, gameType){
-	var	roomId = ct.shoe.room.id;
-	db.on().then(function(){
-		return this.queryRow(
-			"select id from message where room=$1 and author=$2"+
-			" and content like '"+titles.start+"%'"+
-			" order by id desc limit 1",
-			[roomId, bot.id]
-		);
-	})
+// context must be a db con
+function getGames(roomId, gameType){
+	return this.queryRow(
+		"select id from message where room=$1 and author=$2"+
+		" and content like '"+titles.start+"%'"+
+		" order by id desc limit 1",
+		[roomId, bot.id]
+	)
 	.then(function(tournamentStartMessage){
 		return this.queryRows(
 			"select message.id, content, changed from message"+
@@ -105,16 +102,25 @@ function writeScore(ct, gameType){
 		}
 	})
 	.filter(function(m){
-		return m && m.g && m.g.status!=='ask' && m.g.type===gameType;
+		return m && m.g && m.g.type===gameType;
+	});
+}
+
+function writeScore(ct, gameType){
+	var	roomId = ct.shoe.room.id;
+	db.on([roomId, gameType])
+	.spread(getGames)
+	.filter(function(m){
+		return m.g.status!=='ask';
 	})
 	.reduce(function(map, m){
-		console.log("game:", m.g);
 		m.g.players.forEach(function(p,i){
 			var pm = map.get(p.id);
 			if (!pm) {
 				pm = p;
 				pm.nbGames = 0;
 				pm.sumScores = 0;
+				pm.sumEndScores = 0;
 				pm.nbDrops = 0;
 				pm.nbWins = 0;
 				pm.nbFinishedGames = 0;
@@ -123,7 +129,10 @@ function writeScore(ct, gameType){
 			pm.nbGames++;
 			pm.sumScores += m.g.scores[i];
 			if (m.g.scores[i]+i/2>50) pm.nbWins++;
-			if (m.g.status==='finished') pm.nbFinishedGames++;
+			if (m.g.status==='finished') {
+				pm.nbFinishedGames++;
+				pm.sumEndScores += m.g.scores[i];
+			}
 			if (
 				m.g.status === 'running'
 				&& m.g.current === i
@@ -140,16 +149,17 @@ function writeScore(ct, gameType){
 		});
 		players = players.sort(function(a,b){ return b.twcScore-a.twcScore });
 		var lines = [titles.score];
-		lines.push('Rank|Player|Finished Games|Wins|Drops|Mean Score|TWC Score');
+		lines.push('Rank|Player|Finished|Wins|Drops|Mean Gain|TWC Score');
 		lines.push(lines[lines.length-1].replace(/[^|]+/g,':-:'));
 		[].push.apply(lines, players.map(function(p,i){
+			var meanGain = (p.sumEndScores+p.nbWins*3)/p.nbFinishedGames;
 			return [
 				"**"+(i+1)+"**",
 				"["+p.name+"](u/"+p.id+")",
 				p.nbFinishedGames,
 				p.nbWins,
 				p.nbDrops,
-				(p.sumScores/p.nbGames).toFixed(1),
+				meanGain ? meanGain.toFixed(1) : ' ',
 				p.twcScore
 			].join('|');
 		}));
@@ -160,6 +170,35 @@ function writeScore(ct, gameType){
 	})
 	.finally(db.off);
 }
+
+function listGames(ct, gameType){
+	var	roomId = ct.shoe.room.id;
+	db.on([roomId, gameType])
+	.spread(getGames)
+	.then(function(messages){
+		var lines = [titles.games];
+		lines.push('Player 1|Player 2|Result');
+		lines.push(lines[lines.length-1].replace(/[^|]+/g,':-:'));
+		messages.forEach(function(m){
+			var g = m.g;
+			var r;
+			console.log(m);
+			if (g.status==='finished') {
+				r = g.players[0].name+'('+g.scores[0]+') - '+ g.players[1].name+'('+g.scores[1]+')';
+			} else {
+				r = 'Waiting for **'+g.players[g.current||0].name+'**';
+			}
+			lines.push([
+				g.players[0].name,
+				g.players[1].name,
+				"["+r+"](#"+m.id+")"
+			].join('|'));
+		});
+		write(roomId, lines.join('\n'));
+	})
+	.finally(db.off);
+}
+
 
 exports.handle = function(ct, gameType){
 	var	p = ct.shoe.publicUser;
