@@ -153,33 +153,37 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 }
 
 // to be used by bots, creates a message, store it in db and emit it to the room
+// There's a delay because most often this is used to answer a command and
+// we don't want the answer to come first
 exports.botMessage = function(bot, roomId, content, cb){
 	if (!roomId) throw "missing room Id";
-	db.on({content:content, author:bot.id, room:roomId, created:Date.now()/1000|0})
-	.then(function(m){
-		commands.onBotMessage(bot, m);
-		return m;
-	})
-	.then(db.storeMessage)
-	.then(function(m){
-		m.authorname = bot.name;
-		m.avs = bot.avatarsrc;
-		m.avk = bot.avatarkey;
-		m.bot = true;
-		m.room = roomId;
-		miaou.pageBoxer.onSendMessage(this, m, function(t,c){
-			emitToRoom(roomId, t, c);	
-		});
-		return [rooms.mem.call(this, roomId), m];
-	})
-	.spread(function(memroom, m){
-		if (!(m.id<=memroom.lastMessageId)) {
-			memroom.lastMessageId = m.id;
-		}
-		emitToRoom(roomId, 'message', m);
-		if (cb) return cb.call(this, m);
-	})
-	.finally(db.off);
+	setTimeout(function(){
+		db.on({content:content, author:bot.id, room:roomId, created:Date.now()/1000|0})
+		.then(function(m){
+			commands.onBotMessage(bot, m);
+			return m;
+		})
+		.then(db.storeMessage)
+		.then(function(m){
+			m.authorname = bot.name;
+			m.avs = bot.avatarsrc;
+			m.avk = bot.avatarkey;
+			m.bot = true;
+			m.room = roomId;
+			miaou.pageBoxer.onSendMessage(this, m, function(t,c){
+				emitToRoom(roomId, t, c);	
+			});
+			return [rooms.mem.call(this, roomId), m];
+		})
+		.spread(function(memroom, m){
+			if (!(m.id<=memroom.lastMessageId)) {
+				memroom.lastMessageId = m.id;
+			}
+			emitToRoom(roomId, 'message', m);
+			if (cb) return cb.call(this, m);
+		})
+		.finally(db.off);
+	}, 300);
 }
 
 // builds an unpersonnalized message. This avoids requerying the DB for the user
