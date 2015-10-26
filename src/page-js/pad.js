@@ -136,7 +136,6 @@ miaou(function(chat, locals, time, watch, ws){
 	if (locals.room.dialog) {
 		$('#auths').hide();
 	}
-	$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
 
 	function righttab(page){
 		$('#right .tab').removeClass('selected');
