@@ -1,9 +1,9 @@
-miaou(function(games, locals, notif, ws){
+miaou(function(games, locals, notif, skin, ws){
 
 	var T = 10, // size of the board in cells (not expected to change)
 		CS = 20, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
-		bg = "#4d8080",
+		bg = skin.getCssValue(/^\.ludo-tribo-board-bg$/, 'background'),
 		colors = ['SandyBrown', 'AntiqueWhite'];
 
 	function Panel(m, g, s, availableWidth, abstract){
@@ -54,7 +54,7 @@ miaou(function(games, locals, notif, ws){
 	}
 
 	Panel.prototype.lineMark = function(line, p){
-		var x1 = this.XB+(line.x+0.5)*CS,
+		var	x1 = this.XB+(line.x+0.5)*CS,
 			y1 = this.YB+(line.y+0.5)*CS,
 			x2 = line.d==='v' ? x1 : x1+CS*2,
 			y2 = line.d==='h' ? y1 : y1+CS*2;
@@ -67,13 +67,13 @@ miaou(function(games, locals, notif, ws){
 
 	Panel.prototype.drawBoard = function(){
 		if (this.abstract) return;
-		var panel = this, s = this.s, cells = this.g.cells, XB = this.XB, YB = this.YB,
+		var	panel = this, s = this.s, cells = this.g.cells, XB = this.XB, YB = this.YB,
 			userIsCurrentPlayer = panel.g.current!==-1 && panel.u===panel.g.current;
 		for (var i=0; i<T; i++) {
 			for (var j=0; j<T; j++) {
 				(function(i,j){
 					if (panel.holes[i][j]) panel.holes[i][j].remove();
-					var cell = cells[i][j],
+					var	cell = cells[i][j],
 						c = panel.holes[i][j] = ù('<circle', s).attr({cx:XB+i*CS+CS/2, cy:YB+j*CS+CS/2, r:BR});
 					if (cell===-1) {
 						c.attr('fill', panel.holeGrad);
@@ -84,7 +84,7 @@ miaou(function(games, locals, notif, ws){
 						}
 						if (userIsCurrentPlayer) {
 							if (Tribo.canPlay(panel.g, i, j, panel.u)) {
-								var lines = Tribo.getLines(panel.g, i, j, panel.u) || [],
+								var	lines = Tribo.getLines(panel.g, i, j, panel.u) || [],
 									lineMarks;
 								c.on('mouseenter', function(){
 									c.attr('fill', colors[panel.u]);
@@ -112,7 +112,7 @@ miaou(function(games, locals, notif, ws){
 	Panel.prototype.buildScores = function(){
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
-			var name = player.name,
+			var	name = player.name,
 				attr = { x:XS, y:panel.LHS*(i+1), fill:colors[i] };
 			if (!panel.abstract) attr.fontWeight = 'bold';
 			return ù('<text', s).text(name.length>21 ? name.slice(0,18)+'…' : name).attr(attr);
@@ -150,7 +150,7 @@ miaou(function(games, locals, notif, ws){
 	}
 
 	Panel.prototype.addReplayStopButton = function($c){
-		var p = this,
+		var	p = this,
 			playing = false,
 			savedMoves,
 			$button,
