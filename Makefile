@@ -96,10 +96,11 @@ page-css: $(PAGES_CSS_OUT)
 # 	and finally concat css of plugins
 ./build/themes/%:
 	@mkdir -p $@
-./static/themes/%/miaou.css: ./build/themes/% ./themes/%/*.scss ./src/main-scss/*.scss ./plugins/*/css/*.css
+./static/themes/%/miaou.css: ./build/themes/% ./themes/%/*.scss ./src/main-scss/*.scss ./plugins/*/scss/*.scss ./plugins/*/css/*.css
 	@mkdir -p $(@D)
 	@cp ./src/main-scss/*.scss ./build/themes/$*/
 	@cp ./themes/$*/*.scss ./build/themes/$*/
+	@cat ./plugins/*/scss/*.scss >> ./build/themes/$*/main.scss
 	@sass -E utf-8 -t compressed ./build/themes/$*/main.scss > $(@D)/miaou.css
 	@cat ./plugins/*/css/*.css >> $(@D)/miaou.css
 themes: $(THEME_OUT_CSS)

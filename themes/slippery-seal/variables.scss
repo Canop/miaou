@@ -14,6 +14,10 @@ $message-me-bg: #f7f7f7;
 $notifications-bg-color: #eee;
 $notification-text-color: black;
 
+$ping-bg: rgba(100,100,100,.1);
+$ping-me-bg: rgba(255, 235, 186, .8); 
+$ping-border-left-width: 1px;
+
 $connected-user-bg-color-in-user-list: #eee;
 $connected-user-text-color-in-user-list: black;
 $user-text-color-in-user-list: #555;
@@ -179,3 +183,35 @@ img.avatar {
 	background: rgba( $left-background , .8);
 }
 
+// content rating related display
+#messages, #notable-messages, .messages {
+
+	// "not serious"
+	.content.content-rating-not-serious, 
+	.has-opener .content.content-rating-not-serious.closed {
+		-webkit-filter: grayscale(100%) contrast(40%) brightness(1.5);
+		filter: grayscale(100%) contrast(40%) brightness(1.5);
+		opacity: .6;
+	}
+	.content.content-rating-not-serious:hover,
+	.has-opener .content.content-rating-not-serious {
+		-webkit-filter: none;
+		filter: none;
+		opacity: 1;
+	}
+
+	// "nsfw"
+	.content.content-rating-nsfw, 
+	.has-opener .content.content-rating-nsfw.closed,
+	.has-opener .content.content-rating-nsfw.closed:hover {
+		-webkit-filter: grayscale(100%) contrast(40%) brightness(1.5);
+		filter: grayscale(100%) contrast(40%) brightness(1.5);
+		opacity: .45;
+	}
+	.content.content-rating-nsfw:hover,
+	.has-opener .content.content-rating-nsfw:hover {
+		-webkit-filter: none;
+		filter: none;
+		opacity: 1;
+	}
+}

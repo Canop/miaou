@@ -14,41 +14,48 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 
 	var listeners = {};
 
+	function renderMessage($c, message, oldMessage){
+		if (oldMessage && message.content===oldMessage.content && $c.text().length) {
+			return; // mainly to avoid removing boxed content
+		}
+		if (!message.content) {
+			$c.empty().closest('.message').addClass('deleted');
+			return true;
+		}
+		var delmatch = message.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/);
+		if (delmatch) {
+			var h = '';
+			if (delmatch[1]) h += ' by <a href=user/'+delmatch[1].slice(3)+' target=profile>an admin</a>'; 
+			if (delmatch[2]) h += ' on ' + time.formatTime(+delmatch[2].slice(3)); 
+			$c.html(h).closest('.message').addClass('deleted');
+			return true;
+		}
+		if (message.content) {
+			$c.html(miaou.fmt[ $c.closest('#messages').length ? 'mdMcToHtml' : 'mdTextToHtml' ](
+				message.content, message.authorname
+			));
+			// ping and reply colorization
+			$c.find('.ping').css('border-color', function(){
+				return skin.stringToColour(this.textContent.trim().slice(1));
+			});
+			$c.find('.reply').css('border-color', function(){
+				return skin.stringToColour(this.getAttribute("rn"));
+			});
+			// apply content rating classes from content tags
+			if (/(?:^|\s)#nsfw\b/i.test(message.content)) $c.addClass('content-rating-nsfw');
+			if (/(?:^|\s)#not-serious\b/i.test(message.content)) $c.addClass('content-rating-not-serious');
+		} else {
+			$c.empty();				
+		}
+	}
+
 	chat.start = function(){
 		notif.init();
 		horn.init();
 		ws.init();
 		links.init();
 		gui.init();
-		md.registerRenderer(function($c, message, oldMessage){
-			if (oldMessage && message.content===oldMessage.content && $c.text().length) return; // mainly to avoid removing boxed content
-			if (!message.content) {
-				$c.empty().closest('.message').addClass('deleted');
-				return true;
-			}
-			var delmatch = message.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/);
-			if (delmatch) {
-				var h = '';
-				if (delmatch[1]) h += ' by <a href=user/'+delmatch[1].slice(3)+' target=profile>an admin</a>'; 
-				if (delmatch[2]) h += ' on ' + time.formatTime(+delmatch[2].slice(3)); 
-				$c.html(h).closest('.message').addClass('deleted');
-				return true;
-			}
-			if (message.content) {
-				$c.html(miaou.fmt[ $c.closest('#messages').length ? 'mdMcToHtml' : 'mdTextToHtml' ](
-					message.content, message.authorname
-				));
-				// ping and reply colorization
-				$c.find('.ping').css('border-color', function(){
-					return skin.stringToColour(this.textContent.trim().slice(1));
-				});
-				$c.find('.reply').css('border-color', function(){
-					return skin.stringToColour(this.getAttribute("rn"));
-				});
-			} else {
-				$c.empty();				
-			}
-		});
+		md.registerRenderer(renderMessage);
 		plugins.start();
 	}	
 

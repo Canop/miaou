@@ -1062,7 +1062,7 @@ div#notifs {
 	padding: 2px;
 	border-radius: 3px;
 	cursor: pointer;
-	border-left-width: 2px;
+	border-left-width: $ping-border-left-width;
 	border-left-style: solid;
 	&.ping-me {
 		background: $ping-me-bg;

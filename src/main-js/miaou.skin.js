@@ -5,7 +5,7 @@ miaou(function(skin){
 	//  passed regex.
 	// If there's a captured group in the regex, an array is returned (the submatch
 	//  is used as a number for sorting the elements)
-	function getCssValue(regex, property){
+	skin.getCssValue = function(regex, property){
 		var matches = [];
 		for (var is=0; is<document.styleSheets.length; is++) {
 			var sheet = document.styleSheets[is];
@@ -26,10 +26,10 @@ miaou(function(skin){
 	}
 
 	skin.wzincolors = {
-		conv:  getCssValue(/^\.wzin-conv-(\d+)$/, "background-color"),
-		edit:  getCssValue(/^\.wzin-edit$/, "background-color"),
-		reply: getCssValue(/^\.wzin-reply$/, "background-color"),
-		link: getCssValue(/^\.wzin-link$/, "background-color")
+		conv:  skin.getCssValue(/^\.wzin-conv-(\d+)$/, "background-color"),
+		edit:  skin.getCssValue(/^\.wzin-edit$/, "background-color"),
+		reply: skin.getCssValue(/^\.wzin-reply$/, "background-color"),
+		link:  skin.getCssValue(/^\.wzin-link$/, "background-color")
 	}
 	
 	skin.stringToColour = function(str) {
@@ -47,7 +47,7 @@ miaou(function(skin){
 
 
 	$('.Miaou-logo').on('load', function(){
-		$('path',this.getSVGDocument()).css('stroke', getCssValue(/^\.Miaou-logo$/, 'color'));
+		$('path', this.getSVGDocument()).css('stroke', skin.getCssValue(/^\.Miaou-logo$/, 'color'));
 	});
 
 });
