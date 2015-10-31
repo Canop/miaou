@@ -126,7 +126,7 @@ html, #mpad {
 	bottom: $tabs-height;
 	left: 0;
 	right: 0;
-	height: calc(100% - 150px);
+	max-height: calc(100% - 150px);
 	padding: 5px;
 	overflow-y: auto;
 	#users {
@@ -137,15 +137,18 @@ html, #mpad {
 	background: $mpad-menu-bg;
 	position: fixed;
 	bottom: $tabs-height;
-	left: 20px;
-	right: 20px;
-	height: calc(100% - 180px);
+	left:  0;
+	right: 0;
 	padding: 5px;
 	a.menu-item {
 		color: white;
 		text-decoration: none;
 		display: block;
 		padding: 10px;
+		line-height: 140%;
+	}
+	& > p, & > a {
+		text-align: center;
 	}
 }
 

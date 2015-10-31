@@ -89,6 +89,11 @@
 	content: "\e810 ";
 	margin-right: 5px;
 }
+#menu-home::before {
+	font-family: "fontello";
+	content: "\e812 ";
+	margin-right: 5px;
+}
 
 #room-panel-wrapper {
 	margin-left: 40px;
