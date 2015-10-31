@@ -1,25 +1,66 @@
-miaou(function(chat, locals, time, watch, ws){
-	$('.mpad-tab').click(function(){
-		var	$this =$(this),
-			tabId = this.id.split('-')[2];
-		console.log(tabId);
-		$('.mpad-page.open').removeClass('open').slideUp();
-		if ($this.hasClass('open')) {
-			// closing the page
-			$this.removeClass('open');
-		} else {
-			// opening the page
-			$('#mpad-page-'+tabId).addClass('open').slideDown();
-			$('.mpad-tab').removeClass('open');
-			$this.addClass('open');
-			if (tabId==='write') {
-				$('#input').focus();
-			}
-		}
-	});
+miaou(function(chat, gui, locals, prof, time, watch, ws){
+
+	// Global working of all tabs
+	var tabs = {};
+	function Tab(id){
+		this.id = id;
+		this.$tab = $('#mpad-tab-'+id);
+		this.$page = $('#mpad-page-'+id).hide();
+		this.bindEvents();
+	}
 	function closeAllTabs(){
-		$('.mpad-page.open').removeClass('open').slideUp();
-		$('.mpad-tab').removeClass('open');
+		for (var tabId in tabs) {
+			tabs[tabId].close();
+		}
+	}
+	var Tabs = Tab.prototype;
+	Tabs.open = function(cb){
+		this.$tab.addClass('open');
+		this.$page.addClass('open').slideDown(cb);
+	}
+	Tabs.close = function(cb){
+		this.$tab.filter('.open').removeClass('open');
+		this.$page.filter('.open').removeClass('open').slideUp(cb);
+	}
+	Tabs.bindEvents = function(){
+		var tab = this;
+		this.$tab.click(function(){
+			if (tab.$tab.hasClass('open')) {
+				tab.close();
+			} else {
+				closeAllTabs();
+				tab.open();
+			}
+		});
+	}
+	;['room','notables','search','watches','users','menu','write'].forEach(function(tabId){
+		tabs[tabId] = new Tab(tabId);
+	});
+
+	// "search" tab
+	tabs["search"].open = function(){
+		Tabs.open.call(this);
+		$('#searchInput').focus();
+	}
+	tabs["search"].close = function(){
+		$('#searchInput').blur();
+		Tabs.close.call(this);
+	}
+
+	// "write" tab (the one with the input)
+	tabs['write'].open = function(){
+		var iab = gui.isAtBottom();
+		this.$tab.addClass('open');
+		this.$page.addClass('open').show();
+		if (iab) gui.scrollToBottom();
+		$('.mpad-tabs').hide();
+		$('#input').focus();
+	}
+	tabs['write'].close = function(){
+		$('#input').blur();
+		this.$tab.filter('.open').removeClass('open');
+		this.$page.filter('.open').removeClass('open').hide();
+		$('.mpad-tabs').show();
 	}
 	$('#cancel-write').click(closeAllTabs);
 	$('#send').click(closeAllTabs);
@@ -36,7 +77,10 @@ miaou(function(chat, locals, time, watch, ws){
 		delete localStorage['successfulLoginLastTime'];
 		setTimeout(function(){ location = 'logout' }, 100);
 	});
+	$('#changeroom').click(function(){ location = 'rooms' });
 	$('#me').text(locals.me.name);
+
+	$('#users').on('click', '.user', prof.toggle);
 
 	chat.start();
 });

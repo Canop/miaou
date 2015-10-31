@@ -1,26 +1,28 @@
 
 // content rating related display
-#messages, #notable-messages, .messages {
+#pad {
+	#messages, #notable-messages, .messages {
 
-	// "not serious"
-	// nothing done in standard
+		// "not serious"
+		// nothing done in standard
 
-	// "nsfw"
-	.content.content-rating-nsfw, 
-	.has-opener .content.content-rating-nsfw.closed,
-	.has-opener .content.content-rating-nsfw.closed:hover {
-		img {
-			-webkit-filter: grayscale(100%) contrast(40%) brightness(1.5);
-			filter: grayscale(100%) contrast(40%) brightness(1.5);
+		// "nsfw"
+		.content.content-rating-nsfw, 
+		.has-opener .content.content-rating-nsfw.closed,
+		.has-opener .content.content-rating-nsfw.closed:hover {
+			img {
+				-webkit-filter: grayscale(100%) contrast(40%) brightness(1.5);
+				filter: grayscale(100%) contrast(40%) brightness(1.5);
+			}
+			opacity: .4;
 		}
-		opacity: .4;
-	}
-	.content.content-rating-nsfw:hover,
-	.has-opener .content.content-rating-nsfw:hover {
-		img {
-			-webkit-filter: none;
-			filter: none;
+		.content.content-rating-nsfw:hover,
+		.has-opener .content.content-rating-nsfw:hover {
+			img {
+				-webkit-filter: none;
+				filter: none;
+			}
+			opacity: 1;
 		}
-		opacity: 1;
 	}
 }

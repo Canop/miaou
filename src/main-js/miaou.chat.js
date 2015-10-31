@@ -42,8 +42,10 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 				return skin.stringToColour(this.getAttribute("rn"));
 			});
 			// apply content rating classes from content tags
-			if (/(?:^|\s)#nsfw\b/i.test(message.content)) $c.addClass('content-rating-nsfw');
-			if (/(?:^|\s)#not-serious\b/i.test(message.content)) $c.addClass('content-rating-not-serious');
+			if (!gui.mobile) {
+				if (/(?:^|\s)#nsfw\b/i.test(message.content)) $c.addClass('content-rating-nsfw');
+				if (/(?:^|\s)#not-serious\b/i.test(message.content)) $c.addClass('content-rating-not-serious');
+			}
 		} else {
 			$c.empty();				
 		}

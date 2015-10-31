@@ -20,16 +20,12 @@ html, #mpad {
 	z-index: 20;
 }
 #mpad-top-tabs{
-	position: fixed;
-	top:0;
-	left: 0;
-	right: 0;
+	// position: fixed;
+	// top:0;
+	// left: 0;
+	// right: 0;
 }
 #mpad-bottom-tabs{
-	position: fixed;
-	bottom: -1px;
-	left: 0;
-	right: 0;
 }
 .mpad-tab {
 	color: white;
@@ -81,8 +77,13 @@ html, #mpad {
 	left: 0;
 	right: 0;
 	height: calc(100% - 150px);
-	padding: 5px;
-	overflow-y: auto;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	#room-description {
+		flex: 1;
+		overflow-y: auto;
+	}
 }
 #mpad-page-watches {
 	background: $mpad-watches-bg;
@@ -90,7 +91,7 @@ html, #mpad {
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
-	height: calc(100% - 150px);
+	bottom: 80px;
 	padding: 5px;
 	overflow-y: auto;
 }
@@ -100,7 +101,7 @@ html, #mpad {
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
-	height: calc(100% - 150px);
+	bottom: 0;
 	padding: 5px;
 	overflow-y: auto;
 }
@@ -111,8 +112,13 @@ html, #mpad {
 	left: 0;
 	right: 0;
 	height: calc(100% - 150px);
-	padding: 5px;
-	overflow-y: auto;
+	padding: 15px;
+	color: #222;
+	#notable-messages {
+		background: rgba(255,255,255,.9);
+		max-height: 100%;
+		overflow-y: auto;
+	}
 }
 #mpad-page-users {
 	background: $mpad-users-bg;
@@ -123,6 +129,9 @@ html, #mpad {
 	height: calc(100% - 150px);
 	padding: 5px;
 	overflow-y: auto;
+	#users {
+		width: 40%;
+	}
 }
 #mpad-page-menu {
 	background: $mpad-menu-bg;
@@ -132,18 +141,28 @@ html, #mpad {
 	right: 20px;
 	height: calc(100% - 180px);
 	padding: 5px;
+	a.menu-item {
+		color: white;
+		text-decoration: none;
+		display: block;
+		padding: 10px;
+	}
 }
 
-body#mpad.mobile { // FIXME simplify when mobile pad is mainstream
+#mpad-center {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	flex-direction: column;
 	#message-scroller {
-		position: fixed;
-		top: $tabs-height;
-		right: 0;
-		bottom: $tabs-height;
-		left: 0;
+		position: relative;
 		overflow-y: scroll;
 		margin:0;
 		padding: 0;
+		flex: 1;
 	}
 	.user-messages .user {
 		width: 80px;
@@ -155,25 +174,31 @@ body#mpad.mobile { // FIXME simplify when mobile pad is mainstream
 
 #mpad-page-write {
 	background: $mpad-write-bg;
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	padding: 2px;
-	z-index: 25;
+	// position: fixed;
+	// bottom: 0;
+	// left: 0;
+	// right: 0;
+	// padding: 2px;
+	// z-index: 25;
+	//flex: 1;
 	#input {
 		height: 80px;
 		flex: 1;
 	}
-	.mpad-row {
-		width: 100%;
-		display: flex;
-		flex-direction: row;
-		button {
-			flex: 1;
-			margin: 5px;
-		}
+}
+.mpad-row {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	input {
+		flex: 3;
+		align-self: auto;
 	}
 }
-	
+.mpad-button {
+	flex: 1;
+	margin: 5px;
+	line-height: 35px;
+	text-align: center;
+}
 

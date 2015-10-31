@@ -12,48 +12,51 @@ html
 		script(src="static/miaou.min.js")
 		script(src="static/pad.mob.min.js")
 	body#mpad.chat.mobile
-		#message-scroller
-			div#messages
-		div#notifications
-		#mpad-top-tabs.mpad-tabs
-			#mpad-tab-room.mpad-tab
-				#roomname.mpad-tab-label ...
-			#mpad-tab-notables.mpad-tab
-				.mpad-tab-label &#9733;
-			#mpad-tab-search.mpad-tab
-				.mpad-tab-label &#12869;
-			#mpad-tab-watches.mpad-tab
-				.mpad-tab-label w
-		#mpad-bottom-tabs.mpad-tabs
-			#mpad-tab-users.mpad-tab
-				.mpad-tab-label users
-			#mpad-tab-menu.mpad-tab
-				.mpad-tab-label M
-			#mpad-tab-write.mpad-tab
-				.mpad-tab-label write a message
+		#mpad-center
+			#mpad-top-tabs.mpad-tabs
+				#mpad-tab-room.mpad-tab
+					#roomname.mpad-tab-label ...
+				#mpad-tab-notables.mpad-tab
+					.mpad-tab-label &#9733;
+				#mpad-tab-search.mpad-tab
+					.mpad-tab-label.fontello &#xe830;
+				#mpad-tab-watches.mpad-tab
+					.mpad-tab-label.fontello &#xe82a;
+			#message-scroller
+				div#messages
+			#notifications
+			#mpad-page-write.mpad-page
+				.mpad-row
+					textarea#input
+				.mpad-row
+					.mpad-button#send Send
+					.mpad-button#cancel-write Cancel
+			#mpad-bottom-tabs.mpad-tabs
+				#mpad-tab-users.mpad-tab
+					.mpad-tab-label users
+				#mpad-tab-menu.mpad-tab
+					.mpad-tab-label M
+				#mpad-tab-write.mpad-tab
+					.mpad-tab-label write a message
 		#mpad-page-room.mpad-page
-			#roomButtons
-				button.small#auths authorizations
-				button.small#editroom Edit Room
-				button.small#changeroom Change Room
-			#room-info
-				#room-description.rendered
+			#room-description.rendered
+			.mpad-row
+				.mpad-button#changeroom Change Room
 		#mpad-page-search.mpad-page
-			input#searchInput
+			.mpad-row
+				input#searchInput
+				// .mpad-button#search Search
 			#search-results
 		#mpad-page-notables.mpad-page
 			#notable-messages
 		#mpad-page-watches.mpad-page
 			list of watched rooms
 		#mpad-page-users.mpad-page
-			bla bla		
+			#users
 		#mpad-page-menu.mpad-page
-			bla bla		
-		#mpad-page-write.mpad-page
-			.mpad-row
-				textarea#input
-			.mpad-row
-				button.mpad-button#send Send
-				button.mpad-button#cancel-write Cancel
+			p You're connected as <span id=me></span>
+			a.menu-item#menu-logout Log Out
+			a.menu-item#menu-settings Settings
+			a.menu-item#menu-help(href="help") Help
 			
 

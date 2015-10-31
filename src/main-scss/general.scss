@@ -1,6 +1,9 @@
 @font-face {
 	font-family: 'fontello';
-	src: url('../../fontello.woff?1c0b31aa') format('woff');
+	src: url('../../fontello.woff?3e9a8794') format('woff');
+}
+.fontello {
+	font-family: "fontello";
 }
 
 body {
@@ -24,21 +27,21 @@ body {
 
 button, input[type=button], input[type=submit], input[type=reset] {
 	background-color: $button-bg-color;
-    color: $button-text-color;
+	color: $button-text-color;
 	padding: 4px 8px;
 	border: $button-border;
 	margin: 1px 4px;
 	border-radius: 2px;
 	box-shadow: $button-box-shadow;
-    outline: none;
-    cursor: pointer;
-    transition: all 100ms ease;
-    &.small {
+	outline: none;
+	cursor: pointer;
+	transition: all 100ms ease;
+	&.small {
 		font-size: 75%;
 		padding: 2px 4px;
 		border-radius: 2px;
 		box-shadow: $small-button-box-shadow;
-    }
+	}
 	&:hover, &:focus {
 		border-color: $button-hover-border-color;
 		color: $button-hover-text-color;
