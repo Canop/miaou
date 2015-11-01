@@ -70,7 +70,7 @@ miaou(function(fmt){
 		return s;
 	}
 	
-	function _mdTextToHtml(md, username){
+	function _mdTextToHtml(md, username, noThumb){
 		var	table,
 			lang, // current code language, set with a #lang-* pragma
 			ul, ol, code, // arrays : their elements make multi lines structures
@@ -108,7 +108,7 @@ miaou(function(fmt){
 			
 			if (m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gif|png|jpg)\s*$/)) {
 				var bu = (m[1]||"https://")+m[2]+m[3];
-				if (bu[bu.length-1]!=='m') {
+				if (!noThumb && bu[bu.length-1]!=='m') {
 					// use thumbnail for imgur images whenever possible
 					lout.push('<img href='+bu+'.'+m[4]+' src='+bu+'m.'+m[4]+'>');
 				} else {
@@ -147,7 +147,7 @@ miaou(function(fmt){
 				lout.push('<hr>');
 				continue;
 			}
-			s = fmt.mdStringToHtml(s, username);
+			s = fmt.mdStringToHtml(s, username, noThumb);
 			if (m=s.match(/^(?:&gt;\s*)(.*)$/)) {
 				lout.push('<span class=citation>'+(m[1]||'&nbsp;')+'</span>');
 				continue;
@@ -194,8 +194,8 @@ miaou(function(fmt){
 		return lout.join('<br>');
 	}
 	
-	fmt.mdTextToHtml = function(md, username){
-		return _mdTextToHtml(md.replace(/^@\w[\w\-]{2,}#\d+/,''), username);
+	fmt.mdTextToHtml = function(md, username, noThumb){
+		return _mdTextToHtml(md.replace(/^@\w[\w\-]{2,}#\d+/,''), username, noThumb);
 	}
 
 	fmt.mdMcToHtml = function(md, username){
