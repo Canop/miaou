@@ -25,6 +25,7 @@
 	width: $right-panel-width;
 	background: $right-background;
 	overflow-y: auto;	
+	overflow-x: hidden;
 }
 
 @media (max-width: 1300px) {
