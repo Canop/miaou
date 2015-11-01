@@ -1,7 +1,10 @@
 // functions related to user watching other rooms
 
-miaou(function(watch, chat, locals, md, notif, ws){
+miaou(function(watch, chat, gui, locals, md, notif, ws){
 	
+	// the icon sum of all watches, if it exists (i.e. on mpad)
+	var $globalIcon = $('#global-watch');
+
 	// this is false for mobile users
 	watch.enabled = false;
 
@@ -11,6 +14,7 @@ miaou(function(watch, chat, locals, md, notif, ws){
 	}
 	
 	function updateDimensions(){
+		if (gui.mobile) return;
 		$('.watch .name').toggleClass('compact', $('#stripe-top').height()>60);
 		$('#left, #right, #center').css('top', $('#stripe-top').height());
 	}
@@ -47,12 +51,13 @@ miaou(function(watch, chat, locals, md, notif, ws){
 			else $name.text(w.name);
 			var href = ''+w.id;// TODO add the room name
 			// if (watch.last_seen) href += '#'+watch.last_seen;
-			$('<a>').addClass('watch').attr('rid', w.id)
+			var $w = $('<a>').addClass('watch').attr('rid', w.id)
 			.data('watch', w)
 			.append($('<span>').addClass('count').text(w.nbunseen||''))
 			.append($name)
 			.attr('href', href) 
 			.appendTo('#watches');
+			if (w.nbunseen) $w.addClass('has-unseen');
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){
 			var wa = $(a).data('watch'), wb = $(b).data('watch');
@@ -91,25 +96,37 @@ miaou(function(watch, chat, locals, md, notif, ws){
 
 	watch.incr = function(roomId, n){
 		console.log("watch.incr", roomId, n);
-		var $wc =  $('#watches .watch[rid='+roomId+'] .count');
-		if (!$wc.length) return console.log('no watch!');
+		var $w =  $('#watches .watch[rid='+roomId+']');
+		if (!$w.length) return console.log('no watch!');
+		$w.addClass('has-unseen');
+		var $wc = $w.find('.count');
 		$wc.text((+$wc.text()||0)+(n||1));
 		notif.setHasWatchUnseen(true);
 		updateDimensions();
+		updateGlobalIcon();
 	}
-	
+
+	function updateGlobalIcon(){
+		console.log("updateG");
+		if (!$globalIcon.length) return;
+		$globalIcon
+		.toggleClass('ping', !!$('.watch.ping').length)
+		.toggleClass('has-unseen', !!$('.watch.has-unseen').length);
+	}
 	
 	watch.setPings = function(roomIds){
 		$('#watches .watch .count').removeClass('ping');
 		roomIds.forEach(function(rid){
 			$('#watches .watch[rid='+rid+'] .count').addClass('ping');
 		});
+		updateGlobalIcon();
 	}
 
 	watch.raz = function(roomId){
-		 $('#watches .watch[rid='+roomId+'] .count').empty();
-		 if (!$('.watch .count:not(:empty)').length) notif.setHasWatchUnseen(false);
+		 $('#watches .watch[rid='+roomId+'] .count').removeClass('has-unseen').empty();
+		 if (!$('.watch .count.has-unseen').length) notif.setHasWatchUnseen(false);
 		updateDimensions();
+		updateGlobalIcon();
 	}
 
 	watch.unseens = function(){

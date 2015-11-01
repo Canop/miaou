@@ -17,10 +17,12 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 	Tabs.open = function(cb){
 		this.$tab.addClass('open');
 		this.$page.addClass('open').slideDown(cb);
+		$('#mpad-untabber').show();
 	}
 	Tabs.close = function(cb){
 		this.$tab.filter('.open').removeClass('open');
 		this.$page.filter('.open').removeClass('open').slideUp(cb);
+		$('#mpad-untabber').hide();
 	}
 	Tabs.bindEvents = function(){
 		var tab = this;
@@ -36,6 +38,7 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 	;['room','notables','search','watches','users','menu','write'].forEach(function(tabId){
 		tabs[tabId] = new Tab(tabId);
 	});
+	$('#mpad-untabber').click(closeAllTabs);
 
 	// "search" tab
 	tabs["search"].open = function(){
@@ -82,5 +85,6 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 
 	$('#users').on('click', '.user', prof.toggle);
 
+	watch.enabled = true;
 	chat.start();
 });

@@ -17,6 +17,7 @@ const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 		connot:	'yes',		// message content displayed in desktop notif : yes|no
 		theme:	'default',	// theme
 		otowat:	'on_post',	// autowatch : on_visit|on_post|never
+		beta:	'default',	// beta : user is a beta-tester
 	};
 
 var	db,

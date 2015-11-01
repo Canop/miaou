@@ -52,7 +52,8 @@ exports.appGet = function(req, res){
 			pluginsToStart:clientSidePluginNames
 		};
 		if (server.mobile(req)) {
-			res.render(req.query.pad ? 'pad.mob.jade' : 'chat.mob.jade', {vars:locals});
+			var betaTester = userPrefs.beta === "yes";
+			res.render(betaTester ? 'pad.mob.jade' : 'chat.mob.jade', {vars:locals});
 		} else {
 			res.render('pad.jade', {vars:locals, theme:theme});
 		}

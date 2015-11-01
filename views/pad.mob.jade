@@ -17,11 +17,11 @@ html
 				#mpad-tab-room.mpad-tab
 					#roomname.mpad-tab-label ...
 				#mpad-tab-notables.mpad-tab
-					.mpad-tab-label &#9733;
+					.mpad-tab-label.mpad-icon &#9733;
 				#mpad-tab-search.mpad-tab
-					.mpad-tab-label.fontello &#xe830;
+					.mpad-tab-label.fontello.mpad-icon &#xe830;
 				#mpad-tab-watches.mpad-tab
-					.mpad-tab-label.fontello &#xe82a;
+					.mpad-tab-label.fontello#global-watch.mpad-icon &#xe82a;
 			#message-scroller
 				div#messages
 			#notifications
@@ -39,6 +39,7 @@ html
 						object.Miaou-logo#Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
 				#mpad-tab-write.mpad-tab
 					.mpad-tab-label write a message
+		#mpad-untabber
 		#mpad-page-room.mpad-page
 			#room-description.rendered
 			.mpad-row
@@ -51,7 +52,7 @@ html
 		#mpad-page-notables.mpad-page
 			#notable-messages
 		#mpad-page-watches.mpad-page
-			list of watched rooms
+			#watches
 		#mpad-page-users.mpad-page
 			#users
 		#mpad-page-menu.mpad-page

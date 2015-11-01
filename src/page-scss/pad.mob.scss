@@ -1,10 +1,10 @@
 $mpad-room-bg: #444;
-$mpad-watches-bg: #242;
+$mpad-watches-bg: #111;
 $mpad-search-bg: #244;
 $mpad-notables-bg: #224;
 $mpad-users-bg: #422;
 $mpad-menu-bg: #320;
-$mpad-write-bg: #222;
+$mpad-write-bg: #111;
 $tabs-height: 48px;
 html, #mpad {
 	padding: 0;
@@ -27,6 +27,15 @@ html, #mpad {
 }
 #mpad-bottom-tabs{
 }
+#mpad-untabber {
+	position: fixed;
+	display: none;
+	left: 0;
+	right: 0;
+	top: $tabs-height;
+	bottom: $tabs-height;
+	background: rgba(200,200,200,.7);
+}
 .mpad-tab {
 	color: white;
 	display: flex;
@@ -34,6 +43,9 @@ html, #mpad {
 	align-items: center;
 	justify-content: center;
 	margin: 0 -1px;
+}
+.mpad-icon {
+	font-size: 18px;
 }
 #mpad-tab-room {
 	background: $mpad-room-bg;
@@ -76,7 +88,8 @@ html, #mpad {
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
-	height: calc(100% - 150px);
+	// bottom: 0;
+	// height: calc(100% - 150px);
 	padding: 10px;
 	display: flex;
 	flex-direction: column;
@@ -91,7 +104,7 @@ html, #mpad {
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
-	bottom: 80px;
+	// bottom: 80px;
 	padding: 5px;
 	overflow-y: auto;
 }
@@ -111,7 +124,8 @@ html, #mpad {
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
-	height: calc(100% - 150px);
+	bottom: 0;
+	// height: calc(100% - 150px);
 	padding: 15px;
 	color: #222;
 	#notable-messages {
@@ -205,3 +219,21 @@ html, #mpad {
 	text-align: center;
 }
 
+#mpad-page-watches #watches {
+	.watch {
+		color: #222;
+		padding: 7px 4px;
+		margin: 4px;
+	}
+}
+
+$watch-count-new: rgb(255,255,0);
+$watch-count-ping: rgb(255,0,0); 
+#global-watch {
+	&.has-unseen {
+		color: $watch-count-new;
+	}
+	&.ping {
+		color: $watch-count-ping;
+	}
+}
