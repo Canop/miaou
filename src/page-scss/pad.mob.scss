@@ -1,10 +1,10 @@
-$mpad-room-bg: #444;
-$mpad-watches-bg: #111;
-$mpad-search-bg: #244;
-$mpad-notables-bg: #224;
-$mpad-users-bg: #422;
-$mpad-menu-bg: #320;
-$mpad-write-bg: #111;
+$mpad-room-bg: #332e28;
+$mpad-watches-bg: #191e1f;
+$mpad-search-bg: #423526;
+$mpad-notables-bg: #29393b;
+$mpad-users-bg: #393029;
+$mpad-menu-bg: #111;
+$mpad-write-bg: #191e1f;
 $tabs-height: 48px;
 html, #mpad {
 	padding: 0;
@@ -89,7 +89,7 @@ html, #mpad {
 	left: 0;
 	right: 0;
 	// bottom: 0;
-	// height: calc(100% - 150px);
+	max-height: calc(100% - #{$tabs-height} );
 	padding: 10px;
 	display: flex;
 	flex-direction: column;
@@ -215,7 +215,7 @@ html, #mpad {
 .mpad-button {
 	flex: 1;
 	margin: 5px;
-	line-height: 35px;
+	line-height: 40px;
 	text-align: center;
 }
 
