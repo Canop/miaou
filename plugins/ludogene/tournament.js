@@ -128,10 +128,10 @@ function writeScore(ct, gameType){
 			}
 			pm.nbGames++;
 			pm.sumScores += m.g.scores[i];
-			if (m.g.scores[i]+i/2>50) pm.nbWins++;
 			if (m.g.status==='finished') {
 				pm.nbFinishedGames++;
 				pm.sumEndScores += m.g.scores[i];
+				if (m.g.scores[i]+i/2>50) pm.nbWins++;
 			}
 			if (
 				m.g.status === 'running'
@@ -149,10 +149,11 @@ function writeScore(ct, gameType){
 		});
 		players = players.sort(function(a,b){ return b.twcScore-a.twcScore });
 		var lines = [titles.score];
-		lines.push('Rank|Player|Finished|Wins|Drops|Mean Gain|TWC Score');
+		lines.push('Rank|Player|Finished|Wins|Drops|Mean Gain|Running Score|TWC Score');
 		lines.push(lines[lines.length-1].replace(/[^|]+/g,':-:'));
 		[].push.apply(lines, players.map(function(p,i){
-			var meanGain = (p.sumEndScores+p.nbWins*3)/p.nbFinishedGames;
+			var	meanGain = (p.sumEndScores+p.nbWins*3)/p.nbFinishedGames,
+				runningScore = 3*p.nbWins + p.sumEndScores;
 			return [
 				"**"+(i+1)+"**",
 				"["+p.name+"](u/"+p.id+")",
@@ -160,6 +161,7 @@ function writeScore(ct, gameType){
 				p.nbWins,
 				p.nbDrops,
 				meanGain ? meanGain.toFixed(1) : ' ',
+				runningScore,
 				p.twcScore
 			].join('|');
 		}));
