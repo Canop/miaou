@@ -167,7 +167,7 @@ $side-message-hover-bg: lighten($bg-color, 10%) !default;
 $side-message-selected-bg: lighten($bg-color, 24%) !default;
 
 // message sizing
-$user-messages-padding: 2px !default;
+$user-messages-padding: 2px 0 !default;
 $message-min-height: 30px !default;
 $user-padding-in-message: 1px 3px !default;
 $message-content-padding: 4px !default;

@@ -1,6 +1,6 @@
 // histogram and search functions
 
-miaou(function(hist, md, time, ws){
+miaou(function(hist, gui, md, time, ws){
 	
 	var	visible = false,
 		currentPattern; // as the xhr-pulling flavour of socket.io doesn't handle callbacks, we have to store the currently searched pattern
@@ -42,27 +42,36 @@ miaou(function(hist, md, time, ws){
 		$('#hist .bubble').remove();
 	});
 
-	$('#searchInput').on('keyup', function(e){
-		if (e.which===27 && typeof tab === "function") { // esc
-			tab("notablemessagespage"); // tab is defined in chat.jade
-			$('#input').focus();
-			return false;
-		}
-		if (e.which==38) { // up arrow
-			moveSelect(-1);
-		} else if (e.which==40) { //down arrow
-			moveSelect(1);
-		}
-		var pat = this.value.trim();
-		if (pat) {
-			if (pat===currentPattern) return;
+	if (gui.mobile) {
+		$('#search').click(function(){
+			var pat = $('#searchInput').val().trim();
+			if (!pat) return;
+			currentPattern = pat;
 			ws.emit('search', {pattern:pat});
-			hist.search(pat);
-		} else {
-			$('#search-results').empty();
-			$('#hist .bar').removeClass('hit').removeAttr('sm sn');
-		}
-	});
+		});
+	} else {
+		$('#searchInput').on('keyup', function(e){
+			if (e.which===27 && typeof tab === "function") { // esc
+				tab("notablemessagespage"); // tab is defined in chat.jade
+				$('#input').focus();
+				return false;
+			}
+			if (e.which==38) { // up arrow
+				moveSelect(-1);
+			} else if (e.which==40) { //down arrow
+				moveSelect(1);
+			}
+			var pat = this.value.trim();
+			if (pat) {
+				if (pat===currentPattern) return;
+				ws.emit('search', {pattern:pat});
+				hist.search(pat);
+			} else {
+				$('#search-results').empty();
+				$('#hist .bar').removeClass('hit').removeAttr('sm sn');
+			}
+		});
+	}
 
 	hist.open = function(){
 		visible = true;

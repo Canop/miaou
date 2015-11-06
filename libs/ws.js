@@ -393,7 +393,7 @@ function handleUserInRoom(socket, completeUser){
 			shoe.error(e);
 		}).finally(db.off);
 	})
-	.on('hist', function(search){
+	.on('hist', function(search){ // request for histogram data
 		if (!shoe.room) return;
 		db.on(shoe.room.id)
 		.then(db.messageHistogram)
@@ -596,7 +596,7 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('search', function(search){
 		if (!shoe.room) return;
-		db.on([shoe.room.id, search.pattern, 'english', 50])
+		db.on([shoe.room.id, search.pattern, 'english', 100])
 		.spread(db.search)
 		.filter(function(m){ return !/^!!deleted /.test(m.content) })
 		.map(clean)
