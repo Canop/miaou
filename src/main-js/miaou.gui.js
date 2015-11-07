@@ -1,17 +1,20 @@
 
 miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, win, ws, wz){
 		
+	var $scroller = gui.$messageScroller = $('#message-scroller,#mpad').eq(0);
+
 	gui.mobile = $(document.body).hasClass('mobile');
 	
 	gui.isAtBottom = function(){
-		var $scroller = $('#message-scroller'), $messages = $('#messages'),
-			lastMessage = $messages.find('.message').last(), pt = parseInt($scroller.css('padding-top'));
+		var	$messages = $('#messages'),
+			lastMessage = $messages.find('.message').last(),
+			pt = parseInt($scroller.css('padding-top'));
+		if (!lastMessage.length) return false;
 		return lastMessage.length && lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
 	}
 
 	function _scrollToBottom(){
-		var scroller = document.getElementById('message-scroller');
-		$(scroller).scrollTop(scroller.scrollHeight);
+		$scroller.scrollTop($scroller[0].scrollHeight);
 	}
 
 	gui.scrollToBottom = function($m){
@@ -51,7 +54,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			
 			if (ismoddelete) {
 				$('<p>').addClass('warning')
-				.text("Warning : You're not about to delete one of your recent messages but to use your moderator powers. Don't do that lightly.")
+				.text("Warning: you're about to delete another user's message")
 				.appendTo($content);
 			}
 			miaou.dialog({
@@ -138,7 +141,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		});
 		
 		if ($('#hist').length) {
-			$('#message-scroller').on('scroll', hist.showPage);
+			gui.$messageScroller.on('scroll', hist.showPage);
 		}
 		
 		if (gui.mobile) {

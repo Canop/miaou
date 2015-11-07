@@ -199,7 +199,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 		if (!$message && m) $message = $('#messages .message[mid='+m[2]+']');
 		if ($message && $message.length) {
-			var mtop = $message.offset().top, $scroller = $('#message-scroller');
+			var mtop = $message.offset().top, $scroller = gui.$messageScroller;
 			if (mtop<0) {
 				$scroller.scrollTop(mtop+$scroller.scrollTop()-25);
 			} else if ($scroller.height()+$scroller.scrollTop()<$scroller[0].scrollHeight) {
@@ -207,7 +207,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			}			
 			replywzin = wzin($message, $('#input'), {
 				zIndex:5, fill:skin.wzincolors.reply,
-				scrollable:'#message-scroller', parent:document.body
+				scrollable:gui.$messageScroller, parent:document.body
 			});
 		}
 	}
@@ -385,7 +385,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (editwzin) editwzin.remove();
 		editwzin = wzin($message, $('#input'), {
 			zIndex:5, fill:skin.wzincolors.edit,
-			scrollable:'#message-scroller', parent:document.body,
+			scrollable:gui.$messageScroller, parent:document.body,
 			changeElementBackground:true
 		});
 		updateReplyWzin();

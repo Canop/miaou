@@ -1,6 +1,6 @@
 // functions related to wzin conversation effects
 
-miaou(function(wz, skin){
+miaou(function(wz, gui, skin){
 
 	var	wzins = [],
 		frozen;
@@ -11,7 +11,7 @@ miaou(function(wz, skin){
 	wz.onmouseenter = function(){
 		if (wzins.length) return;
 		var colors = skin.wzincolors.conv,
-			opts = { zIndex:5, fill:colors[0], scrollable:'#message-scroller' },
+			opts = { zIndex:5, fill:colors[0], scrollable:gui.$messageScroller },
 			$message = $(this), w,
 			ci = -1, // index of the central message among all
 			cid = $message.data('message').id;

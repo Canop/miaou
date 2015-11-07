@@ -61,7 +61,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		plugins.start();
 	}	
 
-	// Registers for an event ("incoming_message", "sending_message")
+	// Registers for an event ("incoming_message", "sending_message", "ready")
 	// Callback is called with message as argument, and can change this message
 	// Returning false prevents the operation
 	chat.on = function(type, fun){

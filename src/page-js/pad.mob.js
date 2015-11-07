@@ -87,4 +87,5 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 
 	watch.enabled = true;
 	chat.start();
+
 });

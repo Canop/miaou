@@ -1,4 +1,4 @@
-miaou(function(links, locals, md, skin){
+miaou(function(links, gui, locals, md, skin){
 	
 	var linkwzin;
 	
@@ -20,7 +20,8 @@ miaou(function(links, locals, md, skin){
 	
 	function transformLinksToMiaou($c){
 		$c.find('a[href]').each(function(){
-			var	parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
+			var	$link = $(this),
+				parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
 			if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
 				// it's an url towards a room or message on this server
 				if (locals.room.id===+parts[2]) {
@@ -29,14 +30,17 @@ miaou(function(links, locals, md, skin){
 					if (mid) {
 						// it's an url for a message
 						this.href = locals.room.path + '#' + mid
-						$(this).click(function(){
+						$link.click(function(){
 							md.focusMessage(mid);
 							return false;
-						})
-						.on('mouseenter', internalLinkWzin.bind(this, mid))
-						.on('mouseleave', removeLinkWzin);
+						});
+						if (!gui.mobile) {
+							$link
+							.on('mouseenter', internalLinkWzin.bind(this, mid))
+							.on('mouseleave', removeLinkWzin);
+						}
 					} else {
-						$(this).click(function(){
+						$link.click(function(){
 							// it's just an url to our room. Let's scroll to bottom
 							gui.scrollToBottom();
 							return false;
@@ -44,7 +48,7 @@ miaou(function(links, locals, md, skin){
 					}
 				} else {
 					// it's an url for another room or for a message in another room
-					$(this).click(function(){
+					$link.click(function(){
 						location = this.href;
 						return false;
 					})

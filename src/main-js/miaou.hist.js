@@ -134,7 +134,7 @@ miaou(function(hist, gui, md, time, ws){
 	
 	hist.showPage = function(){
 		if (!visible) return;
-		var $scroller = $('#message-scroller'), sh = $scroller.height();
+		var sh = gui.$messageScroller.height();
 		var $messages = $('#messages .message').filter(function(){
 			var y = $(this).offset().top;
 			return y<sh && y+$(this).height()>0;

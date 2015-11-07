@@ -106,6 +106,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			usr.showEntry(locals.me);
 			if (watch.enabled) socket.emit('start_watch');
 			notif.userAct();
+			chat.trigger("ready");
 		})
 		.on('invitation', function(invit){
 			var $md = $('<div>').html(

@@ -5,11 +5,14 @@ $mpad-notables-bg: #29393b;
 $mpad-users-bg: #393029;
 $mpad-menu-bg: #111;
 $mpad-write-bg: #191e1f;
-$tabs-height: 48px;
-html, #mpad {
-	padding: 0;
+$tabs-height: 45px;
+#mpad {
+	padding: $tabs-height 0;
+	overflow-x: hidden; // prevents Chrome from having an horizontal scrollbar here
 	margin: 0;
-	overflow: hidden;
+	#messages {
+		padding-top: 10px;
+	}
 }
 .mpad-tabs {
 	height: $tabs-height;
@@ -18,13 +21,19 @@ html, #mpad {
 	align-items: stretch;
 	justify-content: center;
 	z-index: 20;
-	margin: 0 -2px;
+	position: fixed;
 }
 #mpad-top-tabs{
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
+	top: 0;
+	left: -2px;
+	right: -2px;
 }
 #mpad-bottom-tabs{
 	box-shadow: 0 -2px 2px rgba(0,0,0,.8);
+	bottom: 0;
+	left: -2px;
+	right: -2px;
 }
 #mpad-untabber {
 	position: fixed;
@@ -79,6 +88,7 @@ html, #mpad {
 	color: white;
 	z-index: 21;
 	margin: 0 -2px;
+	position: fixed;
 	&.open {
 
 	}
@@ -86,7 +96,6 @@ html, #mpad {
 #mpad-page-room {
 	background: $mpad-room-bg;
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
-	position: fixed;
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
@@ -103,7 +112,6 @@ html, #mpad {
 #mpad-page-watches {
 	background: $mpad-watches-bg;
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
-	position: fixed;
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
@@ -114,7 +122,6 @@ html, #mpad {
 #mpad-page-search {
 	background: $mpad-search-bg;
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
-	position: fixed;
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
@@ -125,7 +132,6 @@ html, #mpad {
 #mpad-page-notables {
 	background: $mpad-notables-bg;
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
-	position: fixed;
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
@@ -142,7 +148,6 @@ html, #mpad {
 #mpad-page-users {
 	background: $mpad-users-bg;
 	box-shadow: 0 -2px 2px rgba(0,0,0,.8);
-	position: fixed;
 	bottom: $tabs-height;
 	left: 0;
 	right: 0;
@@ -156,7 +161,6 @@ html, #mpad {
 #mpad-page-menu {
 	background: $mpad-menu-bg;
 	box-shadow: 0 -2px 2px rgba(0,0,0,.8);
-	position: fixed;
 	bottom: $tabs-height;
 	left:  0;
 	right: 0;
@@ -173,21 +177,7 @@ html, #mpad {
 	}
 }
 
-#mpad-center {
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	display: flex;
-	flex-direction: column;
-	#message-scroller {
-		position: relative;
-		overflow-y: scroll;
-		margin:0;
-		padding: 0;
-		flex: 1;
-	}
+#mpad {
 	.user-messages .user {
 		width: 80px;
 	}
@@ -198,10 +188,9 @@ html, #mpad {
 
 #mpad-page-write {
 	background: $mpad-write-bg;
-	// position: fixed;
-	// bottom: 0;
-	// left: 0;
-	// right: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
 	// padding: 2px;
 	// z-index: 25;
 	//flex: 1;

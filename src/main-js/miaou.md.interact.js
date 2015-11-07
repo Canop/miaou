@@ -104,7 +104,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 
 	// argument : messageId or $messageDiv
 	md.goToMessageDiv = function(arg){
-		var	$messages = $('#message-scroller'),
+		var	$messages = gui.$messageScroller,
 			mstop = $messages.offset().top,
 			$message = typeof arg === "number" || typeof arg === "string" ? $('.message[mid='+arg+']', $messages) : arg;
 		if (!$message.length) return;

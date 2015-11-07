@@ -27,7 +27,7 @@ miaou(function(prof, gui, locals, skin){
 			uh = $user.outerHeight(), uw = $user.width(),
 			wh = $(window).height(),
 			mintop = 0, maxbot = wh,
-			$ms = $('#message-scroller');
+			$ms = gui.$messageScroller;
 		if ($ms.length) {
 			mintop = $ms.offset().top;
 			maxbot = wh-($ms.offset().top+$ms.height());

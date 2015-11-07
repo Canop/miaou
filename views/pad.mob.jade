@@ -12,33 +12,30 @@ html
 		script(src="static/miaou.min.js")
 		script(src="static/pad.mob.min.js")
 	body#mpad.chat.mobile
-		#mpad-center
-			#mpad-top-tabs.mpad-tabs
-				#mpad-tab-room.mpad-tab
-					#roomname.mpad-tab-label ...
-				#mpad-tab-notables.mpad-tab
-					.mpad-tab-label.mpad-icon &#9733;
-				#mpad-tab-search.mpad-tab
-					.mpad-tab-label.fontello.mpad-icon &#xe830;
-				#mpad-tab-watches.mpad-tab
-					.mpad-tab-label.fontello#global-watch.mpad-icon &#xe82a;
-			#message-scroller
-				div#messages
-			#notifications
-			#mpad-page-write.mpad-page
-				.mpad-row
-					textarea#input
-				.mpad-row
-					.mpad-button#send Send
-					.mpad-button#cancel-write Cancel
-			#mpad-bottom-tabs.mpad-tabs
-				#mpad-tab-users.mpad-tab
-					.mpad-tab-label users
-				#mpad-tab-menu.mpad-tab
-					#Miaou-logo-wrapper.mpad-tab-label
-						object.Miaou-logo#Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
-				#mpad-tab-write.mpad-tab
-					.mpad-tab-label write a message
+		#messages
+		#mpad-top-tabs.mpad-tabs
+			#mpad-tab-room.mpad-tab
+				#roomname.mpad-tab-label ...
+			#mpad-tab-notables.mpad-tab
+				.mpad-tab-label.mpad-icon &#9733;
+			#mpad-tab-search.mpad-tab
+				.mpad-tab-label.fontello.mpad-icon &#xe830;
+			#mpad-tab-watches.mpad-tab
+				.mpad-tab-label.fontello#global-watch.mpad-icon &#xe82a;
+		#mpad-page-write.mpad-page
+			.mpad-row
+				textarea#input
+			.mpad-row
+				.mpad-button#send Send
+				.mpad-button#cancel-write Cancel
+		#mpad-bottom-tabs.mpad-tabs
+			#mpad-tab-users.mpad-tab
+				.mpad-tab-label users
+			#mpad-tab-menu.mpad-tab
+				#Miaou-logo-wrapper.mpad-tab-label
+					object.Miaou-logo#Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
+			#mpad-tab-write.mpad-tab
+				.mpad-tab-label write a message
 		#mpad-untabber
 		#mpad-page-room.mpad-page
 			#room-description.rendered

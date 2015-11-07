@@ -107,7 +107,6 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	}
 
 	function updateGlobalIcon(){
-		console.log("updateG");
 		if (!$globalIcon.length) return;
 		$globalIcon
 		.toggleClass('ping', !!$('.watch.ping').length)
