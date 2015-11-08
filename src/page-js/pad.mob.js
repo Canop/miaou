@@ -65,9 +65,17 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 		this.$page.filter('.open').removeClass('open').hide();
 		$('.mpad-tabs').show();
 	}
-	$('#cancel-write').click(closeAllTabs);
+	$('#cancel-write').click(function(){
+		closeAllTabs();
+		var	$input = $('#input');
+		// if the input contains only a ping or a reply mark, we clean it
+		if (/^\s*@[\w-]+(#\d+)?\s*$/.test($input.val())) $input.val('');
+	});
 	$('#send').click(closeAllTabs);
 
+	$('#messages').on('click', '.replyButton', function(){
+		tabs['write'].open();
+	});
 
 	if (!locals.room) location = 'rooms';
 	if (locals.room.private) {
