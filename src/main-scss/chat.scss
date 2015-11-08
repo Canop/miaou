@@ -337,6 +337,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		overflow-x: auto;		
 		overflow-y: auto;
 		display: inline-block;
+		max-width: 100%;
 		max-height: 55vh;
 	}
 	table {
