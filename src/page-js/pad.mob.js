@@ -40,9 +40,16 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 	});
 	$('#mpad-untabber').click(closeAllTabs);
 
+	// "notables" tab
+	tabs["notables"].open = function(cb){
+		Tabs.open.call(this, function(){
+			$('#mpad-page-notables').renderMessages();
+		});
+	}
+
 	// "search" tab
-	tabs["search"].open = function(){
-		Tabs.open.call(this);
+	tabs["search"].open = function(cb){
+		Tabs.open.call(this, cb);
 		$('#searchInput').focus();
 	}
 	tabs["search"].close = function(){
