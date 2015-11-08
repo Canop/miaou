@@ -95,6 +95,7 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 		delete localStorage['successfulLoginLastTime'];
 		setTimeout(function(){ location = 'logout' }, 100);
 	});
+	$('#menu-settings').attr('href', "prefs?room="+locals.room.id);
 	$('#changeroom').click(function(){ location = 'rooms' });
 	$('#me').text(locals.me.name);
 
