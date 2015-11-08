@@ -5,7 +5,7 @@ $mpad-notables-bg: #29393b;
 $mpad-users-bg: #393029;
 $mpad-menu-bg: #111;
 $mpad-write-bg: #191e1f;
-$tabs-height: 45px;
+$tabs-height: 44px;
 #mpad {
 	padding: $tabs-height 0;
 	overflow-x: hidden; // prevents Chrome from having an horizontal scrollbar here
@@ -22,16 +22,18 @@ $tabs-height: 45px;
 	justify-content: center;
 	z-index: 20;
 	position: fixed;
+	padding: 0;
+	background: $mpad-users-bg;
 }
 #mpad-top-tabs{
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
-	top: 0;
+	top: -1px;
 	left: -2px;
 	right: -2px;
 }
 #mpad-bottom-tabs{
 	box-shadow: 0 -2px 2px rgba(0,0,0,.8);
-	bottom: 0;
+	bottom: -1px;
 	left: -2px;
 	right: -2px;
 }
@@ -50,7 +52,6 @@ $tabs-height: 45px;
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	margin: 0 -1px;
 }
 .mpad-icon {
 	font-size: 18px;
@@ -99,7 +100,6 @@ $tabs-height: 45px;
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
-	// bottom: 0;
 	max-height: calc(100% - #{$tabs-height} - 20px);
 	padding: 10px;
 	display: flex;
@@ -115,7 +115,6 @@ $tabs-height: 45px;
 	top: $tabs-height - 1px;
 	left: 0;
 	right: 0;
-	// bottom: 80px;
 	padding: 5px;
 	overflow-y: auto;
 }
@@ -136,7 +135,6 @@ $tabs-height: 45px;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	// height: calc(100% - 150px);
 	padding: 15px;
 	color: #222;
 	#notable-messages {
@@ -148,7 +146,7 @@ $tabs-height: 45px;
 #mpad-page-users {
 	background: $mpad-users-bg;
 	box-shadow: 0 -2px 2px rgba(0,0,0,.8);
-	bottom: $tabs-height;
+	bottom: $tabs-height - 1px;
 	left: 0;
 	right: 0;
 	max-height: calc(100% - 150px);
@@ -161,7 +159,7 @@ $tabs-height: 45px;
 #mpad-page-menu {
 	background: $mpad-menu-bg;
 	box-shadow: 0 -2px 2px rgba(0,0,0,.8);
-	bottom: $tabs-height;
+	bottom: $tabs-height - 1px;
 	left:  0;
 	right: 0;
 	padding: 5px;
@@ -191,9 +189,6 @@ $tabs-height: 45px;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	// padding: 2px;
-	// z-index: 25;
-	//flex: 1;
 	#input {
 		height: 80px;
 		flex: 1;

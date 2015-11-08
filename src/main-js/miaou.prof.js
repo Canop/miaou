@@ -22,7 +22,7 @@ miaou(function(prof, gui, locals, skin){
 		if ($('.dialog').length) return;
 		var $user = $(this).closest('.user');
 		if (!$user.length) $user = $(this).closest('.user-messages').find('.user');
-		var user = $user.data('user') || $user.closest('.notification,.user-messages,.user-line').data('user'),
+		var	user = $user.data('user') || $user.closest('.notification,.user-messages,.user-line').data('user'),
 			uo = $user.offset(),
 			uh = $user.outerHeight(), uw = $user.width(),
 			wh = $(window).height(),
@@ -33,12 +33,16 @@ miaou(function(prof, gui, locals, skin){
 			maxbot = wh-($ms.offset().top+$ms.height());
 		}
 		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
-		if (uo.top<wh/2) css.top = Math.max(uo.top, mintop);
-		else css.bottom = Math.max(wh-uo.top-uh, maxbot);
+		if (uo.top>wh/2) {
+			css.bottom = Math.max(wh-uo.top-uh+$(window).scrollTop(), maxbot);
+		} else {
+			css.top = Math.max(uo.top, mintop);
+
+		}	
 		css.left = uo.left + uw;
 		$p.load('publicProfile?user='+user.id+'&room='+locals.room.id, function(){
 			$p.find('.avatar').css('color', skin.stringToColour(user.name));
-			if ($p.offset().top+$p.height()>wh) {
+			if ($p.offset().top-$(window).scrollTop()+$p.height()>wh) {
 				$p.css('bottom', '0').css('top','auto');
 			}
 		});
