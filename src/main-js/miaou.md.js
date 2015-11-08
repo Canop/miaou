@@ -37,6 +37,18 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			if (unrenderers[i]($content, message)) break;
 		}
 	}
+	
+	// used for rerendering, for example on resizing or sliding
+	$.fn.renderMessages = function(){
+		var $messages = $('.message', this).add(this).filter('.message');
+		$messages.each(function(){
+			var	$m = $(this),
+				m = $m.data('message'),
+				$c = $m.find('.content');
+			md.render($c, m);
+		});
+	}
+
 
 	md.votesAbstract = function(message){
 		return chat.voteLevels.map(function(l){
