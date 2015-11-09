@@ -18,7 +18,7 @@ exports.configure = function(miaou){
 	return this;
 }
 
-// returns a shared unpersisted object relative to the room
+// returns a promise for a shared unpersisted object relative to the room
 // the context of the call must be a db con
 exports.mem = function(roomId){
 	var mo = memobjects.get(roomId);
@@ -31,6 +31,9 @@ exports.mem = function(roomId){
 	.then(function(notables){
 		for (var i=0; i<notables.lenght; i++) clean(notables[i]);
 		mo.notables = notables;
+		return this.getLastMessageId(roomId);
+	}).then(function(m){
+		if (m) mo.lastMessageId = m.id;
 		return mo;
 	});
 }
