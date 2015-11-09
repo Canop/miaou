@@ -319,6 +319,8 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		color: black;
 		margin: 2px;
 		border: thin solid #ddd;
+		max-width: 100%;
+		overflow-x: auto;
 		h1 {
 			margin: 10px;
 			font-size: 120%;
