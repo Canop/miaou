@@ -618,6 +618,10 @@ proto.updateGetMessage = function(messageId, expr, userId){
 	});
 }
 
+proto.getLastMessageId = function(roomId){
+	return this.queryRow("select max(id) from message where room=$1", [roomId], false);
+}
+
 //////////////////////////////////////////////// #pings
 
 proto.storePing = function(roomId, userId, messageId){

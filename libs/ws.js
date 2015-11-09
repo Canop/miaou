@@ -232,10 +232,10 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('disconnect', function(){
 		if (shoe.room) {
-			if (welcomed) {
+			if (welcomed && memroom) {
 				console.log("watch raz on disconnect", shoe.room.name, shoe.publicUser.name);
-				db.on([shoe.room.id, shoe.publicUser.id])
-				.spread(db.watchRaz)
+				db.on([shoe.room.id, shoe.publicUser.id, memroom.lastMessageId])
+				.spread(db.updateWatch)
 				.finally(db.off);
 			}
 			if (!shoe.userSocket(shoe.completeUser.id, true)) {
@@ -252,6 +252,10 @@ function handleUserInRoom(socket, completeUser){
 	.on('enter', function(roomId){
 		var now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now); // time synchronization
+		if (!roomId) {
+			console.log("WARN : user enters no room");
+			return;
+		}
 		if (shoe.room && roomId==shoe.room.id){
 			console.log('WARN : user already in room'); // how does that happen ?
 			return;
@@ -492,7 +496,6 @@ function handleUserInRoom(socket, completeUser){
 					pings.push(ping[1]);
 				}
 				if (!(m.id<=memroom.lastMessageId)) {
-					// not yet used, might allow less watch_raz
 					memroom.lastMessageId = m.id;
 				}
 			}
@@ -710,8 +713,13 @@ function handleUserInRoom(socket, completeUser){
 		}
 		console.log("watch raz", roomId, shoe.publicUser.name);
 		shoe.emitToAllSocketsOfUser('watch_raz', roomId);
-		db.on([roomId, shoe.publicUser.id, memroom.lastMessageId])
-		.spread(db.updateWatch)
+		db.on()
+		.then(function(){
+			return rooms.mem.call(this, roomId)
+		})
+		.then(function(mr){
+			return this.updateWatch(roomId, shoe.publicUser.id, mr.lastMessageId);
+		})
 		.finally(db.off);
 	});
 
