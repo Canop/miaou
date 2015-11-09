@@ -1,4 +1,5 @@
-miaou(function(chat, gui, locals, prof, time, watch, ws){
+
+miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 
 	// Global working of all tabs
 	var tabs = {};
@@ -46,6 +47,7 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 			$('#mpad-page-notables').renderMessages();
 		});
 	}
+	$('#notable-messages,#search-results').on('click', '.message', closeAllTabs);
 
 	// "search" tab
 	tabs["search"].open = function(cb){
@@ -74,13 +76,12 @@ miaou(function(chat, gui, locals, prof, time, watch, ws){
 	}
 	$('#cancel-write').click(function(){
 		closeAllTabs();
-		var	$input = $('#input');
-		// if the input contains only a ping or a reply mark, we clean it
-		if (/^\s*@[\w-]+(#\d+)?\s*$/.test($input.val())) $input.val('');
+		ed.cancelEdit();
+		ed.cancelReply();
 	});
 	$('#send').click(closeAllTabs);
 
-	$('#messages').on('click', '.replyButton', function(){
+	$('#messages').on('click', '.replyButton,.editButton', function(){
 		tabs['write'].open();
 	});
 
