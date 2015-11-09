@@ -2,6 +2,8 @@
 
 miaou(function(wz, gui, skin){
 
+	if (gui.mobile) return;
+
 	var	wzins = [],
 		frozen;
 	
