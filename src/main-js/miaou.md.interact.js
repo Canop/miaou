@@ -111,7 +111,11 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		$message.addClass('goingto');
 		setTimeout(function(){
 			var mtop = $message.offset().top;
-			if (mtop<mstop || mtop>mstop+$messages.height()) $messages.animate({scrollTop: mtop-mstop+$messages.scrollTop()-25}, 400);
+			if (gui.mobile) {
+				$('html,body').animate({scrollTop: mtop-72}, 400);
+			} else if (mtop<mstop || mtop>mstop+$messages.height()) {
+				$messages.animate({scrollTop: mtop-mstop+$messages.scrollTop()-25}, 400);
+			}
 			setTimeout(function(){ $message.removeClass('goingto'); }, 3000);
 			hist.showPage();
 		}, 300);
