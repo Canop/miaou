@@ -12,6 +12,11 @@ exports.configure = function(miaou){
 
 // params : n, room
 exports.appGetJsonLastMessages = function(req, res){
+	if (!req.user) {
+		console.log("no user in appGetJsonLastMessages");
+		res.json({error: "no connected user"});
+		return;
+	}
 	var n = Math.min(+req.query.n||1, 20),
 		roomId = +req.query.room;
 	db.on([roomId, req.user.id])
