@@ -194,10 +194,4 @@ miaou(function(chat, locals, time, watch, ws){
 		}
 	});
 
-	if (/\[bugs?\]/i.test(locals.room.description)){
-		setTimeout(function(){
-			new BugController({'minBugs':3, 'maxBugs':12, 'mouseOver':'die'});
-		}, 5000);
-		new SpiderController({'minBugs':1, 'maxBugs':4, 'mouseOver':'die'});
-	}
 });
