@@ -316,7 +316,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		})
 		.on('input', function(){
 			tryautocomplete();
-			updateReplyWzin();				
+			if (!gui.mobile) updateReplyWzin();				
 		})
 		.on('click', ed.code.onMove)
 		.focus();
@@ -363,7 +363,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		input.selectionStart = s + dl;
 		input.selectionEnd = e + dl;
 		input.focus();
-		updateReplyWzin($message);
+		if (!gui.mobile) updateReplyWzin($message);
 		ed.code.onMove();
 	}
 	
@@ -382,13 +382,15 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		input.selectionStart = input.selectionEnd = input.value.length;
 		$('#cancelEdit').show();
 		$('#help').hide();
-		if (editwzin) editwzin.remove();
-		editwzin = wzin($message, $('#input'), {
-			zIndex:5, fill:skin.wzincolors.edit,
-			scrollable:gui.$messageScroller, parent:document.body,
-			changeElementBackground:true
-		});
-		updateReplyWzin();
+		if (!gui.mobile) {
+			if (editwzin) editwzin.remove();
+			editwzin = wzin($message, $('#input'), {
+				zIndex:5, fill:skin.wzincolors.edit,
+				scrollable:gui.$messageScroller, parent:document.body,
+				changeElementBackground:true
+			});
+			updateReplyWzin();
+		}
 		ed.code.onMove();
 	}
 	
@@ -410,9 +412,11 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			$('#help').show();
 			editedMessage = null;
 			$input.focus();
-			editwzin.remove();
-			editwzin = null;
-			updateReplyWzin();
+			if (!gui.mobile) {
+				editwzin.remove();
+				editwzin = null;
+				updateReplyWzin();
+			}
 			ed.code.onMove();
 		}
 	}
