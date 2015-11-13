@@ -128,7 +128,7 @@ function defineAppRoutes(){
 	map('post', '/upload', upload.appPostUpload, true);
 	map('post', '/error', clienterrors.appPostError, true, true);
 	map('get', '/json/rooms', rooms.appGetJsonRooms);
-	map('get', '/json/messages/last', messages.appGetJsonLastMessages, true, true);
+	map('get', '/json/messages/last', messages.appGetJsonLastMessages);
 
 
 	miaou.plugins.forEach(function(p){
