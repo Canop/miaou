@@ -1,9 +1,9 @@
 miaou(function(games, locals, notif, skin, ws){
 
-	var T = 10, // size of the board in cells (not expected to change)
+	var	T = 10, // size of the board in cells (not expected to change)
 		CS = 20, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
-		bg = skin.getCssValue(/^\.ludo-tribo-board-bg$/, 'background'),
+		bg = skin.getCssValue(/^\.ludo-tribo-board-bg$/, 'background-color'),
 		colors = ['SandyBrown', 'AntiqueWhite'];
 
 	function Panel(m, g, s, availableWidth, abstract){
@@ -80,7 +80,9 @@ miaou(function(games, locals, notif, skin, ws){
 						var zone = panel.g.cellZone ? panel.g.cellZone[i][j] : null;
 						if (zone && zone.owner!==undefined) {
 							c = ù('<g', s).append(c);
-							ù('<circle', c).attr({cx:XB+i*CS+(CS+1)/2, cy:YB+j*CS+(CS+1)/2, r:BR/2, fill:panel.grads[zone.owner]});
+							ù('<circle', c).attr({
+								cx:XB+i*CS+(CS+1)/2, cy:YB+j*CS+(CS+1)/2, r:BR/2, fill:panel.grads[zone.owner]
+							});
 						}
 						if (userIsCurrentPlayer) {
 							if (Tribo.canPlay(panel.g, i, j, panel.u)) {
@@ -88,12 +90,18 @@ miaou(function(games, locals, notif, skin, ws){
 									lineMarks;
 								c.on('mouseenter', function(){
 									c.attr('fill', colors[panel.u]);
-									lineMarks = lines.map(function(line){ return panel.lineMark(line, panel.u) });
+									lineMarks = lines.map(function(line){
+										return panel.lineMark(line, panel.u)
+									});
 								}).on('mouseleave click', function(){
 									c.attr('fill', panel.holeGrad);
-									for (var k=0; lineMarks && k<lineMarks.length; k++) lineMarks[k].remove();
+									for (var k=0; lineMarks && k<lineMarks.length; k++) {
+										lineMarks[k].remove();
+									}
 								}).on('click', function(){
-									ws.emit('ludo.move', {mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})});
+									ws.emit('ludo.move', {
+										mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})
+									});
 									notif.userAct();
 								}).attr({cursor:'pointer'});
 							} else {
@@ -109,13 +117,49 @@ miaou(function(games, locals, notif, skin, ws){
 		}
 	}
 
+	Panel.prototype.removeLastMoves = function(){
+		if (!this.lastMoves) return;
+		var lm;
+		while (lm = this.lastMoves.shift()) lm.remove();
+	}
+
+	Panel.prototype.drawLastMoves = function(playerIndex){
+		this.removeLastMoves();
+		var	panel = this,
+			lastMoves = [],
+			found = false;
+		for (var i=this.g.moves.length; i-->0;) {
+			var move = Tribo.decodeMove(this.g.moves.charAt(i));
+			if (move.p === playerIndex) {
+				found = true;
+				lastMoves.push(move);
+			} else if (found) {
+				break;
+			}
+		}
+		this.lastMoves = lastMoves.map(function(move){
+			return ù('<circle', panel.s).attr({
+				cx: panel.XB+move.x*CS+CS/2,
+				cy: panel.YB+move.y*CS+CS/2,
+				r: BR+1,
+				fill: "none",
+				stroke: "GoldenRod",
+				strokeWidth: 2
+			});
+		});
+	}
+
 	Panel.prototype.buildScores = function(){
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
 			var	name = player.name,
-				attr = { x:XS, y:panel.LHS*(i+1), fill:colors[i] };
+				attr = { x:XS, y:panel.LHS*(i+1), fill:colors[i], cursor:"help" };
 			if (!panel.abstract) attr.fontWeight = 'bold';
-			return ù('<text', s).text(name.length>21 ? name.slice(0,18)+'…' : name).attr(attr);
+			return ù('<text', s)
+			.text(name.length>21 ? name.slice(0,18)+'…' : name)
+			.attr(attr)
+			.on('mouseenter', panel.drawLastMoves.bind(panel, i))
+			.on('mouseleave', panel.removeLastMoves.bind(panel));
 		});
 		panel.scores = panel.g.players.map(function(player, i){
 			return ù('<text', s).text('0').attr({
@@ -178,7 +222,8 @@ miaou(function(games, locals, notif, skin, ws){
 		}
 		$button = $('<button>').addClass('small').css({
 			background:'#2a4646', color:'white'
-		}).text('replay')
+		})
+		.text('replay')
 		.css({ position:"absolute", top:this.LHS*2.7, left:this.XS }).appendTo($c)
 		.click(function(){
 			if (!playing) {
