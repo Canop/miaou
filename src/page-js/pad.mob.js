@@ -80,6 +80,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		ed.cancelReply();
 	});
 	$('#send').click(closeAllTabs);
+	chat.on("sending_message", closeAllTabs);
 
 	$('#messages').on('click', '.replyButton,.editButton', function(){
 		tabs['write'].open();
