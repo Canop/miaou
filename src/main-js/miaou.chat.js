@@ -10,7 +10,12 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 	chat.DELAY_BEFORE_PROFILE_POPUP= 300; // ms
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
 	chat.commands = {}; // all known commands issued with !! (value=description)
-	chat.voteLevels = [{key:'pin',icon:'&#xe813;'}, {key:'star',icon:'&#xe808;'}, {key:'up',icon:'&#xe800;'}, {key:'down',icon:'&#xe801;'}];
+	chat.voteLevels = [
+		{key:'pin',icon:'&#xe813;'},
+		{key:'star',icon:'&#xe808;'},
+		{key:'up',icon:'&#xe800;'},
+		{key:'down',icon:'&#xe801;'}
+	];
 
 	var listeners = {};
 

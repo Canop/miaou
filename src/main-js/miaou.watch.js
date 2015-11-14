@@ -50,7 +50,6 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			if (otherusername) $name.text(otherusername).addClass('dialog-room');
 			else $name.text(w.name);
 			var href = ''+w.id;// TODO add the room name
-			// if (watch.last_seen) href += '#'+watch.last_seen;
 			var $w = $('<a>').addClass('watch').attr('rid', w.id)
 			.data('watch', w)
 			.append($('<span>').addClass('count').text(w.nbunseen||''))
@@ -94,13 +93,14 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 		updateDimensions();
 	}
 
-	watch.incr = function(roomId, n){
-		console.log("watch.incr", roomId, n);
+	watch.incr = function(incr){
+		var roomId = incr.r;
+		console.log("watch.incr", roomId);
 		var $w =  $('#watches .watch[rid='+roomId+']');
 		if (!$w.length) return console.log('no watch!');
 		$w.addClass('has-unseen');
 		var $wc = $w.find('.count');
-		$wc.text((+$wc.text()||0)+(n||1));
+		$wc.text((+$wc.text()||0)+1);
 		notif.setHasWatchUnseen(true);
 		updateDimensions();
 		updateGlobalIcon();
@@ -147,7 +147,9 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			nbrequestedmessages = Math.min(20, Math.max(5, nbunseen));
 		requiredrid = w.id;
 		function display(data){
-			if (requiredrid!==w.id) return;
+			if (requiredrid!==w.id) {
+				return;
+			}
 			if (nbunseen) {
 				ws.emit('watch_raz', requiredrid);
 			}

@@ -11,6 +11,8 @@ const	titles = {
 const	ws = require('../../libs/ws.js'),
 	ludo = require('./plugin.js');
 
+const	removedPlayers = new Set(['anthracite']);
+
 var	db,
 	bot;
 
@@ -102,7 +104,8 @@ function getGames(roomId, gameType){
 		}
 	})
 	.filter(function(m){
-		return m && m.g && m.g.type===gameType;
+		return m && m.g && m.g.type===gameType
+			&& !(removedPlayers.has(m.g.players[0].name) || removedPlayers.has(m.g.players[1].name));
 	});
 }
 

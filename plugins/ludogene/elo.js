@@ -38,19 +38,21 @@ Rating.prototype.computeMalus = function(){
 	if (this.c < 10) m.push(["Less than 10 counted games", 160]);
 	if (this.c < 50) m.push(["Less than 50 counted games", 50]);
 	if (this.c < 100) m.push(["Less than 100 counted games", 20]);
-	if (this.c < 150) m.push(["Less than 150 counted games", 10]);
+	if (this.c < 150) m.push(["Less than 150 counted games", 15]);
 	if (this.cly < 10) m.push(["Less than 10 counted games since a year", 70]);
 	if (this.cly < 20) m.push(["Less than 20 counted games since a year", 30]);
-	if (this.cly < 50) m.push(["Less than 50 counted games since a year", 10]);
+	if (this.cly < 50) m.push(["Less than 50 counted games since a year", 20]);
+	if (this.cly < 100) m.push(["Less than 100 counted games since a year", 10]);
 	var	nbOpponents = this.nbOpponents(),
 		nbOpponentsLastYear = this.nbOpponents('cly');
 	if (nbOpponents < 5) m.push(["Less than 5 opponents", 170]);
 	if (nbOpponents < 10) m.push(["Less than 10 opponents", 80]);
 	if (nbOpponents < 15) m.push(["Less than 15 opponents", 25]);
-	if (nbOpponents < 20) m.push(["Less than 20 opponents", 10]);
-	if (nbOpponents < 50) m.push(["Less than 50 opponents", 10]);
-	if (nbOpponentsLastYear < 3) m.push(["Less than 3 opponents since a year", 30]);
-	if (nbOpponentsLastYear < 10) m.push(["Less than 10 opponents since a year", 20]);
+	if (nbOpponents < 20) m.push(["Less than 20 opponents", 20]);
+	if (nbOpponents < 50) m.push(["Less than 50 opponents", 15]);
+	if (nbOpponentsLastYear < 3) m.push(["Less than 3 opponents since a year", 50]);
+	if (nbOpponentsLastYear < 10) m.push(["Less than 10 opponents since a year", 30]);
+	if (nbOpponentsLastYear < 15) m.push(["Less than 10 opponents since a year", 15]);
 	this.ms = m.reduce(function(s,e){ return s+e[1] }, 0);
 }
 

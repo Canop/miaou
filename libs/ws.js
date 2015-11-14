@@ -191,13 +191,15 @@ exports.botMessage = function(bot, roomId, content, cb){
 function messageWithoutUserVote(message){
 	var clone = {};
 	for (var key in message) {
-		if (message[key]) clone[key] = key==='vote' ? '?' : message[key]; // a value '?' means for browser "keep the existing value"
+		 // a value '?' means for browser "keep the existing value"
+		if (message[key]) clone[key] = key==='vote' ? '?' : message[key];
 	}
 	return clone;
 }
 
 // handles the socket, whose life should be the same as the presence of the user in a room without reload.
-// Implementation details : //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
+// Implementation details :
+//  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
 //     different rooms and there's a reconnect
 //  - the socket join the sio room whose id is the id of the room (a number)
 //     and a sio room for every watched room, with id 'w'+room.id
@@ -223,7 +225,8 @@ function handleUserInRoom(socket, completeUser){
 		console.log('ban event', ban);
 		auths.wsOnBan(shoe, ban);
 	})
-	.on('rm_ping', function(mid){ // remove the ping(s) related to that message and propagate to other sockets of same user
+	.on('rm_ping', function(mid){
+		// remove the ping(s) related to that message and propagate to other sockets of same user
 		db.on([mid, shoe.publicUser.id])
 		.spread(db.deletePing)
 		.then(function(){
@@ -319,8 +322,7 @@ function handleUserInRoom(socket, completeUser){
 			if (pings.length) return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
-		})
-		.catch(function(err){
+		}).catch(function(err){
 			shoe.error(err);
 		}).finally(db.off)
 	})
@@ -489,7 +491,9 @@ function handleUserInRoom(socket, completeUser){
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
-			io.sockets.in('w'+roomId).emit('watch_incr', roomId);
+			if (m.id>memroom.lastMessageId) {
+				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId,m:m.id});
+			}
 			if (m.content && m.id) {
 				var r = /(?:^|\s)@(\w[\w\-]{2,})\b/g, ping;
 				while ((ping=r.exec(m.content))){
