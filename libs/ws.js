@@ -472,7 +472,6 @@ function handleUserInRoom(socket, completeUser){
 			return commands.onMessage.call(this, shoe, m);
 		}).then(function(ct){
 			commandTask = ct;
-			commandTask.nostore |= commandTask.silent;
 			return [
 				commandTask.nostore && !m.id ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition),
 				commandTask

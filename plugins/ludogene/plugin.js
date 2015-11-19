@@ -93,17 +93,21 @@ function onCommand(ct){
 		}
 		return suggest.call(this, ct, gameType);
 	}
-	if (match[1]===shoe.publicUser.name) throw "You can't play against yourself";
+	var otherUserName = match[1];
 	if (/\[Tournament\]/i.test(shoe.room.description)) {
 		throw "You can't propose a game in a Tournament room";
 	}
-	storeInMess(m, {
-		players: [
-			{name:match[1]}, // id will be resolved later
-			{id:m.author, name:m.authorname}
-		],
-		type: gameType,
-		status:'ask'
+	if (otherUserName===shoe.publicUser.name) throw "You can't play against yourself";
+	return this.getUserByName(otherUserName).then(function(otherUser){
+		if (!otherUser) throw "User @"+otherUserName+" not found";
+		storeInMess(m, {
+			players: [
+				{name:otherUserName}, // id will be resolved later
+				{id:m.author, name:m.authorname}
+			],
+			type: gameType,
+			status:'ask'
+		});
 	});
 }
 

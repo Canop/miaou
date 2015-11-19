@@ -23,7 +23,9 @@ function CommandTask(cmd, args, shoe, message){
 }
 CommandTask.prototype.exec = function(con){
 	var ct = this;
-	return Promise.resolve(ct.cmd.fun.call(con, ct)).then(function(){
+	return Promise.resolve(ct.cmd.fun.call(con, ct))
+	.then(function(){
+		ct.nostore |= ct.silent;
 		return ct;
 	});
 }
