@@ -150,9 +150,6 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			if (requiredrid!==w.id) {
 				return;
 			}
-			if (nbunseen) {
-				ws.emit('watch_raz', requiredrid);
-			}
 			var	dr = Math.max(Math.min(200, ww-off.left-$w.width()-30), 0),
 				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
@@ -175,7 +172,12 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 				if (i>=data.messages.length-nbunseen) $(this).addClass('unseen');
 			});
 			$ml.scrollTop($ml[0].scrollHeight);
-			$w.one('mouseleave', function(){ $('.count', this).empty() });
+			if (nbunseen) {
+				$w.one('mouseleave', function(){
+					ws.emit('watch_raz', requiredrid);
+					$('.count', this).empty()
+				});
+			}
 		}
 		$.get('json/messages/last?n='+nbrequestedmessages+'&room='+w.id, function(data){
 			setTimeout(display, 250 + entertime - Date.now(), data);
