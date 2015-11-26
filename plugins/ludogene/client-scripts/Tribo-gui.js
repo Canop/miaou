@@ -152,14 +152,16 @@ miaou(function(games, locals, notif, skin, ws){
 	Panel.prototype.buildScores = function(){
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
-			var	name = player.name,
-				attr = { x:XS, y:panel.LHS*(i+1), fill:colors[i], cursor:"help" };
-			if (!panel.abstract) attr.fontWeight = 'bold';
-			return ù('<text', s)
+			var name = player.name;
+			var text = ù('<text', s)
 			.text(name.length>21 ? name.slice(0,18)+'…' : name)
-			.attr(attr)
-			.on('mouseenter', panel.drawLastMoves.bind(panel, i))
-			.on('mouseleave', panel.removeLastMoves.bind(panel));
+			.attr({ x:XS, y:panel.LHS*(i+1), fill:colors[i] });
+			if (!panel.abstract) {
+				text.on('mouseenter', panel.drawLastMoves.bind(panel, i))
+				.on('mouseleave', panel.removeLastMoves.bind(panel))
+				.attr({ fontWeight:'bold', cursor:"help" });
+			}
+			return text;
 		});
 		panel.scores = panel.g.players.map(function(player, i){
 			return ù('<text', s).text('0').attr({
@@ -247,7 +249,8 @@ miaou(function(games, locals, notif, skin, ws){
 	games.Tribo = {
 		render: function($c, m, g, abstract){
 			Tribo.restore(g);
-			$c.empty().addClass('wide content-rating-not-serious').css('background', bg).closest('.message').removeClass('edited');
+			$c.empty().addClass('wide content-rating-not-serious').css('background', bg)
+			.closest('.message').removeClass('edited');
 			var	s = ù('<svg', $c),
 				p = new Panel(m, g, s, $c.width(), abstract);
 			s.width(p.W).height(p.H);
