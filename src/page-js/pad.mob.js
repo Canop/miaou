@@ -41,10 +41,17 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 	});
 	$('#mpad-untabber').click(closeAllTabs);
 
+	// "room" tab
+	tabs["room"].open = function(cb){
+		$('#watch-button').text(locals.room.watched ? 'unwatch' : 'watch');
+		Tabs.open.call(this, cb);
+	}
+
 	// "notables" tab
 	tabs["notables"].open = function(cb){
 		Tabs.open.call(this, function(){
 			$('#mpad-page-notables').renderMessages();
+			cb();
 		});
 	}
 	$('#notable-messages,#search-results').on('click', '.message', closeAllTabs);
@@ -93,6 +100,16 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 	if (locals.room.dialog) {
 		$('#auths').hide();
 	}
+	$('#watch-button').click(function(){
+		var r = locals.room;
+		if (r.watched) {
+			ws.emit('unwat', r.id);
+			$(this).text('watch');
+		} else {
+			ws.emit('wat', r.id);
+			$(this).text('unwatch');
+		}
+	});
 	$('#menu-logout').click(function(){
 		delete localStorage['successfulLoginLastTime'];
 		setTimeout(function(){ location = 'logout' }, 100);
