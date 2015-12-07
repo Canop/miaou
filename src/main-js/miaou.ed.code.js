@@ -57,7 +57,6 @@ miaou(function(ed){
 	// returns true when it's code
 	ed.code.onPasted = function(pasted){
 		var looksLikeCode = /^<|^\$|}$|;$/m.test(pasted);
-		console.log("in ed.code.onCtrlV, looksLieCode=", looksLikeCode);
 		if (!looksLikeCode) return;
 		var notIndented = /^(?! {4}|\t)/m.test(pasted);
 		if (notIndented) {

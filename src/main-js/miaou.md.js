@@ -28,6 +28,9 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		unrenderers.unshift(fun);
 	}
 	md.render = function($content, message, oldMessage){
+		if (oldMessage && message.content===oldMessage.content && $content.text().length) {
+			return; // mainly to avoid removing boxed content
+		}
 		for (var i=0; i<renderers.length; i++) {
 			if (renderers[i]($content, message, oldMessage)) break;
 		}

@@ -20,9 +20,9 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 	var listeners = {};
 
 	function renderMessage($c, message, oldMessage){
-		if (oldMessage && message.content===oldMessage.content && $c.text().length) {
-			return; // mainly to avoid removing boxed content
-		}
+		// if (oldMessage && message.content===oldMessage.content && $c.text().length) {
+		// 	return; // mainly to avoid removing boxed content
+		// }
 		if (!message.content) {
 			$c.empty().closest('.message').addClass('deleted');
 			return true;

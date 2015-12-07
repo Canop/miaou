@@ -5,7 +5,6 @@ miaou(function(ed){
 	if (!input) return;
 
 	document.addEventListener('paste', function(e){
-		console.log('paste event');
 		ed.stateBeforePaste = {
 			selectionStart:input.selectionStart, selectionEnd:input.selectionEnd, value:input.value
 		};
@@ -20,7 +19,6 @@ miaou(function(ed){
 			txt = e.clipboardData.getData('text/plain');
 		if (txt) {
 			tbl = ed.tbl.textAsTable(txt);
-			console.log("tbl:", tbl);
 		}
 		for (var i=0; i<files.length; i++) {
 			if (!files[i]) continue;
