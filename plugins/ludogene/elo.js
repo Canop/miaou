@@ -52,7 +52,7 @@ Rating.prototype.computeMalus = function(){
 	if (nbOpponents < 50) m.push(["Less than 50 opponents", 15]);
 	if (nbOpponentsLastYear < 3) m.push(["Less than 3 opponents since a year", 50]);
 	if (nbOpponentsLastYear < 10) m.push(["Less than 10 opponents since a year", 30]);
-	if (nbOpponentsLastYear < 15) m.push(["Less than 10 opponents since a year", 15]);
+	if (nbOpponentsLastYear < 15) m.push(["Less than 15 opponents since a year", 15]);
 	this.ms = m.reduce(function(s,e){ return s+e[1] }, 0);
 }
 
