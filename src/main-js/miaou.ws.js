@@ -100,7 +100,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 				md.focusMessage(+m[1]);
 				location.hash = '';
 			} else if (localStorage.destMessage) {
-				md.focusMessage(localStorage.destMessage);
+				md.focusMessage(+localStorage.destMessage);
 				delete localStorage.destMessage;
 			}
 			usr.showEntry(locals.me);
