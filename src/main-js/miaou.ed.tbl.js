@@ -40,10 +40,12 @@ miaou(function(ed){
 		var buttons = {
 			"Paste it as text":function(){
 				// default behavior, nothing to do
+				$('#input').focus();
 			},
 			"Paste it as an editable table":function(){
 				if (initialText !== undefined) input.value = initialText;
 				$('#input').replaceSelection(ed.tbl.tblAsMd(tbl));
+				$('#input').focus();
 			},
 		};
 		if (file) buttons["Paste it as an image"] = function(){
