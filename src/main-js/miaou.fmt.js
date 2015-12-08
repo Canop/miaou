@@ -58,7 +58,7 @@ miaou(function(fmt){
 				return s.length>2 ? '<i>'+s.slice(1,-1)+'</i>' : s
 			})
 		}).join('')
-		.replace(/^\/me(.*)$/g, '<span class=slashme>'+(username||'/me')+'$1</span>')
+		.replace(/^\/me(.*)$/ig, '<span class=slashme>'+(username||'/me')+'$1</span>')
 	}
 	
 	function wrapCode(code, lang){
