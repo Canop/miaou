@@ -153,7 +153,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$('#messages')
 			.on('click', '.message', md.toggleMessageHoverInfos)
 			.on('click', '.user,.profile', prof.toggle);
-			$(window).resize(gui.scrollToBottom);
+			//$(window).resize(gui.scrollToBottom);
 		} else {
 			$('#messages, #notifications')
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
