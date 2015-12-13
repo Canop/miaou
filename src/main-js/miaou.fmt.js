@@ -153,7 +153,7 @@ miaou(function(fmt){
 				continue;
 			}
 			
-			m=s.match(/^(?:\d+\.\s+)(.*)$/);
+			m=s.match(/^(?:\d{1,3}\.\s+)(.*)$/);
 			if (ol) {
 				if (m) {
 					ol.push(m[1]);
