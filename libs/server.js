@@ -11,7 +11,6 @@ const	fs = require("fs"),
 	db = require('./db.js'),
 	naming = require('./naming.js'),
 	session = require('express-session'),
-	RedisStore = require('connect-redis')(session),
 	oauth2Strategies = {},
 	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i;
 
