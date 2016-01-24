@@ -19,7 +19,7 @@ miaou(function(fmt){
 		return s.split('`').map(function(t,i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
-			.replace( // exemple : [dystroy](http://dystroy.org)
+			.replace( // example: [dystroy](http://dystroy.org)
 				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
 			)
@@ -27,15 +27,15 @@ miaou(function(fmt){
 				var isme = miaou.locals && miaou.locals.me && miaou.locals.me.name===ping.slice(1);
 				return sp+'<span class="ping'+(isme?' ping-me':'')+'">'+ping+'</span>';
 			})
-			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // exemples : [a message](7#123456), [a room](7#)
+			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // example: [a message](7#123456), [a room](7#)
 				r = r || (miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
 			})
-			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s,t,u){ // exemple : [some user](u/1234)
+			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s,t,u){ // example: [some user](u/1234)
 				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
-			.replace( // exemple : http://dystroy.org
+			.replace( // example: http://dystroy.org
 				/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig,
 				'$1<a target=_blank href="$2">$2</a>'
 			)
@@ -73,7 +73,7 @@ miaou(function(fmt){
 	function _mdTextToHtml(md, username, noThumb){
 		var	table,
 			lang, // current code language, set with a #lang-* pragma
-			ul, ol, code, // arrays : their elements make multi lines structures
+			ul, ol, code, // arrays: their elements make multi lines structures
 			lin = md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
@@ -95,7 +95,7 @@ miaou(function(fmt){
 					code = null;
 				}
 			} else if (codeline) {
-				// we check we're not in fact at the start of a table ("    A    |     B    \n-----+----\n    a    |    b")
+				// we check we're not in fact at the beginning of a table ("    A    |     B    \n-----+----\n    a    |    b")
 				if (l<lin.length-2 && /\|/.test(s) && coldefregex.test(lin[l+1]) && !coderegex.test(lin[l+1])  && /\|/.test(lin[l+2])) {
 					table = new fmt.Table(lin[++l]);
 					table.push(s);
@@ -117,12 +117,12 @@ miaou(function(fmt){
 				continue;
 			}
 			if (m=s.match(/^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/)) {
-				 // exemple : http://mustachify.me/?src=http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg
+				 // example: http://mustachify.me/?src=http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg
 				lout.push('<img src="'+m[1]+'.'+m[2]+'">');
 				continue;
 			}
 			if (m=s.match(/^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/)) {
-				// exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&ratio_x=03&ratio_y=02&width=900
+				// example: http://md1.libe.com/photo/566431-unnamed.jpg?height=600&ratio_x=03&ratio_y=02&width=900
 				lout.push('<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">');
 				continue;
 			}
