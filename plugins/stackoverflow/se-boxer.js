@@ -157,7 +157,7 @@ exports.addTask = function(task){
 // read the text to find and analyze SE URL
 exports.rawTasks = function(text){
 	var	tasks = [],
-		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|([^.]+\.)?stackexchange|superuser).com\/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/gm,
+		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|([^.]+\.)?stackexchange|superuser|serverfault).com\/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/gm,
 		match;
 	while (match=r.exec(text)) {
 		var	path = match[6], submatch,
