@@ -167,6 +167,8 @@ For example with Google OAuth2, the registered callbacks used for the dystroy Mi
 
 The first one is for the local tests, the second one for the public server.
 
+Hint: OAuth providers often need a small delay before propagating the changes so you might have to wait a few minutes before it works.
+
 # start, stop, restart the application
 
 Use the script:
