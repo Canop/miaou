@@ -143,7 +143,7 @@ exports.accept = function(mid, accepter){
 // todo: for a greater security we should pass a checked playerId
 exports.move = function(mid, encodedMove){
 	dbGetGame(mid).spread(function(m, game){
-		var	gametype = gametypes[game.type]
+		var	gametype = gametypes[game.type],
 			move = gametype.decodeMove(encodedMove);
 		if (gametype.isValid(game, move)) {
 			game.moves += encodedMove;
