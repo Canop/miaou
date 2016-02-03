@@ -602,12 +602,14 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('search', function(search){
 		if (!shoe.room) return;
-		db.on([shoe.room.id, search.pattern, 'english', 100])
+		var	pageSize = 20,
+			page = search.page || 0;
+		db.on([shoe.room.id, search.pattern, 'english', 20, search.page])
 		.spread(db.search)
 		.filter(function(m){ return !/^!!deleted /.test(m.content) })
 		.map(clean)
 		.then(function(results){
-			socket.emit('found', {results:results, search:search});
+			socket.emit('found', {results:results, search:search, mayHaveMore:results.length===pageSize});
 		}).finally(db.off);
 	})
 	.on('unpin', function(mid){

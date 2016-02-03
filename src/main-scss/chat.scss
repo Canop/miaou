@@ -466,6 +466,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 	width: auto;
 	cursor: pointer;
 }
+
 #search-results .content img, #notable-messages .content img, .messages .content img,
 table.list .rendered img, .rooms-list .rendered img {
 	max-height: 70px;
@@ -1058,6 +1059,13 @@ div#notifs {
 #searchInput {
 	width: calc(100% - 12px);
 	margin: 4px;
+}
+
+#search-next-page {
+	text-align: center;
+	height: 50px;
+	cursor: pointer;
+	padding-top: 10px;
 }
 
 .message .ping {

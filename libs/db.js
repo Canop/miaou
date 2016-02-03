@@ -45,25 +45,28 @@ NoRowError.prototype = Object.create(Error.prototype);
 // fetches a user found by the OAuth profile, creates it if it doesn't exist
 // Important private fields are included in the returned object
 //  but not all the secondary info (location, description, website)
+// Sources of data depend on the oauth provider:
+// - oauthid: id for google, github and reddit, user_id for stackexchange
+// - displayName: displayName for google and github, display_name for stackexchange, name for reddit
 proto.getCompleteUserFromOAuthProfile = function(profile){
-	var	oauthid = profile.id || profile.user_id, // id for google, github and reddit, user_id for stackexchange
-		displayName = profile.displayName || profile.display_name || profile.name, // displayName for google and github, display_name for stackexchange, name for reddit
+	var	oauthid = profile.id || profile.user_id,
+		displayName = profile.displayName || profile.display_name || profile.name,
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
-	var con = this, resolver = Promise.defer(),
-		email = null, returnedCols = 'id, name, lang, oauthprovider, oauthdisplayname, email';
+	var	con = this, resolver = Promise.defer(),
+		email = null, returnedCols = 'id, name, lang, oauthprovider, oauthdisplayname, email',
+		sql = 'select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google, github
-	con.client.query('select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2', [provider, oauthid], function(err, result){
+	con.client.query(sql,[provider, oauthid], function(err, result){
 		if (err) {
 			resolver.reject(err);
 		} else if (result.rows.length) {
 			resolver.resolve(result.rows[0]);
 		} else {
 			console.dir(profile);
-			resolver.resolve(con.queryRow(
-				'insert into player (oauthid, oauthprovider, email, oauthdisplayname) values ($1, $2, $3, $4) returning '+returnedCols,
-				[oauthid, provider, email, displayName]
-			));
+			var sql = 'insert into player (oauthid, oauthprovider, email, oauthdisplayname)' +	 
+				' values ($1, $2, $3, $4) returning '+returnedCols;
+			resolver.resolve(con.queryRow(sql, [oauthid, provider, email, displayName]));
 		}
 	});
 	return resolver.promise.bind(this);
@@ -524,12 +527,12 @@ proto.getNotableMessages = function(roomId, createdAfter){
 	);
 }
 
-proto.search = function(roomId, pattern, lang, N){
+proto.search = function(roomId, pattern, lang, pageSize, numPage){
 	return this.queryRows(
 		"select message.id, author, player.name as authorname, room, content, created, pin, star, up, down, score from message"+
 		" inner join player on author=player.id"+
-		" where to_tsvector($1, content) @@ plainto_tsquery($1,$2) and room=$3 order by message.id desc limit $4",
-		[lang, pattern, roomId, N]
+		" where to_tsvector($1, content) @@ plainto_tsquery($1,$2) and room=$3 order by message.id desc limit $4 offset $5",
+		[lang, pattern, roomId, pageSize, numPage*pageSize||0]
 	);
 }
 

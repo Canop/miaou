@@ -47,7 +47,7 @@ miaou(function(hist, gui, md, time, ws){
 			var pat = $('#searchInput').val().trim();
 			if (!pat) return;
 			currentPattern = pat;
-			ws.emit('search', {pattern:pat});
+			hist.search(pat);
 		});
 	} else {
 		$('#searchInput').on('keyup', function(e){
@@ -64,8 +64,8 @@ miaou(function(hist, gui, md, time, ws){
 			var pat = this.value.trim();
 			if (pat) {
 				if (pat===currentPattern) return;
-				ws.emit('search', {pattern:pat});
 				hist.search(pat);
+				hist.fetchHistogram(pat);
 			} else {
 				$('#search-results').empty();
 				$('#hist .bar').removeClass('hit').removeAttr('sm sn');
@@ -76,7 +76,7 @@ miaou(function(hist, gui, md, time, ws){
 	hist.open = function(){
 		visible = true;
 		$('#hist').show();
-		hist.search($('#searchInput').val().trim());
+		hist.fetchHistogram($('#searchInput').val().trim());
 	}
 
 	hist.close = function(){
@@ -84,14 +84,41 @@ miaou(function(hist, gui, md, time, ws){
 		$('#hist').hide();
 	}
 
-	hist.search = function(pattern) {
+	// request the histogram (not the search result list)
+	hist.fetchHistogram = function(pattern) {
 		if (!visible) return;
 		currentPattern = pattern;
 		ws.emit('hist', {pattern:pattern});
 	}
+
+	// request the search result messages
+	hist.search = function(pattern, page) {
+		ws.emit('search', {pattern:pattern, page:page||0});
+	}
+
+
+	// receive search results sent by the server
+	hist.found = function(res){
+			if (res.search.pattern!=$('#searchInput').val().trim()) {
+				console.log('received results of another search', $('#searchInput').val().trim(), res);
+				return;
+			}
+			console.log('search results:', res);
+			md.showMessages(res.results, $('#search-results'), res.search.page);
+			if (res.mayHaveMore) {
+					$('<div id=search-next-page>').text('more results')
+					.click(function(){
+						$(this).remove();
+						hist.search(res.search.pattern, (res.search.page||0)+1);
+					})
+					.appendTo('#search-results');
+			} else {
+				$('#search-next-page').remove();
+			}
+	}
 	
-	// display search results sent by the server
-	hist.show = function(res){
+	// display search results histogram sent by the server
+	hist.showHist = function(res){
 		if (res.search.pattern !== currentPattern) {
 			console.log('received histogram of another search', $('#searchInput').val().trim(), res);
 			return;

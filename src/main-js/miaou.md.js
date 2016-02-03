@@ -69,8 +69,8 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	}
 
 	// used for notable messages and search results
-	md.showMessages = function(messages, $div){
-		$div.empty();
+	md.showMessages = function(messages, $div, append){
+		if (!append) $div.empty();
 		var notable = $div[0].id==="notable-messages"; // not very pretty...
 		for (var i=0; i<messages.length; i++) {
 			var $md = md.addSideMessageDiv(messages[i], $div);

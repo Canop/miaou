@@ -127,15 +127,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('go_to', function(messageId){
 			setTimeout(function(){ md.goToMessageDiv(messageId) }, 200);
 		})
-		.on('found', function(res){
-			if (res.search.pattern!=$('#searchInput').val().trim()) {
-				console.log('received results of another search', $('#searchInput').val().trim(), res);
-				return;
-			}
-			md.showMessages(res.results, $('#search-results'));
-		})
+		.on('found', hist.found)
 		.on('autocompleteping', ed.proposepings)
-		.on('hist', hist.show)
+		.on('hist', hist.showHist)
 		.on('pings', notif.pings)
 		.on('rm_ping', notif.removePing)
 		.on('disconnect', ws.notif.onOff)
