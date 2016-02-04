@@ -1,5 +1,3 @@
-"use strict";
-
 var config,
 	request = require('request'),
 	Busboy = require('busboy');

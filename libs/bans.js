@@ -1,6 +1,3 @@
-"use strict";
-
-
 exports.configure = function(miaou){
 	return this;
 }

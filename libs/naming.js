@@ -1,5 +1,3 @@
-"use strict";
-
 var	path = require('path'),
 	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
 	blacklist = [/^all$/, /^here$/, /^room$/];

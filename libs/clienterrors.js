@@ -1,5 +1,3 @@
-"use strict";
-
 const server = require('./server.js');
 	
 exports.configure = function(miaou){

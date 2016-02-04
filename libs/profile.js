@@ -1,5 +1,3 @@
-"use strict";
-
 const	auths = require('./auths.js'),
 	path = require('path'),
 	naming = require('./naming.js'),

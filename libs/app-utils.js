@@ -1,5 +1,3 @@
-"use strict";
-
 const naming = require('./naming.js'),
 	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i;
 

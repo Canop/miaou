@@ -1,5 +1,3 @@
-"use strict";
-
 var	bot,
 	ws = require('./ws.js');
 

@@ -1,5 +1,3 @@
-"use strict";
-
 const	apiversion = 52,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 15, nbMessagesBeforeTarget = 8, nbMessagesAfterTarget = 6,
 	Promise = require("bluebird"),
@@ -209,7 +207,6 @@ function handleUserInRoom(socket, completeUser){
 		memroom,
 		watchset = new Set, // set of watched rooms ids (if any)
 		welcomed = false, 
-		lastmmisreply, lastmmisatleastfivelines,
 		send;
 	socket
 	.on('autocompleteping', function(namestart){
@@ -609,7 +606,7 @@ function handleUserInRoom(socket, completeUser){
 		.filter(function(m){ return !/^!!deleted /.test(m.content) })
 		.map(clean)
 		.then(function(results){
-			socket.emit('found', {results:results, search:search, mayHaveMore:results.length===pageSize});
+			socket.emit('found', {results, search, mayHaveMore:results.length===pageSize});
 		}).finally(db.off);
 	})
 	.on('unpin', function(mid){

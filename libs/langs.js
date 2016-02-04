@@ -1,5 +1,3 @@
-"use strict";
-
 const langs = exports.all = {
 	en: { pgname:'english' },
 	fr: { pgname:'french' },

@@ -1,5 +1,3 @@
-"use strict";
-
 var	fs = require('fs'),
 	config,
 	server = require('./libs/server.js');

@@ -1,5 +1,3 @@
-"use strict";
-
 // handles !!afk and !!back
 
 var	bot,

@@ -1,5 +1,3 @@
-"use strict";
-
 const auths = require('./auths.js'),
 	server = require('./server.js');
 

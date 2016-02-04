@@ -1,5 +1,3 @@
-"use strict";
-
 function playersInfos(messages, f, authorizedplayers){
 	var playersmap = {}, players = [];
 	messages.forEach(function(m){

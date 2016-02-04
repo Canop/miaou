@@ -1,5 +1,3 @@
-"use strict";
-
 // !!stats sockets command
 
 exports.doStats = function(ct, io) {

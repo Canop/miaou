@@ -57,7 +57,7 @@ exports.startGame = function(roomId, type, players, running){
 	ws.botMessage(bot, roomId, content, function(m){
 		if (gametype.observers) {
 			gametype.observers.forEach(function(fun){
-				setTimeout(fun, 500, m, game);
+				setTimeout(fun, 1500, m, game);
 			});
 		}
 	});
@@ -208,8 +208,8 @@ exports.onSendMessage = function(shoe, m, send){
 	if (/^!!game /.test(m.content)) {
 		var match = m.content.match(/!!game @\S{3,} (.*)$/);
 		if (match) {
-			g = JSON.parse(match[1]);
-			gametype = gametypes[g.type];
+			let g = JSON.parse(match[1]),
+				gametype = gametypes[g.type];
 			if (gametype && gametype.observers && g.status !== "finished") {
 				console.log("re-observing game ", m.id);
 				gametype.restore(g);

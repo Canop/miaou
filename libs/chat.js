@@ -1,5 +1,3 @@
-"use strict";
-
 const fs = require('fs'),
 	path = require('path'),
 	auths = require('./auths.js'),
@@ -40,15 +38,15 @@ exports.appGet = function(req, res){
 			}
 			return this.getLastAccessRequest(room.id, req.user.id).then(function(ar){
 				res.render('request.jade', {
-					vars:{ room:room },
+					vars:{ room },
 					lastAccessRequest:ar, theme:theme
 				});
 			});
 		}
 		var locals = {
 			me:req.user,
-			room:room,
-			userPrefs:userPrefs,
+			room,
+			userPrefs,
 			pluginsToStart:clientSidePluginNames
 		};
 		if (server.mobile(req)) {

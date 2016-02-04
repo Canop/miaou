@@ -1,5 +1,3 @@
-"use strict";
-
 // !!ban command : just asks the browser to open the moderation dialog
 
 exports.configure = function(miaou){

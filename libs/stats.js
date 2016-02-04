@@ -1,5 +1,3 @@
-"use strict";
-
 // !!stats command
 
 const	siostats = require('./stats-sockets.js');

@@ -1,5 +1,3 @@
-"use strict";
-
 // protects the user from CSRF attacks by
 // - checking the referrer in POST requests
 // - checking a secret session token in POST requests

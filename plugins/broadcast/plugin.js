@@ -1,5 +1,3 @@
-"use strict";
-
 const	auths = require('../../libs/auths.js'),
 	ws = require('../../libs/ws.js');
 

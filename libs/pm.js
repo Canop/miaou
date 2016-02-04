@@ -1,5 +1,3 @@
-"use strict";
-
 // handles !!pm and the pm button
 
 const err = require('./err.js'),

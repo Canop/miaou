@@ -1,5 +1,3 @@
-"use strict";
-
 // postgresql persistence
 // Usage :
 //   
@@ -159,6 +157,7 @@ proto.getBot = function(botname){
 proto.upsertPref = function(userId, name, value){
 	return this.upsert('pref', 'value', value, 'player', userId, 'name', name);
 }
+
 proto.getPrefs = function(userId){
 	return this.queryRows(
 		"select name, value from pref where player=$1", [userId]
@@ -580,10 +579,11 @@ proto.getMessage = function(messageId, userId){
 // else stores a message and sets its id
 proto.storeMessage = function(m, dontCheckAge){
 	if (!m.room||!m.author) {
+		console.log("Invalid message:", m);
 		throw new Error("invalid message");
 	}
 	if (m.id) {
-		var savedAuthorname = m.authorname,
+		var	savedAuthorname = m.authorname,
 			sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
 		if (!dontCheckAge) sql += ' and created>'+(now()-config.maxAgeForMessageEdition);
 		sql += ' returning *';

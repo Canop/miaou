@@ -1,5 +1,3 @@
-"use strict";
-
 const	path = require('path'),
 	Promise = require("bluebird"),
 	server = require('./server.js'),

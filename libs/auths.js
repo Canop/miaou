@@ -1,5 +1,3 @@
-"use strict";
-
 // manage authorizations and bans
 
 const	levels = ['read', 'write', 'admin', 'own'],
