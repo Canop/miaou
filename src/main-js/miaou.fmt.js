@@ -107,11 +107,15 @@ miaou(function(fmt){
 				continue;
 			}
 			
-			if (m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gif|png|jpg)\s*$/)) {
+			if (m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gifv?|png|jpg)\s*$/)) {
 				var bu = (m[1]||"https://")+m[2]+m[3];
 				if (!noThumb && bu[bu.length-1]!=='m') {
 					// use thumbnail for imgur images whenever possible
-					lout.push('<img href='+bu+'.'+m[4]+' src='+bu+'m.'+m[4]+'>');
+					if (m[4]==='gifv') {
+						lout.push('<img href='+bu+'.'+m[4]+' src='+bu+'m.'+m[4].slice(0,-1)+'>');
+					} else {
+						lout.push('<img href='+bu+'.'+m[4]+' src='+bu+'m.'+m[4]+'>');
+					}
 				} else {
 					lout.push('<img src='+bu+'.'+m[4]+'>');
 				}
