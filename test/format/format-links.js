@@ -48,6 +48,10 @@ buster.testCase("Formatting - Links", {
 		"[This link has a tricky href](http://dystroy.org/miaou/help#Ping_and_reply)",
 		'<a target=_blank href="http://dystroy.org/miaou/help#Ping_and_reply">This link has a tricky href</a>'
 	),
+	"// tricky URL with @": t(
+		"https://medium.com/@sebmck/2015-in-review-51ac7035e272#.52hda93q5",
+		'<a target=_blank href="https://medium.com/@sebmck/2015-in-review-51ac7035e272#.52hda93q5">https://medium.com/@sebmck/2015-in-review-51ac7035e272#.52hda93q5</a>'
+	),
 	"style in markdown link": t(
 		"[This md styled link has some **bold** and *italic*](http://dystroy.org/miaou/help#Ping_and_reply)",
 		'<a target=_blank href="http://dystroy.org/miaou/help#Ping_and_reply">This md styled link has some <b>bold</b> and <i>italic</i></a>'

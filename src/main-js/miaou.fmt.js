@@ -23,10 +23,6 @@ miaou(function(fmt){
 				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
 			)
-			.replace(/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g, function(_,sp,ping){ // ping
-				var isme = miaou.locals && miaou.locals.me && miaou.locals.me.name===ping.slice(1);
-				return sp+'<span class="ping'+(isme?' ping-me':'')+'">'+ping+'</span>';
-			})
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // exemples : [a message](7#123456), [a room](7#)
 				r = r || (miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
@@ -41,7 +37,12 @@ miaou(function(fmt){
 			)
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
 				return a
-				+ b.replace(/(^|\W)\*\*(.+?)\*\*(?=[^\w\/]|$)/g, "$1<b>$2</b>")
+				+ b
+				.replace(/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g, function(_,sp,ping){ // ping
+					var isme = miaou.locals && miaou.locals.me && miaou.locals.me.name===ping.slice(1);
+					return sp+'<span class="ping'+(isme?' ping-me':'')+'">'+ping+'</span>';
+				})
+				.replace(/(^|\W)\*\*(.+?)\*\*(?=[^\w\/]|$)/g, "$1<b>$2</b>")
 				.replace(/(^|[^\w\/])\*([^\*]+)\*(?=[^\w\/\*]|$)/g, "$1<i>$2</i>")
 				.replace(/(^|[^\w\/])__(.+?)__(?=[^\w\/]|$)/g, "$1<b>$2</b>")
 				.replace(/(^|[^\w\/])_([^_]+)_(?=[^\w\/]|$)/g, "$1<i>$2</i>")
