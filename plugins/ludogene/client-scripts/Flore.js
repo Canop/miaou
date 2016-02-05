@@ -2,7 +2,8 @@
 
 var Flore = (function(){
 	
-	var T = 8, S = T-1,
+	var	T = 8,
+		S = T-2,
 		GOAL = 10,
 		NO_CELL = -2,
 		NO_PLAYER = -1;
@@ -45,7 +46,8 @@ var Flore = (function(){
 			}
 		},
 		apply: function(g, move){
-			var x = move.x, y = move.y;
+			var	x = move.x,
+				y = move.y;
 			g.cells[x][y] = move.p;
 			move.deaths = [];
 			if (x>0) {
@@ -68,7 +70,8 @@ var Flore = (function(){
 				}
 			}
 			move.deaths.forEach(function(d){
-				var x = d.x, y = d.y;
+				var	x = d.x,
+					y = d.y;
 				g.cells[d.x][d.y] = NO_PLAYER;
 				g.scores[+!d.p]++;
 				if (x>0) {

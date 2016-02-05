@@ -253,8 +253,8 @@ exports.onCommand = function(ct){
 		return [compute(messages), userMatch ? this.getUserByName(userMatch[0].slice(1)) : null];
 	})
 	.spread(function(data, user){
-		var	c = "Elo based Tribo ladder" + ':\n'
-			showOppenents = /\bopponents?\b/.test(ct.args),
+		var	c = "Elo based Tribo ladder" + ':\n',
+			showOpponents = /\bopponents?\b/.test(ct.args),
 			showLog = /\bgames\b/.test(ct.args);
 		if (user) {
 			var r = data.ratingsMap.get(user.id);
@@ -269,7 +269,7 @@ exports.onCommand = function(ct){
 				c += ratingsTable(data, r.id);
 				c += "Counted games: "+r.c+"\n";
 				if (r.ms) c += "## Malus:\n" + table(null, r.malus);
-				if (showOppenents) c += opponentsTable(data, r);
+				if (showOpponents) c += opponentsTable(data, r);
 				if (showLog) c += userGamesTable(data, r);
 			}
 		} else {
