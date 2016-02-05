@@ -1,4 +1,4 @@
-const	apiversion = 52,
+const	apiversion = 53,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 15, nbMessagesBeforeTarget = 8, nbMessagesAfterTarget = 6,
 	Promise = require("bluebird"),
 	path = require('path'),
@@ -64,10 +64,14 @@ var clean = exports.clean = function(src){
 
 // returns all the sockets of the given roomId
 var roomSockets = exports.roomSockets = function(roomId){
-	var	clients = io.sockets.adapter.rooms[roomId],
+	var	ioroom = io.sockets.adapter.rooms[roomId],
 		sockets = [];
-	for (var clientId in clients) {
-		var s = io.sockets.connected[clientId];
+	if (!ioroom) {
+		console.log('no room in ws.roomSockets');
+		return sockets;
+	}
+	for (var socketId in ioroom.sockets) {
+		var s = io.sockets.connected[socketId];
 		if (s) sockets.push(s); // TODO understand why s is often undefined
 	}
 	return sockets;
@@ -118,9 +122,13 @@ function popon(arr, filter, act){
 
 // closes all sockets from a user in a given (sio) room
 exports.throwOut = function(userId, roomId, text){
-	var clients = io.sockets.adapter.rooms[roomId];
-	for (var clientId in clients) {
-		var socket = io.sockets.connected[clientId];
+	var ioroom = io.sockets.adapter.rooms[roomId];
+	if (!ioroom) {
+		console.log('lost room in ws.throwOut');
+		return;
+	}
+	for (var socketId in ioroom.sockets) {
+		var socket = io.sockets.connected[socketId];
 		if (socket && socket.publicUser && socket.publicUser.id===userId) {
 			if (text) socket.emit('miaou.error', text);
 			socket.disconnect('unauthorized');

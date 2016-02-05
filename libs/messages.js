@@ -1,4 +1,4 @@
-const auths = require('./auths.js'),
+const	auths = require('./auths.js'),
 	server = require('./server.js');
 
 var db;
@@ -15,7 +15,7 @@ exports.appGetJsonLastMessages = function(req, res){
 		res.json({error: "no connected user"});
 		return;
 	}
-	var n = Math.min(+req.query.n||1, 20),
+	let	n = Math.min(+req.query.n||1, 20),
 		roomId = +req.query.room;
 	db.on([roomId, req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
@@ -27,9 +27,7 @@ exports.appGetJsonLastMessages = function(req, res){
 		return this.getMessages(roomId, req.user.id, n, false);
 	})
 	.then(function(messages){
-		res.json(
-			{ messages:messages }
-		);
+		res.json({ messages });
 		var oldestMessageId = messages[messages.length-1].id;
 		return this.deleteLastRoomPings(roomId, req.user.id, oldestMessageId);
 	})

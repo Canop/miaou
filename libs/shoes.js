@@ -90,17 +90,25 @@ Shoes.checkAuth = function(requiredLevel){
 
 // returns the socket of the passed user if he's in the same room
 Shoes.userSocket = function(userIdOrName, includeWatchers) {
-	var clients = io.sockets.adapter.rooms[this.room.id];
-	for (var clientId in clients) {
-		var socket = io.sockets.connected[clientId];
+	var ioroom = io.sockets.adapter.rooms[this.room.id];
+	if (!ioroom) {
+		console.log('lost room in shoe.userSocket');
+		return;
+	}
+	for (var socketId in ioroom.sockets) {
+		var socket = io.sockets.connected[socketId];
 		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
 			return socket;
 		}		
 	}
 	if (!includeWatchers) return;
-	clients = io.sockets.adapter.rooms['w'+this.room.id];
-	for (var clientId in clients) {
-		var socket = io.sockets.connected[clientId];
+	ioroom = io.sockets.adapter.rooms['w'+this.room.id];
+	if (!ioroom) {
+		console.log('lost watch room in shoe.userSocket');
+		return;
+	}
+	for (var socketId in ioroom.sockets) {
+		var socket = io.sockets.connected[socketId];
 		if (
 			socket && socket.publicUser &&
 			(socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
@@ -116,14 +124,15 @@ Shoes.botMessage = function(bot, content){
 
 // gives the ids of the rooms to which the user is currently connected (either directly or via a watch)
 Shoes.userRooms = function(){
-	var rooms = [], userId = this.publicUser.id,
+	var	rooms = [],
+		userId = this.publicUser.id,
 		iorooms = io.sockets.adapter.rooms;
 	for (var roomId in iorooms) {
 		var m = roomId.match(/^w?(\d+)$/);
 		if (!m) continue;
-		var clients = iorooms[roomId];
-		for (var clientId in clients) {
-			var socket = io.sockets.connected[clientId];
+		var ioroom = iorooms[roomId];
+		for (var socketId in ioroom.sockets) {
+			var socket = io.sockets.connected[socketId];
 			if (socket && socket.publicUser && socket.publicUser.id===userId) {
 				rooms.push(+m[1]);
 				break;
