@@ -12,7 +12,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	md.applyVote = function(o){
 		$('.message[mid='+o.mid+']').each(function(){
 			var	$md = $(this),
-				m = $md.data('message');
+				m = $md.dat('message');
 			m[o.level] = (m[o.level]||0)+o.diff;
 			if (o.voter===locals.me.id) m.vote = o.diff>0 ? o.level : null;
 			if ($md.closest('#messages').length) {
@@ -31,7 +31,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		var	wab = gui.isAtBottom(),
 			$md = $(this).removeClass('opener').addClass('closer').closest('.message');
 		$md.find('.content').removeClass('closed');
-		notif.userAct($md.data('message').id);
+		notif.userAct($md.dat('message').id);
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
 		wz.updateAll();		
@@ -41,7 +41,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		var	wab = gui.isAtBottom(),
 			$md = $(this).removeClass('closer').addClass('opener').closest('.message');
 		$md.find('.content').addClass('closed');
-		notif.userAct($md.data('message').id);
+		notif.userAct($md.dat('message').id);
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
 		wz.updateAll();		
@@ -72,7 +72,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	md.showMessageHoverInfos = function(){
 		md.hideMessageHoverInfos();
 		var	$message = $(this),
-			message = $message.data('message'),
+			message = $message.dat('message'),
 			$decs = $message.find('.decorations');
 		$hoveredMessage = $message;
 		ms.updateStatus(message);

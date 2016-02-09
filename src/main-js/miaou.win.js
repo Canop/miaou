@@ -14,7 +14,7 @@ miaou(function(win, chat, gui, md, ws){
 		$('.mwintab').filter(function(){ return $(this).attr('mid')==message.id }).addClass('new');
 		var $mwin = $('#mwin');
 		if ($mwin.length && $mwin.attr('mid')==message.id) {
-			$mwin.data('message', message);
+			$mwin.dat('message', message);
 			md.render(
 				$mwin.find('.content').empty().css('max-height', $(window).height()*.85), // sadly didn't find a pure css solution
 				message
@@ -27,7 +27,7 @@ miaou(function(win, chat, gui, md, ws){
 		var $mwin = $('#mwin');
 		if ($mwin.length) {
 			var	$c = $mwin.find('.content'),
-				m = $mwin.data('message');
+				m = $mwin.dat('message');
 			if (m && $c.length)	md.unrender($c, m);
 			$mwin.remove();
 		}

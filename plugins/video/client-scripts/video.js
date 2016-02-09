@@ -197,7 +197,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 					$c.text(match[1]);
 					return true;
 				}
-				var vd = $c.data('video');
+				var vd = $c.dat('video');
 				if (!vd) {
 					if ($c.closest('#mwin').length) {
 						// if we're inside a mwin, we'll try to get the content from the
@@ -205,10 +205,10 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 						var $normalMC = $('#messages .message[mid='+m.id+'] .content');
 						if ($normalMC.length) {
 							$c.append($normalMC.contents());
-							vd = $normalMC.data('video');
-							$normalMC.data('video', null);
+							vd = $normalMC.dat('video');
+							$normalMC.dat('video', null);
 							$normalMC.text(m.content);
-							$c.data('video', vd).find('video').each(function(){ this.play() });
+							$c.dat('video', vd).find('video').each(function(){ this.play() });
 							return true;
 						}
 					}
@@ -216,7 +216,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 						var medias = {audio:true, video:match[1]==='video'};
 						vd = new VD(m.id, [m.authorname, match[2]], medias);
 					}
-					$c.data('video', vd);
+					$c.dat('video', vd);
 				}
 				vd.render($c);
 				return true;
@@ -225,13 +225,13 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 				if (!m.content) return;
 				var match = m.content.match(/^!!(video|audio)\s*@(\w[\w_\-\d]{2,})/);
 				if (!match) return;
-				var vd = $c.data('video');
+				var vd = $c.dat('video');
 				if ($c.closest('#mwin').length) {
 					var $normalMC = $('#messages .message[mid='+m.id+'] .content');
 					if ($normalMC.length && vd) {
 						// returning to normal message
 						$normalMC.append($c.contents());
-						$normalMC.data('video', vd).find('video').each(function(){ this.play() });
+						$normalMC.dat('video', vd).find('video').each(function(){ this.play() });
 						return true;
 					}
 				}
@@ -240,7 +240,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 			ws.on('video.msg', function(arg){
 				console.log('IN video.msg <-', arg);
 				$('.message[mid='+arg.mid+'] .content').each(function(){
-					var vd = $(this).data('video');
+					var vd = $(this).dat('video');
 					if (vd) vd.receiveMsg(arg.msg);
 				});
 			});

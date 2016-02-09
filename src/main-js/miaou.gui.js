@@ -46,7 +46,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		})
 		.on('click', '.deleteButton', function(){
 			prof.hide();
-			var message = $(this).closest('.message').data('message');
+			var message = $(this).closest('.message').dat('message');
 			ms.updateStatus(message);
 			var ismoddelete = !message.status.deletable && message.status.mod_deletable;
 			var $content = $('<div>').append(
@@ -78,7 +78,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		})
 		.on('click', '.replyButton', function(){
 			var	$m = $(this).closest('.message');
-			notif.userAct($m.data('message').id);
+			notif.userAct($m.dat('message').id);
 			ed.replyToMessage($m);
 			return false;
 		})
@@ -88,19 +88,19 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		.on('mouseleave', '.message', wz.onmouseleave)
 		.on('click', '.reply', function(e){
 			var	$m = $(this).closest('.message');
-			notif.userAct($m.data('message').id);
+			notif.userAct($m.dat('message').id);
 			md.focusMessage(+$(this).attr('to'));
 			e.stopPropagation();		
 		})
 		.on('click', '.vote', function(){
-			var $e = $(this), message = $e.closest('.message').data('message'), vote = $e.attr('vote-level');
+			var $e = $(this), message = $e.closest('.message').dat('message'), vote = $e.attr('vote-level');
 			if (message.vote) ws.emit('vote', {action:'remove', mid:message.id, level:message.vote});
 			if (message.vote!=vote) ws.emit('vote', {action:'add', mid:message.id, level:vote});
 			notif.userAct(message.id);
 			return false;
 		})
 		.on('click', '.unpin', function(){
-			var m = $(this).closest('.message').data('message');
+			var m = $(this).closest('.message').dat('message');
 			miaou.dialog({
 				title: "Unpin message",
 				content: "If you confirm, you'll also remove the pin set by other(s) user(s)",
@@ -115,7 +115,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			return false;
 		})
 		.on('click', '.makemwin', function(){
-			var $e = $(this), message = $e.closest('.message').data('message');
+			var $e = $(this), message = $e.closest('.message').dat('message');
 			win.add(message);
 			notif.userAct(message.id);
 			return false;
@@ -139,7 +139,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			return false;
 		})
 		.on('click', '.pen', function(){
-			var m = $(this).closest('.message').data('message');
+			var m = $(this).closest('.message').dat('message');
 			mh.show(m);
 			notif.userAct(m.id);
 			return false;

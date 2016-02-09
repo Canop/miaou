@@ -102,7 +102,7 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 				$('.mwintab[mid='+arg.mid+']').addClass('new');
 				$('.message[mid='+arg.mid+']').each(function(){
 					var	$message = $(this),
-						m = $message.data('message'),
+						m = $message.dat('message'),
 						game = messageGame(m);
 					if (!game) return;
 					var playername = game.players[arg.move.p].name;

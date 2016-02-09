@@ -51,7 +51,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			else $name.text(w.name);
 			var href = ''+w.id;// TODO add the room name
 			var $w = $('<a>').addClass('watch').attr('rid', w.id)
-			.data('watch', w)
+			.dat('watch', w)
 			.append($('<span>').addClass('count').text(w.nbunseen||''))
 			.append($name)
 			.attr('href', href) 
@@ -59,7 +59,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			if (w.nbunseen) $w.addClass('has-unseen');
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){
-			var wa = $(a).data('watch'), wb = $(b).data('watch');
+			var wa = $(a).dat('watch'), wb = $(b).dat('watch');
 			return	(wa.dialog-wb.dialog) ||
 				(interlocutor(wa)||wa.name).localeCompare((interlocutor(wb)||wb.name));
 		}));
@@ -141,12 +141,12 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	var requiredrid;
 	$('#watches').on('mouseenter', '.watch', function(){
 		$('.watch').removeClass('open').find('.watch-panel').remove();
-		var	$w = $(this), w = $w.data('watch'), entertime = Date.now(),
+		var	$w = $(this), w = $w.dat('watch'), entertime = Date.now(),
 			off = $w.offset(), ww = $(window).width(),
 			nbunseen = +$w.find('.count').text()||0,
 			nbrequestedmessages = Math.min(20, Math.max(5, nbunseen));
 		requiredrid = w.id;
-		function display(data){
+		function display(dat){
 			if (requiredrid!==w.id) {
 				return;
 			}
@@ -164,12 +164,12 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			}).appendTo($top);
 			var $ml = $('<div>').addClass('messages').appendTo($panel);
 			$w.addClass('open');
-			if (data.error) {
-				return $ml.text("Error: "+data.error);
+			if (dat.error) {
+				return $ml.text("Error: "+dat.error);
 			}
-			md.showMessages(data.messages.reverse(), $ml);
+			md.showMessages(dat.messages.reverse(), $ml);
 			$ml.find('.message').each(function(i){
-				if (i>=data.messages.length-nbunseen) $(this).addClass('unseen');
+				if (i>=dat.messages.length-nbunseen) $(this).addClass('unseen');
 			});
 			$ml.scrollTop($ml[0].scrollHeight);
 			if (nbunseen) {
@@ -179,15 +179,15 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 				});
 			}
 		}
-		$.get('json/messages/last?n='+nbrequestedmessages+'&room='+w.id, function(data){
-			setTimeout(display, 250 + entertime - Date.now(), data);
+		$.get('json/messages/last?n='+nbrequestedmessages+'&room='+w.id, function(dat){
+			setTimeout(display, 250 + entertime - Date.now(), dat);
 		});
 	}).on('mouseleave', '.watch', function(){
 		requiredrid = 0;
 		$('.watch').removeClass('open').find('.watch-panel').remove();
 	}).on('click', '.watch', function(){
 		notif.userAct();
-		var w = $(this).data('watch');	
+		var w = $(this).dat('watch');	
 		if (w.last_seen) {
 			localStorage.destMessage = w.last_seen;
 		}

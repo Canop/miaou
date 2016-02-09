@@ -347,7 +347,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	// toggle reply to an existing message
 	ed.replyToMessage = function($message){
-		var message = $message.data('message'),
+		var	message = $message.dat('message'),
 			txt = input.value, m = txt.match(replyRegex),
 			s = input.selectionStart, e = input.selectionEnd, l = txt.length, yetPresent = false;
 		notif.userAct(message.id);
@@ -369,7 +369,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	
 	// toggle edition of an existing message
 	ed.editMessage = function($message){
-		var message = $message.data('message');
+		var message = $message.dat('message');
 		if (editedMessage){
 			var edmid = editedMessage.id;
 			this.cancelEdit();

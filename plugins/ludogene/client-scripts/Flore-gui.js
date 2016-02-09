@@ -151,7 +151,7 @@ miaou(function(games, locals, ws){
 				s = Snap('#'+id), // <- there's probably something cleaner when you have the element, I don't know snapsvg well enough
 				p = new Panel(m, g, s, $c.width(), abstract);
 			$s.width(p.W).height(p.H);
-			$c.data('ludo-panel', p);
+			$c.dat('ludo-panel', p);
 			if (g.status !== "ask") m.locked = true;
 			p.buildBoard();
 			p.drawBoard();
@@ -159,7 +159,7 @@ miaou(function(games, locals, ws){
 			p.drawScores();
 		},
 		move: function($c, m, _, move){
-			var panel = $c.data('ludo-panel');
+			var panel = $c.dat('ludo-panel');
 			m.locked = true;
 			panel.g.moves += Flore.encodeMove(move);
 			Flore.apply(panel.g, move);
