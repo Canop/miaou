@@ -38,13 +38,14 @@
     "start": "sh start.sh"
   },
   "devDependencies": {
+    "gulp": "^3.9.1",
     "stackvis": ">=0.2.0"
   },
   "jshintConfig": {
-	"asi": true,
-	"node": true,
-	"esnext": true,
-	"laxcomma": true,
-	"-W058": true
+    "asi": true,
+    "node": true,
+    "esnext": true,
+    "laxcomma": true,
+    "-W058": true
   }
 }

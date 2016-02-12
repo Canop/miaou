@@ -97,7 +97,7 @@ html
 						if unauthorizedUsers.length
 							table.list
 								each u in unauthorizedUsers
-									tr.user-line(data-user={id:u.id})
+									tr.user-line(data-user={id:u.id, name:u.name})
 										th
 											span.user= u.name
 										if rol>=2

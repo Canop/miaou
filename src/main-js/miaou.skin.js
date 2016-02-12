@@ -33,6 +33,7 @@ miaou(function(skin){
 	}
 	
 	skin.stringToColour = function(str) {
+		if (!str) return "#888";
 		var hash = 0;
 		for (var i=0; i<str.length; i++) {
 			hash = str.charCodeAt(i) + ((hash << 5) - hash);

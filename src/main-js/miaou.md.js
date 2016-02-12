@@ -250,7 +250,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 
 	// builds a new .user-messages div for the passed user)
 	function usermessagesdiv(user){
-		var $usermessages = $('<div>').addClass('user-messages').data('user',user),
+		var	$usermessages = $('<div>').addClass('user-messages').data('user',user),
 			$user = $('<div>').addClass('user').appendTo($usermessages),
 			avsrc = usr.avatarsrc(user);
 		$user.css('color', skin.stringToColour(user.name)).append($('<span/>').text(user.name));
