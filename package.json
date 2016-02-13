@@ -39,6 +39,12 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.2.0",
+    "gulp-uglify": "^1.5.2",
     "stackvis": ">=0.2.0"
   },
   "jshintConfig": {
