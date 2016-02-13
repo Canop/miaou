@@ -7,6 +7,7 @@ let	gulp = require("gulp"),
 	path = require("path"),
 	sass = require("gulp-sass"),
 	merge = require("merge-stream"),
+	del = require("del"),
 	uglify = require("gulp-uglify");
 
 
@@ -83,6 +84,9 @@ gulp.task("themes", ["themes:compile-scss"], ()=>{
 		.pipe(gulp.dest("static/themes/"+theme))
 	));
 });
+
+gulp.task("clean", () => del("static/*"));
+
 
 gulp.task("build", ["main-js", "page-js", "resources", "themes"]);
 gulp.task("default", ["build"]);

@@ -32,12 +32,13 @@
     "pg": ">=2.8.3",
     "redis": ">=0.9.1",
     "request": ">=2.34.0",
-    "socket.io": ">=1.0.6",
+    "socket.io": ">=1.0.6"
   },
   "scripts": {
     "start": "sh start.sh"
   },
   "devDependencies": {
+    "del": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-rename": "^1.2.2",
