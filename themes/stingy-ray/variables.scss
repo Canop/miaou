@@ -155,4 +155,7 @@ $profile-avatar-filter: drop-shadow(0 0 2px white);
 // ---------------
 // specific things
 
-
+body.pad #messages .content .citation {
+	background: rgba(255,255,153, .7);
+	width: 100%;
+}

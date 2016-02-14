@@ -46,7 +46,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		var $messages = $('.message', this).add(this).filter('.message');
 		$messages.each(function(){
 			var	$m = $(this),
-				m = $m.data('message'),
+				m = $m.dat('message'),
 				$c = $m.find('.content');
 			md.render($c, m);
 		});
@@ -60,12 +60,12 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	}
 	
 	md.getMessages = function(){
-		return $('#messages .message').map(function(){ return $(this).data('message') }).get();
+		return $('#messages .message').map(function(){ return $(this).dat('message') }).get();
 	}
 
 	md.getMessage = function(mid){
 		var $message = $('#messages .message[mid='+mid+']');
-		if ($message.length) return $message.eq(0).data('message');
+		if ($message.length) return $message.eq(0).dat('message');
 	}
 
 	// used for notable messages and search results
@@ -84,7 +84,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	// May be used for notable messages and search results
 	md.addSideMessageDiv = function(m, $div, $repl){
 		var	$content = $('<div>').addClass('content');
-		var $md = $('<div>').addClass('message').data('message',m).append($content).append(
+		var $md = $('<div>').addClass('message').dat('message',m).append($content).append(
 			$('<div>').addClass('nminfo')
 			.html(md.votesAbstract(m) + ' ' + time.formatTime(m.created) + ' by ' + m.authorname)
 		);
@@ -119,7 +119,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		var	$container = $('#notable-messages'),
 			mmap = {};
 		$container.find('.message').each(function(){
-			var m = $(this).data('message');
+			var m = $(this).dat('message');
 			mmap[m.id] = m;
 		});
 		if (upd.m) mmap[upd.m.id] = upd.m;
@@ -150,7 +150,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		var	notification = {closelisteners:[]},
 			wab = gui.isAtBottom(),
 			$md = notification.$md = $('<div>').addClass('notification')
-			.appendTo('#notifications').data('notification', notification);
+			.appendTo('#notifications').dat('notification', notification);
 		notification.remove = function(f){
 			if (typeof f === "function") {
 				notification.closelisteners.push(f);
@@ -220,7 +220,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		$('.olderLoader,.newerLoader').remove();
 		var idmap = {}, $messages = $('#messages .message'), messages = [], m;
 		for (var i=0; i<$messages.length; i++) {
-			messages.push(m = $messages.eq(i).data('message'));
+			messages.push(m = $messages.eq(i).dat('message'));
 			if (m.id) idmap[m.id] = 1;
 		}
 		for (var i=0; i<$messages.length; i++) {
@@ -250,7 +250,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 
 	// builds a new .user-messages div for the passed user)
 	function usermessagesdiv(user){
-		var	$usermessages = $('<div>').addClass('user-messages').data('user',user),
+		var	$usermessages = $('<div>').addClass('user-messages').dat('user',user),
 			$user = $('<div>').addClass('user').appendTo($usermessages),
 			avsrc = usr.avatarsrc(user);
 		$user.css('color', skin.stringToColour(user.name)).append($('<span/>').text(user.name));
@@ -272,7 +272,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			oldMessage,
 			insertionIndex = messages.length - 1, // -1 : insert at begining, i>=0 : insert after i
 			//~ wasAtBottom = gui.isAtBottom(),
-			$md = $('<div>').addClass('message').data('message', message),
+			$md = $('<div>').addClass('message').dat('message', message),
 			$decorations = $('<div>').addClass('decorations').appendTo($md),
 			$mc,
 			user = { id:message.author, name:message.authorname, avs:message.avs, avk:message.avk },
@@ -334,15 +334,15 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			} else {
 				var $previousmessageset = $('#messages .message').eq(insertionIndex).closest('.user-messages');
 				if (
-					$previousmessageset.data('user').id===user.id && noEndOfBatch
-					&& !$previousmessageset.find('> .message').last().data('message').next
+					$previousmessageset.dat('user').id===user.id && noEndOfBatch
+					&& !$previousmessageset.find('> .message').last().dat('message').next
 				) {
 					$previousmessageset.append($md);
 				} else {
 					var $nextmessageset = $('#messages .message').eq(insertionIndex+1).closest('.user-messages');
 					if (
-						$nextmessageset.length && $nextmessageset.data('user').id===user.id && noEndOfBatch
-						&& !$nextmessageset.find('> .message').first().data('message').prev
+						$nextmessageset.length && $nextmessageset.dat('user').id===user.id && noEndOfBatch
+						&& !$nextmessageset.find('> .message').first().dat('message').prev
 					) {
 						$nextmessageset.prepend($md);
 					} else {
@@ -353,8 +353,8 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		} else {
 			var $nextmessageset = $('#messages .user-messages').first();
 			if (
-				$nextmessageset.length && $nextmessageset.data('user').id===user.id && noEndOfBatch
-				&& !$nextmessageset.find('> .message').first().data('message').prev
+				$nextmessageset.length && $nextmessageset.dat('user').id===user.id && noEndOfBatch
+				&& !$nextmessageset.find('> .message').first().dat('message').prev
 			) {
 				$nextmessageset.prepend($md);
 			} else {
@@ -379,7 +379,9 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		}
 		resize($md, shouldStickToBottom);
 		resizeUser($md.siblings('.user'));
-		if (shouldStickToBottom && (!message.id || message.id==$('#messages .message').last().attr('mid'))) gui.scrollToBottom($md);
+		if (shouldStickToBottom && (!message.id || message.id==$('#messages .message').last().attr('mid'))) {
+			gui.scrollToBottom($md);
+		}
 		return $md;
 	}
 
@@ -390,7 +392,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		$messages.find('.after-disrupt').removeClass('after-disrupt');
 		for (var i=0; i<$messages.length; i++) {
 			var	$message = $messages.eq(i),
-				message = $message.data('message');
+				message = $message.dat('message');
 			if (lastMessage && message.created-lastMessage.created > miaou.chat.DISRUPTION_THRESHOLD) {
 				$lastMessage.addClass('before-disrupt');
 				$message.addClass('after-disrupt');
@@ -409,7 +411,10 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			$m = $('.message[mid='+args.mid+']'),
 			wab = gui.isAtBottom();
 		$m.find('.content').addClass('wide').html(function(_, h){
-			return h.replace($from.html(), '<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>')
+			return h.replace(
+				$from.html(),
+				'<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>'
+			);
 		}).find('a[href]').attr('target','_blank');
 		resize($m, wab);
 	}

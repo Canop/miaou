@@ -12,14 +12,14 @@ miaou(function(wz, gui, skin){
 	//  to a future message) and guarantees acyclicity
 	wz.onmouseenter = function(){
 		if (wzins.length) return;
-		var colors = skin.wzincolors.conv,
+		var	colors = skin.wzincolors.conv,
 			opts = { zIndex:5, fill:colors[0], scrollable:gui.$messageScroller },
 			$message = $(this), w,
 			ci = -1, // index of the central message among all
-			cid = $message.data('message').id;
+			cid = $message.dat('message').id;
 		if (!cid) return;
-		var $messages = $('#messages .message'),
-			messages = $messages.map(function(i){ var m=$(this).data('message'); if (m.id===cid) ci=i; return m }).get();
+		var	$messages = $('#messages .message'),
+			messages = $messages.map(function(i){ var m=$(this).dat('message'); if (m.id===cid) ci=i; return m }).get();
 		while (w=wzins.pop()) w.remove();
 		for (var ui=ci, i=ci; i-- && messages[ui].repliesTo;) {
 			if (messages[i].id===messages[ui].repliesTo) {

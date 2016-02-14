@@ -1,4 +1,4 @@
-const	apiversion = 53,
+const	apiversion = 54,
 	nbMessagesAtLoad = 50, nbMessagesPerPage = 15, nbMessagesBeforeTarget = 8, nbMessagesAfterTarget = 6,
 	Promise = require("bluebird"),
 	path = require('path'),

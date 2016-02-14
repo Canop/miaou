@@ -16,11 +16,11 @@ miaou(function(usr, ed, locals, mod, time, ws){
 	}
 
 	function $user(user){
-		return $('#users .user').filter(function(){ return $(this).data('user').id===user.id });
+		return $('#users .user').filter(function(){ return $(this).dat('user').id===user.id });
 	}
 
 	usr.showUserHoverButtons = function(){
-		var user = $(this).data('user');
+		var user = $(this).dat('user');
 		if (user.name===locals.me.name) return;
 		var decs = $('.decorations', this)
 		.append($('<button>').text('ping').click(function(){
@@ -74,16 +74,16 @@ miaou(function(usr, ed, locals, mod, time, ws){
 		var target, $u = $user(user);
 		if (!enterTime) enterTime = time.now();
 		if ($u.length) {
-			if (enterTime <= $u.data('time')) return $u;
+			if (enterTime <= $u.dat('time')) return $u;
 			$u.detach();
 		} else {
-			$u = $('<div>').addClass('user').data('user', user);
+			$u = $('<div>').addClass('user').dat('user', user);
 			$('<span>').text(user.name).appendTo($u);
 			$('<div>').addClass('decorations').appendTo($u);
 		}
-		$u.data('time', enterTime);
+		$u.dat('time', enterTime);
 		$('#users .user').each(function(){
-			if ($(this).data('time')<=enterTime) {
+			if ($(this).dat('time')<=enterTime) {
 				target = this;
 				return false;
 			}

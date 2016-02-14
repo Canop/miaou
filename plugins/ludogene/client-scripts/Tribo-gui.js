@@ -254,7 +254,7 @@ miaou(function(games, locals, notif, skin, ws){
 			var	s = ù('<svg', $c),
 				p = new Panel(m, g, s, $c.width(), abstract);
 			s.width(p.W).height(p.H);
-			$c.data('ludo-panel', p);
+			$c.dat('ludo-panel', p);
 			if (g.status !== "ask") m.locked = true;
 			p.buildBoard();
 			p.drawBoard();
@@ -263,13 +263,18 @@ miaou(function(games, locals, notif, skin, ws){
 			if (!abstract) {
 				p.addReplayStopButton($c);
 			}
+			return p;
 		},
 		move: function($c, m, _, move){
 			// moves, like messages, can be received more than once
 			// so game implementations must detect that.
 			// move returns true if the player should be notified
-			var	panel = $c.data('ludo-panel'),
-				movechar = Tribo.encodeMove(move),
+			var	panel = $c.dat('ludo-panel');
+			if (!panel) {
+				console.log("Missing ludo-panel for move", m.id, $c);
+				return null;
+			}
+			var	movechar = Tribo.encodeMove(move),
 				newmove = panel.g.moves.slice(-1) !== movechar;
 			m.locked = true;
 			if (newmove) {
