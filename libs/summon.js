@@ -11,8 +11,8 @@ exports.configure = function(miaou){
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name:'summon',
-		fun:function(ct){
+		name: 'summon',
+		fun: function(ct){
 			var shoe = ct.shoe;
 			if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) throw "Only an admin can do that";
 			var match = ct.args.match(/@(\w[\w_\-\d]{2,})/);
@@ -35,8 +35,8 @@ exports.registerCommands = function(registerCommand){
 				shoe.emit('auth_dialog', {id:user.id, name:user.name});
 			});
 		},
-		help:"bring a user in the room : `!!summon @some_user_name`",
-		detailedHelp:"If you're an admin of the room, this is the best way to invite a user.",
-		filter:function(room){ return !room.dialog }	
+		help: "bring a user in the room : `!!summon @some_user_name`",
+		detailedHelp: "If you're an admin of the room, this is the best way to invite a user.",
+		filter: room => !room.dialog
 	});
 }

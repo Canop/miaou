@@ -12,7 +12,7 @@ exports.configure = function(miaou){
 	db = miaou.db;
 	langs = require('./langs.js').configure(miaou);
 	var conf = miaou.config;
-	plugins = (conf.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
+	plugins = (conf.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
 	return this;
 }
 
@@ -61,7 +61,8 @@ exports.appAllUsername = function(req, res){
 		res.render('username.jade', {
 			vars: {valid : hasValidName},
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			error: error, theme:theme
+			error,
+			theme
 		});
 	}).catch(function(err){
 		console.log('err in appAllUsername');
@@ -73,7 +74,8 @@ exports.appAllUsername = function(req, res){
 // used to fill the popup seen when hovering a user name
 exports.appGetPublicProfile = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
-	var userId = +req.query.user, roomId = +req.query.room;
+	var	userId = +req.query.user,
+		roomId = +req.query.room;
 	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile }).map(function(p){
 		return { name:p.name, ep:p.externalProfile }
 	});

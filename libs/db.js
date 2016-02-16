@@ -51,11 +51,11 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 		displayName = profile.displayName || profile.display_name || profile.name,
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
-	var	con = this, resolver = Promise.defer(),
+	var	resolver = Promise.defer(),
 		email = null, returnedCols = 'id, name, lang, oauthprovider, oauthdisplayname, email',
 		sql = 'select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google, github
-	con.client.query(sql,[provider, oauthid], function(err, result){
+	this.client.query(sql,[provider, oauthid], function(err, result){
 		if (err) {
 			resolver.reject(err);
 		} else if (result.rows.length) {
@@ -209,23 +209,24 @@ proto.fixAllDialogRooms = function(){
 
 // obtains a lounge : a room initially made for a private discussion between two users
 proto.getLounge = function(userA, userB){
-	var con = this, resolver = Promise.defer();
+	var resolver = Promise.defer();
 	this.client.query(
 		"select * from room r, room_auth aa, room_auth ab"+
 		" where r.private is true and r.listed is false and r.dialog is true"+
 		" and aa.room=r.id and aa.player=$1 and aa.auth>='admin'"+
 		" and ab.room=r.id and ab.player=$2 and ab.auth>='admin'"+
 		" and not exists(select * from room_auth where room=r.id and player!=$1 and player!=$2)",
-		[userA.id, userB.id], function(err, res)
-	{
-		if (err) return resolver.reject(err);
-		if (res.rows.length) return resolver.resolve(res.rows[0]);		
-		var name = userA.name + ' & ' + userB.name,
-			description = 'A private lounge for '+userA.name+' and '+userB.name,
-			room = {name:name, description:description, private:true, listed:false, dialog:true};
-			room.lang = userA.lang || userB.lang || 'en'; // userA usually is a "completeUser"
-		con.createRoom(room, [userA,userB]).then(function(){ resolver.resolve(room) });
-	});
+		[userA.id, userB.id],
+		(err, res)=>{
+			if (err) return resolver.reject(err);
+			if (res.rows.length) return resolver.resolve(res.rows[0]);		
+			var	name = userA.name + ' & ' + userB.name,
+				description = 'A private lounge for '+userA.name+' and '+userB.name,
+				room = {name:name, description:description, private:true, listed:false, dialog:true};
+				room.lang = userA.lang || userB.lang || 'en'; // userA usually is a "completeUser"
+			this.createRoom(room, [userA,userB]).then(()=>{ resolver.resolve(room) });
+		}
+	);
 	return resolver.promise.bind(this);
 }
 
@@ -296,7 +297,8 @@ proto.insertAccessRequest = function(roomId, userId, message){
 
 // userId : optionnal
 proto.listOpenAccessRequests = function(roomId, userId){
-	var sql = "select player,name,requested,request_message from player p,access_request r where r.denied is null and r.player=p.id and room=$1", args = [roomId];		
+	var	sql = "select player,name,requested,request_message from player p,access_request r where r.denied is null and r.player=p.id and room=$1",
+		args = [roomId];
 	if (userId) {
 		sql += " and player=?";
 		args.push(userId);
@@ -335,8 +337,7 @@ proto.listRoomAuths = function(roomId){
 // do actions on user rights
 // userId : id of the user doing the action (at least an admin of the room)
 proto.changeRights = function(actions, userId, room){
-	var con = this;
-	return Promise.map(actions, function(a){
+	return Promise.map(actions, (a)=>{
 		var sql, args;
 		switch (a.cmd) {
 		case "insert_auth": // we can assume there's no existing auth
@@ -353,12 +354,14 @@ proto.changeRights = function(actions, userId, room){
 			break;
 		case "update_auth":
 			// the exists part is used to check the user doing the change has at least as much auth than the modified user
-			sql = "update room_auth ma set auth=$1 where ma.player=$2 and ma.room=$3 and exists (select * from room_auth ua where ua.player=$4 and ua.room=$5 and ua.auth>=ma.auth)";
+			sql = "update room_auth ma set auth=$1 where ma.player=$2 and ma.room=$3 and"+
+			       " exists (select * from room_auth ua where ua.player=$4 and ua.room=$5 and ua.auth>=ma.auth)";
 			args = [a.auth, a.user, room.id, userId, room.id];
 			break;
 		case "delete_auth":
 			// the exists part is used to check the user doing the change has at least as much auth than the modified user
-			sql = "delete from room_auth ma where ma.player=$1 and ma.room=$2 and exists (select * from room_auth ua where ua.player=$3 and ua.room=$2 and ua.auth>=ma.auth)";
+			sql = "delete from room_auth ma where ma.player=$1 and ma.room=$2 and"+
+			       " exists (select * from room_auth ua where ua.player=$3 and ua.room=$2 and ua.auth>=ma.auth)";
 			args = [a.user, room.id, userId];
 			break;
 		case "unban":
@@ -366,8 +369,8 @@ proto.changeRights = function(actions, userId, room){
 			args = [a.id, room.id];
 			break;
 		}
-		return con.queryRow(sql, args, true);
-	});	
+		return this.queryRow(sql, args, true);
+	});
 }
 
 proto.checkAuthLevel = function(roomId, userId, minimalLevel){
@@ -636,7 +639,7 @@ proto.storePings = function(roomId, users, messageId){
 	return this.execute(
 		"insert into ping (room, player, message) select " +
 		roomId + ", id, " + messageId +
-		" from player where lower(name) in (" + users.map(function(n){ return "'"+n.toLowerCase()+"'" }).join(',') + ")"
+		" from player where lower(name) in (" + users.map(n => "'"+n.toLowerCase()+"'").join(',') + ")"
 	);
 }
 
@@ -750,54 +753,63 @@ proto.getComponentVersion = function(component){
 // applies the not yet applied patches for a component. This is automatically called
 //  for the core of miaou but it may also be called by plugins (including for
 //  initial installation of the plugin)
-exports.upgrade = function(component, patchDirectory, cb){
-	patchDirectory = path.resolve(__dirname, '..', patchDirectory); // because we're in ./libs
-	var startVersion, endVersion;
+exports.upgrade = function(component, patchSubDirectory, cb){
+	let	patchDirectory = path.resolve(__dirname, '..', patchSubDirectory),
+		startVersion,
+		endVersion;
 	var p = on(component)
 	.then(proto.getComponentVersion)
-	.then(function(version){
+	.then(version => {
 		console.log('Component '+component+' : current version='+version);
 		startVersion = version;
-	}).then(function(){
-		return fs.readdirAsync(patchDirectory)
-	}).then(function(names){
-		return names.map(function(name){
+	})
+	.then(()=>fs.readdirAsync(patchDirectory))
+	.then(names =>
+		names.map(name => {
 			var m = name.match(/^(\d+)-(.*).sql$/);
-			return m ? { name:m[2],	num:+m[1], filename:name } : null;
-		}).filter(function(p){ return p && p.num>startVersion })
-		.sort(function(a,b){ return a.num-b.num });
-	}).then(function(patches){
+			return m ? { name:m[2], num:+m[1], filename:name } : null;
+		})
+		.filter(p => p && p.num>startVersion)
+		.sort((a,b) => a.num-b.num)
+	)
+	.then(function(patches){
 		if (!patches.length) return console.log('Component '+component+' is up to date.');
 		endVersion = patches[patches.length-1].num;
-		console.log('Component '+component+' must be upgraded from version '+startVersion+' to '+endVersion);			
+		console.log('Component '+component+' must be upgraded from version '+startVersion+' to '+endVersion);		
 		return Promise.cast(patches).bind(this)
 		.then(proto.begin)
 		.reduce(function(_, patch){
 			console.log('Applying patch '+patch.num+' : '+patch.name);
 			return Promise.cast(patchDirectory+'/'+patch.filename).bind(this)
 			.then(fs.readFileAsync.bind(fs))
-			.then(function(buffer){
-				return buffer.toString().replace(/(#[^\n]*)?\n/g,' ').split(';')
-				.map(function(s){ return s.trim() }).filter(function(s){ return s });
-			}).map(function(statement){
+			.then(buffer =>
+				buffer.toString()
+				.replace(/(#[^\n]*)?\n/g,' ').split(';')
+				.map(s => s.trim()).filter(Boolean)
+			).map(function(statement){
 				console.log(' Next statement :', statement);
 				return this.execute(statement)
 			});
 		}, 'see https://github.com/petkaantonov/bluebird/issues/70')
 		.then(function(){
 			return this.execute("delete from db_version where component=$1", [component])
-		}).then(function(){
+		})
+		.then(function(){
 			return this.execute("insert into db_version (component,version) values($1,$2)", [component, endVersion])
-		}).then(proto.commit)
+		})
+		.then(proto.commit)
 		.then(function(){
 			console.log('Component '+component+' successfully upgraded to version '+endVersion)
-		}).catch(function(err){
+		})
+		.catch(function(err){
 			console.log('An error prevented DB upgrade : ', err);
 			console.log('All changes are rollbacked');
 			return this.rollback();
-		})
-	}).finally(proto.off)
-	if (cb) p.then(cb)
+		});
+	})
+	.finally(proto.off);
+	if (cb) p.then(cb);
+	
 }
 
 //////////////////////////////////////////////// #global API
@@ -827,7 +839,7 @@ exports.init = function(miaouConfig, cb){
 		console.log('Connection to PostgreSQL database successful');
 		pool = pg.pools.all[JSON.stringify(conString)];
 		exports.upgrade('core', 'sql/patches', cb);
-	})
+	});
 }
 
 // returns a promise bound to a connection, available to issue queries
@@ -866,10 +878,9 @@ proto.off = function(v){
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
 //  unless noErrorOnNoRow is true
 proto.queryRow = function(sql, args, noErrorOnNoRow){
-	var	con = this,
-		start = Date.now();
-	return new Promise(function(resolve, reject){
-		con.client.query(sql, args, function(err, res){
+	var	start = Date.now();
+	return new Promise((resolve, reject)=>{
+		this.client.query(sql, args, function(err, res){
 			//~ logQuery(sql, args);
 			var end = Date.now();
 			if (end-start>50) {
@@ -895,8 +906,7 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 // exemple : upsert('pref', 'value', 'normal', 'player', 3, 'name', 'notif')
 // This code will be removed as soon as postgresql 9.5 is available...
 proto.upsert = function(table, changedColumn, newValue, conditions){
-	var	con = this,
-		resolver = Promise.defer(),
+	let	resolver = Promise.defer(),
 		sql = "update "+table+" set "+changedColumn+"=$1",
 		args = [newValue],
 		colnames = [changedColumn],
@@ -906,7 +916,7 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 		sql += (i ? " and " : " where ") + arguments[i*2+3] + "=$"+(i+2)
 		args.push(arguments[i*2+4]);
 	}
-	con.client.query(sql, args, function(err, res){
+	this.client.query(sql, args, (err, res)=>{
 		if (err) {
 			console.log('Error in query:');
 			logQuery(sql, args);
@@ -922,7 +932,7 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 			valnums.push('$'+(i+2));
 		}
 		sql = "insert into "+table+"("+colnames.join(',')+") values("+valnums.join(',')+")";
-		con.client.query(sql, args, function(err, res){
+		this.client.query(sql, args, function(err, res){
 			if (err) {
 				console.log('Error in query:');
 				logQuery(sql, args);
@@ -942,10 +952,9 @@ proto.queryRows = function(sql, args){
 }
 
 proto.execute = function(sql, args){
-	var	con = this,
-		start = Date.now();
-	return new Promise(function(resolve, reject){
-		con.client.query(sql, args, function(err, res){
+	var	start = Date.now();
+	return new Promise((resolve, reject)=>{
+		this.client.query(sql, args, function(err, res){
 			//~ logQuery(sql, args);
 			var end = Date.now();
 			if (end-start>50) {

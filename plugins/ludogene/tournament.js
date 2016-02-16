@@ -56,7 +56,6 @@ function startTournament(ct, gameType){
 			[roomId, bot.id]
 		);
 	}).then(function(m){
-		console.log(m);
 		var players = [];
 		m.content.split('\n').forEach(function(line){
 			var match = line.match(/^(\d+)\|(\w[\w-]{2,19})$/);
@@ -187,7 +186,6 @@ function listGames(ct, gameType){
 		messages.forEach(function(m){
 			var g = m.g;
 			var r;
-			console.log(m);
 			if (g.status==='finished') {
 				r = g.players[0].name+'('+g.scores[0]+') - '+ g.players[1].name+'('+g.scores[1]+')';
 			} else {

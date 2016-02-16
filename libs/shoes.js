@@ -45,7 +45,7 @@ Shoes.emitToRoom = function(key, m){
 }
 // emits something to all sockets of a given user. Returns the number of sockets
 Shoes.emitToAllSocketsOfUser = function(key, args, onlyOtherSockets){
-	var	currentUserId = this.publicUser.id,
+	let	currentUserId = this.publicUser.id,
 		nbs = 0;
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
@@ -74,8 +74,8 @@ Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
 	});
 }
 Shoes.pluginTransformAndSend = function(m, sendFun){
-	for (var plugin of onSendMessagePlugins) {
-		plugin.onSendMessage(this, m, sendFun);
+	for (var i=0; i<onSendMessagePlugins.length; i++) {
+		onSendMessagePlugins[i].onSendMessage(this, m, sendFun);
 	}
 	sendFun('message', m);
 }

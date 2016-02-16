@@ -14,7 +14,8 @@ const	fs = require("fs"),
 
 var	miaou, // properties : db, config, bot, io
 	baseURL,
-	app, server;
+	app,
+	server;
 
 passport.serializeUser(function(user, done) {
 	done(null, user.id);
@@ -198,7 +199,7 @@ exports.mobile = function(req){
 }
 exports.renderErr = function(res, err, base){
 	console.log(err);
-	res.render('error.jade', { base:base||'', error: err.toString() });
+	res.render('error.jade', { base:base||'', error:err.toString() });
 }
 
 function initPlugins(){
@@ -213,8 +214,8 @@ function initPlugins(){
 exports.start = function(config){
 	baseURL = config.server;
 	miaou = {
-		db:db,
-		config:config,
+		db,
+		config,
 		pageBoxer:require('./page-boxers.js')
 	};
 	db.init(config, function(){
@@ -233,7 +234,7 @@ exports.start = function(config){
 			configureOauth2Strategies();
 			initPlugins();
 			startServer();
-		});		
+		});
 	});
 }
 

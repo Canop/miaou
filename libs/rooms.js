@@ -1,3 +1,4 @@
+"use strict";
 const	auths = require('./auths.js'),
 	server = require('./server.js'),
 	prefs = require('./prefs.js'),
@@ -44,7 +45,6 @@ exports.updateMessage = function(message){
 	for (var i=0; i<mo.notables.length; i++) {
 		if (mo.notables[i].id===message.id) {
 			mo.notables[i] = message;
-			console.log("updated notable", message.id);
 			return;
 		}
 	}
@@ -76,11 +76,11 @@ exports.appGetRoom = function(req, res){
 			return server.renderErr(res, "Admin level is required to manage the room");
 		}
 		res.render('room.jade', {
-			vars:{ room:room, error:null, langs:langs.legal }, theme:theme
+			vars:{ room, error:null, langs:langs.legal }, theme
 		});
 	}).catch(db.NoRowError, function(){
 		res.render('room.jade', { // TODO ???
-			vars:{ error:null, langs:langs.legal }, theme:theme
+			vars:{ error:null, langs:langs.legal }, theme
 		});
 	}).catch(function(err){
 		server.renderErr(res, err);
@@ -125,7 +125,7 @@ exports.appPostRoom = function(req, res){
 	}).then(function(){
 		res.redirect(server.roomUrl(room));	// executes the room get
 	}).catch(function(err){
-		res.render('room.jade', {vars:{ room:room, error:err.toString() }});
+		res.render('room.jade', {vars:{ room, error:err.toString() }});
 	}).finally(db.off);
 }
 
@@ -152,13 +152,13 @@ exports.appGetRooms = function(req, res){
 	.spread(function(rooms, pings, welcomeRooms, userPrefs, watches){
 		rooms.forEach(function(r){ r.path = server.roomPath(r) });
 		welcomeRooms.forEach(function(r){ r.path = server.roomPath(r) });
-		var mobile = server.mobile(req),
-			data = {
+		var mobile = server.mobile(req);
+		let data = {
 			vars:{
-				rooms:rooms, langs:langs.legal, mobile:mobile,
-				welcomeRooms:welcomeRooms, watches:watches, pings:pings
+				rooms, langs:langs.legal, mobile,
+				welcomeRooms, watches, pings
 			},
-			user:req.user, pings:pings
+			user:req.user, pings
 		};
 		if (mobile) {
 			res.render('rooms.mob.jade', data);
@@ -179,7 +179,7 @@ exports.appGetJsonRooms = function(req, res){
 	.then(function(rooms){
 		rooms.forEach(function(r){ r.path = server.roomPath(r) });
 		res.json(
-			{ rooms:rooms, langs:langs.legal }
+			{ rooms, langs:langs.legal }
 		);
 	})
 	.catch(function(err){
@@ -202,3 +202,4 @@ exports.appPostRooms = function(req, res){
 	})
 	.finally(db.off);
 }
+

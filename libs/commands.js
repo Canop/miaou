@@ -48,7 +48,7 @@ CommandTask.prototype.textAfterCommand = function(s){
 
 exports.configure = function(miaou){
 	var	config = miaou.config, db = miaou.db,
-		plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
+		plugins = (config.plugins||[]).map( n => require(path.resolve(__dirname, '..', n)) );
 	db.on(botname).then(db.getBot).then(function(b){ bot = b }).finally(db.off);
 	function registerCommand(cmd){
 		commands[cmd.name] = cmd;
@@ -83,11 +83,9 @@ var getHelpText = exports.getHelpText = function(room, cmdname){
 		return h;
 	} else {
 		return 'For a detailed help on Miaou, see the [help page]('+server.url('/help')+').\nCommands :'+
-		all.filter(function(cmd){
-			return cmd.help && (cmd.filter===undefined || cmd.filter(room))
-		}).map(function(cmd){
-			return '\n* `!!' + cmd.name + '` : ' + cmd.help
-		}).join('');
+		all.filter(cmd => cmd.help && (cmd.filter===undefined || cmd.filter(room)))
+		.map(cmd => '\n* `!!' + cmd.name + '` : ' + cmd.help)
+		.join('');
 	}
 }
 

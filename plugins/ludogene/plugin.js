@@ -208,7 +208,7 @@ exports.onSendMessage = function(shoe, m, send){
 	if (/^!!game /.test(m.content)) {
 		var match = m.content.match(/!!game @\S{3,} (.*)$/);
 		if (match) {
-			let g = JSON.parse(match[1]),
+			let	g = JSON.parse(match[1]),
 				gametype = gametypes[g.type];
 			if (gametype && gametype.observers && g.status !== "finished") {
 				console.log("re-observing game ", m.id);

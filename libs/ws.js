@@ -47,10 +47,6 @@ exports.getOnSendMessagePlugins = function(){
 }
 
 // clones the message, removing all useless properties and the deleted content
-// A typical not lighted message is like this :
-//  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801,"changed":null,"pin":0,"star":0,"up":0,"down":0,"vote":null,"score":0}
-// lighted :
-//  {"id":629,"author":9,"authorname":"dystroy_lo","content":"A typical content in Miaou is very short.","created":1394132801}
 var clean = exports.clean = function(src){
 	var m = {};
 	for (var k in src) {
@@ -210,7 +206,7 @@ function messageWithoutUserVote(message){
 //  - the socket join the sio room whose id is the id of the room (a number)
 //     and a sio room for every watched room, with id 'w'+room.id
 function handleUserInRoom(socket, completeUser){
-	var	shoe = new shoes.Shoe(socket, completeUser),
+	let	shoe = new shoes.Shoe(socket, completeUser),
 		otherDialogRoomUser, // defined only in a dialog room
 		memroom,
 		watchset = new Set, // set of watched rooms ids (if any)
@@ -222,7 +218,9 @@ function handleUserInRoom(socket, completeUser){
 		.then(function(){
 			return this.usersStartingWith(namestart, shoe.room.id, 10);
 		}).then(function(list){
-			if (list.length) socket.emit('autocompleteping', list.map(function(item){ return item.name }));
+			if (list.length) {
+				socket.emit('autocompleteping', list.map(item => item.name));
+			}
 		}).catch(function(err){ console.log('ERR in PM :', err) })
 		.finally(db.off);
 	})
@@ -285,7 +283,6 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.spread(function(r, ban){
 			if (r.private && !r.auth) {
-				// FIXME don't fill the logs with those errors that can come very fast in case of pulling
 				throw new Error('Unauthorized user'); 
 			}
 			if (ban) throw new Error('Banned user');
@@ -319,8 +316,6 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('recent_users', recentUsers);
 			socket.emit('welcome');
 			welcomed = true;
-			// FIXME why send the enter to watchers ?
-			//for (var s of roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))) {
 			for (var s of roomSockets(shoe.room.id)) {
 				socket.emit('enter', s.publicUser);
 			}
@@ -335,7 +330,6 @@ function handleUserInRoom(socket, completeUser){
 		db.on(completeUser.id)
 		.then(db.listUserWatches)
 		.then(function(watches){
-			// console.log("watches of user "+shoe.publicUser.name+":", watches);
 			socket.emit('wat', watches);
 			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
 			for (var w of watches) {
@@ -392,9 +386,9 @@ function handleUserInRoom(socket, completeUser){
 			return [user, this.getAuthLevel(shoe.room.id, user.id)]
 		})
 		.spread(function(user, authLevel){
-			// TODO test bans 
 			if (authLevel) throw "you can't grant access to this user, he has already access to the room";
-			shoe.emitBotFlakeToRoom(bot, "*"+user.name+"* has been granted access by *"+shoe.publicUser.name+"*", shoe.room.id);
+			let text = "*"+user.name+"* has been granted access by *"+shoe.publicUser.name+"*";
+			shoe.emitBotFlakeToRoom(bot, text, shoe.room.id);
 			return this.changeRights([
 				{cmd:"insert_auth", user:user.id, auth:"write"}, {cmd:"delete_ar", user:user.id}
 			], shoe.publicUser.id, shoe.room);
@@ -536,7 +530,8 @@ function handleUserInRoom(socket, completeUser){
 			return this.getAuthLevelByUsername(shoe.room.id, unsentping).then(function(oauth){
 				if (oauth) return true;
 				if (commandTask.cmd) return commandTask.alwaysPing;
-				shoe.error(unsentping+" has no right to this room and wasn't pinged"); // todo different message for no user
+				// todo different message for no user
+				shoe.error(unsentping+" has no right to this room and wasn't pinged"); 
 			});
 		}).then(function(remainingpings){
 			if (remainingpings.length) {
@@ -566,7 +561,8 @@ function handleUserInRoom(socket, completeUser){
 		.map(db.getMessage)
 		.map(function(m){
 			var now = (Date.now()/1000|0);
-			m.room = shoe.room.id; // to trigger a security exception if user tried to mod_delete a message of another room
+			m.room = shoe.room.id;  // to trigger a security exception if user tried
+						// to mod_delete a message of another room
 			m.content = "!!deleted by:" + shoe.publicUser.id + ' on:'+ now + ' ' + m.content;
 			return this.storeMessage(m, true)
 		}).map(function(m){
@@ -623,8 +619,6 @@ function handleUserInRoom(socket, completeUser){
 		db.on([shoe.room.id, shoe.publicUser.id, mid])
 		.spread(db.unpin)
 		.then(function(updatedMessage){
-			// FIXME message isn't removed|moved from notables -> a complete update of notables is needed
-			// Maybe send the index among notables ?
 			var lm = clean(updatedMessage);
 			socket.emit('message', lm);
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
@@ -719,9 +713,7 @@ function handleUserInRoom(socket, completeUser){
 		if (!shoe.room) return;
 		if (!roomId) {
 			roomId = shoe.room.id;
-			console.log("watch raz salle courante");
 		}
-		console.log("watch raz", roomId, shoe.publicUser.name);
 		shoe.emitToAllSocketsOfUser('watch_raz', roomId);
 		db.on()
 		.then(function(){

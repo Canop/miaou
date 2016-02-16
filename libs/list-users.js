@@ -10,7 +10,7 @@ function doCommand(ct){
 	return this.listRoomUsers(ct.shoe.room.id).then(function(names){
 		ct.nostore = true;
 		ct.reply(
-			"Room users:"+names.map(function(u){ return "\n* "+u.name }).join(''),
+			"Room users:"+names.map(u => "\n* "+u.name).join(''),
 			true
 		);
 	});

@@ -29,7 +29,7 @@ exports.configure = function(miaou){
 	db = miaou.db;
 	langs = require('./langs.js').configure(miaou);
 	themes = miaou.config.themes;
-	plugins = (miaou.config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
+	plugins = (miaou.config.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
 	return this;
 }
 
@@ -56,10 +56,14 @@ var getUserPrefs = exports.get = function(userId){
 
 // user prefs page GET & POST
 exports.appAllPrefs = function(req, res){
-	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
-		return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
-	});
-	var error = '',
+	let externalProfileInfos = plugins
+	.filter(
+		p => p.externalProfile
+	)
+	.map(
+		p => ({ name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields })
+	);
+	var	error = '',
 		userPrefs;
 	db.on().then(function(){
 		return getUserPrefs.call(this, req.user.id);

@@ -2,7 +2,7 @@ var	fs = require('fs'),
 	config,
 	server = require('./libs/server.js');
 
-console.log("Running on "+process.title+" "+process.version);
+console.log("Miaou running on "+process.title+" "+process.version);
 
 // config may be in a js or json file
 try {
