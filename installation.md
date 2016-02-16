@@ -76,7 +76,16 @@ When you'll want to update Miaou later, you'll do
 	
 ## Build Miaou
 
-	make
+Two solutions are available today, and both are equivalent: `make` and `gulp`.
+In the future, only one of those will be kept, probably gulp.
+
+If you want a continuous build of the client side files, in order to test while you code, you may do
+
+    watch -n 1 make
+
+or
+
+    gulp watch
 
 ## Fill the configuration
 
