@@ -7,6 +7,7 @@ let	gulp = require("gulp"),
 	path = require("path"),
 	sass = require("gulp-sass"),
 	merge = require("merge-stream"),
+	eslint = require('gulp-eslint'),
 	del = require("del"),
 	uglify = require("gulp-uglify");
 
@@ -41,8 +42,66 @@ let globs = {
 	"page-js": "src/page-js/*.js",
 	"resources:main": "src/rsc/**/*",
 	"resources:plugins": "plugins/*/rsc/**/*",
+	"server-js": [
+		"libs/*.js",
+		"plugins/*/*.js",
+	],
 };
 
+gulp.task("server-js", ()=> 
+	gulp.src(globs["server-js"])
+	.pipe(eslint({
+		"env": {
+			"node": true,
+			"es6": true
+		},
+		"extends": "eslint:recommended",
+		"rules": {
+			"no-unused-vars": [
+				2,
+				{"vars": "all", "args": "none"}
+			],
+			"comma-dangle": [
+				2,
+				"only-multiline"
+			],
+			"complexity": [
+				0,
+				20
+			],
+			"dot-location": [
+				2,
+				"property"
+			],
+			"no-extra-label": [
+				2
+			],
+			"indent": [
+				2,
+				"tab"
+			],
+			"linebreak-style": [
+				2,
+				"unix"
+			],
+			"brace-style": [
+				2,
+				"1tbs"
+			],
+			"no-lonely-if": 2,
+			"no-eval": 2,
+			"no-caller": 2,
+			"no-extra-bind": 2,
+			"no-extra-label": 2,
+			"no-console": 0,
+			"quotes": [
+				0,
+				"double"
+			]
+		}
+	}))
+	.pipe(eslint.format())
+);
 
 gulp.task("main-js", ()=>
 	gulp.src(globs["main-js"])
@@ -98,7 +157,7 @@ gulp.task("themes", ["themes:compile-scss"], ()=>
 );
 
 gulp.task("clean", () => del("static/*"));
-gulp.task("build", ["main-js", "page-js", "resources:main", "resources:plugins", "themes"]);
+gulp.task("build", ["server-js", "main-js", "page-js", "resources:main", "resources:plugins", "themes"]);
 
 gulp.task("watch", ["build"], ()=>{
 	for (let task in globs) {
