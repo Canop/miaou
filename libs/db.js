@@ -55,7 +55,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 		email = null, returnedCols = 'id, name, lang, oauthprovider, oauthdisplayname, email',
 		sql = 'select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google, github
-	this.client.query(sql,[provider, oauthid], function(err, result){
+	this.client.query(sql,[provider, oauthid], (err, result)=>{
 		if (err) {
 			resolver.reject(err);
 		} else if (result.rows.length) {
@@ -64,7 +64,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 			console.dir(profile);
 			var sql = 'insert into player (oauthid, oauthprovider, email, oauthdisplayname)' +	 
 				' values ($1, $2, $3, $4) returning '+returnedCols;
-			resolver.resolve(con.queryRow(sql, [oauthid, provider, email, displayName]));
+			resolver.resolve(this.queryRow(sql, [oauthid, provider, email, displayName]));
 		}
 	});
 	return resolver.promise.bind(this);
