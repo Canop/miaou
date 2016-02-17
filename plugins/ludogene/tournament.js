@@ -149,7 +149,7 @@ function writeScore(ct, gameType){
 			p.twcScore = 3*p.nbWins + p.sumScores -10*p.nbDrops;
 			players.push(p);
 		});
-		players = players.sort(function(a,b){ return b.twcScore-a.twcScore });
+		players = players.sort((a,b) => b.twcScore-a.twcScore);
 		var lines = [titles.score];
 		lines.push('Rank|Player|Finished|Wins|Drops|Mean Gain|Running Score|TWC Score');
 		lines.push(lines[lines.length-1].replace(/[^|]+/g,':-:'));
@@ -204,7 +204,6 @@ function listGames(ct, gameType){
 
 
 exports.handle = function(ct, gameType){
-	var	p = ct.shoe.publicUser;
 	if (/\blist\b/i.test(ct.args)) return listPlayers.call(this, ct, gameType);
 	if (/\bstart\b/i.test(ct.args)) return startTournament.call(this, ct, gameType);
 	if (/\bgames\b/i.test(ct.args)) return listGames.call(this, ct, gameType);

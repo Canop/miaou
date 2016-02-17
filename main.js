@@ -1,5 +1,4 @@
-var	fs = require('fs'),
-	config,
+var	config,
 	server = require('./libs/server.js');
 
 console.log("Miaou running on "+process.title+" "+process.version);

@@ -1,11 +1,9 @@
 const	path = require('path'),
 	Promise = require("bluebird"),
 	server = require('./server.js'),
-	botname = "miaou.help",
 	commands = {}
 
-var	bot,
-	all = [];
+var	all = [];
 	
 function CommandTask(cmd, args, shoe, message){
 	this.cmd = cmd;
@@ -47,9 +45,8 @@ CommandTask.prototype.textAfterCommand = function(s){
 }
 
 exports.configure = function(miaou){
-	var	config = miaou.config, db = miaou.db,
+	var	config = miaou.config,
 		plugins = (config.plugins||[]).map( n => require(path.resolve(__dirname, '..', n)) );
-	db.on(botname).then(db.getBot).then(function(b){ bot = b }).finally(db.off);
 	function registerCommand(cmd){
 		commands[cmd.name] = cmd;
 		all.push(cmd);
@@ -70,7 +67,7 @@ exports.configure = function(miaou){
 	['afk','ban', 'bans', 'flake','list-users','pm','stats','summon'].forEach(function(module){
 		require('./'+module+'.js').configure(miaou).registerCommands(registerCommand);
 	});
-	all.sort(function(a,b){ return a.name>b.name ? 1 : -1 });
+	all.sort((a,b) => a.name>b.name ? 1 : -1);
 }
 
 var getHelpText = exports.getHelpText = function(room, cmdname){

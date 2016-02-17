@@ -21,7 +21,7 @@ function rollDices(ct){
 	var	cols = ['Sum'],
 		row = [sum];
 	if (nbDices>1 && nbDices<=12) {
-		cols = dices.map(function(_,i){ return i+1 }).concat(cols);
+		cols = dices.map((_,i) => i+1).concat(cols);
 		row = dices.concat(row);
 	}
 	ct.reply(
@@ -29,7 +29,7 @@ function rollDices(ct){
 		(constant ? ' and adding '+constant : '')+
 		' (expect: '+exp.toFixed(1)+')'+
 		'\n|'+cols.join('|')+'|\n'+
-		'|'+cols.map(function(){ return ':-:' }).join('|')+'|\n'+
+		'|'+cols.map(()=> ':-:').join('|')+'|\n'+
 		'|'+row.join('|')+'|\n'
 	);
 }

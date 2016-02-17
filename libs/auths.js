@@ -78,7 +78,7 @@ exports.appPostAuths = function(req, res){
 		}
 		var m, modifiedUserId, actions = [];
 		for (var key in req.body){
-			if (m = key.match(/^answer_request_(\d+)$/)) {
+			if ((m = key.match(/^answer_request_(\d+)$/))) {
 				var	accepted = req.body[key]==='grant',
 					denyMessage = req.body['deny_message_'+m[1]];
 				modifiedUserId = +m[1];
@@ -89,9 +89,9 @@ exports.appPostAuths = function(req, res){
 					actions.push({cmd:'deny_ar', user:modifiedUserId, message:denyMessage||''});					
 				}
 				ws.emitAccessRequestAnswer(room.id, modifiedUserId, accepted, denyMessage);
-			} else if (m = key.match(/^insert_auth_(\d+)$/)) {
+			} else if ((m = key.match(/^insert_auth_(\d+)$/))) {
 				if (req.body[key]!='none') actions.push({cmd:'insert_auth', auth:req.body[key], user:+m[1]});
-			} else if (m = key.match(/^change_auth_(\d+)$/)) {
+			} else if ((m = key.match(/^change_auth_(\d+)$/))) {
 				var new_auth = req.body[key];
 				modifiedUserId = +m[1];
 				if (new_auth==='none') {
@@ -103,7 +103,7 @@ exports.appPostAuths = function(req, res){
 				} else {
 					actions.push({cmd:'update_auth', user:modifiedUserId, auth:new_auth});
 				}
-			} else if (m = key.match(/^unban_(\d+)_(\d+)$/)) {
+			} else if ((m = key.match(/^unban_(\d+)_(\d+)$/))) {
 				var banid = +m[1], banned = +m[2];
 				actions.push({cmd:'unban', id:banid, user:banned});
 				actions.push({cmd:'delete_ar', user:banned});

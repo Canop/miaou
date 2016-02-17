@@ -39,8 +39,8 @@ function removeAlert(roomId, messageId){
 function getAlert(messageId, userId){
 	return this.queryRow(
 		"select a.message, a.creator, a.room, s.player as seen"+
-	       " from attention_alert a left join attention_seen s on a.message=s.message"+
-	       " where a.message=$1", [messageId], true
+		" from attention_alert a left join attention_seen s on a.message=s.message"+
+		" where a.message=$1", [messageId], true
 	);
 }
 exports.onNewShoe = function(shoe){
@@ -52,13 +52,13 @@ exports.onNewShoe = function(shoe){
 		.then(function(){
 			shoe.emitToRoom('attention.alert', {message:mid, creator:shoe.publicUser.id});
 		})
-		.catch(function(e){ console.log("error in attention.alert handling:", e) })
+		.catch(e => console.log("error in attention.alert handling:", e) )
 		.finally(db.off);
 	})
 	.on('attention.ok', function(mid){ 
 		db.on([+mid, shoe.publicUser.id])
 		.spread(acknowledgeAlert)
-		.catch(function(e){ console.log("error in attention.ok handling:", e) })
+		.catch(e => console.log("error in attention.ok handling:", e) )
 		.finally(db.off);
 	})
 	.on('attention.remove', function(mid){ 
@@ -69,7 +69,7 @@ exports.onNewShoe = function(shoe){
 			// todo check we removed something (security)
 			shoe.emitToRoom('attention.remove', mid);
 		})
-		.catch(function(e){ console.log("error in attention.remove handling:", e) })
+		.catch(e => console.log("error in attention.remove handling:", e) )
 		.finally(db.off);
 	})
 	.on('attention.query', function(mid){ 
@@ -78,7 +78,7 @@ exports.onNewShoe = function(shoe){
 		.then(function(alert){
 			if (alert) shoe.emitToRoom('attention.alert', alert);
 		})
-		.catch(function(e){ console.log("error in getAlert handling:", e) })
+		.catch(e => console.log("error in getAlert handling:", e) )
 		.finally(db.off);
 	})
 }

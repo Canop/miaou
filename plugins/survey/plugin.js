@@ -4,7 +4,7 @@ var	db,
 function onCommand(ct){
 	var	m = ct.message,
 		lines = m.content.split('\n'),
-		itemlines = lines.filter(function(l){ return /^(\d+\.|\*)\s+/.test(l) })
+		itemlines = lines.filter(l=> /^(\d+\.|\*)\s+/.test(l));
 	if (!itemlines.length) throw 'Nothing asked';
 }
 
@@ -69,8 +69,12 @@ function wsvotes(shoe, mid){
 
 exports.onNewShoe = function(shoe){
 	shoe.socket
-	.on('survey.vote', function(arg){ wsvote(shoe, arg) })
-	.on('survey.votes', function(arg){ wsvotes(shoe, arg) })
+	.on('survey.vote', function(arg){
+		wsvote(shoe, arg)
+	})
+	.on('survey.votes', function(arg){
+		wsvotes(shoe, arg)
+	})
 }
 
 exports.onChangeMessage = function(shoe, m){

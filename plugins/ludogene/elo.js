@@ -53,7 +53,7 @@ Rating.prototype.computeMalus = function(){
 	if (nbOpponentsLastYear < 3) m.push(["Less than 3 opponents since a year", 50]);
 	if (nbOpponentsLastYear < 10) m.push(["Less than 10 opponents since a year", 30]);
 	if (nbOpponentsLastYear < 15) m.push(["Less than 15 opponents since a year", 15]);
-	this.ms = m.reduce(function(s,e){ return s+e[1] }, 0);
+	this.ms = m.reduce((s,e) => s+e[1], 0);
 }
 
 function GameImpact(m, r){ // impact of a game (note: the constructor has side effects on r)
@@ -152,16 +152,16 @@ function compute(messages){
 		r.r -= r.ms;
 	});
 	ratings = ratings
-	.filter(function(r){ return r.nbOpponents() >= NB_OPPONENTS_MIN })
-	.sort(function(a,b){ return b.r-a.r });
+	.filter(r => r.nbOpponents() >= NB_OPPONENTS_MIN )
+	.sort((a,b) => b.r-a.r);
 	return { log:log, ratings:ratings, ratingsMap:ratingsMap };
 }
 
 function table(cols, rows){
 	var t = '';
 	if (cols) t += cols.join('|')+'\n';
-	t += (cols||rows[0]||[]).map(function(){ return ':-:' }).join('|')+'\n';
-	t += rows.map(function(r){ return r.join('|')+'|' }).join('\n')+'\n';
+	t += (cols||rows[0]||[]).map(()=> ':-:').join('|')+'\n';
+	t += rows.map(r => r.join('|')+'|').join('\n')+'\n';
 	return t;
 }
 

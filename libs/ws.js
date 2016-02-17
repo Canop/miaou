@@ -1,9 +1,10 @@
 const	apiversion = 54,
-	nbMessagesAtLoad = 50, nbMessagesPerPage = 15, nbMessagesBeforeTarget = 8, nbMessagesAfterTarget = 6,
-	Promise = require("bluebird"),
+	nbMessagesAtLoad = 50,
+	nbMessagesPerPage = 15,
+	nbMessagesBeforeTarget = 8,
+	nbMessagesAfterTarget = 6,
 	path = require('path'),
 	socketio = require('socket.io'),
-	connect = require('connect'),
 	socketWaitingApproval = [],
 	auths = require('./auths.js'),
 	commands = require('./commands.js'),
@@ -18,7 +19,11 @@ var	miaou,
 	minDelayBetweenMessages,
 	clientConfig, // config sent to clients when they connect
 	io, db, bot,
-	plugins, onSendMessagePlugins, onNewMessagePlugins, onNewShoePlugins, onChangeMessagePlugins;
+	plugins,
+	onSendMessagePlugins,
+	onNewMessagePlugins,
+	onNewShoePlugins,
+	onChangeMessagePlugins;
 
 exports.configure = function(_miaou){
 	miaou = _miaou;
@@ -27,11 +32,11 @@ exports.configure = function(_miaou){
 	var config = miaou.config;
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
-	plugins = (config.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) });
-	onSendMessagePlugins = plugins.filter(function(p){ return p.onSendMessage });
-	onNewMessagePlugins = plugins.filter(function(p){ return p.onNewMessage });
-	onNewShoePlugins = plugins.filter(function(p){ return p.onNewShoe });
-	onChangeMessagePlugins = plugins.filter(function(p){ return p.onChangeMessage });
+	plugins = (config.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
+	onSendMessagePlugins = plugins.filter(p => p.onSendMessage );
+	onNewMessagePlugins = plugins.filter(p => p.onNewMessage );
+	onNewShoePlugins = plugins.filter(p => p.onNewShoe );
+	onChangeMessagePlugins = plugins.filter(p => p.onChangeMessage );
 	clientConfig = [
 		'maxMessageContentSize','minDelayBetweenMessages',
 		'maxAgeForMessageTotalDeletion','maxAgeForMessageEdition'
@@ -79,11 +84,11 @@ var emitToRoom = exports.emitToRoom = function(roomId, key, m){
 }
 
 // returns an array of all the Miaou rooms to which at least one user is connected
-var roomIds = exports.roomIds = function(){
-	return Object.keys(io.sockets.adapter.rooms).filter(function(n){ return n==+n });
+exports.roomIds = function(){
+	return Object.keys(io.sockets.adapter.rooms).filter(n => n==+n );
 }
 
-var userSockets = exports.userSockets = function(userIdOrName) {
+exports.userSockets = function(userIdOrName) {
 	var sockets = [];
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
@@ -95,7 +100,7 @@ var userSockets = exports.userSockets = function(userIdOrName) {
 }
 
 // returns the first found socket of the passed user (may be in another room)
-var anyUserSocket = exports.anyUserSocket = function(userIdOrName) {
+exports.anyUserSocket = function(userIdOrName) {
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
 		if (socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
@@ -193,7 +198,7 @@ exports.botMessage = function(bot, roomId, content, cb){
 function messageWithoutUserVote(message){
 	var clone = {};
 	for (var key in message) {
-		 // a value '?' means for browser "keep the existing value"
+		// a value '?' means for browser "keep the existing value"
 		if (message[key]) clone[key] = key==='vote' ? '?' : message[key];
 	}
 	return clone;
@@ -221,7 +226,8 @@ function handleUserInRoom(socket, completeUser){
 			if (list.length) {
 				socket.emit('autocompleteping', list.map(item => item.name));
 			}
-		}).catch(function(err){ console.log('ERR in PM :', err) })
+		})
+		.catch(err => console.log('ERR in PM :', err))
 		.finally(db.off);
 	})
 	.on('ban', function(ban){
@@ -253,12 +259,12 @@ function handleUserInRoom(socket, completeUser){
 		} else {
 			console.log(shoe.completeUser.name, "disconnected before entering a room");
 		}
-		popon(socketWaitingApproval, function(o){ return o.socket===socket });
+		popon(socketWaitingApproval, o => o.socket===socket );
 	})
 	.on('enter', function(roomId){
 		var now = Date.now()/1000|0;
-		socket.emit('set_enter_time', now); // time synchronization
-		if (!roomId) {
+		socket.emit('set_enter_time',now); // time synchronization
+		if (!roomId) {
 			console.log("WARN : user enters no room");
 			return;
 		}
@@ -444,7 +450,6 @@ function handleUserInRoom(socket, completeUser){
 		shoe.lastMessageTime = now;
 		var	u = shoe.publicUser,
 			m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id},
-			isreply = /^\s*@\w[\w\-]{2,}#\d+/.test(content),
 			commandTask;
 		if (u.avk) {
 			m.avk = u.avk;
@@ -453,14 +458,15 @@ function handleUserInRoom(socket, completeUser){
 		if (message.id) {
 			m.id = +message.id;
 			m.changed = seconds;
-			for (var p of onChangeMessagePlugins) {
-				var error = p.onChangeMessage(shoe, m);
-				if (error) { // we don't use trycatch for performance reasons
-					return shoe.error(error, m.content);
-				}
-			}
 		} else {
 			m.created = seconds;
+		}
+		let plugins = m.id ? onChangeMessagePlugins : onNewMessagePlugins;
+		for (let i=0; i<plugins.length; i++) {
+			var error = plugins[i].onChangeMessage(shoe, m);
+			if (error) { // we don't use trycatch for performance reasons
+				return shoe.error(error, m.content);
+			}
 		}
 
 		db.on().then(function(){
@@ -509,11 +515,11 @@ function handleUserInRoom(socket, completeUser){
 					return pings;
 				}
 				return this.listRoomUsers(shoe.room.id).then(function(users){
-					return pings.concat(users.map(function(u){ return u.name }));
+					return pings.concat(users.map(u => u.name ));
 				});
 			} else if (ping==='here') {
 				return roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))
-				.map(function(s){ return s.publicUser.name });
+				.map(s => s.publicUser.name );
 			}
 			pings.push(ping.toLowerCase());
 			return pings;
@@ -589,25 +595,30 @@ function handleUserInRoom(socket, completeUser){
 		var roomId = request.room, publicUser = shoe.publicUser;
 		console.log(publicUser.name + ' requests access to room ' + roomId);
 		db.on()
-		.then(function(){ return this.deleteAccessRequests(roomId, publicUser.id) })
-		.then(function(){ return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0,200)) })
+		.then(function(){
+			return this.deleteAccessRequests(roomId, publicUser.id)
+		})
+		.then(function(){
+			return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0,200))
+		})
 		.then(function(ar){
 			ar.user = publicUser;
 			socket.broadcast.to(roomId).emit('request', ar);
-			popon(socketWaitingApproval, function(o){ return o.socket===socket }); // cleans the pre_request
+			popon(socketWaitingApproval, o => o.socket===socket ); // cleans the pre_request
 			socketWaitingApproval.push({
 				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
 			});
-		}).catch(function(err){ console.log(err) }) // well...
+		})
+		.catch(err => console.log(err)) // well...
 		.finally(db.off);
 	})
 	.on('search', function(search){
 		if (!shoe.room) return;
 		var	pageSize = 20,
 			page = search.page || 0;
-		db.on([shoe.room.id, search.pattern, 'english', 20, search.page])
+		db.on([shoe.room.id, search.pattern, 'english', 20, page])
 		.spread(db.search)
-		.filter(function(m){ return !/^!!deleted /.test(m.content) })
+		.filter(m => !/^!!deleted /.test(m.content) )
 		.map(clean)
 		.then(function(results){
 			socket.emit('found', {results, search, mayHaveMore:results.length===pageSize});
@@ -624,7 +635,7 @@ function handleUserInRoom(socket, completeUser){
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
 			return rooms.updateNotables.call(this, memroom);
 		})
-		.catch(function(err){ console.log('ERR in vote handling:', err) })
+		.catch(err => console.log('ERR in vote handling:', err))
 		.finally(db.off);		
 	})
 	.on('unwat', function(roomId){
@@ -645,7 +656,7 @@ function handleUserInRoom(socket, completeUser){
 	.on('vote', function(vote){
 		var	changedMessageIsInNotables,
 			updatedMessage,
-			strIds = memroom.notables.map(function(m){ return m.id }).join(' ');
+			strIds = memroom.notables.map(m => m.id ).join(' ');
 		if (!shoe.room) return;
 		if (vote.level==='pin' && !(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
 		db.on([shoe.room.id, shoe.publicUser.id, vote.mid, vote.level])
@@ -668,7 +679,7 @@ function handleUserInRoom(socket, completeUser){
 				voter: shoe.publicUser.id,
 				diff: vote.action==='add' ? 1 : -1
 			});
-			var notableIds = memroom.notables.map(function(m){ return m.id });
+			var notableIds = memroom.notables.map(m => m.id);
 			if (notableIds.join(' ')!==strIds) {
 				// list of notables has changed, we send it
 				var notablesUpdate = { ids:notableIds };
@@ -685,7 +696,7 @@ function handleUserInRoom(socket, completeUser){
 				shoe.emitToRoom('notableIds', notablesUpdate);
 			}
 		})
-		.catch(function(err){ console.log('ERR in vote handling:', err) })
+		.catch(err => console.log('ERR in vote handling:', err))
 		.finally(db.off);
 	})
 	.on('wat', function(roomId){

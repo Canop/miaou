@@ -6,8 +6,8 @@ exports.configure = function(miaou){
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name:'ban',
-		fun:function(ct){
+		name: 'ban',
+		fun: function(ct){
 			var	shoe = ct.shoe;
 			if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) throw "Only an admin can do that";
 			var match = ct.args.match(/@(\w[\w_\-\d]{2,})/);
@@ -29,8 +29,8 @@ exports.registerCommands = function(registerCommand){
 				shoe.emit('mod_dialog', {id:user.id, name:user.name});
 			})
 		},
-		help:"Temporarily ban a user from the room : `!!ban @some_user_name`",
-		detailedHelp:"A dialog will open to ask you the ban duration",
-		filter:function(room){ return !room.dialog }	
+		help: "Temporarily ban a user from the room : `!!ban @some_user_name`",
+		detailedHelp: "A dialog will open to ask you the ban duration",
+		filter: room => !room.dialog 	
 	});
 }

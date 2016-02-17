@@ -26,7 +26,7 @@ function doStats(ct) {
 		return siostats.doStats(ct, miaou.io);
 	}
 	if (/^me$/i.test(topic)) topic = '@'+ct.username();
-	var cols, from, title, args=[], c;
+	var cols, from, title, args=[], orderingCol;
 	if (/^server$/i.test(topic)) {
 		cols = [
 			{name:"Users", value:"(select count(*) from player)"},
@@ -47,13 +47,13 @@ function doStats(ct) {
 		ranking = false;
 	} else if (/^(active-)?users$/i.test(topic)) {
 		cols = [
-			{name:"Name", value:"name", fmt:function(row){ return "["+row.c0+"](u/"+row.c0+")" }},		
+			{name:"Name", value:"name", fmt:row => "["+row.c0+"](u/"+row.c0+")" },		
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
 			{name:"Stars", value:"(select sum(star) from message where author=player.id)"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
-		var orderingCol = /^active-/i.test(topic) ? 2 : 1;
+		orderingCol = /^active-/i.test(topic) ? 2 : 1;
 		from = "from player where bot is false order by c"+orderingCol+" desc limit "+n;
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
@@ -82,14 +82,14 @@ function doStats(ct) {
 	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
 			{name:"Id", value:"id"},
-			{name:"Name", value:"name", fmt:function(row){ return "["+row.c1+"]("+row.c0+"#)" }},		
+			{name:"Name", value:"name", fmt:row => "["+row.c1+"]("+row.c0+"#)" },		
 			{name:"Language", value:"lang"},		
 			{name:"Private", value:"private"},		
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
-		var orderingCol = /^active-/i.test(topic) ? 5 : 4;
+		orderingCol = /^active-/i.test(topic) ? 5 : 4;
 		from = "from room order by c"+orderingCol+" desc limit "+n;
 		title = "Rooms Statistics (top "+n+")";
 	} else if (/^room$/i.test(topic)) {
@@ -121,7 +121,7 @@ function doStats(ct) {
 	} else {
 		throw "Wrong statistics request. Use `!!stats [server|me|@user|users|room|rooms] [n]`.";
 	}
-	var sql = "select " + cols.map(function(col, i){ return (col.value||col.name)+' c'+i }).join(',');
+	var sql = "select " + cols.map((col, i) => (col.value||col.name)+' c'+i).join(',');
 	if (from) sql += ' '+from;
 	return this.queryRows(sql, args, true).then(function(rows){
 		var c;
@@ -131,9 +131,9 @@ function doStats(ct) {
 			ranking = ranking && rows.length>1;
 			c = title+"\n";
 			if (ranking) c += '#|';
-			c += cols.map(function(c){ return c.name }).join('|')+'\n';
+			c += cols.map(c => c.name).join('|')+'\n';
 			if (ranking) c += '-:|';
-			c += cols.map(function(){ return ':-:' }).join('|')+'\n';
+			c += cols.map(()=> ':-:').join('|')+'\n';
 			c += rows.map(function(row, l){
 				var line='';
 				if (ranking) line += l+1+'|';

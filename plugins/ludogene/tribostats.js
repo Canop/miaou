@@ -45,7 +45,7 @@ function playersInfos(messages, f, authorizedplayers){
 		}
 	});
 	players.forEach(f);
-	return players.sort(function(a,b){ return b.r-a.r });
+	return players.sort((a,b) => b.r-a.r);
 }
 
 function matrixInfo(messages) {
@@ -89,7 +89,10 @@ exports.onCommand = function(ct, id){
 			&& (keepBots||m.g.players[0].name!=="meow")
 	})
 	.then(function(messages){
-		var title, cols, rows = [], f, players;
+		var	title,
+			cols,
+			rows = [],
+			players;
 		switch (ct.args) {
 			
 		case "games":
@@ -176,7 +179,9 @@ exports.onCommand = function(ct, id){
 			var threshold = players[0].f / 2;
 			console.log("threshold:",threshold);
 			var authorizedplayers = new Set;
-			players.forEach(function(p){ if (p.f>=threshold) authorizedplayers.add(p.id) });
+			players.forEach(function(p){
+				if (p.f>=threshold) authorizedplayers.add(p.id)
+			});
 			players = playersInfos(messages, function(p){
 				p.t = 2*p.w + p.s; // total twc score
 				p.r = p.t / p.f;   // ranking value
@@ -219,8 +224,8 @@ exports.onCommand = function(ct, id){
 		}
 		var c = title + ":\n"+
 			cols.join('|')+'\n'+
-			cols.map(function(){ return ':-:' }).join('|')+'\n'+
-			rows.map(function(r){ return r.join('|') }).join('\n');
+			cols.map(()=>':-:').join('|')+'\n'+
+			rows.map(r => r.join('|') ).join('\n');
 		ct.reply(c, ct.nostore = c.length>2000);
 	});
 }

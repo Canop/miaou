@@ -1,6 +1,6 @@
 function ClientError(message) {
-    this.message = message;
-    Error.captureStackTrace(this, ClientError);
+	this.message = message;
+	Error.captureStackTrace(this, ClientError);
 }
 ClientError.prototype = Object.create(Error.prototype);
 ClientError.prototype.constructor = ClientError;

@@ -1,11 +1,8 @@
 
-var	url = require('url');
-
 // from the jquery-like context of the input page
 // build and return the html to send to the clients
 function abstract($, line){
 	var	$box = $('<div/>').addClass('twitter'),
-		$abstract = $('<div/>').addClass('abstract'),
 		$twitterBody = $('#permalink-overlay, #permalink-overlay-body, body').eq(0), // twitter layout changes...
 		$tweet = $twitterBody.find('.tweet').first(),
 		$tweetHead = $tweet.find('.content').eq(0),

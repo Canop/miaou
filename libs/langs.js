@@ -8,7 +8,7 @@ exports.legal = {}; // codes of the languages proposed in room creation / filter
 
 exports.configure = function(miaou){
 	var conf = miaou.config;
-	for (var key in langs) {
+	for (let key in langs) {
 		var lang = langs[key];
 		lang.name = lang.pgname[0].toUpperCase() + lang.pgname.slice(1);
 		if (!conf.langs || ~conf.langs.indexOf(key)) exports.legal[key] = lang;

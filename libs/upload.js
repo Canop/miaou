@@ -13,7 +13,7 @@ exports.appPostUpload = function(req, res){
 		return res.send({error:"upload service not available"}); // todo : don't show upload button in this case
 	}
 	var busboy = new Busboy({ headers: req.headers }), files=[];
-	busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+	busboy.on('file', function(fieldname, file) {
 		var chunks = [];
 		file.on('data', function(chunk) {
 			chunks.push(chunk);				

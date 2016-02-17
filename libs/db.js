@@ -223,8 +223,11 @@ proto.getLounge = function(userA, userB){
 			var	name = userA.name + ' & ' + userB.name,
 				description = 'A private lounge for '+userA.name+' and '+userB.name,
 				room = {name:name, description:description, private:true, listed:false, dialog:true};
-				room.lang = userA.lang || userB.lang || 'en'; // userA usually is a "completeUser"
-			this.createRoom(room, [userA,userB]).then(()=>{ resolver.resolve(room) });
+			room.lang = userA.lang || userB.lang || 'en'; // userA usually is a "completeUser"
+			this.createRoom(room, [userA,userB])
+			.then(()=> {
+				resolver.resolve(room);
+			});
 		}
 	);
 	return resolver.promise.bind(this);
@@ -355,13 +358,13 @@ proto.changeRights = function(actions, userId, room){
 		case "update_auth":
 			// the exists part is used to check the user doing the change has at least as much auth than the modified user
 			sql = "update room_auth ma set auth=$1 where ma.player=$2 and ma.room=$3 and"+
-			       " exists (select * from room_auth ua where ua.player=$4 and ua.room=$5 and ua.auth>=ma.auth)";
+				" exists (select * from room_auth ua where ua.player=$4 and ua.room=$5 and ua.auth>=ma.auth)";
 			args = [a.auth, a.user, room.id, userId, room.id];
 			break;
 		case "delete_auth":
 			// the exists part is used to check the user doing the change has at least as much auth than the modified user
 			sql = "delete from room_auth ma where ma.player=$1 and ma.room=$2 and"+
-			       " exists (select * from room_auth ua where ua.player=$3 and ua.room=$2 and ua.auth>=ma.auth)";
+				" exists (select * from room_auth ua where ua.player=$3 and ua.room=$2 and ua.auth>=ma.auth)";
 			args = [a.user, room.id, userId];
 			break;
 		case "unban":
@@ -819,7 +822,10 @@ function now(){
 }
 
 function logQuery(sql, args){ // used in debug
-	console.log(sql.replace(/\$(\d+)/g, function(_,i){ var s=args[i-1]; return typeof s==="string" ? "'"+s+"'" : s }));
+	console.log(sql.replace(/\$(\d+)/g, function(_,i){
+		var s=args[i-1];
+		return typeof s==="string" ? "'"+s+"'" : s
+	}));
 }
 
 // must be called before any call to connect
@@ -895,9 +901,10 @@ proto.queryRow = function(sql, args, noErrorOnNoRow){
 				resolve(res.rows[0]);
 			} else if (res.rowCount) {
 				resolve(res.rowCount);
+			} else if (noErrorOnNoRow) {
+				resolve(null);
 			} else {
-				if (noErrorOnNoRow) resolve(null);
-				else reject(new NoRowError());
+				reject(new NoRowError());
 			}
 		});
 	}).bind(this);
@@ -937,7 +944,7 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 				console.log('Error in query:');
 				logQuery(sql, args);
 				resolver.reject(err);
-			} else {
+			} else {
 				resolver.resolve();
 			}
 		});
@@ -973,7 +980,12 @@ proto.execute = function(sql, args){
 }
 
 ;['begin','rollback','commit'].forEach(function(s){
-	proto[s] = function(arg){ return this.execute(s).then(function(){ return arg }) }
+	proto[s] = function(arg){
+		return this.execute(s)
+		.then(function(){
+			return arg
+		})
+	}
 });
 
 for (var fname in proto) {

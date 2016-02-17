@@ -95,8 +95,8 @@ Shoes.userSocket = function(userIdOrName, includeWatchers) {
 		console.log('lost room in shoe.userSocket');
 		return;
 	}
-	for (var socketId in ioroom.sockets) {
-		var socket = io.sockets.connected[socketId];
+	for (let socketId in ioroom.sockets) {
+		let socket = io.sockets.connected[socketId];
 		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
 			return socket;
 		}		
@@ -107,8 +107,8 @@ Shoes.userSocket = function(userIdOrName, includeWatchers) {
 		console.log('lost watch room in shoe.userSocket');
 		return;
 	}
-	for (var socketId in ioroom.sockets) {
-		var socket = io.sockets.connected[socketId];
+	for (let socketId in ioroom.sockets) {
+		let socket = io.sockets.connected[socketId];
 		if (
 			socket && socket.publicUser &&
 			(socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)

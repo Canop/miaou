@@ -1,5 +1,4 @@
 // boxes StackOverflow chat messages (there's no API for that)
-var	url = require('url');
 
 // from the jquery-like context of the input page
 // build and return the html to send to the clients

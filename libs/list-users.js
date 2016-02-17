@@ -1,8 +1,5 @@
-var	bot,
-	ws = require('./ws.js');
 
 exports.configure = function(miaou){
-	bot = miaou.bot;
 	return this;
 }
 

@@ -150,8 +150,12 @@ exports.appGetRooms = function(req, res){
 		]
 	})
 	.spread(function(rooms, pings, welcomeRooms, userPrefs, watches){
-		rooms.forEach(function(r){ r.path = server.roomPath(r) });
-		welcomeRooms.forEach(function(r){ r.path = server.roomPath(r) });
+		rooms.forEach(function(r){
+			r.path = server.roomPath(r)
+		});
+		welcomeRooms.forEach(function(r){
+			r.path = server.roomPath(r)
+		});
 		var mobile = server.mobile(req);
 		let data = {
 			vars:{
@@ -177,7 +181,9 @@ exports.appGetJsonRooms = function(req, res){
 	db.on(req.user.id)
 	.then(db.listFrontPageRooms)
 	.then(function(rooms){
-		rooms.forEach(function(r){ r.path = server.roomPath(r) });
+		rooms.forEach(function(r){
+			r.path = server.roomPath(r)
+		});
 		res.json(
 			{ rooms, langs:langs.legal }
 		);

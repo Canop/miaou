@@ -109,11 +109,11 @@ function listRepos(ct, provider){
 
 function onCommand(ct, provider){
 	var m;
-	if (m=ct.args.match(/^watch ([\w-]+\/[\w-.]+)/)) {
+	if ((m=ct.args.match(/^watch ([\w-]+\/[\w-.]+)/))) {
 		ct.shoe.checkAuth("admin");
 		return watchRepo.call(this, ct, provider, m[1]);
 	}
-	if (m=ct.args.match(/^unwatch ([\w-]+\/[\w-.]+)/)) {
+	if ((m=ct.args.match(/^unwatch ([\w-]+\/[\w-.]+)/))) {
 		ct.shoe.checkAuth("admin");
 		return unwatchRepo.call(this, ct, provider, m[1]);
 	}
@@ -127,8 +127,7 @@ function scmCalling(provider, req, res){
 	console.log("SCM "+provider.key+" CALLED"); 
 	console.log("headers:", req.headers);
 	console.log("body:", req.body);
-	var	data = req.body,
-		queryRooms = req.query.rooms || req.query.room || "",
+	var	queryRooms = req.query.rooms || req.query.room || "",
 		rooms = queryRooms.split(/\D+/).filter(Boolean).map(Number),
 		anal;
 	console.log("ROOMS:", rooms);
@@ -139,16 +138,20 @@ function scmCalling(provider, req, res){
 		return res.status(400).send('Hu?');
 	}
 	res.send('Okey');
-	db.on().then(function(){
+	db.on()
+	.then(function(){
 		return this.execute("update scm_hook set nb_calls=nb_calls+1 where provider=$1 and repo=$2", [provider.key, anal.repo]); 
-	}).then(function(res){
+	})
+	.then(function(res){
 		if (!res.rowCount) {
 			console.log("NEW HOOK");
 			return this.execute("insert into scm_hook (provider, repo, nb_calls) values($1,$2,1)", [provider.key, anal.repo]); 
 		}
-	}).then(function(){
+	})
+	.then(function(){
 		return this.queryRows("select room from scm_hook_room where provider=$1 and repo=$2", [provider.key, anal.repo]); 
-	}).then(function(rows){
+	})
+	.then(function(rows){
 		if (!anal.content) {
 			console.log("empty message not sent");
 			return;
@@ -160,13 +163,15 @@ function scmCalling(provider, req, res){
 			}
 			ws.botMessage(provider.bot, row.room, anal.content);
 		});
-	}).finally(db.off);
+	})
+	.finally(db.off);
 }
+
 exports.registerRoutes = function(map){
 	providers.forEach(function(p){
 		var route = "/"+p.key+"-webhook";
 		require('../../libs/anti-csrf.js').whitelist(route);
-		map('post', route, function(req, res) { scmCalling(p, req, res) }, true, true);
+		map('post', route, (req, res) => scmCalling(p, req, res), true, true);
 	});
 }
 
@@ -174,7 +179,7 @@ exports.registerCommands = function(cb){
 	providers.forEach(function(p){
 		cb({
 			name: p.command,
-			fun: function(ct){ return onCommand.call(this, ct, p) },
+			fun: ct => onCommand.call(this, ct, p),
 			help: p.help,
 			detailedHelp: p.detailedHelp(config)
 		});

@@ -1,5 +1,4 @@
-const	auths = require('./auths.js'),
-	server = require('./server.js');
+const	auths = require('./auths.js');
 
 var db;
 

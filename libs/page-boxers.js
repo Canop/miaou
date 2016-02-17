@@ -1,12 +1,12 @@
-var	request = require('request'),
-	url = require('url'),
+const	request = require('request'),
 	$$ = require('cheerio'),
 	cache = require('bounded-cache')(300),
 	Deque = require("double-ended-queue"),
 	TTL = 30*60*1000,
 	boxers = [], // boxers: {pattern,box(function),TTL,urler(function)}
-	tasks = new Deque(200),
-	currentTask;
+	tasks = new Deque(200);
+
+let	currentTask;
 
 exports.register = function(boxer){
 	boxer.TTL = boxer.TTL || TTL;

@@ -73,8 +73,8 @@ function storeInMess(m, game){
 	m.content = m.content.match(/^(.*?)!!/)[1] + "!!game @"+game.players[0].name + " " + JSON.stringify(saved);
 	m.changed = 0;
 	if (gametype.observers) {
-		 // warning : at this point it's still possible the message has no id
-		 // we should provide a way for the observer to be notified after the message has been saved
+		// warning : at this point it's still possible the message has no id
+		// we should provide a way for the observer to be notified after the message has been saved
 		gametype.observers.forEach(function(fun){
 			setTimeout(fun, 500, m, game);
 		});
@@ -162,8 +162,12 @@ exports.move = function(mid, encodedMove){
 exports.onNewShoe = function(shoe){
 	// todo: pass the shoe player id to functions
 	shoe.socket
-	.on('ludo.accept', function(arg){ exports.accept(arg.mid, shoe.publicUser) })
-	.on('ludo.move', function(arg){ exports.move(arg.mid, arg.move) });
+	.on('ludo.accept', function(arg){
+		exports.accept(arg.mid, shoe.publicUser)
+	})
+	.on('ludo.move', function(arg){
+		exports.move(arg.mid, arg.move)
+	});
 }
 
 // Checking the message isn't a started game

@@ -1,5 +1,4 @@
-var	path = require('path'),
-	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+var	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
 	blacklist = [/^all$/, /^here$/, /^room$/];
 
 exports.configure = function(miaou){
@@ -109,23 +108,23 @@ for (var i=0; i < defaultDiacriticsRemovalap.length; i++){
 }
 var removeDiacritics = exports.removeDiacritics = function(str){
 	return str.replace(/[^\u0000-\u007E]/g, function(a){ 
-	   return diacriticsMap[a] || a; 
+		return diacriticsMap[a] || a; 
 	});
 }
 
 exports.suggestUsername = function(completeName){
 	completeName = completeName.trim();
 	return (removeDiacritics(completeName)+'@@@@@@@'.slice(completeName.length))
-		.replace(/^[^a-zA-Z]/g, function(){ return String.fromCharCode(~~(Math.random()*24)+97) })
-		.replace(/[\s',]/g, '_')
-		.replace(/[^\w\-]/g, function(){ return validChars[~~(Math.random()*validChars.length)] })
-		.slice(0, 20)
+	.replace(/^[^a-zA-Z]/g, ()=> String.fromCharCode(~~(Math.random()*24)+97))
+	.replace(/[\s',]/g, '_')
+	.replace(/[^\w\-]/g, ()=> validChars[~~(Math.random()*validChars.length)])
+	.slice(0, 20)
 }
 
 exports.toUrlDecoration = function(roomName){
 	return removeDiacritics(roomName||'')
-		.replace(/[^\w\-\s]/g,'')
-		.replace(/\s+/g, '_');
+	.replace(/[^\w\-\s]/g,'')
+	.replace(/\s+/g, '_');
 }
 
 exports.isValidUsername = function(username){

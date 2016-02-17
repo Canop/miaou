@@ -4,7 +4,6 @@
 //   https://api.stackexchange.com/docs/questions#order=desc&sort=activity&filter=!9YdnSJrC1&site=stackoverflow&run=true
 
 var	http = require('http'),
-	url = require('url'),
 	zlib = require("zlib"),
 	cache = require('bounded-cache')(300),
 	Deque = require("double-ended-queue"),
@@ -33,7 +32,7 @@ var handlers = {
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 
 			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
-			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
+			main += '<div class=so-tags>'+item.tags.map(tag => '<span>'+tag+'</span>').join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
 			
 			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
@@ -50,7 +49,7 @@ var handlers = {
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 
 			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
-			main += '<div class=so-tags>'+item.tags.map(function(tag){ return '<span>'+tag+'</span>' }).join('')+'</div>';
+			main += '<div class=so-tags>'+item.tags.map(tag => '<span>'+tag+'</span>').join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
 			
 			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
@@ -159,7 +158,7 @@ exports.rawTasks = function(text){
 	var	tasks = [],
 		r = /(?:^|\n)\s*https?:\/\/(meta\.)?(stackoverflow|askubuntu|([^.]+\.)?stackexchange|superuser|serverfault).com\/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/gm,
 		match;
-	while (match=r.exec(text)) {
+	while ((match=r.exec(text))) {
 		var	path = match[6], submatch,
 			hash = match[7],
 			task = { line:match[0], meta:!!match[1], site:match[2] };

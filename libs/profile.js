@@ -4,14 +4,12 @@ const	auths = require('./auths.js'),
 	prefs = require('./prefs.js'),
 	server = require('./server.js');
 
-var	langs,
-	db,
+var	db,
 	plugins;
 
 exports.configure = function(miaou){
 	db = miaou.db;
-	langs = require('./langs.js').configure(miaou);
-	var conf = miaou.config;
+	let conf = miaou.config;
 	plugins = (conf.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
 	return this;
 }
@@ -76,7 +74,7 @@ exports.appGetPublicProfile = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 	var	userId = +req.query.user,
 		roomId = +req.query.room;
-	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile }).map(function(p){
+	var externalProfileInfos = plugins.filter(p => p.externalProfile).map(function(p){
 		return { name:p.name, ep:p.externalProfile }
 	});
 	if (!userId || !roomId) return server.renderErr(res, 'room and user must be provided');
@@ -101,7 +99,7 @@ exports.appGetPublicProfile = function(req, res){
 	}).then(function(){
 		return this.getUserInfo(userId);
 	}).then(function(info){
-		externalProfileInfos = externalProfileInfos.filter(function(epi){ return epi.html });
+		externalProfileInfos = externalProfileInfos.filter(epi => epi.html);
 		res.render('publicProfile.jade', {
 			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
 			isServerAdmin:auths.isServerAdmin(user),
@@ -113,9 +111,9 @@ exports.appGetPublicProfile = function(req, res){
 }
 
 exports.appGetUser = function(req, res){
-	var userIdOrName = req.params[0],
+	var	userIdOrName = req.params[0],
 		user;
-	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
+	var externalProfileInfos = plugins.filter(p => p.externalProfile).map(function(p){
 		return { name:p.name, ep:p.externalProfile }
 	});
 	db.on().then(function(){
@@ -134,8 +132,10 @@ exports.appGetUser = function(req, res){
 			this.listRecentUserRooms(user.id)
 		]
 	}).spread(function(info, rooms){
-		rooms.forEach(function(r){ r.path = '../'+server.roomPath(r) });
-		var vars = {
+		rooms.forEach(function(r){
+			r.path = '../'+server.roomPath(r)
+		});
+		let vars = {
 			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
 			rooms:rooms
 		};

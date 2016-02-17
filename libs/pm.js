@@ -1,13 +1,10 @@
 // handles !!pm and the pm button
 
-const err = require('./err.js'),
+const	err = require('./err.js'),
 	ws = require('./ws.js');
 
-var bot, db;
 
 exports.configure = function(miaou){
-	bot = miaou.bot;
-	db = miaou.db;
 	return this;
 }
 
@@ -41,19 +38,20 @@ var openPmRoom = exports.openPmRoom = function (shoe, otherUserId, otherUserName
 	.then(function(){
 		shoe.socket.emit('pm_room', lounge.id)
 	})
-	.catch(function(e){ return !e.isclient }, function(e){ console.log('ERR in PM :', e) }) // TODO don't catch and filter client message upstream
+	.catch(e => !e.isclient, e => console.log('ERR in PM :', e));
 }
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name:"pm", fun:function(ct){
+		name: "pm",
+		fun: function(ct){
 			var m = ct.args.match(/@([\w-]{3,})/);
 			if (!m) throw "missing username in !!pm command";
 			ct.silent = true;
 			ct.nostore = true;
 			return openPmRoom.call(this, ct.shoe, 0, m[1]);
 		},
-		help:"open a dialog room to discuss with a specific user. Usage : `!!pm @someuser`",
-		filter:function(room){ return !room.dialog }	
+		help: "open a dialog room to discuss with a specific user. Usage : `!!pm @someuser`",
+		filter: room => !room.dialog 	
 	});
 }

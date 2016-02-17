@@ -1,11 +1,9 @@
-const	fs = require("fs"),
-	http = require('http'),
+const	http = require('http'),
 	path = require('path'),
 	express = require('express'),
 	bodyParser = require('body-parser'),
 	passport = require('passport'),
 	login = require('./login.js'),
-	util = require('util'),
 	db = require('./db.js'),
 	naming = require('./naming.js'),
 	session = require('express-session'),
@@ -20,11 +18,14 @@ var	miaou, // properties : db, config, bot, io
 passport.serializeUser(function(user, done) {
 	done(null, user.id);
 });
+
 passport.deserializeUser(function(id, done) {
 	db.on(id)
 	.then(db.getUserById)
-	.then(function(user){ done(null, user) })
-	.catch(function(err){ done(err) })
+	.then(function(user){
+		done(null, user)
+	})
+	.catch(done)
 	.finally(db.off);
 });
 
@@ -56,7 +57,9 @@ function configureOauth2Strategies(){
 		passport.use(new (impl.strategyConstructor)(params, function(accessToken, refreshToken, profile, done) {
 			db.on(profile)
 			.then(db.getCompleteUserFromOAuthProfile)
-			.then(function(user){ done(null, user) })
+			.then(function(user){
+				done(null, user)
+			})
 			.catch(function(err){
 				console.log('ERR in passport:',err);
 				done(err);
@@ -104,7 +107,9 @@ function defineAppRoutes(){
 		app.get(
 			'/auth/'+key+'/callback',
 			passport.authenticate(key, { failureRedirect: '/login' }),
-			function(req, res) { res.redirect(url()) }
+			function(req, res) {
+				res.redirect(url())
+			}
 		);
 	}
 	map('get', '/login', login.appGetLogin, true, true);
@@ -184,14 +189,14 @@ function startServer(){
 	require('./ws.js').configure(miaou).listen(server, sessionStore, cookieParser);
 }
 
-var url = exports.url = function(pathname){ // todo cleaner way in express not supposing absolute paths ?
+var url = exports.url = function(pathname){
 	return baseURL+(pathname||'/');
 }
 
-var roomPath = exports.roomPath = function(room){
+exports.roomPath = function(room){
 	return room.id+'?'+naming.toUrlDecoration(room.name);	
 }
-var roomUrl = exports.roomUrl = function(room){
+exports.roomUrl = function(room){
 	return exports.url('/'+exports.roomPath(room));
 }
 exports.mobile = function(req){

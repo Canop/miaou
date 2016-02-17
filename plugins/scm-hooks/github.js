@@ -123,9 +123,9 @@ function eventToMarkdown(event, data){
 			return '|'+link(c, c.timestamp.replace("T"," ").replace(/:\d+\+/," GMT+"))+'|'
 			+ link(c.committer)+'|' 
 			+ c.message.split('\n',1)[0]+'|\n';
-	       }).join(''));
+		}).join(''));
 	}
-	return big.map(function(t){ return "**"+t+"**\n" })
+	return big.map(t => "**"+t+"**\n")
 	+ small.join('\n');
 }
 
@@ -135,7 +135,7 @@ exports.provider = {
 	botName: "GitHub-Bot",
 	botAvatar: {src:'url', key:'https://i.imgur.com/JeB730V.png'},
 	botInfo: {location:'The Big Cloud In The Sky', lang:'en', description:"I watch GitHub repositories. Use !!github"},
-	repoURL: function(repo){ return "https://github.com/"+repo },
+	repoURL: repo => "https://github.com/"+repo,
 	analyzeIncomingData: analyzeIncomingData,
 	help: "interact with GitHub. Type `!!help !!github` to learn more.",
 	detailedHelp: detailedHelp
