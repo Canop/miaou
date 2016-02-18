@@ -148,8 +148,8 @@ exports.move = function(mid, encodedMove){
 		if (gametype.isValid(game, move)) {
 			game.moves += encodedMove;
 			gametype.apply(game, move);
-			ws.emitToRoom(m.room, 'ludo.move', {mid:m.id, move:move});
 			storeInMess(m, game);
+			ws.emitToRoom(m.room, 'ludo.move', {mid:m.id, move:move});
 			m.changed = Date.now()/1000|0;
 			rooms.updateMessage(m);
 			return this.storeMessage(m, true);
