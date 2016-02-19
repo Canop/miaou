@@ -1,8 +1,9 @@
 // from http://dystroy.org/demos/vis.html
 //  var visible = vis(); // gives the current state
 //  vis(function(){});   // register a visibility change event handler
-var vis = (function(){
-	var stateKey, eventKey, keys = {
+window.vis = (function(){
+	var stateKey, eventKey;
+	var keys = {
 		hidden: "visibilitychange",
 		webkitHidden: "webkitvisibilitychange",
 		mozHidden: "mozvisibilitychange",

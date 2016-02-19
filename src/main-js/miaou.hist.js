@@ -51,8 +51,8 @@ miaou(function(hist, gui, md, time, ws){
 		});
 	} else {
 		$('#searchInput').on('keyup', function(e){
-			if (e.which===27 && typeof tab === "function") { // esc
-				tab("notablemessagespage"); // tab is defined in chat.jade
+			if (e.which===27 && typeof window.tab === "function") { // esc
+				window.tab("notablemessagespage"); // tab is defined in chat.jade
 				$('#input').focus();
 				return false;
 			}
@@ -99,22 +99,22 @@ miaou(function(hist, gui, md, time, ws){
 
 	// receive search results sent by the server
 	hist.found = function(res){
-			if (res.search.pattern!=$('#searchInput').val().trim()) {
-				console.log('received results of another search', $('#searchInput').val().trim(), res);
-				return;
-			}
-			console.log('search results:', res);
-			md.showMessages(res.results, $('#search-results'), res.search.page);
-			if (res.mayHaveMore) {
-					$('<div id=search-next-page>').text('more results')
-					.click(function(){
-						$(this).remove();
-						hist.search(res.search.pattern, (res.search.page||0)+1);
-					})
-					.appendTo('#search-results');
-			} else {
-				$('#search-next-page').remove();
-			}
+		if (res.search.pattern!=$('#searchInput').val().trim()) {
+			console.log('received results of another search', $('#searchInput').val().trim(), res);
+			return;
+		}
+		console.log('search results:', res);
+		md.showMessages(res.results, $('#search-results'), res.search.page);
+		if (res.mayHaveMore) {
+			$('<div id=search-next-page>').text('more results')
+			.click(function(){
+				$(this).remove();
+				hist.search(res.search.pattern, (res.search.page||0)+1);
+			})
+			.appendTo('#search-results');
+		} else {
+			$('#search-next-page').remove();
+		}
 	}
 	
 	// display search results histogram sent by the server

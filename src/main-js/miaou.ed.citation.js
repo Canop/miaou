@@ -17,8 +17,8 @@ miaou(function(ed){
 			if (sp<ep-1 && val[ep-1]==='\n') this.selectionEnd--;
 		}
 		if (sp===ep) {
-			$input.selectLines().replaceSelection(toggleLinesCode);
-			this.selectionStart = this.selectionEnd;			
+			$input.selectLines().replaceSelection(toggleLinesCitation);
+			this.selectionStart = this.selectionEnd;	
 		} else {
 			$input.selectLines().replaceSelection(toggleLinesCitation);
 		}

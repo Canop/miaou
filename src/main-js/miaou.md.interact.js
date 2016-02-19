@@ -125,17 +125,21 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	//  and then scroll to it and flashes it
 	md.focusMessage = function(messageId){
 		if (!messageId) return;
-		var	$messages = $('#messages .message'), l = $messages.length,
-			beforeId = 0, afterId = 0, mids = new Array($messages.length);
-		for (var i=0; i<l; i++) {
+		var	$messages = $('#messages .message'),
+			i,
+			l = $messages.length,
+			beforeId = 0,
+			afterId = 0,
+			mids = new Array($messages.length);
+		for (i=0; i<l; i++) {
 			mids[i] = +$messages.eq(i).attr('mid');
 			if (mids[i]===messageId) return md.goToMessageDiv(messageId);
 		} 
-		for (var i=0; i<l; i++) {
+		for (i=0; i<l; i++) {
 			if (mids[i]<messageId) beforeId=mids[i];
 			else break;
 		}
-		for (var i=l; i--;) {
+		for (i=l; i--;) {
 			if (mids[i]>messageId) afterId=mids[i];
 			else break;
 		}

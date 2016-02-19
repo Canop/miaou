@@ -156,9 +156,11 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	}
 
 	function replyPreviousOrNext(dif) {
-		var	messages = md.getMessages().filter(function(m){
+		var messages = md.getMessages().filter(function(m){
 			return m.id && m.content && m.author !== locals.me.id && !(editedMessage && m.id>editedMessage.id);
-		}), index = -1, m = input.value.match(replyRegex);
+		});
+		var	index = -1,
+			m = input.value.match(replyRegex);
 		if (m) {
 			var mid = +m[2];
 			for (var i=0; i<messages.length; i++) {
@@ -186,7 +188,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	// if a $message is passed, it's assumed it matches
 	function updateReplyWzin($message){
 		var m, mid;
-		if ($message) { // callers must ensure it's not empty
+		if ($message) {
 			mid = +$message.attr('mid');
 		} else {
 			m = input.value.match(replyRegex);
@@ -329,12 +331,14 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	// adds or remove a ping to that username
 	ed.ping = function(username){
 		var	val = input.value,
-			s = input.selectionStart, e = input.selectionEnd,
+			s = input.selectionStart,
+			e = input.selectionEnd,
+			r = new RegExp('\s?@'+username+'\\s*$','i'),
 			acname = getacname();
 		if (acname) {
 			input.value = val.slice(0, e-acname.length) + username + val.slice(e);
 			input.selectionStart = input.selectionEnd = e + username.length - acname.length;
-		} else if (new RegExp('\s?@'+username+'\\s*$','i').test(val)) {
+		} else if (r.test(val)) {
 			input.value = val.replace(r, '');
 		} else {
 			var insert = ' @'+username+' ';

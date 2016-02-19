@@ -13,7 +13,7 @@ miaou(function(fmt){
 	//  defining the column alignements.
 	// This is how we recognize a table in Markdown 
 	var	coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
-		coderegex = /^(    |\t)/;
+		coderegex = /^( {4}|\t)/;
 	
 	fmt.mdStringToHtml = function(s, username) {
 		return s.split('`').map(function(t,i){
@@ -50,7 +50,7 @@ miaou(function(fmt){
 				+ c;
 			})
 			.replace(/---[^<>]*?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){
-					return s.length>6 ? '<strike>'+s.slice(3,-3)+'</strike>' : s
+				return s.length>6 ? '<strike>'+s.slice(3,-3)+'</strike>' : s
 			})
 			.replace(/\*\*[^<>]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*\*/g, function(s){
 				return s.length>4 ? '<b>'+s.slice(2,-2)+'</b>' : s
@@ -107,7 +107,7 @@ miaou(function(fmt){
 				continue;
 			}
 			
-			if (m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gifv?|png|jpg)\s*$/)) {
+			if ((m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gifv?|png|jpg)\s*$/))) {
 				var bu = (m[1]||"https://")+m[2]+m[3];
 				if (!noThumb && bu[bu.length-1]!=='m') {
 					// use thumbnail for imgur images whenever possible
@@ -121,12 +121,12 @@ miaou(function(fmt){
 				}
 				continue;
 			}
-			if (m=s.match(/^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/)) {
-				 // exemple : http://mustachify.me/?src=http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg
+			if ((m=s.match(/^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/))) {
+				// exemple : http://mustachify.me/?src=http://blabla/queenelizabethii.jpg
 				lout.push('<img src="'+m[1]+'.'+m[2]+'">');
 				continue;
 			}
-			if (m=s.match(/^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/)) {
+			if ((m=s.match(/^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/))) {
 				// exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&ratio_x=03&ratio_y=02&width=900
 				lout.push('<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">');
 				continue;
@@ -153,7 +153,7 @@ miaou(function(fmt){
 				continue;
 			}
 			s = fmt.mdStringToHtml(s, username, noThumb);
-			if (m=s.match(/^(?:&gt;\s*)(.*)$/)) {
+			if ((m=s.match(/^(?:&gt;\s*)(.*)$/))) {
 				lout.push('<span class=citation>'+(m[1]||'&nbsp;')+'</span>');
 				continue;
 			}
@@ -186,7 +186,7 @@ miaou(function(fmt){
 				continue;
 			}
 
-			if (m=s.match(/^(?:(#+)\s+)(.*)$/))	{
+			if ((m=s.match(/^(?:(#+)\s+)(.*)$/)))	{
 				lout.push('<span class=h'+m[1].length+'>'+m[2]+'</span>');
 				continue;
 			}

@@ -4,10 +4,11 @@ miaou(function(webrtc){
 
 	// Set Opus as the default audio codec if it's present.
 	webrtc.preferOpus = function(sdp) {
-		var sdpLines = sdp.split('\r\n');
-		var mLineIndex;
+		var	sdpLines = sdp.split('\r\n'),
+			mLineIndex,
+			i;
 		// Search for m line.
-		for (var i = 0; i < sdpLines.length; i++) {
+		for (i = 0; i < sdpLines.length; i++) {
 			if (sdpLines[i].search('m=audio') !== -1) {
 				mLineIndex = i;
 				break;
@@ -18,7 +19,7 @@ miaou(function(webrtc){
 		}
 
 		// If Opus is available, set it as the default in m line.
-		for (var i = 0; i < sdpLines.length; i++) {
+		for (i = 0; i < sdpLines.length; i++) {
 			if (sdpLines[i].search('opus/48000') !== -1) {
 				var opusPayload = extractSdp(sdpLines[i], /:(\d+) opus\/48000/i);
 				if (opusPayload) {
@@ -61,10 +62,10 @@ miaou(function(webrtc){
 		var mLineElements = sdpLines[mLineIndex].split(' ');
 		// Scan from end for the convenience of removing an item.
 		for (var i = sdpLines.length-1; i >= 0; i--) {
-		var payload = extractSdp(sdpLines[i], /a=rtpmap:(\d+) CN\/\d+/i);
+			var payload = extractSdp(sdpLines[i], /a=rtpmap:(\d+) CN\/\d+/i);
 			if (payload) {
 				var cnPos = mLineElements.indexOf(payload);
-					if (cnPos !== -1) {
+				if (cnPos !== -1) {
 					// Remove CN payload from m line.
 					mLineElements.splice(cnPos, 1);
 				}

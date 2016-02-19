@@ -54,14 +54,15 @@ miaou(function(usr, ed, locals, mod, time, ws){
 	}
 
 	usr.insertAmongRecentUsers = function(user, enterTime){
+		var i;
 		user.mc = enterTime;
-		for (var i=0; i<recentUsers.length; i++) {
+		for (i=0; i<recentUsers.length; i++) {
 			if (recentUsers[i].id===user.id) {
 				recentUsers.splice(i, 1);
 				break;
 			}
 		}
-		for (var i=0; i<recentUsers.length; i++) {
+		for (i=0; i<recentUsers.length; i++) {
 			if (enterTime>recentUsers[i].mc) {
 				recentUsers.splice(i, 0, user);
 				return;

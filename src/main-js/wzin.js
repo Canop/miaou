@@ -2,7 +2,7 @@
 // Used to show the relation between an edited message and the input, or between a reply
 //  icon and the replied to message.
 
-var wzin = (function(){
+window.wzin = (function(){
 
 	var nextId = 0;
 	

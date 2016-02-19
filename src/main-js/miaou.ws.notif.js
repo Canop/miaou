@@ -14,8 +14,11 @@ miaou(function(ws, md){
 					$('<span>').text("Connection to the server lost.")
 				)
 				.append(
-					$('<button id=ws-off-refresh-button>').text('Try Refreshing')
-					.click(function(){ location.reload() })
+					$('<button id=ws-off-refresh-button>')
+					.text('Try Refreshing')
+					.click(function(){
+						location.reload()
+					})
 				)
 			}).remove(function(){ notif = null });
 		}, 18000);

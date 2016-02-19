@@ -96,13 +96,13 @@
 				var	input = node.nodeValue,
 					copied = 0,
 					res;
-				while (res = regex.exec(input)) {
+				while ((res = regex.exec(input))) {
 					if (res.index) element.insertBefore(document.createTextNode(input.slice(copied, res.index)), node);
 					var	r = cb.apply(null, res.concat(res.index, res.input)),
 						div=document.createElement('div');
 					div.innerHTML = r;
 					var childNode;
-					while (childNode = div.firstChild) {
+					while ((childNode = div.firstChild)) {
 						element.insertBefore(childNode, node);
 					}
 					copied = res.index+res[0].length;
@@ -140,7 +140,7 @@
 						var cur = input.slice(p, p+pat.length);
 						if (cur.toLowerCase()===pat) {
 							if (p) element.insertBefore(document.createTextNode(input.slice(copied, p)), node);
-							var r = cb ? cb(cur, tree[j].v) : tree[j].v,
+							var	r = cb ? cb(cur, tree[j].v) : tree[j].v,
 								div=document.createElement('div');
 							div.innerHTML = r;
 							for (var k=0, newNodes=div.childNodes, nnl=newNodes.length; k<nnl; k++) {
@@ -178,7 +178,7 @@
 		};
 	});
 
-	if (typeof module !== "undefined") module.exports = Groumf;
+	if (typeof module !== "undefined") module.exports = Groumf; //eslint-disable-line
 	else if (window) window.Groumf = Groumf;
 
 })();

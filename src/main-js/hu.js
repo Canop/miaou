@@ -1,7 +1,7 @@
 /* http://Github.com/Canop/hu.js */
 
 // A simple SVG library by denys.seguret@gmail.com
-;(function(){
+(function(){
 
 	"use strict";
 	

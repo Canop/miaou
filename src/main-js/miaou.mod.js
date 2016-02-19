@@ -6,14 +6,12 @@ miaou(function(mod, chat, md, ws){
 	durs['d'] = 24 * (durs['h'] = 60 * (durs['m'] = 60));
 
 	mod.dialog = function(user){
-		var $c = $('<div>').addClass('ban-dialog'),
-			durationtype;
+		var $c = $('<div>').addClass('ban-dialog');
 		$('<span>').text("Duration :").appendTo($c);
 		function radio(idval, text, $r){
 			$c.append('<br>').append(
 				$r = $('<input type=radio>').attr({id:idval, name:'duration-type', value:idval})
 				.on('change', function(){
-					durationtype = 
 					$c.find('.custom').prop('disabled', !$('#custom').prop('checked'));
 				})
 			).append($('<label>').attr('for',idval).text(text));
@@ -37,9 +35,9 @@ miaou(function(mod, chat, md, ws){
 			title: "Ban "+user.name,
 			content: $c,
 			buttons:{
-				Cancel:null,
-				Ban:function(){
-					var ban = {banned:user.id, bannedname:user.name, reason:$('#ban-reason').val()},
+				Cancel: null,
+				Ban: function(){
+					var	ban = {banned:user.id, bannedname:user.name, reason:$('#ban-reason').val()},
 						durationtype = $('input[name=duration-type]:checked').val(),
 						m = durationtype.match(/^([a-z]+)(\d+)$/);
 					if (m) {
@@ -59,7 +57,8 @@ miaou(function(mod, chat, md, ws){
 	mod.showBan = function(ban){
 		md.notificationMessage(function($c){
 			// warning : parts of the ban object can be injected by another browser, don't use as html
-			$('<p>').text(ban.bannedname+' was banned by '+ban.bannername+' for '+ban.nb+' '+ban.unit+'.').appendTo($c);
+			$('<p>').text(ban.bannedname+' was banned by '+ban.bannername+' for '+ban.nb+' '+ban.unit+'.')
+			.appendTo($c);
 			if (ban.reason) $('<p>').text('Reason : '+ban.reason).appendTo($c);
 		});
 	}

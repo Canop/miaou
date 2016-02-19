@@ -9,7 +9,7 @@ miaou(function(ed){
 	];
 
 	function toggleLinesCode(s){
-		return ed.toggleLines(s, /^(    |\t)/, '\t');
+		return ed.toggleLines(s, /^( {4}|\t)/, '\t');
 	}
 
 	ed.code = {};
@@ -64,7 +64,7 @@ miaou(function(ed){
 				"This looks like code.<br>Hit ctrl-K to have it indented"
 				+ " and properly rendered in Miaou"
 			);
-		 }
+		}
 		return true;
 	}
 	
@@ -73,7 +73,7 @@ miaou(function(ed){
 		var input = this.input = document.getElementById('input');
 		this.linesBeforeCursor = input.value.slice(0, input.selectionEnd).split('\n');
 		var nbLines = this.linesBeforeCursor.length;
-		for (var nbLinesOfCode=0; /^(    |\t)/.test(this.linesBeforeCursor[nbLines-nbLinesOfCode-1]); nbLinesOfCode++);
+		for (var nbLinesOfCode=0; /^( {4}|\t)/.test(this.linesBeforeCursor[nbLines-nbLinesOfCode-1]); nbLinesOfCode++);
 		this.isCode = nbLinesOfCode>0;
 		if (!this.isCode) return;
 		this.nbLinesOfCode = nbLinesOfCode;
@@ -106,9 +106,13 @@ miaou(function(ed){
 
 	BlockAnalysis.prototype.setLang = function(lang){
 		if (lang===this.selectedLang) return;
-		$('#code-controls .lang').filter(function(){ return $(this).text()===lang }).addClass('selected')
+		var	input = this.input,
+			lines = input.value.split('\n');
+		$('#code-controls .lang').filter(function(){
+			return $(this).text()===lang
+		})
+		.addClass('selected')
 		.siblings().removeClass('selected');
-		var	lines = this.input.value.split('\n');
 		if (lang==='auto') {
 			if (this.langPragmaLine==-1) return
 			lines.splice(this.langPragmaLine, 1);

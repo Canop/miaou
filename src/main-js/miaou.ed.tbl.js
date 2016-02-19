@@ -24,32 +24,34 @@ miaou(function(ed){
 	}
 
 	ed.tbl.tblAsMd = function(tbl){
-		var md = '\n';
-		for (var i=0; i<tbl.nbcols; i++) md += (tbl.rows[0][i]||' ')+'|';
+		var	i,
+			md = '\n';
+		for (i=0; i<tbl.nbcols; i++) md += (tbl.rows[0][i]||' ')+'|';
 		md += '\n';
-		for (var i=0; i<tbl.nbcols; i++) md += ':-:|';
+		for (i=0; i<tbl.nbcols; i++) md += ':-:|';
 		md += '\n';
 		for (var j=1; j<tbl.rows.length; j++) {
-			for (var i=0; i<tbl.nbcols; i++) md += (tbl.rows[j][i]||' ')+'|';
+			for (i=0; i<tbl.nbcols; i++) md += (tbl.rows[j][i]||' ')+'|';
 			md += '\n';
 		}
 		return md;
 	}
 
 	ed.tbl.askAboutPastedTable = function(tbl, file, initialText){
+		var $input = $('#input');
 		var buttons = {
 			"Paste it as text":function(){
 				// default behavior, nothing to do
-				$('#input').focus();
+				$input.focus();
 			},
 			"Paste it as an editable table":function(){
-				if (initialText !== undefined) input.value = initialText;
-				$('#input').replaceSelection(ed.tbl.tblAsMd(tbl));
-				$('#input').focus();
+				if (initialText !== undefined) $input.val(initialText);
+				$input.replaceSelection(ed.tbl.tblAsMd(tbl));
+				$input.focus();
 			},
 		};
 		if (file) buttons["Paste it as an image"] = function(){
-			if (initialText !== undefined) input.value = initialText;
+			if (initialText !== undefined) $input.val(initialText);
 			ed.uploadFile(file); 
 		};
 		miaou.dialog({

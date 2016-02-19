@@ -1,7 +1,7 @@
 // https://github.com/Canop/taliner.js
-;$.fn.taliner = function(){
+$.fn.taliner = function(){
 
-	var $t = this,
+	var	$t = this,
 		$d = $('<div>').appendTo('body'),
 		$s1 = $('<span>').text('a').appendTo($d),
 		$s2 = $('<span>').appendTo($d),
@@ -23,8 +23,7 @@
 		zIndex: 666
 	});
 
-	var lh = $s1.height(),
-		input = this[0],
+	var	input = this[0],
 		se = input.selectionEnd,
 		v = input.value,
 		res = {};

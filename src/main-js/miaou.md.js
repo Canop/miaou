@@ -149,13 +149,13 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	md.notificationMessage = function(fill){
 		var	notification = {closelisteners:[]},
 			wab = gui.isAtBottom(),
-			$md = notification.$md = $('<div>').addClass('notification')
-			.appendTo('#notifications').dat('notification', notification);
+			$md = notification.$md = $('<div>').addClass('notification');
+		$md.appendTo('#notifications').dat('notification', notification);
 		notification.remove = function(f){
 			if (typeof f === "function") {
 				notification.closelisteners.push(f);
 			} else {
-				while (f = notification.closelisteners.shift()) f();
+				while ((f = notification.closelisteners.shift())) f();
 				$md.remove();
 			}
 			return this;
@@ -218,12 +218,16 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	
 	md.updateLoaders = function(){
 		$('.olderLoader,.newerLoader').remove();
-		var idmap = {}, $messages = $('#messages .message'), messages = [], m;
-		for (var i=0; i<$messages.length; i++) {
+		var 	i,
+			idmap = {},
+			$messages = $('#messages .message'),
+			messages = [],
+			m;
+		for (i=0; i<$messages.length; i++) {
 			messages.push(m = $messages.eq(i).dat('message'));
 			if (m.id) idmap[m.id] = 1;
 		}
-		for (var i=0; i<$messages.length; i++) {
+		for (i=0; i<$messages.length; i++) {
 			m = messages[i];
 			if (m.prev) {
 				if (idmap[m.prev]) {
@@ -302,7 +306,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 						|| messages[insertionIndex].created>message.created
 					) ){
 						insertionIndex--;
-					};
+					}
 				}
 			}
 		}
@@ -318,28 +322,31 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			$md.addClass('me');
 			$('.error').remove();
 		}
-		var noEndOfBatch =  !message.prev && !message.next;
+		var	$previousmessageset,
+			$nextmessageset,
+			noEndOfBatch =  !message.prev && !message.next;
 		if (~insertionIndex) {
 			if (oldMessage) {
 				if (message.vote === '?') {
 					message.vote = oldMessage.vote;
 				}
 				if (message.content === oldMessage.content) {
-					// we take the old message content, so as not to lose the possible replacements (e.g. boxing)
+					// we take the old message content,
+					// so as not to lose the possible replacements (e.g. boxing)
 					$mc = $('#messages .message[mid='+message.id+'] .content');
 				} else if (message.changed !== oldMessage.changed) {
 					message.previous = oldMessage;
 				}
 				$('#messages .message').eq(insertionIndex).replaceWith($md);
 			} else {
-				var $previousmessageset = $('#messages .message').eq(insertionIndex).closest('.user-messages');
+				$previousmessageset = $('#messages .message').eq(insertionIndex).closest('.user-messages');
 				if (
 					$previousmessageset.dat('user').id===user.id && noEndOfBatch
 					&& !$previousmessageset.find('> .message').last().dat('message').next
 				) {
 					$previousmessageset.append($md);
 				} else {
-					var $nextmessageset = $('#messages .message').eq(insertionIndex+1).closest('.user-messages');
+					$nextmessageset = $('#messages .message').eq(insertionIndex+1).closest('.user-messages');
 					if (
 						$nextmessageset.length && $nextmessageset.dat('user').id===user.id && noEndOfBatch
 						&& !$nextmessageset.find('> .message').first().dat('message').prev
@@ -351,7 +358,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 				}
 			}
 		} else {
-			var $nextmessageset = $('#messages .user-messages').first();
+			$nextmessageset = $('#messages .user-messages').first();
 			if (
 				$nextmessageset.length && $nextmessageset.dat('user').id===user.id && noEndOfBatch
 				&& !$nextmessageset.find('> .message').first().dat('message').prev

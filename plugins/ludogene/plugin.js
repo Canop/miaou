@@ -15,7 +15,6 @@ var	db,
 
 var gametypes = {
 	Tribo: require('./client-scripts/Tribo.js'),
-	Flore: require('./client-scripts/Flore.js')
 };
 
 exports.init = function(miaou, pluginpath){

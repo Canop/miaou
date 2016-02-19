@@ -122,8 +122,8 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	}
 
 	watch.raz = function(roomId){
-		 $('#watches .watch[rid='+roomId+'] .count').removeClass('has-unseen').empty();
-		 if (!$('.watch .count.has-unseen').length) notif.setHasWatchUnseen(false);
+		$('#watches .watch[rid='+roomId+'] .count').removeClass('has-unseen').empty();
+		if (!$('.watch .count.has-unseen').length) notif.setHasWatchUnseen(false);
 		updateDimensions();
 		updateGlobalIcon();
 	}

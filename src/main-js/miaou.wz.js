@@ -18,9 +18,13 @@ miaou(function(wz, gui, skin){
 			ci = -1, // index of the central message among all
 			cid = $message.dat('message').id;
 		if (!cid) return;
-		var	$messages = $('#messages .message'),
-			messages = $messages.map(function(i){ var m=$(this).dat('message'); if (m.id===cid) ci=i; return m }).get();
-		while (w=wzins.pop()) w.remove();
+		var $messages = $('#messages .message');
+		var messages = $messages.map(function(i){
+			var m=$(this).dat('message');
+			if (m.id===cid) ci=i;
+			return m
+		}).get();
+		while ((w=wzins.pop())) w.remove();
 		for (var ui=ci, i=ci; i-- && messages[ui].repliesTo;) {
 			if (messages[i].id===messages[ui].repliesTo) {
 				wzins.push(wzin($messages.eq(ui), $messages.eq(i), opts));
@@ -31,7 +35,11 @@ miaou(function(wz, gui, skin){
 		(function down(si, colorIndex){
 			for (var i=si+1; i<messages.length; i++) {
 				if (messages[i].repliesTo && messages[i].repliesTo===messages[si].id) { // be wary of flakes
-					wzins.push(wzin($messages.eq(si), $messages.eq(i), $.extend({fill:colors[colorIndex]}, opts)));
+					wzins.push(wzin(
+						$messages.eq(si),
+						$messages.eq(i),
+						$.extend({fill:colors[colorIndex]}, opts)
+					));
 					down(i, colorIndex);
 					colorIndex = (colorIndex+1)%colors.length;
 				}
@@ -43,7 +51,7 @@ miaou(function(wz, gui, skin){
 	wz.onmouseleave = function(){
 		if (frozen) return;
 		var w;
-		while (w=wzins.pop()) w.remove();
+		while ((w=wzins.pop())) w.remove();
 	}
 	
 	wz.updateAll = function(){
