@@ -4,6 +4,7 @@ miaou(function(games, locals, notif, skin, ws){
 		CS = 20, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
 		bg = skin.getCssValue(/^\.ludo-tribo-board-bg$/, 'background-color'),
+		Tribo = window.Tribo,
 		colors = ['SandyBrown', 'AntiqueWhite'];
 
 	function Panel(m, g, s, availableWidth, abstract){
@@ -119,8 +120,7 @@ miaou(function(games, locals, notif, skin, ws){
 
 	Panel.prototype.removeLastMoves = function(){
 		if (!this.lastMoves) return;
-		var lm;
-		while (lm = this.lastMoves.shift()) lm.remove();
+		for(var lm; (lm = this.lastMoves.shift());) lm.remove();
 	}
 
 	Panel.prototype.drawLastMoves = function(playerIndex){

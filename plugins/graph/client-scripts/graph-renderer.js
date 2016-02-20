@@ -67,8 +67,8 @@ miaou(function(md, plugins){
 	];
 	var colors = [
 		'#e9967a', 'rgba(0,143,143,.4)', 'rgba(251, 170, 5, .4)',
-		 'rgba(251, 237, 5, .5)', 'rgba(188,143,143,0.35)',
-		 'rgba(180, 237, 228, .45)', 'rgba(192, 169, 244, .45)', 'rgba(160, 5, 5, .3)',
+		'rgba(251, 237, 5, .5)', 'rgba(188,143,143,0.35)',
+		'rgba(180, 237, 228, .45)', 'rgba(192, 169, 244, .45)', 'rgba(160, 5, 5, .3)',
 		'rgba(176,224,230,0.32)', 'rgba(255,255,102,0.3)', 'rgba(255,35,215,0.3)'
 	];
 	var pop;
@@ -100,7 +100,7 @@ miaou(function(md, plugins){
 				if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
 			}
 
-			var H = 170,
+			var	H = 170,
 				nbycols = ycols.length;
 			
 			if (!nbycols) {
@@ -108,17 +108,15 @@ miaou(function(md, plugins){
 				return;
 			}
 
-			var ml = Math.min(70, nbycols*35),
-				xvals = xcol.vals, 
+			var	xvals = xcol.vals, 
 				n = xvals.length,
-				mt = 2, mr = 5, mb = 60, ml = 35; // margins top, right, bottom and left
-
-			var g = ù('<svg',$c[0]).css({ height:H, width:600 }),
+				mt = 2, mr = 5, mb = 60, ml = 35, // margins top, right, bottom and left
+				g = ù('<svg',$c[0]).css({ height:H, width:600 }),
 				gW = Math.max(50, Math.min(g.width()-mr-ml, 40*n*ycols.length)),
 				W = gW+mr+ml,
 				xmin = xvals[0].start,
-				w = W-ml-mr, h = H-mt-mb;
-			var	rx = w / (xvals[n-1].end-xvals[0].start);
+				w = W-ml-mr, h = H-mt-mb,
+				rx = w / (xvals[n-1].end-xvals[0].start);
 
 			ycols.forEach(function(ycol, j){
 				ycol.max = Math.max.apply(0, ycol.vals);

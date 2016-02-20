@@ -78,7 +78,9 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 		if (!match) return;
 		try {
 			return m.game = JSON.parse(match[1]);
-		} catch (e){}
+		} catch (e){
+			console.log("not a game message");
+		}
 	}
 
 	plugins.ludogene = {

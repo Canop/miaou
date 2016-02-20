@@ -2,17 +2,17 @@
 // This file is imported both server-side and client-side
 // A move is encoded in one character
 
-var Tribo = (function(){
+(function(){
 
 	// returns a square matrix filled with the provided value
 	function matrix(s, v){
-		var row = [], m = [];
-		for (var i=0; i<s; i++) row[i] = v;
-		for (var i=0; i<s; i++) m[i] = i ? row.slice() : row;
+		var i, row = [], m = [];
+		for (i=0; i<s; i++) row[i] = v;
+		for (i=0; i<s; i++) m[i] = i ? row.slice() : row;
 		return m;
 	}
 
-	return {
+	var Tribo = {
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y, p) {
 			var c = g.cells;
@@ -134,12 +134,17 @@ var Tribo = (function(){
 			}
 		}
 	}
-})();
 
-if (typeof module !== 'undefined') {
-	for (var fname in Tribo) {
-		if (Tribo.hasOwnProperty(fname) && typeof Tribo[fname] === "function") {
-			exports[fname] = Tribo[fname];
+	if (typeof exports !== 'undefined') {
+		for (var fname in Tribo) {
+			if (Tribo.hasOwnProperty(fname) && typeof Tribo[fname] === "function") {
+				exports[fname] = Tribo[fname];
+			}
 		}
 	}
-}
+
+	if (typeof window !== 'undefined') {
+		window.Tribo = Tribo;
+	}
+})();
+

@@ -56,6 +56,8 @@ function clientGlobals(){
 		"$", "hu", "ù", "wzin", "vis", "Groumf", "prettyPrint",
 		// new browser globals
 		"RTCPeerConnection", "Set", "Map", "Promise", "WeakMap",
+		// for files which may also be executed on node
+		"exports", "module",
 	].reduce((s,v)=>{s[v]=true; return s;},{});
 }
 
@@ -115,7 +117,7 @@ gulp.task("server-js", ()=>
 );
 
 gulp.task("lint-client-js", ()=>
-	gulp.src(["src/main-js/*.js"])
+	gulp.src(["src/main-js/*.js", "plugins/*/client-scripts/*.js"])
 	.pipe(eslint({
 		"env": {
 			"browser": true,
@@ -232,7 +234,7 @@ gulp.task("watch", ["build"], ()=>{
 		gulp.watch(globs[task], [task]);
 	}
 	gulp.watch(["themes/**/*.scss", "plugins/**/*.scss", "plugins/**/*.css", "src/**/*.scss"], ["themes"])
-	gulp.watch(["src/main-js/*.js"], ["lint-client-js"]);
+	gulp.watch(["src/main-js/*.js", "plugins/*/client-scripts/*.js"], ["lint-client-js"]);
 
 });
 
