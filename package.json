@@ -45,13 +45,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.2.0",
     "gulp-uglify": "^1.5.2",
+    "merge-stream": "^1.0.0",
     "stackvis": ">=0.2.0"
-  },
-  "jshintConfig": {
-    "asi": true,
-    "node": true,
-    "esnext": true,
-    "laxcomma": true,
-    "-W058": true
   }
 }

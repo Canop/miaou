@@ -114,6 +114,7 @@ gulp.task("server-js", ()=>
 		}
 	}))
 	.pipe(eslint.format())
+	.pipe(eslint.failAfterError())
 );
 
 gulp.task("lint-client-js", ()=>
@@ -170,7 +171,7 @@ gulp.task("lint-client-js", ()=>
 		}
 	}))
 	.pipe(eslint.format())
-	//.pipe(eslint.failAfterError())
+	.pipe(eslint.failAfterError())
 );
 
 gulp.task("main-js", ()=>
