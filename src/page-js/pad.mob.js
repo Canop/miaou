@@ -51,7 +51,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 	tabs["notables"].open = function(cb){
 		Tabs.open.call(this, function(){
 			$('#mpad-page-notables').renderMessages();
-			cb();
+			if (cb) cb();
 		});
 	}
 	$('#notable-messages,#search-results').on('click', '.message', closeAllTabs);
