@@ -28,6 +28,7 @@ $.fn.taliner = function(){
 		v = input.value,
 		res = {};
 	
+	lh = $s1.height();
 	$s1.text(v);
 	res.linesNumber = $s1.height()/lh|0;
 		
