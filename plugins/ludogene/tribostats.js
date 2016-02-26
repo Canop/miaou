@@ -33,7 +33,7 @@ function playersInfos(messages, f, authorizedplayers){
 				p[1].l++;
 			} else {
 				p[1].w++;
-				p[0].l++;					
+				p[0].l++;
 			}
 		} else {
 			if (g.current===undefined) {
@@ -45,10 +45,10 @@ function playersInfos(messages, f, authorizedplayers){
 		}
 	});
 	players.forEach(f);
-	return players.sort((a,b) => b.r-a.r);
+	return players.sort((a, b) => b.r-a.r);
 }
 
-function matrixInfo(messages) {
+function matrixInfo(messages){
 	var playersmap = {}, players = [];
 	messages.forEach(function(m){
 		var	p = [], g = m.g;
@@ -74,7 +74,7 @@ exports.onCommand = function(ct, id){
 		"select id, content from message where room=$1 and content like '!!game %' limit $2", [ct.shoe.room.id, 1000]
 	)
 	.map(function(m){
-		try {			
+		try {
 			m.g = JSON.parse(m.content.match(/{.*$/)[0]);
 			return m;
 		} catch (e) {
@@ -94,12 +94,12 @@ exports.onCommand = function(ct, id){
 			rows = [],
 			players;
 		switch (ct.args) {
-			
+
 		case "games":
 			title = "Tribo Games played in this room (excluding the ones with bots)";
-			cols = ["Game","status", "Winner","First Player","Second Player"];
+			cols = ["Game", "status", "Winner", "First Player", "Second Player"];
 			messages.forEach(function(m){
-				var winner = '-', status = '?'; 
+				var winner = '-', status = '?';
 				if (m.g.status==="finished") {
 					winner = "**" + ( m.g.scores[0]>m.g.scores[1] ? m.g.players[0].name : m.g.players[1].name ) + "**";
 					status = "finished";
@@ -115,7 +115,7 @@ exports.onCommand = function(ct, id){
 				]);
 			});
 			break;
-						
+
 		case "matrix":
 			var	data = matrixInfo(messages),
 				l = data.length<15 ? 3 : 2;
@@ -123,7 +123,7 @@ exports.onCommand = function(ct, id){
 			cols = [' '].concat(data.map(function(p){
 				var tokens = p.name.split(/[_-](?=\w)/);
 				if (tokens.length==1) tokens = p.name.split(/(?:[a-z])(?=[A-Z])/);
-				if (tokens.length==1) return p.name.slice(0,l);
+				if (tokens.length==1) return p.name.slice(0, l);
 				var s = tokens[0][0]+tokens[1][0];
 				if (l>2 && tokens.length>2) s += tokens[2][0];
 				return s;
@@ -142,7 +142,7 @@ exports.onCommand = function(ct, id){
 				}));
 			});
 			break;
-			
+
 		case "twc":
 			title = "Tribo World Cup Style Running Scoring";
 			cols = ["Player", "Finished Games", "Wins", "Losses", "Unfinished", "Avg Score", "TWC Score", "Avg TWC Score"];
@@ -164,7 +164,7 @@ exports.onCommand = function(ct, id){
 				];
 			});
 			break;
-			
+
 		case "twc-final":
 			title = "Tribo World Cup Style End Scoring (players without enough games are eliminated)";
 			cols = ["Player", "Finished Games", "Wins", "Losses", "Avg Score", "Sum TWC Score", "Avg TWC Score"];
@@ -177,7 +177,7 @@ exports.onCommand = function(ct, id){
 				break;
 			}
 			var threshold = players[0].f / 2;
-			console.log("threshold:",threshold);
+			console.log("threshold:", threshold);
 			var authorizedplayers = new Set;
 			players.forEach(function(p){
 				if (p.f>=threshold) authorizedplayers.add(p.id)
@@ -198,7 +198,7 @@ exports.onCommand = function(ct, id){
 				];
 			});
 			break;
-			
+
 		case "players":
 			title = title || "Tribo players results in this room";
 			cols = cols || ["Player", "Games", "Wins", "Losses", "Drops", "Avg Score"];

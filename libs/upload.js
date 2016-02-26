@@ -1,7 +1,7 @@
 var config,
 	request = require('request'),
 	Busboy = require('busboy');
-	
+
 exports.configure = function(miaou){
 	config = miaou.config;
 	return this;
@@ -13,16 +13,16 @@ exports.appPostUpload = function(req, res){
 		return res.send({error:"upload service not available"}); // todo : don't show upload button in this case
 	}
 	var busboy = new Busboy({ headers: req.headers }), files=[];
-	busboy.on('file', function(fieldname, file) {
+	busboy.on('file', function(fieldname, file){
 		var chunks = [];
-		file.on('data', function(chunk) {
-			chunks.push(chunk);				
+		file.on('data', function(chunk){
+			chunks.push(chunk);
 			// todo : abort if sum of chunk.lengths is too big (and tell the client he's fat)
 		});
-		file.on('end', function() {
+		file.on('end', function(){
 			files.push({name:fieldname, bytes:Buffer.concat(chunks)});
 		});
-	}).on('finish', function() {
+	}).on('finish', function(){
 		if (!files.length) {
 			return res.send({error:'found nothing in form'});
 		}
@@ -41,7 +41,7 @@ exports.appPostUpload = function(req, res){
 			try {
 				data = JSON.parse(body).data;
 			} catch (e) {
-				console.log("Error while parsing imgur answer:" , e);
+				console.log("Error while parsing imgur answer:", e);
 				console.log(body);
 			}
 			if (data && data.error) return res.send({error:"Imgur answered : "+data.error});
@@ -52,5 +52,5 @@ exports.appPostUpload = function(req, res){
 		form.append('type', 'file');
 		form.append('image', files[0].bytes);
 	});
-	req.pipe(busboy);		
+	req.pipe(busboy);
 }

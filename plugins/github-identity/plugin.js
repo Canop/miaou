@@ -3,7 +3,7 @@
 var	Promise = require("bluebird"),
 	config,
 	request = require('request');
-	
+
 exports.name = "GitHub";
 
 function gistText(user){
@@ -24,8 +24,8 @@ function fetch(url, p, cb){
 }
 
 // returns a promise
-// updates and provides in resolution the pluginPlayerInfos if successful, else throws an error 
-function createProfile(user, ppi, vals) {
+// updates and provides in resolution the pluginPlayerInfos if successful, else throws an error
+function createProfile(user, ppi, vals){
 	var	p = Promise.defer(),
 		m = vals.gist_url.match(/([a-z0-9]{10,})\/?$/);
 	if (!m) p.reject("gist ID not found in URL");
@@ -52,7 +52,7 @@ function createProfile(user, ppi, vals) {
 
 // returns the HTML of the profile
 // or undefined if there's no profile
-function renderProfile(ppi) {
+function renderProfile(ppi){
 	var html = '';
 	if (ppi.id) {
 		html += '<div style="background:white;padding:2px;min-height:30px;line-height:30px;color:black;">';

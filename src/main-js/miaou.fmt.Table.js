@@ -1,5 +1,5 @@
 miaou(function(fmt){
-	
+
 	var	regularcoldefregex = /^\s*[:\-]*(\|[:\-]+)*\|?\s*$/,
 		rowchange = {},
 		nextId = 1;
@@ -14,7 +14,7 @@ miaou(function(fmt){
 			this.style = (cols.match(/[:\-]+/g)||[]).map(function(c){ // the ||[] might be over defensive now
 				return c[c.length-1]!==':' ? 'left' : ( c[0]===':' ? 'center' : 'right' );
 			}).map(function(align, i){
-				return '#'+id+' td:nth-child('+(i+1)+'){text-align:'+align+'}'; 
+				return '#'+id+' td:nth-child('+(i+1)+'){text-align:'+align+'}';
 			}).join('');
 		}
 		this.lines = [];
@@ -77,7 +77,7 @@ miaou(function(fmt){
 							if (i<currentRow.length) currentRow[i] += '<br>'+ row[i];
 							else currentRow[i] = row[i];
 						}
-						
+
 					} else {
 						currentRow = row;
 					}
@@ -90,15 +90,15 @@ miaou(function(fmt){
 					r.map(function(c){ return fmt.mdStringToHtml(c.trim(), username) }),
 					!ir
 				);
-			}, this).join('');			
+			}, this).join('');
 		}
 		h += '</table></div>';
 		return h;
 	}
-	
+
 	// the only purpose of the reset function is to allow unit testing
 	fmt.reset = function(){
 		nextId = 1;
-		return fmt;		
+		return fmt;
 	}
 });

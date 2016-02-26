@@ -34,7 +34,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		notif.userAct($md.dat('message').id);
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
-		wz.updateAll();		
+		wz.updateAll();
 		return false;
 	}
 	md.closer = function(e){
@@ -44,10 +44,10 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		notif.userAct($md.dat('message').id);
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
-		wz.updateAll();		
+		wz.updateAll();
 		return false;
 	}
-		
+
 	// returns the html needed to fill the message menu (the thing at the top right visible on hover)
 	// Message status is assumed to be up to date
 	function getMessageMenuHtml(message){
@@ -134,7 +134,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		for (i=0; i<l; i++) {
 			mids[i] = +$messages.eq(i).attr('mid');
 			if (mids[i]===messageId) return md.goToMessageDiv(messageId);
-		} 
+		}
 		for (i=0; i<l; i++) {
 			if (mids[i]<messageId) beforeId=mids[i];
 			else break;

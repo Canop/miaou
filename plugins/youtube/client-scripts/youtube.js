@@ -1,11 +1,11 @@
 miaou(function(plugins, md){
 	
-	function getEmbedLink(id) {
+	function getEmbedLink(id){
 		return 'https://www.youtube.com/embed/' + id;
 	}
 
 	// We want to make sure the video size isn't too big
-	function calculateVideoSize($c) {
+	function calculateVideoSize($c){
 		var defaultWidth = 640;
 		var defaultHeight = 390;
 
@@ -46,7 +46,7 @@ miaou(function(plugins, md){
 	}
 	
 	plugins.youtube = {
-		start: function() {
+		start: function(){
 			// post renderer
 			md.registerRenderer(replaceLink, true, true);
 		}

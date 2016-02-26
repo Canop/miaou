@@ -14,7 +14,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			var	visible = vis(),
 				isAtBottom = gui.isAtBottom(),
 				shouldStickToBottom = isAtBottom || info.state!=='connected';
-			messages = Array.isArray(messages) ? messages.sort(function(m1,m2){ return m1.id-m2.id }) : [messages];
+			messages = Array.isArray(messages) ? messages.sort(function(m1, m2){ return m1.id-m2.id }) : [messages];
 			messages.forEach(function(message){
 				if (chat.trigger('incoming_message', message) === false) return;
 				if (shouldStickToBottom && !visible) {
@@ -40,7 +40,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		}
 
 		socket
-		.on('ready', function(){			
+		.on('ready', function(){
 			info.state = 'entering';
 			socket.emit('enter', locals.room.id);
 		})
@@ -63,7 +63,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		})
 		.on('message', messagesIn)
 		.on('messages', messagesIn)
-		.on('mod_dialog', mod.dialog) 
+		.on('mod_dialog', mod.dialog)
 		.on('room', function(r){
 			if (locals.room.id!==r.id) {
 				console.log('SHOULD NOT HAPPEN!');
@@ -75,7 +75,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			$('#roomname').text(locals.room.name);
 			var htmldesc = miaou.fmt.mdTextToHtml(locals.room.description, null, true);
 			$('#room-description').html(htmldesc);
-			$('#room-panel-bg').css('background-image',function(){
+			$('#room-panel-bg').css('background-image', function(){
 				var m = htmldesc.match(/^<img (?:href="?[^"> ]+"? )?src="?([^">]+)"?[^>]*>(<br>|$)/);
 				return m ? 'url('+m[1]+')' : '';
 			});
@@ -133,7 +133,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('pings', notif.pings)
 		.on('rm_ping', notif.removePing)
 		.on('disconnect', ws.notif.onOff)
-		.on('enter',usr.showEntry)
+		.on('enter', usr.showEntry)
 		.on('leave', usr.showLeave)
 		.on('miaou.error', md.showError)
 		.on('recent_users', function(users){

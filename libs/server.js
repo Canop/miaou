@@ -15,11 +15,11 @@ var	miaou, // properties : db, config, bot, io
 	app,
 	server;
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function(user, done){
 	done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function(id, done){
 	db.on(id)
 	.then(db.getUserById)
 	.then(function(user){
@@ -53,15 +53,15 @@ function configureOauth2Strategies(){
 			console.log('no implementation for ' + key + ' strategy');
 			continue;
 		}
-		params.callbackURL = url("/auth/"+key+"/callback"); 
-		passport.use(new (impl.strategyConstructor)(params, function(accessToken, refreshToken, profile, done) {
+		params.callbackURL = url("/auth/"+key+"/callback");
+		passport.use(new (impl.strategyConstructor)(params, function(accessToken, refreshToken, profile, done){
 			db.on(profile)
 			.then(db.getCompleteUserFromOAuthProfile)
 			.then(function(user){
 				done(null, user)
 			})
 			.catch(function(err){
-				console.log('ERR in passport:',err);
+				console.log('ERR in passport:', err);
 				done(err);
 			}).finally(db.off);
 		}));
@@ -82,12 +82,12 @@ function defineAppRoutes(){
 		help = require('./help.js'),
 		intro = require('./intro.js'),
 		prefs = require('./prefs.js').configure(miaou);
-	function ensureAuthenticated(req, res, next) {
+	function ensureAuthenticated(req, res, next){
 		if (req.isAuthenticated()) return next();
 		var roomId = req.params[0];
 		res.redirect(url(roomId ? '/login?room=' + roomId : '/login'));
 	}
-	function ensureCompleteProfile(req, res, next) {
+	function ensureCompleteProfile(req, res, next){
 		if (naming.isValidUsername(req.user.name)) return next();
 		res.redirect(url('/username'));
 	}
@@ -98,7 +98,7 @@ function defineAppRoutes(){
 		args.push(fun);
 		app[verb].apply(app, args);
 	}
-	for (var key in oauth2Strategies){
+	for (var key in oauth2Strategies) {
 		var s = oauth2Strategies[key];
 		app.get(
 			'/auth/'+key,
@@ -107,7 +107,7 @@ function defineAppRoutes(){
 		app.get(
 			'/auth/'+key+'/callback',
 			passport.authenticate(key, { failureRedirect: '/login' }),
-			function(req, res) {
+			function(req, res){
 				res.redirect(url())
 			}
 		);
@@ -159,7 +159,7 @@ function startServer(){
 	app.use(cookieParser);
 	app.use(session({
 		store: sessionStore, secret: miaou.config.secret,
-		saveUninitialized: true, resave: false 
+		saveUninitialized: true, resave: false
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
@@ -172,16 +172,16 @@ function startServer(){
 	anticsrf.whitelist('/upload');
 	anticsrf.whitelist('/error');
 	app.use(anticsrf.filter);
-	
+
 	app.use(function(req, res, next){
 		res.set("X-Frame-Options", "deny");
 		res.set("Content-Security-Policy", "script-src 'self'");
 		res.set("Cache-Control", "no-transform");
 		next();
 	});
-	
+
 	app.locals.theme = miaou.config.themes[0]; // default theme
-	
+
 	defineAppRoutes();
 	var port = miaou.config.port;
 	console.log('Miaou server starting on port', port);
@@ -194,7 +194,7 @@ var url = exports.url = function(pathname){
 }
 
 exports.roomPath = function(room){
-	return room.id+'?'+naming.toUrlDecoration(room.name);	
+	return room.id+'?'+naming.toUrlDecoration(room.name);
 }
 exports.roomUrl = function(room){
 	return exports.url('/'+exports.roomPath(room));

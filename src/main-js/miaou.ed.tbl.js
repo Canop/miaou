@@ -20,7 +20,7 @@ miaou(function(ed){
 				if (/\S/.test(l)) nbrows = i+1;
 				return r;
 			});
-		if (nbcols>1 && nbNotEmptyFirstCell>1) return {rows:rows.slice(0,nbrows), nbcols:nbcols};
+		if (nbcols>1 && nbNotEmptyFirstCell>1) return {rows:rows.slice(0, nbrows), nbcols:nbcols};
 	}
 
 	ed.tbl.tblAsMd = function(tbl){
@@ -52,7 +52,7 @@ miaou(function(ed){
 		};
 		if (file) buttons["Paste it as an image"] = function(){
 			if (initialText !== undefined) $input.val(initialText);
-			ed.uploadFile(file); 
+			ed.uploadFile(file);
 		};
 		miaou.dialog({
 			title: "Table Pasting",

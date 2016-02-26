@@ -9,7 +9,7 @@ const	auths = require('./auths.js'),
 var	langs,
 	db,
 	welcomeRoomIds;
-	
+
 exports.configure = function(miaou){
 	langs = require('./langs.js').configure(miaou);
 	db = miaou.db;
@@ -101,7 +101,7 @@ exports.appPostRoom = function(req, res){
 		description: req.body.description.replace(/\r\n?/g, '\n'),
 		lang: req.body.lang
 	};
-	db.on().then(function(){		
+	db.on().then(function(){
 		if (!roomId) {
 			// room creation
 			return this.createRoom(room, [req.user]);

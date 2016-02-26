@@ -3,7 +3,7 @@
 miaou(function(webrtc){
 
 	// Set Opus as the default audio codec if it's present.
-	webrtc.preferOpus = function(sdp) {
+	webrtc.preferOpus = function(sdp){
 		var	sdpLines = sdp.split('\r\n'),
 			mLineIndex,
 			i;
@@ -36,13 +36,13 @@ miaou(function(webrtc){
 		return sdp;
 	}
 
-	function extractSdp(sdpLine, pattern) {
+	function extractSdp(sdpLine, pattern){
 		var result = sdpLine.match(pattern);
 		return result && result.length === 2 ? result[1] : null;
 	}
 
 	// Set the selected codec to the first in m line.
-	function setDefaultCodec(mLine, payload) {
+	function setDefaultCodec(mLine, payload){
 		var elements = mLine.split(' ');
 		var newLine = [];
 		var index = 0;
@@ -58,7 +58,7 @@ miaou(function(webrtc){
 	}
 
 	// Strip CN from sdp before CN constraints is ready.
-	function removeCN(sdpLines, mLineIndex) {
+	function removeCN(sdpLines, mLineIndex){
 		var mLineElements = sdpLines[mLineIndex].split(' ');
 		// Scan from end for the convenience of removing an item.
 		for (var i = sdpLines.length-1; i >= 0; i--) {

@@ -14,7 +14,7 @@
 
 	var Tribo = {
 		// is the cell playable by p (assuming he's the current player) ?
-		canPlay: function(g, x, y, p) {
+		canPlay: function(g, x, y, p){
 			var c = g.cells;
 			if (c[x][y] !== -1)  return false;
 			return g.moves.length < 2 ||
@@ -30,7 +30,7 @@
 		isValid: function(g, move){
 			return move.p === g.current && Tribo.canPlay(g, move.x, move.y, move.p);
 		},
-		getLines: function(g, x, y, p) {
+		getLines: function(g, x, y, p){
 			var c = g.cells, lines = [];
 			if (x>0 && c[x-1][y]===p) {
 				if ( x>1 && c[x-2][y]===p) {
@@ -113,7 +113,7 @@
 					var p = c[x][y];
 					if (p===-1) {
 						if (seen[x][y]<nbmoves) {
-							var zone = {size:0, access:[false,false]};
+							var zone = {size:0, access:[false, false]};
 							zones.push(zone);
 							actz(x, y, zone);
 							if (zone.access[0] && zone.access[1]) {

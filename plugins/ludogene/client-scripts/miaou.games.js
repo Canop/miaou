@@ -40,7 +40,7 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 		games[game.type].render($c, m, game, true);
 	}
 
-	function renderHelp($c, game) {
+	function renderHelp($c, game){
 		var $helpDiv;
 		$c.css('position', 'relative'); // <- fixme : find a less hacky solution than changing $c
 		$('<div>?</div>').css({
@@ -78,7 +78,7 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 		if (!match) return;
 		try {
 			return m.game = JSON.parse(match[1]);
-		} catch (e){
+		} catch (e) {
 			console.log("not a game message");
 		}
 	}

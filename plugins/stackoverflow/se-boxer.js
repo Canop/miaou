@@ -11,7 +11,7 @@ var	http = require('http'),
 	apikey, // necessary to get a bigger quota (10 000 instead of 300)
 	TTL = 15*60*1000,
 	tasks = new Deque(2000), currentTask;
-	
+
 function logoCDN(task){
 	var img = '<img src=https://cdn.sstatic.net/'+task.site.split('.')[0];
 	if (task.meta) img += 'meta';
@@ -34,7 +34,7 @@ var handlers = {
 			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(tag => '<span>'+tag+'</span>').join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
-			
+
 			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
 		}
 	},
@@ -51,7 +51,7 @@ var handlers = {
 			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(tag => '<span>'+tag+'</span>').join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
-			
+
 			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
 		}
 	},
@@ -68,9 +68,9 @@ var handlers = {
 				item.owner.display_name+' <i>'+
 				Date(item.creation_date)+ // todo make the browser compute the date using the locale
 				'</i></a>';
-			
+
 			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
-			
+
 		}
 	}
 };
@@ -80,8 +80,8 @@ var handlers = {
 // callback is given an error and a js object
 function getFromSO(url, callback){
 	var buffer = [];
-	http.get(url, function(res) {
-		var gunzip = zlib.createGunzip();			
+	http.get(url, function(res){
+		var gunzip = zlib.createGunzip();
 		res.pipe(gunzip);
 		gunzip.on('data', function(data){
 			buffer.push(data.toString())
@@ -118,7 +118,7 @@ function dequeue(){
 		url = apiurl+task.type+"/"+task.num+"?site="+(task.meta?'meta.':'')+task.site+"&filter="+handler.filter;
 	if (apikey) url += "&key="+apikey;
 	//~ console.log("SE API URL", url);
-	getFromSO(url, function(error, data) {
+	getFromSO(url, function(error, data){
 		//~ console.log('SO box', task.key, 'fetched');
 		currentTask = null;
 		setTimeout(dequeue, 50);
@@ -135,7 +135,7 @@ function dequeue(){
 		}
 		var box = handler.dobox(data.items[0], task);
 		cache.set(task.key, box, TTL);
-		task.send('box', {mid:task.mid, from:task.line, to:box});	   
+		task.send('box', {mid:task.mid, from:task.line, to:box});
 	});
 }
 
@@ -145,7 +145,7 @@ function dequeue(){
 //  - site : "stackoverflow" | "askubuntu" | ...
 //  - meta : false | true
 //  - num  : id of the thing
-//  - mid  : the id of the message 
+//  - mid  : the id of the message
 //  - send : box sending function
 exports.addTask = function(task){
 	task.key = task.type+'.'+task.num;
@@ -164,13 +164,13 @@ exports.rawTasks = function(text){
 			task = { line:match[0], meta:!!match[1], site:match[2] };
 		if ( hash && (submatch=hash.match(/^#comment(\d+)_\d+$/)) ) {
 			task.type = "comments";
-			task.num = +submatch[1];			
+			task.num = +submatch[1];
 		} else if ( match[4]==='a' ) {
 			task.type = "answers";
 			task.num = +match[5];
 		} else if ( path && (submatch=path.match(/^\/[^\/]+\/(\d+)$/)) ) {
 			task.type = "answers";
-			task.num = +submatch[1];			
+			task.num = +submatch[1];
 		} else {
 			task.type = "questions";
 			task.num = +match[5];

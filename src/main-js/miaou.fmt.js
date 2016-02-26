@@ -8,37 +8,37 @@
 // 3. mdMcToHtml     : conversion of a message content. #messages related elements
 //                     like the reply mark may be added at this level
 miaou(function(fmt){
-	
+
 	// format of the line, between the header and the body of a table,
 	//  defining the column alignements.
-	// This is how we recognize a table in Markdown 
+	// This is how we recognize a table in Markdown
 	var	coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
 		coderegex = /^( {4}|\t)/;
-	
-	fmt.mdStringToHtml = function(s, username) {
-		return s.split('`').map(function(t,i){
+
+	fmt.mdStringToHtml = function(s, username){
+		return s.split('`').map(function(t, i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
 			.replace( // exemple : [dystroy](http://dystroy.org)
 				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
 			)
-			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s,t,r,_,m){ // exemples : [a message](7#123456), [a room](7#)
+			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s, t, r, _, m){ // exemples : [a message](7#123456), [a room](7#)
 				r = r || (miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
 			})
-			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s,t,u){ // exemple : [some user](u/1234)
+			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s, t, u){ // exemple : [some user](u/1234)
 				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
 			.replace( // exemple : http://dystroy.org
 				/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig,
 				'$1<a target=_blank href="$2">$2</a>'
 			)
-			.replace(/(^|>)([^<]*)(<|$)/g, function(_,a,b,c){ // do replacements only on what isn't in a tag
+			.replace(/(^|>)([^<]*)(<|$)/g, function(_, a, b, c){ // do replacements only on what isn't in a tag
 				return a
 				+ b
-				.replace(/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g, function(_,sp,ping){ // ping
+				.replace(/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g, function(_, sp, ping){ // ping
 					var isme = miaou.locals && miaou.locals.me && miaou.locals.me.name===ping.slice(1);
 					return sp+'<span class="ping'+(isme?' ping-me':'')+'">'+ping+'</span>';
 				})
@@ -50,18 +50,18 @@ miaou(function(fmt){
 				+ c;
 			})
 			.replace(/---[^<>]*?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){
-				return s.length>6 ? '<strike>'+s.slice(3,-3)+'</strike>' : s
+				return s.length>6 ? '<strike>'+s.slice(3, -3)+'</strike>' : s
 			})
 			.replace(/\*\*[^<>]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*\*/g, function(s){
-				return s.length>4 ? '<b>'+s.slice(2,-2)+'</b>' : s
+				return s.length>4 ? '<b>'+s.slice(2, -2)+'</b>' : s
 			})
 			.replace(/\*[^<>\*]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*(?=[^\*]|$)/g, function(s){
-				return s.length>2 ? '<i>'+s.slice(1,-1)+'</i>' : s
+				return s.length>2 ? '<i>'+s.slice(1, -1)+'</i>' : s
 			})
 		}).join('')
 		.replace(/^\/me(.*)$/ig, '<span class=slashme>'+(username||'/me')+'$1</span>')
 	}
-	
+
 	function wrapCode(code, lang){
 		var s = '<pre class="prettyprint';
 		if (lang) s += " lang-"+lang;
@@ -70,26 +70,26 @@ miaou(function(fmt){
 		s += '</pre>';
 		return s;
 	}
-	
+
 	function _mdTextToHtml(md, username, noThumb){
 		var	table,
 			lang, // current code language, set with a #lang-* pragma
 			ul, ol, code, // arrays : their elements make multi lines structures
-			lin = md.replace(/(\n\s*\n)+/g,'\n\n').replace(/^(\s*\n)+/g,'').replace(/(\s*\n\s*)+$/g,'').split('\n'),
+			lin = md.replace(/(\n\s*\n)+/g, '\n\n').replace(/^(\s*\n)+/g, '').replace(/(\s*\n\s*)+$/g, '').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
-			var m, s = lin[l].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-			
+			var m, s = lin[l].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 			var langPragmaMatch = s.match(/^\s*#lang-(\w+)\s*$/);
 			if (langPragmaMatch) {
 				lang = langPragmaMatch[1];
 				continue;
 			}
-			
+
 			var codeline = ((/^\s*$/.test(s) && code) || coderegex.test(s)) && !(table && /\|/.test(s));
 			if (code) {
 				if (codeline) {
-					code.push(s.replace(coderegex,''));
+					code.push(s.replace(coderegex, ''));
 					continue;
 				} else {
 					lout.push(wrapCode(code, lang));
@@ -102,17 +102,17 @@ miaou(function(fmt){
 					table.push(s);
 					table.push(lin[++l]);
 				} else {
-					code = [s.replace(coderegex,'')];
+					code = [s.replace(coderegex, '')];
 				}
 				continue;
 			}
-			
+
 			if ((m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gifv?|png|jpg)\s*$/))) {
 				var bu = (m[1]||"https://")+m[2]+m[3];
 				if (!noThumb && bu[bu.length-1]!=='m') {
 					// use thumbnail for imgur images whenever possible
 					if (m[4]==='gifv') {
-						lout.push('<img href='+bu+'.'+m[4]+' src='+bu+'m.'+m[4].slice(0,-1)+'>');
+						lout.push('<img href='+bu+'.'+m[4]+' src='+bu+'m.'+m[4].slice(0, -1)+'>');
 					} else {
 						lout.push('<img href='+bu+'.'+m[4]+' src='+bu+'m.'+m[4]+'>');
 					}
@@ -131,7 +131,7 @@ miaou(function(fmt){
 				lout.push('<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">');
 				continue;
 			}
-			
+
 			if (table) {
 				if (table.read(s)) continue;
 				lout.push(table.html(username));
@@ -147,7 +147,7 @@ miaou(function(fmt){
 					continue;
 				}
 			}
-			
+
 			if (/^--\s*$/.test(lin[l])) {
 				lout.push('<hr>');
 				continue;
@@ -157,7 +157,7 @@ miaou(function(fmt){
 				lout.push('<span class=citation>'+(m[1]||'&nbsp;')+'</span>');
 				continue;
 			}
-			
+
 			m=s.match(/^(?:\d{1,3}\.\s+)(.*)$/);
 			if (ol) {
 				if (m) {
@@ -171,7 +171,7 @@ miaou(function(fmt){
 				ol = [m[1]]
 				continue;
 			}
-						
+
 			m=s.match(/^(?:\*\s+)(.*)$/);
 			if (ul) {
 				if (m) {
@@ -198,13 +198,13 @@ miaou(function(fmt){
 		if (ul) lout.push('<ul>'+ul.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ul>');
 		return lout.join('<br>');
 	}
-	
+
 	fmt.mdTextToHtml = function(md, username, noThumb){
-		return _mdTextToHtml(md.replace(/^@\w[\w\-]{2,}#\d+/,''), username, noThumb);
+		return _mdTextToHtml(md.replace(/^@\w[\w\-]{2,}#\d+/, ''), username, noThumb);
 	}
 
 	fmt.mdMcToHtml = function(md, username){
-		return md.replace(/^(?:@(\w[\w\-]{2,})#(\d+))?([\s\S]*)/, function(_,name,num,text){
+		return md.replace(/^(?:@(\w[\w\-]{2,})#(\d+))?([\s\S]*)/, function(_, name, num, text){
 			return (num ? '<span class=reply rn="'+name+'" to='+num+'>&#xe81a;</span>' : '') + _mdTextToHtml(text, username);
 		});
 	}

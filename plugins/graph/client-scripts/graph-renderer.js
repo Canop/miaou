@@ -18,7 +18,7 @@ miaou(function(md, plugins){
 	}
 	TGCol.prototype.parse = function(parser){
 		var vals = new Array(this.rawvals.length);
-		for (var i=0; i<this.rawvals.length; i++){
+		for (var i=0; i<this.rawvals.length; i++) {
 			vals[i]=parser(this.rawvals[i]);
 			if (vals[i]===undefined) return;
 		}
@@ -27,7 +27,7 @@ miaou(function(md, plugins){
 	}
 	TGCol.prototype.isAscending = function(){
 		for (var i=0, n=this.vals.length; i<n; i++) {
-			if ( !(this.vals[i].end>this.vals[i].start) || (i && (this.vals[i-1].end>this.vals[i].start)) ) {
+			if ( !(this.vals[i].end> this.vals[i].start) || (i && (this.vals[i-1].end> this.vals[i].start)) ) {
 				return false;
 			}
 		}
@@ -75,14 +75,14 @@ miaou(function(md, plugins){
 	function hidePop(){
 		if (pop) pop.remove();
 	}
-	
+
 	function render($c, m){
 		if (m.content && /(^|\s)#graph\b/.test(m.content)) {
 			var $table = $c.find('table').eq(0);
 			if ($table.length!==1) return;
 			var	xcol = new TGCol($table, 0),
 				ycols = [];
-			for (var ip=0; ip<xparsers.length; ip++){
+			for (var ip=0; ip<xparsers.length; ip++) {
 				xcol.parse(xparsers[ip]);
 				if (xcol.valid) {
 					if (xcol.isAscending()) break;
@@ -93,7 +93,7 @@ miaou(function(md, plugins){
 				console.log("table : no valid x column");
 				return;
 			}
-			
+
 			for (var i=1, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
 				var ycol = new TGCol($table, i);
 				ycol.parse(Number);
@@ -102,16 +102,16 @@ miaou(function(md, plugins){
 
 			var	H = 170,
 				nbycols = ycols.length;
-			
+
 			if (!nbycols) {
 				console.log("no value column for #graph");
 				return;
 			}
 
-			var	xvals = xcol.vals, 
+			var	xvals = xcol.vals,
 				n = xvals.length,
 				mt = 2, mr = 5, mb = 60, ml = 35, // margins top, right, bottom and left
-				g = ù('<svg',$c[0]).css({ height:H, width:600 }),
+				g = ù('<svg', $c[0]).css({ height:H, width:600 }),
 				gW = Math.max(50, Math.min(g.width()-mr-ml, 40*n*ycols.length)),
 				W = gW+mr+ml,
 				xmin = xvals[0].start,
@@ -150,7 +150,7 @@ miaou(function(md, plugins){
 					ù('<text', pop).text(xval.label).attr({
 						x:xmr, y:mt+h+19, textAnchor:"middle"
 					});
-					ycols.forEach(function(ycol,j){
+					ycols.forEach(function(ycol, j){
 						ù('<rect', pop).attr({
 							x:xmr-70, width:6, y:mt+h+28+j*16, height:6,
 							fill:ycol.color
@@ -190,7 +190,7 @@ miaou(function(md, plugins){
 			.append($tablewrap).append(g.n);
 		}
 	}
-	
+
 	plugins.graph = {
 		start: function(){
 			md.registerRenderer(render, true);

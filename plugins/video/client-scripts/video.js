@@ -15,7 +15,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		if (~this.index) this.ready[this.index] = true;
 	}
 	VD.prototype.render = function($c){ // renders the VD in a message, called only once
-		$c.css('background','#F0EAD6');
+		$c.css('background', '#F0EAD6');
 		if (this.index===-1) {
 			$c.text(this.usernames[0] + " proposed a video/audio chat to " + this.usernames[1]);
 			return;
@@ -47,7 +47,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		if (this.accept[this.index]) {
 			$('<button/>').text('Stop').click(this.off.bind(this)).appendTo(this.$controls);
 		} else {
-			$('<button/>').text('Start').click(this.on.bind(this)).appendTo(this.$controls);			
+			$('<button/>').text('Start').click(this.on.bind(this)).appendTo(this.$controls);
 		}
 		if (this.accept[0] && this.accept[1]) {
 			if (this.medias.video) {
@@ -88,7 +88,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 			if (vd.index===0) vd.tryStart();
 			vd.update();
 		}, function(error){
-			console.log("getUserMedia error: ", error);			
+			console.log("getUserMedia error: ", error);
 		});
 	}
 	VD.prototype.cut = function(){
@@ -124,7 +124,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 					console.log('End of candidates.');
 				}
 			};
-			this.pc.onaddstream = function(event) {
+			this.pc.onaddstream = function(event){
 				console.log('Remote stream added.');
 				vd.remoteVideo.src = window.URL.createObjectURL(event.stream);
 				vd.remoteStream = event.stream;
@@ -142,7 +142,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 			this.started = true;
 			if (this.index===0) {
 				console.log('Sending offer to peer');
-				this.pc.createOffer(this.setLocalAndSendMessage.bind(this), function(e){ console.log('createOffer() error: ', e) });				
+				this.pc.createOffer(this.setLocalAndSendMessage.bind(this), function(e){ console.log('createOffer() error: ', e) });
 			}
 		}
 	}
@@ -151,7 +151,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		this.pc.createAnswer(this.setLocalAndSendMessage.bind(this), null, {});
 	}
 	VD.prototype.setLocalAndSendMessage = function(sessionDescription){
-		console.log('setLocalAndSendMessage sending message' , sessionDescription);
+		console.log('setLocalAndSendMessage sending message', sessionDescription);
 		sessionDescription.sdp = webrtc.preferOpus(sessionDescription.sdp);
 		this.pc.setLocalDescription(sessionDescription);
 		this.sendMsg(sessionDescription);

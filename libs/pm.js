@@ -9,7 +9,7 @@ exports.configure = function(miaou){
 }
 
 // must be called with context being a db connection, returns a promise
-var openPmRoom = exports.openPmRoom = function (shoe, otherUserId, otherUserName){
+var openPmRoom = exports.openPmRoom = function(shoe, otherUserId, otherUserName){
 	if (!shoe.room) return;
 	var lounge, otherUser;
 	return (otherUserId ? this.getUserById(otherUserId) : this.getUserByName(otherUserName))
@@ -22,7 +22,7 @@ var openPmRoom = exports.openPmRoom = function (shoe, otherUserId, otherUserName
 		lounge = r;
 		return this.storeMessage({
 			content:otherUser.name+' has been invited to join this private room.',
-			author:shoe.publicUser.id, authorname:shoe.publicUser.name, 
+			author:shoe.publicUser.id, authorname:shoe.publicUser.name,
 			room:lounge.id,
 			created:Date.now()/1000|0
 		});
@@ -52,6 +52,6 @@ exports.registerCommands = function(registerCommand){
 			return openPmRoom.call(this, ct.shoe, 0, m[1]);
 		},
 		help: "open a dialog room to discuss with a specific user. Usage : `!!pm @someuser`",
-		filter: room => !room.dialog 	
+		filter: room => !room.dialog
 	});
 }

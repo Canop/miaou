@@ -3,12 +3,12 @@ var	Promise = require("bluebird"),
 	seboxer = require("./se-boxer.js"),
 	config,
 	request = require('request');
-	
+
 exports.name = "StackOverflow";
 
 // returns a promise
-// updates and provides in resolution the pluginPlayerInfos if successful, else throws an error 
-function createSOProfile(user, ppi, vals) {
+// updates and provides in resolution the pluginPlayerInfos if successful, else throws an error
+function createSOProfile(user, ppi, vals){
 	var p = Promise.defer(), num = +vals.so_num;
 	request('http://stackoverflow.com/users/'+num, function(error, res, body){
 		if (!error && res.statusCode===200) {
@@ -40,7 +40,7 @@ function createSOProfile(user, ppi, vals) {
 
 // returns the HTML of the profile
 // or undefined if there's no profile
-function renderSOProfile(ppi) {
+function renderSOProfile(ppi){
 	if (ppi.num) {
 		var html = '<a target=_blank href=https://stackoverflow.com/users/'+ppi.num+'>';
 		html += '<img src=https://stackoverflow.com/users/flair/'+ppi.num+'.png>';

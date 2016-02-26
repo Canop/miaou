@@ -4,7 +4,7 @@ const	path = require('path'),
 	commands = {}
 
 var	all = [];
-	
+
 function CommandTask(cmd, args, shoe, message){
 	this.cmd = cmd;
 	this.message = message;
@@ -64,10 +64,10 @@ exports.configure = function(miaou){
 		help:'get help about commands. Usage : `!!help !!commandname`',
 		detailedHelp:"You can also get a list of all commands with just `!!help`"
 	});
-	['afk','ban', 'bans', 'flake','list-users','pm','stats','summon'].forEach(function(module){
+	['afk', 'ban', 'bans', 'flake', 'list-users', 'pm', 'stats', 'summon'].forEach(function(module){
 		require('./'+module+'.js').configure(miaou).registerCommands(registerCommand);
 	});
-	all.sort((a,b) => a.name>b.name ? 1 : -1);
+	all.sort((a, b) => a.name>b.name ? 1 : -1);
 }
 
 var getHelpText = exports.getHelpText = function(room, cmdname){
@@ -96,7 +96,7 @@ exports.onMessage = function(shoe, m){
 	var cmd = commands[cmdMatch[2]];
 	if (!cmd || !cmd.fun) throw 'Command "' + cmdMatch[2] + '" not found';
 	if (cmd.filter && !cmd.filter(shoe.room)) throw 'Command "'+cmd.name+'" not available in this room';
-	return (new CommandTask(cmd, cmdMatch[3], shoe, m)).exec(this);	
+	return (new CommandTask(cmd, cmdMatch[3], shoe, m)).exec(this);
 }
 // may return a promise
 // called with context being a db connection

@@ -2,9 +2,9 @@
 
 // replace the selected part by rep, or what is returned by rep if it's a function
 $.fn.replaceSelection = function(rep){
-	return this.each(function(){		
+	return this.each(function(){
 		var v = this.value, s = this.selectionStart, e = this.selectionEnd;
-		var toReplace = v.slice(s,e),
+		var toReplace = v.slice(s, e),
 			replacement = typeof rep === "function" ? rep.call(this, toReplace, v, s, e) : rep;
 		this.value = v.slice(0, s) + replacement + v.slice(e);
 		this.selectionEnd = e + replacement.length - toReplace.length;
@@ -21,7 +21,7 @@ $.fn.selectedText = function(){
 
 // changes the selection so that it covers entire line(s)
 $.fn.selectLines = function(){
-	return this.each(function(i,s){
+	return this.each(function(i, s){
 		if (this.selectionStart>0 && this.value[this.selectionStart-1]!=='\n') {
 			s = this.value.lastIndexOf('\n', this.selectionStart-1);
 			this.selectionStart = Math.max(0, s+1);
@@ -29,10 +29,10 @@ $.fn.selectLines = function(){
 		if (this.selectionStart===this.selectionEnd) this.selectionEnd++;
 		if (this.selectionEnd<this.value.length) {
 			if (this.value[this.selectionEnd-1]==='\n') {
-				if (this.selectionEnd>this.selectionStart) this.selectionEnd--;
+				if (this.selectionEnd> this.selectionStart) this.selectionEnd--;
 			} else {
 				s = this.value.indexOf('\n', this.selectionEnd-1);
-				this.selectionEnd = s===-1 ? this.value.length : s;				
+				this.selectionEnd = s===-1 ? this.value.length : s;
 			}
 		}
 		this.focus();
@@ -45,7 +45,7 @@ $.fn.insertLine = function(s){
 		var e = this.selectionEnd, v = this.value;
 		if (e>0 && v[e-1]!='\n') s = '\n'+s;
 		if (e<v.length && v[e]!='\n') s += '\n';
-		this.value = v.slice(0,e)+s+v.slice(e);
+		this.value = v.slice(0, e)+s+v.slice(e);
 		this.selectionStart += s.length;
 		this.selectionEnd = this.selectionStart;
 		this.focus();

@@ -14,7 +14,7 @@ miaou(function(games, locals, notif, skin, ws){
 		this.u = -1; // user index in the game
 		this.grads = colors.map(function(c){ return s.rgrad(0.3, 0.3, 1, c, '#000') });
 		this.holeGrad = s.rgrad(0.3, 0.3, 1, 'rgba(0,0,0,0.5)', bg);
-		g.players.forEach(function(p,i){ if (p.id===locals.me.id) this.u=i }, this);
+		g.players.forEach(function(p, i){ if (p.id===locals.me.id) this.u=i }, this);
 		if (abstract) {
 			this.layout = "row";
 			this.W = availableWidth;
@@ -72,7 +72,7 @@ miaou(function(games, locals, notif, skin, ws){
 			userIsCurrentPlayer = panel.g.current!==-1 && panel.u===panel.g.current;
 		for (var i=0; i<T; i++) {
 			for (var j=0; j<T; j++) {
-				(function(i,j){
+				(function(i, j){
 					if (panel.holes[i][j]) panel.holes[i][j].remove();
 					var	cell = cells[i][j],
 						c = panel.holes[i][j] = ù('<circle', s).attr({cx:XB+i*CS+CS/2, cy:YB+j*CS+CS/2, r:BR});
@@ -113,14 +113,14 @@ miaou(function(games, locals, notif, skin, ws){
 					} else {
 						c.attr('fill', panel.grads[cell]);
 					}
-				})(i,j);
+				})(i, j);
 			}
 		}
 	}
 
 	Panel.prototype.removeLastMoves = function(){
 		if (!this.lastMoves) return;
-		for(var lm; (lm = this.lastMoves.shift());) lm.remove();
+		for (var lm; (lm = this.lastMoves.shift());) lm.remove();
 	}
 
 	Panel.prototype.drawLastMoves = function(playerIndex){
@@ -154,7 +154,7 @@ miaou(function(games, locals, notif, skin, ws){
 		panel.names = panel.g.players.map(function(player, i){
 			var name = player.name;
 			var text = ù('<text', s)
-			.text(name.length>21 ? name.slice(0,18)+'…' : name)
+			.text(name.length>21 ? name.slice(0, 18)+'…' : name)
 			.attr({ x:XS, y:panel.LHS*(i+1), fill:colors[i] });
 			if (!panel.abstract) {
 				text.on('mouseenter', panel.drawLastMoves.bind(panel, i))
@@ -173,7 +173,7 @@ miaou(function(games, locals, notif, skin, ws){
 
 	Panel.prototype.drawScores = function(){
 		var g = this.g;
-		this.scores.forEach(function(s,i){ s.text(g.scores[i]) });
+		this.scores.forEach(function(s, i){ s.text(g.scores[i]) });
 		if (this.currentPlayerMark) this.currentPlayerMark.remove();
 		if (this.g.current >= 0) {
 			this.currentPlayerMark = ù('<text', this.s).text("►").attr({
@@ -188,7 +188,7 @@ miaou(function(games, locals, notif, skin, ws){
 		}
 	}
 	
-	Panel.prototype.showMoveLines = function(move) {
+	Panel.prototype.showMoveLines = function(move){
 		if (!move.lines) return;
 		move.lines.forEach(function(line){
 			this.lineMark(line, move.p).animate({strokeOpacity:0}, 6000, ù.remove);

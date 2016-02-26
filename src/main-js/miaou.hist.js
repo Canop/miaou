@@ -1,10 +1,10 @@
 // histogram and search functions
 
 miaou(function(hist, gui, md, time, ws){
-	
+
 	var	visible = false,
 		currentPattern; // as the xhr-pulling flavour of socket.io doesn't handle callbacks, we have to store the currently searched pattern
-	
+
 	// arg : +1 or -1
 	function moveSelect(d){
 		var i, $s = $('#search-results .message.selected');
@@ -23,10 +23,10 @@ miaou(function(hist, gui, md, time, ws){
 				$scroller.scrollTop(mtop-stop+-25);
 			} else if (mtop+$selected.height()+sst>stop+$scroller.height()) {
 				$scroller.scrollTop(mtop+$selected.height()+sst-$scroller.height()+15);
-			}			
+			}
 		}
 	}
-	
+
 	$('#hist').on('click', '[m]', function(){
 		md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
 	}).on('mouseenter', '[m]', function(){
@@ -85,14 +85,14 @@ miaou(function(hist, gui, md, time, ws){
 	}
 
 	// request the histogram (not the search result list)
-	hist.fetchHistogram = function(pattern) {
+	hist.fetchHistogram = function(pattern){
 		if (!visible) return;
 		currentPattern = pattern;
 		ws.emit('hist', {pattern:pattern});
 	}
 
 	// request the search result messages
-	hist.search = function(pattern, page) {
+	hist.search = function(pattern, page){
 		ws.emit('search', {pattern:pattern, page:page||0});
 	}
 
@@ -116,7 +116,7 @@ miaou(function(hist, gui, md, time, ws){
 			$('#search-next-page').remove();
 		}
 	}
-	
+
 	// display search results histogram sent by the server
 	hist.showHist = function(res){
 		if (res.search.pattern !== currentPattern) {
@@ -147,18 +147,18 @@ miaou(function(hist, gui, md, time, ws){
 			}
 			var $bar = $('<div/>').addClass('bar').css('width', Math.log(n)*80/logmaxn+'%');
 			if (sm) $bar.addClass('hit');
-			var $day = $('<div/>').addClass('day').append($bar).attr('d',d).attr('n',n).appendTo($month);
-			if (m) $day.attr('m',m);
-			if (sm) $day.attr('sm',sm).attr('sn',sn);
+			var $day = $('<div/>').addClass('day').append($bar).attr('d', d).attr('n', n).appendTo($month);
+			if (m) $day.attr('m', m);
+			if (sm) $day.attr('sm', sm).attr('sn', sn);
 		}
 		records.forEach(function(r){
-			for(d++;d<r.d;d++) day(d,0);
+			for (d++;d<r.d;d++) day(d, 0);
 			day(d=r.d, r.n, r.m, r.sn, r.sm);
 		});
 		$('#hist').scrollTop($('#hist')[0].scrollHeight);
 		hist.showPage();
 	}
-	
+
 	hist.showPage = function(){
 		if (!visible) return;
 		var sh = gui.$messageScroller.height();

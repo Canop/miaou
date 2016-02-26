@@ -4,7 +4,7 @@
 (function(){
 
 	"use strict";
-	
+
 	var WordCharRegex = /[\d@A-Z_a-z~\xa1-\xac\xae-\xaf\xb5-\xba\xc0-\xfe]/; // something a little less bad than the \w of ES5
 
 	function Groumf(options){
@@ -26,11 +26,11 @@
 	// callback.
 	Groumf.prototype.add = function(expr,  value){
 		if (expr.length<3) return console.log('Expression "'+expr+'" ignored : too short');
-		var root = expr.slice(0,3).toLowerCase(),
+		var root = expr.slice(0, 3).toLowerCase(),
 			tree = this.forest[root];
 		if (!tree) tree = this.forest[root] = [];
-		tree.push({p:expr.toLowerCase(),v:value||expr});
-		tree.sort(function(a,b){
+		tree.push({p:expr.toLowerCase(), v:value||expr});
+		tree.sort(function(a, b){
 			return b.p.length-a.p.length
 		});
 	}
@@ -39,12 +39,12 @@
 	// returns the originally added expression or its value if any.
 	Groumf.prototype.get = function(expr){
 		var lexpr = expr.toLowerCase(),
-			tree = this.forest[lexpr.slice(0,3)];
+			tree = this.forest[lexpr.slice(0, 3)];
 		if (!tree) return;
 		for (var i=0; i<tree.length; i++) {
 			if (tree[i].p===lexpr) return tree[i].v;
 		}
-	}	
+	}
 
 	Groumf.prototype.replaceInString = function(input, cb, arg3){
 		if (arg3 !== undefined) return input.replace(cb, arg3);
@@ -171,8 +171,8 @@
 			return this.replaceInString(input, cb, arg3);
 		}
 	}
-	
-	;['replace','replaceTextWithHTMLInHTML','replaceTextWithHTMLInHTMLUsingRegex','replaceTextWithTextInHTML','replaceInString'].forEach(function(n){
+
+	;['replace', 'replaceTextWithHTMLInHTML', 'replaceTextWithHTMLInHTMLUsingRegex', 'replaceTextWithTextInHTML', 'replaceInString'].forEach(function(n){
 		Groumf[n] = function(){
 			return Groumf.prototype[n].apply(new Groumf, arguments);
 		};

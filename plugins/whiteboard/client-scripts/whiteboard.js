@@ -24,7 +24,7 @@ miaou(function(plugins, chat, locals, md, ms){
 					if (oldMessage && oldMessage.whiteboard && oldMessage.author!==locals.me.id) {
 						if (!r.test(m.content)) {
 							// to avoid an error, let's silently restore the !!whiteboard if it's missing
-							m.content = m.content.replace(/^(@[\w-]{3,}#?\d*\s+)?/,'$1!!whiteboard ');
+							m.content = m.content.replace(/^(@[\w-]{3,}#?\d*\s+)?/, '$1!!whiteboard ');
 						}
 					}
 				}

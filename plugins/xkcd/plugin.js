@@ -9,7 +9,7 @@ function abstract($, line){
 	}
 	$box.append($abstract);
 	$abstract.append($("<h1>").append(
-		$("<a>").attr("href",line).attr("target","_blank").text(
+		$("<a>").attr("href", line).attr("target", "_blank").text(
 			"XKCD: " + $("#ctitle").text()
 		)
 	));

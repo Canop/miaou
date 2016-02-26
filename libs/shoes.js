@@ -7,7 +7,7 @@ var	miaou,
 	auths = require('./auths.js'),
 	ws = require('./ws.js'),
 	onSendMessagePlugins;
-	
+
 exports.configure = function(_miaou){
 	miaou = _miaou;
 	io = miaou.io;
@@ -89,7 +89,7 @@ Shoes.checkAuth = function(requiredLevel){
 }
 
 // returns the socket of the passed user if he's in the same room
-Shoes.userSocket = function(userIdOrName, includeWatchers) {
+Shoes.userSocket = function(userIdOrName, includeWatchers){
 	var ioroom = io.sockets.adapter.rooms[this.room.id];
 	if (!ioroom) {
 		console.log('lost room in shoe.userSocket');
@@ -99,7 +99,7 @@ Shoes.userSocket = function(userIdOrName, includeWatchers) {
 		let socket = io.sockets.connected[socketId];
 		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
 			return socket;
-		}		
+		}
 	}
 	if (!includeWatchers) return;
 	ioroom = io.sockets.adapter.rooms['w'+this.room.id];
@@ -114,7 +114,7 @@ Shoes.userSocket = function(userIdOrName, includeWatchers) {
 			(socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
 		) {
 			return socket;
-		}		
+		}
 	}
 }
 // to be used by bots, creates a message, store it in db and emit it to the room
@@ -137,7 +137,7 @@ Shoes.userRooms = function(){
 				rooms.push(+m[1]);
 				break;
 			}
-		}	
+		}
 	}
 	return rooms;
 }

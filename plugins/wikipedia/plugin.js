@@ -6,8 +6,8 @@ function abstract($, line){
 	var	$box = $('<div/>').addClass('wikipedia'),
 		$abstract = $('<div/>').addClass('abstract');
 	$box.append(
-		$('<a>').attr('href', line).css('text-decoration','none')
-		.attr('title',"Click here to jump to the whole article")
+		$('<a>').attr('href', line).css('text-decoration', 'none')
+		.attr('title', "Click here to jump to the whole article")
 		.append('<img class=wikipedia-icon src=static/plugins/wikipedia/rsc/Wikipedia-globe-icon.png align=left>')
 		.append($('h1'))
 	);
@@ -26,19 +26,19 @@ function abstract($, line){
 		$abstract.append($txt);
 		$('p').each(function(){
 			var $this = $(this);
-			if (!$this.closest('div[class*="infobox"],table').length){
-				for(;;) {
+			if (!$this.closest('div[class*="infobox"],table').length) {
+				for (;;) {
 					$txt.append($this.clone());
 					$this = $this.next();
-					if (!$this.length || $this[0].name !== 'p') return false; 
+					if (!$this.length || $this[0].name !== 'p') return false;
 				}
 			}
 		});
 	}
-	$box.find('a[href]').attr('href', function(_,u){
+	$box.find('a[href]').attr('href', function(_, u){
 		return url.resolve(line, u)
-	}).attr('target','_blank');
-	$box.find('img:not(.wikipedia-icon)').attr('src', function(_,u){
+	}).attr('target', '_blank');
+	$box.find('img:not(.wikipedia-icon)').attr('src', function(_, u){
 		return url.resolve(line, u)
 	});
 	$box.append('<div style="clear:both"/>');

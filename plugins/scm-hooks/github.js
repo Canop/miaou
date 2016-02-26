@@ -50,7 +50,7 @@ function link(o, label, url){
 
 function pushComment(arr, comment){
 	arr.push(link(comment, "Comment")+":");
-	arr.push.apply(arr, comment.body.replace(/\s*$/,'').split(/\r?\n/).map(function(line){
+	arr.push.apply(arr, comment.body.replace(/\s*$/, '').split(/\r?\n/).map(function(line){
 		return "> "+line;
 	}));
 }
@@ -97,7 +97,7 @@ function eventToMarkdown(event, data){
 	if (event==='release') {
 		big.push("Release " + link(data.release) + " " + data.action + " in " + link(repo));
 	}
-	if (data.ref_type && data.sender) { 
+	if (data.ref_type && data.sender) {
 		var verb = event==='create' ? " added a " : " deleted a ";
 		var s = link(data.sender) + verb + data.ref_type;
 		if (data.ref) s += " ("+data.ref+")";
@@ -120,9 +120,9 @@ function eventToMarkdown(event, data){
 		small.push("|Commit|Committer|Message|\n"
 		+ "|:-:|:-:|:-|\n"
 		+ data.commits.map(function(c){
-			return '|'+link(c, c.timestamp.replace("T"," ").replace(/:\d+\+/," GMT+"))+'|'
-			+ link(c.committer)+'|' 
-			+ c.message.split('\n',1)[0]+'|\n';
+			return '|'+link(c, c.timestamp.replace("T", " ").replace(/:\d+\+/, " GMT+"))+'|'
+			+ link(c.committer)+'|'
+			+ c.message.split('\n', 1)[0]+'|\n';
 		}).join(''));
 	}
 	return big.map(t => "**"+t+"**\n")

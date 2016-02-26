@@ -13,8 +13,8 @@ miaou(function(mh, time){
 				)
 			).append(
 				$('<div>').append(current.content.split('\n').map(function(t){ return $('<div>').text(t) }))
-			).prependTo($content);		
-			if (!current.previous) break;	
+			).prependTo($content);
+			if (!current.previous) break;
 			current = current.previous;
 		}
 		if (current.changed) {

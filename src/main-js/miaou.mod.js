@@ -1,7 +1,7 @@
 // moderation functions
 
 miaou(function(mod, chat, md, ws){
-	
+
 	var durs = {};
 	durs['d'] = 24 * (durs['h'] = 60 * (durs['m'] = 60));
 
@@ -14,7 +14,7 @@ miaou(function(mod, chat, md, ws){
 				.on('change', function(){
 					$c.find('.custom').prop('disabled', !$('#custom').prop('checked'));
 				})
-			).append($('<label>').attr('for',idval).text(text));
+			).append($('<label>').attr('for', idval).text(text));
 			return $r;
 		}
 		radio('m10', '10 minutes').prop('checked', true);
@@ -23,12 +23,12 @@ miaou(function(mod, chat, md, ws){
 		radio('h12', '12 hours');
 		radio('d2', '2 days');
 		radio('custom', 'custom :');
-		$('<input id=ban_nb class=custom type=number value=1 min=1>').prop('disabled', true).appendTo($c);		
+		$('<input id=ban_nb class=custom type=number value=1 min=1>').prop('disabled', true).appendTo($c);
 		$('<select  id=ban_unit class=custom>')
 		.append($('<option>').val('m').text('minutes'))
 		.append($('<option>').val('h').text('hours'))
 		.append($('<option>').val('d').text('days'))
-		.prop('disabled', true).appendTo($c);		
+		.prop('disabled', true).appendTo($c);
 		$('<p>').text("Reason :").appendTo($c);
 		$('<input id=ban-reason>').appendTo($c);
 		miaou.dialog({
@@ -47,13 +47,13 @@ miaou(function(mod, chat, md, ws){
 						ban.nb = $('#ban_nb').val();
 						ban.unit = $('#ban_unit').val();
 					}
-					ban.duration = ban.nb*durs[ban.unit];					
+					ban.duration = ban.nb*durs[ban.unit];
 					ws.emit('ban', ban);
 				}
 			}
 		});
 	}
-	
+
 	mod.showBan = function(ban){
 		md.notificationMessage(function($c){
 			// warning : parts of the ban object can be injected by another browser, don't use as html

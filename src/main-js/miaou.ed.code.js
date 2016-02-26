@@ -4,8 +4,8 @@
 miaou(function(ed){
 
 	var langs = [
-		'auto','bsh','c','cpp', 'cs', 'css','erlang','go','hs','html','java'
-		,'js','lisp','md','perl','r','sql','tcl','tex','xml'
+		'auto', 'bsh', 'c', 'cpp', 'cs', 'css', 'erlang', 'go', 'hs', 'html', 'java',
+		'js', 'lisp', 'md', 'perl', 'r', 'sql', 'tcl', 'tex', 'xml',
 	];
 
 	function toggleLinesCode(s){

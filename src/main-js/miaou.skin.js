@@ -21,7 +21,7 @@ miaou(function(skin){
 			}
 		}
 		return matches
-		.sort(function(a,b){ return a.num-b.num })
+		.sort(function(a, b){ return a.num-b.num })
 		.map(function(a){ return a.bg });
 	}
 
@@ -32,7 +32,7 @@ miaou(function(skin){
 		link:  skin.getCssValue(/^\.wzin-link$/, "background-color")
 	}
 	
-	skin.stringToColour = function(str) {
+	skin.stringToColour = function(str){
 		if (!str) return "#888";
 		var	i,
 			hash = 0;

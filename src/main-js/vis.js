@@ -15,7 +15,7 @@ window.vis = (function(){
 			break;
 		}
 	}
-	return function(c) {
+	return function(c){
 		if (c) document.addEventListener(eventKey, c);
 		return !document[stateKey];
 	}

@@ -35,7 +35,7 @@ miaou(function(){
 			close: close, // removes the dialog
 			hide: function(callback){ $d.fadeOut(callback) }, // just hides it so that it can be reopened (be careful not to let them accumulate)
 			show: function(callback){ $d.fadeIn(callback) }, // shows a previously hidden dialog
-			exists: function() { return !!$d.parent().length } // if false, it won't be possible to show it
+			exists: function(){ return !!$d.parent().length } // if false, it won't be possible to show it
 		}
 		setTimeout(function(){ $(window).on('keyup', handleKey) }, 300); // this delay mostly to prevent the handling of the keydown event which lead to this dialog
 		dialogs.push(d);

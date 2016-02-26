@@ -13,14 +13,14 @@ const	providers = [require("./github.js").provider],
 
 var	config,
 	db;
-	
+
 exports.name = "SCM-Hooks";
 
 // called with context the db, return a promise
 function initProvider(p){
 	return this.getBot(p.botName)
 	.then(function(bot){
-		p.bot = bot;	
+		p.bot = bot;
 		if (p.botAvatar.src===bot.avatarsrc && p.botAvatar.key===bot.avatarkey) return;
 		bot.avatarsrc = p.botAvatar.src;
 		bot.avatarkey = p.botAvatar.key;
@@ -83,7 +83,7 @@ function unwatchRepo(ct, provider, repo){
 		return this.execute(
 			"delete from scm_hook_room where provider=$1 and repo=$2 and room=$3",
 			[provider.key, repo, ct.shoe.room.id]
-		); 
+		);
 	})
 	.then(function(){
 		ct.reply("The room is unhooked from "+repo);
@@ -124,7 +124,7 @@ function onCommand(ct, provider){
 }
 
 function scmCalling(provider, req, res){
-	console.log("SCM "+provider.key+" CALLED"); 
+	console.log("SCM "+provider.key+" CALLED");
 	console.log("headers:", req.headers);
 	console.log("body:", req.body);
 	var	queryRooms = req.query.rooms || req.query.room || "",
@@ -140,16 +140,16 @@ function scmCalling(provider, req, res){
 	res.send('Okey');
 	db.on()
 	.then(function(){
-		return this.execute("update scm_hook set nb_calls=nb_calls+1 where provider=$1 and repo=$2", [provider.key, anal.repo]); 
+		return this.execute("update scm_hook set nb_calls=nb_calls+1 where provider=$1 and repo=$2", [provider.key, anal.repo]);
 	})
 	.then(function(res){
 		if (!res.rowCount) {
 			console.log("NEW HOOK");
-			return this.execute("insert into scm_hook (provider, repo, nb_calls) values($1,$2,1)", [provider.key, anal.repo]); 
+			return this.execute("insert into scm_hook (provider, repo, nb_calls) values($1,$2,1)", [provider.key, anal.repo]);
 		}
 	})
 	.then(function(){
-		return this.queryRows("select room from scm_hook_room where provider=$1 and repo=$2", [provider.key, anal.repo]); 
+		return this.queryRows("select room from scm_hook_room where provider=$1 and repo=$2", [provider.key, anal.repo]);
 	})
 	.then(function(rows){
 		if (!anal.content) {

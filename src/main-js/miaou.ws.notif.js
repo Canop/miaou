@@ -1,6 +1,6 @@
 // notification of ws connections or reconnections
 miaou(function(ws, md){
-	
+
 	var	notif,
 		timer;
 
@@ -23,12 +23,12 @@ miaou(function(ws, md){
 			}).remove(function(){ notif = null });
 		}, 18000);
 	}
-		
+
 	function onOn(){
 		console.log('RECONNECT');
 		clearTimeout(timer);
 		timer = 0;
-		if (notif) notif.remove();	
+		if (notif) notif.remove();
 	}
 
 	ws.notif = {onOff:onOff, onOn:onOn};

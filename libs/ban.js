@@ -24,13 +24,13 @@ exports.registerCommands = function(registerCommand){
 					throw "You can't ban a room owner";
 				}
 				if (authLevel==="admin" && shoe.room.auth!=="own") {
-					throw "Only a room owner can ban a room admin";				
+					throw "Only a room owner can ban a room admin";
 				}
 				shoe.emit('mod_dialog', {id:user.id, name:user.name});
 			})
 		},
 		help: "Temporarily ban a user from the room : `!!ban @some_user_name`",
 		detailedHelp: "A dialog will open to ask you the ban duration",
-		filter: room => !room.dialog 	
+		filter: room => !room.dialog
 	});
 }

@@ -5,7 +5,7 @@ miaou(function(time){
 	var	offsetWithServer = 0, // in seconds
 		roomEnterTime; // in seconds since epoch, server time
 
-	time.MMM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+	time.MMM = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 		
 	time.setRoomEnterTime = function(serverTime){
 		roomEnterTime = serverTime;

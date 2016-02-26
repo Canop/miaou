@@ -10,7 +10,7 @@ var	clientSidePluginNames,
 exports.configure = function(miaou){
 	clientSidePluginNames = (miaou.config.plugins||[]).filter(function(n){
 		return fs.existsSync(path.resolve(__dirname, '..', n, '..', 'client-scripts'))
-	}).map(p=>p.split('/').slice(-2,-1)[0]);
+	}).map(p=>p.split('/').slice(-2, -1)[0]);
 	db = miaou.db;
 	return this;
 }

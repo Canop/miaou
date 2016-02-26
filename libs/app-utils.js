@@ -1,4 +1,4 @@
-const naming = require('./naming.js'),
+const	naming = require('./naming.js'),
 	mobileRegex = /Android|webOS|iPhone|iPad|Mini/i;
 
 var config;
@@ -13,7 +13,7 @@ exports.url = function(pathname){ // todo cleaner way in express not supposing a
 }
 
 exports.roomPath = function(room){
-	return room.id+'?'+naming.toUrlDecoration(room.name);	
+	return room.id+'?'+naming.toUrlDecoration(room.name);
 }
 exports.roomUrl = function(room){
 	return exports.url('/'+exports.roomPath(room));

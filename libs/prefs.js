@@ -24,7 +24,7 @@ var	db,
 	langs,
 	themes,
 	plugins;
-	
+
 exports.configure = function(miaou){
 	db = miaou.db;
 	langs = require('./langs.js').configure(miaou);
@@ -73,7 +73,7 @@ exports.appAllPrefs = function(req, res){
 	}).map(function(epi){
 		return this.getPlayerPluginInfo(epi.name, req.user.id);
 	}).then(function(ppis){ // todo use map(ppi,i) to avoid iteration
-		ppis.forEach(function(ppi,i){
+		ppis.forEach(function(ppi, i){
 			if (ppi) externalProfileInfos[i].ppi = ppi.info;
 		});
 		return externalProfileInfos;
@@ -107,14 +107,14 @@ exports.appAllPrefs = function(req, res){
 			var	name = req.body.name.trim(),
 				avatarsrc = req.body['avatar-src'],
 				avatarkey = req.body['avatar-key'];
-				
+
 			// in the very specific case of a user having choosed gravatar and
 			//  having given a clear email, we hash it so that it's never displayed
 			//  to other users through the URL of the avatar
 			if (avatarsrc==='gravatar' && /@/.test(avatarkey)) {
 				avatarkey = crypto.createHash('md5').update(avatarkey.trim().toLowerCase()).digest('hex');
 			}
-			
+
 			if (!naming.isValidUsername(name)) return;
 			if (name!==req.user.name && naming.isUsernameForbidden(name)) {
 				error = "Sorry, that username is reserved.";
@@ -146,9 +146,9 @@ exports.appAllPrefs = function(req, res){
 				if (!val || val===userPrefs[key]) continue;
 				if (val.length>VALUE_MAX_LENGTH) {
 					console.log("pref value too long :", val);
-					continue;				
+					continue;
 				}
-				dbops.push(this.upsertPref(req.user.id, key, val));	
+				dbops.push(this.upsertPref(req.user.id, key, val));
 				userPrefs[key] = val; // update the cache
 			}
 			return Promise.all(dbops);

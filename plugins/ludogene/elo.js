@@ -9,7 +9,7 @@ function Rating(playerId){ // rating of a player
 	this.f = 0; // number of finished games
 	this.c = 0; // number of counted games (finished, not ignored)
 	this.cly = 0; // number of counted games last year
-	this.op = new Map(); // map opponent Id -> shared object {n,f,c,cly} 
+	this.op = new Map(); // map opponent Id -> shared object {n,f,c,cly}
 	this.d = 0; // number of dropped games
 	this.malus = []; // array [[text,value],...]
 	this.ms = 0; // sum of all malus
@@ -53,14 +53,14 @@ Rating.prototype.computeMalus = function(){
 	if (nbOpponentsLastYear < 3) m.push(["Less than 3 opponents since a year", 50]);
 	if (nbOpponentsLastYear < 10) m.push(["Less than 10 opponents since a year", 30]);
 	if (nbOpponentsLastYear < 15) m.push(["Less than 15 opponents since a year", 15]);
-	this.ms = m.reduce((s,e) => s+e[1], 0);
+	this.ms = m.reduce((s, e) => s+e[1], 0);
 }
 
 function GameImpact(m, r){ // impact of a game (note: the constructor has side effects on r)
 	var g = m.g;
 	this.p0 = r[0].id;
 	this.p1 = r[1].id;
-	var opo = r[0].op.get(this.p1); // informations common to those two players 
+	var opo = r[0].op.get(this.p1); // informations common to those two players
 	if (!opo) {
 		opo = {c:0, n:0, f:0, cly:0};
 		r[0].op.set(this.p1, opo);
@@ -84,7 +84,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		var minc = Math.min(r[0].c, r[1].c) + 1;
 		if ( (opo.c>50 && opo.c-50>.2*(minc-50)) || (opo.c>10 && opo.c-10>.5*(minc-10)) ) {
 			this.t = "ignored";
-			return;	
+			return;
 		}
 		r[0].c++;
 		r[1].c++;
@@ -104,7 +104,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		// var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
 		var v = .6 + (g.scores[winnerIndex]-50)*.0084; // in ].6,1[
 		this.v = winnerIndex ? 1-v : v;
-		this.D = r[0].e0-r[1].e1; 
+		this.D = r[0].e0-r[1].e1;
 		if (this.D>100) this.D = 100 + (this.D-100)*.7;
 		this.p = 1 / ( 1 + Math.pow(10, - this.D/R)); // in ]0,1[
 		this.d0 = this.coef * K * (this.v - this.p);
@@ -153,7 +153,7 @@ function compute(messages){
 	});
 	ratings = ratings
 	.filter(r => r.nbOpponents() >= NB_OPPONENTS_MIN )
-	.sort((a,b) => b.r-a.r);
+	.sort((a, b) => b.r-a.r);
 	return { log:log, ratings:ratings, ratingsMap:ratingsMap };
 }
 
@@ -172,9 +172,9 @@ function ratingsTable(data, userId){
 		["Rank", "Player", "Games", "Opponents", "Wins", "Losses", "Drops",
 		"Elo 1st player", "Elo 2nd player", "Malus", "Global Rating"],
 		data.ratings
-		.filter(function(r,i){
+		.filter(function(r, i){
 			r.rank = i+1;
-			return !userId || userId===r.id; 
+			return !userId || userId===r.id;
 		})
 		.map(function(r){
 			return [
@@ -229,7 +229,7 @@ function userGamesTable(data, r){
 	);
 }
 
-function opponentsTable(data, r) {
+function opponentsTable(data, r){
 	var	s = "## Opponents:\n",
 		rows = [];
 	r.op.forEach(function(opo, uid){

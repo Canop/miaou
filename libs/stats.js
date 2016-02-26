@@ -9,7 +9,7 @@ exports.configure = function(_miaou){
 	return this;
 }
 
-function doStats(ct) {
+function doStats(ct){
 	// this regex must be changed with care : it prevents injections
 	var	match = ct.args.match(/([@\w\-]+)(\s+[a-zA-Z]+)?(\s+\d+)?/),
 		room = ct.shoe.room,
@@ -19,7 +19,7 @@ function doStats(ct) {
 		n = 10;
 	if (match) {
 		topic = match[1];
-		subtopic = match[2]; 
+		subtopic = match[2];
 		n = Math.min(+match[3] || n, 500);
 	}
 	if (/^socket/i.test(topic)) {
@@ -47,7 +47,7 @@ function doStats(ct) {
 		ranking = false;
 	} else if (/^(active-)?users$/i.test(topic)) {
 		cols = [
-			{name:"Name", value:"name", fmt:row => "["+row.c0+"](u/"+row.c0+")" },		
+			{name:"Name", value:"name", fmt:row => "["+row.c0+"](u/"+row.c0+")" },
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
 			{name:"Stars", value:"(select sum(star) from message where author=player.id)"},
@@ -82,9 +82,9 @@ function doStats(ct) {
 	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
 			{name:"Id", value:"id"},
-			{name:"Name", value:"name", fmt:row => "["+row.c1+"]("+row.c0+"#)" },		
-			{name:"Language", value:"lang"},		
-			{name:"Private", value:"private"},		
+			{name:"Name", value:"name", fmt:row => "["+row.c1+"]("+row.c0+"#)" },
+			{name:"Language", value:"lang"},
+			{name:"Private", value:"private"},
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
@@ -99,7 +99,7 @@ function doStats(ct) {
 			{name:"Users", value:"(select count(distinct author) from message where room=$1)"},
 		];
 		args.push(room.id);
-		title = "Statistics of the room *"+room.name+"*";		
+		title = "Statistics of the room *"+room.name+"*";
 	} else if (/^votes$/i.test(topic)) {
 		cols = [
 			{name:"Vote", value:"vote"},
@@ -163,6 +163,6 @@ exports.registerCommands = function(registerCommand){
 			"\n* `!!stats` : basic stats"+
 			"\n* `!!stats server-graph` : monthly histogram"+
 			"\n* `!!stats sockets` : stats about current connections"
-			
+
 	});
 }

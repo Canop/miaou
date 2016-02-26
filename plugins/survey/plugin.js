@@ -17,14 +17,14 @@ function wsvote(shoe, userdata){
 		return this.execute(
 			"delete from survey_vote where message=$1 and player=$2",
 			[mid, shoe.completeUser.id]
-		);			
+		);
 	})
 	.then(function(){
 		if (userdata.vote >= 0) {
 			return this.execute(
 				"insert into survey_vote (message, player, item) values ($1, $2, $3)",
 				[mid, shoe.completeUser.id, userdata.vote]
-			);			
+			);
 		}
 	})
 	.then(function(){

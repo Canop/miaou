@@ -30,7 +30,7 @@ module.exports = function(ct, gameType){
 					} else {
 						c += link(m, 'waiting for @' + m.g.players[0].name+' to accept');
 					}
-				} else if (m.g.current===0 || m.g.current===1){
+				} else if (m.g.current===0 || m.g.current===1) {
 					if (m.g.players[m.g.current].name===p.name) {
 						c += link(m, "It's **your** turn to play against @"+m.g.players[+!m.g.current].name);
 					} else {

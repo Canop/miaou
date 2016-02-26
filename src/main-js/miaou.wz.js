@@ -6,7 +6,7 @@ miaou(function(wz, gui, skin){
 
 	var	wzins = [],
 		frozen;
-	
+
 	// highlights the conversation graph on hover of one message
 	// The algorithm searches only in normal directions (no replying
 	//  to a future message) and guarantees acyclicity
@@ -53,11 +53,11 @@ miaou(function(wz, gui, skin){
 		var w;
 		while ((w=wzins.pop())) w.remove();
 	}
-	
+
 	wz.updateAll = function(){
-		for (var i=0; i<wzins.length; i++) wzins[i].update(); 
+		for (var i=0; i<wzins.length; i++) wzins[i].update();
 	}
-	
+
 	$(window).click(function(){
 		if (!wzins.length) return;
 		frozen = ! frozen;

@@ -5,7 +5,7 @@
 var Promise = require("bluebird"),
 	cache = require('bounded-cache')(200);
 
-function makeVD(shoe, message) {
+function makeVD(shoe, message){
 	var match = message.content.match(/^(?:@\w[\w\-]{2,}#?\d*\s+)?!!\w+\s*@(\w[\w_\-\d]{2,})/);
 	if (!match) throw  'Bad syntax. Use `!!video @somebody` or `!!audio @somebody`';
 	var vd = {
@@ -21,7 +21,7 @@ function makeVD(shoe, message) {
 //  - the video descriptor
 //  - the index of the current user in vd.players (-1, 0 or 1)
 // Sets a missing shoe whenever possible
-function getVD(shoe, mid) {
+function getVD(shoe, mid){
 	var vd = cache.get(mid);
 	return (
 		vd

@@ -4,7 +4,7 @@ const	levels = ['read', 'write', 'admin', 'own'],
 	naming = require('./naming.js'),
 	server = require('./server.js'),
 	ws = require('./ws.js');
-	
+
 var	config,
 	db;
 
@@ -43,7 +43,7 @@ exports.appGetAuths = function(req, res){
 			this.listActiveBans(room.id),
 			room
 		];
-	}).spread(function(auths, requests, recentUsers, bans, room) {
+	}).spread(function(auths, requests, recentUsers, bans, room){
 		var dontlistasrecent = {}, unauthorizedUsers = [];
 		auths.concat(requests).forEach(function(a){
 			dontlistasrecent[a.player] = true;
@@ -52,7 +52,7 @@ exports.appGetAuths = function(req, res){
 			if (!dontlistasrecent[u.id]) unauthorizedUsers.push(u);
 		});
 		res.render('auths.jade', {
-			vars:{room:room}, 
+			vars:{room:room},
 			room:room, auths:auths, requests:requests, unauthorizedUsers:unauthorizedUsers, bans:bans
 		});
 	}).catch(db.NoRowError, function(){
@@ -74,10 +74,10 @@ exports.appPostAuths = function(req, res){
 			return server.renderErr(res, "Admin auth is required");
 		}
 		if (r.dialog) {
-			return server.renderErr(res, "You can't change authorizations of a dialog room");			
+			return server.renderErr(res, "You can't change authorizations of a dialog room");
 		}
 		var m, modifiedUserId, actions = [];
-		for (var key in req.body){
+		for (var key in req.body) {
 			if ((m = key.match(/^answer_request_(\d+)$/))) {
 				var	accepted = req.body[key]==='grant',
 					denyMessage = req.body['deny_message_'+m[1]];
@@ -86,7 +86,7 @@ exports.appPostAuths = function(req, res){
 					actions.push({cmd:'insert_auth', auth:'write', user:modifiedUserId});
 					actions.push({cmd:'delete_ar', user:modifiedUserId});
 				} else {
-					actions.push({cmd:'deny_ar', user:modifiedUserId, message:denyMessage||''});					
+					actions.push({cmd:'deny_ar', user:modifiedUserId, message:denyMessage||''});
 				}
 				ws.emitAccessRequestAnswer(room.id, modifiedUserId, accepted, denyMessage);
 			} else if ((m = key.match(/^insert_auth_(\d+)$/))) {
@@ -133,7 +133,7 @@ exports.wsOnBan = function(shoe, o){
 		if (bannedAuth==="admin" && bannerAuth!=="own") throw "Only a room owner can ban an admin";
 		if (bannerAuth!=="admin" && bannerAuth!=="own") throw "Only an owner or an admin can ban a user"; // should not happen
 		var now = Date.now()/1000|0;
-		return this.insertBan(shoe.room.id, o.banned, now, now+o.duration, shoe.publicUser.id, o.reason); 
+		return this.insertBan(shoe.room.id, o.banned, now, now+o.duration, shoe.publicUser.id, o.reason);
 	}).then(function(){
 		shoe.emitToRoom('ban', o);
 		ws.throwOut(o.banned, shoe.room.id, 'You have been banned from this room for ' + o.nb + ' ' + o.unit);

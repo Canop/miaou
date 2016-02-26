@@ -1,11 +1,11 @@
 
 miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, win, ws, wz){
-		
+
 	var	$scroller = gui.$messageScroller = $('#message-scroller,#mpad').eq(0),
 		scroller = $scroller[0];
 
 	gui.mobile = $(document.body).hasClass('mobile');
-	
+
 	gui.isAtBottom = function(){
 		// FIXME use only one solution (but it's not easy)
 		if (gui.mobile) {
@@ -31,7 +31,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 
 	gui.init = function(){
 		var	timer;
-					
+
 		$('#messages')
 		.on('click', '.message .content img', function(e){
 			window.open(this.getAttribute('href')||this.src);
@@ -56,7 +56,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			).append(
 				$('<p>').text("This can't be undone.")
 			);
-			
+
 			if (ismoddelete) {
 				$('<p>').addClass('warning')
 				.text("Warning: you're about to delete another user's message")
@@ -90,7 +90,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			var	$m = $(this).closest('.message');
 			notif.userAct($m.dat('message').id);
 			md.focusMessage(+$(this).attr('to'));
-			e.stopPropagation();		
+			e.stopPropagation();
 		})
 		.on('click', '.vote', function(){
 			var $e = $(this), message = $e.closest('.message').dat('message'), vote = $e.attr('vote-level');
@@ -119,7 +119,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			win.add(message);
 			notif.userAct(message.id);
 			return false;
-		})	
+		})
 		.on('click', '.olderLoader', function(){
 			var $this = $(this), mid = +$this.attr('mid'), olderPresent = 0;
 			$this.remove();
@@ -144,11 +144,11 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			notif.userAct(m.id);
 			return false;
 		});
-		
+
 		if ($('#hist').length) {
 			gui.$messageScroller.on('scroll', hist.showPage);
 		}
-		
+
 		if (gui.mobile) {
 			$('#messages')
 			.on('click', '.message', md.toggleMessageHoverInfos)
@@ -168,7 +168,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			.on('mouseleave', '.user', usr.hideUserHoverButtons)
 			.on('mouseenter', '.user', prof.show);
 		}
-		
+
 		$('#notable-messages, #search-results').on('click', '.message', function(e){
 			var $this = $(this);
 			$this.closest('#notable-messages, #search-results').find('.message.selected').removeClass('selected');
@@ -184,8 +184,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 
 		if (usr.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+locals.room.id });
 		else $('#editroom').hide();
-		$('#auths').click(function(){ location = 'auths?id='+locals.room.id });			
-				
+		$('#auths').click(function(){ location = 'auths?id='+locals.room.id });
+
 		$('#showPreview').click(function(){
 			$(this).hide();
 			$('#input').focus();
@@ -202,10 +202,10 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		$('#input').on('change keyup', function(){
 			$('#preview').html(miaou.fmt.mdTextToHtml(this.value, locals.me.name));
 		});
-			
+
 		// When the window is resized, all the messages have to be resized too.
 		$(window).on('resize', md.resizeAll);
-				
+
 		ed.init();
 	}
 });

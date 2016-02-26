@@ -1,9 +1,9 @@
 // functions related to user profile displaying on hover
 
 miaou(function(prof, gui, locals, skin){
-	
+
 	var showTimer;
-	
+
 	prof.checkOverProfile = function(e){
 		var elems = $('.profile,.profiled').get();
 		for (var i=0; i<elems.length; i++) {
@@ -17,7 +17,7 @@ miaou(function(prof, gui, locals, skin){
 		}
 		prof.hide();
 	}
-	
+
 	prof.shownow = function(){
 		if ($('.dialog').length) return;
 		var $user = $(this).closest('.user');
@@ -38,12 +38,12 @@ miaou(function(prof, gui, locals, skin){
 		} else {
 			css.top = Math.max(uo.top, mintop);
 
-		}	
+		}
 		css.left = uo.left + uw;
 		$p.load('publicProfile?user='+user.id+'&room='+locals.room.id, function(){
 			$p.find('.avatar').css('color', skin.stringToColour(user.name));
 			if ($p.offset().top-$(window).scrollTop()+$p.height()>wh) {
-				$p.css('bottom', '0').css('top','auto');
+				$p.css('bottom', '0').css('top', 'auto');
 			}
 		});
 		$p.css(css).appendTo('body');

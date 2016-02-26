@@ -13,18 +13,18 @@ function abstract($, line){
 	$box
 	.append(
 		$('<div>').addClass('tweet-first-line')
-		.append($('<a><span>&#xe81e;</span></a>').attr('href',line).addClass('twitter-icon'))
+		.append($('<a><span>&#xe81e;</span></a>').attr('href', line).addClass('twitter-icon'))
 		.append($tweetHead.find('.avatar'))
 		.append(
 			$('<div>').addClass('tweet-core')
 			.append($tweetHead.find('.fullname'))
 			.append($tweetHead.find('.username'))
-			.append($('<a>').addClass('time').text(time).attr('href',line))
+			.append($('<a>').addClass('time').text(time).attr('href', line))
 			.append($text)
 		)
 	)
 	.append($media)
-	$box.find('a').attr('target', '_blank').attr('href', function(_,href){
+	$box.find('a').attr('target', '_blank').attr('href', function(_, href){
 		return href[0]==='/' ? 'https://twitter.com'+href : href;
 	});
 	return $('<div>').append($box).html();

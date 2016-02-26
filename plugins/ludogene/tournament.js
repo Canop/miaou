@@ -116,7 +116,7 @@ function writeScore(ct, gameType){
 		return m.g.status!=='ask';
 	})
 	.reduce(function(map, m){
-		m.g.players.forEach(function(p,i){
+		m.g.players.forEach(function(p, i){
 			var pm = map.get(p.id);
 			if (!pm) {
 				pm = p;
@@ -149,11 +149,11 @@ function writeScore(ct, gameType){
 			p.twcScore = 3*p.nbWins + p.sumScores -10*p.nbDrops;
 			players.push(p);
 		});
-		players = players.sort((a,b) => b.twcScore-a.twcScore);
+		players = players.sort((a, b) => b.twcScore-a.twcScore);
 		var lines = [titles.score];
 		lines.push('Rank|Player|Finished|Wins|Drops|Mean Gain|Running Score|TWC Score');
-		lines.push(lines[lines.length-1].replace(/[^|]+/g,':-:'));
-		[].push.apply(lines, players.map(function(p,i){
+		lines.push(lines[lines.length-1].replace(/[^|]+/g, ':-:'));
+		[].push.apply(lines, players.map(function(p, i){
 			var	meanGain = (p.sumEndScores+p.nbWins*3)/p.nbFinishedGames,
 				runningScore = 3*p.nbWins + p.sumEndScores;
 			return [
@@ -182,7 +182,7 @@ function listGames(ct, gameType){
 	.then(function(messages){
 		var lines = [titles.games];
 		lines.push('Player 1|Player 2|Result');
-		lines.push(lines[lines.length-1].replace(/[^|]+/g,':-:'));
+		lines.push(lines[lines.length-1].replace(/[^|]+/g, ':-:'));
 		messages.forEach(function(m){
 			var g = m.g;
 			var r;

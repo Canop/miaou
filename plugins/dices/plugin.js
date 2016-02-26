@@ -5,7 +5,7 @@ function rollDices(ct){
 	if (!m) throw "invalid syntax";
 	var	nbDices = +m[1]||1,
 		nbSides = +m[2],
-		constant = m[3] ? +m[3].replace(/\s+/g,'') : 0;
+		constant = m[3] ? +m[3].replace(/\s+/g, '') : 0;
 	if (nbDices<1) throw "you can't roll less than one dice";
 	if (nbSides<2 || nbSides>500) throw "there's no such dice";
 	if (nbDices>200) throw "Dices Overflow Error: Rolling Pad is flooded";
@@ -21,7 +21,7 @@ function rollDices(ct){
 	var	cols = ['Sum'],
 		row = [sum];
 	if (nbDices>1 && nbDices<=12) {
-		cols = dices.map((_,i) => i+1).concat(cols);
+		cols = dices.map((_, i) => i+1).concat(cols);
 		row = dices.concat(row);
 	}
 	ct.reply(

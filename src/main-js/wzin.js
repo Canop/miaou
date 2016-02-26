@@ -5,8 +5,8 @@
 window.wzin = (function(){
 
 	var nextId = 0;
-	
-	function Wzin(e1, e2, opts) {
+
+	function Wzin(e1, e2, opts){
 		this.id = nextId++;
 		this.e1 = e1;
 		this.e2 = e2;
@@ -18,7 +18,7 @@ window.wzin = (function(){
 		this.chbg = !!opts.changeElementBackground;
 		this.bind($(window), 'resize', Wzin.prototype.update);
 		this.update();
-		
+
 		if (opts.observe) {
 			this.observer = new MutationObserver(this.update.bind(this));
 			this.observer.observe(e1[0]||e1, {attributes:true, subtree:true, characterData:true});
@@ -43,7 +43,7 @@ window.wzin = (function(){
 			this.e2.css({background:this.savedBg[1]});
 		}
 	}
-	
+
 	Wzin.prototype.update = function(){
 		var e1, e2; // inside this function, e1 is the topmost of this.e1 and this.e2
 		if (this.e1.offset().top<=this.e2.offset().top) {
@@ -56,22 +56,22 @@ window.wzin = (function(){
 			this.svg.remove();
 		} else if (this.chbg) {
 			this.savedBg = [this.e1.css('background'), this.e2.css('background')];
-			$().add(e1).add(e2).css({background:this.fill});			
+			$().add(e1).add(e2).css({background:this.fill});
 		}
 		var p1 = e1.offset(), h1 = e1.outerHeight(), w1 = e1.outerWidth(),
 			p2 = e2.offset(), h2 = e2.outerHeight(), w2 = e2.outerWidth(),
-			H = Math.max(p2.top+h2, p1.top+h1) - p1.top,	
+			H = Math.max(p2.top+h2, p1.top+h1) - p1.top,
 			ps = {
 				top: p1.top,
 				left: Math.min(p1.left, p2.left)-100
 			},
-			W = 100+Math.max(w1,w2);
+			W = 100+Math.max(w1, w2);
 
-		p1.left -= ps.left; p1.top -= ps.top; 
+		p1.left -= ps.left; p1.top -= ps.top;
 		p2.left -= ps.left; p2.top -= ps.top;
 		var pl = Math.min(p1.left, p2.left),
 			antitwist = Math.abs(p1.left-p2.left)>p2.top-p1.top-h1;
-			
+
 		var path = "M "+p1.left+' '+p1.top;
 		if (antitwist) {
 			path += " H "+pl;
@@ -91,7 +91,7 @@ window.wzin = (function(){
 				path += " C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
 			}
 		}
-		
+
 		var svg = this.svg = ù('<svg', this.parent).css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none', width:W, height:H});
 		$(svg.n).offset(ps).css({pointerEvents:'none'}); // strange bug : I can't set pointerEvents to none using ù.css :(
 		ù('<path', svg).attr({d:path, fill:this.fill});
@@ -108,9 +108,9 @@ window.wzin = (function(){
 			ù('<rect', svg).attr({x:p2.left, y:p2.top, width:w2, height:h2, fill:grad});
 		}
 	}
-	
+
 	return function(e1, e2, opts){
-		return new Wzin(e1,e2, opts);
+		return new Wzin(e1, e2, opts);
 	}
 
 })();

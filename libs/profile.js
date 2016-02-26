@@ -14,7 +14,7 @@ exports.configure = function(miaou){
 	return this;
 }
 
-// Problem: the exact same code is duplicated here and in src/main-js/miaou.usr.js 
+// Problem: the exact same code is duplicated here and in src/main-js/miaou.usr.js
 var avatarsrc = exports.avatarsrc = function(source, key){
 	if (!key) return;
 	if (/^https?:\/\//.test(key)) return key; // this is hacky...
@@ -25,7 +25,7 @@ var avatarsrc = exports.avatarsrc = function(source, key){
 }
 
 // Checks that the profile is complete enough to be used for the chat
-//  (a valid name is needed). If not, the user is redirected to the 
+//  (a valid name is needed). If not, the user is redirected to the
 //  page where he can set his name.
 exports.ensureComplete = function(req, res, next){
 	if (naming.isValidUsername(req.user.name)) return next();
@@ -85,7 +85,7 @@ exports.appGetPublicProfile = function(req, res){
 		user = u;
 		return this.fetchRoomAndUserAuth(roomId, userId);
 	}).then(function(r){
-		switch(r.auth) {
+		switch (r.auth) {
 		case 'write': auth='writer'; break;
 		case 'admin': auth='admin'; break;
 		case 'own'  : auth='owner'; break;

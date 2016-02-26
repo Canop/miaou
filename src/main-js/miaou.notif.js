@@ -1,23 +1,23 @@
 // manages the list and dispatching of notifications
 
 miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
-				
+
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
 		hasWatchUnseen = false,
 		nbUnseenMessages = 0,
 		lastUserAction = 0; // ms
-	
+
 	function lastNotificationInRoom(){
 		for (var i=notifications.length; i--;) {
 			if (notifications[i].r==locals.room.id) return notifications[i];
 		}
 	}
-	
+
 	notif.log = function(){ // for console
-		return notifications; 
+		return notifications;
 	}
-	
+
 	// called in case of user action proving he's right in front of the chat so
 	//  we should not ping him
 	// If the user action is related to a message, its mid is passed
@@ -29,7 +29,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		});
 		notif.removePing(mid, true, true);
 	}
-	
+
 	// goes to next ping in the room. Return true if there's still another one after that
 	notif.nextPing = function(){
 		lastUserAction = Date.now();
@@ -107,15 +107,15 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 					}).appendTo($brs);
 				});
 				watch.setPings(otherRoomIds);
-			}	
+			}
 		});
 	}
-	
+
 	// add pings to the list and update the GUI
 	notif.pings = function(pings){
 		var	changed = false,
 			visible = vis(),
-			map = notifications.reduce(function(map,n){ map[n.mid]=1;return map; }, {});
+			map = notifications.reduce(function(map, n){ map[n.mid]=1;return map; }, {});
 		console.log("received pings:", pings);
 		pings.forEach(function(ping){
 			if (!map[ping.mid]) {
@@ -126,11 +126,11 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				}
 			}
 		});
-		notifications.sort(function(a,b){ return a.mid-b.mid }); // this isn't perfect as some notifications are related to flakes
+		notifications.sort(function(a, b){ return a.mid-b.mid }); // this isn't perfect as some notifications are related to flakes
 		console.log("notifications:", notifications);
 		if (changed) notif.updatePingsList();
 	}
-	
+
 	// called by the server or (most often) in case of any action on a message
 	//  (so this is very frequently called on non pings)
 	notif.removePing = function(mid, forwardToServer, flash){
@@ -157,7 +157,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		hasWatchUnseen = b;
 		if (!vis()) notif.updateTab(!!notifications.length, nbUnseenMessages);
 	}
-	
+
 	// called in case of new message (or a new important event related to a message)
 	// FIXME : it's also called if the message isn't really new (loading old pages)
 	notif.touch = function(mid, ping, from, text, r, $md){
@@ -178,7 +178,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				( locals.userPrefs.notif==="on_message" || (ping && locals.userPrefs.notif==="on_ping") )
 				&& lastUserActionAge>500
 			) {
-				horn.show(mid, r||locals.room, from, text);					
+				horn.show(mid, r||locals.room, from, text);
 			}
 		}
 		if (!visible) notif.updateTab(!!notifications.length, ++nbUnseenMessages);
@@ -194,7 +194,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 			title = nbUnseenMessages+'-'+title;
 			icon += '-new';
 		} else if (hasWatchUnseen && !vis()) {
-			icon += '-new';			
+			icon += '-new';
 		}
 		document.title = title;
 		$('#favicon').attr('href', icon+'.png');

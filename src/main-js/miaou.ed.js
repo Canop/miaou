@@ -12,10 +12,10 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	ed.stateBeforePaste = null; // {selectionStart,selectionEnd,value}
 
-	ed.toggleLines = function(s,r,insert){
+	ed.toggleLines = function(s, r, insert){
 		var	lines = s.split('\n'),
-			on = lines.reduce(function(b,l){ return b && r.test(l) }, true);
-		return lines.map(function(l){ return on ? l.replace(r,'') : insert+l }).join('\n');
+			on = lines.reduce(function(b, l){ return b && r.test(l) }, true);
+		return lines.map(function(l){ return on ? l.replace(r, '') : insert+l }).join('\n');
 	}
 
 	function _send(txt){
@@ -38,8 +38,8 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	function sendInput(){
 		notif.userAct();
-		var txt = $input.val().replace(/\s+$/,'');
-		if (txt.length > chat.config.maxMessageContentSize) {		
+		var txt = $input.val().replace(/\s+$/, '');
+		if (txt.length > chat.config.maxMessageContentSize) {
 			miaou.dialog({
 				title: "Message too big",
 				content: "Messages can't be more than "+chat.config.maxMessageContentSize+
@@ -47,7 +47,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			});
 			return;
 		}
-		if (!txt.replace(replyRegex,'').length) return;
+		if (!txt.replace(replyRegex, '').length) return;
 		if (/(^|\W)@room\b/.test(txt) && usr.nbRecentUsers()>9) {
 			miaou.dialog({
 				title: "@room ping",
@@ -56,7 +56,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 				buttons: {
 					"Yes":function(){ _send(txt) },
 					"Change it to @here":function(){
-						_send(txt.replace(/(^|\W)@room\b/g,'$1@here'))
+						_send(txt.replace(/(^|\W)@room\b/g, '$1@here'))
 					},
 					"Wait. No!":null
 				}
@@ -77,7 +77,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		var m = input.value.slice(0, input.selectionEnd).match(/(^|\W)!!(\w+)$/);
 		return m ? m[2].toLowerCase() : null;
 	}
-	
+
 	function tryautocomplete(){
 		if ($autocompleter) {
 			$autocompleter.remove();
@@ -118,16 +118,16 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			ed.ping(name);
 		}
 	}
-	
+
 	function insertLink(){
 		$input.replaceSelection(function(s){
-			var url = $('#newlinkhref').val().replace(/\(/g,'%28').replace(/\)/g,'%29');
+			var url = $('#newlinkhref').val().replace(/\(/g, '%28').replace(/\)/g, '%29');
 			return '['+s+']('+url+')';
 		});
 	}
-	
+
 	// dif : +1 or -1
-	function editPreviousOrNext(dif) {
+	function editPreviousOrNext(dif){
 		var index = -1;
 		var	myMessages = md.getMessages().filter(function(m){
 			ms.updateStatus(m);
@@ -155,7 +155,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		else ed.cancelEdit();
 	}
 
-	function replyPreviousOrNext(dif) {
+	function replyPreviousOrNext(dif){
 		var messages = md.getMessages().filter(function(m){
 			return m.id && m.content && m.author !== locals.me.id && !(editedMessage && m.id>editedMessage.id);
 		});
@@ -183,7 +183,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (~index) ed.replyToMessage($('#messages .message[mid='+messages[index].id+']'));
 		else ed.cancelReply();
 	}
-	
+
 	// sets or unsets the reply wzin depending on the message
 	// if a $message is passed, it's assumed it matches
 	function updateReplyWzin($message){
@@ -195,7 +195,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			if (m) mid = +m[2];
 		}
 		if (replywzin) {
-			if (mid && (replywzin.e1.attr('mid')==mid || replywzin.e2.attr('mid')==mid)) return;			
+			if (mid && (replywzin.e1.attr('mid')==mid || replywzin.e2.attr('mid')==mid)) return;
 			replywzin.remove();
 			replywzin = null;
 		}
@@ -206,14 +206,14 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 				$scroller.scrollTop(mtop+$scroller.scrollTop()-25);
 			} else if ($scroller.height()+$scroller.scrollTop()<$scroller[0].scrollHeight) {
 				$scroller.scrollTop(Math.min(mtop+$scroller.scrollTop()-25, $scroller[0].scrollHeight));
-			}			
+			}
 			replywzin = wzin($message, $('#input'), {
 				zIndex:5, fill:skin.wzincolors.reply,
 				scrollable:gui.$messageScroller, parent:document.body
 			});
 		}
 	}
-	
+
 	ed.init = function(){
 		$input = $('#input');
 		input = $input[0];
@@ -221,7 +221,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			notif.userAct();
 			if (miaou.dialog.has()) return false;
 			if (e.ctrlKey && !e.shiftKey) {
-				switch(e.which){
+				switch (e.which) {
 				case 75: // ctrl - K : toggle code
 					ed.code.onCtrlK.call(this);
 					return false;
@@ -242,7 +242,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 						}
 					});
 					$('#newlinkhref').focus().on('keyup', function(e){
-						switch (e.which){
+						switch (e.which) {
 						case 13: // enter
 							insertLink();
 						case 27: // esc
@@ -252,12 +252,12 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 					return false;
 				case 66: // ctrl - B : toggle bold
 					$input.replaceSelection(function(s){
-						return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2,-2) : '**'+s+'**'
+						return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2, -2) : '**'+s+'**'
 					});
 					return false;
 				case 73: // ctrl - I : toggle italic
 					$input.replaceSelection(function(s){
-						return /^\*[\s\S]*\*$/.test(s) ? s.slice(1,-1) : '*'+s+'*'
+						return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*'
 					});
 					return false;
 				case 13: // ctrl - enter : insert new line
@@ -318,7 +318,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		})
 		.on('input', function(){
 			tryautocomplete();
-			if (!gui.mobile) updateReplyWzin();				
+			if (!gui.mobile) updateReplyWzin();
 		})
 		.on('click', ed.code.onMove)
 		.focus();
@@ -327,13 +327,13 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 		$('#cancelEdit').on('click', ed.cancelEdit);
 	}
-	
+
 	// adds or remove a ping to that username
 	ed.ping = function(username){
 		var	val = input.value,
 			s = input.selectionStart,
 			e = input.selectionEnd,
-			r = new RegExp('\s?@'+username+'\\s*$','i'),
+			r = new RegExp('\s?@'+username+'\\s*$', 'i'),
 			acname = getacname();
 		if (acname) {
 			input.value = val.slice(0, e-acname.length) + username + val.slice(e);
@@ -342,7 +342,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			input.value = val.replace(r, '');
 		} else {
 			var insert = ' @'+username+' ';
-			input.value = val.slice(0,e)+insert+val.slice(e);
+			input.value = val.slice(0, e)+insert+val.slice(e);
 			if (e==s) input.selectionStart += insert.length;
 			input.selectionEnd = e + insert.length;
 		}
@@ -356,7 +356,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			s = input.selectionStart, e = input.selectionEnd, l = txt.length, yetPresent = false;
 		notif.userAct(message.id);
 		if (m) {
-			input.value = txt = txt.replace(replyRegex,'').replace(/^\s/,'');
+			input.value = txt = txt.replace(replyRegex, '').replace(/^\s/, '');
 			yetPresent = m[1]===message.authorname && m[2]==message.id;
 		}
 		if (!yetPresent) {
@@ -370,11 +370,11 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (!gui.mobile) updateReplyWzin($message);
 		ed.code.onMove();
 	}
-	
+
 	// toggle edition of an existing message
 	ed.editMessage = function($message){
 		var message = $message.dat('message');
-		if (editedMessage){
+		if (editedMessage) {
 			var edmid = editedMessage.id;
 			this.cancelEdit();
 			if (edmid===message.id) return;
@@ -397,7 +397,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 		ed.code.onMove();
 	}
-	
+
 	// cancels replying
 	ed.cancelReply = function(){
 		$input.replaceInVal(replyRegex);
@@ -407,7 +407,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 		ed.code.onMove();
 	}
-	
+
 	// cancels edition
 	ed.cancelEdit = function(){
 		if (editedMessage) {
@@ -424,7 +424,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			ed.code.onMove();
 		}
 	}
-	
+
 	// displays the list of autocomplete pings
 	ed.proposepings = function(names){
 		var	acname = getacname(),
@@ -433,9 +433,9 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (!acname || (names[0] && names[0].toLowerCase().indexOf(acname)!==0)) {
 			return console.log('bad list'); // too late, probably
 		}
-		if (!'room'.lastIndexOf(acname,0) && ( locals.room.private||usr.checkAuth('admin'))) {
+		if (!'room'.lastIndexOf(acname, 0) && ( locals.room.private||usr.checkAuth('admin'))) {
 			names.unshift('room');
-		} else if (!'here'.lastIndexOf(acname,0)) {
+		} else if (!'here'.lastIndexOf(acname, 0)) {
 			names.unshift('here');
 		}
 		if (!names.length) return;

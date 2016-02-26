@@ -4,7 +4,7 @@ miaou(function(usr, ed, locals, mod, time, ws){
 
 	var	levels = ['read', 'write', 'admin', 'own'],
 		recentUsers = []; // sorted list of {id,name,mc} (this list isn't displayed but used for ping autocompletion)
-	
+
 	// o is an object with avs and avk (may be a user or a message)
 	usr.avatarsrc = function(o){
 		if (!o.avk) return;
@@ -27,17 +27,17 @@ miaou(function(usr, ed, locals, mod, time, ws){
 			ed.ping(user.name);
 		}))
 		.append($('<button>').text('pm').click(function(){
-			ws.emit('pm', user.id);			
+			ws.emit('pm', user.id);
 		}));
-		if (usr.checkAuth('admin')) {			
+		if (usr.checkAuth('admin')) {
 			decs.append($('<button>').text('mod').click(function(){
 				mod.dialog(user);
 			}));
 		}
 	}
-	
+
 	usr.recentNamesStartingWith = function(s){
-		return recentUsers.filter(function(u){ return !u.name.lastIndexOf(s,0) }).map(function(u){ return u.name });
+		return recentUsers.filter(function(u){ return !u.name.lastIndexOf(s, 0) }).map(function(u){ return u.name });
 	}
 
 	usr.hideUserHoverButtons = function(){
@@ -48,7 +48,7 @@ miaou(function(usr, ed, locals, mod, time, ws){
 		usr.insertInUserList(user, time);
 		usr.insertAmongRecentUsers(user, time);
 	}
-	
+
 	usr.nbRecentUsers = function(){
 		return recentUsers.length;
 	}
@@ -71,7 +71,7 @@ miaou(function(usr, ed, locals, mod, time, ws){
 		recentUsers.push(user);
 	}
 
-	usr.insertInUserList = function(user, enterTime) {
+	usr.insertInUserList = function(user, enterTime){
 		var target, $u = $user(user);
 		if (!enterTime) enterTime = time.now();
 		if ($u.length) {
@@ -101,11 +101,11 @@ miaou(function(usr, ed, locals, mod, time, ws){
 		usr.insertInUserList(user).addClass('connected');
 	}
 	usr.showLeave = function(user){
-		$user(user).removeClass('connected');	
+		$user(user).removeClass('connected');
 	}
 
 	// returns true if the user's authorization level in room is at least the passed one
-	usr.checkAuth = function(auth) {
+	usr.checkAuth = function(auth){
 		for (var i=levels.length; i--;) {
 			if (levels[i]===locals.room.auth) return true;
 			if (levels[i]===auth) return false;

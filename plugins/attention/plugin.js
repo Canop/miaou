@@ -15,20 +15,20 @@ function addAlert(roomId, messageId, userId){
 	return this.execute(
 		"insert into attention_alert (message, room, creator)"+
 		" select id, room, $3 from message where id=$1 and room=$2",
-		[messageId, roomId, userId] 
+		[messageId, roomId, userId]
 	)
 }
 
 function acknowledgeAlert(messageId, userId){
 	return this.execute(
 		"insert into attention_seen (message, player) values ($1,$2)",
-		[messageId, userId] 
+		[messageId, userId]
 	)
 }
 function removeAlert(roomId, messageId){
 	return this.execute(
 		"delete from attention_alert where room=$1 and message=$2",
-		[roomId, messageId] 
+		[roomId, messageId]
 	).then(function(res){
 		if (!res.rowCount) throw "no alert to remove";
 		return this.execute(
@@ -45,7 +45,7 @@ function getAlert(messageId, userId){
 }
 exports.onNewShoe = function(shoe){
 	shoe.socket
-	.on('attention.alert', function(mid){ 
+	.on('attention.alert', function(mid){
 		shoe.checkAuth('admin');
 		db.on([shoe.room.id, +mid, shoe.publicUser.id])
 		.spread(addAlert)
@@ -55,13 +55,13 @@ exports.onNewShoe = function(shoe){
 		.catch(e => console.log("error in attention.alert handling:", e) )
 		.finally(db.off);
 	})
-	.on('attention.ok', function(mid){ 
+	.on('attention.ok', function(mid){
 		db.on([+mid, shoe.publicUser.id])
 		.spread(acknowledgeAlert)
 		.catch(e => console.log("error in attention.ok handling:", e) )
 		.finally(db.off);
 	})
-	.on('attention.remove', function(mid){ 
+	.on('attention.remove', function(mid){
 		shoe.checkAuth('admin');
 		db.on([shoe.room.id, +mid])
 		.spread(removeAlert)
@@ -72,7 +72,7 @@ exports.onNewShoe = function(shoe){
 		.catch(e => console.log("error in attention.remove handling:", e) )
 		.finally(db.off);
 	})
-	.on('attention.query', function(mid){ 
+	.on('attention.query', function(mid){
 		db.on([+mid])
 		.spread(getAlert)
 		.then(function(alert){

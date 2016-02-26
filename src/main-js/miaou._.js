@@ -1,5 +1,5 @@
 // the 'miaou' function initializes or extends module(s).
-// This enables a kind of modularisation of miaou in different 
+// This enables a kind of modularisation of miaou in different
 //  files without having to bother about the initialization order
 //  and with less boilerplate in each module code. It also allows
 //  to split the initialization of a module in several files if
@@ -32,7 +32,7 @@ $(function(){
 		$('<p>').text("Is it OK ? " + appl.isWorldOK(a,b)).appendTo('body');
 	}
 });
-  
+
 
 $(function(){
 	if (!miaou.arr) miaou.arr = {};
@@ -82,7 +82,7 @@ miaou(function(appl, arr, maths){
 		$('<p>').text("Is it OK ? " + appl.isWorldOK(a,b)).appendTo('body');
 	}
 });
-  
+
 
 miaou(function(arr){
 	arr.repeat = function(n,v){
@@ -124,14 +124,14 @@ function miaou(f){
 }
 
 (function(){
-	
+
 	// Initialization of locals (variables provided by the server for the page
 	try {
 		miaou.locals = JSON.parse($('#locals').html());
-	} catch(e) {
+	} catch (e) {
 		console.log("Error while loading locals");
 	}
-	
+
 	// Discovery of the root URL
 	var scripts = document.getElementsByTagName("script");
 	for (var i=scripts.length; i--;) {
@@ -142,7 +142,7 @@ function miaou(f){
 			break;
 		}
 	}
-	
+
 	// Sending errors to the server
 	var nbsenterrors = 0;
 	window.onerror = function(message, url, line, col, err){
@@ -158,5 +158,5 @@ function miaou(f){
 			err:err
 		});
 	}
-	
+
 })();

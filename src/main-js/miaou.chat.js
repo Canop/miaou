@@ -1,6 +1,6 @@
 
 miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, ws){
-	
+
 	chat.config = { // may be changed by server later
 		maxMessageContentSize: 8000,
 		minDelayBetweenMessages: 500,
@@ -11,10 +11,10 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
 	chat.commands = {}; // all known commands issued with !! (value=description)
 	chat.voteLevels = [
-		{key:'pin',icon:'&#xe813;'},
-		{key:'star',icon:'&#xe808;'},
-		{key:'up',icon:'&#xe800;'},
-		{key:'down',icon:'&#xe801;'}
+		{key:'pin', icon:'&#xe813;'},
+		{key:'star', icon:'&#xe808;'},
+		{key:'up', icon:'&#xe800;'},
+		{key:'down', icon:'&#xe801;'}
 	];
 
 	var listeners = {};
@@ -30,8 +30,8 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		var delmatch = message.content.match(/^!!deleted (by:\d+ )?(on:\d+ )?/);
 		if (delmatch) {
 			var h = '';
-			if (delmatch[1]) h += ' by <a href=user/'+delmatch[1].slice(3)+' target=profile>an admin</a>'; 
-			if (delmatch[2]) h += ' on ' + time.formatTime(+delmatch[2].slice(3)); 
+			if (delmatch[1]) h += ' by <a href=user/'+delmatch[1].slice(3)+' target=profile>an admin</a>';
+			if (delmatch[2]) h += ' on ' + time.formatTime(+delmatch[2].slice(3));
 			$c.html(h).closest('.message').addClass('deleted');
 			return true;
 		}
@@ -52,7 +52,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 				if (/(?:^|\s)#not-serious\b/i.test(message.content)) $c.addClass('content-rating-not-serious');
 			}
 		} else {
-			$c.empty();				
+			$c.empty();
 		}
 	}
 
@@ -64,7 +64,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		gui.init();
 		md.registerRenderer(renderMessage);
 		plugins.start();
-	}	
+	}
 
 	// Registers for an event ("incoming_message", "sending_message", "ready")
 	// Callback is called with message as argument, and can change this message
@@ -88,7 +88,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		}
 		return chat;
 	}
-	
+
 	// Sends a message. Examples :
 	//  - sending a new message : miaou.chat.sendMessage("hello");
 	//  - sending a new message : miaou.chat.sendMessage({content:"hello"});
@@ -101,5 +101,5 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		if (r!==false) ws.emit('message', m);
 		notif.userAct();
 	}
-	
+
 });

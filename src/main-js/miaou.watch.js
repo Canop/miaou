@@ -1,7 +1,7 @@
 // functions related to user watching other rooms
 
 miaou(function(watch, chat, gui, locals, md, notif, ws){
-	
+
 	// the icon sum of all watches, if it exists (i.e. on mpad)
 	var $globalIcon = $('#global-watch');
 
@@ -12,15 +12,15 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	watch.watched = function(roomId){
 		return $('#watches .watch[rid='+roomId+']').length>0;
 	}
-	
+
 	function updateDimensions(){
 		if (gui.mobile) return;
 		$('.watch .name').toggleClass('compact', $('#stripe-top').height()>60);
 		$('#left, #right, #center').css('top', $('#stripe-top').height());
 	}
-	
+
 	if ($('#non-top').length) $(window).resize(updateDimensions);
-	
+
 	// if the room is a dialog room and we guess the name of the other user, return this name
 	function interlocutor(w){
 		if (!w.dialog) return;
@@ -29,13 +29,13 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 		if (names[1]===locals.me.name) return names[2];
 		if (names[2]===locals.me.name) return names[1];
 	}
-	
+
 	watch.addLocalRoom = function(){
 		$('#watch').text('unwatch');
 		ws.emit('wat', locals.room.id);
 		locals.room.watched = true;
 	}
-	
+
 	// w must be {id:roomId,name:roomname,nbunseen}
 	watch.add = function(watches){
 		watches.forEach(function(w){
@@ -54,18 +54,18 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			.dat('watch', w)
 			.append($('<span>').addClass('count').text(w.nbunseen||''))
 			.append($name)
-			.attr('href', href) 
+			.attr('href', href)
 			.appendTo('#watches');
 			if (w.nbunseen) $w.addClass('has-unseen');
 		});
-		$('#watches').append($('#watches .watch').detach().slice().sort(function(a,b){
+		$('#watches').append($('#watches .watch').detach().slice().sort(function(a, b){
 			var wa = $(a).dat('watch'), wb = $(b).dat('watch');
 			return	(wa.dialog-wb.dialog) ||
 				(interlocutor(wa)||wa.name).localeCompare((interlocutor(wb)||wb.name));
 		}));
 		updateDimensions();
 	}
-	
+
 	// called when the initial watches are passed by the server (i.e. The local state
 	//  is the persisted one)
 	watch.started = function(){
@@ -112,7 +112,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 		.toggleClass('ping', !!$('.watch.ping').length)
 		.toggleClass('has-unseen', !!$('.watch.has-unseen').length);
 	}
-	
+
 	watch.setPings = function(roomIds){
 		$('#watches .watch .count').removeClass('ping');
 		roomIds.forEach(function(rid){
@@ -153,7 +153,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			var	dr = Math.max(Math.min(200, ww-off.left-$w.width()-30), 0),
 				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
-				top: $w.height()+5, left: dl, right: -dr, 
+				top: $w.height()+5, left: dl, right: -dr,
 			}).appendTo($w);
 			var $top = $('<div>').addClass('watch-panel-top').appendTo($panel);
 			$('<span>').text(w.name).appendTo($top);
@@ -187,7 +187,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 		$('.watch').removeClass('open').find('.watch-panel').remove();
 	}).on('click', '.watch', function(){
 		notif.userAct();
-		var w = $(this).dat('watch');	
+		var w = $(this).dat('watch');
 		if (w.last_seen) {
 			localStorage.destMessage = w.last_seen;
 		}

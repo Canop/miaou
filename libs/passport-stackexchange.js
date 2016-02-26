@@ -4,12 +4,12 @@ const name = 'stackexchange',
 	zlib = require('zlib'),
 	request = require("request");
 
-function Strategy(options, verify) {
+function Strategy(options, verify){
 	options = options || {};
 	options.authorizationURL = options.authorizationURL || 'https://stackexchange.com/oauth';
 	options.tokenURL = options.tokenURL || 'https://stackexchange.com/oauth/access_token';
 	options.scopeSeparator = options.scopeSeparator || ',';
-	if(options.key === undefined) throw new Error("No Stackexchange API Key");
+	if (options.key === undefined) throw new Error("No Stackexchange API Key");
 	this._options = options;
 	OAuth2Strategy.call(this, options, verify);
 	this.name = name;
@@ -17,7 +17,7 @@ function Strategy(options, verify) {
 
 util.inherits(Strategy, OAuth2Strategy);
 
-Strategy.prototype.userProfile = function(accessToken, done) {
+Strategy.prototype.userProfile = function(accessToken, done){
 	var gz = zlib.createGunzip(),
 		body = '';
 
@@ -26,10 +26,10 @@ Strategy.prototype.userProfile = function(accessToken, done) {
 		headers: { 'Accept-Encoding': 'gzip' }
 	}).pipe(gz);
 
-	gz.on('data', function (data) {
+	gz.on('data', function(data){
 		body += data;
 	});
-	gz.on('end', function() {
+	gz.on('end', function(){
 		try {
 			var data = JSON.parse(body.trim()),
 				item = data.items[0];
@@ -40,7 +40,7 @@ Strategy.prototype.userProfile = function(accessToken, done) {
 			done(err);
 		}
 	});
-	gz.on('error', function(err) {
+	gz.on('error', function(err){
 		done(err);
 	});
 }

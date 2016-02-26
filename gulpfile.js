@@ -9,8 +9,13 @@ let	gulp = require("gulp"),
 	merge = require("merge-stream"),
 	eslint = require('gulp-eslint'),
 	del = require("del"),
+	gulpif = require("gulp-if"),
 	uglify = require("gulp-uglify");
 
+
+let mode = {
+	watch: false,
+};
 
 function miaouModules(){
 	return fs.readdirSync("src/main-js").map(name=>{
@@ -22,7 +27,7 @@ function miaouModules(){
 function miaouUglify(){
 	return uglify({
 		warnings: true,
-		mangle: { except:miaouModules() }
+		mangle: { except:miaouModules() },
 	});
 }
 
@@ -48,7 +53,6 @@ let globs = {
 	],
 };
 
-
 function clientGlobals(){
 	return [
 		"miaou",
@@ -70,108 +74,88 @@ gulp.task("server-js", ()=>
 		},
 		"extends": "eslint:recommended",
 		"rules": {
-			"no-unused-vars": [
-				2,
-				{"vars": "all", "args": "none"}
-			],
-			"comma-dangle": [
-				2,
-				"only-multiline"
-			],
-			"complexity": [
-				0,
-				20
-			],
-			"dot-location": [
-				2,
-				"property"
-			],
-			"no-extra-label": [
-				2
-			],
-			"indent": [
-				2,
-				"tab"
-			],
-			"linebreak-style": [
-				2,
-				"unix"
-			],
-			"brace-style": [
-				2,
-				"1tbs"
-			],
-			"no-lonely-if": 2,
+			"no-unused-vars": [ 2, {"vars": "all", "args": "none"} ],
+			"comma-dangle": [ 2, "only-multiline" ],
+			"complexity": [	0, 10 ],
+			"dot-location": [ 2, "property"	],
+			"no-extra-label": [ 2 ],
+			"indent": [ 2, "tab" ],
+			"brace-style": [ 2, "1tbs" ],
+			"linebreak-style": [ 2, "unix" ],
 			"no-eval": 2,
 			"no-caller": 2,
 			"no-extra-bind": 2,
 			"no-extra-label": 2,
 			"no-console": 0,
-			"quotes": [
-				0,
-				"double"
-			]
+			"no-extra-semi": 0,
+			"quotes": 0,
+			"comma-spacing": [ 2, {"before": false, "after": true} ],
+			"comma-style": 2,
+			"no-trailing-spaces": [ 2, { "skipBlankLines": true } ],
+			"no-restricted-syntax": [ 2, "WithStatement" ],
+			"keyword-spacing": 2,
+			"no-throw-literal": 0, // TODO fix errors in Miaou server code
+			"no-useless-call": 2,
+			"no-void": 2,
+			"max-depth": [ 2, 8], // the goal will be to go to 5 or 6
+			"no-unneeded-ternary": 2,
+			"operator-assignment": [ 2, "always" ],
+			"space-before-function-paren": [ 2, "never" ],
+			"space-before-blocks": [2, { "functions": "never", "keywords": "always", classes: "never" }],
+			"no-lonely-if": 2,
 		}
 	}))
 	.pipe(eslint.format())
-	.pipe(eslint.failAfterError())
+	.pipe(gulpif(!mode.watch, eslint.failAfterError()))
 );
 
 gulp.task("lint-client-js", ()=>
-	gulp.src(["src/main-js/*.js", "plugins/*/client-scripts/*.js"])
+	gulp.src(["src/main-js/*.js", "plugins/*/client-scripts/*.js", "!**/*.min.js"])
 	.pipe(eslint({
+		"parserOptions": {
+			"ecmaVersion": 6,
+		},
 		"env": {
 			"browser": true,
 		},
 		"extends": "eslint:recommended",
 		"globals": clientGlobals(),
 		"rules": {
-			"no-unused-vars": [
-				2,
-				{"vars": "all", "args": "none"}
-			],
-			"comma-dangle": [
-				2,
-				"only-multiline"
-			],
-			"complexity": [
-				0,
-				20
-			],
-			"dot-location": [
-				2,
-				"property"
-			],
-			"no-extra-label": [
-				2
-			],
-			"indent": [
-				2,
-				"tab"
-			],
-			"linebreak-style": [
-				2,
-				"unix"
-			],
-			"brace-style": [
-				0, // I'll activate this when switching code to ES6
-				"1tbs"
-			],
-			"no-lonely-if": 0,
+			"no-unused-vars": [ 2, {"vars": "all", "args": "none"} ],
+			"comma-dangle": [ 2, "only-multiline" ],
+			"complexity": [	0, 10 ],
+			"dot-location": [ 2, "property"	],
+			"no-extra-label": [ 2 ],
+			"indent": [ 2, "tab" ],
+			"brace-style": [ 0, "1tbs" ],
+			"linebreak-style": [ 2, "unix" ],
 			"no-eval": 2,
 			"no-caller": 2,
 			"no-extra-bind": 2,
 			"no-extra-label": 2,
-			"no-fallthrough": 0,
 			"no-console": 0,
-			"quotes": [
-				0,
-				"double"
-			]
+			"no-extra-semi": 0,
+			"quotes": 0,
+			"comma-spacing": [ 2, {"before": false, "after": true} ],
+			"comma-style": 2,
+			"no-trailing-spaces": [ 2, { "skipBlankLines": true } ],
+			"no-restricted-syntax": [ 2, "WithStatement" ],
+			"keyword-spacing": 2,
+			"new-cap": 2,
+			"no-throw-literal": 2,
+			"no-useless-call": 2,
+			"no-void": 2,
+			"max-depth": [ 2, 8], // the goal will be to go to 5 or 6
+			"no-unneeded-ternary": 2,
+			"operator-assignment": [ 2, "always" ],
+			"space-before-function-paren": [ 2, "never" ],
+			"space-before-blocks": [2, { "functions": "never", "keywords": "always", classes: "never" }],
+			"no-lonely-if": 0,
+			"no-fallthrough": 0,
 		}
 	}))
 	.pipe(eslint.format())
-	.pipe(eslint.failAfterError())
+	.pipe(gulpif(!mode.watch, eslint.failAfterError()))
 );
 
 gulp.task("main-js", ()=>
@@ -230,7 +214,11 @@ gulp.task("themes", ["themes:compile-scss"], ()=>
 gulp.task("clean", () => del("static/*"));
 gulp.task("build", ["server-js", "lint-client-js", "main-js", "page-js", "resources:main", "resources:plugins", "themes"]);
 
-gulp.task("watch", ["build"], ()=>{
+gulp.task("set-watch-mode", ()=>{
+	mode.watch = true;
+});
+
+gulp.task("watch", ["set-watch-mode", "build"], ()=>{
 	for (let task in globs) {
 		gulp.watch(globs[task], [task]);
 	}

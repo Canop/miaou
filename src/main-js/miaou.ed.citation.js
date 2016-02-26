@@ -18,10 +18,10 @@ miaou(function(ed){
 		}
 		if (sp===ep) {
 			$input.selectLines().replaceSelection(toggleLinesCitation);
-			this.selectionStart = this.selectionEnd;	
+			this.selectionStart = this.selectionEnd;
 		} else {
 			$input.selectLines().replaceSelection(toggleLinesCitation);
 		}
 	}
-	
+
 });

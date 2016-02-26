@@ -38,9 +38,9 @@ exports.configure = function(_miaou){
 	onNewShoePlugins = plugins.filter(p => p.onNewShoe );
 	onChangeMessagePlugins = plugins.filter(p => p.onChangeMessage );
 	clientConfig = [
-		'maxMessageContentSize','minDelayBetweenMessages',
-		'maxAgeForMessageTotalDeletion','maxAgeForMessageEdition'
-	].reduce(function(c,k){
+		'maxMessageContentSize', 'minDelayBetweenMessages',
+		'maxAgeForMessageTotalDeletion', 'maxAgeForMessageEdition'
+	].reduce(function(c, k){
 		c[k] = config[k]; return c;
 	}, {});
 	commands.configure(miaou);
@@ -88,7 +88,7 @@ exports.roomIds = function(){
 	return Object.keys(io.sockets.adapter.rooms).filter(n => n==+n );
 }
 
-exports.userSockets = function(userIdOrName) {
+exports.userSockets = function(userIdOrName){
 	var sockets = [];
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
@@ -100,7 +100,7 @@ exports.userSockets = function(userIdOrName) {
 }
 
 // returns the first found socket of the passed user (may be in another room)
-exports.anyUserSocket = function(userIdOrName) {
+exports.anyUserSocket = function(userIdOrName){
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
 		if (socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
@@ -138,7 +138,7 @@ exports.throwOut = function(userId, roomId, text){
 }
 
 // granted : true if it's an approval, false in other cases
-exports.emitAccessRequestAnswer = function(roomId, userId, granted, message) {
+exports.emitAccessRequestAnswer = function(roomId, userId, granted, message){
 	popon(socketWaitingApproval, function(o){
 		return o.userId===userId && o.roomId===roomId
 	}, function(o){
@@ -177,8 +177,8 @@ exports.botMessage = function(bot, roomId, content, cb){
 			m.avk = bot.avatarkey;
 			m.bot = true;
 			m.room = roomId;
-			miaou.pageBoxer.onSendMessage(this, m, function(t,c){
-				emitToRoom(roomId, t, c);	
+			miaou.pageBoxer.onSendMessage(this, m, function(t, c){
+				emitToRoom(roomId, t, c);
 			});
 			return [rooms.mem.call(this, roomId), m];
 		})
@@ -215,7 +215,7 @@ function handleUserInRoom(socket, completeUser){
 		otherDialogRoomUser, // defined only in a dialog room
 		memroom,
 		watchset = new Set, // set of watched rooms ids (if any)
-		welcomed = false, 
+		welcomed = false,
 		send;
 	socket
 	.on('autocompleteping', function(namestart){
@@ -263,12 +263,12 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('enter', function(roomId){
 		var now = Date.now()/1000|0;
-		socket.emit('set_enter_time',now); // time synchronization
+		socket.emit('set_enter_time', now); // time synchronization
 		if (!roomId) {
 			console.log("WARN : user enters no room");
 			return;
 		}
-		if (shoe.room && roomId==shoe.room.id){
+		if (shoe.room && roomId==shoe.room.id) {
 			console.log('WARN : user already in room'); // how does that happen ?
 			return;
 		}
@@ -289,7 +289,7 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.spread(function(r, ban){
 			if (r.private && !r.auth) {
-				throw new Error('Unauthorized user'); 
+				throw new Error('Unauthorized user');
 			}
 			if (ban) throw new Error('Banned user');
 			r.path = server.roomPath(r);
@@ -349,7 +349,7 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.catch(function(err){
 			shoe.error(err);
-		}).finally(db.off)		
+		}).finally(db.off)
 	})
 	.on('error', function(e){
 		console.log('socket.io error:', e);
@@ -369,7 +369,7 @@ function handleUserInRoom(socket, completeUser){
 		.then(db.getMessage)
 		.then(function(m){
 			m.vote = '?';
-			shoe.pluginTransformAndSend(m, function(v,m){
+			shoe.pluginTransformAndSend(m, function(v, m){
 				shoe.emit(v, clean(m));
 			});
 		}).finally(db.off);
@@ -399,8 +399,8 @@ function handleUserInRoom(socket, completeUser){
 				{cmd:"insert_auth", user:user.id, auth:"write"}, {cmd:"delete_ar", user:user.id}
 			], shoe.publicUser.id, shoe.room);
 		}).then(function(){
-			exports.emitAccessRequestAnswer(shoe.room.id, userId, true);			
-		}).catch(function(e) {
+			exports.emitAccessRequestAnswer(shoe.room.id, userId, true);
+		}).catch(function(e){
 			shoe.error(e);
 		}).finally(db.off);
 	})
@@ -414,7 +414,7 @@ function handleUserInRoom(socket, completeUser){
 				search.pattern ? this.messageHistogram(shoe.room.id, search.pattern, 'english') : null
 			]
 		}).spread(function(hist, shist){
-			if (shist){
+			if (shist) {
 				for (var ih=0, ish=0; ish<shist.length; ish++) {
 					var sh = shist[ish];
 					while (hist[ih].d<sh.d) ih++;
@@ -438,7 +438,7 @@ function handleUserInRoom(socket, completeUser){
 		var	now = Date.now(),
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
 			seconds = now/1000|0,
-			content = message.content.replace(/\s+$/,'');
+			content = message.content.replace(/\s+$/, '');
 		if (content.length>maxContentLength) {
 			shoe.error('Message too big, consider posting a link instead', content);
 			return;
@@ -496,11 +496,11 @@ function handleUserInRoom(socket, completeUser){
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
 			if (m.id>memroom.lastMessageId) {
-				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId,m:m.id});
+				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id});
 			}
 			if (m.content && m.id) {
 				var r = /(?:^|\s)@(\w[\w\-]{2,})\b/g, ping;
-				while ((ping=r.exec(m.content))){
+				while ((ping=r.exec(m.content))) {
 					pings.push(ping[1]);
 				}
 				if (!(m.id<=memroom.lastMessageId)) {
@@ -537,7 +537,7 @@ function handleUserInRoom(socket, completeUser){
 				if (oauth) return true;
 				if (commandTask.cmd) return commandTask.alwaysPing;
 				// todo different message for no user
-				shoe.error(unsentping+" has no right to this room and wasn't pinged"); 
+				shoe.error(unsentping+" has no right to this room and wasn't pinged");
 			});
 		}).then(function(remainingpings){
 			if (remainingpings.length) {
@@ -556,7 +556,7 @@ function handleUserInRoom(socket, completeUser){
 				}
 				return this.storePings(shoe.room.id, remainingpings, m.id);
 			}
-		}).catch(function(e) {
+		}).catch(function(e){
 			shoe.error(e, m.content);
 		}).finally(db.off)
 	})
@@ -576,7 +576,7 @@ function handleUserInRoom(socket, completeUser){
 		}).catch(function(err){
 			shoe.error('error in mod_delete');
 			console.log('error in mod_delete', err);
-		}).finally(db.off);		
+		}).finally(db.off);
 	})
 	.on('pm', function(otherUserId){
 		db.on(otherUserId)
@@ -599,7 +599,7 @@ function handleUserInRoom(socket, completeUser){
 			return this.deleteAccessRequests(roomId, publicUser.id)
 		})
 		.then(function(){
-			return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0,200))
+			return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0, 200))
 		})
 		.then(function(ar){
 			ar.user = publicUser;
@@ -636,7 +636,7 @@ function handleUserInRoom(socket, completeUser){
 			return rooms.updateNotables.call(this, memroom);
 		})
 		.catch(err => console.log('ERR in vote handling:', err))
-		.finally(db.off);		
+		.finally(db.off);
 	})
 	.on('unwat', function(roomId){
 		console.log(shoe.publicUser.name+' unwatches '+roomId);
@@ -686,7 +686,7 @@ function handleUserInRoom(socket, completeUser){
 				if (!changedMessageIsInNotables) {
 					for (var i=0; i<memroom.notables.length; i++) {
 						if (memroom.notables[i].id===updatedMessage.id) {
-							// the voted message entered the notables, we should send it 
+							// the voted message entered the notables, we should send it
 							// TODO useless if message is among the very recent ones (last page)
 							notablesUpdate.m = updatedMessage;
 							break;

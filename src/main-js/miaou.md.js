@@ -2,15 +2,15 @@
 // Here are functions related to the display of messages in the chat and to the various message element lists
 
 miaou(function(md, chat, gui, hist, locals, skin, time, usr){
-	
+
 	var renderers = [], unrenderers = [];
-	
+
 	// registers a function which will be called when a message needs rendering
 	// Unless a renderer returns true, the other renderers will be called.
 	// A renderer can be registered to be executed before the standard,markdown
 	//  based, renderer, or after : set postrendering to true to register the
 	//  renderer as a postrenderer (your renderer would then be able to use the
-	//  result of the previous renderers including the default one. 
+	//  result of the previous renderers including the default one.
 	// If a renderer has nothing specific to do, it should do nothing and return
 	//  undefined.
 	// Arguments passed to your renderer are
@@ -40,7 +40,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			if (unrenderers[i]($content, message)) break;
 		}
 	}
-	
+
 	// used for rerendering, for example on resizing or sliding
 	$.fn.renderMessages = function(){
 		var $messages = $('.message', this).add(this).filter('.message');
@@ -58,7 +58,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			return message[l.key] ? '<span class="vote '+l.key+'">'+message[l.key]+' '+l.icon+'</span>' : '';
 		}).join('');
 	}
-	
+
 	md.getMessages = function(){
 		return $('#messages .message').map(function(){ return $(this).dat('message') }).get();
 	}
@@ -79,12 +79,12 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			}
 		}
 	}
-	
+
 	// builds the message div and append it to the container, managing resizing.
 	// May be used for notable messages and search results
 	md.addSideMessageDiv = function(m, $div, $repl){
 		var	$content = $('<div>').addClass('content');
-		var $md = $('<div>').addClass('message').dat('message',m).append($content).append(
+		var $md = $('<div>').addClass('message').dat('message', m).append($content).append(
 			$('<div>').addClass('nminfo')
 			.html(md.votesAbstract(m) + ' ' + time.formatTime(m.created) + ' by ' + m.authorname)
 		);
@@ -94,7 +94,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			chat.trigger("notable", m, $md);
 		}
 		else $md.appendTo($div);
-		if (m.id) $md.attr('mid',m.id);
+		if (m.id) $md.attr('mid', m.id);
 		$md.addClass(m.pin ? 'pin' : 'star');
 		md.render($content, m);
 		if ($content.height()>80) {
@@ -114,7 +114,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 
 	// the passed upd object contains
 	//  ids : sorted ids of notable messages
-	//  m : optional message which is entering the list 
+	//  m : optional message which is entering the list
 	md.updateNotableMessages = function(upd){
 		var	$container = $('#notable-messages'),
 			mmap = {};
@@ -143,7 +143,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		if (error.mc && !$('#input').val()) !$('#input').val(error.mc);
 		gui.scrollToBottom();
 	}
-	
+
 	// builds a notification message with a close button. The fill callback
 	//  is passed the container and a close function
 	md.notificationMessage = function(fill){
@@ -165,12 +165,12 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		if (wab) gui.scrollToBottom();
 		return notification;
 	}
-	
+
 	function resizeUser($u){
 		$u.removeClass('size0 size1 size2 size3 size4');
-		$u.addClass('size'+Math.min($u.height()/22|0,4));
+		$u.addClass('size'+Math.min($u.height()/22|0, 4));
 	}
-	
+
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
 	// TODO This function is very expensive (cpu). We should be able to batch
@@ -191,7 +191,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		resize();
 		$content.find('img').imgOn('load', resize);
 	}
-	
+
 	// resizes all messages. This must be called each time a container of
 	//  .message elements change width.
 	md.resizeAll = function(){
@@ -215,7 +215,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		});
 		if (wasAtBottom) gui.scrollToBottom();
 	}
-	
+
 	md.updateLoaders = function(){
 		$('.olderLoader,.newerLoader').remove();
 		var 	i,
@@ -247,20 +247,20 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			}
 		}
 	}
-		
+
 	function selfHide(){
 		this.style.visibility="hidden";
 	}
 
 	// builds a new .user-messages div for the passed user)
 	function usermessagesdiv(user){
-		var	$usermessages = $('<div>').addClass('user-messages').dat('user',user),
+		var	$usermessages = $('<div>').addClass('user-messages').dat('user', user),
 			$user = $('<div>').addClass('user').appendTo($usermessages),
 			avsrc = usr.avatarsrc(user);
 		$user.css('color', skin.stringToColour(user.name)).append($('<span/>').text(user.name));
 		if (avsrc) {
 			$('<div>').addClass('avatar-wrapper').prependTo($user).append(
-				$('<img>').attr('src',avsrc).addClass('avatar').imgOn('error', selfHide)
+				$('<img>').attr('src', avsrc).addClass('avatar').imgOn('error', selfHide)
 			);
 		} else {
 			$('<div>').addClass('avatar').prependTo($user);
@@ -298,13 +298,13 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 				) {
 					insertionIndex = -1;
 					// the following line because of the possible special case of a
-					//  pin vote being removed by somebody's else 
+					//  pin vote being removed by somebody's else
 					if (message.vote && !message[message.vote]) delete message.vote; // fixme ???
 				} else {
 					while ( insertionIndex && (
 						messages[insertionIndex].id>message.id
 						|| messages[insertionIndex].created>message.created
-					) ){
+					) ) {
 						insertionIndex--;
 					}
 				}
@@ -365,7 +365,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			) {
 				$nextmessageset.prepend($md);
 			} else {
-				usermessagesdiv(user).append($md).prependTo('#messages');				
+				usermessagesdiv(user).append($md).prependTo('#messages');
 			}
 		}
 		if (message.content && message.changed) {
@@ -422,8 +422,8 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 				$from.html(),
 				'<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>'
 			);
-		}).find('a[href]').attr('target','_blank');
+		}).find('a[href]').attr('target', '_blank');
 		resize($m, wab);
 	}
-		
+
 });

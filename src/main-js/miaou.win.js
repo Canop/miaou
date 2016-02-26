@@ -44,11 +44,11 @@ miaou(function(win, chat, gui, md, ws){
 			while (i<tokens.length && title.length+tokens[i].length<20) title += ' '+tokens[i++];
 			$('.mwincontainer.'+side).append(
 				$('<div/>').addClass('mwintab').html(miaou.fmt.mdTextToHtml(title))
-				.attr('mid',message.id).click(function(){ win.add(message) })
+				.attr('mid', message.id).click(function(){ win.add(message) })
 			)
 		} else {
 			var $mc = $('<div/>').addClass('content');
-			var $mwin = $('<div id=mwin/>').attr('mid',message.id).addClass('message').append($mc);
+			var $mwin = $('<div id=mwin/>').attr('mid', message.id).addClass('message').append($mc);
 			$mwin.append($('<div class=remover/>').text('X').click(closeMWin)).appendTo(document.body);
 			sides.forEach(function(side){
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));

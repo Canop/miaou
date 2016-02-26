@@ -1,6 +1,6 @@
 // !!stats sockets command
 
-exports.doStats = function(ct, io) {
+exports.doStats = function(ct, io){
 	var	transports = new Map(), // map transportName -> number
 		nbSockets = 0,
 		nbInvalidSockets = 0,
@@ -10,9 +10,9 @@ exports.doStats = function(ct, io) {
 		nbSockets++;
 		try {
 			var transportName = socket.conn.transport.name;
-			transports.set(transportName, (transports.get(transportName)||0) + 1);	
+			transports.set(transportName, (transports.get(transportName)||0) + 1);
 			var userId = socket.publicUser.id;
-			users.set(userId, (users.get(userId)||0) + 1);	
+			users.set(userId, (users.get(userId)||0) + 1);
 		} catch (e) {
 			console.log('error in stats sockets', e);
 			nbInvalidSockets++;

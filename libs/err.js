@@ -1,4 +1,4 @@
-function ClientError(message) {
+function ClientError(message){
 	this.message = message;
 	Error.captureStackTrace(this, ClientError);
 }

@@ -1,12 +1,12 @@
 // postgresql persistence
 // Usage :
-//   
+//
 //  db.on(req.user)                             // returns a promise bound to the connection taken from the pool
 //  .then(db.updateUser)                        // querying functions are available on the db object and use the connection (context of the call)
 //  .then(function(user){                       // when you can't use the simple form
 //      if (!user.bot) return this.ping(uid)    // `this` is the connection
 //  }).finally(db.off);                         // releases the connection which is returned to the pool
-// 
+//
 //  It's also possible to do transactions :
 //
 //  db.on(someArg)
@@ -55,14 +55,14 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 		email = null, returnedCols = 'id, name, lang, oauthprovider, oauthdisplayname, email',
 		sql = 'select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google, github
-	this.client.query(sql,[provider, oauthid], (err, result)=>{
+	this.client.query(sql, [provider, oauthid], (err, result)=>{
 		if (err) {
 			resolver.reject(err);
 		} else if (result.rows.length) {
 			resolver.resolve(result.rows[0]);
 		} else {
 			console.dir(profile);
-			var sql = 'insert into player (oauthid, oauthprovider, email, oauthdisplayname)' +	 
+			var sql = 'insert into player (oauthid, oauthprovider, email, oauthdisplayname)' +
 				' values ($1, $2, $3, $4) returning '+returnedCols;
 			resolver.resolve(this.queryRow(sql, [oauthid, provider, email, displayName]));
 		}
@@ -147,7 +147,7 @@ proto.getBot = function(botname){
 	).then(function(player){
 		return player || this.queryRow(
 			'insert into player (name, bot) values ($1, true) returning id, name, bot',	[botname]
-		)	
+		)
 	})
 }
 
@@ -181,7 +181,7 @@ proto.createRoom = function(r, owners){
 	})
 }
 
-proto.updateRoom = function(r, author, authlevel) {
+proto.updateRoom = function(r, author, authlevel){
 	if (authlevel==="own") {
 		return this.queryRow(
 			"update room set name=$1, private=$2, listed=$3, dialog=$4, description=$5, lang=$6 where id=$7",
@@ -191,11 +191,11 @@ proto.updateRoom = function(r, author, authlevel) {
 		return this.queryRow(
 			"update room set name=$1, listed=$2, description=$3, lang=$4 where id=$5",
 			[r.name, r.listed, r.description||'', r.lang, r.id]
-		);			
+		);
 	}
 }
 
-// ensures the name and lang of every dialog room is correct according to user names and lang 
+// ensures the name and lang of every dialog room is correct according to user names and lang
 proto.fixAllDialogRooms = function(){
 	console.log("Fixing all dialog room names");
 	return this.execute(
@@ -219,12 +219,12 @@ proto.getLounge = function(userA, userB){
 		[userA.id, userB.id],
 		(err, res)=>{
 			if (err) return resolver.reject(err);
-			if (res.rows.length) return resolver.resolve(res.rows[0]);		
+			if (res.rows.length) return resolver.resolve(res.rows[0]);
 			var	name = userA.name + ' & ' + userB.name,
 				description = 'A private lounge for '+userA.name+' and '+userB.name,
 				room = {name:name, description:description, private:true, listed:false, dialog:true};
 			room.lang = userA.lang || userB.lang || 'en'; // userA usually is a "completeUser"
-			this.createRoom(room, [userA,userB])
+			this.createRoom(room, [userA, userB])
 			.then(()=> {
 				resolver.resolve(room);
 			});
@@ -263,7 +263,7 @@ proto.listFrontPageRooms = function(userId){
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
 		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself"+ // use index message_room_author
-		" from room r left join room_auth a on a.room=r.id and a.player=$1"+  
+		" from room r left join room_auth a on a.room=r.id and a.player=$1"+
 		" where listed is true or auth is not null"+
 		" order by lastcreated desc nulls last limit 200", [userId]
 	);
@@ -321,7 +321,7 @@ proto.listUserAuths = function(userId){
 	return this.queryRows("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId]);
 }
 
-// get the id of the other user of the room (supposed a dialog room 
+// get the id of the other user of the room (supposed a dialog room
 proto.getOtherDialogRoomUser = function(roomId, userId){
 	return this.queryRow(
 		"select id from player p, room_auth a where a.player=p.id and a.room=$1 and p.id!=$2",
@@ -353,7 +353,7 @@ proto.changeRights = function(actions, userId, room){
 			break;
 		case "deny_ar":
 			sql = "update access_request set denied=$1, deny_message=$2 where room=$3 and player=$4";
-			args = [now(), (a.message||'').slice(0,200), room.id, a.user];
+			args = [now(), (a.message||'').slice(0, 200), room.id, a.user];
 			break;
 		case "update_auth":
 			// the exists part is used to check the user doing the change has at least as much auth than the modified user
@@ -420,7 +420,7 @@ proto.tryInsertWatch = function(roomId, userId){
 		")",
 		[roomId, userId]
 	).then(function(res){
-		return !!res.rowCount;	
+		return !!res.rowCount;
 	});
 }
 proto.updateWatch = function(roomId, userId, lastUnseen){
@@ -459,7 +459,7 @@ proto.listUserWatches = function(userId){
 proto.insertBan = function(roomId, bannedId, now, expires, bannerId, reason){
 	return this.queryRow(
 		"insert into ban(banned, room, banner, bandate, expires, reason) values ($1, $2, $3, $4, $5, $6) returning *",
-		[bannedId, roomId, bannerId, now, expires, reason.slice(0,255)]
+		[bannedId, roomId, bannerId, now, expires, reason.slice(0, 255)]
 	);
 }
 
@@ -473,7 +473,7 @@ proto.listActiveBans = function(roomId){
 }
 
 proto.getRoomUserActiveBan = function(roomId, userId){
-	return this.queryRow("select * from ban where room=$1 and banned=$2 and expires>$3 order by expires desc limit 1", [roomId, userId, now()], true);	
+	return this.queryRow("select * from ban where room=$1 and banned=$2 and expires>$3 order by expires desc limit 1", [roomId, userId, now()], true);
 }
 
 //////////////////////////////////////////////// #messages
@@ -552,7 +552,7 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 }
 
 // builds an histogram, each record relative to a utc day
-proto.messageHistogram = function(roomId, pattern, lang) {
+proto.messageHistogram = function(roomId, pattern, lang){
 	return pattern ? this.queryRows(
 			"select count(*) n, min(id) m, floor(created/86400) d from message where room=$1"+
 			" and to_tsvector($2, content) @@ plainto_tsquery($2,$3)"+
@@ -602,11 +602,11 @@ proto.storeMessage = function(m, dontCheckAge){
 				return this.queryRow(
 					"delete from message_vote where message=$1", [m.id], true
 				)
-			}).then(function(){ 
+			}).then(function(){
 				return this.queryRow(
 					"delete from message where id=$1", [m.id]
 				)
-			}).then(function(){ 
+			}).then(function(){
 				return m
 			});
 		});
@@ -732,15 +732,15 @@ proto.unpin = function(roomId, userId, messageId){
 
 //////////////////////////////////////////////// #plugin
 
-proto.storePlayerPluginInfo = function(plugin, userId, info) {
+proto.storePlayerPluginInfo = function(plugin, userId, info){
 	return this.queryRow("insert into plugin_player_info (plugin, player, info) values($1, $2, $3)", [plugin, userId, info])
 }
 
-proto.getPlayerPluginInfo = function(plugin, userId) {
+proto.getPlayerPluginInfo = function(plugin, userId){
 	return this.queryRow("select * from plugin_player_info where plugin=$1 and player=$2", [plugin, userId], true);
 }
 
-proto.deletePlayerPluginInfo = function(plugin, userId) {
+proto.deletePlayerPluginInfo = function(plugin, userId){
 	return this.queryRow("delete from plugin_player_info where plugin=$1 and player=$2", [plugin, userId], true);
 }
 
@@ -773,12 +773,12 @@ exports.upgrade = function(component, patchSubDirectory, cb){
 			return m ? { name:m[2], num:+m[1], filename:name } : null;
 		})
 		.filter(p => p && p.num>startVersion)
-		.sort((a,b) => a.num-b.num)
+		.sort((a, b) => a.num-b.num)
 	)
 	.then(function(patches){
 		if (!patches.length) return console.log('Component '+component+' is up to date.');
 		endVersion = patches[patches.length-1].num;
-		console.log('Component '+component+' must be upgraded from version '+startVersion+' to '+endVersion);		
+		console.log('Component '+component+' must be upgraded from version '+startVersion+' to '+endVersion);
 		return Promise.cast(patches).bind(this)
 		.then(proto.begin)
 		.reduce(function(_, patch){
@@ -787,7 +787,7 @@ exports.upgrade = function(component, patchSubDirectory, cb){
 			.then(fs.readFileAsync.bind(fs))
 			.then(buffer =>
 				buffer.toString()
-				.replace(/(#[^\n]*)?\n/g,' ').split(';')
+				.replace(/(#[^\n]*)?\n/g, ' ').split(';')
 				.map(s => s.trim()).filter(Boolean)
 			).map(function(statement){
 				console.log(' Next statement :', statement);
@@ -812,7 +812,7 @@ exports.upgrade = function(component, patchSubDirectory, cb){
 	})
 	.finally(proto.off);
 	if (cb) p.then(cb);
-	
+
 }
 
 //////////////////////////////////////////////// #global API
@@ -822,7 +822,7 @@ function now(){
 }
 
 function logQuery(sql, args){ // used in debug
-	console.log(sql.replace(/\$(\d+)/g, function(_,i){
+	console.log(sql.replace(/\$(\d+)/g, function(_, i){
 		var s=args[i-1];
 		return typeof s==="string" ? "'"+s+"'" : s
 	}));
@@ -918,7 +918,7 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 		args = [newValue],
 		colnames = [changedColumn],
 		nbConditions = (arguments.length-3)>>1;
-	for (var i=0; i<nbConditions; i++){
+	for (var i=0; i<nbConditions; i++) {
 		colnames.push(arguments[i*2+3]);
 		sql += (i ? " and " : " where ") + arguments[i*2+3] + "=$"+(i+2)
 		args.push(arguments[i*2+4]);
@@ -935,7 +935,7 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 			return;
 		}
 		var	valnums = ["$1"];
-		for (var i=0; i<nbConditions; i++){
+		for (var i=0; i<nbConditions; i++) {
 			valnums.push('$'+(i+2));
 		}
 		sql = "insert into "+table+"("+colnames.join(',')+") values("+valnums.join(',')+")";
@@ -949,7 +949,7 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 			}
 		});
 	});
-	return resolver.promise.bind(this);	
+	return resolver.promise.bind(this);
 }
 
 proto.queryRows = function(sql, args){
@@ -979,7 +979,7 @@ proto.execute = function(sql, args){
 	}).bind(this);
 }
 
-;['begin','rollback','commit'].forEach(function(s){
+;['begin', 'rollback', 'commit'].forEach(function(s){
 	proto[s] = function(arg){
 		return this.execute(s)
 		.then(function(){
