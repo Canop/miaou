@@ -22,7 +22,7 @@ And if you run your own server, please tell us.
 
 # Contributing
 
-As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes io.js, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Jade, Passport.js, hu.js, jQuery, sass/scss, Uglify-js and nginx.
+As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Jade, Passport.js, hu.js, jQuery, sass/scss, Uglify-js, gulp and nginx.
 
 If you have the ability and will to contribute, come and discuss with us. The best landing place is usually the [Miaou room](http://dystroy.org/miaou/1?Miaou) where you can ping @dystroy or @Florian. We'll show you where we manage ideas, reports, [tasks](https://trello.com/b/s4adghOI/miaou-tasks) and you'll see the list of tasks waiting for a volunteer.
 

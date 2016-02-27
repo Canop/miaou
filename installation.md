@@ -10,7 +10,7 @@ It's a work in progress and you're invited to come chat with other developers on
 
 # Standard Tools
 
-You probably already have them if you coded on that computer. Basically you'll need recent versions of gcc, git, make, Python, etc.
+You probably already have them if you coded on that computer. Basically you'll need recent versions of gcc, git, Python, etc.
 
 	sudo apt-get install build-essential
 	sudo apt-get install git
@@ -76,16 +76,13 @@ When you'll want to update Miaou later, you'll do
 	
 ## Build Miaou
 
-Two solutions are available today, and both are equivalent: `make` and `gulp`.
-In the future, only one of those will be kept, probably gulp.
+To build the application, run
 
-If you want a continuous build of the client side files, in order to test while you code, you may do
+	gulp
 
-    watch -n 1 make
+If you want a continuous build of the client side files, in order to test while you code, do
 
-or
-
-    gulp watch
+	gulp watch
 
 ## Fill the configuration
 
