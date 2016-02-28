@@ -45,6 +45,7 @@ let globs = {
 		"plugins/*/client-scripts/*.js" // TODO filter to keep only active plugins
 	],
 	"page-js": "src/page-js/*.js",
+	"page-scss": "src/page-scss/*.scss",
 	"resources:main": "src/rsc/**/*",
 	"resources:plugins": "plugins/*/rsc/**/*",
 	"server-js": [
@@ -211,8 +212,13 @@ gulp.task("themes", ["themes:compile-scss"], ()=>
 	))
 );
 
+gulp.task("page-scss", ()=>
+	gulp.src(globs["page-scss"])
+	.pipe(sass())
+	.pipe(gulp.dest("static"))
+);
 gulp.task("clean", () => del("static/*"));
-gulp.task("build", ["server-js", "lint-client-js", "main-js", "page-js", "resources:main", "resources:plugins", "themes"]);
+gulp.task("build", ["server-js", "lint-client-js", "main-js", "page-js", "page-scss", "resources:main", "resources:plugins", "themes"]);
 gulp.task("lint", ["server-js", "lint-client-js"]);
 gulp.task("set-watch-mode", ()=>{
 	mode.watch = true;
