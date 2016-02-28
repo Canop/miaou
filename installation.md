@@ -19,19 +19,13 @@ You probably already have them if you coded on that computer. Basically you'll n
 *(this should probably be completed)*
 
 
-# iojs
+# node & npm
 
-Installing it from the sources rather than from binaries is easier and make updates straightforward.
+There are various valid ways to install them. Be sure to install a recent version of node. Versions lower than 5 aren't compatible with Miaou.
 
-	git clone git@github.com:iojs/io.js.git
-	cd io.js/
-	./configure 
-	make
-	sudo make install
-	
-*TODO: is something missing for npm?*
+# gulp cli
 
-Note that `make` may take a while (about 10 to 20 minutes)
+	npm install -g gulp-cli
 
 # redis
 
@@ -42,17 +36,6 @@ You must install and start redis. There's no specific configuration to do for Mi
 There's several ways to start it. Here's the simplest one:
 
 	redis-server &
-
-## sass
-
-Reference: http://sass-lang.com/install
-
-	sudo apt-get install ruby ruby-dev
-	sudo gem install sass
-
-## uglify 
-
-	sudo npm install -g uglify-js
 
 # Installing Miaou
 
@@ -83,6 +66,12 @@ To build the application, run
 If you want a continuous build of the client side files, in order to test while you code, do
 
 	gulp watch
+
+## Test
+
+You only need to do it when you change the source code.
+
+	./test.sh
 
 ## Fill the configuration
 
