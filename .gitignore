@@ -25,7 +25,8 @@ plugins/miaou.static-user-list/
 # edition byproducts
 *.swp
 
-# compilation byproducts
+# compilation & test byproducts
+test/format/miaou.format.node.js
 .sass-cache
 build
 

@@ -9,5 +9,3 @@
 # calling buster
 BUSTER_REPORTER=specification buster-test
 
-# cleaning
-rm test/format/miaou.format.node.js

@@ -213,7 +213,7 @@ gulp.task("themes", ["themes:compile-scss"], ()=>
 
 gulp.task("clean", () => del("static/*"));
 gulp.task("build", ["server-js", "lint-client-js", "main-js", "page-js", "resources:main", "resources:plugins", "themes"]);
-
+gulp.task("lint", ["server-js", "lint-client-js"]);
 gulp.task("set-watch-mode", ()=>{
 	mode.watch = true;
 });
