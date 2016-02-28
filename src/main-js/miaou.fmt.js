@@ -19,19 +19,19 @@ miaou(function(fmt){
 		return s.split('`').map(function(t, i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
-			.replace( // exemple : [dystroy](http://dystroy.org)
+			.replace( // example : [dystroy](http://dystroy.org)
 				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
 			)
-			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s, t, r, _, m){ // exemples : [a message](7#123456), [a room](7#)
+			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s, t, r, _, m){ // examples : [a message](7#123456), [a room](7#)
 				r = r || (miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
 			})
-			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s, t, u){ // exemple : [some user](u/1234)
+			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s, t, u){ // example : [some user](u/1234)
 				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
-			.replace( // exemple : http://dystroy.org
+			.replace( // example : http://dystroy.org
 				/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig,
 				'$1<a target=_blank href="$2">$2</a>'
 			)
@@ -122,12 +122,12 @@ miaou(function(fmt){
 				continue;
 			}
 			if ((m=s.match(/^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/))) {
-				// exemple : http://mustachify.me/?src=http://blabla/queenelizabethii.jpg
+				// example : http://mustachify.me/?src=http://blabla/queenelizabethii.jpg
 				lout.push('<img src="'+m[1]+'.'+m[2]+'">');
 				continue;
 			}
 			if ((m=s.match(/^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/))) {
-				// exemple : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&ratio_x=03&ratio_y=02&width=900
+				// example : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&ratio_x=03&ratio_y=02&width=900
 				lout.push('<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">');
 				continue;
 			}
