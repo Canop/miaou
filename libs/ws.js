@@ -484,7 +484,18 @@ function handleUserInRoom(socket, completeUser){
 		}).spread(function(m, commandTask){
 			var pings = []; // names of pinged users that weren't in the room
 			if (commandTask.silent) return pings;
-			if (m.changed) m.vote = '?';
+			if (m.changed) {
+				if (m.score) {
+					// we must update the notable cache
+					for (let i=0; i<memroom.notables.length; i++) {
+						if (memroom.notables[i].id===m.id) {
+							memroom.notables[i] = clean(m);
+							break;
+						}
+					}
+				}
+				m.vote = '?';
+			}
 			for (var p of onSendMessagePlugins) {
 				p.onSendMessage(this, m, send);
 			}
