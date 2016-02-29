@@ -84,8 +84,6 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		})
 		.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
 		.on('mouseleave', '.replyButton,.deleteButton,.editButton', prof.shownow)
-		.on('mouseenter', '.message', wz.onmouseenter)
-		.on('mouseleave', '.message', wz.onmouseleave)
 		.on('click', '.reply', function(e){
 			var	$m = $(this).closest('.message');
 			notif.userAct($m.dat('message').id);
@@ -153,8 +151,10 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$('#messages')
 			.on('click', '.message', md.toggleMessageHoverInfos)
 			.on('click', '.user,.profile', prof.toggle);
-			//$(window).resize(gui.scrollToBottom);
 		} else {
+			$('#messages')
+			.on('mouseenter', '.message', wz.onmouseenter)
+			.on('mouseleave', '.message', wz.onmouseleave)
 			$('#messages, #notifications')
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
 			.on('mouseleave', md.hideMessageHoverInfos)
@@ -167,6 +167,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			.on('mouseenter', '.user', usr.showUserHoverButtons)
 			.on('mouseleave', '.user', usr.hideUserHoverButtons)
 			.on('mouseenter', '.user', prof.show);
+			// When the window is resized, all the messages have to be resized too.
+			$(window).on('resize', md.resizeAll);
 		}
 
 		$('#notable-messages, #search-results').on('click', '.message', function(e){
@@ -202,9 +204,6 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		$('#input').on('change keyup', function(){
 			$('#preview').html(miaou.fmt.mdTextToHtml(this.value, locals.me.name));
 		});
-
-		// When the window is resized, all the messages have to be resized too.
-		$(window).on('resize', md.resizeAll);
 
 		ed.init();
 	}

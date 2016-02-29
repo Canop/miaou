@@ -34,7 +34,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		notif.userAct($md.dat('message').id);
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
-		wz.updateAll();
+		if (!gui.mobile) wz.updateAll();
 		return false;
 	}
 	md.closer = function(e){
@@ -44,7 +44,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		notif.userAct($md.dat('message').id);
 		if (wab) gui.scrollToBottom();
 		e.stopPropagation();
-		wz.updateAll();
+		if (!gui.mobile) wz.updateAll();
 		return false;
 	}
 
