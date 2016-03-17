@@ -634,7 +634,7 @@ proto.getLastMessageId = function(roomId){
 //////////////////////////////////////////////// #pings
 
 proto.storePing = function(roomId, userId, messageId){
-	return this.queryRow("insert into ping(room, player, message) values ($1,$2,$3,$4)", [roomId, userId, messageId]);
+	return this.queryRow("insert into ping(room, player, message) values ($1,$2,$3)", [roomId, userId, messageId]);
 }
 
 // users must be a sanitized array of usernames
