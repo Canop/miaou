@@ -153,7 +153,7 @@ You need to set up at least one OAuth provider.
 
 Fill the relevant parts of the configuration `config.js`.
 
-With Google at least the same account can be used both for your local tests and for the deployement on a public server. Don't forget to register the callback with adresss `127.0.0.1`, not `localhost`.
+With Google at least the same account can be used both for your local tests and for the deployment on a public server. Don't forget to register the callback with address `127.0.0.1`, not `localhost`.
 
 For example with Google OAuth2, the registered callbacks used for the dystroy Miaou server are
 
@@ -174,13 +174,13 @@ Use the script:
 
 This makes it easy to share the 80 port with other applications and to let nginx serve static resources for better performances. It's also the recommended solution to serve Miaou in HTTPS.
 
-Be careful that most servers aren't able to proxy websockets, which results in Miaou falling back to slow protocols. Don't try to use another server than nginx unless you really know what you do and how to check websockets correcly pass trough.
+Be careful that most servers aren't able to proxy websockets, which results in Miaou falling back to slow protocols. Don't try to use another server than nginx unless you really know what you do and how to check websockets correctly pass trough.
 
 Installation is done with
 
 	sudo apt-get install nginx
 
-## Exemple configuration
+## Example configuration
 
 	cd /etc/nginx/site-enabed
 	vim www.yourdomain.conf
