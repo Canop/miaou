@@ -34,7 +34,9 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 
 		$('#messages')
 		.on('click', '.message .content img', function(e){
-			window.open(this.getAttribute('href')||this.src);
+			var w = window.open();
+			w.opener = null;
+			w.location = this.getAttribute('href')||this.src;
 			e.stopPropagation();
 		})
 		.on('click', '.opener', md.opener)

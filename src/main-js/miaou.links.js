@@ -24,7 +24,7 @@ miaou(function(links, gui, locals, md, skin){
 				parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
 			if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
 				// it's an url towards a room or message on this server
-				if (locals.room.id===+parts[2]) {
+				if (locals.room && locals.room.id===+parts[2]) {
 					// it's an url for the same room
 					var mid = +parts[4];
 					if (mid) {
@@ -54,8 +54,6 @@ miaou(function(links, gui, locals, md, skin){
 					})
 					addStop(this);
 				}
-			} else {
-				addStop(this);
 			}
 		});
 	}
@@ -67,5 +65,13 @@ miaou(function(links, gui, locals, md, skin){
 	links.permalink = function(message){
 		return miaou.root + locals.room.path + '#' + message.id;
 	}
+
+	// protects against opener attacks (see https://mathiasbynens.github.io/rel-noopener/)
+	$(document.body).on("click", "a[target]", function(){
+		var w = window.open();
+		w.opener = null;
+		w.location = this.getAttribute('href');
+		return false;
+	});
 
 });
