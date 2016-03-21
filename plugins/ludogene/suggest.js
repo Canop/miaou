@@ -41,7 +41,7 @@ module.exports = function(ct, gameType){
 				}
 			});
 		} else {
-			ct += '\n*none*';
+			c += '\n*none*';
 		}
 		ct.reply(c, ct.nostore=true);
 	});
