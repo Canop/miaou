@@ -8,7 +8,7 @@ let	gulp = require("gulp"),
 	sass = require("gulp-sass"),
 	merge = require("merge-stream"),
 	eslint = require('gulp-eslint'),
-        gutil = require("gulp-util"),
+	gutil = require("gulp-util"),
 	del = require("del"),
 	gulpif = require("gulp-if"),
 	uglify = require("gulp-uglify");
@@ -172,7 +172,7 @@ gulp.task("main-js", ()=>
 	.pipe(concat("miaou.concat.js"))
 	.pipe(gulp.dest("static"))
 	.pipe(miaouUglify())
-        .on("error", jsErrHandler)
+	.on("error", jsErrHandler)
 	.pipe(rename("miaou.min.js"))
 	.pipe(gulp.dest("static"))
 );
@@ -180,7 +180,7 @@ gulp.task("main-js", ()=>
 gulp.task("page-js", ()=>
 	gulp.src(globs["page-js"])
 	.pipe(miaouUglify())
-        .on("error", jsErrHandler)
+	.on("error", jsErrHandler)
 	.pipe(rename({ suffix:'.min' }))
 	.pipe(gulp.dest("static"))
 );
