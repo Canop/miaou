@@ -9,3 +9,7 @@
 .survey-table tr:hover .pc-votes {
 	color: #222;
 }
+.survey-cb {
+	-moz-appearance: radio;
+	-webkit-appearance: radio;
+}
