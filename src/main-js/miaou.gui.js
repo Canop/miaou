@@ -33,10 +33,6 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		var	timer;
 
 		$('#messages')
-		.on('click', '.message .content img', function(e){
-			window.open(this.getAttribute('href')||this.src);
-			e.stopPropagation();
-		})
 		.on('click', '.opener', md.opener)
 		.on('click', '.closer', md.closer)
 		.on('click', '.editButton', function(){
