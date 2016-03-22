@@ -1,7 +1,7 @@
 miaou(function(plugins, md){
 	
 	function getEmbedLink(id){
-		return 'https://www.youtube.com/embed/' + id;
+		return 'https://www.youtube.com/embed/' + id + '?html5=1';
 	}
 
 	// We want to make sure the video size isn't too big
@@ -38,7 +38,7 @@ miaou(function(plugins, md){
 			var size = calculateVideoSize($c);
 			return '<iframe width=' + size.width +
 				' height=' + size.height +
-				' sandbox="allow-forms allow-scripts"' +
+				' sandbox="allow-forms allow-scripts allow-same-origin"' +
 				' src="' + getEmbedLink(match[1])+'"' +
 				' frameborder=0 allowfullscreen></iframe>';
 		});
