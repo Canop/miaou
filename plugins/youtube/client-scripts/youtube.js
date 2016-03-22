@@ -39,7 +39,7 @@ miaou(function(plugins, md){
 			return '<iframe width=' + size.width +
 				' height=' + size.height +
 				' sandbox="allow-forms allow-scripts allow-same-origin"' +
-				' src="' + getEmbedLink(match[1])+'"' +
+				' src="' + getEmbedLink(match[1]) + '"' +
 				' frameborder=0 allowfullscreen></iframe>';
 		});
 		if (hasYoutubeLink) $c.html(lines.join('<br>'));
