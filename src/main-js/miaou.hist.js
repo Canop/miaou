@@ -51,8 +51,8 @@ miaou(function(hist, gui, md, time, ws){
 		});
 	} else {
 		$('#searchInput').on('keyup', function(e){
-			if (e.which===27 && typeof window.tab === "function") { // esc
-				window.tab("notablemessagespage"); // tab is defined in chat.jade
+			if (e.which===27 && typeof window.righttab === "function") { // esc
+				window.righttab("notablemessagespage"); // defined in page-js/pad.js
 				$('#input').focus();
 				return false;
 			}

@@ -142,7 +142,7 @@ miaou(function(chat, locals, time, watch, ws){
 		$('#auths').hide();
 	}
 
-	function righttab(page){
+	var righttab = window.righttab = function(page){
 		$('#right .tab').removeClass('selected');
 		$('#right .tab[page='+page+']').addClass('selected');
 		$('.page').removeClass('selected');
