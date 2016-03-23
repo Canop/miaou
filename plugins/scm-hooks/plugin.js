@@ -92,7 +92,10 @@ function unwatchRepo(ct, provider, repo){
 function listRepos(ct, provider){
 	return db.on()
 	.then(function(){
-		return this.queryRows("select repo from scm_hook_room where provider=$1 and room=$2", [provider.key, ct.shoe.room.id]);
+		return this.queryRows(
+			"select repo from scm_hook_room where provider=$1 and room=$2",
+			[provider.key, ct.shoe.room.id]
+		);
 	})
 	.then(function(rows){
 		if (rows.length) {
@@ -140,16 +143,25 @@ function scmCalling(provider, req, res){
 	res.send('Okey');
 	db.on()
 	.then(function(){
-		return this.execute("update scm_hook set nb_calls=nb_calls+1 where provider=$1 and repo=$2", [provider.key, anal.repo]);
+		return this.execute(
+			"update scm_hook set nb_calls=nb_calls+1 where provider=$1 and repo=$2",
+			[provider.key, anal.repo]
+		);
 	})
 	.then(function(res){
 		if (!res.rowCount) {
 			console.log("NEW HOOK");
-			return this.execute("insert into scm_hook (provider, repo, nb_calls) values($1,$2,1)", [provider.key, anal.repo]);
+			return this.execute(
+				"insert into scm_hook (provider, repo, nb_calls) values($1,$2,1)",
+				[provider.key, anal.repo]
+			);
 		}
 	})
 	.then(function(){
-		return this.queryRows("select room from scm_hook_room where provider=$1 and repo=$2", [provider.key, anal.repo]);
+		return this.queryRows(
+			"select room from scm_hook_room where provider=$1 and repo=$2",
+			[provider.key, anal.repo]
+		);
 	})
 	.then(function(rows){
 		if (!anal.content) {

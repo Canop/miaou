@@ -34,7 +34,8 @@ miaou(function(md, plugins, ws){
 			$table.find('tr').each(function(i){
 				var votes = data.votes[i]||0, pc = Math.round(100*votes/sum)||0;
 				$('.nb-votes', this).text(votes);
-				$('.pc-votes', this).html('<i>'+pc+'%</i>').css("box-shadow", "inset "+pc+"px 0 0 0 rgba(182,105,57,0.4)");
+				$('.pc-votes', this).html('<i>'+pc+'%</i>')
+				.css("box-shadow", "inset "+pc+"px 0 0 0 rgba(182,105,57,0.4)");
 			});
 			if (data.vote==+data.vote) { // undefined=unknown_vote, -1=no_vote
 				$inputs.prop('checked', false);

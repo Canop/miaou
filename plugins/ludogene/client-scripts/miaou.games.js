@@ -8,21 +8,23 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 
 	function renderAsk($c, m, game){
 		$c.empty();
-		var $p = $('<div>').addClass('game-proposal').appendTo($c);
-		if (game.players[0].name===locals.me.name) {
+		var	$p = $('<div>').addClass('game-proposal').appendTo($c),
+			names = game.players.map(function(p){ return p.name });
+		if (names[0]===locals.me.name) {
 			$p.append("<i>"+game.players[1].name+"</i> wants to play a game of "+game.type+" with you. ");
 			$('<button/>').text('Accept').click(function(){ send(m, game, "accept") }).appendTo($p);
-		} else if (game.players[1].name===locals.me.name) {
+		} else if (names[1]===locals.me.name) {
 			$p.append("You proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");
 		} else {
-			$p.append("<i>"+game.players[1].name+"</i> proposed a game of "+game.type+" to <i>"+game.players[0].name+"</i>.");
+			$p.append("<i>"+names[1]+"</i> proposed a game of "+game.type+" to <i>"+names[0]+"</i>.");
 		}
 	}
 	
 	function renderRefused($c, m, game){
 		$c.empty();
-		var $p = $('<div>').addClass('game-proposal').appendTo($c);
-		$p.append("<i>"+game.players[0].name+"</i> refused a game of "+game.type+" proposed by <i>"+game.players[1].name+"</i>.");
+		var	$p = $('<div>').addClass('game-proposal').appendTo($c),
+			names = game.players.map(function(p){ return p.name });
+		$p.append("<i>"+names[0]+"</i> refused a game of "+game.type+" proposed by <i>"+names[1]+"</i>.");
 	}
 	
 	// renders the message when it's in small or side containers

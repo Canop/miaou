@@ -76,7 +76,7 @@ gulp.task("server-js", ()=>
 		},
 		"extends": "eslint:recommended",
 		"rules": {
-			"no-unused-vars": [ 2, {"vars": "all", "args": "none"} ],
+			"no-unused-vars": [ 2, { "vars": "all", "args": "none" } ],
 			"comma-dangle": [ 2, "only-multiline" ],
 			"complexity": [	0, 10 ],
 			"dot-location": [ 2, "property"	],
@@ -85,13 +85,17 @@ gulp.task("server-js", ()=>
 			"brace-style": [ 2, "1tbs" ],
 			"linebreak-style": [ 2, "unix" ],
 			"no-eval": 2,
+			"max-len": [2, {
+				"code": 120,
+				"ignorePattern": "^\\s*(var )?\\w+ = \\/.*\\/\\w*(,|;)$" // regex declarations
+			}],
 			"no-caller": 2,
 			"no-extra-bind": 2,
 			"no-extra-label": 2,
 			"no-console": 0,
 			"no-extra-semi": 0,
 			"quotes": 0,
-			"comma-spacing": [ 2, {"before": false, "after": true} ],
+			"comma-spacing": [ 2, { "before": false, "after": true } ],
 			"comma-style": 2,
 			"no-trailing-spaces": [ 2, { "skipBlankLines": true } ],
 			"no-restricted-syntax": [ 2, "WithStatement" ],
@@ -132,6 +136,10 @@ gulp.task("lint-client-js", ()=>
 			"brace-style": [ 0, "1tbs" ],
 			"linebreak-style": [ 2, "unix" ],
 			"no-eval": 2,
+			"max-len": [2, {
+				"code": 120,
+				"ignorePattern": "^\\s*(var )?\\w+ = \\/.*\\/\\w*(,|;)$" // regex declarations
+			}],
 			"no-caller": 2,
 			"no-extra-bind": 2,
 			"no-extra-label": 2,

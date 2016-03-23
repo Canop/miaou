@@ -32,7 +32,12 @@ miaou(function(ms, chat, locals, time, usr){
 			modDeleted = /^!!deleted/.test(message.content);
 		status.answerable = !deleted && message.author!==locals.me.id;
 		status.old =  time.now() - created > chat.config.maxAgeForMessageEdition;
-		status.deletable = status.editable = !deleted && message.author===locals.me.id && !status.old && message.content && !modDeleted;
+		status.deletable = status.editable =
+			!deleted
+			&& message.author===locals.me.id
+			&& !status.old
+			&& message.content
+			&& !modDeleted;
 		status.mod_deletable = !deleted && usr.checkAuth('admin') && message.content && !modDeleted;
 	});
 

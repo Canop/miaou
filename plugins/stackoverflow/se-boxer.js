@@ -27,15 +27,18 @@ var handlers = {
 
 			side += '<div class=so-type>Question</div>';
 			side += '<div class=so-score>Score: <span class=num>'+item.score+'</span></div>';
-			side += '<div class="so-answers'+(item.is_answered?' so-accepted':'')+'"><span class=num>'+item.answer_count+'</span> answers</div>';
+			side += '<div class="so-answers'+(item.is_answered?' so-accepted':'')+'">';
+			side += '<span class=num>'+item.answer_count+'</span> answers</div>';
 			side += '<img class=so-owner-img src="'+item.owner.profile_image+'">';
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
+			side = '<div class=so-side>'+side+'</div>';
 
 			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(tag => '<span>'+tag+'</span>').join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
+			main = '<div class=so-main>'+main+'</div>';
 
-			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
+			return '<div class=stackexchangebox>'+side+main+'</div>';
 		}
 	},
 	"answers":{
@@ -44,15 +47,18 @@ var handlers = {
 			var side = '', main = '';
 
 			side += '<div class=so-type>Answer</div>';
-			side += '<div class="so-score'+(item.is_accepted?' so-accepted':'')+'">Score: <span class=num>'+item.score+'</span></div>';
+			var classes = "so-score'+(item.is_accepted?' so-accepted':'')+'";
+			side += '<div class='+classes+'>Score: <span class=num>'+item.score+'</span></div>';
 			side += '<img class=so-owner-img src="'+item.owner.profile_image+'">';
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
+			side = '<div class=so-side>'+side+'</div>';
 
 			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(tag => '<span>'+tag+'</span>').join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
+			main = '<div class=so-main>'+main+'</div>';
 
-			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
+			return '<div class=stackexchangebox>'+side+main+'</div>';
 		}
 	},
 	"comments":{
@@ -62,6 +68,7 @@ var handlers = {
 
 			side += '<div class=so-type>Comment</div>';
 			side += '<div class=so-score>Score: <span class=num>'+item.score+'</span></div>';
+			side = '<div class=so-side>'+side+'</div>';
 
 			main += '<span class=so-comment>'+item.body+'</span> - ';
 			main += '<a target=_blank class=so-comment-link href='+task.line+'">'+
@@ -69,7 +76,9 @@ var handlers = {
 				Date(item.creation_date)+ // todo make the browser compute the date using the locale
 				'</i></a>';
 
-			return '<div class=stackexchangebox><div class=so-side>'+side+'</div><div class=so-main>'+main+'</div></div>';
+			main = '<div class=so-main>'+main+'</div>';
+
+			return '<div class=stackexchangebox>'+side+main+'</div>';
 
 		}
 	}

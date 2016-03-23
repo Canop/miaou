@@ -27,6 +27,9 @@ function doStats(ct){
 	}
 	if (/^me$/i.test(topic)) topic = '@'+ct.username();
 	var cols, from, title, args=[], orderingCol;
+
+	/* eslint-disable max-len */
+
 	if (/^server$/i.test(topic)) {
 		cols = [
 			{name:"Users", value:"(select count(*) from player)"},
@@ -123,6 +126,9 @@ function doStats(ct){
 	}
 	var sql = "select " + cols.map((col, i) => (col.value||col.name)+' c'+i).join(',');
 	if (from) sql += ' '+from;
+
+	/* eslint-enable max-len */
+
 	return this.queryRows(sql, args, true).then(function(rows){
 		var c;
 		if (!rows.length) {

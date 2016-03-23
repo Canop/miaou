@@ -131,7 +131,7 @@ exports.wsOnBan = function(shoe, o){
 		if (bannedAuth==="own") throw "A room owner cannot be banned";
 		var bannerAuth = shoe.room.auth;
 		if (bannedAuth==="admin" && bannerAuth!=="own") throw "Only a room owner can ban an admin";
-		if (bannerAuth!=="admin" && bannerAuth!=="own") throw "Only an owner or an admin can ban a user"; // should not happen
+		if (bannerAuth!=="admin" && bannerAuth!=="own") throw "Only an owner or an admin can ban a user";
 		var now = Date.now()/1000|0;
 		return this.insertBan(shoe.room.id, o.banned, now, now+o.duration, shoe.publicUser.id, o.reason);
 	}).then(function(){

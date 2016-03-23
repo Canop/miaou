@@ -2,7 +2,8 @@
 // Usage :
 //
 //  db.on(req.user)                             // returns a promise bound to the connection taken from the pool
-//  .then(db.updateUser)                        // querying functions are available on the db object and use the connection (context of the call)
+//  .then(db.updateUser)                        // querying functions are available on the db object
+//                                              // and use the connection (context of the call)
 //  .then(function(user){                       // when you can't use the simple form
 //      if (!user.bot) return this.ping(uid)    // `this` is the connection
 //  }).finally(db.off);                         // releases the connection which is returned to the pool
@@ -74,7 +75,9 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 // Private fields are included in the returned object
 proto.getUserById = function(id){
 	return this.queryRow(
-		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where id=$1', [id]
+		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey'+
+		' from player where id=$1',
+		[id]
 	);
 }
 
@@ -82,7 +85,8 @@ proto.getUserById = function(id){
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
 	return this.queryRow(
-		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey from player where lower(name)=$1',
+		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey'+
+		' from player where lower(name)=$1',
 		[username.toLowerCase()], true
 	);
 }
@@ -168,7 +172,8 @@ proto.getPrefs = function(userId){
 
 proto.createRoom = function(r, owners){
 	return this.queryRow(
-		'insert into room (name, private, listed, dialog, description, lang) values ($1, $2, $3, $4, $5, $6) returning id',
+		'insert into room (name, private, listed, dialog, description, lang)'+
+		' values ($1, $2, $3, $4, $5, $6) returning id',
 		[r.name, r.private, r.listed, r.dialog, r.description||'', r.lang||'en']
 	).then(function(row){
 		r.id = row.id;
@@ -252,17 +257,19 @@ proto.fetchRoomAndUserAuth = function(roomId, userId, dontThrowIfNoRow){
 // lists the rooms a user can access, either public or whose access was explicitely granted
 proto.listAccessibleRooms = function(userId){
 	return this.queryRows(
-		"select id, name, description, private, dialog, listed, lang, auth from room r left join room_auth a on a.room=r.id and a.player=$1"+
+		"select id, name, description, private, dialog, listed, lang, auth"+
+		" from room r left join room_auth a on a.room=r.id and a.player=$1"+
 		" where private is false or auth is not null order by auth desc nulls last, name", [userId]
 	);
 }
 
 // lists the rooms that should make it to the front page
+// use index message_room_author
 proto.listFrontPageRooms = function(userId){
 	return this.queryRows(
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
-		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself"+ // use index message_room_author
+		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+
 		" where listed is true or auth is not null"+
 		" order by lastcreated desc nulls last limit 200", [userId]
@@ -300,7 +307,8 @@ proto.insertAccessRequest = function(roomId, userId, message){
 
 // userId : optionnal
 proto.listOpenAccessRequests = function(roomId, userId){
-	var	sql = "select player,name,requested,request_message from player p,access_request r where r.denied is null and r.player=p.id and room=$1",
+	var	sql = "select player,name,requested,request_message from player p,access_request r"+
+		" where r.denied is null and r.player=p.id and room=$1",
 		args = [roomId];
 	if (userId) {
 		sql += " and player=?";
@@ -311,14 +319,18 @@ proto.listOpenAccessRequests = function(roomId, userId){
 
 proto.getLastAccessRequest = function(roomId, userId){
 	return this.queryRow(
-		"select player,requested,request_message,denied,deny_message from access_request where room=$1 and player=$2 order by denied desc limit 1",
+		"select player,requested,request_message,denied,deny_message"+
+		" from access_request where room=$1 and player=$2 order by denied desc limit 1",
 		[roomId, userId], true
 	);
 }
 
 // lists the authorizations a user has
 proto.listUserAuths = function(userId){
-	return this.queryRows("select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1", [userId]);
+	return this.queryRows(
+		"select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1",
+		[userId]
+	);
 }
 
 // get the id of the other user of the room (supposed a dialog room
@@ -332,7 +344,8 @@ proto.getOtherDialogRoomUser = function(roomId, userId){
 // lists the authorizations of the room
 proto.listRoomAuths = function(roomId){
 	return this.queryRows(
-		"select id, name, auth, player, granter, granted from player p, room_auth a where a.player=p.id and a.room=$1 order by auth desc, name",
+		"select id, name, auth, player, granter, granted from player p, room_auth a"+
+		" where a.player=p.id and a.room=$1 order by auth desc, name",
 		[roomId]
 	);
 }
@@ -356,13 +369,15 @@ proto.changeRights = function(actions, userId, room){
 			args = [now(), (a.message||'').slice(0, 200), room.id, a.user];
 			break;
 		case "update_auth":
-			// the exists part is used to check the user doing the change has at least as much auth than the modified user
+			// the exists part is used to check the user doing the change
+			//  has at least as much auth than the modified user
 			sql = "update room_auth ma set auth=$1 where ma.player=$2 and ma.room=$3 and"+
 				" exists (select * from room_auth ua where ua.player=$4 and ua.room=$5 and ua.auth>=ma.auth)";
 			args = [a.auth, a.user, room.id, userId, room.id];
 			break;
 		case "delete_auth":
-			// the exists part is used to check the user doing the change has at least as much auth than the modified user
+			// the exists part is used to check the user doing the change
+			//  has at least as much auth than the modified user
 			sql = "delete from room_auth ma where ma.player=$1 and ma.room=$2 and"+
 				" exists (select * from room_auth ua where ua.player=$3 and ua.room=$2 and ua.auth>=ma.auth)";
 			args = [a.user, room.id, userId];
@@ -473,7 +488,11 @@ proto.listActiveBans = function(roomId){
 }
 
 proto.getRoomUserActiveBan = function(roomId, userId){
-	return this.queryRow("select * from ban where room=$1 and banned=$2 and expires>$3 order by expires desc limit 1", [roomId, userId, now()], true);
+	return this.queryRow(
+		"select * from ban where room=$1 and banned=$2 and expires>$3 order by expires desc limit 1",
+		[roomId, userId, now()],
+		true
+	);
 }
 
 //////////////////////////////////////////////// #messages
@@ -526,7 +545,8 @@ proto.getNextMessageId = function(roomId, mid, asc){
 
 proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
-		'select message.id, author, player.name as authorname, player.bot, room, content, created, pin, star, up, down, score from message'+
+		'select message.id, author, player.name as authorname, player.bot, room, content,'+
+		' created, pin, star, up, down, score from message'+
 		' inner join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
 		' order by pin desc, created desc, score desc limit 20', [roomId, createdAfter]
 	);
@@ -534,9 +554,11 @@ proto.getNotableMessages = function(roomId, createdAfter){
 
 proto.search = function(roomId, pattern, lang, pageSize, numPage){
 	return this.queryRows(
-		"select message.id, author, player.name as authorname, room, content, created, pin, star, up, down, score from message"+
+		"select message.id, author, player.name as authorname, room, content, created,"+
+		" pin, star, up, down, score from message"+
 		" inner join player on author=player.id"+
-		" where to_tsvector($1, content) @@ plainto_tsquery($1,$2) and room=$3 order by message.id desc limit $4 offset $5",
+		" where to_tsvector($1, content) @@ plainto_tsquery($1,$2) and room=$3"+
+		" order by message.id desc limit $4 offset $5",
 		[lang, pattern, roomId, pageSize, numPage*pageSize||0]
 	);
 }
@@ -544,7 +566,8 @@ proto.search = function(roomId, pattern, lang, pageSize, numPage){
 // accepts a tsquery for example 'dog&!cat' (find dogs but filter out cats)
 proto.search_tsquery = function(roomId, tsquery, lang, N){
 	return this.queryRows(
-		"select message.id, author, player.name as authorname, room, content, created, pin, star, up, down, score from message"+
+		"select message.id, author, player.name as authorname, room, content,"+
+		" created, pin, star, up, down, score from message"+
 		" inner join player on author=player.id"+
 		" where to_tsvector($1, content) @@ to_tsquery($1,$2) and room=$3 order by message.id desc limit $4",
 		[lang, tsquery, roomId, N]
@@ -553,11 +576,16 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 
 // builds an histogram, each record relative to a utc day
 proto.messageHistogram = function(roomId, pattern, lang){
-	return pattern ? this.queryRows(
-			"select count(*) n, min(id) m, floor(created/86400) d from message where room=$1"+
-			" and to_tsvector($2, content) @@ plainto_tsquery($2,$3)"+
-			" group by d order by d", [roomId, lang, pattern]
-		) : this.queryRows("select count(*) n, min(id) m, floor(created/86400) d from message where room=$1 group by d order by d", [roomId]);
+	return pattern
+	? this.queryRows(
+		"select count(*) n, min(id) m, floor(created/86400) d from message where room=$1"+
+		" and to_tsvector($2, content) @@ plainto_tsquery($2,$3)"+
+		" group by d order by d", [roomId, lang, pattern]
+	) : this.queryRows(
+		"select count(*) n, min(id) m, floor(created/86400) d"+
+		" from message where room=$1 group by d order by d",
+		[roomId]
+	);
 }
 
 // fetches one message. Votes of the passed user are included if user is provided
@@ -694,7 +722,7 @@ proto.addVote = function(roomId, userId, messageId, level){
 	switch (level) {
 	case 'pin': case 'star': case 'up': case 'down':
 		sql = "insert into message_vote (message, player, vote) select $1, $2, $3";
-		sql += " where exists(select * from message where id=$1 and room=$4)"; // to avoid users cheating by voting on messages they're not allowed to
+		sql += " where exists(select * from message where id=$1 and room=$4)"; // security check
 		args = [messageId, userId, level, roomId];
 		break;
 	default:
@@ -706,7 +734,11 @@ proto.addVote = function(roomId, userId, messageId, level){
 	});
 }
 proto.removeVote = function(roomId, userId, messageId, level){
-	return this.queryRow("delete from message_vote where message=$1 and player=$2 and vote=$3", [messageId, userId, level], true)
+	return this.queryRow(
+		"delete from message_vote where message=$1 and player=$2 and vote=$3",
+		[messageId, userId, level],
+		true
+	)
 	.then(function(removedOne){
 		if (removedOne)	return this.updateGetMessage(messageId, level+"="+level+"-1", userId);
 	});
@@ -733,7 +765,10 @@ proto.unpin = function(roomId, userId, messageId){
 //////////////////////////////////////////////// #plugin
 
 proto.storePlayerPluginInfo = function(plugin, userId, info){
-	return this.queryRow("insert into plugin_player_info (plugin, player, info) values($1, $2, $3)", [plugin, userId, info])
+	return this.queryRow(
+		"insert into plugin_player_info (plugin, player, info) values($1, $2, $3)",
+		[plugin, userId, info]
+	);
 }
 
 proto.getPlayerPluginInfo = function(plugin, userId){

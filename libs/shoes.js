@@ -97,7 +97,11 @@ Shoes.userSocket = function(userIdOrName, includeWatchers){
 	}
 	for (let socketId in ioroom.sockets) {
 		let socket = io.sockets.connected[socketId];
-		if (socket && socket.publicUser && (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)) {
+		if (
+			socket
+			&& socket.publicUser
+			&& (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
+		) {
 			return socket;
 		}
 	}

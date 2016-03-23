@@ -3,7 +3,7 @@
 miaou(function(hist, gui, md, time, ws){
 
 	var	visible = false,
-		currentPattern; // as the xhr-pulling flavour of socket.io doesn't handle callbacks, we have to store the currently searched pattern
+		currentPattern;
 
 	// arg : +1 or -1
 	function moveSelect(d){

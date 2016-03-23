@@ -16,7 +16,7 @@ miaou(function(win, chat, gui, md, ws){
 		if ($mwin.length && $mwin.attr('mid')==message.id) {
 			$mwin.dat('message', message);
 			md.render(
-				$mwin.find('.content').empty().css('max-height', $(window).height()*.85), // sadly didn't find a pure css solution
+				$mwin.find('.content').empty().css('max-height', $(window).height()*.85),
 				message
 			);
 		}
@@ -53,7 +53,7 @@ miaou(function(win, chat, gui, md, ws){
 			sides.forEach(function(side){
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
 			});
-			$mc.html('loading...'); // fixme : this isn't replaced when the message isn't found on the server (hard deleted)
+			$mc.html('loading...'); // fixme : isn't replaced when the message isn't found on the server (hard deleted)
 			ws.emit('get_message', message.id);
 		}
 	}

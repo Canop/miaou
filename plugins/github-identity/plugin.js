@@ -35,7 +35,9 @@ function createProfile(user, ppi, vals){
 			filenames = Object.keys(g.files);
 		console.log(g);
 		if (filenames.length!==1) return p.reject(new Error('Gist must contain exactly one file'));
-		if (!g.owner || !g.owner.html_url || !g.owner.login || !g.owner.id)  return p.reject(new Error('Missing owner info'));
+		if (!g.owner || !g.owner.html_url || !g.owner.login || !g.owner.id) {
+			return p.reject(new Error('Missing owner info'));
+		}
 		if (g.public !== true)  return p.reject(new Error("Gist isn't public"));
 		var file = g.files[filenames[0]];
 		fetch(file.raw_url, p, function(body){
@@ -67,7 +69,8 @@ function renderProfile(ppi){
 
 function describeProfileCreation(user){
 	return [
-		"to validate you're the owner of a GitHub account, please <a href=https://gist.github.com/ target=_blank>create a public gist</a> with the following :",
+		"to validate you're the owner of a GitHub account,"
+		+ " please <a href=https://gist.github.com/ target=_blank>create a public gist</a> with the following :",
 		"<code>"+gistText(user)+"</code>",
 	].join('<br>');
 }

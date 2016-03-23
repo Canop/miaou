@@ -72,28 +72,32 @@ window.wzin = (function(){
 		var pl = Math.min(p1.left, p2.left),
 			antitwist = Math.abs(p1.left-p2.left)>p2.top-p1.top-h1;
 
-		var path = "M "+p1.left+' '+p1.top;
+		var	path = "M "+p1.left+' '+p1.top,
+			B1 = p1.top+h1,
+			B2 = p2.top+h2,
+			B = Math.max(B2, B1);
 		if (antitwist) {
 			path += " H "+pl;
-			path += " C "+(pl-100)+' '+p1.top+ ', '+(pl-100)+' '+(p2.top+h2)+ ', '+pl+' '+Math.max(p2.top+h2, p1.top+h1);
+			path += " C "+(pl-100)+' '+p1.top+ ', '+(pl-100)+' '+B2+ ', '+pl+' '+B;
 			path += " H "+p2.left;
 			path += " V "+p2.top;
 			path += " H "+pl;
 			var dx = Math.min(40, p2.top-p1.top-h1+10);
-			path += " C "+(pl-dx)+' '+(p2.top)+ ', '+(pl-dx)+' '+(p1.top+h1)+ ', '+p1.left+' '+(p1.top+h1);
+			path += " C "+(pl-dx)+' '+(p2.top)+ ', '+(pl-dx)+' '+B1+ ', '+p1.left+' '+B1;
 		} else {
-			path += " C "+(pl-100)+' '+p1.top+ ', '+(pl-100)+' '+(p2.top+h2)+ ', '+p2.left+' '+Math.max(p2.top+h2, p1.top+h1);
+			path += " C "+(pl-100)+' '+p1.top+ ', '+(pl-100)+' '+B2+ ', '+p2.left+' '+B;
 			if (p1.top+h1<p2.top-10) {
 				path += " L "+p2.left+' '+p2.top;
-				path += " C "+(pl-40)+' '+(p2.top)+ ', '+(pl-40)+' '+(p1.top+h1)+ ', '+p1.left+' '+(p1.top+h1);
+				path += " C "+(pl-40)+' '+(p2.top)+ ', '+(pl-40)+' '+B1+ ', '+p1.left+' '+B1;
 			} else if (p1.top+h1<p2.top+3) {
 				path += " L "+p2.left+' '+p2.top;
-				path += " C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(p1.top+h1-5-h1/7)+ ', '+p1.left+' '+(p1.top+h1);
+				path += " C "+(p2.left-40)+' '+(p2.top+5+h2/7)+ ', '+(p1.left-40)+' '+(B1-5-h1/7)+ ', '+p1.left+' '+B1;
 			}
 		}
 
-		var svg = this.svg = ù('<svg', this.parent).css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none', width:W, height:H});
-		$(svg.n).offset(ps).css({pointerEvents:'none'}); // strange bug : I can't set pointerEvents to none using ù.css :(
+		var svg = this.svg = ù('<svg', this.parent)
+		.css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none', width:W, height:H});
+		$(svg.n).offset(ps).css({pointerEvents:'none'});
 		ù('<path', svg).attr({d:path, fill:this.fill});
 		if (!this.chbg) {
 			var grad = svg.def('<linearGradient').attr({

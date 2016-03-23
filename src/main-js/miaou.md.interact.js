@@ -56,11 +56,16 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		infos.push(time.formatRelativeTime(message.created));
 		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ';
 		if (message.id) {
-			h += '<a class=link target=_blank href="'+links.permalink(message)+'" title="permalink : right-click to copy">&#xe815;</a> ';
+			h += '<a class=link target=_blank href="'+links.permalink(message)+
+				'" title="permalink : right-click to copy">&#xe815;</a> ';
 			if (!gui.mobile) h += '<a class=makemwin title="float">&#xe81d;</a> ';
-			h += chat.voteLevels.slice(0, message.author===locals.me.id ? 1 : 4).slice(usr.checkAuth('admin')?0:1).map(function(l){
-				return '<span class="vote'+(l.key===message.vote?' on':'')+'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
-			}).join('');
+			h += chat.voteLevels.slice(0, message.author===locals.me.id ? 1 : 4)
+			.slice(usr.checkAuth('admin')?0:1)
+			.map(function(l){
+				return '<span class="vote'+(l.key===message.vote?' on':'')+
+					'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
+			})
+			.join('');
 			if (message.pin>(message.vote=="pin") && usr.checkAuth('admin')) {
 				h += ' - <span class=unpin>unpin</span>';
 			}
@@ -76,9 +81,15 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 			$decs = $message.find('.decorations');
 		$hoveredMessage = $message;
 		ms.updateStatus(message);
-		if (message.status.deletable || message.status.mod_deletable) $('<button>').addClass('deleteButton').text('delete').prependTo($decs);
-		if (message.status.editable) $('<button>').addClass('editButton').text('edit').prependTo($decs);
-		if (message.status.answerable) $('<button>').addClass('replyButton').text('reply').prependTo($decs);
+		if (message.status.deletable || message.status.mod_deletable) {
+			$('<button>').addClass('deleteButton').text('delete').prependTo($decs);
+		}
+		if (message.status.editable) {
+			$('<button>').addClass('editButton').text('edit').prependTo($decs);
+		}
+		if (message.status.answerable) {
+			$('<button>').addClass('replyButton').text('reply').prependTo($decs);
+		}
 		$('<div>').addClass('message-menu').html(getMessageMenuHtml(message)).appendTo(this);
 		return false;
 	}
@@ -88,7 +99,11 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		return false;
 	}
 	md.toggleMessageHoverInfos = function(){
-		($('.message-menu, .editButton, .replyButton, .deleteButton', this).length ? md.hideMessageHoverInfos : md.showMessageHoverInfos).call(this);
+		(
+			$('.message-menu, .editButton, .replyButton, .deleteButton', this).length
+			? md.hideMessageHoverInfos
+			: md.showMessageHoverInfos
+		).call(this);
 		return false;
 	}
 	// mainly a workaround for some mouseleave events I can't catch

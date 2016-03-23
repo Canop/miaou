@@ -148,7 +148,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect
 			console.log('ERROR', err);
-			console.log("A fatal error occurred, you're disconnected from the server (you might try refreshing the page)");
+			console.log("A fatal error occurred, you're disconnected from the server");
 			socket.disconnect();
 		});
 	}

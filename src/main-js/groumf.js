@@ -5,7 +5,8 @@
 
 	"use strict";
 
-	var WordCharRegex = /[\d@A-Z_a-z~\xa1-\xac\xae-\xaf\xb5-\xba\xc0-\xfe]/; // something a little less bad than the \w of ES5
+	// something a little less bad than the \w of ES5
+	var WordCharRegex = /[\d@A-Z_a-z~\xa1-\xac\xae-\xaf\xb5-\xba\xc0-\xfe]/;
 
 	function Groumf(options){
 		this.forest = {};
@@ -172,7 +173,13 @@
 		}
 	}
 
-	;['replace', 'replaceTextWithHTMLInHTML', 'replaceTextWithHTMLInHTMLUsingRegex', 'replaceTextWithTextInHTML', 'replaceInString'].forEach(function(n){
+	;[
+		'replace',
+		'replaceTextWithHTMLInHTML',
+		'replaceTextWithHTMLInHTMLUsingRegex',
+		'replaceTextWithTextInHTML',
+		'replaceInString'
+	].forEach(function(n){
 		Groumf[n] = function(){
 			return Groumf.prototype[n].apply(new Groumf, arguments);
 		};

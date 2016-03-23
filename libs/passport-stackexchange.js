@@ -1,7 +1,8 @@
-const name = 'stackexchange',
+const	name = 'stackexchange',
 	util = require('util'),
 	OAuth2Strategy = require('passport-oauth').OAuth2Strategy,
 	zlib = require('zlib'),
+	apiBaseUrl = "https://api.stackexchange.com/2.1/me?site=stackoverflow",
 	request = require("request");
 
 function Strategy(options, verify){
@@ -18,11 +19,11 @@ function Strategy(options, verify){
 util.inherits(Strategy, OAuth2Strategy);
 
 Strategy.prototype.userProfile = function(accessToken, done){
-	var gz = zlib.createGunzip(),
+	var	gz = zlib.createGunzip(),
 		body = '';
 
 	request({
-		url: "https://api.stackexchange.com/2.1/me?site=stackoverflow&key=" + this._options.key + "&access_token=" + accessToken,
+		url: apiBaseUrl + "&key=" + this._options.key + "&access_token=" + accessToken,
 		headers: { 'Accept-Encoding': 'gzip' }
 	}).pipe(gz);
 

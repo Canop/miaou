@@ -145,7 +145,10 @@ exports.onCommand = function(ct, id){
 
 		case "twc":
 			title = "Tribo World Cup Style Running Scoring";
-			cols = ["Player", "Finished Games", "Wins", "Losses", "Unfinished", "Avg Score", "TWC Score", "Avg TWC Score"];
+			cols = [
+				"Player", "Finished Games", "Wins", "Losses", "Unfinished",
+				"Avg Score", "TWC Score", "Avg TWC Score"
+			];
 			players = playersInfos(messages, function(p){
 				p.t = 2*p.w + p.s; // total twc score
 				p.r = p.t / p.f;   // ranking value

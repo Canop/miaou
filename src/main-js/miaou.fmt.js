@@ -23,19 +23,23 @@ miaou(function(fmt){
 				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
 			)
-			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s, t, r, _, m){ // examples : [a message](7#123456), [a room](7#)
+			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s, t, r, _, m){
+				// examples : [a message](7#123456), [a room](7#)
 				r = r || (miaou.locals && miaou.locals.room.id);
 				if (!r) return s;
 				return '<a target=_blank href='+r+'#'+m+'>'+t+'</a>';
 			})
-			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s, t, u){ // example : [some user](u/1234)
+			.replace(/\[([^\]]+)\]\(u\/([\w-]+)\)/g, function(s, t, u){
+				// example : [some user](u/1234)
 				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
-			.replace( // example : http://dystroy.org
+			.replace(
+				// example : http://dystroy.org
 				/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig,
 				'$1<a target=_blank href="$2">$2</a>'
 			)
-			.replace(/(^|>)([^<]*)(<|$)/g, function(_, a, b, c){ // do replacements only on what isn't in a tag
+			.replace(/(^|>)([^<]*)(<|$)/g, function(_, a, b, c){
+				// do replacements only on what isn't in a tag
 				return a
 				+ b
 				.replace(/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g, function(_, sp, ping){ // ping
@@ -96,8 +100,14 @@ miaou(function(fmt){
 					code = null;
 				}
 			} else if (codeline) {
-				// we check we're not in fact at the start of a table ("    A    |     B    \n-----+----\n    a    |    b")
-				if (l<lin.length-2 && /\|/.test(s) && coldefregex.test(lin[l+1]) && !coderegex.test(lin[l+1])  && /\|/.test(lin[l+2])) {
+				// we check we're not in fact at the start of a table
+				// ("    A    |     B    \n-----+----\n    a    |    b")
+				if (
+					l<lin.length-2 && /\|/.test(s)
+					&& coldefregex.test(lin[l+1])
+					&& !coderegex.test(lin[l+1])
+					&& /\|/.test(lin[l+2])
+				) {
 					table = new fmt.Table(lin[++l]);
 					table.push(s);
 					table.push(lin[++l]);
@@ -121,12 +131,14 @@ miaou(function(fmt){
 				}
 				continue;
 			}
-			if ((m=s.match(/^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/))) {
+			var regex = /^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/;
+			if ((m=s.match(regex))) {
 				// example : http://mustachify.me/?src=http://blabla/queenelizabethii.jpg
 				lout.push('<img src="'+m[1]+'.'+m[2]+'">');
 				continue;
 			}
-			if ((m=s.match(/^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/))) {
+			regex = /^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/;
+			if ((m=s.match(regex))) {
 				// example : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&ratio_x=03&ratio_y=02&width=900
 				lout.push('<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">');
 				continue;
@@ -205,7 +217,8 @@ miaou(function(fmt){
 
 	fmt.mdMcToHtml = function(md, username){
 		return md.replace(/^(?:@(\w[\w\-]{2,})#(\d+))?([\s\S]*)/, function(_, name, num, text){
-			return (num ? '<span class=reply rn="'+name+'" to='+num+'>&#xe81a;</span>' : '') + _mdTextToHtml(text, username);
+			return (num ? '<span class=reply rn="'+name+'" to='+num+'>&#xe81a;</span>' : '')
+				+ _mdTextToHtml(text, username);
 		});
 	}
 

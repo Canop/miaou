@@ -126,7 +126,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				}
 			}
 		});
-		notifications.sort(function(a, b){ return a.mid-b.mid }); // this isn't perfect as some notifications are related to flakes
+		notifications.sort(function(a, b){ return a.mid-b.mid });
 		console.log("notifications:", notifications);
 		if (changed) notif.updatePingsList();
 	}
@@ -145,7 +145,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 						md.goToMessageDiv($md);
 					}
 				}
-				if (forwardToServer) ws.emit("rm_ping", mid); // TODO know if the ping is saved in db to avoid useless messages
+				if (forwardToServer) ws.emit("rm_ping", mid);
 				notifications.splice(i, 1);
 				notif.updatePingsList();
 				return;

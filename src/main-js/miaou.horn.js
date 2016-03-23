@@ -20,7 +20,10 @@ miaou(function(horn, gui, locals, md){
 		if (sound) audio = new Audio('static/'+sound);
 		if (locals.userPrefs.notif !== "never" && Notification.permission !== "granted") {
 			md.notificationMessage(function($c, close){
-				$('<p>').appendTo($c).text("Please grant Miaou the permission to issue desktop notifications or change the settings.");
+				$('<p>').appendTo($c).text(
+					"Please grant Miaou the permission to issue desktop notifications"+
+					" or change the settings."
+				);
 				$('<button>').appendTo($c).text('Grant Permission (recommended)').click(function(){
 					Notification.requestPermission(function(permission){
 						if (!('permission' in Notification)) { // from the MDN - not sure if useful

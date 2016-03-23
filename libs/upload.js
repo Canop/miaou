@@ -9,7 +9,9 @@ exports.configure = function(miaou){
 
 exports.appPostUpload = function(req, res){
 	if (!config.imgur || !config.imgur.clientID) {
-		console.log('To activate the imgur service, register your application at imgur.com and set the imgur.clientID property in the config.json file.');
+		console.log(
+			'To activate the imgur service, register your application'
+			+ ' at imgur.com and set the imgur.clientID property in the config.json file.');
 		return res.send({error:"upload service not available"}); // todo : don't show upload button in this case
 	}
 	var busboy = new Busboy({ headers: req.headers }), files=[];

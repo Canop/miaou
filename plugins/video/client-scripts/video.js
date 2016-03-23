@@ -142,7 +142,9 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 			this.started = true;
 			if (this.index===0) {
 				console.log('Sending offer to peer');
-				this.pc.createOffer(this.setLocalAndSendMessage.bind(this), function(e){ console.log('createOffer() error: ', e) });
+				this.pc.createOffer(this.setLocalAndSendMessage.bind(this), function(e){
+					console.log('createOffer() error: ', e)
+				});
 			}
 		}
 	}

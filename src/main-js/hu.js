@@ -186,7 +186,8 @@
 				v.f = fn.attr;
 				var d = this.n[k] || this.attr(k);
 				if (d) {
-					v.s = parseFloat(d.baseVal ? d.baseVal.value : d); // you have a baseval for example in SVGAnimatedLength
+					// you have a baseval for example in SVGAnimatedLength
+					v.s = parseFloat(d.baseVal ? d.baseVal.value : d);
 				} else {
 					v.s = 0;
 				}
