@@ -197,7 +197,7 @@ exports.roomPath = function(room){
 	return room.id+'?'+naming.toUrlDecoration(room.name);
 }
 exports.roomUrl = function(room){
-	return exports.url('/'+exports.roomPath(room));
+	return url('/'+exports.roomPath(room));
 }
 exports.mobile = function(req){
 	return mobileRegex.test(req.headers['user-agent']);

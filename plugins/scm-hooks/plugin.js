@@ -9,6 +9,8 @@
 
 const	providers = [require("./github.js").provider],
 	ws = require('../../libs/ws.js'),
+	server = require('../../libs/server.js'),
+	availableFlags = ["en", "fr", "it"],
 	path = require('path');
 
 var	config,
@@ -89,6 +91,7 @@ function unwatchRepo(ct, provider, repo){
 		ct.reply("The room is unhooked from "+repo);
 	}).finally(db.off);
 }
+
 function listRepos(ct, provider){
 	return db.on()
 	.then(function(){
@@ -110,6 +113,19 @@ function listRepos(ct, provider){
 	}).finally(db.off);
 }
 
+function writeDownLink(ct, provider){
+	var	room = ct.shoe.room,
+		langPostfix = ~availableFlags.indexOf(room.lang) ? "-"+room.lang : "",
+		shieldUrl = server.url("/static/shields/room"+langPostfix+".svg"),
+		roomUrl = server.roomUrl(room),
+		mdCode = "[![Chat on Miaou]("+shieldUrl+")]("+roomUrl+")";
+	ct.reply(
+		"You can link "+provider.key+" users to this room"+
+		" by adding the following markdown in your `README.md` file:\n"+
+		"    "+mdCode
+	);
+}
+
 function onCommand(ct, provider){
 	var m;
 	if ((m=ct.args.match(/^watch ([\w-]+\/[\w-.]+)/))) {
@@ -122,6 +138,9 @@ function onCommand(ct, provider){
 	}
 	if (ct.args==="list") {
 		return listRepos.call(this, ct, provider);
+	}
+	if (ct.args==="shield") {
+		return writeDownLink.call(this, ct, provider);
 	}
 	ct.reply("Command not understood. Try `!!help !!"+provider.command+"` for more information.", true);
 }
