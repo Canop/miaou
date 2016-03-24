@@ -3,6 +3,7 @@
 A chat server with authentication, persistent and searchable history, rich markdown formatting, video, private rooms, conversation highlighting, plugins, persisted notifications, and many other features.
 
 [![Build Status](https://travis-ci.org/Canop/miaou.svg?branch=master)](https://travis-ci.org/Canop/miaou)
+[![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-en.svg)](https://dystroy.org/miaou/1?Miaou)
 [![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-fr.svg)](https://dystroy.org/miaou/3?Code_Croissants)
 
 **[Introduction/Gallery](http://dystroy.org/miaou/static/intro.html)**
