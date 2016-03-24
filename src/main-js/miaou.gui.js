@@ -6,11 +6,12 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 
 	gui.mobile = $(document.body).hasClass('mobile');
 
-	gui.isAtBottom = function(){
-		// FIXME use only one solution (but it's not easy)
-		if (gui.mobile) {
-			return window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
-		}
+	// FIXME use only one solution (but it's not easy)
+	gui.isAtBottom = gui.mobile
+	? function(){
+		return window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+	}
+	: function(){
 		var	$messages = $('#messages'),
 			lastMessage = $messages.find('.message').last(),
 			pt = parseInt($scroller.css('padding-top'));
