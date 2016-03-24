@@ -17,25 +17,6 @@
    License:   SIL ()
    Homepage:  http://fortawesome.github.com/Font-Awesome/
 
-
-### Zocial
-
-   Copyright (C) 2012 by Sam Collins
-
-   Author:    Sam Collins
-   License:   MIT (http://opensource.org/licenses/mit-license.php)
-   Homepage:  http://zocial.smcllns.com/
-
-
-### Typicons
-
-   (c) Stephen Hutchings 2012
-
-   Author:    Stephen Hutchings
-   License:   CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0/)
-   Homepage:  http://typicons.com/
-
-
 ### Tribo and Flore games
 
    Author: Denys Seguret
