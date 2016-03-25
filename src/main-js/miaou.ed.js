@@ -298,6 +298,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 					ed.cancelEdit();
 				}
 			} else if (e.which===13) { // enter
+				if (gui.mobile) return;
 				sendInput();
 				return false;
 			} else if (e.which===9) { // tab
