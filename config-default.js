@@ -59,6 +59,7 @@ module.exports = {
 		"./plugins/survey/plugin.js",
 		"./plugins/graph/plugin.js",
 		"./plugins/hashcolor/plugin.js",
+		"./plugins/shield/plugin.js",
 	],
 
 	// available themes. The first one is both the default theme and the one

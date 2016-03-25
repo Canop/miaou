@@ -37,9 +37,7 @@ function detailedHelp(config){
 	+"To see what repositories are watched, use	    \n"
 	+"     !!github list\n"
 	+"To stop watching a repository, use\n"
-	+"     !!github unwatch Canop/miaou\n"
-	+"You can get a Miaou room shield for your repository's README using\n"
-	+"     !!github shield\n";
+	+"     !!github unwatch Canop/miaou\n";
 }
 
 function link(o, label, url){
