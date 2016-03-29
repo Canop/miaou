@@ -1,6 +1,6 @@
 miaou(function(plugins, md){
-	
-	var regex = /^\s*<a[^>]* href="https?:\/\/www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=([a-zA-Z0-9-_]+)[&#\w\d=]*">[^<>]+<\/a>\s*$/;
+
+	var regex = /^\s*<a[^>]* href="https?:\/\/(?:www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=|youtu\.be\/)([a-zA-Z0-9-_]+)[\?&#\w\d=]*">[^<>]+<\/a>\s*$/;
 
 	function getEmbedLink(id){
 		return 'https://www.youtube.com/embed/' + id + '?html5=1';
@@ -30,7 +30,7 @@ miaou(function(plugins, md){
 	}
 
 	function replaceLink($c, m){
-		if (!m.content || !/www\.youtube\.com\/watch/.test(m.content)) return;
+		if (!m.content || !/(?:www\.youtube\.com\/watch|youtu\.be\/)/.test(m.content)) return;
 		var hasYoutubeLink = false;
 		var lines = $c.html().split('<br>').map(function(line){
 			var match = line.match(regex);
@@ -46,7 +46,7 @@ miaou(function(plugins, md){
 		});
 		if (hasYoutubeLink) $c.html(lines.join('<br>'));
 	}
-	
+
 	plugins.youtube = {
 		start: function(){
 			// post renderer
