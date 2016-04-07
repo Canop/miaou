@@ -44,7 +44,7 @@ You need to fetch the repository from github, either directly of after a fork.
 
 For example if not forking:
 
-	git clone https://githup.com/Canop/miaou.git
+	git clone https://github.com/Canop/miaou.git
 	cd miaou
 
 When you'll want to update Miaou later, you'll do
