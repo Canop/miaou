@@ -16,7 +16,9 @@ miaou(function(usr, ed, locals, mod, time, ws){
 	}
 
 	function $user(user){
-		return $('#users .user').filter(function(){ return $(this).dat('user').id===user.id });
+		return $('#users .user').filter(function(){
+			return $(this).dat('user').id===user.id
+		});
 	}
 
 	usr.showUserHoverButtons = function(){
@@ -37,7 +39,11 @@ miaou(function(usr, ed, locals, mod, time, ws){
 	}
 
 	usr.recentNamesStartingWith = function(s){
-		return recentUsers.filter(function(u){ return !u.name.lastIndexOf(s, 0) }).map(function(u){ return u.name });
+		return recentUsers.filter(function(u){
+			return !u.name.lastIndexOf(s, 0)
+		}).map(function(u){
+			return u.name
+		});
 	}
 
 	usr.hideUserHoverButtons = function(){

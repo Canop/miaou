@@ -301,14 +301,11 @@ function handleUserInRoom(socket, completeUser){
 		}).then(function(){
 			return [
 				this.fetchUserPings(completeUser.id),
-				this.listRecentUsers(shoe.room.id, 50)
+				this.listRecentUsers(shoe.room.id, 50),
 			]
 		}).spread(function(pings, recentUsers){
 			if (pings.length) socket.emit('pings', pings);
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
-			for (var o of socketWaitingApproval) {
-				if (o.roomId===shoe.room.id && o.ar) socket.emit('request', o.ar);
-			}
 			if (shoe.room.dialog) {
 				for (var i=0; i<recentUsers.length; i++) {
 					if (recentUsers[i].id!==shoe.publicUser.id) {
@@ -326,6 +323,15 @@ function handleUserInRoom(socket, completeUser){
 				socket.emit('enter', s.publicUser);
 			}
 			if (pings.length) return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
+		}).then(function(){
+			if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+			return this.listOpenAccessRequests(shoe.room.id)
+			.then(function(accessRequests){
+				accessRequests = accessRequests.slice(-5); // limit the number of notifications
+				for (var j=accessRequests.length; j--;) {
+					socket.emit('request', accessRequests[j]);
+				}
+			});
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
 		}).catch(function(err){

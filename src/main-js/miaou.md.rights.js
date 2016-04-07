@@ -3,6 +3,9 @@
 miaou(function(md, gui, notif, usr, ws){
 
 	md.showRequestAccess = function(ar){
+		if (!ar.user && ar.player) {
+			ar.user = {id:ar.player, name:ar.name};
+		}
 		md.notificationMessage(function($c, close){
 			var h = "<span class=user>"+ar.user.name+"</span>";
 			if (!ar.answered) {

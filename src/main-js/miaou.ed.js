@@ -214,6 +214,29 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 	}
 
+	function makeLink(){
+		if (/^\s*https?:\/\/\S+\s*$/i.test($input.selectedText())) {
+			alert("It's already an URL, you don't need to make it a link.");
+			return;
+		}
+		miaou.dialog({
+			title: 'Insert Hyperlink',
+			content: 'URL : <input id=newlinkhref style="width:82%">',
+			buttons: {
+				Cancel: null,
+				Insert: insertLink
+			}
+		});
+		$('#newlinkhref').focus().on('keyup', function(e){
+			switch (e.which) {
+			case 13: // enter
+				insertLink();
+			case 27: // esc
+				miaou.dialog.closeAll();
+			}
+		});
+	}
+
 	ed.init = function(){
 		$input = $('#input');
 		input = $input[0];
@@ -229,26 +252,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 					ed.onCtrlQ.call(this);
 					return false;
 				case 76: // ctrl - L : make link
-					if (/^\s*https?:\/\/\S+\s*$/i.test($input.selectedText())) {
-						alert("It's already an URL, you don't need to make it a link.");
-						return;
-					}
-					miaou.dialog({
-						title: 'Insert Hyperlink',
-						content: 'URL : <input id=newlinkhref style="width:82%">',
-						buttons: {
-							Cancel: null,
-							Insert: insertLink
-						}
-					});
-					$('#newlinkhref').focus().on('keyup', function(e){
-						switch (e.which) {
-						case 13: // enter
-							insertLink();
-						case 27: // esc
-							miaou.dialog.closeAll();
-						}
-					});
+					makeLink();
 					return false;
 				case 66: // ctrl - B : toggle bold
 					$input.replaceSelection(function(s){
@@ -310,9 +314,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		})
 		.on('keyup', function(e){
 			if (e.which===17) return; // ctrl-
-			if ((e.which===86 && e.ctrlKey)) { // end of ctrl-V
-				return;
-			}
+			if (e.which===86 && e.ctrlKey) return; // end of ctrl-V
 			ed.stateBeforePaste = null;
 			ed.code.onMove();
 			if (e.which===9) return false; // tab
