@@ -42,6 +42,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		socket
 		.on('ready', function(){
 			info.state = 'entering';
+			console.log("emitting enter in ready");
 			socket.emit('enter', locals.room.id);
 		})
 		.on('apiversion', function(vers){
@@ -58,6 +59,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			for (var key in commands) chat.commands[key] = commands[key];
 		})
 		.on('get_room', function(unhandledMessage){
+			console.log("emitting enter in get_room");
 			socket.emit('enter', locals.room.id);
 			socket.emit('message', unhandledMessage);
 		})
@@ -87,8 +89,11 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('notableIds', md.updateNotableMessages)
 		.on('request', md.showRequestAccess)
 		.on('reconnect', function(){
+			$("#notifications").empty();
 			ws.notif.onOn();
-			socket.emit('enter', locals.room.id);
+			// console.log("emitting enter in reconnect");
+			// socket.emit('enter', locals.room.id);
+			// 20160403 I remove this emit, it should be done on 'ready'
 		})
 		.on('welcome', function(){
 			console.log("received welcome");
