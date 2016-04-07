@@ -47,8 +47,11 @@ function abstract($, line){
 
 exports.init = function(miaou){
 	miaou.pageBoxer.register({
-		pattern:/^\s*https?:\/\/\w{2}\.wikipedia\.org\/[^ ]*\s*$/,
-		box:abstract
+		pattern: /^\s*https?:\/\/(\w{2})(?:\.m)?\.wikipedia\.org\/([^ ]+)\s*$/,
+		box: abstract,
+		urler: function(line, lang, path){
+			return `http://${lang}.wikipedia.org/${path}`;
+		}
 	});
 }
 
