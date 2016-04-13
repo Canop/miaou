@@ -131,14 +131,16 @@ Shoes.userRooms = function(){
 	var	rooms = [],
 		userId = this.publicUser.id,
 		iorooms = io.sockets.adapter.rooms;
-	for (var roomId in iorooms) {
-		var m = roomId.match(/^w?(\d+)$/);
+	for (var ioroomid in iorooms) {
+		var	m = ioroomid.match(/^w?(\d+)$/);
 		if (!m) continue;
-		var ioroom = iorooms[roomId];
+		var	ioroom = iorooms[ioroomid],
+			roomId = +m[1];
+		if (~rooms.indexOf(roomId)) continue;
 		for (var socketId in ioroom.sockets) {
 			var socket = io.sockets.connected[socketId];
 			if (socket && socket.publicUser && socket.publicUser.id===userId) {
-				rooms.push(+m[1]);
+				rooms.push(roomId);
 				break;
 			}
 		}
