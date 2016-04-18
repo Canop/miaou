@@ -23,17 +23,32 @@ miaou(function(ed){
 		if (nbcols>1 && nbNotEmptyFirstCell>1) return {rows:rows.slice(0, nbrows), nbcols:nbcols};
 	}
 
+	// try to guess whether the first line is the column titles
+	// sets the hasTitleRow bool property
+	function hasTitleRow(tbl){
+		for (var i=0; i<tbl.nbcols; i++) {
+			var c = tbl.rows[0][i]||' ';
+			if (/^[+-]?[\d\.,\s]+\w*$/.test(c) || !/^[\w\(\)\s-]{1,50}$/.test(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	function rowAsMd(tbl, j){
+		var md = "|";
+		for (var i=0; i<tbl.nbcols; i++) md += (tbl.rows[j][i]||' ')+'|';
+		return md + '\n';
+	}
+
 	ed.tbl.tblAsMd = function(tbl){
 		var	i,
+			j = 0,
 			md = '\n';
-		for (i=0; i<tbl.nbcols; i++) md += (tbl.rows[0][i]||' ')+'|';
-		md += '\n';
+		if (hasTitleRow(tbl)) md += rowAsMd(tbl, j++);
 		for (i=0; i<tbl.nbcols; i++) md += ':-:|';
 		md += '\n';
-		for (var j=1; j<tbl.rows.length; j++) {
-			for (i=0; i<tbl.nbcols; i++) md += (tbl.rows[j][i]||' ')+'|';
-			md += '\n';
-		}
+		while (j<tbl.rows.length) md += rowAsMd(tbl, j++);
 		return md;
 	}
 
