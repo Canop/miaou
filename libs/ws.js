@@ -650,7 +650,7 @@ function handleUserInRoom(socket, completeUser){
 			var lm = clean(updatedMessage);
 			socket.emit('message', lm);
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
-			return rooms.updateNotables.call(this, memroom);
+			return memroom.updateNotables(this);
 		})
 		.catch(err => console.log('ERR in vote handling:', err))
 		.finally(db.off);
@@ -687,7 +687,7 @@ function handleUserInRoom(socket, completeUser){
 					break;
 				}
 			}
-			return rooms.updateNotables.call(this, memroom);
+			return memroom.updateNotables(this);
 		})
 		.then(function(){
 			shoe.emitToRoom('vote', {

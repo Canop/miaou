@@ -1,5 +1,6 @@
 "use strict";
-const	auths = require('./auths.js'),
+const	Promise = require("bluebird"),
+	auths = require('./auths.js'),
 	server = require('./server.js'),
 	prefs = require('./prefs.js'),
 	maxAgeForNotableMessages = 50*24*60*60, // in seconds
@@ -17,24 +18,65 @@ exports.configure = function(miaou){
 	return this;
 }
 
+class MemRoom{
+	constructor(roomId){
+		this.id = roomId;
+		this.resolvers = []; // set to null when loaded
+	}
+	load(con){
+		let	memroom = this,
+			roomId = this.id,
+			now = Date.now()/1000|0;
+		return con
+		.getNotableMessages(roomId, now-maxAgeForNotableMessages)
+		.then(function(notables){
+			for (var i=0; i<notables.lenght; i++) clean(notables[i]);
+			memroom.notables = notables;
+			return con.getLastMessageId(roomId);
+		}).then(function(m){
+			if (m) memroom.lastMessageId = m.id;
+			memobjects.set(roomId, memroom);
+			for (var i=0; i<memroom.resolvers.length; i++) {
+				memroom.resolvers[i].resolve(this);
+			}
+			memroom.resolvers = null;
+			return memroom;
+		});
+	}
+	updateNotables(con){
+		let memroom = this;
+		return con
+		.getNotableMessages(memroom.id, Date.now()/1000-maxAgeForNotableMessages|0)
+		.then(function(notables){
+			for (var i=0; i<notables.lenght; i++) clean(notables[i]);
+			memroom.notables = notables;
+			return notables;
+		});
+	}
+}
+
 // returns a promise for a shared unpersisted object relative to the room
 // the context of the call must be a db con
+//  memroom : {
+//   id, //  id of the room
+//   lastMessageId,
+//   notables, // notable messages
+//   accessRequests, // unanswered access requests
+//  }
 exports.mem = function(roomId){
-	var mo = memobjects.get(roomId);
-	if (mo) return mo;
-	mo = { id:roomId };
-	memobjects.set(roomId, mo);
-	var now = Date.now()/1000|0;
-	return this
-	.getNotableMessages(roomId, now-maxAgeForNotableMessages)
-	.then(function(notables){
-		for (var i=0; i<notables.lenght; i++) clean(notables[i]);
-		mo.notables = notables;
-		return this.getLastMessageId(roomId);
-	}).then(function(m){
-		if (m) mo.lastMessageId = m.id;
-		return mo;
-	});
+	var memroom = memobjects.get(roomId);
+	if (memroom) {
+		if (memroom.resolvers) {
+			console.log("memroom", roomId, "-> WAIT load");
+			var resolver = Promise.defer();
+			memroom.resolvers.push(resolver);
+			return resolver.promise;
+		}
+		return memroom;
+	}
+	memroom = new MemRoom(roomId);
+	console.log("memroom", roomId, "-> start load");
+	return memroom.load(this);
 }
 
 // called in case of a possibly cached message being changed
@@ -48,18 +90,6 @@ exports.updateMessage = function(message){
 			return;
 		}
 	}
-}
-
-// updates the list and resolves the closure with it
-// context of the call must be a db con
-exports.updateNotables = function(memroom){
-	return this
-	.getNotableMessages(memroom.id, Date.now()/1000-maxAgeForNotableMessages|0)
-	.then(function(notables){
-		for (var i=0; i<notables.lenght; i++) clean(notables[i]);
-		memroom.notables = notables;
-		return notables;
-	});
 }
 
 // room admin page GET
