@@ -7,6 +7,7 @@ const	apiversion = 54,
 	socketio = require('socket.io'),
 	socketWaitingApproval = [],
 	auths = require('./auths.js'),
+	bench = require('./bench.js'),
 	commands = require('./commands.js'),
 	pm  = require('./pm.js'),
 	botMgr = require('./bots.js'),
@@ -262,6 +263,7 @@ function handleUserInRoom(socket, completeUser){
 		popon(socketWaitingApproval, o => o.socket===socket );
 	})
 	.on('enter', function(roomId){
+		var op = bench.start("room entry");
 		var now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now); // time synchronization
 		if (!roomId) {
@@ -332,6 +334,9 @@ function handleUserInRoom(socket, completeUser){
 					socket.emit('request', accessRequests[j]);
 				}
 			});
+		}).then(function(){
+			op.end();
+			bench.dump();
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
 		}).catch(function(err){
