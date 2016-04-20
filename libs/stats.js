@@ -22,6 +22,7 @@ function doStats(ct){
 		subtopic = match[2];
 		n = Math.min(+match[3] || n, 500);
 	}
+	var psname = subtopic ? null : "stats / " + topic; // name of the prepared statement (null if none should be used)
 	if (/^socket/i.test(topic)) {
 		return siostats.doStats(ct, miaou.io);
 	}
@@ -129,7 +130,7 @@ function doStats(ct){
 
 	/* eslint-enable max-len */
 
-	return this.queryRows(sql, args, true).then(function(rows){
+	return this.queryRowsBench(sql, args, psname).then(function(rows){
 		var c;
 		if (!rows.length) {
 			c = "nothing found";
