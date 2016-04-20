@@ -263,7 +263,7 @@ function handleUserInRoom(socket, completeUser){
 		popon(socketWaitingApproval, o => o.socket===socket );
 	})
 	.on('enter', function(roomId){
-		var op = bench.start("room entry");
+		var op = bench.start("WS / Room Entry");
 		var now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now); // time synchronization
 		if (!roomId) {
@@ -336,7 +336,6 @@ function handleUserInRoom(socket, completeUser){
 			});
 		}).then(function(){
 			op.end();
-			bench.dump();
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
 		}).catch(function(err){
@@ -449,13 +448,17 @@ function handleUserInRoom(socket, completeUser){
 		var	now = Date.now(),
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
 			seconds = now/1000|0,
+			benchOp = bench.start("WS / message"),
 			content = message.content.replace(/\s+$/, '');
 		if (content.length>maxContentLength) {
 			shoe.error('Message too big, consider posting a link instead', content);
 			return;
 		}
 		if (now-shoe.lastMessageTime<minDelayBetweenMessages) {
-			shoe.error("You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)", content);
+			shoe.error(
+				"You're too fast (minimum delay between messages : "+minDelayBetweenMessages+" ms)",
+				content
+			);
 			return;
 		}
 		shoe.lastMessageTime = now;
@@ -578,6 +581,8 @@ function handleUserInRoom(socket, completeUser){
 				}
 				return this.storePings(shoe.room.id, remainingpings, m.id);
 			}
+		}).then(function(){
+			benchOp.end();
 		}).catch(function(e){
 			shoe.error(e, m.content);
 		}).finally(db.off)
