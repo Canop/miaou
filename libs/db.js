@@ -22,6 +22,7 @@
 
 const	Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
+	bench = require("./bench.js"),
 	path = require("path");
 
 var	pg = require('pg'),
@@ -74,10 +75,11 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 // returns an existing user found by his id
 // Private fields are included in the returned object
 proto.getUserById = function(id){
-	return this.queryRow(
+	return this.queryRowBench(
 		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey'+
 		' from player where id=$1',
-		[id]
+		[id],
+		'user_by_id'
 	);
 }
 
@@ -115,11 +117,13 @@ proto.getUserInfo = function(id){
 
 // uses index message_room_author_created (but still not lighning fast)
 proto.listRecentUsers = function(roomId, N){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select a.id, a.mc, player.name, avatarsrc as avs, avatarkey as avk from"+
 		" (select message.author as id, max(message.created) as mc from message where room=$1"+
 		" group by message.author order by mc desc limit $2) a"+
-		" join player on player.id=a.id and player.bot is false", [roomId, N]
+		" join player on player.id=a.id and player.bot is false",
+		[roomId, N],
+		"list_recent_users"
 	);
 }
 
@@ -129,18 +133,20 @@ proto.listRoomUsers = function(roomId){
 		"select player.id, player.name from"+
 		" (select distinct author from message where room=$1"+
 		" union select player from watch where room=$1) a"+
-		" join player on player.id=a.author and player.bot is false", [roomId]
+		" join player on player.id=a.author and player.bot is false",
+		[roomId]
 	);
 }
 
 // returns the name to use in ping autocompletion.
 // uses index message_author_created_room
 proto.usersStartingWith = function(str, roomId, limit){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select name, (select max(created) from message where p.id=author and room=$1) lir," +
 		" (select max(created) from message where p.id=author) l" +
 		" from player p where name ilike $2 order by lir desc nulls last, l desc nulls last limit $3",
-		[roomId, str+'%', limit]
+		[roomId, str+'%', limit],
+		"users_starting_with"
 	);
 }
 
@@ -256,28 +262,32 @@ proto.fetchRoomAndUserAuth = function(roomId, userId, dontThrowIfNoRow){
 
 // lists the rooms a user can access, either public or whose access was explicitely granted
 proto.listAccessibleRooms = function(userId){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select id, name, description, private, dialog, listed, lang, auth"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+
-		" where private is false or auth is not null order by auth desc nulls last, name", [userId]
+		" where private is false or auth is not null order by auth desc nulls last, name",
+		[userId],
+		"list_accessible_rooms"
 	);
 }
 
 // lists the rooms that should make it to the front page
 // use index message_room_author
 proto.listFrontPageRooms = function(userId){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select r.id, name, description, private, listed, dialog, lang, auth,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
 		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+
 		" where listed is true or auth is not null"+
-		" order by lastcreated desc nulls last limit 200", [userId]
+		" order by lastcreated desc nulls last limit 200",
+		[userId],
+		"list_front_page_rooms"
 	);
 }
 
 proto.listRecentUserRooms = function(userId){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select m.id, m.number, m.last_created, r.name, r.description, r.private, r.listed, r.dialog, r.lang"+
 		" from ("+
 			"select m.room as id, count(*) number, max(created) last_created"+
@@ -287,7 +297,9 @@ proto.listRecentUserRooms = function(userId){
 		") m"+
 		" join room r on r.id = m.id"+
 		" where r.listed is true"+
-		" order by m.last_created desc limit 10", [userId]
+		" order by m.last_created desc limit 10",
+		[userId],
+		"list_recent_user_rooms"
 	);
 }
 
@@ -426,6 +438,7 @@ proto.insertWatch = function(roomId, userId){
 		[roomId, userId]
 	);
 }
+//
 // inserts a watch if there's none. Return true if an insert was done
 proto.tryInsertWatch = function(roomId, userId){
 	return this.execute(
@@ -438,13 +451,16 @@ proto.tryInsertWatch = function(roomId, userId){
 		return !!res.rowCount;
 	});
 }
+
 proto.updateWatch = function(roomId, userId, lastUnseen){
-	return this.execute(
+	return this.executeBench(
 		"update watch set last_seen=$3"+
 		" where room=$1 and player=$2",
-		[roomId, userId, lastUnseen]
+		[roomId, userId, lastUnseen],
+		"update_watch"
 	);
 }
+
 proto.watchRaz = function(roomId, userId){
 	return this.execute(
 		"update watch set last_seen=(select max(id) from message where message.room=$1)"+
@@ -452,19 +468,21 @@ proto.watchRaz = function(roomId, userId){
 		[roomId, userId]
 	);
 }
+
 proto.deleteWatch = function(roomId, userId){
 	return this.execute("delete from watch where room=$1 and player=$2", [roomId, userId]);
 }
 
 proto.listUserWatches = function(userId){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select w.room id, w.last_seen, r.name, r.private, r.dialog,"+
 		" (select count(*) from message m where m.room=w.room and m.id>w.last_seen) as nbunseen"+
 		" from watch w"+
 		" join room r on w.room=r.id"+
 		" left join room_auth a on a.room=r.id and a.player=$1"+
 		" where w.player=$1 and (r.private is false or a.auth is not null)",
-		[userId]
+		[userId],
+		"list_user_watches"
 	);
 }
 
@@ -544,22 +562,25 @@ proto.getNextMessageId = function(roomId, mid, asc){
 }
 
 proto.getNotableMessages = function(roomId, createdAfter){
-	return this.queryRows(
+	return this.queryRowsBench(
 		'select message.id, author, player.name as authorname, player.bot, room, content,'+
 		' created, pin, star, up, down, score from message'+
 		' inner join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
-		' order by pin desc, created desc, score desc limit 20', [roomId, createdAfter]
+		' order by pin desc, created desc, score desc limit 20',
+		[roomId, createdAfter],
+		"notable_messages"
 	);
 }
 
 proto.search = function(roomId, pattern, lang, pageSize, numPage){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select message.id, author, player.name as authorname, room, content, created,"+
 		" pin, star, up, down, score from message"+
 		" inner join player on author=player.id"+
 		" where to_tsvector($1, content) @@ plainto_tsquery($1,$2) and room=$3"+
 		" order by message.id desc limit $4 offset $5",
-		[lang, pattern, roomId, pageSize, numPage*pageSize||0]
+		[lang, pattern, roomId, pageSize, numPage*pageSize||0],
+		"search"
 	);
 }
 
@@ -621,7 +642,8 @@ proto.storeMessage = function(m, dontCheckAge){
 			sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
 		if (!dontCheckAge) sql += ' and created>'+(now()-config.maxAgeForMessageEdition);
 		sql += ' returning *';
-		return this.queryRow(sql, [m.content, m.changed||0, m.id, m.room, m.author]).then(function(m){
+		return this.queryRow(sql, [m.content, m.changed||0, m.id, m.room, m.author])
+		.then(function(m){
 			m.authorname = savedAuthorname;
 			if (m.content.length || m.created<now()-config.maxAgeForMessageTotalDeletion) return m;
 			return this.queryRow(
@@ -639,9 +661,10 @@ proto.storeMessage = function(m, dontCheckAge){
 			});
 		});
 	}
-	return this.queryRow(
+	return this.queryRowBench(
 		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
-		[m.room, m.author, m.content, m.created]
+		[m.room, m.author, m.content, m.created],
+		"insert_message"
 	).then(function(row){
 		m.id = row.id;
 		return m;
@@ -697,12 +720,14 @@ proto.deleteAllUserPings = function(userId){
 }
 
 proto.fetchUserPings = function(userId){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select message.room r, room.name rname, player.name authorname, ping.message mid, content from ping"+
 		" inner join message on message=message.id"+
 		" inner join player on author=player.id"+
 		" inner join room on room.id=ping.room"+
-		" where player=$1", [userId]
+		" where player=$1",
+		[userId],
+		"user_pings"
 	);
 }
 
@@ -918,10 +943,16 @@ proto.off = function(v){
 
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
 //  unless noErrorOnNoRow is true
-proto.queryRow = function(sql, args, noErrorOnNoRow){
-	var	start = Date.now();
+proto.queryRow = function(sql, args, noErrorOnNoRow, name){
+	if (noErrorOnNoRow && typeof noErrorOnNoRow === "string") {
+		name = noErrorOnNoRow;
+		noErrorOnNoRow = false;
+	}
+	var	start = Date.now(),
+		opts = {text: sql, values: args};
+	if (name) opts.name = name;
 	return new Promise((resolve, reject)=>{
-		this.client.query(sql, args, function(err, res){
+		this.client.query(opts, function(err, res){
 			//~ logQuery(sql, args);
 			var end = Date.now();
 			if (end-start>50) {
@@ -987,16 +1018,18 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 	return resolver.promise.bind(this);
 }
 
-proto.queryRows = function(sql, args){
-	return this.execute(sql, args).then(function(res){
+proto.queryRows = function(sql, args, name){
+	return this.execute(sql, args, name).then(function(res){
 		return res.rows;
 	});
 }
 
-proto.execute = function(sql, args){
-	var	start = Date.now();
+proto.execute = function(sql, args, name){
+	var	start = Date.now(),
+		opts = {text: sql, values: args};
+	if (name) opts.name = name;
 	return new Promise((resolve, reject)=>{
-		this.client.query(sql, args, function(err, res){
+		this.client.query(opts, function(err, res){
 			//~ logQuery(sql, args);
 			var end = Date.now();
 			if (end-start>50) {
@@ -1013,6 +1046,37 @@ proto.execute = function(sql, args){
 		});
 	}).bind(this);
 }
+
+proto.lookForPreparedStatement = function(psname){
+	return this.queryRows("select name from pg_prepared_statements where name=$1", [psname])
+	.then(function(rows){
+		if (rows.length) console.log("PS", psname, "FOUND");
+		else console.log("PS", psname, "NOT FOUND!");
+	});
+}
+
+;['queryRow', 'queryRows', 'execute'].forEach(function(f){
+	proto[f+"Bench"] = function(){
+		var	benchArguments = Array.from(arguments),
+			name = arguments[arguments.length-1],
+			useNamed = Math.random()<.5,
+			benchName = "DB / "+f+" / "+name;
+		if (useNamed) {
+			benchName += " (named)";
+		} else {
+			benchArguments.splice(benchArguments.length-1);
+		}
+		// return this.lookForPreparedStatement(name)
+		// .then(function(){
+		var	benchOp = bench.start(benchName);
+		return this[f].apply(this, benchArguments)
+		.then(function(r){
+			benchOp.end();
+			return r;
+		});
+		// });
+	}
+});
 
 ;['begin', 'rollback', 'commit'].forEach(function(s){
 	proto[s] = function(arg){
