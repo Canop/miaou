@@ -3,9 +3,9 @@
 
 module.exports = {
 
-	server: "http://" + process.env.VIRTUAL_HOST, // the URL of Miaou as seen by the browser
+	server: "http://" + process.env.MIAOU_HOST, // the URL of Miaou as seen by the browser
 	base: "/", 	// path to Miaou as seen by the browser
-	port: process.env.VIRTUAL_PORT, // port on which to start Miaou (might be hidden from the browser by a proxy)
+	port: 8204, // port on which to start Miaou (might be hidden from the browser by a proxy)
 
 	maxMessageContentSize: 5000,	// in characters
 	minDelayBetweenMessages: 500,	// in milliseconds
@@ -26,13 +26,13 @@ module.exports = {
 	},
 
 	database: {
-		url: "postgres://miaou:miaou@" + process.env.POSTGRES_PORT_5432_TCP_ADDR + ":5432/miaou",
+		url: "postgres://miaou:miaou@postgres:5432/miaou",
 		native_pg: false // let it to false unless you're a wizard
 	},
 
 	// connect-redis RedisStore options. Comment or remove all options to use defaults
 	redisStore: {
-		host: process.env.REDIS_PORT_6379_TCP_ADDR,
+		host: "redis",
 		port: 6379
 	},
 
@@ -40,13 +40,15 @@ module.exports = {
 	plugins: [
 		"./plugins/stackoverflow/plugin.js",
 		"./plugins/wikipedia/plugin.js",
-		"./plugins/github/plugin.js",
+		"./plugins/github-identity/plugin.js",
+		"./plugins/scm-hooks/plugin.js",
 		"./plugins/video/plugin.js",
 		"./plugins/whiteboard/plugin.js",
 		"./plugins/youtube/plugin.js",
 		"./plugins/survey/plugin.js",
 		"./plugins/graph/plugin.js",
 		"./plugins/hashcolor/plugin.js",
+		"./plugins/shield/plugin.js",
 	],
 
 	// available themes. The first one is both the default theme and the one
@@ -97,5 +99,10 @@ module.exports = {
 	// identifiants of the rooms that are proposed as entry point to new users
 	// (regular users of the server should be invited to watch those rooms)
 	// Don't fill this array until you created the rooms
-	welcomeRooms: []
+	welcomeRooms: [],
+
+	// Server admins may have access to specific server wide admin commands
+	// They can be specified using their id (which is constant)
+	// or their name (which is easier)
+	serverAdmins: []
 }
