@@ -1,3 +1,4 @@
+"use strict";
 // Record durations of measured operations and gives stats
 // on !!perfs command
 //
