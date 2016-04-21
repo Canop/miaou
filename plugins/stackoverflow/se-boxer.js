@@ -1,3 +1,5 @@
+"use strict";
+
 // replaces URL to SO questions, answers and comments with the relevant extract
 //   using the StackExchange API.
 // The filter parameter passed to SO API can be edited here :
