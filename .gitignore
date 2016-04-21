@@ -47,6 +47,7 @@ miaou.pid
 vagrant/manifests/modules/*
 
 # docker
+docker/miaou.env
 !docker/config.js
 
 # IDE metadata

@@ -1,0 +1,17 @@
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Git
+.git
+.gitignore
+
+# IDE metadata
+.idea
+
+# Miaou
+node_modules
+build
+.sass-cache
+static
