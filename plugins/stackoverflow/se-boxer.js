@@ -11,13 +11,20 @@ var	http = require('http'),
 	apiurl = "http://api.stackexchange.com/2.2/",
 	apikey, // necessary to get a bigger quota (10 000 instead of 300)
 	TTL = 15*60*1000,
-	tasks = new Deque(2000), currentTask;
+	tasks = new Deque(2000),
+	currentTask;
 
-function logoCDN(task){
-	var img = '<img src=https://cdn.sstatic.net/'+task.site.split('.')[0];
-	if (task.meta) img += 'meta';
-	img += '/img/apple-touch-icon.png width=40>';
-	return img;
+const icons = {
+	stackoverflow: "so",
+	serverfault: "sf",
+	superuser: "su"
+};
+
+
+function logo(task){
+	var	icon = (icons[task.site] || "se") + "-icon.png",
+		path = "static/plugins/stackoverflow/rsc/" + icon;
+	return '<img src="'+path+'" width=40>';
 }
 
 var handlers = {
@@ -34,7 +41,7 @@ var handlers = {
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 			side = '<div class=so-side>'+side+'</div>';
 
-			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
+			main += '<a target=_blank class=so-title href="'+task.line+'">'+logo(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(tag => '<span>'+tag+'</span>').join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
 			main = '<div class=so-main>'+main+'</div>';
@@ -54,7 +61,7 @@ var handlers = {
 			side += '<div class=so-owner-name>'+item.owner.display_name+'</div>';
 			side = '<div class=so-side>'+side+'</div>';
 
-			main += '<a target=_blank class=so-title href="'+task.line+'">'+logoCDN(task)+item.title+'</a>';
+			main += '<a target=_blank class=so-title href="'+task.line+'">'+logo(task)+item.title+'</a>';
 			main += '<div class=so-tags>'+item.tags.map(tag => '<span>'+tag+'</span>').join('')+'</div>';
 			main += '<div class=so-body>'+item.body+'</div>';
 			main = '<div class=so-main>'+main+'</div>';
