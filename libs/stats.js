@@ -20,6 +20,7 @@ function doStats(ct){
 	var	match = ct.args.match(/([@\w\-]+)(\s+[a-zA-Z]+)?(\s+\d+)?/),
 		room = ct.shoe.room,
 		topic = 'server',
+		psname = "stats / " + topic,
 		subtopic,
 		ranking = true,
 		n = 10;
@@ -27,8 +28,8 @@ function doStats(ct){
 		topic = match[1];
 		subtopic = match[2];
 		n = Math.min(+match[3] || n, 500);
+		psname = null; // we can't use the same prepared statement as args number changes
 	}
-	var psname = subtopic ? null : "stats / " + topic; // name of the prepared statement (null if none should be used)
 	if (/^socket/i.test(topic)) {
 		return siostats.doStats(ct, miaou.io);
 	}

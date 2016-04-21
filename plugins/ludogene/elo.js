@@ -1,4 +1,5 @@
 const	ludodb = require('./db.js'),
+	bench = require('../../libs/bench.js'),
 	K = 40,
 	R = 750, // 300 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
 	NB_OPPONENTS_MIN = 3;
@@ -241,7 +242,8 @@ function opponentsTable(data, r){
 
 exports.onCommand = function(ct){
 	console.log("==========================\nELO COMPUTING "+ct.args);
-	var st = Date.now();
+	var	benchOperation = bench.start("Tribo / ladder"),
+		st = Date.now();
 	return ludodb.getGameMessages(this)
 	.filter(function(m){
 		return	m.g.type==="Tribo"
@@ -276,6 +278,7 @@ exports.onCommand = function(ct){
 			c += ratingsTable(data);
 			if (showLog) c += gamesTable(data);
 		}
+		benchOperation.end();
 		console.log("ELO COMPUTING done in " + (Date.now()-st) + "ms");
 		ct.reply(c, ct.nostore = c.length>3000);
 	});

@@ -1,9 +1,10 @@
 const	request = require('request'),
 	$$ = require('cheerio'),
+	bench = require('./bench.js'),
 	cache = require('bounded-cache')(300),
 	Deque = require("double-ended-queue"),
 	TTL = 30*60*1000,
-	boxers = [], // boxers: {pattern,box(function),TTL,urler(function)}
+	boxers = [], // boxers: {name,pattern,box(function),TTL,urler(function)}
 	tasks = new Deque(200);
 
 let	currentTask;
@@ -29,6 +30,7 @@ function dequeue(){
 	}
 	var	line = task.line,
 		url = line,
+		benchOperation = bench.start("Boxer / " + task.boxer.name),
 		args = line.match(task.boxer.pattern);
 	if (task.boxer.urler) {
 		url = task.boxer.urler.apply(null, args);
@@ -39,12 +41,13 @@ function dequeue(){
 		setTimeout(dequeue, 0);
 		if (error || !res || res.statusCode!==200) {
 			cache.set(line, null, TTL);
-			console.log("Error in box fetching", url, error, res);
+			console.log("Error in box fetching", url, error);
 			return;
 		}
 		args.unshift($$.load(body));
 		var box = task.boxer.box.apply(null, args);
 		cache.set(line, box, task.boxer.TTL);
+		benchOperation.end();
 		task.send('box', {mid:task.mid, from:line, to:box});
 	});
 }
@@ -56,7 +59,12 @@ exports.onSendMessage = function(shoe, m, send){
 	m.content.split('\n').forEach(function(line){
 		for (var i=0; i<boxers.length; i++) {
 			if (boxers[i].pattern.test(line)) {
-				tasks.push({line:line.trim(), mid:m.id, send:send, boxer:boxers[i]});
+				tasks.push({
+					line:line.trim(),
+					mid:m.id,
+					send:send,
+					boxer:boxers[i]
+				});
 				dequeue();
 				return;
 			}

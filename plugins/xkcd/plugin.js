@@ -19,6 +19,7 @@ function abstract($, line){
 
 exports.init = function(miaou){
 	miaou.pageBoxer.register({
+		name: "xkcd",
 		pattern:/^\s*https?:\/\/(www\.)?xkcd\.com\/[0-9]*\/\s*$/,
 		box:abstract
 	});

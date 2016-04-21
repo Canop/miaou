@@ -246,7 +246,6 @@ function handleUserInRoom(socket, completeUser){
 	.on('disconnect', function(){
 		if (shoe.room) {
 			if (welcomed && memroom) {
-				console.log("watch raz on disconnect", shoe.room.name, shoe.publicUser.name);
 				db.on([shoe.room.id, shoe.publicUser.id, memroom.lastMessageId])
 				.spread(db.updateWatch)
 				.finally(db.off);
@@ -296,7 +295,7 @@ function handleUserInRoom(socket, completeUser){
 			if (ban) throw new Error('Banned user');
 			r.path = server.roomPath(r);
 			shoe.room = r;
-			console.log(shoe.publicUser.name, 'enters room', shoe.room.id, ':', shoe.room.name);
+			//console.log(shoe.publicUser.name, 'enters room', shoe.room.id, ':', shoe.room.name);
 			socket.emit('room', shoe.room).join(shoe.room.id);
 			socket.emit('config', clientConfig);
 			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);

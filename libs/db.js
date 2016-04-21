@@ -86,10 +86,12 @@ proto.getUserById = function(id){
 // returns an existing user found by his name with a case insensitive search
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
-	return this.queryRow(
+	return this.queryRowBench(
 		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey'+
 		' from player where lower(name)=$1',
-		[username.toLowerCase()], true
+		[username.toLowerCase()],
+		true,
+		"user_by_name"
 	);
 }
 
@@ -170,8 +172,10 @@ proto.upsertPref = function(userId, name, value){
 }
 
 proto.getPrefs = function(userId){
-	return this.queryRows(
-		"select name, value from pref where player=$1", [userId]
+	return this.queryRowsBench(
+		"select name, value from pref where player=$1",
+		[userId],
+		"get_prefs"
 	);
 }
 
@@ -253,11 +257,12 @@ proto.fetchRoom = function(id){
 // returns an existing room found by its id and the user's auth level
 proto.fetchRoomAndUserAuth = function(roomId, userId, dontThrowIfNoRow){
 	if (!roomId) throw new NoRowError();
-	return this.queryRow(
+	return this.queryRowBench(
 		"select id, name, description, private, listed, dialog, lang, auth from room"+
 		" left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2",
 		[userId, roomId],
-		dontThrowIfNoRow
+		dontThrowIfNoRow,
+		"fetch_room_and_user_auth"
 	);
 }
 
@@ -338,14 +343,6 @@ proto.getLastAccessRequest = function(roomId, userId){
 	);
 }
 
-// lists the authorizations a user has
-proto.listUserAuths = function(userId){
-	return this.queryRows(
-		"select id, name, description, auth from room r, room_auth a where a.room=r.id and a.player=$1",
-		[userId]
-	);
-}
-
 // get the id of the other user of the room (supposed a dialog room
 proto.getOtherDialogRoomUser = function(roomId, userId){
 	return this.queryRow(
@@ -356,10 +353,11 @@ proto.getOtherDialogRoomUser = function(roomId, userId){
 
 // lists the authorizations of the room
 proto.listRoomAuths = function(roomId){
-	return this.queryRows(
+	return this.queryRowsBench(
 		"select id, name, auth, player, granter, granted from player p, room_auth a"+
 		" where a.player=p.id and a.room=$1 order by auth desc, name",
-		[roomId]
+		[roomId],
+		"list_room_auths"
 	);
 }
 
@@ -405,9 +403,10 @@ proto.changeRights = function(actions, userId, room){
 }
 
 proto.checkAuthLevel = function(roomId, userId, minimalLevel){
-	return this.queryRow(
+	return this.queryRowBench(
 		"select auth from room_auth where player=$1 and room=$2 and auth>=$3",
-		[userId, roomId, minimalLevel]
+		[userId, roomId, minimalLevel],
+		"check_auth_level"
 	).catch(NoRowError, function(){
 		return false;
 	}).then(function(row){
@@ -416,9 +415,11 @@ proto.checkAuthLevel = function(roomId, userId, minimalLevel){
 }
 
 proto.getAuthLevel = function(roomId, userId){
-	return this.queryRow(
+	return this.queryRowBench(
 		"select auth from room_auth where player=$1 and room=$2",
-		[userId, roomId], true
+		[userId, roomId],
+		true,
+		"get_auth_level"
 	);
 }
 
@@ -426,28 +427,31 @@ proto.getAuthLevel = function(roomId, userId){
 proto.getAuthLevelByUsername = function(roomId, username){
 	return this.queryRow(
 		"select auth from room_auth,player where lower(name)=$1 and room=$2 and room_auth.player=player.id;",
-		[username.toLowerCase(), roomId], true
+		[username.toLowerCase(), roomId],
+		true
 	);
 }
 
 //////////////////////////////////////////////// #watch
 
 proto.insertWatch = function(roomId, userId){
-	return this.execute(
+	return this.executeBench(
 		"insert into watch(room, player, last_seen)"+
 		" select $1, $2, (select max(id) from message where room=$1)",
-		[roomId, userId]
+		[roomId, userId],
+		"insert_watch"
 	);
 }
 //
 // inserts a watch if there's none. Return true if an insert was done
 proto.tryInsertWatch = function(roomId, userId){
-	return this.execute(
+	return this.executeBench(
 		"insert into watch(room, player, last_seen) ("+
 		" select $1, $2, (select max(id) from message where room=$1)"+
 		" where not exists ( select * from watch where room=$1 and player=$2 )"+
 		")",
-		[roomId, userId]
+		[roomId, userId],
+		"try_insert_watch"
 	).then(function(res){
 		return !!res.rowCount;
 	});
@@ -463,10 +467,11 @@ proto.updateWatch = function(roomId, userId, lastUnseen){
 }
 
 proto.watchRaz = function(roomId, userId){
-	return this.execute(
+	return this.executeBench(
 		"update watch set last_seen=(select max(id) from message where message.room=$1)"+
 		" where room=$1 and player=$2",
-		[roomId, userId]
+		[roomId, userId],
+		"raz_watch"
 	);
 }
 
@@ -558,7 +563,8 @@ proto.getNextMessageId = function(roomId, mid, asc){
 		asc?
 		"select min(id) mid from message where room=$1 and id>$2":
 		"select max(id) mid from message where room=$1 and id<$2",
-		[roomId, mid], true
+		[roomId, mid],
+		true
 	);
 }
 
@@ -599,14 +605,17 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 // builds an histogram, each record relative to a utc day
 proto.messageHistogram = function(roomId, pattern, lang){
 	return pattern
-	? this.queryRows(
+	? this.queryRowsBench(
 		"select count(*) n, min(id) m, floor(created/86400) d from message where room=$1"+
 		" and to_tsvector($2, content) @@ plainto_tsquery($2,$3)"+
-		" group by d order by d", [roomId, lang, pattern]
-	) : this.queryRows(
+		" group by d order by d",
+		[roomId, lang, pattern],
+		"histogram_with_patthern"
+	) : this.queryRowsBench(
 		"select count(*) n, min(id) m, floor(created/86400) d"+
 		" from message where room=$1 group by d order by d",
-		[roomId]
+		[roomId],
+		"histogram_without_pattern"
 	);
 }
 
@@ -614,19 +623,23 @@ proto.messageHistogram = function(roomId, pattern, lang){
 // avatar isn't given (now)
 proto.getMessage = function(messageId, userId){
 	if (userId) {
-		return this.queryRow(
+		return this.queryRowBench(
 			'select message.id, message.room, author, player.name as authorname, player.bot, room, content,'+
 			' message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 			' left join message_vote on message.id=message and message_vote.player=$2'+
 			' inner join player on author=player.id'+
-			' where message.id=$1', [messageId, userId]
+			' where message.id=$1',
+			[messageId, userId],
+			"get_message_for_user"
 		)
 	} else {
-		return this.queryRow(
+		return this.queryRowBench(
 			'select message.id, message.room, author, player.name as authorname, player.bot, room, content,'+
 			' message.created as created, message.changed, pin, star, up, down, score from message'+
 			' inner join player on author=player.id'+
-			' where message.id=$1', [messageId]
+			' where message.id=$1',
+			[messageId],
+			"get_message"
 		)
 	}
 }

@@ -21,6 +21,7 @@ function abstract($, line){
 
 exports.init = function(miaou){
 	miaou.pageBoxer.register({
+		name: "urban",
 		pattern:/^\s*https?:\/\/(www\.)?urbandictionary\.com\/define\.php\?term=[^ ]*\s*$/,
 		box:abstract
 	});

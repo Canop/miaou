@@ -1,4 +1,5 @@
-var config,
+var	config,
+	bench = require('./bench.js'),
 	request = require('request'),
 	Busboy = require('busboy');
 
@@ -16,18 +17,21 @@ exports.appPostUpload = function(req, res){
 	}
 	var busboy = new Busboy({ headers: req.headers }), files=[];
 	busboy.on('file', function(fieldname, file){
-		var chunks = [];
+		var	chunks = [],
+			bo = bench.start("Image Upload / from browser");
 		file.on('data', function(chunk){
 			chunks.push(chunk);
 			// todo : abort if sum of chunk.lengths is too big (and tell the client he's fat)
 		});
 		file.on('end', function(){
 			files.push({name:fieldname, bytes:Buffer.concat(chunks)});
+			bo.end();
 		});
 	}).on('finish', function(){
 		if (!files.length) {
 			return res.send({error:'found nothing in form'});
 		}
+		var	bo = bench.start("Image Upload / to Imgur");
 		// for now, we handle only the first file, we'll see later if we want to upload galleries
 		console.log('Trying to send image of '+ files[0].bytes.length +' bytes to imgur :', files[0].name);
 		var options = {
@@ -48,6 +52,7 @@ exports.appPostUpload = function(req, res){
 			}
 			if (data && data.error) return res.send({error:"Imgur answered : "+data.error});
 			if (!data || !data.id) return res.send({error:"Miaou didn't understand imgur's answer"});
+			bo.end(); // we don't count failed uploads
 			res.send({image:data});
 		})
 		var form = r.form();

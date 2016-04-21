@@ -1,4 +1,5 @@
-const ludodb = require('./db.js');
+const	bench = require('../../libs/bench.js'),
+	ludodb = require('./db.js');
 
 function link(m, s){
 	return '\n* ['+s+']('+m.room+'#'+m.id+')';
@@ -10,6 +11,7 @@ module.exports = function(ct, gameType){
 	var	c = 'To invite somebody to a game of '+gameType+' type\n'+
 		'`!!'+gameType.toLowerCase()+' @someUser`';
 	var	p = ct.shoe.publicUser,
+		bo = bench.start(gameType+" / suggest"),
 		local = ct.shoe.room.private || /\[tournament\]/i.test(ct.shoe.room.description);
 	return ludodb.getGameMessages(this,  local ? ct.shoe.room.id : 0)
 	.filter(function(m){
@@ -43,6 +45,7 @@ module.exports = function(ct, gameType){
 		} else {
 			c += '\n*none*';
 		}
+		bo.end();
 		ct.reply(c, ct.nostore=true);
 	});
 }

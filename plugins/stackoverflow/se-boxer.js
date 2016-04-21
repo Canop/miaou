@@ -6,6 +6,7 @@
 var	http = require('http'),
 	zlib = require("zlib"),
 	cache = require('bounded-cache')(300),
+	bench = require("../../libs/bench.js"),
 	Deque = require("double-ended-queue"),
 	apiurl = "http://api.stackexchange.com/2.2/",
 	apikey, // necessary to get a bigger quota (10 000 instead of 300)
@@ -114,7 +115,8 @@ function dequeue(){
 	if (!task) return;
 	currentTask = task;
 	//~ console.log("Doing", task);
-	var box = cache.get(task.key);
+	var	benchOperation = bench.start("Stack Exchange / Box Page"),
+		box = cache.get(task.key);
 	if (box !== undefined) {
 		//~ console.log('SO box', task.key, 'found in cache');
 		return setTimeout(function(){
@@ -123,7 +125,7 @@ function dequeue(){
 			dequeue();
 		}, 50);
 	}
-	var handler = handlers[task.type],
+	var	handler = handlers[task.type],
 		url = apiurl+task.type+"/"+task.num+"?site="+(task.meta?'meta.':'')+task.site+"&filter="+handler.filter;
 	if (apikey) url += "&key="+apikey;
 	//~ console.log("SE API URL", url);
@@ -144,6 +146,7 @@ function dequeue(){
 		}
 		var box = handler.dobox(data.items[0], task);
 		cache.set(task.key, box, TTL);
+		benchOperation.end();
 		task.send('box', {mid:task.mid, from:task.line, to:box});
 	});
 }
