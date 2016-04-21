@@ -108,6 +108,7 @@ proto.updateUserInfo = function(id, info){
 		[info.description, info.location, info.url, info.lang, id]
 	).then(this.fixAllDialogRooms);
 }
+
 proto.getUserInfo = function(id){
 	return this.queryRow(
 		"select description, location, url, lang from player where id=$1",

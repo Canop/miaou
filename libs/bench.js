@@ -64,7 +64,7 @@ exports.start = function(name){
 function fmt(num){
 	if (!num) return ' ';
 	var s = num<100 ? num.toFixed(2) : Math.round(num).toString();
-	return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return s.replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
 }
 
 function doCommand(ct){

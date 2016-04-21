@@ -9,6 +9,12 @@ exports.configure = function(_miaou){
 	return this;
 }
 
+function fmt(num){
+	if (!num) return ' ';
+	if (typeof num !== "number") return num;
+	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
+}
+
 function doStats(ct){
 	// this regex must be changed with care : it prevents injections
 	var	match = ct.args.match(/([@\w\-]+)(\s+[a-zA-Z]+)?(\s+\d+)?/),
@@ -145,7 +151,7 @@ function doStats(ct){
 				var line='';
 				if (ranking) line += l+1+'|';
 				for (var i=0; i<cols.length; i++) {
-					line += ( cols[i].fmt ? cols[i].fmt(row) : row['c'+i] ) + '|';
+					line += ( cols[i].fmt ? cols[i].fmt(row) : fmt(row['c'+i]) ) + '|';
 				}
 				return line;
 			}).join('\n');
