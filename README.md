@@ -16,7 +16,7 @@ To discuss the code and feature of Miaou, please come to [the dedicated room](ht
 
 A [vagrant](http://www.vagrantup.com/) configuration is available to help you set up a development environment quickly. See more information at its [documentation](vagrant/vagrant.md).
 
-If you prefer to use [docker](https://www.docker.com/) as development environment, its also available. See more information at its [documentation](docker/README.md).
+If you prefer to use [docker](https://www.docker.com/) as development environment, it's also available. See more information at its [documentation](docker/README.md).
 
 If you want to install Miaou on your own, the installation documentation is available [here](installation.md).
 
