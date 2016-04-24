@@ -28,6 +28,12 @@
 		z-index: 60;
 		content: "";
 	}
+	&.has-requests {
+		box-shadow: $watch-has-requests-box-shadow;
+		.name {
+			color: $watch-has-requests-color;
+		}
+	}
 	.count:not(:empty) {
 		color: $watch-count-color;
 		background: $watch-count-new-bg;
@@ -90,4 +96,15 @@
 			background: $unseen-message-bg; 
 		}
 	}
+}
+
+.watch-requests {
+	display: block;
+	color: $watch-requests-color;
+	text-decoration: none;
+	padding: 3px;
+	margin: 5px 0;
+	border: $watch-requests-border;
+	background: $watch-requests-bg;
+	box-shadow: $watch-has-requests-box-shadow;
 }

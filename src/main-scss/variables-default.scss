@@ -250,6 +250,12 @@ $selected-room-tab-color: $title-text-color !default;
 $hovered-room-tab-color: transparentize($title-text-color, 0.2) !default;
 $unselected-room-tab-color: transparentize($title-text-color, 0.5) !default;
 $opacity-behind-open-top: .45 !default;
+$watch-has-requests-box-shadow: 0 0 10px orangered !default;
+$watch-has-requests-color: #540404 !default;
+$watch-requests-bg: rgba(255,255,0,.2) !default;
+$watch-requests-color: #540404 !default;
+$watch-requests-border: thin solid rgba(0,0,0,.2) !default;
+
 
 $unseen-message-bg: $watch-count-new-bg !default;
 

@@ -188,6 +188,9 @@ $pad-room-desc-bg: rgba(0,0,0,.1);
 $pad-room-hover-bg: black;
 $pad-room-last-message-bg: $pad-room-hover-bg;
 $pad-room-last-message-border-top: solid thin PaleVioletRed;
+$watch-has-requests-box-shadow: 0 0 10px $accent;
+$watch-has-requests-color: inherit;
+$watch-requests-color: $accent-plus;
 
 // miaou logo
 $miaou-logo-color: $general-text-color;

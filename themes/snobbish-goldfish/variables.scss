@@ -152,6 +152,8 @@ $watch-panel-bg: linear-gradient(#111, #111, #222); // #444;
 $watch-count-new-bg: rgba(255,255,0,.6) !default;
 $watch-count-ping-bg: rgba(255,0,0,.6) !default;
 $open-watch-bg: #111;
+$watch-has-requests-color: inherit;
+$watch-requests-color: #CAC5C5;
 
 // history
 $hist-bg: $left-background;

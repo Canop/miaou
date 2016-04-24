@@ -49,7 +49,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			var otherusername = interlocutor(w);
 			if (otherusername) $name.text(otherusername).addClass('dialog-room');
 			else $name.text(w.name);
-			var href = ''+w.id;// TODO add the room name
+			var href = ''+w.id; // TODO add the room name
 			var $w = $('<a>').addClass('watch').attr('rid', w.id)
 			.dat('watch', w)
 			.append($('<span>').addClass('count').text(w.nbunseen||''))
@@ -57,6 +57,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			.attr('href', href)
 			.appendTo('#watches');
 			if (w.nbunseen) $w.addClass('has-unseen');
+			if (w.nbrequests && (w.auth==="admin"||w.auth==="own")) $w.addClass('has-requests');
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a, b){
 			var wa = $(a).dat('watch'), wb = $(b).dat('watch');
@@ -109,7 +110,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	function updateGlobalIcon(){
 		if (!$globalIcon.length) return;
 		$globalIcon
-		.toggleClass('ping', !!$('.watch.ping').length)
+		.toggleClass('ping', !!$('.watch.ping,.watch.has-requests').length)
 		.toggleClass('has-unseen', !!$('.watch.has-unseen').length);
 	}
 
@@ -118,6 +119,16 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 		roomIds.forEach(function(rid){
 			$('#watches .watch[rid='+rid+'] .count').addClass('ping');
 		});
+		updateGlobalIcon();
+	}
+
+	// increment or decrement the number of access requests in a watched room
+	watch.incrRequests = function(roomId, diff){
+		var $w =  $('#watches .watch[rid='+roomId+']');
+		if (!$w.length) return console.log('no watch!');
+		var w = $w.dat('watch');
+		w.nbrequests = (w.nbrequests||0)+diff;
+		$w.toggleClass("has-requests", !!w.nbrequests);
 		updateGlobalIcon();
 	}
 
@@ -147,9 +158,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			nbrequestedmessages = Math.min(20, Math.max(5, nbunseen));
 		requiredrid = w.id;
 		function display(dat){
-			if (requiredrid!==w.id) {
-				return;
-			}
+			if (requiredrid!==w.id) return;
 			var	dr = Math.max(Math.min(200, ww-off.left-$w.width()-30), 0),
 				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
@@ -162,6 +171,13 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 				$w.remove();
 				return false;
 			}).appendTo($top);
+			if (w.nbrequests) {
+				var text = w.nbrequests+" unanswered access request";
+				if (w.nbrequests>1) text += "s";
+				$("<a>").addClass("watch-requests")
+				.attr("href", "auths?id="+w.id)
+				.text(text).appendTo($panel);
+			}
 			var $ml = $('<div>').addClass('messages').appendTo($panel);
 			$w.addClass('open');
 			if (dat.error) {

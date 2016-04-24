@@ -481,8 +481,9 @@ proto.deleteWatch = function(roomId, userId){
 
 proto.listUserWatches = function(userId){
 	return this.queryRowsBench(
-		"select w.room id, w.last_seen, r.name, r.private, r.dialog,"+
-		" (select count(*) from message m where m.room=w.room and m.id>w.last_seen) as nbunseen"+
+		"select w.room id, w.last_seen, r.name, r.private, r.dialog, a.auth,"+
+		" (select count(*) from message m where m.room=w.room and m.id>w.last_seen) as nbunseen,"+
+		" (select count(*) from access_request ar where ar.room=w.room and ar.denied is null) as nbrequests"+
 		" from watch w"+
 		" join room r on w.room=r.id"+
 		" left join room_auth a on a.room=r.id and a.player=$1"+

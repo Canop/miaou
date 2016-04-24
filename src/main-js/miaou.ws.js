@@ -88,6 +88,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		})
 		.on('notableIds', md.updateNotableMessages)
 		.on('request', md.showRequestAccess)
+		.on('request_outcome', function(ar){
+			watch.incrRequests(ar.room, -1);
+		})
 		.on('reconnect', function(){
 			$("#notifications").empty();
 			ws.notif.onOn();

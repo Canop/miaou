@@ -1,8 +1,12 @@
 // messages and notifications in the chat related to user rights
 
-miaou(function(md, gui, notif, usr, ws){
+miaou(function(md, gui, locals, notif, usr, watch, ws){
 
 	md.showRequestAccess = function(ar){
+		if (ar.room!==locals.room.id) {
+			watch.incrRequests(ar.room, 1);
+			return;
+		}
 		if (!ar.user && ar.player) {
 			ar.user = {id:ar.player, name:ar.name};
 		}

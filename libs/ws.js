@@ -79,7 +79,6 @@ var roomSockets = exports.roomSockets = function(roomId){
 	return sockets;
 }
 
-// TODO function to also emit an incr to the related w room (to watchers)
 var emitToRoom = exports.emitToRoom = function(roomId, key, m){
 	io.sockets.in(roomId).emit(key, clean(m));
 }
@@ -143,7 +142,12 @@ exports.emitAccessRequestAnswer = function(roomId, userId, granted, message){
 	popon(socketWaitingApproval, function(o){
 		return o.userId===userId && o.roomId===roomId
 	}, function(o){
-		o.socket.emit('request_outcome', {granted:granted, message:message})
+		o.socket.emit('request_outcome', {granted:granted, message:message});
+	});
+	io.sockets.to(roomId).to('w'+roomId).emit('request_outcome', {
+		room: roomId,
+		granted: granted,
+		message: message
 	});
 }
 
@@ -629,7 +633,7 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.then(function(ar){
 			ar.user = publicUser;
-			socket.broadcast.to(roomId).emit('request', ar);
+			socket.broadcast.to(roomId).to('w'+roomId).emit('request', ar);
 			popon(socketWaitingApproval, o => o.socket===socket ); // cleans the pre_request
 			socketWaitingApproval.push({
 				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
