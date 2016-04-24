@@ -3,7 +3,8 @@
 miaou(function(md, gui, locals, notif, usr, watch, ws){
 
 	md.showRequestAccess = function(ar){
-		if (ar.room!==locals.room.id) {
+		console.log("received ar", ar);
+		if (ar.room && ar.room!==locals.room.id) {
 			watch.incrRequests(ar.room, 1);
 			return;
 		}
@@ -23,7 +24,7 @@ miaou(function(md, gui, locals, notif, usr, watch, ws){
 			$c.append($p).dat('user', ar.user);
 			if (usr.checkAuth('admin')) {
 				$('<button>').text('Manage Users').click(function(){
-					$('#auths').click();
+					location = 'auths?id='+locals.room.id;
 					close();
 				}).appendTo($p);
 				$('<button>').text('Grant Access').click(function(){
