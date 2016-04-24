@@ -1,4 +1,5 @@
-var	url = require('url');
+const	url = require('url'),
+	icon = "<img class=wikipedia-icon src=static/plugins/wikipedia/rsc/Wikipedia-globe-icon.png align=left>";
 
 // from the jquery-like context of the input page
 // build and return the html to send to the clients
@@ -8,7 +9,7 @@ function abstract($, line){
 	$box.append(
 		$('<a>').attr('href', line).css('text-decoration', 'none')
 		.attr('title', "Click here to jump to the whole article")
-		.append('<img class=wikipedia-icon src=static/plugins/wikipedia/rsc/Wikipedia-globe-icon.png align=left>')
+		.append(icon)
 		.append($('h1'))
 	);
 	$box.append($('<hr style="clear:both">'));
@@ -62,9 +63,12 @@ function onCommand(ct){
 
 exports.registerCommands = function(cb){
 	cb({
-		name:'wiki', fun:onCommand,
-		help:"display the relevant Wikipedia page in the language of the room. Example : `!!wiki Neil Armstrong`",
-		detailedHelp:"You may also simply paste the URL of a wikipedia page to have it abstracted for you.\n"+
+		name: 'wiki',
+		fun: onCommand,
+		help: "display the relevant Wikipedia page in the language of the room."+
+			" Example : `!!wiki Neil Armstrong`",
+		detailedHelp: "You may also simply paste the URL of a wikipedia page "+
+			"to have it abstracted for you.\n"+
 			"Example: `http://fr.wikipedia.org/wiki/Chat`"
 	});
 }

@@ -3,7 +3,10 @@ var cache = require('bounded-cache')(100); // not necessarily the last version, 
 var r = /^(@[\w-]{3,}#?\d*\s+)?!!whiteboard(\s|$)/;
 
 function chown(newMessage, savedMessage){
-	if (savedMessage.author!==newMessage.author && r.test(savedMessage.content)!==r.test(newMessage.content)) {
+	if (
+		savedMessage.author!==newMessage.author
+		&& r.test(savedMessage.content)!==r.test(newMessage.content)
+	) {
 		throw "Only its author can change a message to or from a white board";
 	}
 	newMessage.author = savedMessage.author;

@@ -107,7 +107,11 @@ gulp.task("server-js", ()=>
 			"no-unneeded-ternary": 2,
 			"operator-assignment": [ 2, "always" ],
 			"space-before-function-paren": [ 2, "never" ],
-			"space-before-blocks": [2, { "functions": "never", "keywords": "always", classes: "never" }],
+			"space-before-blocks": [2, {
+				"functions": "never",
+				"keywords": "always",
+				classes: "never"
+			}],
 			"no-lonely-if": 2,
 		}
 	}))

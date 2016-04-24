@@ -3,7 +3,7 @@
 // build and return the html to send to the clients
 function abstract($, line){
 	var	$box = $('<div/>').addClass('twitter'),
-		$twitterBody = $('#permalink-overlay, #permalink-overlay-body, body').eq(0), // twitter layout changes...
+		$twitterBody = $('#permalink-overlay, #permalink-overlay-body, body').eq(0),
 		$tweet = $twitterBody.find('.tweet').first(),
 		$tweetHead = $tweet.find('.content').eq(0),
 		time = $twitterBody.find('.client-and-actions .metadata').eq(0).text(),
