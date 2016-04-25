@@ -41,6 +41,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 
 		socket
 		.on('ready', function(){
+			if (info.state === 'connected') {
+				console.log("already entered");
+				return;
+			}
 			info.state = 'entering';
 			console.log("emitting enter in ready");
 			socket.emit('enter', locals.room.id);
@@ -94,9 +98,6 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('reconnect', function(){
 			$("#notifications").empty();
 			ws.notif.onOn();
-			// console.log("emitting enter in reconnect");
-			// socket.emit('enter', locals.room.id);
-			// 20160403 I remove this emit, it should be done on 'ready'
 		})
 		.on('welcome', function(){
 			console.log("received welcome");

@@ -1,4 +1,4 @@
-const	apiversion = 54,
+const	apiversion = 55,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
