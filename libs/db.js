@@ -279,17 +279,23 @@ proto.listAccessibleRooms = function(userId){
 
 // lists the rooms that should make it to the front page
 // use index message_room_author
-proto.listFrontPageRooms = function(userId){
-	return this.queryRowsBench(
-		"select r.id, name, description, private, listed, dialog, lang, auth,"+
+proto.listFrontPageRooms = function(userId, pattern){
+	var	psname = "list_front_page_rooms",
+		sql = "select r.id, name, description, private, listed, dialog, lang, auth,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
 		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+
-		" where listed is true or auth is not null"+
-		" order by lastcreated desc nulls last limit 200",
-		[userId],
-		"list_front_page_rooms"
-	);
+		" where (listed is true or auth is not null)",
+		args = [userId];
+	if (pattern) {
+		psname += "_search";
+		sql += " and (name ilike $2 or description ilike $2)";
+		pattern = "%"+pattern+"%";
+		args.push(pattern);
+	}
+	sql += " order by lastcreated desc nulls last limit 200";
+	logQuery(sql, args);
+	return this.queryRowsBench(sql, args, psname);
 }
 
 proto.listRecentUserRooms = function(userId){

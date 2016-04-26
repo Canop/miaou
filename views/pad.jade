@@ -75,15 +75,16 @@ html
 				#watches
 			#rooms-panel.closed
 				#rooms
-					#rooms-spinner
-						img(src="static/ajax-loader-brown.gif")
 					#rooms-content
 						#rooms-tabs
 							span.tab Your Main Rooms
 							span.tab Public Rooms
 							span.tab Private Rooms
 							span.tab Dialog Rooms
-							span.tab.aftertabs
+							span.aftertabs
 								button.small#create-room Create A Room
+								#room-search-div
+									input#room-search-input(placeholder="filter rooms")
+									button.small#room-search-reset X
 						#rooms-page
 	

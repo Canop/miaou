@@ -4,15 +4,43 @@ miaou(function(chat, locals, time, watch, ws){
 
 	// ROOMS MANAGEMENT
 	
-	function updateRooms(){
-		$('#rooms-content').hide();
-		$('#rooms-spinner').show();
-		$.get('json/rooms', function(data){
+	function fetchRooms(){
+		var pat = $("#room-search-input").val();
+		$("#room-search-reset").toggle(!!pat);
+		$.get('json/rooms?pattern='+encodeURIComponent(pat), function(data){
+			if (pat!==$("#room-search-input").val()) {
+				console.log("received obsolete search result", pat);
+				return;
+			}
 			rooms = data.rooms;
-			selectRoomsTab(0);
-			$('#rooms-spinner').hide();
-			$('#rooms-content').show();
+			updateRoomsTab();
 		});
+	}
+
+	function updateRoomsTab(){
+		var i = $('#rooms-tabs .tab.selected').index();
+		$('#rooms-page').empty();
+		switch (i){
+		case 0:
+			listRooms(
+				rooms.filter(function(r){ return !r.private && (r.hasself || r.auth)})
+				, 'Your Public Rooms'
+			);
+			listRooms(
+				rooms.filter(function(r){ return r.private && r.auth && !r.dialog })
+				, 'Your Private Rooms'
+			);
+			break;
+		case 1:
+			listRooms(rooms.filter(function(r){ return !r.private }));
+			break;
+		case 2:
+			listRooms(rooms.filter(function(r){ return r.private && !r.dialog }));
+			break;
+		case 3:
+			listRooms(rooms.filter(function(r){ return r.dialog }));
+			break;
+		}
 	}
 	
 	function listRooms(roomlist, title){
@@ -61,28 +89,7 @@ miaou(function(chat, locals, time, watch, ws){
 	
 	function selectRoomsTab(i){
 		$('#rooms-tabs .tab').removeClass('selected').eq(i).addClass('selected');
-		$('#rooms-page').empty();
-		switch (i){
-		case 0:
-			listRooms(
-				rooms.filter(function(r){ return !r.private && (r.hasself || r.auth)})
-				, 'Your Public Rooms'
-			);
-			listRooms(
-				rooms.filter(function(r){ return r.private && r.auth && !r.dialog })
-				, 'Your Private Rooms'
-			);
-			break;
-		case 1:
-			listRooms(rooms.filter(function(r){ return !r.private }));
-			break;
-		case 2:
-			listRooms(rooms.filter(function(r){ return r.private && !r.dialog }));
-			break;
-		case 3:
-			listRooms(rooms.filter(function(r){ return r.dialog }));
-			break;
-		}
+		updateRoomsTab();
 	}
 	
 	$('#rooms-tabs .tab').click(function(){
@@ -93,7 +100,8 @@ miaou(function(chat, locals, time, watch, ws){
 	function openRoomsPanel(){
 		if ($('#rooms-panel').hasClass('open')) return;
 		$('#rooms').hide();
-		updateRooms();
+		selectRoomsTab(0);
+		fetchRooms();
 		$('#rooms-panel').addClass('open').removeClass('closed');
 		$('#stripe').addClass('open');
 		$('#non-top').addClass('behind');
@@ -104,14 +112,11 @@ miaou(function(chat, locals, time, watch, ws){
 	function hideRoomsPanel(){
 		clearTimeout(openpaneltimer);
 		clearTimeout(showroomstimer);
-		$('#rooms-content').hide();
 		$('#rooms-panel').addClass('closed').removeClass('open');		
 		$('#stripe').removeClass('open');		
 		$('#non-top').removeClass('behind');
 	}
 	
-	//~ $('#rooms-spinner.hide();	
-	$('#rooms-content').hide();
 	$('#room-panel').on('mouseenter', function(){
 		openpaneltimer = setTimeout(openRoomsPanel, 180);
 	})
@@ -191,6 +196,7 @@ miaou(function(chat, locals, time, watch, ws){
 			return false;
 		}
 	});
+
 	watch.enabled = true;
 	chat.start();
 	$(window).keyup(function(e){
@@ -199,4 +205,15 @@ miaou(function(chat, locals, time, watch, ws){
 		}
 	});
 
+	$("#room-search-input").keyup(function(e){
+		if (e.which===27) { // esc
+			this.value = '';
+		}
+		fetchRooms();
+	});
+
+	$("#room-search-reset").click(function(){
+		$("#room-search-input").val('');
+		fetchRooms();
+	});
 });

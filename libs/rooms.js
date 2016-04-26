@@ -208,8 +208,8 @@ exports.appGetRooms = function(req, res){
 }
 
 exports.appGetJsonRooms = function(req, res){
-	db.on(req.user.id)
-	.then(db.listFrontPageRooms)
+	db.on([req.user.id, req.query.pattern])
+	.spread(db.listFrontPageRooms)
 	.then(function(rooms){
 		rooms.forEach(function(r){
 			r.path = server.roomPath(r)

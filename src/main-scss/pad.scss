@@ -148,13 +148,11 @@
 }
 #rooms {
 	@include flexbox(row, stretch);
-	max-width: 1200px;
+	width: 1200px;
+	max-width: 90%;
 }
-#rooms-spinner, #rooms-content {
+#rooms-content {
 	@include flex(1 0);
-}
-#rooms-spinner {
-	@include flexbox(row, center, center);
 }
 #rooms-content {
 	@include flexbox(column, stretch);
@@ -164,15 +162,17 @@
 #rooms-tabs {
 	@include flexbox(row);
 	@include flex(0 0 34px);
-	.tab {
+	.tab, .aftertabs {
 		text-align: center;
 		padding: 5px 10px;
 		border-style:solid;
 		border-color:  $chat-tabs-border-color;
 		border-width: 0 0 $chat-tabs-border-width 0;
 		color: $unselected-room-tab-color;
-		cursor: pointer;
 		background-image: $chat-tabs-unselected-bg-image;
+	}
+	.tab {
+		cursor: pointer;
 		&:hover {
 			color: $hovered-room-tab-color;
 		}
@@ -185,6 +185,7 @@
 	}
 	.aftertabs {
 		@include flex(1 0);
+		@include flexbox(row, center, space-around);
 	}
 }
 #rooms-page {
@@ -272,4 +273,11 @@
 	max-height: none;
 	-webkit-mask-image: none;
 	transition: max-height .3s; // doesn't work
+}
+
+#room-search-input {
+
+}
+#room-search-reset {
+	display: none;
 }
