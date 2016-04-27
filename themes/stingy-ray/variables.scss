@@ -159,3 +159,10 @@ body.pad #messages .content .citation {
 	background: rgba(255,255,153, .7);
 	min-width: 70%;
 }
+
+.avatar {
+	border-radius: 2px;
+}
+.user-messages .avatar {
+	border-radius: 50%;
+}
