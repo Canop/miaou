@@ -279,5 +279,8 @@
 
 }
 #room-search-reset {
-	display: none;
+	visibility: hidden;
+	&.visible {
+		visibility: visible;
+	}
 }

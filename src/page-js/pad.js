@@ -6,7 +6,7 @@ miaou(function(chat, locals, time, watch, ws){
 	
 	function fetchRooms(){
 		var pat = $("#room-search-input").val();
-		$("#room-search-reset").toggle(!!pat);
+		$("#room-search-reset").toggleClass("visible", !!pat);
 		$.get('json/rooms?pattern='+encodeURIComponent(pat), function(data){
 			if (pat!==$("#room-search-input").val()) {
 				console.log("received obsolete search result", pat);
@@ -107,6 +107,7 @@ miaou(function(chat, locals, time, watch, ws){
 		$('#non-top').addClass('behind');
 		showroomstimer = setTimeout(function(){
 			$('#rooms').fadeIn("fast");
+		$("#room-search-input").focus();
 		}, 500); // ensure the div is high enough
 	}
 	function hideRoomsPanel(){
@@ -115,6 +116,7 @@ miaou(function(chat, locals, time, watch, ws){
 		$('#rooms-panel').addClass('closed').removeClass('open');		
 		$('#stripe').removeClass('open');		
 		$('#non-top').removeClass('behind');
+		$("#input").focus();
 	}
 	
 	$('#room-panel').on('mouseenter', function(){

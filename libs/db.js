@@ -294,7 +294,6 @@ proto.listFrontPageRooms = function(userId, pattern){
 		args.push(pattern);
 	}
 	sql += " order by lastcreated desc nulls last limit 200";
-	logQuery(sql, args);
 	return this.queryRowsBench(sql, args, psname);
 }
 
@@ -921,7 +920,11 @@ exports.init = function(miaouConfig, cb){
 	var conString = config.database.url;
 	pg.defaults.parseInt8 = true;
 	pg.connect(conString, function(err, client, done){
-		if (err) return console.log('Connection to PostgreSQL database failed');
+		if (err) {
+			console.log('Connection to PostgreSQL database failed');
+			console.log(err);
+			return;
+		}
 		done();
 		console.log('Connection to PostgreSQL database successful');
 		pool = pg.pools.all[JSON.stringify(conString)];
