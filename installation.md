@@ -182,7 +182,7 @@ Installation is done with
 
 ## Example configuration
 
-	cd /etc/nginx/site-enabed
+	cd /etc/nginx/site-enabled
 	vim www.yourdomain.conf
 
 Copy (and maybe complete) this:
