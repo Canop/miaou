@@ -95,8 +95,11 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	}
 
 	watch.incr = function(incr){
+		if (incr.f===locals.me.id) {
+			console.log("dismissing watch increment from self");
+			return;
+		}
 		var roomId = incr.r;
-		console.log("watch.incr", roomId);
 		var $w =  $('#watches .watch[rid='+roomId+']');
 		if (!$w.length) return console.log('no watch!');
 		$w.addClass('has-unseen');

@@ -209,7 +209,7 @@ function messageWithoutUserVote(message){
 	return clone;
 }
 
-// handles the socket, whose life should be the same as the presence of the user in a room without reload.
+// handles the socket, whose life should be the same as the presence of the user in a room
 // Implementation details :
 //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
 //     different rooms and there's a reconnect
@@ -524,7 +524,7 @@ function handleUserInRoom(socket, completeUser){
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
 			if (m.id>memroom.lastMessageId) {
-				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id});
+				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
 			}
 			if (m.content && m.id) {
 				var r = /(?:^|\s)@(\w[\w\-]{2,})\b/g, ping;
