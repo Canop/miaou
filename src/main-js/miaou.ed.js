@@ -436,6 +436,8 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (!acname || (names[0] && names[0].toLowerCase().indexOf(acname)!==0)) {
 			return console.log('bad list'); // too late, probably
 		}
+		var indexMe = names.indexOf(locals.me.name);
+		if (~indexMe) names.splice(indexMe, 1);
 		if (!'room'.lastIndexOf(acname, 0) && ( locals.room.private||usr.checkAuth('admin'))) {
 			names.unshift('room');
 		} else if (!'here'.lastIndexOf(acname, 0)) {
