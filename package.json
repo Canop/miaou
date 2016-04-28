@@ -29,7 +29,7 @@
     "passport-google-oauth": ">=0.1.5",
     "passport-oauth": ">=1.0.0",
     "passport-reddit": ">=0.2.4",
-    "pg": ">=2.8.3",
+    "pg": ">=4.5.5",
     "redis": ">=0.9.1",
     "request": ">=2.34.0",
     "socket.io": ">=1.0.6"
