@@ -38,27 +38,31 @@ html
 					a(href="room") Create a room
 					| -
 					a(href="help#About",target=help) Help
-		section#home-notifs
-			.MP
-				h2
-					form(method="post")
-						| Notifications
-						if pings.length > 0
-							input(type="hidden", name="secret", value=secret)
-							input(type="hidden",name="clear_pings",value="true")
-							input(type="submit",value="Clear")
-				if pings.length==1
-					p
-						| You've been pinged in room&nbsp;
-						a(href=pings[0].room)= pings[0].roomname
-				else if pings.length
-					p You've been pinged in rooms
-					ul 
-						each ping in pings
-							li
-								a(href=ping.room)= ping.roomname
-				else
-					p None
+		section
+			.MP#home-blurb
+				#home-notifs
+					h2
+						form(method="post")
+							| Notifications
+							if pings.length > 0
+								input(type="hidden", name="secret", value=secret)
+								input(type="hidden",name="clear_pings",value="true")
+								input(type="submit",value="Clear")
+						if pings.length==1
+							p
+								| You've been pinged in room&nbsp;
+								a(href=pings[0].room)= pings[0].roomname
+						else if pings.length
+							p You've been pinged in rooms
+							ul 
+								each ping in pings
+									li
+										a(href=ping.room)= ping.roomname
+						else
+							p None
+				#home-search.desktop
+					input#room-search-input(placeholder="filter rooms")
+					button.small#room-search-reset X
 		.home-tabs.MP
 			.home-tab.selected Your Main Rooms
 			.home-tab Public Rooms
