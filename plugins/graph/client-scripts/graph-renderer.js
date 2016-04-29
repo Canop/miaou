@@ -55,8 +55,8 @@ miaou(function(md, plugins){
 				label:m[1]+' '+m[2]
 			};
 		},
-		function(s){ // 201506
-			var m = s.match(/^(\d{4})\s*(\d{2})$/);
+		function(s){ // 201506 or 2015/06
+			var m = s.match(/^(\d{4})\s*(?:\/\s*)?(\d{2})$/);
 			if (!m) return;
 			return {
 				start: (new Date(+m[1], m[2]-1)).getTime(),
@@ -77,118 +77,118 @@ miaou(function(md, plugins){
 	}
 
 	function render($c, m){
-		if (m.content && /(^|\s)#graph\b/.test(m.content)) {
-			var $table = $c.find('table').eq(0);
-			if ($table.length!==1) return;
-			var	xcol = new TGCol($table, 0),
-				ycols = [];
-			for (var ip=0; ip<xparsers.length; ip++) {
-				xcol.parse(xparsers[ip]);
-				if (xcol.valid) {
-					if (xcol.isAscending()) break;
-					else xcol.valid = false; // not valid as a x column
-				}
+		if (!m.content || !/(^|\s)#graph\b/.test(m.content)) return;
+
+		var $table = $c.find('table').eq(0);
+		if ($table.length!==1) return;
+		var	xcol = new TGCol($table, 0),
+			ycols = [];
+		for (var ip=0; ip<xparsers.length; ip++) {
+			xcol.parse(xparsers[ip]);
+			if (xcol.valid) {
+				if (xcol.isAscending()) break;
+				else xcol.valid = false; // not valid as a x column
 			}
-			if (!xcol.valid) {
-				console.log("table : no valid x column");
-				return;
-			}
+		}
+		if (!xcol.valid) {
+			console.log("table : no valid x column", xcol);
+			return;
+		}
 
-			for (var i=1, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
-				var ycol = new TGCol($table, i);
-				ycol.parse(Number);
-				if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
-			}
+		for (var i=1, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
+			var ycol = new TGCol($table, i);
+			ycol.parse(Number);
+			if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
+		}
 
-			var	H = 170,
-				nbycols = ycols.length;
+		var	H = 170,
+			nbycols = ycols.length;
 
-			if (!nbycols) {
-				console.log("no value column for #graph");
-				return;
-			}
+		if (!nbycols) {
+			console.log("no value column for #graph");
+			return;
+		}
 
-			var	xvals = xcol.vals,
-				n = xvals.length,
-				mt = 2, mr = 5, mb = 60, ml = 35, // margins top, right, bottom and left
-				g = ù('<svg', $c[0]).css({ height:H, width:600 }),
-				gW = Math.max(50, Math.min(g.width()-mr-ml, 40*n*ycols.length)),
-				W = gW+mr+ml,
-				xmin = xvals[0].start,
-				w = W-ml-mr, h = H-mt-mb,
-				rx = w / (xvals[n-1].end-xvals[0].start);
+		var	xvals = xcol.vals,
+			n = xvals.length,
+			mt = 2, mr = 5, mb = 60, ml = 35, // margins top, right, bottom and left
+			g = ù('<svg', $c[0]).css({ height:H, width:600 }),
+			gW = Math.max(50, Math.min(g.width()-mr-ml, 40*n*ycols.length)),
+			W = gW+mr+ml,
+			xmin = xvals[0].start,
+			w = W-ml-mr, h = H-mt-mb,
+			rx = w / (xvals[n-1].end-xvals[0].start);
 
-			ycols.forEach(function(ycol, j){
-				ycol.max = Math.max.apply(0, ycol.vals);
-				ycol.min = Math.min.apply(0, ycol.vals);
-				if (ycol.min>0 && ycol.min<.9*ycol.max) ycol.min = 0;
-				ycol.r = h / (ycol.max-ycol.min);
-				ycol.color = colors[j%colors.length];
-			});
-			xvals.forEach(function(xval, i){
-				var	x1 = Math.floor(ml+(xvals[i].start-xmin)*rx)+2,
-					x2 = ml+(xvals[i].end-xmin)*rx-3,
-					xm = (x1+x2)/2,
-					barWidth = Math.floor((x2-x1-5)/nbycols);
-				var showPop = function(){
-					var l = 70;
-					if (xm-l<10) l = 10;
-					else if (xm+l>W-10) l = 135;
-					var path = "M "+(xm)+" "+(mt+h-5.5)
-						+ " l 10 10"
-						+ " h "+(140-l)
-						+ " v 52"
-						+ " h -160"
-						+ " v-52"
-						+ " h "+l
-						+ " l 10 -10";
-					var xmr = xm + 70 - l;
-					pop = ù("<g", g).attr({
-						alignmentBaseline:"middle", fontSize:"85%"
-					});
-					ù('<path', pop).attr({d:path, fill:"#eee", stroke:"#aaa", strokeWidth:1});
-					ù('<text', pop).text(xval.label).attr({
-						x:xmr, y:mt+h+19, textAnchor:"middle"
-					});
-					ycols.forEach(function(ycol, j){
-						ù('<rect', pop).attr({
-							x:xmr-70, width:6, y:mt+h+28+j*16, height:6,
-							fill:ycol.color
-						});
-						ù('<text', pop).text(ycol.name+": "+ycol.rawvals[i]).attr({
-							x:xmr-58, y:mt+h+35+j*16
-						});
-					});
-				}
+		ycols.forEach(function(ycol, j){
+			ycol.max = Math.max.apply(0, ycol.vals);
+			ycol.min = Math.min.apply(0, ycol.vals);
+			if (ycol.min>0 && ycol.min<.9*ycol.max) ycol.min = 0;
+			ycol.r = h / (ycol.max-ycol.min);
+			ycol.color = colors[j%colors.length];
+		});
+		xvals.forEach(function(xval, i){
+			var	x1 = Math.floor(ml+(xvals[i].start-xmin)*rx)+2,
+				x2 = ml+(xvals[i].end-xmin)*rx-3,
+				xm = (x1+x2)/2,
+				barWidth = Math.floor((x2-x1-5)/nbycols);
+			var showPop = function(){
+				var l = 70;
+				if (xm-l<10) l = 10;
+				else if (xm+l>W-10) l = 135;
+				var path = "M "+(xm)+" "+(mt+h-5.5)
+					+ " l 10 10"
+					+ " h "+(140-l)
+					+ " v 52"
+					+ " h -160"
+					+ " v-52"
+					+ " h "+l
+					+ " l 10 -10";
+				var xmr = xm + 70 - l;
+				pop = ù("<g", g).attr({
+					alignmentBaseline:"middle", fontSize:"85%"
+				});
+				ù('<path', pop).attr({d:path, fill:"#eee", stroke:"#aaa", strokeWidth:1});
+				ù('<text', pop).text(xval.label).attr({
+					x:xmr, y:mt+h+19, textAnchor:"middle"
+				});
 				ycols.forEach(function(ycol, j){
-					var	val = ycol.vals[i],
-						y = mt + h - Math.floor((val-ycol.min)*ycol.r),
-						height = Math.ceil(h-y+mt),
-						xbar = x1+(barWidth+2)*j+4;
-					ù('<rect', g).attr({
-						x:xbar, y:y, width:barWidth, height:height,
+					ù('<rect', pop).attr({
+						x:xmr-70, width:6, y:mt+h+28+j*16, height:6,
 						fill:ycol.color
 					});
+					ù('<text', pop).text(ycol.name+": "+ycol.rawvals[i]).attr({
+						x:xmr-58, y:mt+h+35+j*16
+					});
 				});
-				var	x = xm,
-					y = h+mt+10;
-				ù('<text', g).text(xval.label).attr({
-					x:x, y:y, textAnchor:"end", alignmentBaseline:"middle", fontSize:"85%",
-					opacity:.9, transform:"rotate(-45 "+x+" "+y+")"
-				});
+			}
+			ycols.forEach(function(ycol, j){
+				var	val = ycol.vals[i],
+					y = mt + h - Math.floor((val-ycol.min)*ycol.r),
+					height = Math.ceil(h-y+mt),
+					xbar = x1+(barWidth+2)*j+4;
 				ù('<rect', g).attr({
-					x:x1, width:x2-x1, y:0, height:h, fill:"transparent", cursor:'crosshair'
-				}).on('mouseenter', showPop).on('mouseleave', hidePop);
-				ù('<line', g).attr({
-					x1:x1-.5, x2:x1-.5, y1:mt+h-2, y2:mt+h+1,
-					stroke:"#666", strokeWidth:1
+					x:xbar, y:y, width:barWidth, height:height,
+					fill:ycol.color
 				});
 			});
+			var	x = xm,
+				y = h+mt+10;
+			ù('<text', g).text(xval.label).attr({
+				x:x, y:y, textAnchor:"end", alignmentBaseline:"middle", fontSize:"85%",
+				opacity:.9, transform:"rotate(-45 "+x+" "+y+")"
+			});
+			ù('<rect', g).attr({
+				x:x1, width:x2-x1, y:0, height:h, fill:"transparent", cursor:'crosshair'
+			}).on('mouseenter', showPop).on('mouseleave', hidePop);
+			ù('<line', g).attr({
+				x1:x1-.5, x2:x1-.5, y1:mt+h-2, y2:mt+h+1,
+				stroke:"#666", strokeWidth:1
+			});
+		});
 
-			var $tablewrap = $table.closest('.tablewrap');
-			$('<div>').addClass('graph-tbl-wrapper').insertBefore($tablewrap)
-			.append($tablewrap).append(g.n);
-		}
+		var $tablewrap = $table.closest('.tablewrap');
+		$('<div>').addClass('graph-tbl-wrapper').insertBefore($tablewrap)
+		.append($tablewrap).append(g.n);
 	}
 
 	plugins.graph = {
