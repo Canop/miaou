@@ -19,7 +19,7 @@ function rollDices(ct){
 		exp += (nbSides+1)/2;
 	}
 	var	cols = ['Sum'],
-		row = [sum];
+		row = ["**"+sum+"**"];
 	if (nbDices>1 && nbDices<=12) {
 		cols = dices.map((_, i) => i+1).concat(cols);
 		row = dices.concat(row);
