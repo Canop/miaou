@@ -225,3 +225,10 @@ $profile-avatar-filter: drop-shadow(0 0 2px white);
 ::-webkit-scrollbar-thumb:hover {
 	background: #fb0;
 }
+
+.user-messages .bot .avatar {
+	border-radius: 0;
+}
+.user-messages .avatar {
+	border-radius: 50%;
+}

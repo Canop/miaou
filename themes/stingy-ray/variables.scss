@@ -160,9 +160,10 @@ body.pad #messages .content .citation {
 	min-width: 70%;
 }
 
-.avatar {
-	border-radius: 2px;
+.user-messages .bot .avatar {
+	border-radius: 0;
 }
 .user-messages .avatar {
 	border-radius: 50%;
 }
+

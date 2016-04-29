@@ -5,7 +5,7 @@ miaou(function(horn, gui, locals, md){
 	var sounds = {
 		standard: 'ping-standard.wav'
 	};
-	var sound = locals.userPrefs ? sounds[locals.userPrefs.sound] || sounds.standard : null,
+	var	sound = locals.userPrefs ? sounds[locals.userPrefs.sound] || sounds.standard : null,
 		audio;
 
 	horn.init = function(){
