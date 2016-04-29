@@ -15,6 +15,10 @@ function fmt(num){
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
 }
 
+function raw(_, num){
+	return num ? ''+num : ' ';
+}
+
 function doStats(ct){
 	// this regex must be changed with care : it prevents injections
 	var	match = ct.args.match(/([@\w\-]+)(\s+[a-zA-Z]+)?(\s+\d+)?/),
@@ -49,9 +53,16 @@ function doStats(ct){
 		title = "Server Statistics";
 	} else if (/^server-graph$/i.test(topic)) {
 		cols = [
-			{name:"Month", value:"extract(year from to_timestamp(created))*100+extract(month from to_timestamp(created))"},
-			{name:"Messages", value:"count(*)"},
-			{name:"Authors", value:"count(distinct author)"},
+			{
+				name:"Month",
+				value:"extract(year from to_timestamp(created))*100+extract(month from to_timestamp(created))",
+				fmt:row => {
+					var c0 = ''+row.c0;
+					return c0.slice(0, 4)+"/"+c0.slice(-2);
+				}
+			},
+			{name:"Messages", value:"count(*)", fmt:raw},
+			{name:"Authors", value:"count(distinct author)", fmt:raw},
 		];
 		from = "from message group by c0 order by c0";
 		title = "Server Statistics #graph";
@@ -152,7 +163,8 @@ function doStats(ct){
 				var line='';
 				if (ranking) line += l+1+'|';
 				for (var i=0; i<cols.length; i++) {
-					line += ( cols[i].fmt ? cols[i].fmt(row) : fmt(row['c'+i]) ) + '|';
+					var num = row['c'+i];
+					line += ( cols[i].fmt ? cols[i].fmt(row, num) : fmt(num) ) + '|';
 				}
 				return line;
 			}).join('\n');
