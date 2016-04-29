@@ -218,4 +218,7 @@ miaou(function(chat, locals, time, watch, ws){
 		$("#room-search-input").val('');
 		fetchRooms();
 	});
+
+	$('#shortcuts').click(function(){ window.open('help#Keyboard_Shortcuts') });
+
 });
