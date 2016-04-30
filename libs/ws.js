@@ -224,6 +224,7 @@ function handleUserInRoom(socket, completeUser){
 		send;
 	socket
 	.on('autocompleteping', function(namestart){
+		if (!shoe.room) return;
 		db.on()
 		.then(function(){
 			return this.usersStartingWith(namestart, shoe.room.id, 10);
