@@ -1,18 +1,13 @@
 // !!stats command
 
-const	siostats = require('./stats-sockets.js');
+const	fmt = require('./fmt.js'),
+	siostats = require('./stats-sockets.js');
 
 var	miaou;
 
 exports.configure = function(_miaou){
 	miaou = _miaou;
 	return this;
-}
-
-function fmt(num){
-	if (!num) return ' ';
-	if (typeof num !== "number") return num;
-	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
 }
 
 function raw(_, num){
@@ -92,6 +87,11 @@ function doStats(ct){
 	} else if (topic[0]==='@') {
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
+			{
+				name:"Since",
+				value:"(select min(created) from message where author=player.id)",
+				fmt: (r, c) => fmt.date(c, "DD MMM YYYY")
+			},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
 			{name:"Received Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star')"},
 			{name:"Given Stars", value:"(select count(*) from message_vote where player=player.id and vote='star')"},
@@ -164,7 +164,7 @@ function doStats(ct){
 				if (ranking) line += l+1+'|';
 				for (var i=0; i<cols.length; i++) {
 					var num = row['c'+i];
-					line += ( cols[i].fmt ? cols[i].fmt(row, num) : fmt(num) ) + '|';
+					line += ( cols[i].fmt ? cols[i].fmt(row, num) : fmt.int(num) ) + '|';
 				}
 				return line;
 			}).join('\n');

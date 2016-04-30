@@ -22,7 +22,7 @@ miaou(function(time){
 	}
 
 	time.formatDate = function(t){ // time in ms
-		var date = new Date(t), now = new Date,
+		var	date = new Date(t), now = new Date,
 			m = date.getMinutes(), h = date.getHours(), Y = date.getFullYear(),
 			s = s = (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
 		if (now.getFullYear()===Y && now.getMonth()===date.getMonth() && now.getDate()===date.getDate()) {

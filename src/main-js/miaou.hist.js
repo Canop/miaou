@@ -167,7 +167,7 @@ miaou(function(hist, gui, md, time, ws){
 			return y<sh && y+$(this).height()>0;
 		});
 		if (!$messages.length) return;
-		var fd = Math.floor($messages.first().dat('message').created / (24*60*60)),
+		var	fd = Math.floor($messages.first().dat('message').created / (24*60*60)),
 			ld = Math.floor($messages.last().dat('message').created / (24*60*60));
 		$('#hist .day').each(function(){
 			var $this = $(this), d = +$(this).attr('d');
