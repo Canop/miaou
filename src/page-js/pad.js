@@ -1,5 +1,6 @@
 
 miaou(function(chat, locals, time, watch, ws){
+
 	var	rooms = [];
 
 	// ROOMS MANAGEMENT
@@ -118,6 +119,11 @@ miaou(function(chat, locals, time, watch, ws){
 		$('#non-top').removeClass('behind');
 		$("#input").focus();
 	}
+
+	function toggleRoomsPanel(){
+		if ($('#rooms-panel').hasClass('open')) hideRoomsPanel();
+		else openRoomsPanel();
+	}
 	
 	$('#room-panel').on('mouseenter', function(){
 		openpaneltimer = setTimeout(openRoomsPanel, 180);
@@ -221,4 +227,10 @@ miaou(function(chat, locals, time, watch, ws){
 
 	$('#shortcuts').click(function(){ window.open('help#Keyboard_Shortcuts') });
 
+	$(window).on('keyup', function(e){
+		if ((e.ctrlKey && !e.shiftKey) && e.which===32) {
+			toggleRoomsPanel();
+			return false;
+		}
+	});
 });

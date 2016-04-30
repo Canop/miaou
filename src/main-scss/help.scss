@@ -41,6 +41,15 @@ h1 {
 		background: $left-background;
 	}
 }
+
+#help-shortcuts {
+	th {
+		width: 100px;
+		text-align: right;
+		font-weight: normal;
+	}
+}
+
 #help-content {
 	max-width: 900px;
 	h2, h3 {
