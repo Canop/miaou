@@ -212,6 +212,10 @@ miaou(function(chat, locals, time, watch, ws){
 
 	$("#room-search-input").keyup(function(e){
 		if (e.which===27) { // esc
+			if (! this.value) {
+				hideRoomsPanel();
+				return false;
+			}
 			this.value = '';
 		}
 		fetchRooms();
