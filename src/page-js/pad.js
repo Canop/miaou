@@ -237,4 +237,6 @@ miaou(function(chat, locals, time, watch, ws){
 			return false;
 		}
 	});
+
+	$("#input").click(hideRoomsPanel);
 });
