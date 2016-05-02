@@ -274,6 +274,7 @@
 		transition: height .2s .2s;
 	}
 	#room-description {
+		min-height: 30px;
 		max-height: 60px;
 		overflow-y: hidden;
 		margin-bottom: 10px;

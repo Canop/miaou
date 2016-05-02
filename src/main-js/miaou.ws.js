@@ -79,7 +79,11 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			localStorage['room'] = locals.room.id;
 			notif.updateTab(0, 0);
 			$('#roomname').text(locals.room.name);
-			var htmldesc = miaou.fmt.mdTextToHtml(locals.room.description, null, true);
+			var htmldesc = miaou.fmt.mdTextToHtml(
+				locals.room.description.trim()||"*no description*",
+				null,
+				true
+			);
 			$('#room-description').html(htmldesc);
 			$('#room-panel-bg').css('background-image', function(){
 				var m = htmldesc.match(/^<img (?:href="?[^"> ]+"? )?src="?([^">]+)"?[^>]*>(<br>|$)/);
