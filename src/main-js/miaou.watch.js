@@ -31,7 +31,8 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	}
 
 	watch.addLocalRoom = function(){
-		$('#watch').text('unwatch');
+		$('#room-watch').hide();
+		$('#room-unwatch').show();
 		ws.emit('wat', locals.room.id);
 		locals.room.watched = true;
 	}
@@ -40,7 +41,8 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	watch.add = function(watches){
 		watches.forEach(function(w){
 			if (w.id===locals.room.id) {
-				$('#watch').text('unwatch');
+				$('#room-watch').hide();
+				$('#room-unwatch').show();
 				locals.room.watched = true;
 				return;
 			}

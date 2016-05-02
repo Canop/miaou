@@ -201,6 +201,12 @@ $left-panel-width: 140px !default;
 $right-panel-width: 400px !default;
 $hist-width: 200px !default;
 
+// room controls
+$room-control-bg: rgba(0,0,50,.5) !default;
+$room-control-color: rgba(255,255,255,.9) !default;
+$room-hover-control-bg: rgba(0,0,50,.7) !default;
+$room-hover-control-color: rgba(255,255,255,.9) !default;
+
 // mobile chat
 $minput-height: 50px !default; // height of input in mobile interface
 $mtab-height: 39px !default;   // height of the top tabs in mobile interface

@@ -126,6 +126,12 @@ $message-content-padding: 6px 10px;
 $message-content-border-radius: 5px;
 $message-content-margin: 4px;
 
+// room controls
+$room-control-bg: $accent;
+$room-control-color: rgba(255,255,255,.7);
+$room-hover-control-bg: $accent-plus;
+$room-hover-control-color: rgba(255,255,255,.9);
+
 // buttons
 $button-bg-color: $accent;
 $button-text-color: #bbb;

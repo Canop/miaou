@@ -127,6 +127,12 @@ $profile-bg: #1B0E05;
 $profile-box-shadow: none;
 $profile-text-color: #8ADADA;
 
+// room controls
+$room-control-bg: #555;
+$room-control-color: $bear-green;
+$room-hover-control-bg: #544;
+$room-hover-control-color: darcken( $bear-green , 10%);
+
 // buttons
 $button-bg-color: #555;
 $button-text-color: $bear-green;

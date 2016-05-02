@@ -132,15 +132,17 @@ miaou(function(chat, locals, time, watch, ws){
 		clearTimeout(openpaneltimer);		
 	});
 	$('#stripe').on('mouseleave', hideRoomsPanel);
-	$('#watch').on('click', function(){
-		if (locals.room.watched) {
-			ws.emit('unwat', locals.room.id);
-			$(this).text('watch');
-		} else {
-			ws.emit('wat', locals.room.id);
-			$(this).text('unwatch');
-		}
-		locals.room.watched = !locals.room.watched;
+	$('#room-watch').on('click', function(){
+		ws.emit('wat', locals.room.id);
+		locals.room.watched = true;
+		$(this).hide();
+		$("#room-unwatch").show();
+	});
+	$('#room-unwatch').hide().on('click', function(){
+		ws.emit('unwat', locals.room.id);
+		locals.room.watched = false;
+		$(this).hide();
+		$("#room-watch").show();
 	});
 	$('#menu-settings').attr('href', "prefs?room="+locals.room.id);
 

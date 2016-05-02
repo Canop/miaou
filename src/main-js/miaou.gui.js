@@ -187,8 +187,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			}
 		}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
 
-		if (usr.checkAuth('admin')) $('#editroom').click(function(){ location = 'room?id='+locals.room.id });
-		else $('#editroom').hide();
+		if (usr.checkAuth('admin')) $('#room-edit').click(function(){ location = 'room?id='+locals.room.id });
+		else $('#room-edit').hide();
 		$('#auths').click(function(){ location = 'auths?id='+locals.room.id });
 
 		$('#showPreview').click(function(){

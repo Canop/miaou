@@ -8,7 +8,7 @@ miaou(function(chat, locals){
 		$('#roomname').addClass('private').attr('title', 'This room is private');
 	}
 	if (room.dialog) {
-		$('#auths,#editroom').hide();
+		$('#auths, #room-edit').hide();
 	}
 	$('#help').click(function(){ window.open('help') });
 	$('#changeroom').click(function(){ window.open('rooms') });

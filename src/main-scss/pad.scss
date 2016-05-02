@@ -259,22 +259,76 @@
 		top: 40px;
 	}
 	#left, #right {
-		padding-top: 15px;
+		padding-top: 5px;
+	}
+	#right {
+		//overflow-y: scroll;
 	}
 }
 
-#right #room-description {
-	max-height: 60px;
-	overflow-y: hidden;
-	margin-bottom: 10px;
-	transition: max-height .4s .2s;
-	position: relative;
-	-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0,0,0,1)), color-stop(0.6, rgba(0,0,0,1)), color-stop(0.8, rgba(0,0,0,.8)), color-stop(1, rgba(0,0,0,0)));
+#right #room-area {
+	#room-controls {
+		height: 0;
+		overflow: hidden;
+		@include flexbox(row, stretch);
+		transition: height .2s .2s;
+	}
+	#room-description {
+		max-height: 60px;
+		overflow-y: hidden;
+		margin-bottom: 10px;
+		transition: max-height .4s .2s;
+		position: relative;
+		-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0,0,0,1)), color-stop(0.6, rgba(0,0,0,1)), color-stop(0.8, rgba(0,0,0,.8)), color-stop(1, rgba(0,0,0,0)));
+	}
 }
-#right #room-description:hover {
-	max-height: 500px;
-	-webkit-mask-image: none;
-	transition: max-height .4s .2s;
+#right #room-area:hover {
+	#room-controls {
+		height: 30px;
+		transition: height .2s .2s;
+	}
+	#room-description {
+		max-height: 500px;
+		-webkit-mask-image: none;
+		transition: max-height .4s .2s;
+	}
+}
+
+.room-control {
+	font-size: 95%;
+	@include flex(1);
+	cursor: pointer;
+	text-align: center;
+	line-height: 30px;
+	margin: 0 5px 0 0;
+	background: $room-control-bg;
+	color: $room-control-color;
+	&:hover {
+		background: $room-hover-control-bg;
+		color: $room-hover-control-color;
+	}
+	&::before {
+		@extend .fontello;
+		font-size: 110%;
+		margin-right: 4px;
+	}
+}
+#room-watch, #room-unwatch {
+	margin: 0 5px 0 5px;
+}
+
+#room-edit::before {
+	content: '\e80c';
+}
+#auths::before {
+	content: '\e832';
+}
+#room-watch::before {
+	margin: 0 5px 0 5px;
+	content: '\e82a';
+}
+#room-unwatch::before {
+	content: '\e82b';
 }
 
 #room-search-input {

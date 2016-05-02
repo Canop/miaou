@@ -12,6 +12,12 @@ $message-list-bg: linear-gradient(#444, #111);
 $ping-bg: rgb(27, 27, 27);
 $ping-me-bg: rgb(68, 51, 0); 
 
+// room controls
+$room-control-bg: none;
+$room-control-color: rgba(255,255,255,.7);
+$room-hover-control-bg: rgba(110,100,60,.7);
+$room-hover-control-color: rgba(255,255,255,.9);
+
 // home
 $home-top-bg: #444;
 $home-top-color: #aaa;
@@ -149,8 +155,8 @@ $unselected-room-tab-color: #aaa;
 $watch-bg: rgba(0,0,0,.8);
 $watch-count-color: #222;
 $watch-panel-bg: linear-gradient(#111, #111, #222); // #444;
-$watch-count-new-bg: rgba(255,255,0,.6) !default;
-$watch-count-ping-bg: rgba(255,0,0,.6) !default;
+$watch-count-new-bg: rgba(255,255,0,.6);
+$watch-count-ping-bg: rgba(255,0,0,.6);
 $open-watch-bg: #111;
 $watch-has-requests-color: inherit;
 $watch-requests-color: #CAC5C5;

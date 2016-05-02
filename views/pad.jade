@@ -3,12 +3,12 @@ html
 	head
 		title Miaou - Pad
 		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=3')
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=4')
 		script(src="socket.io/socket.io.js")
 		script(src="static/jquery-2.1.3.min.js")
 		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
-		script(src="static/miaou.min.js?v=7")
-		script(src="static/pad.min.js")
+		script(src="static/miaou.min.js?v=8")
+		script(src="static/pad.min.js?v=2")
 	body.pad
 		#non-top
 			#left
@@ -41,7 +41,13 @@ html
 						button.small#hidePreview Hide
 				#hist
 			#right
-				#room-description.rendered
+				#room-area
+					#room-controls
+						#room-watch.room-control watch room
+						#room-unwatch.room-control unwatch room
+						#room-edit.room-control edit room
+						#auths.room-control authorizations
+					#room-description.rendered
 				.tabs
 					span.tab.selected(page="notablemessagespage") Notable Messages
 					span.tab(page="search") Search
@@ -68,10 +74,6 @@ html
 					#room-panel
 						#room-title
 							a#roomname(href=vars.room.path)
-						#room-buttons
-							button.small#editroom edit
-							button.small#watch watch
-							button.small#auths authorizations
 				#watches
 			#rooms-panel.closed
 				#rooms

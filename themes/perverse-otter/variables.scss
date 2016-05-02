@@ -120,6 +120,12 @@ $message-content-flex-grow: 0;
 $message-content-border-radius: 5px;
 $message-content-margin: 4px 2px 4px 10px;
 
+// room controls
+$room-control-bg: $accent;
+$room-control-color: rgba(255,255,255,.7);
+$room-hover-control-bg: $accent-plus;
+$room-hover-control-color: rgba(255,255,255,.9);
+
 // buttons
 $button-bg-color: $accent;
 $button-text-color: #bbb;
