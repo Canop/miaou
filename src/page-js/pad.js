@@ -201,7 +201,7 @@ miaou(function(chat, locals, time, watch, ws){
 	});
 
 	$(window).on('keydown', function(e){
-		if (e.which===70 && e.ctrlKey && !$('#room-and-rooms').hasClass('open')) {
+		if (e.which===70 && e.ctrlKey && !$('#rooms-panel').hasClass('open')) {
 			righttab("search");
 			return false;
 		}
@@ -209,11 +209,6 @@ miaou(function(chat, locals, time, watch, ws){
 
 	watch.enabled = true;
 	chat.start();
-	$(window).keyup(function(e){
-		if (!$('#room-and-rooms').hasClass('open')) {
-			if (e.which===35) miaou.gui.scrollToBottom();
-		}
-	});
 
 	$("#room-search-input").keyup(function(e){
 		if (e.which===27) { // esc
@@ -230,7 +225,10 @@ miaou(function(chat, locals, time, watch, ws){
 	$('#shortcuts').click(function(){ window.open('help#Keyboard_Shortcuts') });
 
 	$(window).on('keyup', function(e){
-		if ((e.ctrlKey && !e.shiftKey) && e.which===32) {
+		if (e.which === 35 && !$('#rooms-panel').hasClass('open')) { // end
+			miaou.gui.scrollToBottom();
+		}
+		if ((e.ctrlKey && !e.shiftKey) && e.which===32) { // ctrl - space
 			toggleRoomsPanel();
 			return false;
 		}
