@@ -283,7 +283,7 @@ proto.listFrontPageRooms = function(userId, pattern){
 	var	psname = "list_front_page_rooms",
 		sql = "select r.id, name, description, private, listed, dialog, lang, auth,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
-		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself"+
+		" (select exists (select 1 from message m where m.room = r.id and m.author=$1)) as hasself"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+
 		" where (listed is true or auth is not null)",
 		args = [userId];
