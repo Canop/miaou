@@ -463,12 +463,14 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 	}
 }
 
-.content img, .rendered img {
-	border: none;
-	max-width: 100%;
-	max-height: 130px;
-	width: auto;
-	cursor: pointer;
+.content, .rendered {
+       	img[href] {
+		border: none;
+		max-width: 100%;
+		max-height: 130px;
+		width: auto;
+		cursor: pointer;
+	}
 }
 
 #search-results .content img, #notable-messages .content img, .messages .content img,
