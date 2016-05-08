@@ -166,6 +166,9 @@ body.mobile {
 		box-shadow: 0 0 10px black;
 	}
 }
+body.mobile #home-notifs {
+	background: $home-bg;
+}
 #mobstrip {
 	background: $home-top-bg;
 	position: fixed;

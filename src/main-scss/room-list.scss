@@ -8,14 +8,11 @@ body.pad #rooms-page {
 	max-width: 1205px;
 }
 
-.desktop .room-list .room {
-	margin: 5px;
+.room-list .room {
+	margin: 2px;
 }
-.mobile .room-list {
-	justify-content: center;
-	.room {
-		margin: 2px;
-	}
+.mobile .room-list, .home .room-list {
+	//justify-content: center;
 }
 
 .room-list {

@@ -21,9 +21,6 @@ miaou(function(roomFinder, locals, time, watch, ws){
 				return;
 			}
 			rooms = data.rooms;
-
-			console.log("fr:", data);
-
 			updateRoomsTab();
 			if (callback) callback();
 		});
@@ -64,7 +61,6 @@ miaou(function(roomFinder, locals, time, watch, ws){
 
 	function showRooms(rooms, alt){
 		$("#room-search-input").focus();
-		console.log("rooms:", rooms);
 		var $container = $('#rooms-page').empty();
 		if (rooms.length) {
 			var $t = $('<div>').addClass('room-list'), rex = /^<img[^>]*><br>/;
@@ -88,7 +84,6 @@ miaou(function(roomFinder, locals, time, watch, ws){
 				}
 				var w = getWatch(r.id);
 				if (w) {
-					console.log(r.name, w);
 					var $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
 					var txt = "You're watching this room.";
 					if (w.nbunseen) {
@@ -162,6 +157,18 @@ miaou(function(roomFinder, locals, time, watch, ws){
 				$("#room-search-input").val('');
 				fetchRooms(callback);
 			});
+			var	pageWidth = $('#rooms-page').width() - 3,
+				nbSquares = Math.max(pageWidth / 175 | 0, 2),
+				squareSide = ((pageWidth / nbSquares) - 4) | 0; // 2: square margin
+			if (pageWidth>100) {
+				var style = document.createElement('style');
+				style.type = 'text/css';
+				style.innerHTML = '.room {'
+				+ 'width:'+squareSide+'px !important;'
+				+ 'height:'+squareSide+'px !important;'
+				+ '}';
+				$('head').append(style);
+			}
 			initialized = true;
 		}
 	}
