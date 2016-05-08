@@ -37,14 +37,8 @@
 	padding-top: 20px;
 }
 
-body.home {
-	overflow-y: scroll;
-	background: $home-bg;
-	a {
-		color: black;
-	}
-
-	#home-tabs {
+body.home.desktop {
+	.rooms-tabs {
 		height: 30px;
 		.tab {
 			z-index: 2;
@@ -55,16 +49,14 @@ body.home {
 			}
 		}
 	}
-	#home-tab-shadows {
-		margin-top: -30px;
-		.tab {
-			z-index: 1;
-			box-shadow: $home-mi-shadows;
-			&.selected {
-				box-shadow: $home-main-shadows;
-			}
-		}
+}
+body.home {
+	overflow-y: scroll;
+	background: $home-bg;
+	a {
+		color: black;
 	}
+
 	#home-main {
 		position: absolute;
 		left:0; right:0;

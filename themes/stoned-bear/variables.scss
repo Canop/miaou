@@ -33,6 +33,9 @@ $square-room-name-color: $title-text-color;
 $square-room-box-shadow: 0px 0px 2px black;
 $square-room-hover-box-shadow: 0px 0px 4px black;
 $square-description-color: #aaa;
+$square-room-hover-bg: transparentize( $mes-me-brown , 0.3 );
+$square-room-last-created-color: #eee;
+$square-room-last-created-text-shadow: 0 0 2px black;
 
 // dialogs
 $dialog-bg: white; 

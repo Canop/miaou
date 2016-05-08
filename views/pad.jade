@@ -9,7 +9,7 @@ html
 		script#locals(type="Application/JSON") !{JSON.stringify(vars)}
 		script(src="static/miaou.min.js?v=8")
 		script(src="static/pad.min.js?v=2")
-	body.pad
+	body.pad.desktop
 		#non-top
 			#left
 				#users
@@ -78,7 +78,7 @@ html
 			#rooms-panel.closed
 				#rooms
 					#rooms-content
-						#rooms-tabs
+						.rooms-tabs
 							span.tab Your Main Rooms
 							span.tab Public Rooms
 							span.tab Private Rooms

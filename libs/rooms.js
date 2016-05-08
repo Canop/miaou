@@ -172,24 +172,20 @@ exports.appGetRooms = function(req, res){
 	})
 	.then(function(welcomeRooms){
 		return [
-			this.listFrontPageRooms(userId),
 			this.fetchUserPingRooms(userId),
 			welcomeRooms,
 			prefs.get.call(this, userId),
 			this.listUserWatches(userId)
 		]
 	})
-	.spread(function(rooms, pings, welcomeRooms, userPrefs, watches){
-		rooms.forEach(function(r){
-			r.path = server.roomPath(r)
-		});
+	.spread(function(pings, welcomeRooms, userPrefs, watches){
 		welcomeRooms.forEach(function(r){
 			r.path = server.roomPath(r)
 		});
 		var mobile = server.mobile(req);
 		let data = {
 			vars:{
-				rooms, langs:langs.legal, mobile,
+				langs:langs.legal, mobile,
 				welcomeRooms, watches, pings
 			},
 			user:req.user, pings

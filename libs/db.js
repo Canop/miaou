@@ -314,7 +314,6 @@ proto.listRecentUserRooms = function(userId){
 	);
 }
 
-
 ///////////////////////////////////////////// #auths
 
 proto.deleteAccessRequests = function(roomId, userId){

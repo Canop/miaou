@@ -154,6 +154,10 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 		return m;
 	}
 
+	watch.watch = function(roomId){
+		return $('#watches .watch[rid='+roomId+']').dat('watch');
+	}
+
 	var requiredrid;
 	$('#watches').on('mouseenter', '.watch', function(){
 		$('.watch').removeClass('open').find('.watch-panel').remove();

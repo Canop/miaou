@@ -112,7 +112,6 @@
 }
 #room-panel {
 	@include flexbox(row, center);
-	//~ height: 40px;
 	padding: 0 4px;
 	button {
 		opacity: 0;
@@ -142,14 +141,12 @@
 		transition: height .5s;	
 	}
 	&.open {
-		height: 67vh;
+		height: 71vh;
 		transition: height .5s;	
 	}
 }
 #rooms {
 	@include flexbox(row, stretch);
-	width: 1200px;
-	max-width: 90%;
 }
 #rooms-content {
 	@include flex(1 0);
@@ -159,10 +156,11 @@
 	padding: 5px;
 }
 
-#rooms-tabs {
+.pad .rooms-tabs {
 	@include flexbox(row);
 	@include flex(0 0 34px);
 	.tab, .aftertabs {
+		line-height: 24px;
 		text-align: center;
 		padding: 5px 10px;
 		border-style:solid;
@@ -188,71 +186,17 @@
 		@include flexbox(row, center, space-around);
 	}
 }
-#rooms-page {
-	@include flex(1 1);
+
+#rooms-panel #rooms-page {
 	border-style:solid;
 	border-color: $chat-tabs-border-color;
 	border-width: 0 $chat-tabs-border-width $chat-tabs-border-width $chat-tabs-border-width;	
-	background-color: $room-tab-bg-color;
-	padding: 5px;
-	overflow-y: auto;
-	@include flexbox(row);
-	min-width: 1000px;
-	.rooms-list {
-		flex: 0 1 800px;
-		.room {
-			@include flexbox(row);
-			position: relative;
-			margin: 1px 0;
-			&:hover {
-				background: $pad-room-hover-bg;
-				transition: background .5s;
-			}
-			.room-left {
-				@include flex(1 0);
-				a.room-title {
-					color: inherit;
-					margin: 4px 0;
-					display: block;
-				}
-				.room-desc {
-					margin-left: 20px;
-					background: $pad-room-desc-bg;
-					padding: 4px;
-					min-height: 40px;
-					overflow: hidden;
-				}			
-			}
-			.room-right {
-				@include flex(0 0 80px);
-				visibility: hidden;
-				padding: 4px;
-				@include flexbox(column, center, center);
-				span {
-					margin: 8px 0;
-					text-align: center;				
-				}
-				.lastcreated {
-					font-size: 0.7em;
-				}
-			}
-			.last-message {
-				display: none;
-				position: absolute;
-				left: 0;
-				right: 0;
-				background: $pad-room-last-message-bg;
-				z-index: 55;
-				padding: 8px;
-				font-size: .9em;
-				border-top: $pad-room-last-message-border-top;
-			}
-		}
-		.room:hover .room-right {
-			visibility: visible;
-		}
-	}
 }
+
+body.desktop #rooms-page {
+	padding: 5px;
+}
+
 
 #non-top {
 	#left, #right, #center {
