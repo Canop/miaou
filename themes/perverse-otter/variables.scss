@@ -17,6 +17,9 @@ $square-room-name-color: #bbb;
 $square-room-box-shadow: 1px 1px 2px black;
 $square-room-hover-box-shadow: 0px 0px 3px $accent-minus;
 $square-description-color: #aaa;
+$square-room-hover-bg: rgba(50,30,30, .4);
+$square-room-last-created-color: #eee;
+$square-room-last-created-text-shadow: 0 0 2px black;
 
 // lang filter
 $lang-filter-bg-off: $bg-color;
@@ -34,8 +37,6 @@ $hovered-user-in-messages-border-right: none;
 $user-in-messages-bg: rgba(5,5,5,.4);
 
 $user-color-shadow-in-messages: 1px 0 0;
-//~ $user-color-shadow-in-messages: none;
-//~ $user-text-color-in-message: inherit; // gives to the username the color of the user
 $user-text-color-in-message: #888;
 
 $input-border-color: #222;

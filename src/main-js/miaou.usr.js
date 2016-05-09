@@ -15,6 +15,15 @@ miaou(function(usr, ed, locals, mod, time, ws){
 		return 'https://avatars.io/'+o.avs+'/'+o.avk+'?size=large';
 	}
 
+	// if the room is a dialog room and we guess the name of the other user, return this name
+	usr.interlocutor = function(w){
+		if (!w.dialog) return;
+		var names = w.name.match(/^([a-zA-Z][\w\-]{2,19}) & ([a-zA-Z][\w\-]{2,19})$/);
+		if (!names) return;
+		if (names[1]===locals.me.name) return names[2];
+		if (names[2]===locals.me.name) return names[1];
+	}
+
 	function $user(user){
 		return $('#users .user').filter(function(){
 			return $(this).dat('user').id===user.id

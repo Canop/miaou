@@ -4,7 +4,7 @@
 .home-tabs {
 	@include flexbox(row, stretch);
 	height: 30px;
-	.home-tab {
+	.home-tab, .tab {
 		background: $home-tab-bg;
 		text-align: center;
 		padding: 8px;
@@ -43,9 +43,8 @@
 	}
 }
 
-
 body.mobile .home-tabs {
-	.home-tab {
+	.home-tab, .tab {
 		padding: 8px 4px;
 		margin: 0 2px;
 	}
@@ -68,7 +67,7 @@ body.mobile .home-tabs {
 	background: $home-top-bg;
 	box-shadow: $home-main-shadows;
 	padding: 3px;
-	.home-tab {
+	.home-tab, .tab {
 		padding: 5px;
 		flex-grow: 1;
 		text-align: center;

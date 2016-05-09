@@ -1,10 +1,30 @@
+body.pad #rooms-page {
+	overflow-y: scroll;
+	background-color: $room-tab-bg-color;
+}
+
+#rooms-page {
+	@include flex(1 1);
+	max-width: 1205px;
+}
+
+.room-list .room {
+	margin: 2px;
+}
+.mobile .room-list, .home .room-list {
+	//justify-content: center;
+}
+
 .room-list {
 	display: flex;
 	flex-wrap: wrap;
 	.room {
-		width: 188px;
-		height: 188px;
-		margin: 5px;
+		width: 194px;
+		height: 194px;
+		&.dialog-square {
+			width: 144px;
+			height: 144px;
+		}
 		cursor: pointer;
 		background: $square-room-bg;
 		display: flex;
@@ -12,6 +32,7 @@
 		align-items: stretch;
 		box-shadow: $square-room-box-shadow;
 		overflow: hidden;
+		position: relative;
 		&:hover {
 			box-shadow: $square-room-hover-box-shadow;
 			transition: box-shadow .2s;
@@ -56,6 +77,32 @@
 			a, a:visited {
 				color: $square-description-color;
 			}
+		}
+		.room-hover {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 0;
+			background: $square-room-hover-bg;
+			overflow: hidden;
+			transition: height .4s;
+		}
+		&:hover .room-hover {
+			height: 54px;
+			transition: height .2s .1s;
+		}
+		.room-last-created {
+			font-size: 80%;
+			color: $square-room-last-created-color;
+			height: 20px;
+			line-height: 20px;
+			text-align: center;
+			text-shadow: $square-room-last-created-text-shadow;
+		}
+		.room-buttons {
+			height: 30px;
+			@include flexbox(row, center, space-around);
 		}
 	}
 }
