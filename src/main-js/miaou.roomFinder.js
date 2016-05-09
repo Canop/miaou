@@ -160,8 +160,8 @@ miaou(function(roomFinder, locals, time, watch, usr, ws){
 	}
 
 	function cssFitSquares(selector, minSize, pageWidth){
-		var	nbSquares = Math.max(pageWidth / minSize | 0, 2),
-			squareSide = ((pageWidth / nbSquares) - 4) | 0; // 2: square margin
+		var	nbSquares = Math.max(pageWidth/ minSize | 0, 2),
+			squareSide = (((pageWidth-24) / nbSquares) - 3) | 0;
 		return selector + '{'
 		+ 'width:'+squareSide+'px !important;'
 		+ 'height:'+squareSide+'px !important;'
@@ -188,13 +188,12 @@ miaou(function(roomFinder, locals, time, watch, usr, ws){
 				$("#room-search-input").val('');
 				fetchRooms(callback);
 			});
-			var	pageWidth = $('#rooms-page').width() - 3;
+			var	pageWidth = $('#rooms-page').innerWidth() - 3;
 			if (pageWidth>100) {
 				var style = document.createElement('style');
 				style.type = 'text/css';
 				style.innerHTML = cssFitSquares('.room', 175, pageWidth)
 				+ cssFitSquares('.room.dialog-square', 130, pageWidth);
-				console.log(style.innerHTML);
 				$('head').append(style);
 			}
 			initialized = true;
