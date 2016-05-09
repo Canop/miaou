@@ -185,10 +185,10 @@ exports.appGetRooms = function(req, res){
 		var mobile = server.mobile(req);
 		let data = {
 			vars:{
-				langs:langs.legal, mobile,
+				langs: langs.legal, mobile, me: req.user,
 				welcomeRooms, watches, pings
 			},
-			user:req.user, pings
+			user: req.user, pings
 		};
 		if (mobile) {
 			res.render('rooms.mob.jade', data);

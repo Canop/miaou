@@ -19,8 +19,12 @@ body.pad #rooms-page {
 	display: flex;
 	flex-wrap: wrap;
 	.room {
-		width: 188px;
-		height: 188px;
+		width: 196px;
+		height: 196px;
+		&.dialog-square {
+			width: 129px;
+			height: 129px;
+		}
 		cursor: pointer;
 		background: $square-room-bg;
 		display: flex;

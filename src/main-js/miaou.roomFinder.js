@@ -5,11 +5,12 @@
 // - the mobile pad (not yet)
 //
 
-miaou(function(roomFinder, locals, time, watch, ws){
+miaou(function(roomFinder, locals, time, watch, usr, ws){
 
 	var	rooms = [],
 		initialized = false,
 		connected, // if true we may
+		descImageRegex = /^<img[^>]*><br>/,
 		getWatch;
 
 	function fetchRooms(callback){
@@ -21,6 +22,9 @@ miaou(function(roomFinder, locals, time, watch, ws){
 				return;
 			}
 			rooms = data.rooms;
+			console.log("Rooms:", rooms.filter(function(r){
+				return r.dialog
+			}));
 			updateRoomsTab();
 			if (callback) callback();
 		});
@@ -59,29 +63,47 @@ miaou(function(roomFinder, locals, time, watch, ws){
 		}
 	}
 
+	function fillSquareTitle($roomHead, r){
+		$("<div>").addClass("room-privacy").appendTo($roomHead);
+		$('<a>').addClass("room-title").attr('href', r.path)
+		.text(usr.interlocutor(r) || r.name)
+		.appendTo($roomHead);
+	}
+
+	function fillSquareDescription($room, r){
+		var	html = miaou.fmt.mdTextToHtml(r.description),
+			floatImage = descImageRegex.test(html);
+		if (floatImage) html = html.replace(/<br>/, '');
+		var $underDescription = $('<div>').addClass('under-room-description')
+		.appendTo($room);
+		var $description = $('<div>').addClass('room-description rendered').html(html)
+		.appendTo($underDescription);
+		if (floatImage) {
+			var bgsrc = $description.find('img:eq(0)').remove().attr('src');
+			$underDescription.css('background-image', 'url("'+bgsrc+'")');
+		}
+	}
+
+	function fillDialogSquareDescription($room, r){
+		var $underDescription = $('<div>').addClass('under-room-description').appendTo($room);
+		//var $description = $('<div>').addClass('room-description rendered').appendTo($underDescription);
+		$underDescription.css('background-image', 'url("'+usr.avatarsrc(r)+'")');
+	}
+
 	function showRooms(rooms, alt){
 		$("#room-search-input").focus();
 		var $container = $('#rooms-page').empty();
 		if (rooms.length) {
-			var $t = $('<div>').addClass('room-list'), rex = /^<img[^>]*><br>/;
+			var $t = $('<div>').addClass('room-list');
 			rooms.forEach(function(r){
 				if (locals.room && r.id===locals.room.id) return;
-				var $room = $("<div>").addClass("room").addClass(r.lang).addClass(r.private?'private':'public');
+				var $room = $("<div>").addClass("room");
+				$room.addClass(r.lang).addClass(r.private?'private':'public');
+				if (r.dialog) $room.addClass("dialog-square");
 				var $roomHead = $("<div>").addClass("room-head").appendTo($room);
-				$("<div>").addClass("room-privacy").appendTo($roomHead);
-				// var $roomTitle = $("<div>").addClass("room-title").appendTo($roomHead);
-				$('<a>').addClass("room-title").attr('href', r.path).text(r.name).appendTo($roomHead);
-				var	html = miaou.fmt.mdTextToHtml(r.description),
-					floatImage = rex.test(html);
-				if (floatImage) html = html.replace(/<br>/, '');
-				var $underDescription = $('<div>').addClass('under-room-description')
-				.appendTo($room);
-				var $description = $('<div>').addClass('room-description rendered').html(html)
-				.appendTo($underDescription);
-				if (floatImage) {
-					var bgsrc = $description.find('img:eq(0)').remove().attr('src');
-					$underDescription.css('background-image', 'url("'+bgsrc+'")');
-				}
+				fillSquareTitle($roomHead, r);
+				if (r.avk) fillDialogSquareDescription($room, r);
+				else fillSquareDescription($room, r);
 				var w = getWatch(r.id);
 				if (w) {
 					var $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
@@ -104,7 +126,7 @@ miaou(function(roomFinder, locals, time, watch, ws){
 					var $hover = $("<div>").addClass("room-hover").appendTo($room);
 					var $last = $('<div>').addClass('room-last-created').appendTo($hover);
 					if (r.lastcreated) {
-						$last.html('Last message: '+time.formatRelativeTime(r.lastcreated))
+						$last.html(time.formatRelativeTime(r.lastcreated))
 					}
 					var $buts = $('<div>').addClass("room-buttons").appendTo($hover);
 					var iswatched = !!w;
@@ -137,6 +159,15 @@ miaou(function(roomFinder, locals, time, watch, ws){
 		updateRoomsTab();
 	}
 
+	function cssFitSquares(selector, minSize, pageWidth){
+		var	nbSquares = Math.max(pageWidth / minSize | 0, 2),
+			squareSide = ((pageWidth / nbSquares) - 4) | 0; // 2: square margin
+		return selector + '{'
+		+ 'width:'+squareSide+'px !important;'
+		+ 'height:'+squareSide+'px !important;'
+		+ '} ';
+	}
+
 	roomFinder.open = function(callback, options){
 		options = options || {connected:true};
 		selectRoomsTab(0);
@@ -157,16 +188,13 @@ miaou(function(roomFinder, locals, time, watch, ws){
 				$("#room-search-input").val('');
 				fetchRooms(callback);
 			});
-			var	pageWidth = $('#rooms-page').width() - 3,
-				nbSquares = Math.max(pageWidth / 175 | 0, 2),
-				squareSide = ((pageWidth / nbSquares) - 4) | 0; // 2: square margin
+			var	pageWidth = $('#rooms-page').width() - 3;
 			if (pageWidth>100) {
 				var style = document.createElement('style');
 				style.type = 'text/css';
-				style.innerHTML = '.room {'
-				+ 'width:'+squareSide+'px !important;'
-				+ 'height:'+squareSide+'px !important;'
-				+ '}';
+				style.innerHTML = cssFitSquares('.room', 175, pageWidth)
+				+ cssFitSquares('.room.dialog-square', 130, pageWidth);
+				console.log(style.innerHTML);
 				$('head').append(style);
 			}
 			initialized = true;

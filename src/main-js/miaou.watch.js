@@ -1,6 +1,6 @@
 // functions related to user watching other rooms
 
-miaou(function(watch, chat, gui, locals, md, notif, ws){
+miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 
 	// the icon sum of all watches, if it exists (i.e. on mpad)
 	var $globalIcon = $('#global-watch');
@@ -21,15 +21,6 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 
 	if ($('#non-top').length) $(window).resize(updateDimensions);
 
-	// if the room is a dialog room and we guess the name of the other user, return this name
-	function interlocutor(w){
-		if (!w.dialog) return;
-		var names = w.name.match(/^([a-zA-Z][\w\-]{2,19}) & ([a-zA-Z][\w\-]{2,19})$/);
-		if (!names) return;
-		if (names[1]===locals.me.name) return names[2];
-		if (names[2]===locals.me.name) return names[1];
-	}
-
 	watch.addLocalRoom = function(){
 		$('#room-watch').hide();
 		$('#room-unwatch').show();
@@ -48,7 +39,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			}
 			if (watch.watched(w.id)) return;
 			var $name = $('<span>').addClass('name');
-			var otherusername = interlocutor(w);
+			var otherusername = usr.interlocutor(w);
 			if (otherusername) $name.text(otherusername).addClass('dialog-room');
 			else $name.text(w.name);
 			var href = ''+w.id; // TODO add the room name
@@ -64,7 +55,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a, b){
 			var wa = $(a).dat('watch'), wb = $(b).dat('watch');
 			return	(wa.dialog-wb.dialog) ||
-				(interlocutor(wa)||wa.name).localeCompare((interlocutor(wb)||wb.name));
+				(usr.interlocutor(wa)||wa.name).localeCompare((usr.interlocutor(wb)||wb.name));
 		}));
 		updateDimensions();
 	}

@@ -281,11 +281,14 @@ proto.listAccessibleRooms = function(userId){
 // use index message_room_author
 proto.listFrontPageRooms = function(userId, pattern){
 	var	psname = "list_front_page_rooms",
-		sql = "select r.id, name, description, private, listed, dialog, lang, auth,"+
+		sql = "select r.id, r.name, r.description, private, listed, dialog, r.lang, a.auth,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
-		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself"+
+		" (select exists (select 1 from message m where m.room = r.id and m.author='840')) as hasself,"+
+		" otheruser.avatarsrc as avs, otheruser.avatarkey as avk"+
 		" from room r left join room_auth a on a.room=r.id and a.player=$1"+
-		" where (listed is true or auth is not null)",
+		" left join room_auth oua on (r.dialog is true and oua.room=r.id and oua.player!=$1)"+
+		" left join player otheruser on otheruser.id = oua.player"+
+		" where (listed is true or a.auth is not null)",
 		args = [userId];
 	if (pattern) {
 		psname += "_search";
@@ -1060,7 +1063,7 @@ proto.execute = function(sql, args, name){
 				logQuery(sql, args);
 			}
 			if (err) {
-				console.log('Error in query:');
+				console.log('Error in query:', err);
 				logQuery(sql, args);
 				reject(err);
 			} else {
