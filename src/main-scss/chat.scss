@@ -464,13 +464,15 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 }
 
 .content, .rendered {
-       	img[href] {
+       	img {
 		border: none;
 		max-width: 100%;
 		max-height: 130px;
 		width: auto;
-		cursor: pointer;
 	}
+}
+.content img {
+	cursor: pointer;
 }
 
 #search-results .content img, #notable-messages .content img, .messages .content img,
