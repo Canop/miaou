@@ -11,8 +11,8 @@ body.pad #rooms-page {
 .room-list .room {
 	margin: 2px;
 }
-.mobile .room-list, .home .room-list {
-	//justify-content: center;
+body.home.mobile .room-list {
+	justify-content: center;
 }
 
 .room-list {
