@@ -159,7 +159,7 @@ exports.appPostRoom = function(req, res){
 	}).finally(db.off);
 }
 
-// rooms list GET
+// rooms list GET (home page)
 exports.appGetRooms = function(req, res){
 	var userId = req.user.id;
 	db.on(welcomeRoomIds)

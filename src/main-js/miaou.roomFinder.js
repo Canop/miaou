@@ -22,9 +22,6 @@ miaou(function(roomFinder, locals, time, watch, usr, ws){
 				return;
 			}
 			rooms = data.rooms;
-			console.log("Rooms:", rooms.filter(function(r){
-				return r.dialog
-			}));
 			updateRoomsTab();
 			if (callback) callback();
 		});
@@ -33,12 +30,23 @@ miaou(function(roomFinder, locals, time, watch, usr, ws){
 	function updateRoomsTab(){
 		var i = $('.rooms-tabs .tab.selected').index();
 		$('#rooms-page').empty();
+		if (!rooms.length) return;
 		switch (i) {
 		case 0:
+			var myRooms = rooms.filter(function(r){
+				return (r.hasself || r.auth) && !r.dialog
+			});
+			if (myRooms.length<5 && locals.welcomeRooms) {
+				var roomIds = myRooms.reduce(function(s, r){
+					return s.add(r.id);
+				}, new Set);
+				for (var j=0; j<locals.welcomeRooms.length; j++) {
+					var room = locals.welcomeRooms[j];
+					if (!roomIds.has(room.id)) myRooms.unshift(room);
+				}
+			}
 			showRooms(
-				rooms.filter(function(r){
-					return (r.hasself || r.auth) && !r.dialog
-				}),
+				myRooms,
 				"You didn't participate in any non dialog room."
 			);
 			break;
@@ -170,9 +178,9 @@ miaou(function(roomFinder, locals, time, watch, usr, ws){
 
 	roomFinder.open = function(callback, options){
 		options = options || {connected:true};
+		getWatch = options.getWatch || watch.watch;
 		selectRoomsTab(0);
 		fetchRooms();
-		getWatch = options.getWatch || watch.watch;
 		connected = !!options.connected;
 		if (!initialized) {
 			$('.rooms-tabs .tab').click(function(){
