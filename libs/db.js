@@ -292,7 +292,7 @@ proto.listFrontPageRooms = function(userId, pattern){
 		args = [userId];
 	if (pattern) {
 		psname += "_search";
-		sql += " and (name ilike $2 or description ilike $2)";
+		sql += " and (r.name ilike $2 or r.description ilike $2)";
 		pattern = "%"+pattern+"%";
 		args.push(pattern);
 	}
