@@ -8,14 +8,19 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		nbUnseenMessages = 0,
 		lastUserAction = 0; // ms
 
-	function lastNotificationInRoom(){
+	function lastNotificationInRoom(roomId){
 		for (var i=notifications.length; i--;) {
-			if (notifications[i].r==locals.room.id) return notifications[i];
+			if (notifications[i].r==(roomId||locals.room.id)) return notifications[i];
 		}
 	}
 
 	notif.log = function(){ // for console
 		return notifications;
+	}
+
+	// tells whether there's a ping related to that room
+	notif.hasPing = function(roomId){
+		return !!lastNotificationInRoom(roomId);
 	}
 
 	// called in case of user action proving he's right in front of the chat so
@@ -118,12 +123,11 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 			map = notifications.reduce(function(map, n){ map[n.mid]=1;return map; }, {});
 		console.log("received pings:", pings);
 		pings.forEach(function(ping){
-			if (!map[ping.mid]) {
-				notifications.push(ping);
-				changed = true;
-				if (locals.userPrefs.notif!=="never" && (!visible || locals.userPrefs.nifvis==="yes")) {
-					horn.show(ping.mid, ping.rname, ping.authorname, ping.content);
-				}
+			if (map[ping.mid]) return;
+			notifications.push(ping);
+			changed = true;
+			if (locals.userPrefs.notif!=="never" && (!visible || locals.userPrefs.nifvis==="yes")) {
+				horn.show(ping.mid, ping.rname, ping.authorname, ping.content);
 			}
 		});
 		notifications.sort(function(a, b){ return a.mid-b.mid });

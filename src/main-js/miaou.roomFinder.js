@@ -5,12 +5,13 @@
 // - the mobile pad (not yet)
 //
 
-miaou(function(roomFinder, locals, time, watch, usr, ws){
+miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
 	var	rooms = [],
 		initialized = false,
 		connected, // if true we may
 		descImageRegex = /^<img[^>]*><br>/,
+		hasPing,
 		getWatch;
 
 	function fetchRooms(callback){
@@ -121,12 +122,12 @@ miaou(function(roomFinder, locals, time, watch, usr, ws){
 						txt += " There's "+w.nbunseen+" new message";
 						if (w.nbunseen>1) txt += "s";
 						txt += ".";
-						//if (hasPings(r.id)) {
-						//	$unseen.addClass('has-ping');
-						//	txt += " You were also pinged here.";
-						//}
 					} else {
 						txt += " There's no new message.";
+					}
+					if (hasPing(r.id)) {
+						$unseen.addClass('has-ping');
+						txt += " You were pinged here.";
 					}
 					$unseen.attr('title', txt).appendTo($roomHead);
 				}
@@ -179,6 +180,7 @@ miaou(function(roomFinder, locals, time, watch, usr, ws){
 	roomFinder.open = function(callback, options){
 		options = options || {connected:true};
 		getWatch = options.getWatch || watch.watch;
+		hasPing = options.hasPing || notif.hasPing;
 		selectRoomsTab(0);
 		fetchRooms();
 		connected = !!options.connected;

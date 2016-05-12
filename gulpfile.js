@@ -127,6 +127,7 @@ gulp.task("lint-client-js", ()=>
 		},
 		"env": {
 			"browser": true,
+			"es6": true
 		},
 		"extends": "eslint:recommended",
 		"globals": clientGlobals(),
