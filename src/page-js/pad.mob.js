@@ -36,7 +36,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 			}
 		});
 	}
-	;['room','notables','search','watches','users','menu','write'].forEach(function(tabId){
+	;['room', 'notables', 'search', 'watches', 'users', 'menu', 'write'].forEach(function(tabId){
 		tabs[tabId] = new Tab(tabId);
 	});
 	$('#mpad-untabber').click(closeAllTabs);

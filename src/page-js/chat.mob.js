@@ -9,7 +9,7 @@ miaou(function(chat, locals, prof){
 	if (room.private) {
 		$('#roomname').addClass('private').attr('title', 'This room is private');
 	}
-	$('#help').click(function(){ window.open('help#Writing_Messages') });		
+	$('#help').click(function(){ window.open('help#Writing_Messages') });
 	$('#changeroom').click(function(){ location = 'rooms' });
 	$('#shortcuts').click(function(){ window.open('help#All_Shortcuts') });
 	$('#me').text(me.name);
@@ -26,7 +26,7 @@ miaou(function(chat, locals, prof){
 	$('#editProfile').click(function(){
 		location = 'prefs';
 	});
-	
+
 	// profile opening
 	$('#messages').on('click', '.decorations', function(e){
 		if ($(e.target).hasClass('decorations')) {

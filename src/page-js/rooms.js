@@ -1,9 +1,9 @@
 
 miaou(function(locals, notif, roomFinder){
-	
+
 	var	langs = locals.langs,
 		loginRoom = localStorage['login.room'];
-	
+
 	if (loginRoom) {
 		delete localStorage['login.room'];
 		location = loginRoom;
@@ -36,11 +36,11 @@ miaou(function(locals, notif, roomFinder){
 				.attr('title', 'Rooms in '+lang.name+' are displayed. Click to hide them.');
 			} else {
 				$lang.removeClass('on').addClass('off')
-				.attr('title', 'Rooms in '+lang.name+' are hidden. Click to display them.');				
+				.attr('title', 'Rooms in '+lang.name+' are hidden. Click to display them.');
 			}
 		});
 	}
-	$.each(langs, function(key, lang){	
+	$.each(langs, function(key, lang){
 		var $lang = $(document.getElementById(key));
 		lang.on = localStorage[key] !== 'off';
 		$lang.click(function(){
@@ -55,6 +55,6 @@ miaou(function(locals, notif, roomFinder){
 		{
 			getWatch: roomWatch,
 			hasPing: hasPing
-		}		
+		}
 	);
 });

@@ -17,8 +17,8 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 	function hideRoomsPanel(){
 		clearTimeout(openpaneltimer);
 		clearTimeout(showroomstimer);
-		$('#rooms-panel').addClass('closed').removeClass('open');		
-		$('#stripe').removeClass('open');		
+		$('#rooms-panel').addClass('closed').removeClass('open');
+		$('#stripe').removeClass('open');
 		$('#non-top').removeClass('behind');
 		$("#input").focus();
 	}
@@ -27,12 +27,12 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 		if ($('#rooms-panel').hasClass('open')) hideRoomsPanel();
 		else openRoomsPanel();
 	}
-	
+
 	$('#room-panel').on('mouseenter', function(){
 		openpaneltimer = setTimeout(openRoomsPanel, 180);
 	})
 	.on('mouseleave', function(){
-		clearTimeout(openpaneltimer);		
+		clearTimeout(openpaneltimer);
 	});
 	$('#stripe').on('mouseleave', hideRoomsPanel);
 
@@ -69,7 +69,7 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 			miaou.hist.open();
 			$('#searchInput').focus();
 		} else if (page==="notablemessagespage") {
-			miaou.hist.close();	
+			miaou.hist.close();
 		}
 		miaou.md.resizeAll();
 	}
@@ -91,9 +91,9 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 		setTimeout(function(){ location = 'logout' }, 100);
 	});
 	$('#me').text(locals.me.name);
-	
+
 	$('#create-room').click(function(){ location="room" });
-	
+
 	$('#Miaou-logo').on('load', function(){
 		$('#M-menu').on('mouseenter', function(){
 			hideRoomsPanel();

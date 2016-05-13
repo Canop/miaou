@@ -10,7 +10,7 @@ miaou(function(locals){
 	$(document.body).addClass(
 		/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
 	);
-	
+
 	miaou.horn.init();
 
 	function selectTab(i){
@@ -23,7 +23,7 @@ miaou(function(locals){
 	else selectTab(0);
 	$('.home-tab').click(function(){
 		selectTab($(this).index());
-	});			
+	});
 	$('#logout').click(function(){
 		delete localStorage['successfulLoginLastTime'];
 		setTimeout(function(){ location = 'logout' }, 100);
@@ -52,7 +52,7 @@ miaou(function(locals){
 	$('#location').val(userinfo.location||'');
 	$('#url').val(userinfo.url||'');
 	$('#lang').val(userinfo.lang);
-	
+
 	// preferences
 	Object.keys(userPrefs).forEach(function(key){
 		var $input = $('#'+key);
@@ -65,7 +65,7 @@ miaou(function(locals){
 	});
 
 	// Avatar preferences management
-	avatarSources = {
+	var avatarSources = {
 		gravatar:{
 			keyLabel: 'hash or email',
 			description: 'Gravatar is a free service'+
@@ -83,17 +83,17 @@ miaou(function(locals){
 			keyLabel: 'Instagram&nbsp;id'
 		}
 	}
-	for (var key in locals.pluginAvatars) {
+	for (key in locals.pluginAvatars) {
 		avatarSources[key] = {
 			key: locals.pluginAvatars[key]
 		}
-		console.log("->",avatarSources[key]);
 	}
+
 	function avatarTry(){
 		var srcname = $('#avatar-src').val(),
 			src = avatarSources[srcname],
 			key = src.key || $('#avatar-key').val().trim();
-		if (key.length<1){
+		if (key.length<1) {
 			$('#avatar-preview').empty();
 			return;
 		}
@@ -105,8 +105,8 @@ miaou(function(locals){
 			src.key = key;
 			$('#avatar-key').val(key);
 		}).on('error', function(){
-			$('#avatar-preview').html('<p>Image not found</p>');			
-		}).attr('src',url).appendTo('#avatar-preview').hide();
+			$('#avatar-preview').html('<p>Image not found</p>');
+		}).attr('src', url).appendTo('#avatar-preview').hide();
 	}
 	function onchangeAvatarSrc(){
 		$('#avatar-preview').empty();
@@ -129,7 +129,7 @@ miaou(function(locals){
 	$('#avatar-src').append(Object.keys(avatarSources).map(function(key){
 		return $('<option>').text(key).val(key);
 	})).on('change', onchangeAvatarSrc);
-	
+
 	if (locals.avatarsrc) {
 		$('#avatar-src').val(locals.avatarsrc);
 		$('#avatar-key').val(locals.avatarkey);
@@ -139,14 +139,14 @@ miaou(function(locals){
 			$('#avatar-key-label').html(src.keyLabel+':');
 			$('#avatar-src-description').html(src.description||'');
 		} else {
-			$('#avatar-key').val('').hide();			
+			$('#avatar-key').val('').hide();
 		}
 		avatarTry();
 	} else {
 		onchangeAvatarSrc();
 	}
 	$('#avatar-try').click(avatarTry);
-	
+
 	$('#try-sound').click(function(){
 		miaou.horn.honk($('#volume').val());
 	});
@@ -157,7 +157,7 @@ miaou(function(locals){
 	if (roomMatch) {
 		$('#close').text("Back to room").click(function(){
 			location=roomMatch[2];
-			return false;		
+			return false;
 		});
 	} else {
 		$('#close').click(function(){
@@ -165,5 +165,5 @@ miaou(function(locals){
 			return false;
 		});
 	}
-	
+
 });

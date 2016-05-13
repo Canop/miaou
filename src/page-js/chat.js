@@ -24,7 +24,7 @@ miaou(function(chat, locals){
 			miaou.hist.open();
 			$('#searchInput').focus();
 		} else if (page==="notablemessagespage") {
-			miaou.hist.close();	
+			miaou.hist.close();
 		}
 		miaou.md.resizeAll();
 	}

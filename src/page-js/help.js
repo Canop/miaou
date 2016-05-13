@@ -6,7 +6,7 @@ $(function(){
 			$('html,body').scrollTop($(this).offset().top);
 		}
 		if (this.tagName==='H2') h2hash = hash;
-		$(this).attr('hash',hash).attr('h2hash',h2hash).clone().appendTo('#help-summary');
+		$(this).attr('hash', hash).attr('h2hash', h2hash).clone().appendTo('#help-summary');
 	});
 	$('h1').click(function(){
 		location.hash = '';

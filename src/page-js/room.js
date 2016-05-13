@@ -21,7 +21,7 @@ miaou(function(locals){
 		$('#id').val(room.id);
 		$('#cancel').click(function(){ location = room.id });
 	} else {
-		$('#cancel').click(function(){ location = 'rooms' });			
+		$('#cancel').click(function(){ location = 'rooms' });
 	}
 	if (error) {
 		$('#err').text(error);
@@ -31,7 +31,7 @@ miaou(function(locals){
 	}
 	$('form')[0].action = location;
 	$('#name').focus().keyup(function(){
-		if (!this.validity.valid){
+		if (!this.validity.valid) {
 			$('#err').text('Please type a ' + (this.value.length>50 ? 'shorter' : 'prettier') + ' name');
 			$('#submit').prop('disabled', true);
 		} else {

@@ -7,7 +7,11 @@ miaou(function(locals){
 	} else {
 		delete localStorage['login.room'];
 	}
-	if (localStorage['successfulLoginLastTime'] && localStorage['lastUsedStrategy'] && strategies[localStorage['lastUsedStrategy']]) {
+	if (
+		localStorage['successfulLoginLastTime']
+		&& localStorage['lastUsedStrategy']
+		&& strategies[localStorage['lastUsedStrategy']]
+	) {
 		delete localStorage['successfulLoginLastTime'];
 		$('#buttons').html('<i>Authentication in progress...</i>');
 		$('.toRemoveWhenLogin').remove();

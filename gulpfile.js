@@ -120,7 +120,7 @@ gulp.task("server-js", ()=>
 );
 
 gulp.task("lint-client-js", ()=>
-	gulp.src(["src/main-js/*.js", "plugins/*/client-scripts/*.js", "!**/*.min.js"])
+	gulp.src(["src/*-js/*.js", "plugins/*/client-scripts/*.js", "!**/*.min.js"])
 	.pipe(eslint({
 		"parserOptions": {
 			"ecmaVersion": 6,
@@ -252,7 +252,7 @@ gulp.task("watch", ["set-watch-mode", "build"], ()=>{
 		gulp.watch(globs[task], [task]);
 	}
 	gulp.watch(["themes/**/*.scss", "plugins/**/*.scss", "plugins/**/*.css", "src/**/*.scss"], ["themes"])
-	gulp.watch(["src/main-js/*.js", "plugins/*/client-scripts/*.js"], ["lint-client-js"]);
+	gulp.watch(["src/*-js/*.js", "plugins/*/client-scripts/*.js"], ["lint-client-js"]);
 
 });
 
