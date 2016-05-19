@@ -13,6 +13,7 @@ config["all"] = {
         "format/format-tables.js",
         "ludogene/tribo.js",
         "stackoverflow/url.js",
-        "naming/name-cleaning.js"
+        "naming/name-cleaning.js",
+	"db/sql.js"
     ]	
 };

@@ -910,6 +910,27 @@ function logQuery(sql, args){ // used in debug
 	}));
 }
 
+// concatenate the conditions to the base query, ensuring the proper numbering
+// of ps arguments (psql needs a dense numbering)
+// while allowing repetitions
+var ps = exports.ps = function(sql, conditions, postConditions){
+	var nn = 0;
+	conditions = conditions.map(s=>{
+		var n = 0;
+		s = s.replace(/\$(\d+)/g, (_, d)=>{
+			if (d>n) n = +d;
+			return "$"+(+d+nn);
+		});
+		nn += n;
+		return s;
+	});
+	if (conditions.length) {
+		sql += " where " + conditions.join(" and ");
+	}
+	if (postConditions) sql += " " + postConditions.replace(/\$(\d+)/g, (_, d)=>"$"+(+d+nn));
+	return sql;
+}
+
 // must be called before any call to connect
 exports.init = function(miaouConfig, cb){
 	config = miaouConfig;
@@ -1092,15 +1113,12 @@ proto.lookForPreparedStatement = function(psname){
 		} else {
 			benchArguments.splice(benchArguments.length-1);
 		}
-		// return this.lookForPreparedStatement(name)
-		// .then(function(){
 		var	benchOp = bench.start(benchName);
 		return this[f].apply(this, benchArguments)
 		.then(function(r){
 			benchOp.end();
 			return r;
 		});
-		// });
 	}
 });
 
