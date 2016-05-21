@@ -1,0 +1,12 @@
+
+.autocomplete-menu {
+	background: $autocomplete-bg;
+	border: $autocomplete-border;
+	div {
+		padding: 2px;
+		cursor: pointer;
+		&.selected {
+			background: $autocomplete-selected-bg;
+		}
+	}
+}

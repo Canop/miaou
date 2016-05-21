@@ -9,6 +9,11 @@ $right-background: #222;
 $box-background: rgba(255, 255, 255, 0.8);
 $ping-me-bg: #250F17;
 
+// autocomplete
+$autocomplete-border: thin solid #555;
+$autocomplete-bg: #333;
+$autocomplete-selected-bg: $accent-minus;
+
 // square rooms in list
 $square-room-bg: #151515;
 $square-description-opacifier-bg: rgba(0,0,0, .45);

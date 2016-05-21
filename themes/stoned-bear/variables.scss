@@ -5,6 +5,11 @@ $bear-text: #FFFACD;
 $mes-brown: #222222;
 $mes-me-brown: #2c2523;
 
+// autocomplete
+$autocomplete-border: thin solid #555;
+$autocomplete-bg: #333;
+$autocomplete-selected-bg: $mes-brown;
+
 // chat colors
 $bg-color: #2F4F4F;
 $general-text-color: transparentize( $bear-text , 0.14 );

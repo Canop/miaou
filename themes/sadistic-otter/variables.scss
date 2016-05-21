@@ -15,6 +15,11 @@ $hovered-message-content-bg: black;
 
 $ping-me-bg: #44153B;
 
+// autocomplete
+$autocomplete-border: thin solid #555;
+$autocomplete-bg: #333;
+$autocomplete-selected-bg: $accent-minus;
+
 // square rooms in list
 $square-room-bg: black;
 $square-description-opacifier-bg: rgba(0,0,0, .45);

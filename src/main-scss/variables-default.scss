@@ -265,6 +265,10 @@ $watch-requests-bg: rgba(255,255,0,.2) !default;
 $watch-requests-color: #540404 !default;
 $watch-requests-border: thin solid rgba(0,0,0,.2) !default;
 
+// autocomplete
+$autocomplete-border: thin solid #777 !default;
+$autocomplete-bg: $bg-color !default;
+$autocomplete-selected-bg: #aab !default;
 
 $unseen-message-bg: $watch-count-new-bg !default;
 
