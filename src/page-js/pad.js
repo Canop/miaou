@@ -67,7 +67,7 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 		$('#'+page).addClass('selected');
 		if (page==="search") {
 			miaou.hist.open();
-			$('#searchInput').focus();
+			$('#search-input').focus();
 		} else if (page==="notablemessagespage") {
 			miaou.hist.close();
 		}
@@ -136,4 +136,12 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 	});
 
 	$("#input").click(hideRoomsPanel);
+
+	$("#search-options-open").click(function(){
+		$("#search-options, #search-options-open").toggleClass("open");
+	});
+	$(".search-options-details").click(function(){
+		$(this).closest(".search-input-line").children("input").prop("checked", true);
+	});
+
 });

@@ -285,3 +285,9 @@ body.desktop #rooms-page {
 		visibility: visible;
 	}
 }
+
+#notablemessagespage {
+	.message {
+		border-top: none;
+	}
+}

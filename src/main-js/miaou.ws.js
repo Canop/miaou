@@ -141,7 +141,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			setTimeout(function(){ md.goToMessageDiv(messageId) }, 200);
 		})
 		.on('found', hist.found)
-		.on('autocompleteping', ed.proposepings)
+		//.on('autocompleteping', ed.proposepings)
 		.on('hist', hist.showHist)
 		.on('pings', notif.pings)
 		.on('rm_ping', notif.removePing)

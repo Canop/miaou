@@ -142,6 +142,7 @@ proto.listRoomUsers = function(roomId){
 }
 
 // returns the name to use in ping autocompletion.
+// Room users are listed first
 // uses index message_author_created_room
 proto.usersStartingWith = function(str, roomId, limit){
 	return this.queryRowsBench(
@@ -587,15 +588,56 @@ proto.getNotableMessages = function(roomId, createdAfter){
 	);
 }
 
-proto.search = function(roomId, pattern, lang, pageSize, numPage){
-	return this.queryRowsBench(
-		"select message.id, author, player.name as authorname, room, content, created,"+
+// appends to the args and conditions arrays, from the s search options
+// returns the completed ps name
+proto._searchConditions = function(s, args, conditions){
+	var psname = "";
+	if (s.pattern) {
+		psname += "_pattern";
+		args.push(s.lang||"english", s.pattern);
+		conditions.push("to_tsvector($1, content) @@ plainto_tsquery($1,$2)");
+	}
+	if (s.room) {
+		psname += "_room";
+		args.push(s.room);
+		conditions.push("room=$1");
+	}
+	if (s.author) {
+		psname += "_author";
+		args.push(s.author);
+		conditions.push("author=$1");
+	}
+	if (s.authorName) {
+		psname += "_authorName";
+		args.push(s.authorName);
+		conditions.push("player.name=$1");
+	}
+	if (s.starrer) {
+		psname += "_starrer";
+		args.push(s.starrer);
+		conditions.push(
+			"exists (select * from message_vote mv where mv.player=$1 and mv.message=message.id and mv.vote='star')"
+		);
+	} else if (s.starred) {
+		psname += "_starred";
+		conditions.push("exists (select * from message_vote mv where mv.message=message.id and mv.vote='star')")
+	}
+	return psname;
+}
+
+proto.search = function(s){
+	var	psname = "search",
+		args = [],
+		conditions = [],
+		sql = "select message.id, author, player.name as authorname, room, content, created,"+
 		" pin, star, up, down, score from message"+
-		" inner join player on author=player.id"+
-		" where to_tsvector($1, content) @@ plainto_tsquery($1,$2) and room=$3"+
-		" order by message.id desc limit $4 offset $5",
-		[lang, pattern, roomId, pageSize, numPage*pageSize||0],
-		"search"
+		" inner join player on author=player.id";
+	psname += this._searchConditions(s, args, conditions);
+	args.push(s.pageSize, s.numPage*s.pageSize||0);
+	return this.queryRowsBench(
+		ps(sql, conditions, "order by message.id desc limit $1 offset $2"),
+		args,
+		psname
 	);
 }
 
@@ -925,7 +967,7 @@ var ps = exports.ps = function(sql, conditions, postConditions){
 		return s;
 	});
 	if (conditions.length) {
-		sql += " where " + conditions.join(" and ");
+		sql += " where " + conditions.map(c=>"("+c+")").join(" and ");
 	}
 	if (postConditions) sql += " " + postConditions.replace(/\$(\d+)/g, (_, d)=>"$"+(+d+nn));
 	return sql;

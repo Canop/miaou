@@ -1,9 +1,19 @@
 // histogram and search functions
 
-miaou(function(hist, gui, md, time, ws){
+miaou(function(hist, gui, locals, md, time, ws){
 
 	var	visible = false,
-		currentPattern;
+		currentSearch;
+
+	function isCurrentSearch(s){
+		return (
+			currentSearch
+			&& currentSearch.pattern != s.pattern
+			&& currentSearch.starred != s.starred
+			&& currentSearch.selfstarred != s.selfstarred
+			&& currentSearch.author != s.author
+		);
+	}
 
 	// arg : +1 or -1
 	function moveSelect(d){
@@ -27,56 +37,10 @@ miaou(function(hist, gui, md, time, ws){
 		}
 	}
 
-	$('#hist').on('click', '[m]', function(){
-		md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
-	}).on('mouseenter', '[m]', function(){
-		var	sn = +$(this).attr('sn'),
-			n = +$(this).attr('n'),
-			d = +$(this).attr('d'),
-			h = time.formatDateDDMMM(new Date(d*24*60*60*1000));
-		if (n) h += ' - ' + n + ' messages';
-		if (sn) h += '<br>' + sn + ' match';
-		if (sn>1) h += 'es';
-		$(this).append($('<div>').addClass('bubble').html(h));
-	}).on('mouseleave', '[m]', function(){
-		$('#hist .bubble').remove();
-	});
-
-	if (gui.mobile) {
-		$('#search').click(function(){
-			var pat = $('#searchInput').val().trim();
-			if (!pat) return;
-			currentPattern = pat;
-			hist.search(pat);
-		});
-	} else {
-		$('#searchInput').on('keyup', function(e){
-			if (e.which===27 && typeof window.righttab === "function") { // esc
-				window.righttab("notablemessagespage"); // defined in page-js/pad.js
-				$('#input').focus();
-				return false;
-			}
-			if (e.which==38) { // up arrow
-				moveSelect(-1);
-			} else if (e.which==40) { //down arrow
-				moveSelect(1);
-			}
-			var pat = this.value.trim();
-			if (pat) {
-				if (pat===currentPattern) return;
-				hist.search(pat);
-				hist.fetchHistogram(pat);
-			} else {
-				$('#search-results').empty();
-				$('#hist .bar').removeClass('hit').removeAttr('sm sn');
-			}
-		});
-	}
-
 	hist.open = function(){
 		visible = true;
 		$('#hist').show();
-		hist.fetchHistogram($('#searchInput').val().trim());
+		hist.fetchHistogram($('#search-input').val().trim());
 	}
 
 	hist.close = function(){
@@ -85,22 +49,25 @@ miaou(function(hist, gui, md, time, ws){
 	}
 
 	// request the histogram (not the search result list)
-	hist.fetchHistogram = function(pattern){
+	hist.fetchHistogram = function(options){
 		if (!visible) return;
-		currentPattern = pattern;
-		ws.emit('hist', {pattern:pattern});
+		currentSearch = options;
+		ws.emit('hist', options);
 	}
 
 	// request the search result messages
-	hist.search = function(pattern, page){
-		ws.emit('search', {pattern:pattern, page:page||0});
+	hist.search = function(options){
+		if (!options.page) options.page = 0;
+		currentSearch = options;
+		console.log("emit Search", options);
+		ws.emit('search', options);
 	}
 
 
 	// receive search results sent by the server
 	hist.found = function(res){
-		if (res.search.pattern!=$('#searchInput').val().trim()) {
-			console.log('received results of another search', $('#searchInput').val().trim(), res);
+		if (res.search.pattern!=$('#search-input').val().trim()) {
+			console.log('received results of another search', $('#search-input').val().trim(), res);
 			return;
 		}
 		console.log('search results:', res);
@@ -109,7 +76,8 @@ miaou(function(hist, gui, md, time, ws){
 			$('<div id=search-next-page>').text('more results')
 			.click(function(){
 				$(this).remove();
-				hist.search(res.search.pattern, (res.search.page||0)+1);
+				res.search.page = (res.search.page||0) + 1;
+				hist.search(res.search);
 			})
 			.appendTo('#search-results');
 		} else {
@@ -119,10 +87,6 @@ miaou(function(hist, gui, md, time, ws){
 
 	// display search results histogram sent by the server
 	hist.showHist = function(res){
-		if (res.search.pattern !== currentPattern) {
-			console.log('received histogram of another search', $('#searchInput').val().trim(), res);
-			return;
-		}
 		$('#hist').empty();
 		var records = res.hist;
 		if (!records || !records.length) return;
@@ -172,6 +136,78 @@ miaou(function(hist, gui, md, time, ws){
 		$('#hist .day').each(function(){
 			var $this = $(this), d = +$(this).attr('d');
 			$this[fd<=d && d<=ld ? 'addClass' : 'removeClass']('vis');
+		});
+	}
+
+	$('#hist').on('click', '[m]', function(){
+		md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
+	}).on('mouseenter', '[m]', function(){
+		var	sn = +$(this).attr('sn'),
+			n = +$(this).attr('n'),
+			d = +$(this).attr('d'),
+			h = time.formatDateDDMMM(new Date(d*24*60*60*1000));
+		if (n) h += ' - ' + n + ' messages';
+		if (sn) h += '<br>' + sn + ' match';
+		if (sn>1) h += 'es';
+		$(this).append($('<div>').addClass('bubble').html(h));
+	}).on('mouseleave', '[m]', function(){
+		$('#hist .bubble').remove();
+	});
+
+
+	function startSearch(){
+		var options = buildSearchOptions();
+		if (isCurrentSearch(options)) return;
+		if (options.pattern || options.starred || options.starrer || options.author || options.authorName) {
+			hist.search(options);
+			hist.fetchHistogram(options);
+		} else {
+			$('#search-results').empty();
+			$('#hist .bar').removeClass('hit').removeAttr('sm sn');
+		}
+	}
+
+	// read the inputs to build the search object
+	function buildSearchOptions(){
+		var options = {pattern: $('#search-input').val().trim()};
+		if ($("#search-starred").prop("checked")) {
+			if ($("#search-starred-by-me").prop("checked")) {
+				options.starrer = locals.me.id;
+			} else {
+				options.starred = true;
+			}
+		}
+		if ($("#search-written").prop("checked")) {
+			if ($("#search-written-by-me").prop("checked")) {
+				options.author = locals.me.id;
+			} else if ($("#search-author").val().trim()) {
+				options.authorName = $("#search-author").val().trim();
+			}
+		}
+		return options;
+	}
+	
+	$('#search-button').click(startSearch);
+	$("#search input").change(startSearch);
+	if (!gui.mobile) {
+		$("#search-author").focus(function(){
+			$("#search-written-by").prop("checked", true);
+		}).keyup(function(e){
+			if (e.which===13) { // enter
+				startSearch();
+			}
+		}).on("change blur", startSearch);
+		$('#search-input').on('keyup', function(e){
+			if (e.which===27 && typeof window.righttab === "function") { // esc
+				window.righttab("notablemessagespage"); // defined in page-js/pad.js
+				$('#input').focus();
+			} else if (e.which==38) { // up arrow
+				moveSelect(-1);
+			} else if (e.which==40) { //down arrow
+				moveSelect(1);
+			} else {
+				startSearch();
+			}
 		});
 	}
 });

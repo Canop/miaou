@@ -183,7 +183,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 				clearTimeout(timer);
 				timer = setTimeout(function(){ $this.removeClass('selected') }, 2000);
 			} else {
-				$('#searchInput').focus();
+				$('#search-input').focus();
 			}
 		}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
 

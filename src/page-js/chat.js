@@ -22,7 +22,7 @@ miaou(function(chat, locals){
 		$('#'+page).addClass('selected');
 		if (page==="search") {
 			miaou.hist.open();
-			$('#searchInput').focus();
+			$('#search-input').focus();
 		} else if (page==="notablemessagespage") {
 			miaou.hist.close();
 		}

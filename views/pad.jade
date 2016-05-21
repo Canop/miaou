@@ -20,7 +20,7 @@ html
 					#notifications
 					#input-panel
 						textarea#input(lang=vars.room.lang)
-						button.small#send Send
+						button#send Send
 						button.small#showPreview Preview
 						button.small#cancelEdit(style="display:none") Cancel
 						button.small#uploadOpen Upload
@@ -54,7 +54,25 @@ html
 				.page.selected#notablemessagespage
 					#notable-messages
 				.page#search
-					input#searchInput(autocomplete="off")
+					.search-input-line
+						input#search-input(autocomplete="off")
+						span#search-options-open &#xe827;
+					#search-options
+						.search-input-line
+							input(type="checkbox")#search-starred
+							label(for="search-starred") starred
+							.search-options-details
+								input(type="checkbox")#search-starred-by-me
+								label(for="search-starred-by-me") by me
+						.search-input-line
+							input(type="checkbox")#search-written
+							label(for="search-written") written
+							.search-options-details
+								input(type="radio",name="search-written-by",checked="checked")#search-written-by-me
+								label(for="search-written-by-me") by me
+								input(type="radio",name="search-written-by")#search-written-by
+								label(for="search-written-by") by @
+								input.username(type="text")#search-author
 					#search-results
 						i
 							p Type anything to search it (common English words are ignored)

@@ -550,13 +550,13 @@ body.mobile .message-menu .vote {
 	margin: 0 4px;
 }
 #notable-messages, #search-results {
-	.message + .message {
+	.message {
 		border-top: $side-message-border-top;		
 	}
 	.message {
 		font-size: 12px;
 		border-bottom: $side-message-border-bottom;	
-		&:nth-child(even) {
+		&:nth-child(odd) {
 			background: $side-message-even-background;
 		}
 		&:hover {
@@ -1064,9 +1064,57 @@ div#notifs {
 }
 
 
-#searchInput {
-	width: calc(100% - 12px);
-	margin: 4px;
+.search-input-line {
+	@include flexbox(row, center);
+	padding: 4px;
+}
+#search-input {
+	@include flex(1 1);
+}
+#search-options-open {
+	@include flex(0 0 20px);
+	font-family: "fontello";
+	text-align: center;
+	height: 20px;
+	line-height: 20px;
+	cursor: pointer;
+	margin-left: 4px;
+	transition: all 1s;
+	opacity: .7;
+	&:hover {
+		opacity: 1;
+	}
+	&.open {
+		transform: rotate(100deg);
+		opacity: 1;
+		transition: all 1s;
+	}
+}
+
+#search-options {
+	height: 0;
+	overflow-y: hidden;
+	transition: height .3s;
+	&.open {
+		height: 60px;
+		transition: height .2s;
+	}
+	.search-input-line {
+		@include flex(row center);
+		label:first-of-type {
+			width: 48px;
+		}
+		.search-options-details {
+			opacity: .4;
+		}
+		input:first-of-type:checked ~ .search-options-details {
+			opacity: 1;
+			transition: all .2s;
+		}
+		input.username {
+			margin-left: 4px;
+		}
+	}
 }
 
 #search-next-page {

@@ -6,6 +6,12 @@ const langs = exports.all = {
 
 exports.legal = {}; // codes of the languages proposed in room creation / filtering
 
+// from an ISO lang (e.g. "fr") returns a postgresql lang name (e.g. "french")
+exports.pgLang = function(name){
+	var lang = langs[name];
+	return lang ? lang.pgname : "english";
+}
+
 exports.configure = function(miaou){
 	var conf = miaou.config;
 	for (let key in langs) {

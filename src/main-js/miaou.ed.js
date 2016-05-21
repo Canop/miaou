@@ -33,6 +33,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		stash = null;
 		chat.sendMessage(m);
 		$('#preview').html('');
+		$('#send').addClass("sent");
 		if (!gui.mobile) $input.focus();
 	}
 
@@ -87,7 +88,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		var acname = getacname();
 		if (acname) {
 			ed.proposepings(usr.recentNamesStartingWith(acname));
-			return ws.emit('autocompleteping', acname);
+			return ws.emit('autocompleteping', acname, ed.proposepings);
 		}
 		// should we display the command autocompleting menu ?
 		var accmd = getaccmd();

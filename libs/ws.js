@@ -1,4 +1,4 @@
-const	apiversion = 57,
+const	apiversion = 58,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -13,6 +13,7 @@ const	apiversion = 57,
 	botMgr = require('./bots.js'),
 	server = require('./server.js'),
 	rooms = require('./rooms.js'),
+	langs = require('./langs.js'),
 	shoes = require('./shoes.js');
 
 var	miaou,
@@ -209,6 +210,20 @@ function messageWithoutUserVote(message){
 	return clone;
 }
 
+// fix the search object, completing author if given authorname
+// and ensuring no options goes against room search rights
+// must be called with context being a connection
+function fixSearchOptions(search, userId, room){
+	search.roomId = room ? room.id : search.roomId;
+	search.lang = langs.pgLang(room.lang);
+	search.pageSize = 20;
+	search.page = search.page>0 ? search.page : 0;
+	if (search.starrer && search.starrer!==userId) {
+		throw new Error("Unauthorized search");
+	}
+	return search;
+}
+
 // handles the socket, whose life should be the same as the presence of the user in a room
 // Implementation details :
 //  - we don't pick the room in the session because it may be incorrect when the user has opened tabs in
@@ -223,15 +238,16 @@ function handleUserInRoom(socket, completeUser){
 		welcomed = false,
 		send;
 	socket
-	.on('autocompleteping', function(namestart){
+	.on('autocompleteping', function(namestart, cb){
 		if (!shoe.room) return;
 		db.on()
 		.then(function(){
 			return this.usersStartingWith(namestart, shoe.room.id, 10);
 		}).then(function(list){
-			if (list.length) {
-				socket.emit('autocompleteping', list.map(item => item.name));
-			}
+			cb(list.map(item => item.name));
+			// if (list.length) {
+			// 	socket.emit('autocompleteping', list.map(item => item.name));
+			// }
 		})
 		.catch(err => console.log('ERR in PM :', err))
 		.finally(db.off);
@@ -645,14 +661,13 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('search', function(search){
 		if (!shoe.room) return;
-		var	pageSize = 20,
-			page = search.page || 0;
-		db.on([shoe.room.id, search.pattern, 'english', 20, page])
-		.spread(db.search)
+		db.on([search, shoe.publicUser.id, shoe.room])
+		.spread(fixSearchOptions)
+		.then(db.search)
 		.filter(m => !/^!!deleted /.test(m.content) )
 		.map(clean)
 		.then(function(results){
-			socket.emit('found', {results, search, mayHaveMore:results.length===pageSize});
+			socket.emit('found', {results, search, mayHaveMore:results.length===search.pageSize});
 		}).finally(db.off);
 	})
 	.on('unpin', function(mid){

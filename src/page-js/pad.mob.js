@@ -59,10 +59,10 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 	// "search" tab
 	tabs["search"].open = function(cb){
 		Tabs.open.call(this, cb);
-		$('#searchInput').focus();
+		$('#search-input').focus();
 	}
 	tabs["search"].close = function(){
-		$('#searchInput').blur();
+		$('#search-input').blur();
 		Tabs.close.call(this);
 	}
 
