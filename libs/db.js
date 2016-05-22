@@ -633,7 +633,7 @@ proto.search = function(s){
 		" pin, star, up, down, score from message"+
 		" inner join player on author=player.id";
 	psname += this._searchConditions(s, args, conditions);
-	args.push(s.pageSize, s.numPage*s.pageSize||0);
+	args.push(s.pageSize, s.page*s.pageSize||0);
 	return this.queryRowsBench(
 		ps(sql, conditions, "order by message.id desc limit $1 offset $2"),
 		args,

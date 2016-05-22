@@ -63,7 +63,6 @@ miaou(function(hist, gui, locals, md, time, ws){
 		ws.emit('search', options);
 	}
 
-
 	// receive search results sent by the server
 	hist.found = function(res){
 		if (res.search.pattern!=$('#search-input').val().trim()) {
