@@ -597,9 +597,9 @@ proto._searchConditions = function(s, args, conditions){
 		args.push(s.lang||"english", s.pattern);
 		conditions.push("to_tsvector($1, content) @@ plainto_tsquery($1,$2)");
 	}
-	if (s.room) {
+	if (s.roomId) {
 		psname += "_room";
-		args.push(s.room);
+		args.push(s.roomId);
 		conditions.push("room=$1");
 	}
 	if (s.author) {
