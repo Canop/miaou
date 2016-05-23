@@ -59,11 +59,16 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 			h += '<a class=link target=_blank href="'+links.permalink(message)+
 				'" title="permalink : right-click to copy">&#xe815;</a> ';
 			if (!gui.mobile) h += '<a class=makemwin title="float">&#xe81d;</a> ';
-			h += chat.voteLevels.slice(0, message.author===locals.me.id ? 1 : 4)
-			.slice(usr.checkAuth('admin')?0:1)
-			.map(function(l){
+			var possibleVotes = [];
+			if (usr.checkAuth('admin')) possibleVotes.push(chat.voteLevels[0]); // pin
+			if (message.author!==locals.me.id || usr.checkAuth('admin')) {
+				possibleVotes.push(chat.voteLevels[1]); // star
+			}
+			possibleVotes.push(chat.voteLevels[2]); // up
+			possibleVotes.push(chat.voteLevels[3]); // down
+			h += possibleVotes.map(function(l){
 				return '<span class="vote'+(l.key===message.vote?' on':'')+
-					'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
+				'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 			})
 			.join('');
 			if (message.pin>(message.vote=="pin") && usr.checkAuth('admin')) {
