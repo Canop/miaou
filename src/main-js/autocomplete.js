@@ -5,8 +5,11 @@
 			lastPat,
 			$menu = $("<div>").addClass("autocomplete-menu").hide().appendTo("body");
 		function receiveMatches(matches){
-			if (matches.length && !matches[0].startsWith($field.val())) {
-				console.log("disregard obsolete completion");
+			if (
+				matches.length &&
+				!matches[0].toLowerCase().startsWith($field.val().toLowerCase()))
+			{
+				console.log("disregard obsolete completion", $field.val(), matches);
 				return;
 			}
 			if (!matches.length) return $menu.hide();
