@@ -70,7 +70,7 @@ function watchRepo(ct, provider, repo){
 	})
 	.catch(db.NoRowError, function(){
 		ct.reply(
-			"No webhook seems to be defined for repository "+repo+".\n"
+			"No webhook seems to be defined for repository `"+repo+"`.\n"
 			+" Check you correctly spelled the repository, then check the webhook configuration"
 			+" in the repository settings.\n"
 			+" The callback should be `"+getCallback(provider)+"`"
@@ -113,11 +113,11 @@ function listRepos(ct, provider){
 
 function onCommand(ct, provider){
 	var m;
-	if ((m=ct.args.match(/^watch ([\w-]+\/[\w-.]+)/))) {
+	if ((m=ct.args.match(/^watch (?:https?:\/\/github\.com\/)?([\w-]+\/[\w-.]+)/))) {
 		ct.shoe.checkAuth("admin");
 		return watchRepo.call(this, ct, provider, m[1]);
 	}
-	if ((m=ct.args.match(/^unwatch ([\w-]+\/[\w-.]+)/))) {
+	if ((m=ct.args.match(/^unwatch (?:https?:\/\/github\.com\/)?([\w-]+\/[\w-.]+)/))) {
 		ct.shoe.checkAuth("admin");
 		return unwatchRepo.call(this, ct, provider, m[1]);
 	}
