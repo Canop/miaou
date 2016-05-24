@@ -238,16 +238,14 @@ function handleUserInRoom(socket, completeUser){
 		welcomed = false,
 		send;
 	socket
-	.on('autocompleteping', function(namestart, cb){
-		if (!shoe.room) return;
+	.on('completeusername', function(query, cb){
+		if (!shoe.room || !query.start) return;
 		db.on()
 		.then(function(){
-			return this.usersStartingWith(namestart, shoe.room.id, 10);
+			return this.usersStartingWith(query.start, shoe.room.id, 10);
 		}).then(function(list){
+			if (query.roomAuthors) list = list.filter(r=>r.lir);
 			cb(list.map(item => item.name));
-			// if (list.length) {
-			// 	socket.emit('autocompleteping', list.map(item => item.name));
-			// }
 		})
 		.catch(err => console.log('ERR in PM :', err))
 		.finally(db.off);

@@ -4,7 +4,7 @@
 	if (gui.mobile) return;
 
 	$("input.username").autocomplete(function(pat, cb){
-		ws.emit("autocompleteping", pat, cb);
+		ws.emit("completeusername", {start:pat, roomAuthors:true}, cb);
 	});
 
 });
