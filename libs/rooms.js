@@ -3,7 +3,7 @@ const	Promise = require("bluebird"),
 	auths = require('./auths.js'),
 	server = require('./server.js'),
 	prefs = require('./prefs.js'),
-	maxAgeForNotableMessages = 50*24*60*60, // in seconds
+	maxAgeForNotableMessages = 10*24*60*60, // in seconds
 	memobjects = new Map,
 	clean = require('./ws.js').clean;
 
