@@ -148,7 +148,8 @@ function doStats(ct){
 
 	/* eslint-enable max-len */
 
-	return this.queryRowsBench(sql, args, psname).then(function(rows){
+	var query = psname ? this.queryRowsBench(sql, args, psname) : this.queryRows(sql, args);
+	return query.then(function(rows){
 		var c;
 		if (!rows.length) {
 			c = "nothing found";
