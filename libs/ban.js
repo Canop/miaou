@@ -9,7 +9,7 @@ exports.registerCommands = function(registerCommand){
 		name: 'ban',
 		fun: function(ct){
 			var	shoe = ct.shoe;
-			if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) throw "Only an admin can do that";
+			shoe.checkAuth('admin');
 			var match = ct.args.match(/@(\w[\w_\-\d]{2,})/);
 			if (!match) throw 'Bad syntax. Use `!!ban @some_other_user`';
 			var username=match[1];
