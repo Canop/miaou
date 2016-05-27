@@ -29,6 +29,9 @@ CommandTask.prototype.reply = function(content, asFlake){
 	this.replyContent = content;
 	this.replyAsFlake = asFlake;
 }
+CommandTask.prototype.user= function(){
+	return this.shoe.publicUser;
+}
 CommandTask.prototype.username = function(){
 	return this.shoe.publicUser.name;
 }
