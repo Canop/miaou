@@ -106,7 +106,7 @@ function doStats(ct){
 			{name:"Id", value:"id"},
 			{name:"Name", value:"name", fmt:row => "["+row.c1+"]("+row.c0+"#)" },
 			{name:"Language", value:"lang"},
-			{name:"Private", value:"private"},
+			{name:"Public", value:"private", fmt:(_, b) => b ? ' ' : '✓'},
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
