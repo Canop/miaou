@@ -65,7 +65,7 @@ function doStats(ct){
 		ranking = false;
 	} else if (/^(active-)?users$/i.test(topic)) {
 		cols = [
-			{name:"Name", value:"name", fmt:row => "["+row.c0+"](u/"+row.c0+")" },
+			{name:"Name", value:"name", fmt:row => "["+naming.makeMarkdownCompatible(row.c0)+"](u/"+row.c0+")" },
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
 			{name:"Stars", value:"(select sum(star) from message where author=player.id)"},
@@ -76,7 +76,7 @@ function doStats(ct){
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
 		cols = [
-			{name:"Name", value:"name"},
+			{name:"Name", value:"name", fmt:row => "["+naming.makeMarkdownCompatible(row.c0)+"](u/"+row.c0+")" },
 			{name:"Room Messages", value:"(select count(*) from message where author=player.id and room=$1)"},
 			{name:"Last Two Days Room Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id and room=$1)"},
 			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star' and room=$1)"},
