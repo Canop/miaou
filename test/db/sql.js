@@ -5,7 +5,6 @@ var	buster = require("buster"),
 //  statements arguments
 buster.testCase("sql", {
 	"ps building": function(){
-		console.log(Object.keys(lib));
 		var conditions = [];
 		var sql = "select * from message";
 		conditions.push("to_tsvector($1, content) @@ plainto_tsquery($1,$2)");
