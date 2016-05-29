@@ -1,5 +1,18 @@
-var	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+const	validChars = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
 	blacklist = [/^all$/, /^here$/, /^room$/];
+
+// replacements for some characters, ensuring they're not interpreted as markdown markers
+const lookAlikes = {
+	'/': '⟋',
+	'|': '│',
+	'(': '⟮',
+	')': '⟯',
+	'*': '⁕',
+	'[': '❲',
+	']': '❳',
+	'_': '⎽',
+
+};
 
 exports.configure = function(miaou){
 	if (miaou.config.forbiddenUsernames) {
@@ -139,4 +152,10 @@ exports.isUsernameForbidden = function(n){
 		if (blacklist[i].test(n)) return true;
 	}
 	return false;
+}
+
+// changes all characters which might break a markdown rendering
+// When possible, a look-alike is choosen
+exports.makeMarkdownCompatible = function(s){
+	return s.replace(/[*_|\]\[)(]/g, s => lookAlikes[s] || ' ');
 }

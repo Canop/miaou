@@ -1,6 +1,7 @@
 // !!stats command
 
 const	fmt = require('./fmt.js'),
+	naming = require('./naming.js'),
 	siostats = require('./stats-sockets.js');
 
 var	miaou;
@@ -104,7 +105,9 @@ function doStats(ct){
 	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
 			{name:"Id", value:"id", fmt:row => row.c4 ? row.c0 : ' '},
-			{name:"Name", value:"name", fmt:row => row.c4 ? "["+row.c1+"]("+row.c0+"#)" : "*a discreet room*" },
+			{name:"Name", value:"name", fmt:row => {
+				return row.c4 ? "["+naming.makeMarkdownCompatible(row.c1)+"]("+row.c0+"#)" : "*a discreet room*";
+			}},
 			{name:"Language", value:"lang"},
 			{name:"Public", value:"private", fmt:(_, b) => b ? ' ' : '✓'},
 			{name:"Listed", value:"listed", fmt:(_, b) => b ? '✓' : ' '},
