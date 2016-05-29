@@ -103,15 +103,16 @@ function doStats(ct){
 		title = "Statistics for user "+topic;
 	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
-			{name:"Id", value:"id"},
-			{name:"Name", value:"name", fmt:row => "["+row.c1+"]("+row.c0+"#)" },
+			{name:"Id", value:"id", fmt:row => row.c4 ? row.c0 : ' '},
+			{name:"Name", value:"name", fmt:row => row.c4 ? "["+row.c1+"]("+row.c0+"#)" : "*a discreet room*" },
 			{name:"Language", value:"lang"},
 			{name:"Public", value:"private", fmt:(_, b) => b ? ' ' : '✓'},
+			{name:"Listed", value:"listed", fmt:(_, b) => b ? '✓' : ' '},
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
-		orderingCol = /^active-/i.test(topic) ? 5 : 4;
+		orderingCol = /^active-/i.test(topic) ? 6 : 5;
 		from = "from room order by c"+orderingCol+" desc limit "+n;
 		title = "Rooms Statistics (top "+n+")";
 	} else if (/^room$/i.test(topic)) {
