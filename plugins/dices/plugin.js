@@ -27,7 +27,7 @@ function rollDices(ct){
 	ct.reply(
 		'Rolling '+nbDices+' '+nbSides+'-sided dice'+(nbDices>1?'s':'')+
 		(constant ? ' and adding '+constant : '')+
-		' (expect: '+exp.toFixed(1)+')'+
+		' (**expect: '+exp.toFixed(1)+'**)'+
 		'\n|'+cols.join('|')+'|\n'+
 		'|'+cols.map(()=> ':-:').join('|')+'|\n'+
 		'|'+row.join('|')+'|\n'
