@@ -593,10 +593,10 @@ proto.getNotableMessages = function(roomId, createdAfter){
 proto._searchConditions = function(s, args, conditions){
 	var psname = "";
 	if (s.pattern) {
-		// due to the indexing, the only possible language is "english"
 		psname += "_pattern";
-		args.push("english", s.pattern);
-		conditions.push("to_tsvector($1, content) @@ plainto_tsquery($1,$2)");
+		args.push(s.pattern);
+		conditions.push("to_tsvector('english', content) @@ plainto_tsquery('english',$1)");
+		// due to the indexing, the only possible language is "english"
 	}
 	if (s.roomId) {
 		psname += "_room";
