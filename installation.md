@@ -132,7 +132,7 @@ You'll need this shell every time you want to mess with the tables, or for the f
 	
 ## Create the tables
 
-The easiest solution is to copy-paste the content of /sql/postgres-creation.sql into the pg shell
+The easiest solution is to copy-paste the content of /sql/postgres-creation.sql into the pg shell. Note that you won't have to update the tables yourself, Miaou takes care of this updating when the schema changes or when a plugin needs a specific table.
 
 ## Configure miaou to connect the database
 
