@@ -10,8 +10,9 @@ miaou(function(hist, gui, locals, md, time, ws){
 			currentSearch
 			&& currentSearch.pattern == s.pattern
 			&& currentSearch.starred == s.starred
-			&& currentSearch.selfstarred == s.selfstarred
+			&& currentSearch.starrer == s.starrer
 			&& currentSearch.author == s.author
+			&& currentSearch.authorName == s.authorName
 		);
 	}
 
@@ -164,6 +165,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 			hist.search(options);
 			hist.fetchHistogram(options);
 		} else {
+			currentSearch = options;
 			$('#search-results').empty();
 			$('#hist .bar').removeClass('hit').removeAttr('sm sn');
 		}
