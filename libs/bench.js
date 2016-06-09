@@ -62,21 +62,21 @@ exports.start = function(name){
 	return new BenchOperation(bench);
 }
 
-function fmt(num){
+function fmt(num, prec){
 	if (!num) return ' ';
-	var s = num<100 ? num.toFixed(3) : Math.round(num).toString();
+	var s = num<100 ? num.toFixed(prec||3) : Math.round(num).toString();
 	return s.replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
 }
 
 function doCommand(ct){
 	var c = "Miaou Server Operation Durations:\n";
-	c += "Type | Operations | Average (µs) | Std Dev (µs) | Sum (s)\n";
+	c += "Type | Operations | Average (ms) | Std Dev (ms) | Sum (s)\n";
 	c += ":-|:-:|:-:|:-:|:-:\n";
 	c += Array.from(benchs.values())
 	.sort((a, b) =>
 		a.name < b.name ? -1 : 1
 	).map(b =>
-		b.name + "|" + b.n  + "|" + fmt(b.avg()) + "|" + fmt(b.stdDev()) + "|" + fmt(b.durationSum/1e6) + "|"
+		b.name + "|" + b.n  + "|" + fmt(b.avg()/1e3, 1) + "|" + fmt(b.stdDev()/1e3, 1) + "|" + fmt(b.durationSum/1e6)
 	).join("\n");
 	ct.reply(c);
 }
