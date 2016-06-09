@@ -621,7 +621,7 @@ proto._searchConditions = function(s, args, conditions){
 		);
 	} else if (s.starred) {
 		psname += "_starred";
-		conditions.push("exists (select * from message_vote mv where mv.message=message.id and mv.vote='star')")
+		conditions.push("star<>0")
 	}
 	return psname;
 }
