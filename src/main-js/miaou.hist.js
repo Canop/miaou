@@ -8,10 +8,10 @@ miaou(function(hist, gui, locals, md, time, ws){
 	function isCurrentSearch(s){
 		return (
 			currentSearch
-			&& currentSearch.pattern != s.pattern
-			&& currentSearch.starred != s.starred
-			&& currentSearch.selfstarred != s.selfstarred
-			&& currentSearch.author != s.author
+			&& currentSearch.pattern == s.pattern
+			&& currentSearch.starred == s.starred
+			&& currentSearch.selfstarred == s.selfstarred
+			&& currentSearch.author == s.author
 		);
 	}
 
@@ -59,16 +59,19 @@ miaou(function(hist, gui, locals, md, time, ws){
 	hist.search = function(options){
 		if (!options.page) options.page = 0;
 		currentSearch = options;
+		$("#search-load-bar").addClass("active");
 		console.log("emit Search", options);
 		ws.emit('search', options);
 	}
 
 	// receive search results sent by the server
 	hist.found = function(res){
-		if (res.search.pattern!=$('#search-input').val().trim()) {
+		if (!isCurrentSearch(res.search)) {
+			console.log("NO", currentSearch, res.search);
 			console.log('received results of another search', $('#search-input').val().trim(), res);
 			return;
 		}
+		$("#search-load-bar").removeClass("active");
 		console.log('search results:', res);
 		md.showMessages(res.results, $('#search-results'), res.search.page);
 		if (res.mayHaveMore) {

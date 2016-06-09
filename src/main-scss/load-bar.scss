@@ -1,0 +1,27 @@
+.load-bar {
+	height: 4px;
+	background: $load-bar-color;
+	width: 0;
+	opacity: 0;
+	&.active {
+		opacity: 1;
+		transition: opacity .2s;
+		animation: load-bar 1s ease-out;
+		animation-iteration-count:infinite;
+		animation-direction: alternate;
+	}
+}
+@keyframes load-bar {
+	0% {
+		width: 0px;
+		margin-left:0;
+	}
+	50% {
+		width: 100%;
+		margin-left:0;    
+	}
+	100% {
+		width: 0;
+		margin-left:100%;    
+	}
+}
