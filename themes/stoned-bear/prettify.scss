@@ -1,3 +1,12 @@
+.prettyprint {
+  background: rgba(200,255,200,.2);
+  font-family: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  border: 1px solid #7E7C79;
+  padding: 10px;
+}
+
 /* desert scheme ported from vim to google prettify */
 pre.prettify { display: block; background-color: #333 }
 pre .nocode { background-color: none; color: #000 }
