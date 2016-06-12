@@ -167,3 +167,14 @@ body.pad #messages .content .citation {
 	border-radius: 50%;
 }
 
+button, input[type="reset"], input[type="submit"] {
+	color: #333;
+	background-color: #fcfcfc;
+	background-image: linear-gradient(to bottom,#fcfcfc 0,#f1f1f1 100%);
+	border-color: #c2c0c2 #c2c0c2 #a19fa1;
+	line-height: 1.4;
+	&:hover {
+		color: #000;
+		background-image: linear-gradient(to bottom,#ebebf1 0,#e0e0ff 100%);
+	}
+}
