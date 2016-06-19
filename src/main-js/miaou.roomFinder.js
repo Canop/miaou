@@ -51,16 +51,25 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 				return;
 			}
 			rooms = data.rooms;
-			updateRoomsTab();
+			updateRoomsTabsAndPage();
 			if (callback) callback();
 		});
 	}
 
-	function updateRoomsTab(){
+	function updateRoomsTabsAndPage(){
 		$('#rooms-page').empty();
-		if (!rooms.length) return;
-		var i = $('.rooms-tabs .tab.selected').index();
-		showRooms(roomSets[Object.keys(roomSets)[i]]());
+		var selectedSetIndex = $('.rooms-tabs .tab.selected').index();
+		Object.keys(roomSets).forEach(function(name, i){
+			var tabRooms = roomSets[name]();
+			if (i===selectedSetIndex) showRooms(tabRooms);
+			var nbunseen = tabRooms.reduce(function(sum, r){
+				var w = getWatch(r.id);
+				if (w) sum += w.nbunseen;
+				return sum;
+			}, 0);
+			$(".rooms-tabs .tab .watch-count").eq(i).text(nbunseen||"")
+			.toggleClass("has-unseen", !!nbunseen);
+		});
 	}
 
 	function fillSquareTitle($roomHead, r){
@@ -168,11 +177,11 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 		if (!initialized) {
 			$(".rooms-tabs").prepend(Object.keys(roomSets).map(function(name){
 				return $("<span class=tab>").click(function(){
-					$('#rooms-page').empty();
 					$(this).addClass("selected").siblings().removeClass("selected");
-					if (!rooms.length) return;
-					showRooms(roomSets[name]());
-				}).text(name);
+					updateRoomsTabsAndPage();
+
+				}).text(name).append("<span class=watch-count>");
+					
 			}));
 			$(".rooms-tabs .tab").first().click();
 			$("#room-search-input").keyup(function(e){
