@@ -180,6 +180,10 @@
 			background-color: $room-tab-bg-color;
 			border-width: $chat-tabs-border-width $chat-tabs-border-width 0 $chat-tabs-border-width;	
 		}
+		.watch-count {
+			margin-left: 2px;
+			font-size: 95%;
+		}
 	}
 	.aftertabs {
 		@include flex(1 0);
