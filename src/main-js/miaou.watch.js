@@ -150,6 +150,16 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 	}
 
 	var requiredrid;
+	$('#watches').on('click', '.watch', function(){
+		notif.userAct();
+		var w = $(this).dat('watch');
+		if (w.last_seen) {
+			localStorage.destMessage = w.last_seen;
+		}
+	});
+
+	if (gui.mobile) return;
+
 	$('#watches').on('mouseenter', '.watch', function(){
 		$('.watch').removeClass('open').find('.watch-panel').remove();
 		var	$w = $(this), w = $w.dat('watch'), entertime = Date.now(),
@@ -201,11 +211,5 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 	}).on('mouseleave', '.watch', function(){
 		requiredrid = 0;
 		$('.watch').removeClass('open').find('.watch-panel').remove();
-	}).on('click', '.watch', function(){
-		notif.userAct();
-		var w = $(this).dat('watch');
-		if (w.last_seen) {
-			localStorage.destMessage = w.last_seen;
-		}
 	});
 });
