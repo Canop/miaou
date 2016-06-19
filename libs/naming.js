@@ -11,7 +11,6 @@ const lookAlikes = {
 	'[': '❲',
 	']': '❳',
 	'_': '⎽',
-
 };
 
 exports.configure = function(miaou){
@@ -154,7 +153,7 @@ exports.isUsernameForbidden = function(n){
 	return false;
 }
 
-// changes all characters which might break a markdown rendering
+// changes all characters which might break a markdown rendering.
 // When possible, a look-alike is choosen
 exports.makeMarkdownCompatible = function(s){
 	return s.replace(/[*_|\]\[)(]/g, s => lookAlikes[s] || ' ');
