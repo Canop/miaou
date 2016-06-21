@@ -14,10 +14,6 @@ miaou(function(links, gui, locals, md, skin){
 		linkwzin = null;
 	}
 	
-	function addStop(link){
-		$(link).click(function(e){ e.stopPropagation() });
-	}
-	
 	function transformLinksToMiaou($c){
 		$c.find('a[href]').each(function(){
 			var	$link = $(this),
@@ -48,12 +44,15 @@ miaou(function(links, gui, locals, md, skin){
 					}
 				} else {
 					// it's an url for another room or for a message in another room
-					$link.click(function(){
+					$link.click(function(e){
 						location = this.href;
 						return false;
-					})
-					addStop(this);
+					});
 				}
+			} else {
+				$link.click(function(e){
+					e.stopPropagation();
+				});
 			}
 		});
 	}
