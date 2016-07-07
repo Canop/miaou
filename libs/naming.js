@@ -156,5 +156,6 @@ exports.isUsernameForbidden = function(n){
 // changes all characters which might break a markdown rendering.
 // When possible, a look-alike is choosen
 exports.makeMarkdownCompatible = function(s){
+	if (!s) return "";
 	return s.replace(/[*_|\]\[)(]/g, s => lookAlikes[s] || ' ');
 }
