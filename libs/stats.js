@@ -40,7 +40,7 @@ function doStats(ct){
 
 	if (/^server$/i.test(topic)) {
 		cols = [
-			{name:"Users", value:"(select count(*) from player)"},
+			{name:"Users", value:"(select count(*) from player where name is not null)"},
 			{name:"Public Rooms", value:"(select count(*) from room where private=false)"},
 			{name:"Private Rooms", value:"(select count(*) from room where private=true)"},
 			{name:"Messages", value:"(select count(*) from message)"},
@@ -72,7 +72,7 @@ function doStats(ct){
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
 		orderingCol = /^active-/i.test(topic) ? 2 : 1;
-		from = "from player where bot is false order by c"+orderingCol+" desc limit "+n;
+		from = "from player where bot is false and name is not null order by c"+orderingCol+" desc limit "+n;
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
 		cols = [
