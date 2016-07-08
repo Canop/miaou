@@ -64,16 +64,16 @@ function clientGlobals(){
 		"RTCPeerConnection", "Set", "Map", "Promise", "WeakMap",
 		// for files which may also be executed on node
 		"exports", "module",
-	].reduce((s,v)=>{s[v]=true; return s;},{});
+	];
 }
 
 gulp.task("server-js", ()=> 
 	gulp.src(globs["server-js"])
 	.pipe(eslint({
-		"env": {
-			"node": true,
-			"es6": true
+		"parserOptions": {
+			"ecmaVersion": 6,
 		},
+		"env": [ "node", "es6"],
 		"extends": "eslint:recommended",
 		"rules": {
 			"no-unused-vars": [ 2, { "vars": "all", "args": "none" } ],
@@ -125,10 +125,9 @@ gulp.task("lint-client-js", ()=>
 		"parserOptions": {
 			"ecmaVersion": 6,
 		},
-		"env": {
-			"browser": true,
-			"es6": true
-		},
+		"env": [
+			"browser", "es6"
+		],
 		"extends": "eslint:recommended",
 		"globals": clientGlobals(),
 		"rules": {
