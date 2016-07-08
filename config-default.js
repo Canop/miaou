@@ -39,7 +39,9 @@ module.exports = {
 	},
 	
 	database: {
-		url: "postgres://miaou:somepassword@localhost/miaou",
+		database: "miaou",
+		user: "miaou",
+		password: "choose_a_password",
 		native_pg: false // let it to false unless you're a wizard
 	},
 

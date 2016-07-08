@@ -983,19 +983,17 @@ exports.init = function(miaouConfig, cb){
 	} else {
 		console.log("Using NOT native driver to connect to PostgreSQL");
 	}
-	var conString = config.database.url;
 	pg.defaults.parseInt8 = true;
-	pg.connect(conString, function(err, client, done){
-		if (err) {
-			console.log('Connection to PostgreSQL database failed');
-			console.log(err);
-			return;
-		}
-		done();
+	pool = new pg.Pool(config.database);
+	pool.connect()
+	.then(function(client){
 		console.log('Connection to PostgreSQL database successful');
-		pool = pg.pools.all[JSON.stringify(conString)];
 		exports.upgrade('core', 'sql/patches', cb);
-	});
+	})
+	.catch(function(err){
+		console.log('Connection to PostgreSQL database failed');
+		console.log(err);
+	})
 }
 
 // returns a promise bound to a connection, available to issue queries
