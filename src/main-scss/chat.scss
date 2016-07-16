@@ -855,6 +855,7 @@ span.warning {
 	border-left-width: 1px;
 	border-left-style: solid;
 	margin-left: 1px;
+	margin-right: 4px;
 	&:hover {
 		background: $reply-box-hover-bg;
 		opacity: 1;
