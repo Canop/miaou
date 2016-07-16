@@ -31,6 +31,7 @@ exports.appGetJsonLastMessages = function(req, res){
 		return this.deleteLastRoomPings(roomId, req.user.id, oldestMessageId);
 	})
 	.catch(function(err){
+		console.log("error in appGetJsonLastMessages:", err);
 		res.json({error: err.toString()});
 	})
 	.finally(db.off);

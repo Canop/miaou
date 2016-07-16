@@ -117,5 +117,9 @@ module.exports = {
 	// Server admins may have access to specific server wide admin commands
 	// They can be specified using their id (which is constant)
 	// or their name (which is easier)
-	serverAdmins: []
+	serverAdmins: [],
+
+	"cleaning-frequencies": { // in seconds
+		"old-access-requests": 2*24*60*60
+	}
 }

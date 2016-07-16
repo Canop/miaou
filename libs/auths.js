@@ -11,8 +11,32 @@ var	config,
 exports.configure = function(miaou){
 	config = miaou.config;
 	db = miaou.db;
+	startPeriodicAccessRequestCleaning();
 	return this;
 }
+
+function startPeriodicAccessRequestCleaning(){
+	var maxAge = 2*60*60; // 2 hours
+	var configCleaningFrequencies = config["cleaning-frequencies"];
+	if (configCleaningFrequencies) maxAge = configCleaningFrequencies["old-access-requests"] || maxAge;
+	var checkInterval = Math.max(10, Math.min(1000, maxAge/5|0));
+	console.log('Periodic Access Request Cleaning: checkInterval=', checkInterval, 'maxAge:', maxAge);
+	setInterval(function(){
+		console.log("checking access requests");
+		db.on().then(function(){
+			var now = Date.now()/1000|0;
+			return this.execute(
+				"update access_request set denied=$1, deny_message=$2"
+				+ " where denied is null and requested<$3",
+				[now, "Access Request Too Old - Automatic Deletion", now-maxAge]
+			);
+		}).then(function(res){
+			console.log("Removed", res.rowCount, "old access request(s)");
+		}).finally(db.off);
+
+	}, checkInterval*1000);
+}
+
 
 exports.checkAtLeast = function(auth, neededAuth){
 	for (var i=levels.length; i-->0;) {
