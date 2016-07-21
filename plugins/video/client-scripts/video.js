@@ -1,5 +1,7 @@
 miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 
+	var webrtcConfig = null;
+
 	// The video descriptor, one per displayed miaou !!video message
 	// medias : something like {video:true, audio:true}
 	function VD(mid, usernames, medias){
@@ -79,7 +81,8 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 	}
 	VD.prototype.on = function(){
 		var vd = this;
-		webrtc.getUserMedia(this.medias, function(stream){
+		navigator.mediaDevices.getUserMedia(this.medias)
+		.then(function(stream){
 			vd.localStream = stream;
 			vd.localVideo.src = window.URL.createObjectURL(stream);
 			vd.localVideo.play();
@@ -87,13 +90,19 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 			vd.sendMsg('on');
 			if (vd.index===0) vd.tryStart();
 			vd.update();
-		}, function(error){
+		})
+		.catch(function(error){
 			console.log("getUserMedia error: ", error);
 		});
 	}
 	VD.prototype.cut = function(){
 		this.started = false;
-		if (this.localStream) this.localStream.stop();
+		if (this.localStream) {
+			this.localStream.getTracks().forEach(function(track){
+				console.log("stopping track", track.label);
+				track.stop();
+			});
+		}
 		if (this.pc) {
 			this.pc.close();
 			this.pc = null;
@@ -110,7 +119,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		if (this.started || !this.localStream) return;
 		var vd = this;
 		try {
-			this.pc = new RTCPeerConnection(webrtc.config, webrtc.constraints);
+			this.pc = new RTCPeerConnection(webrtcConfig);
 			this.pc.onicecandidate = function(event){
 				console.log('handleIceCandidate event: ', event);
 				if (event.candidate) {
@@ -150,11 +159,17 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 	}
 	VD.prototype.doAnswer = function(){
 		console.log('Sending answer to peer.');
-		this.pc.createAnswer(this.setLocalAndSendMessage.bind(this), null, {});
+		this.pc.createAnswer(
+			this.setLocalAndSendMessage.bind(this),
+			function(err){
+				console.log("error in peerConnection.createAnswer:", err);
+			},
+			{}
+		);
 	}
 	VD.prototype.setLocalAndSendMessage = function(sessionDescription){
 		console.log('setLocalAndSendMessage sending message', sessionDescription);
-		sessionDescription.sdp = webrtc.preferOpus(sessionDescription.sdp);
+		//sessionDescription.sdp = webrtc.preferOpus(sessionDescription.sdp);
 		this.pc.setLocalDescription(sessionDescription);
 		this.sendMsg(sessionDescription);
 	}
@@ -199,6 +214,9 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 					$c.text(match[1]);
 					return true;
 				}
+				if (!webrtcConfig) {
+					ws.emit("video.getConfig");
+				}
 				var vd = $c.dat('video');
 				if (!vd) {
 					if ($c.closest('#mwin').length) {
@@ -238,6 +256,10 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 					}
 				}
 				if (vd) vd.off();
+			});
+			ws.on('video.setConfig', function(arg){
+				console.log('IN video.setConfig <-', arg);
+				webrtcConfig = arg;
 			});
 			ws.on('video.msg', function(arg){
 				console.log('IN video.msg <-', arg);

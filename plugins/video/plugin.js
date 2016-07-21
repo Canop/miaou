@@ -2,8 +2,13 @@
 //  - both usernames
 //  - both shoes
 
-var Promise = require("bluebird"),
+var	Promise = require("bluebird"),
+	webRtcConfig,
 	cache = require('bounded-cache')(200);
+
+exports.init = function(miaou, pluginpath){
+	webRtcConfig = miaou.conf("pluginConfig", "video", "webRTC") || {};
+}
 
 function makeVD(shoe, message){
 	var match = message.content.match(/^(?:@\w[\w\-]{2,}#?\d*\s+)?!!\w+\s*@(\w[\w_\-\d]{2,})/);
@@ -42,6 +47,9 @@ function onCommand(ct){
 }
 
 exports.onNewShoe = function(shoe){
+	shoe.socket.on('video.getConfig', function(arg){ // pass the message to the other video chatter
+		shoe.socket.emit("video.setConfig", webRtcConfig);
+	});
 	shoe.socket.on('video.msg', function(arg){ // pass the message to the other video chatter
 		getVD(shoe, arg.mid).spread(function(vd, index){
 			var otherShoe = vd.shoes[+!index];
