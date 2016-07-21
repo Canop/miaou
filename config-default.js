@@ -64,6 +64,17 @@ module.exports = {
 		"./plugins/shield/plugin.js",
 	],
 
+	// specific configurations required by plugins
+	"pluginConfig":{
+		"video": {
+			"webRTC": { // standard webRTC config passed to RTCPeerConnection
+				"iceServers": [{
+					urls: ["some STUN and or TURN server(s)"]
+				}]
+			}
+		}
+	},
+
 	// available themes. The first one is both the default theme and the one
 	//  used on smartphones
 	themes: [

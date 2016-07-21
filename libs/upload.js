@@ -1,15 +1,15 @@
-var	config,
-	bench = require('./bench.js'),
+var	bench = require('./bench.js'),
 	request = require('request'),
+	clientID,
 	Busboy = require('busboy');
 
 exports.configure = function(miaou){
-	config = miaou.config;
+	clientID = miaou.conf("imgur", "clientID");
 	return this;
 }
 
 exports.appPostUpload = function(req, res){
-	if (!config.imgur || !config.imgur.clientID) {
+	if (!clientID) {
 		console.log(
 			'To activate the imgur service, register your application'
 			+ ' at imgur.com and set the imgur.clientID property in the config.json file.');
@@ -36,7 +36,7 @@ exports.appPostUpload = function(req, res){
 		console.log('Trying to send image of '+ files[0].bytes.length +' bytes to imgur :', files[0].name);
 		var options = {
 			url: 'https://api.imgur.com/3/upload',
-			headers: { Authorization: 'Client-ID ' + config.imgur.clientID }
+			headers: { Authorization: 'Client-ID ' + clientID }
 		};
 		var r = request.post(options, function(err, req, body){
 			if (err) {

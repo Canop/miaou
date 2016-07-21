@@ -5,22 +5,20 @@ const	levels = ['read', 'write', 'admin', 'own'],
 	server = require('./server.js'),
 	ws = require('./ws.js');
 
-var	config,
+var	serverAdmins,
 	db;
 
 exports.configure = function(miaou){
-	config = miaou.config;
+	serverAdmins = miaou.conf("serverAdmins")||[];
 	db = miaou.db;
-	startPeriodicAccessRequestCleaning();
+	startPeriodicAccessRequestCleaning(miaou);
 	return this;
 }
 
-function startPeriodicAccessRequestCleaning(){
-	var maxAge = 2*60*60; // 2 hours
-	var configCleaningFrequencies = config["cleaning-frequencies"];
-	if (configCleaningFrequencies) maxAge = configCleaningFrequencies["old-access-requests"] || maxAge;
+function startPeriodicAccessRequestCleaning(miaou){
+	var maxAge = miaou.conf("cleaning-frequencies", "old-access-requests") || 2*60*60; // 2 hours
 	var checkInterval = Math.max(10, Math.min(1000, maxAge/5|0));
-	console.log('Periodic Access Request Cleaning: checkInterval=', checkInterval, 'maxAge:', maxAge);
+	console.log('Periodic Access Request Cleaning: checkInterval:', checkInterval, 'maxAge:', maxAge);
 	setInterval(function(){
 		console.log("checking access requests");
 		db.on().then(function(){
@@ -47,8 +45,7 @@ exports.checkAtLeast = function(auth, neededAuth){
 }
 
 exports.isServerAdmin = function(user){
-	if (!config.serverAdmins) return false;
-	for (let idOrName of config.serverAdmins) {
+	for (let idOrName of serverAdmins) {
 		if (idOrName===user.id || idOrName===user.name) return true;
 	}
 	return false;

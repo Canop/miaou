@@ -223,6 +223,9 @@ exports.start = function(config){
 		config,
 		pageBoxer:require('./page-boxers.js')
 	};
+	miaou.conf = function(...token){
+		return token.reduce((o, t)=> o ? o[t] : undefined, miaou.config);
+	}
 	db.init(config, function(){
 		db.on("miaou")
 		.then(db.getBot)
