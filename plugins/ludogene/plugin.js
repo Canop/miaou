@@ -159,7 +159,6 @@ exports.move = function(mid, encodedMove){
 }
 
 exports.onNewShoe = function(shoe){
-	// todo: pass the shoe player id to functions
 	shoe.socket
 	.on('ludo.accept', function(arg){
 		exports.accept(arg.mid, shoe.publicUser)

@@ -61,7 +61,7 @@ $(function(){
 });
 
 $(function(){
-  $(window).click(miaou.appl.main);
+	$(window).click(miaou.appl.main);
 });
 
 
@@ -70,14 +70,14 @@ Program 2 ( http://jsbin.com/mubik/1/edit ) :
 
 miaou(function(appl, arr, maths){
 	appl.isWorldOK = function(a,b){
-		var array = arr.repeat(a,b),
+		var	array = arr.repeat(a,b),
 			result1 = maths.sums(array),
 			result2 = maths.mult(a,b);
 		console.log("result1:",result1, "result2:", result2);
 		return result1===result2;
 	}
 	appl.main = function(){
-		var a = maths.int(10),
+		var	a = maths.int(10),
 			b = maths.int(10);
 		$('<p>').text("Is it OK ? " + appl.isWorldOK(a,b)).appendTo('body');
 	}
@@ -95,9 +95,9 @@ miaou(function(arr){
 });
 
 miaou(function(maths, arr){
-    maths.int = function(m){
+	maths.int = function(m){
 		return Math.random()*m|0;
-    }
+	}
 	maths.sums = function(array){
 		return arr.reduce(array,function(a,b){ return a+b });
 	}

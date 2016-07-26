@@ -221,7 +221,7 @@ exports.start = function(config){
 	miaou = {
 		db,
 		config,
-		pageBoxer:require('./page-boxers.js')
+		pageBoxer: require('./page-boxers.js')
 	};
 	miaou.conf = function(...token){
 		return token.reduce((o, t)=> o ? o[t] : undefined, miaou.config);

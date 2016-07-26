@@ -319,6 +319,10 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('config', clientConfig);
 			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);
 		}).then(function(){
+			for (let plugin of onNewShoePlugins) {
+				plugin.onNewShoe(shoe);
+			}
+		}).then(function(){
 			return [
 				this.fetchUserPings(completeUser.id),
 				this.listRecentUsers(shoe.room.id, 50),
@@ -495,7 +499,7 @@ function handleUserInRoom(socket, completeUser){
 		}
 		let plugins = m.id ? onChangeMessagePlugins : onNewMessagePlugins;
 		for (let i=0; i<plugins.length; i++) {
-			var error = plugins[i].onChangeMessage(shoe, m);
+			var error = plugins[i].onChangeMessage(shoe, m); // FIXME no onNewMessage ?
 			if (error) { // we don't use trycatch for performance reasons
 				return shoe.error(error, m.content);
 			}
@@ -780,9 +784,6 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	});
 
-	for (let plugin of onNewShoePlugins) {
-		plugin.onNewShoe(shoe);
-	}
 
 	socket.emit('ready');
 }

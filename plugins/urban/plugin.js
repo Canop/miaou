@@ -22,8 +22,8 @@ function abstract($, line){
 exports.init = function(miaou){
 	miaou.pageBoxer.register({
 		name: "urban",
-		pattern:/^\s*https?:\/\/(www\.)?urbandictionary\.com\/define\.php\?term=[^ ]*\s*$/,
-		box:abstract
+		pattern: /^\s*https?:\/\/(www\.)?urbandictionary\.com\/define\.php\?term=[^ ]*\s*$/,
+		box: abstract
 	});
 }
 
@@ -33,8 +33,9 @@ function onCommand(ct){
 
 exports.registerCommands = function(cb){
 	cb({
-		name:'urban', fun:onCommand,
-		help:"display the relevant Urban Dictionary page. Example : `!!urban miaou`",
-		detailedHelp:"You may also simply paste the URL of a page to have it abstracted for you."
+		name: 'urban',
+		fun: onCommand,
+		help: "display the relevant Urban Dictionary page. Example : `!!urban miaou`",
+		detailedHelp: "You may also simply paste the URL of a page to have it abstracted for you."
 	});
 }
