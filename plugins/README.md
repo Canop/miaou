@@ -48,7 +48,7 @@ Now that the plugin is enabled, it will be available next time you restart Miaou
 
 ## Server Side Operation
 
-Most server side operations of a plugins are exported functions called by Miaou's core. Those functions have conventionnal names (see the "server side hooks" chapter), which avoids the task of registering them: the core calls the function if it is found in the plugin, doesn't call anything in the contrary.
+Most server side operations of a plugins are exported functions called by Miaou's core. Those functions have conventionnal names (see the "server side hooks" chapter), which avoids the task of registering them: the core calls the function if it is found in the plugin, doesn't call anything otherwise.
 
 Exemples of those functions are 
 
