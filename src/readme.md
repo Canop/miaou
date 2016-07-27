@@ -1,4 +1,4 @@
-This directory contains files that will be moved out of here, concatenated, minified or modified before execution (see Makefile).
+This directory contains files that will be moved out of here, concatenated, minified or modified before execution (see gulpfile).
 
 ## main-js
 

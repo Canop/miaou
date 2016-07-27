@@ -1014,7 +1014,6 @@ var on = exports.on = function(val){
 }
 
 // releases the connection which returns to the pool
-// It's ok to call this function more than once
 proto.off = function(v){
 	if (this instanceof Con) {
 		if (this.done) {
