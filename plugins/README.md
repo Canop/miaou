@@ -146,7 +146,7 @@ This function is called with context (`this`) being the DB transaction handling 
 
 The `fun` function is passed as argument an instance of `CommandTask` whose properties are:
 
-- `cmd`: the name of the used command (the same used for registration)
+- `cmd`: the name of the command used (the same used for registration)
 - `message`: the message object (whose properties are the content, author, id when it's already saved, etc.)
 - `args`: the optional arguments of the command (what comes after `!!command` in the message's first line
 - `shoe`: an instance of `Shoe`, on which the command implementation can execute socket related actions
@@ -398,12 +398,16 @@ And the server part handles it this way:
 		shoe.socket
 		.on('ludo.move', function(arg){
 			var messageId = arg.mid;
-			here we fetch the message, check the move, update the state of the game, save it in db
-			then we propagate that move to all the users currently in the game message's room:
+			
+			// here we fetch the message, check the move, update the state of the game, save it in db
+			// then we propagate that move to all the users currently in the game message's room:
+			
 			ws.emitToRoom(messageId, "ludo.move", {mid: messageId, move: move});
 		})
 		.on('ludo.accept', function(arg){
-			start of a game: we do about the same thing than for incoming moves
+			
+			// start of a game: we do about the same thing than for incoming moves
+			
 		});
 	}
 
