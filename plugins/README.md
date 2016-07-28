@@ -4,7 +4,7 @@ Plugins are extensions of Miaou, installed on the server, and having those (opti
 
 1. some server-side javascript code, executed in the same process than Miaou
 1. some client-side javascript code, concatenated and minified with Miaou's core javascript code
-1. some CSS code, compiled from SCSS code
+1. some CSS and SCSS
 1. some static resources, served without modidification
 1. sql scripts used to install and update plugin's tables
 
@@ -172,7 +172,15 @@ Example: a command replying "pong" to every !!ping command would be defined with
 
 (this can be the whole plugin)
 
-*TODO: describe botfun*
+## `botfun` callback
+
+Like the `fun` callback, `botfun` is called with context a DB transaction and it may return a promise. But it is not passed an instance of commandTask but the following arguments:
+
+- `cmd`: the name of the command used (the same used for registration)
+- `args`: the optional arguments of the command (what comes after `!!command` in the message's first line
+- `bot`: the bot author of the message
+- `message`: the message object (whose properties are the content, author, id when it's already saved, etc.)
+
 
 # Bots
 
@@ -217,7 +225,7 @@ The simplest way to send a message as a bot is to use the `botMessage` function 
 
 ## Listen for pings
 
-A plugin can read any message (see [onNewMessage](#onNewMessage)) but it's preferable to avoid useless parsings. The standard way for a bot to react to the right messages is to listen for commands but it can also be part of a conversation by listening to pings:
+A plugin can read any message (see [onReceiveMessage](#onReceiveMessage)) but it's preferable to avoid useless parsings. The standard way for a bot to react to the right messages is to listen for commands but it can also be part of a conversation by listening to pings:
 
 	const	bots = require('../../libs/bots.js'),
 	var	me;
@@ -308,11 +316,23 @@ Such a command is simple to make, here's the `!!urban` implementation:
 
 # Themes & CSS
 
-*TODO*
+To define styles, a plugin can provide CSS files:  `plugins/<plugin>/css/*.css` files are automatically merged with the core styles.
+
+A plugin maker must be aware Miaou is themable. As such, he can't defined hardcoded colors and just hope they'll be fine with any theme. If coloring is necessary, then the solution is to use SCSS.
+
+`plugins/<plugin>/scss/*.scss` files are compiled with core scss files, and may use all the variables defined in themes and whose names are listed in `src/main-scss/variables-default.scss`. This makes it possible to reuse theme tuned colors either as is or using one of the color transformation functions of scss.
 
 # Static Resources
 
-*TODO*
+Static resources that must be served without changes must be present in the `rsc` sub-directory of the plugin directory.
+
+A file whose path is
+
+	plugins/<plugin-name>/rsc/<filename>
+
+is visible from the chat with this relative URL:
+
+	static/plugins/<plugin-name>/rsc/<filename>
 
 # Reference: Server Side Hooks
 
@@ -411,11 +431,13 @@ And the server part handles it this way:
 		});
 	}
 
-## onNewMessage and onChangeMessage
+## onReceiveMessage
 
-Those two hooks are very similar: both are called when the server receives a message. The first one is called when the message is new, the second one when it's a modified message.
+This function is called when a message is received from a browser.
 
-Those functions are called with arguments
+The incoming message may be new (it has a strictly positive `id`) or a modified one (no `id`).
+
+This function is called with arguments
 
 - the shoe wrapping the socket on which the message was received
 - the message

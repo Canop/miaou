@@ -168,9 +168,10 @@ exports.onNewShoe = function(shoe){
 	});
 }
 
-// Checking the message isn't a started game
+// Checking the modified message isn't a started game
 // We just check the cache right now, which isn't 100% secure
-exports.onChangeMessage = function(shoe, m){
+exports.onReceiveMessage = function(shoe, m){
+	if (!m.id) return;
 	var data = cache.peek(m.id);
 	if (!data) return;
 	if (data[1].moves) return "A started game can't be rewritten or deleted";

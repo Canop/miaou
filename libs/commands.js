@@ -1,6 +1,7 @@
 const	path = require('path'),
 	Promise = require("bluebird"),
 	server = require('./server.js'),
+	commandParsingRegex = /^\s*(@\w[\w\-]{2,}#?\d*\s+)?!!(\w+)\s*([^\n]*)/,
 	commands = {}
 
 var	all = [];
@@ -94,7 +95,7 @@ exports.commands = commands;
 // may return a promise
 // called with context being a db connection
 exports.onMessage = function(shoe, m){
-	var cmdMatch = m.content.match(/^\s*(@\w[\w\-]{2,}#?\d*\s+)?!!(\w+)\s*([^\n]*)/);
+	var cmdMatch = m.content.match(commandParsingRegex);
 	if (!cmdMatch) return {};
 	var cmd = commands[cmdMatch[2]];
 	if (!cmd || !cmd.fun) throw 'Command "' + cmdMatch[2] + '" not found';
@@ -104,7 +105,7 @@ exports.onMessage = function(shoe, m){
 // may return a promise
 // called with context being a db connection
 exports.onBotMessage = function(bot, m){
-	var cmdMatch = m.content.match(/^\s*(@\w[\w\-]{2,}#?\d*\s+)?!!(\w+)\s*([^\n]*)/);
+	var cmdMatch = m.content.match(commandParsingRegex);
 	if (!cmdMatch) return {};
 	var cmd = commands[cmdMatch[2]];
 	if (!cmd || !cmd.botfun) return;

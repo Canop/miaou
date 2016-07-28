@@ -77,7 +77,7 @@ exports.onNewShoe = function(shoe){
 	})
 }
 
-exports.onChangeMessage = function(shoe, m){
+exports.onReceiveMessage = function(shoe, m){
 	// what could we do to prevent cheating ?
 }
 

@@ -23,9 +23,8 @@ var	miaou,
 	io, db, bot,
 	plugins,
 	onSendMessagePlugins,
-	onNewMessagePlugins,
 	onNewShoePlugins,
-	onChangeMessagePlugins;
+	onReceiveMessagePlugins;
 
 exports.configure = function(_miaou){
 	miaou = _miaou;
@@ -36,9 +35,8 @@ exports.configure = function(_miaou){
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
 	plugins = (config.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
 	onSendMessagePlugins = plugins.filter(p => p.onSendMessage );
-	onNewMessagePlugins = plugins.filter(p => p.onNewMessage );
 	onNewShoePlugins = plugins.filter(p => p.onNewShoe );
-	onChangeMessagePlugins = plugins.filter(p => p.onChangeMessage );
+	onReceiveMessagePlugins = plugins.filter(p => p.onReceiveMessage );
 	clientConfig = [
 		'maxMessageContentSize', 'minDelayBetweenMessages',
 		'maxAgeForMessageTotalDeletion', 'maxAgeForMessageEdition'
@@ -497,9 +495,8 @@ function handleUserInRoom(socket, completeUser){
 		} else {
 			m.created = seconds;
 		}
-		let plugins = m.id ? onChangeMessagePlugins : onNewMessagePlugins;
-		for (let i=0; i<plugins.length; i++) {
-			var error = plugins[i].onChangeMessage(shoe, m); // FIXME no onNewMessage ?
+		for (let i=0; i<onReceiveMessagePlugins.length; i++) {
+			var error = onReceiveMessagePlugins[i].onReceiveMessage(shoe, m);
 			if (error) { // we don't use trycatch for performance reasons
 				return shoe.error(error, m.content);
 			}
