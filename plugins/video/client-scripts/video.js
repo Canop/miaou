@@ -17,7 +17,6 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		if (~this.index) this.ready[this.index] = true;
 	}
 	VD.prototype.render = function($c){ // renders the VD in a message, called only once
-		$c.css('background', '#F0EAD6');
 		if (this.index===-1) {
 			$c.text(this.usernames[0] + " proposed a video/audio chat to " + this.usernames[1]);
 			return;
