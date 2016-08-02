@@ -704,6 +704,7 @@ function handleUserInRoom(socket, completeUser){
 			strIds = memroom.notables.map(m => m.id ).join(' ');
 		if (!shoe.room) return;
 		if (vote.level==='pin' && !(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		var	bo = bench.start("vote");
 		db.on([shoe.room.id, shoe.publicUser.id, vote.mid, vote.level])
 		.spread(db[vote.action==='add'?'addVote':'removeVote'])
 		.then(function(um){ // TODO most often we don't need the message, don't query it
@@ -742,7 +743,10 @@ function handleUserInRoom(socket, completeUser){
 			}
 		})
 		.catch(err => console.log('ERR in vote handling:', err))
-		.finally(db.off);
+		.finally(function(){
+			this.off();
+			bo.end();
+		});
 	})
 	.on('wat', function(roomId){
 		db.on([roomId, shoe.publicUser.id])
