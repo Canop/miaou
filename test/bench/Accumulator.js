@@ -17,7 +17,6 @@ buster.testCase("simple stats", {
 		for (var i=0; i<M; i++) a.add(1);
 		buster.assert.equals(a.avg(), 1);
 		buster.assert.equals(a.stdDev(), 0);
-		buster.assert.equals(a.naiveStdDev(), 0);
 	},
 	"constant (100M x 1M)": function(){
 		var a = new Accumulator();
