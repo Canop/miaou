@@ -10,30 +10,45 @@
 // all timings here are in microseconds
 
 const	process = require("process"),
+	startTime = Date.now(),
 	benchs = new Map;
 
 exports.configure = function(_miaou){
 	return this;
 }
 
-class Bench{
+// The exported Accumulator makes it possible to iteratively compute
+// mean, variance and standard deviation on big populations without
+// keeping them in memory.
+// It's based on the Wedford algorithm:
+//  https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm
+class Accumulator{
 	constructor(name){
 		this.name = name;
 		this.n = 0; // number of completed operations
-		this.durationSum = 0;
-		this.durationSquareSum = 0;
+		this.mean = 0;
+		this.m2 = 0;
 	}
 	add(micros){
 		this.n++;
+		var delta = micros - this.mean;
+		this.mean += delta / this.n;
+		this.m2 += delta*(micros - this.mean);
+
 		this.durationSum += micros;
 		this.durationSquareSum += micros*micros;
 	}
 	avg(){
-		return this.durationSum / this.n;
+		return this.mean;
+	}
+	sampleVariance(){
+		return this.m2/(this.n-1);
+	}
+	populationVariance(){
+		return this.m2/this.n;
 	}
 	stdDev(){
-		var s = this.durationSum/this.n;
-		return Math.sqrt(this.durationSquareSum/this.n - s*s);
+		return Math.sqrt(this.m2/this.n);
 	}
 }
 
@@ -43,8 +58,10 @@ class BenchOperation{
 		this.starthrtime = process.hrtime();
 	}
 	end(){
-		var diff = process.hrtime(this.starthrtime);
-		this.bench.add(diff[0]*1e6 + diff[1]/1e3);
+		var	diff = process.hrtime(this.starthrtime),
+			micros = diff[0]*1e6 + diff[1]/1e3;
+		this.bench.add(micros);
+		return micros;
 	}
 }
 
@@ -58,26 +75,40 @@ exports.dump = function(){
 
 exports.start = function(name){
 	var bench = benchs.get(name);
-	if (!bench) benchs.set(name, bench = new Bench(name));
+	if (!bench) benchs.set(name, bench = new Accumulator(name));
 	return new BenchOperation(bench);
 }
 
 function fmt(num, prec){
 	if (!num) return ' ';
-	var s = num<100 ? num.toFixed(prec||3) : Math.round(num).toString();
-	return s.replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
+	if (num<100) return num.toPrecision(prec||2);
+	return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
+}
+
+function fmtDuration(t){
+	var d = t/86400000|0;
+	return (d ? d+"d ":"")+(new Date(t-d|0)).toUTCString().replace(/.*(\d{2}):(\d{2}):(\d{2}).*/, "$1h $2m $3s");
 }
 
 function doCommand(ct){
-	var c = "Miaou Server Operation Durations:\n";
+	var c = "Miaou Server started on " + Date(startTime) + "\n";
+	c += "Uptime: " + fmtDuration((Date.now()-startTime))+ "\n";
+	c += "Operation Durations:\n";
 	c += "Type | Operations | Average (ms) | Std Dev (ms) | Sum (s)\n";
 	c += ":-|:-:|:-:|:-:|:-:\n";
 	c += Array.from(benchs.values())
+	.filter(b => b.n > 2)
 	.sort((a, b) =>
 		a.name < b.name ? -1 : 1
-	).map(b =>
-		b.name + "|" + b.n  + "|" + fmt(b.avg()/1e3, 1) + "|" + fmt(b.stdDev()/1e3, 1) + "|" + fmt(b.durationSum/1e6)
-	).join("\n");
+	)
+	.map(b =>
+		b.name + "|"
+		+ b.n  + "|"
+		+ fmt(b.avg()/1e3) + "|"
+		+ fmt(b.stdDev()/1e3) + "|"
+		+ fmt(b.durationSum/1e6)
+	)
+	.join("\n");
 	ct.reply(c);
 }
 
@@ -88,3 +119,5 @@ exports.registerCommands = function(registerCommand){
 		help:"Usage : `!!perfs` lists performance information on some miaou internals",
 	});
 }
+
+exports.Accumulator = Accumulator;

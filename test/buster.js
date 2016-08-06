@@ -14,6 +14,7 @@ config["all"] = {
         "ludogene/tribo.js",
         "stackoverflow/url.js",
         "naming/name-cleaning.js",
-	"db/sql.js"
+	"db/sql.js",
+	"bench/Accumulator.js",
     ]	
 };
