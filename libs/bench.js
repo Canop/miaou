@@ -28,15 +28,14 @@ class Accumulator{
 		this.n = 0; // number of completed operations
 		this.mean = 0;
 		this.m2 = 0;
+		this.sum = 0;
 	}
 	add(micros){
 		this.n++;
 		var delta = micros - this.mean;
 		this.mean += delta / this.n;
 		this.m2 += delta*(micros - this.mean);
-
-		this.durationSum += micros;
-		this.durationSquareSum += micros*micros;
+		this.sum += micros;
 	}
 	avg(){
 		return this.mean;
@@ -99,14 +98,14 @@ function doCommand(ct){
 	c += Array.from(benchs.values())
 	.filter(b => b.n > 2)
 	.sort((a, b) =>
-		a.name < b.name ? -1 : 1
+		a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
 	)
 	.map(b =>
 		b.name + "|"
 		+ b.n  + "|"
 		+ fmt(b.avg()/1e3) + "|"
 		+ fmt(b.stdDev()/1e3) + "|"
-		+ fmt(b.durationSum/1e6)
+		+ (Math.round(b.sum/1e6) || '')
 	)
 	.join("\n");
 	ct.reply(c);
