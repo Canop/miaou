@@ -1,4 +1,4 @@
-var fmt = require("./miaou.format.node.js"),
+var	fmt = require("./miaou.format.node.js"),
 	buster = require("buster");
 	
 function t(s,r){
