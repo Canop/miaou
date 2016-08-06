@@ -152,7 +152,7 @@ function doStats(ct){
 
 	/* eslint-enable max-len */
 
-	var query = psname ? this.queryRowsBench(sql, args, psname) : this.queryRows(sql, args);
+	var query = psname ? this.queryRows(sql, args, psname) : this.queryRows(sql, args, "fuzzy stats", false);
 	return query.then(function(rows){
 		var c;
 		if (!rows.length) {

@@ -15,32 +15,39 @@ function addAlert(roomId, messageId, userId){
 	return this.execute(
 		"insert into attention_alert (message, room, creator)"+
 		" select id, room, $3 from message where id=$1 and room=$2",
-		[messageId, roomId, userId]
+		[messageId, roomId, userId],
+		"attention / add_alert"
 	)
 }
 
 function acknowledgeAlert(messageId, userId){
 	return this.execute(
 		"insert into attention_seen (message, player) values ($1,$2)",
-		[messageId, userId]
+		[messageId, userId],
+		"attention / ack_alert"
 	)
 }
 function removeAlert(roomId, messageId){
 	return this.execute(
 		"delete from attention_alert where room=$1 and message=$2",
-		[roomId, messageId]
+		[roomId, messageId],
+		"attention / delete_alert"
 	).then(function(res){
 		if (!res.rowCount) throw "no alert to remove";
 		return this.execute(
-			"delete from attention_seen where message=$1", [messageId]
+			"delete from attention_seen where message=$1",
+			[messageId],
+			"attention / delete_alert_seen"
 		);
 	});
 }
 function getAlert(messageId, userId){
-	return this.queryRow(
+	return this.queryOptionalRow(
 		"select a.message, a.creator, a.room, s.player as seen"+
 		" from attention_alert a left join attention_seen s on a.message=s.message"+
-		" where a.message=$1", [messageId], true
+		" where a.message=$1",
+		[messageId],
+		"attention / get_alert"
 	);
 }
 exports.onNewShoe = function(shoe){

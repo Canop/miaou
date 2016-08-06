@@ -75,7 +75,6 @@ exports.mem = function(roomId){
 		return memroom;
 	}
 	memroom = new MemRoom(roomId);
-	console.log("memroom", roomId, "-> start load");
 	return memroom.load(this);
 }
 

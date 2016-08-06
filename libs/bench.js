@@ -105,7 +105,7 @@ function doCommand(ct){
 		+ b.n  + "|"
 		+ fmt(b.avg()/1e3) + "|"
 		+ fmt(b.stdDev()/1e3) + "|"
-		+ (Math.round(b.sum/1e6) || '')
+		+ (Math.round(b.sum/1e6) || ' ')
 	)
 	.join("\n");
 	ct.reply(c);

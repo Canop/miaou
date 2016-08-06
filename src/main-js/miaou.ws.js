@@ -65,7 +65,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('get_room', function(unhandledMessage){
 			console.log("emitting enter in get_room");
 			socket.emit('enter', locals.room.id);
-			socket.emit('message', unhandledMessage);
+			if (unhandledMessage) socket.emit("message", unhandledMessage);
 		})
 		.on('message', messagesIn)
 		.on('messages', messagesIn)

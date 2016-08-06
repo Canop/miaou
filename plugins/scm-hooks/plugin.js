@@ -55,14 +55,17 @@ function watchRepo(ct, provider, repo){
 	return db.on()
 	.then(function(){
 		return this.queryRow(
-			"select repo, nb_calls from scm_hook where provider=$1 and repo ilike $2", [provider.key, repo]
+			"select repo, nb_calls from scm_hook where provider=$1 and repo ilike $2",
+			[provider.key, repo],
+			"scm-hooks / repo"
 		); // throw NRE if unknown
 	})
 	.then(function(gh){
 		console.log("SCM Hook found:", gh);
 		return this.queryRow(
 			"insert into scm_hook_room (provider, repo, room) values($1,$2,$3) returning *",
-			[provider.key, gh.repo, ct.shoe.room.id]
+			[provider.key, gh.repo, ct.shoe.room.id],
+			"scm-hooks / insert hook_room"
 		);
 	})
 	.then(function(ghr){
@@ -82,7 +85,8 @@ function unwatchRepo(ct, provider, repo){
 	.then(function(){
 		return this.execute(
 			"delete from scm_hook_room where provider=$1 and repo=$2 and room=$3",
-			[provider.key, repo, ct.shoe.room.id]
+			[provider.key, repo, ct.shoe.room.id],
+			"scm-hooks / delete hook_room"
 		);
 	})
 	.then(function(){
@@ -95,7 +99,8 @@ function listRepos(ct, provider){
 	.then(function(){
 		return this.queryRows(
 			"select repo from scm_hook_room where provider=$1 and room=$2",
-			[provider.key, ct.shoe.room.id]
+			[provider.key, ct.shoe.room.id],
+			"scm-hooks / delete room_repos"
 		);
 	})
 	.then(function(rows){
@@ -146,7 +151,8 @@ function scmCalling(provider, req, res){
 	.then(function(){
 		return this.execute(
 			"update scm_hook set nb_calls=nb_calls+1 where provider=$1 and repo=$2",
-			[provider.key, anal.repo]
+			[provider.key, anal.repo],
+			"scm-hooks / update hook"
 		);
 	})
 	.then(function(res){
@@ -154,14 +160,16 @@ function scmCalling(provider, req, res){
 			console.log("NEW HOOK");
 			return this.execute(
 				"insert into scm_hook (provider, repo, nb_calls) values($1,$2,1)",
-				[provider.key, anal.repo]
+				[provider.key, anal.repo],
+				"scm-hooks / insert hook"
 			);
 		}
 	})
 	.then(function(){
 		return this.queryRows(
 			"select room from scm_hook_room where provider=$1 and repo=$2",
-			[provider.key, anal.repo]
+			[provider.key, anal.repo],
+			"scm-hooks / romm_hook"
 		);
 	})
 	.then(function(rows){

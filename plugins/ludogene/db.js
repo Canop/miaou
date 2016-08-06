@@ -8,12 +8,15 @@ exports.getGameMessages = function(con, roomId){
 		query = con.queryRows(
 			"select message.id, room, content, created, changed from message join room on message.room=room.id"+
 			" where room=$1 and content like '!!game %' order by message.id",
-			[roomId]
+			[roomId],
+			"ludogene / room_game_messages"
 		);
 	} else {
 		query = con.queryRows(
 			"select message.id, room, content, created, changed from message join room on message.room=room.id"+
-			" where room.private is false and content like '!!game %' order by message.id"
+			" where room.private is false and content like '!!game %' order by message.id",
+			[],
+			"ludogene / game_messages"
 		);
 	}
 	return query.map(function(m){
@@ -36,7 +39,8 @@ exports.cleanOldInvitations = function(db, age){
 			"update message set content = replace(content, '\"ask\"', '\"refused\"')"
 			+ " where content ~ '!!game @\\w[\\w-]{2,19} \\{\"type\":\"\\w+\",\"status\":\"ask\"'"
 			+ " and created<$1",
-			[(Date.now()/1000-age)|0]
+			[(Date.now()/1000-age)|0],
+			"ludogene / auto_decline"
 		);
 	}).then(function(res){
 		console.log("Removed", res.rowCount, "old invitation(s)");

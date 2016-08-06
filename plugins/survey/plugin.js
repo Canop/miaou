@@ -16,20 +16,24 @@ function wsvote(shoe, userdata){
 	.then(function(){
 		return this.execute(
 			"delete from survey_vote where message=$1 and player=$2",
-			[mid, shoe.completeUser.id]
+			[mid, shoe.completeUser.id],
+			"survey / remove_vote"
 		);
 	})
 	.then(function(){
 		if (userdata.vote >= 0) {
 			return this.execute(
 				"insert into survey_vote (message, player, item) values ($1, $2, $3)",
-				[mid, shoe.completeUser.id, userdata.vote]
+				[mid, shoe.completeUser.id, userdata.vote],
+				"survey / insert_vote"
 			);
 		}
 	})
 	.then(function(){
 		return this.queryRows(
-			"select item, count(*) nb from survey_vote where message=$1 group by item", [mid]
+			"select item, count(*) nb from survey_vote where message=$1 group by item",
+			[mid],
+			"survey / list_votes"
 		);
 	})
 	.then(function(rows){
@@ -47,14 +51,18 @@ function wsvotes(shoe, mid){
 	var data = {mid:mid};
 	db.on()
 	.then(function(){
-		return this.queryRow(
-			"select item from survey_vote where message=$1 and player=$2", [mid, shoe.completeUser.id], true
+		return this.queryOptionalRow(
+			"select item from survey_vote where message=$1 and player=$2",
+			[mid, shoe.completeUser.id],
+			"survey / user vote"
 		);
 	})
 	.then(function(row){
 		data.vote = row ? row.item : -1;
 		return this.queryRows(
-			"select item, count(*) nb from survey_vote where message=$1 group by item", [mid]
+			"select item, count(*) nb from survey_vote where message=$1 group by item",
+			[mid],
+			"survey / list_votes"
 		);
 	})
 	.then(function(rows){

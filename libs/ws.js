@@ -235,6 +235,14 @@ function handleUserInRoom(socket, completeUser){
 		watchset = new Set, // set of watched rooms ids (if any)
 		welcomed = false,
 		send;
+	
+	function check(){
+		if (shoe.room) return;
+		socket.emit("get_room");
+		console.log("missing room in socket");
+		return true;
+	}
+
 	socket
 	.on('completeusername', function(query, cb){
 		if (!shoe.room || !query.start) return;
@@ -279,7 +287,7 @@ function handleUserInRoom(socket, completeUser){
 		popon(socketWaitingApproval, o => o.socket===socket );
 	})
 	.on('enter', function(roomId){
-		var op = bench.start("WS / Room Entry");
+		var op = bench.start("ws / Room Entry");
 		var now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now); // time synchronization
 		if (!roomId) {
@@ -468,7 +476,7 @@ function handleUserInRoom(socket, completeUser){
 		var	now = Date.now(),
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
 			seconds = now/1000|0,
-			benchOp = bench.start("WS / message"),
+			benchOp = bench.start("ws / message"),
 			content = message.content.replace(/\s+$/, '');
 		if (content.length>maxContentLength) {
 			shoe.error('Message too big, consider posting a link instead', content);
@@ -699,12 +707,12 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	})
 	.on('vote', function(vote){
+		if (check()) return;
 		var	changedMessageIsInNotables,
 			updatedMessage,
 			strIds = memroom.notables.map(m => m.id ).join(' ');
-		if (!shoe.room) return;
 		if (vote.level==='pin' && !(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		var	bo = bench.start("vote");
+		var bo = bench.start("ws / vote");
 		db.on([shoe.room.id, shoe.publicUser.id, vote.mid, vote.level])
 		.spread(db[vote.action==='add'?'addVote':'removeVote'])
 		.then(function(um){ // TODO most often we don't need the message, don't query it

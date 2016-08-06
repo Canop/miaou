@@ -30,7 +30,8 @@ function listPlayers(ct, gameType){
 		return this.queryRows(
 			"select author id, (select name from player where player.id=author) from message"+
 			" where star>0 and room=$1 and content not like '!!deleted%' group by author",
-			[roomId]
+			[roomId],
+			"ludogene / list players"
 		);
 	}).then(function(players){
 		var lines = [];
@@ -53,7 +54,8 @@ function startTournament(ct, gameType){
 			"select content from message where room=$1 and author=$2"+
 			" and content like '"+titles.list+"%'"+
 			" order by id desc limit 1",
-			[roomId, bot.id]
+			[roomId, bot.id],
+			"ludogene / fuzzy", false
 		);
 	}).then(function(m){
 		var players = [];
@@ -84,13 +86,15 @@ function getGames(roomId, gameType){
 		"select id from message where room=$1 and author=$2"+
 		" and content like '"+titles.start+"%'"+
 		" order by id desc limit 1",
-		[roomId, bot.id]
+		[roomId, bot.id],
+		"ludogene / fuzzy", false
 	)
 	.then(function(tournamentStartMessage){
 		return this.queryRows(
 			"select message.id, content, changed from message"+
 			" where room=$1 and id>$2 and content like '!!game %'",
-			[roomId, tournamentStartMessage.id]
+			[roomId, tournamentStartMessage.id],
+			"ludogene / tournament messages"
 		);
 	})
 	.map(function(m){

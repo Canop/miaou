@@ -26,7 +26,8 @@ function startPeriodicAccessRequestCleaning(miaou){
 			return this.execute(
 				"update access_request set denied=$1, deny_message=$2"
 				+ " where denied is null and requested<$3",
-				[now, "Access Request Too Old - Automatic Deletion", now-maxAge]
+				[now, "Access Request Too Old - Automatic Deletion", now-maxAge],
+				"purge_old_access_requests", false
 			);
 		}).then(function(res){
 			console.log("Removed", res.rowCount, "old access request(s)");
@@ -56,6 +57,7 @@ exports.appGetAuths = function(req, res){
 	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
+		if (!room) throw new db.NoRowError();
 		room.path = server.roomPath(room);
 		return [
 			this.listRoomAuths(room.id),
@@ -89,6 +91,7 @@ exports.appPostAuths = function(req, res){
 	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(r){
+		if (!r) throw new db.NoRowError();
 		room = r;
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);
 		if (!exports.checkAtLeast(room.auth, 'admin')) {

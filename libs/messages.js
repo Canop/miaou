@@ -27,6 +27,7 @@ exports.appGetJsonLastMessages = function(req, res){
 	})
 	.then(function(messages){
 		res.json({ messages });
+		if (!messages.length) return;
 		var oldestMessageId = messages[messages.length-1].id;
 		return this.deleteLastRoomPings(roomId, req.user.id, oldestMessageId);
 	})

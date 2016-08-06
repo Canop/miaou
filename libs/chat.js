@@ -1,4 +1,4 @@
-const fs = require('fs'),
+const	fs = require('fs'),
 	path = require('path'),
 	auths = require('./auths.js'),
 	prefs = require('./prefs.js'),
@@ -27,6 +27,11 @@ exports.appGet = function(req, res){
 		]
 	})
 	.spread(function(room, ban, userPrefs){
+		if (!room) {
+			// not an error as it happens when there's no room id in url
+			res.redirect(server.url('/rooms'));
+			return;
+		}
 		room.path = server.roomPath(room);
 		req.session.room = room;
 		var theme = prefs.theme(userPrefs, req.query.theme);
@@ -42,19 +47,16 @@ exports.appGet = function(req, res){
 			});
 		}
 		var locals = {
-			me:req.user,
+			me: req.user,
 			room,
 			userPrefs,
-			pluginsToStart:clientSidePluginNames
+			pluginsToStart: clientSidePluginNames
 		};
 		if (server.mobile(req)) {
 			res.render('pad.mob.jade', {vars:locals});
 		} else {
 			res.render('pad.jade', {vars:locals, theme:theme});
 		}
-	}).catch(db.NoRowError, function(){
-		// not an error as it happens when there's no room id in url
-		res.redirect(server.url('/rooms'));
 	}).catch(function(err){
 		server.renderErr(res, err);
 	}).finally(db.off);
