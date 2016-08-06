@@ -1174,8 +1174,14 @@ proto._query = function(sql, args, name, useANamedPreparedStatement){
 				console.log("Slow query", name, "(" + duration + " ms)");
 				logQuery(sql, args);
 			}
-			if (err) reject(err);
-			else resolve([res.rows, res]);
+			if (err) {
+				console.log("DB query error in " + name);
+				console.log(err.message);
+				logQuery(sql, args);
+				reject(err);
+			} else {
+				resolve([res.rows, res]);
+			}
 		});
 	}).bind(this);
 }
