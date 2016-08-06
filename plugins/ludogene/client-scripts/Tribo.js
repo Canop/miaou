@@ -3,6 +3,9 @@
 // A move is encoded in one character
 
 (function(){
+	
+	// optional benchmarking (only server side)
+	var bench = (typeof require==="function" && require("../../../libs/bench.js")) || null;
 
 	// returns a square matrix filled with the provided value
 	function matrix(s, v){
@@ -85,8 +88,9 @@
 		computeZonesAndScores: function(g){
 			var nbmoves = g.moves.length;
 			if (nbmoves<6) return g.scores = [nbmoves+1>>1, nbmoves>>1];
+			var bo = bench && bench.start("Tribo / zones");
 			g.cellZone = matrix(10, null); // holds a pointer to the zone containing the cell
-			var c = g.cells,
+			var	c = g.cells,
 				zones = g.zones = [],
 				seen = matrix(10, -1),
 				hasMixZone = false;
@@ -132,6 +136,7 @@
 				g.status = "finished";
 				g.current = -1;
 			}
+			if (bo) bo.end();
 		}
 	}
 
