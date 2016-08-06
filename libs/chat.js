@@ -16,10 +16,15 @@ exports.configure = function(miaou){
 }
 
 exports.appGet = function(req, res){
+	var	roomId = +req.params[0],
+		userId = req.user.id;
+	if (!roomId) {
+		// not an error as it happens when there's no room id in url
+		res.redirect(server.url('/rooms'));
+		return;
+	}
 	db.on()
 	.then(function(){
-		var	roomId = +req.params[0],
-			userId = req.user.id;
 		return [
 			this.fetchRoomAndUserAuth(roomId, userId),
 			this.getRoomUserActiveBan(roomId, userId),
@@ -28,7 +33,7 @@ exports.appGet = function(req, res){
 	})
 	.spread(function(room, ban, userPrefs){
 		if (!room) {
-			// not an error as it happens when there's no room id in url
+			console.log("no room found for id", roomId);
 			res.redirect(server.url('/rooms'));
 			return;
 		}
