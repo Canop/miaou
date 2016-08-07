@@ -55,6 +55,7 @@ function dequeue(){
 // Requests are queued and only one at a time is done.
 exports.onSendMessage = function(shoe, m, send){
 	if (!m.content || !m.id ||!boxers.length) return;
+	var bo = bench.start("Boxer - analyze");
 	m.content.split('\n').forEach(function(line){
 		for (var i=0; i<boxers.length; i++) {
 			if (boxers[i].pattern.test(line)) {
@@ -69,5 +70,6 @@ exports.onSendMessage = function(shoe, m, send){
 			}
 		}
 	});
+	bo.end();
 }
 
