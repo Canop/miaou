@@ -788,7 +788,7 @@ proto.updateGetMessage = function(messageId, expr, userId){
 
 proto.getLastMessageId = function(roomId){
 	return this.queryRow(
-		"select max(id) from message where room=$1",
+		"select max(id) as id from message where room=$1",
 		[roomId],
 		"last_message_id"
 	);
