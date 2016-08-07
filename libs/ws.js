@@ -393,6 +393,7 @@ function handleUserInRoom(socket, completeUser){
 		console.log('socket.io error:', e);
 	})
 	.on('get_around', function(data){
+		var bo = bench.start("ws / get_around");
 		db.on()
 		.then(function(){
 			return emitMessages.call(this, shoe, false, nbMessagesBeforeTarget+1, '<=', data.target)
@@ -400,6 +401,7 @@ function handleUserInRoom(socket, completeUser){
 			return emitMessages.call(this, shoe, true, nbMessagesAfterTarget, '>', data.target)
 		}).then(function(){
 			socket.emit('go_to', data.target);
+			bo.end();
 		}).finally(db.off);
 	})
 	.on('get_message', function(mid){
@@ -423,6 +425,7 @@ function handleUserInRoom(socket, completeUser){
 	.on('grant_access', function(userId){
 		if (!shoe.room) return;
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		var bo = bench.start("ws / grant_access");
 		db.on(userId)
 		.then(db.getUserById)
 		.then(function(user){
@@ -438,6 +441,7 @@ function handleUserInRoom(socket, completeUser){
 			], shoe.publicUser.id, shoe.room);
 		}).then(function(){
 			exports.emitAccessRequestAnswer(shoe.room.id, userId, true);
+			bo.end();
 		}).catch(function(e){
 			shoe.error(e);
 		}).finally(db.off);
@@ -647,6 +651,7 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('request', function(request){ // not called from chat but from request.jade
 		var roomId = request.room, publicUser = shoe.publicUser;
+		var bo = bench.start("ws / request access");
 		console.log(publicUser.name + ' requests access to room ' + roomId);
 		db.on()
 		.then(function(){
@@ -662,6 +667,7 @@ function handleUserInRoom(socket, completeUser){
 			socketWaitingApproval.push({
 				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
 			});
+			bo.end();
 		})
 		.catch(err => console.log(err)) // well...
 		.finally(db.off);
