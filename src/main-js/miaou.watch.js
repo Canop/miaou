@@ -30,7 +30,6 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 
 	// w must be {id:roomId,name:roomname,nbunseen}
 	watch.add = function(watches){
-		console.log("watch.add", watches);
 		watches.forEach(function(w){
 			if (w.id===locals.room.id) {
 				$('#room-watch').hide();
@@ -64,7 +63,6 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 	// called when the initial watches are passed by the server (i.e. The local state
 	//  is the persisted one)
 	watch.started = function(){
-		console.log("watch.started");
 		if (/#$/.test(location)) {
 			history.replaceState('', document.title, location.pathname+location.search);
 		}
@@ -90,7 +88,6 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 	}
 
 	watch.incr = function(incr){
-		console.log("watch incr", incr);
 		if (incr.f===locals.me.id) {
 			console.log("dismissing watch increment from self");
 			return;

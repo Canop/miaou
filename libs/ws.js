@@ -1,4 +1,4 @@
-const	apiversion = 59,
+const	apiversion = 60,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -286,31 +286,35 @@ function handleUserInRoom(socket, completeUser){
 		}
 		popon(socketWaitingApproval, o => o.socket===socket );
 	})
-	.on('enter', function(roomId){
-		var op = bench.start("ws / Room Entry");
-		var now = Date.now()/1000|0;
+	.on('enter', function(entry){
+		var	op = bench.start("ws / Room Entry"),
+			now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now); // time synchronization
-		if (!roomId) {
+		if (typeof entry !== "object") {
+			entry = { roomId: +entry };
+		}
+		console.log(entry.nbEntries ? "RE-ENTRY" : "Entry", shoe.publicUser.name, entry);
+		if (!entry.roomId) {
 			console.log("WARN : user enters no room");
 			return;
 		}
-		if (shoe.room && roomId==shoe.room.id) {
+		if (shoe.room && entry.roomId==shoe.room.id) {
 			console.log('WARN : user already in room'); // how does that happen ?
 			return;
 		}
 		socket.emit('apiversion', apiversion);
 		send = function(v, m){
-			io.sockets.in(roomId).emit(v, clean(m));
+			io.sockets.in(entry.roomId).emit(v, clean(m));
 		}
 		db.on()
 		.then(function(){
-			return rooms.mem.call(this, roomId);
+			return rooms.mem.call(this, entry.roomId);
 		})
 		.then(function(mr){
 			memroom = mr;
 			return [
-				this.fetchRoomAndUserAuth(roomId, shoe.publicUser.id),
-				this.getRoomUserActiveBan(roomId, shoe.publicUser.id)
+				this.fetchRoomAndUserAuth(entry.roomId, shoe.publicUser.id),
+				this.getRoomUserActiveBan(entry.roomId, shoe.publicUser.id)
 			]
 		})
 		.spread(function(r, ban){
@@ -330,7 +334,7 @@ function handleUserInRoom(socket, completeUser){
 			}
 		}).then(function(){
 			return [
-				this.fetchUserPings(completeUser.id),
+				this.fetchUserPings(completeUser.id, entry.lastMessageSeen),
 				this.listRecentUsers(shoe.room.id, 50),
 			]
 		}).spread(function(pings, recentUsers){
@@ -551,10 +555,10 @@ function handleUserInRoom(socket, completeUser){
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
-			if (m.id>memroom.lastMessageId) {
-				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
-			}
 			if (m.content && m.id) {
+				if (m.id>memroom.lastMessageId) {
+					io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
+				}
 				var r = /(?:^|\s)@(\w[\w\-]{2,})\b/g, ping;
 				while ((ping=r.exec(m.content))) {
 					pings.push(ping[1]);

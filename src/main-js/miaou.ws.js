@@ -5,6 +5,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 	ws.init = function(){
 		var	pingRegex = new RegExp('(^|\\s)@(room|here|'+locals.me.name+')\\b', 'i'),
 			info = { state:'connecting', start:Date.now() },
+			nbEntries = 0, // grows on disconnect+reconnect
 			socket = window.io.connect(location.origin);
 
 		ws.emit = socket.emit.bind(socket);
@@ -39,15 +40,26 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			hist.showPage();
 		}
 
-		socket
-		.on('ready', function(){
-			if (info.state === 'connected') {
-				console.log("already entered");
-				return;
+		function enter(){
+			var entry = {
+				roomId: locals.room.id,
+				nbEntries: nbEntries
+			};
+			if (nbEntries++) {
+				console.log("preparing RE-entry");
+				entry.lastMessageSeen = $("#messages .message").map(function(){
+					return +this.getAttribute("mid");
+				}).get().filter(Number).pop();
 			}
 			info.state = 'entering';
-			console.log("emitting enter in ready");
-			socket.emit('enter', locals.room.id);
+			console.log("-> enter", entry);
+			socket.emit("enter", entry);
+		}
+
+		socket
+		.on('ready', function(){
+			console.log("<- ready");
+			enter();
 		})
 		.on('apiversion', function(vers){
 			if (!miaou.apiversion) miaou.apiversion=vers;
@@ -63,8 +75,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			for (var key in commands) chat.commands[key] = commands[key];
 		})
 		.on('get_room', function(unhandledMessage){
+			// this should be mostly useless now
 			console.log("emitting enter in get_room");
-			socket.emit('enter', locals.room.id);
+			enter();
 			if (unhandledMessage) socket.emit("message", unhandledMessage);
 		})
 		.on('message', messagesIn)
@@ -73,6 +86,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('room', function(r){
 			if (locals.room.id!==r.id) {
 				console.log('SHOULD NOT HAPPEN!');
+				return;
 			}
 			locals.room = r;
 			localStorage['successfulLoginLastTime'] = "yes";
@@ -100,11 +114,13 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			watch.incrRequests(ar.room, -1);
 		})
 		.on('reconnect', function(){
-			$("#notifications").empty();
+			console.log("<- reconnect");
+			$("#notifications").empty(); // why ?
 			ws.notif.onOn();
+			enter();
 		})
 		.on('welcome', function(){
-			console.log("received welcome");
+			console.log("<- welcome");
 			info.state = 'connected';
 			gui.entered = true;
 			gui.scrollToBottom();
@@ -144,7 +160,15 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('hist', hist.showHist)
 		.on('pings', notif.pings)
 		.on('rm_ping', notif.removePing)
-		.on('disconnect', ws.notif.onOff)
+		.on('must_reenter', function(){
+			console.log("<- must_reenter");
+			enter();
+		})
+		.on('disconnect', function(){
+			console.log("<- disconnect");
+			info.state = 'disconnected';
+			ws.notif.onOff();
+		})
 		.on('enter', usr.showEntry)
 		.on('leave', usr.showLeave)
 		.on('miaou.error', md.showError)
@@ -155,7 +179,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('wat', watch.add)
 		.on('watch_incr', watch.incr)
 		.on('watch_raz', watch.raz)
-		.on('watch_started', watch.started)
+		.on('watch_started', function(){
+			console.log("<- watch_started");
+			watch.started();
+		})
 		.on('unwat', watch.remove)
 		.on('error', function(err){
 			// in case of a user having lost his rights, we don't want him to constantly try to connect

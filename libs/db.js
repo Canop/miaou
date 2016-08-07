@@ -857,16 +857,20 @@ proto.deleteAllUserPings = function(userId){
 	);
 }
 
-proto.fetchUserPings = function(userId){
-	return this.queryRows(
-		"select message.room r, room.name rname, player.name authorname, ping.message mid, content from ping"+
+proto.fetchUserPings = function(userId, after){
+	var	sql = "select message.room r, room.name rname, player.name authorname, ping.message mid, content from ping"+
 		" inner join message on message=message.id"+
 		" inner join player on author=player.id"+
 		" inner join room on room.id=ping.room"+
 		" where player=$1",
-		[userId],
-		"user_pings"
-	);
+		args = [userId],
+		name = "user_pings";
+	if (after) {
+		sql += " and ping.message>$2";
+		args.push(after);
+		name += "_after";
+	}
+	return this.queryRows(sql, args, name);
 }
 
 // returns the id and name of the rooms where the user has been pinged
