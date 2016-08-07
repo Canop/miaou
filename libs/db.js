@@ -86,7 +86,7 @@ proto.getUserById = function(id){
 		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey'+
 		' from player where id=$1',
 		[id],
-		"user_by_id", false
+		"user_by_id"
 	);
 }
 

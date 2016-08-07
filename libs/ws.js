@@ -233,16 +233,39 @@ function handleUserInRoom(socket, completeUser){
 		otherDialogRoomUser, // defined only in a dialog room
 		memroom,
 		watchset = new Set, // set of watched rooms ids (if any)
+		routes = new Map,
+		pendingEvent,
 		welcomed = false,
 		send;
 	
-	function check(){
-		if (shoe.room) return;
-		socket.emit("get_room");
-		console.log("missing room in socket");
-		return true;
+	// maps an event-type to a callback, for all events
+	// which need a room.
+	// Can't be used for event types using a callback
+	// The eventHandler must be a function taking
+	//  - an argument sent by the client
+	//  - a function which should be called on end
+	function on(eventType, eventHandler){
+		var wrapperHander = function(arg){
+			if (!shoe.room) {
+				if (!pendingEvent) {
+					// in order not to flood the server, we accept only one pending event
+					pendingEvent = { eventType, arg };
+				}
+				socket.emit("must_reenter");
+				console.log("missing room on " + eventType + ", emitting must_reenter");
+				return;
+			}
+			var bo = bench.start("ws / " + eventType);
+			eventHandler(arg, bo.end.bind(bo));
+		}
+		routes.set(eventType, wrapperHander);
+		socket.on(eventType, wrapperHander);
 	}
 
+	//-----------------
+	// special event handlers
+	// (either allow no route to be set, or are callback based)
+	
 	socket
 	.on('completeusername', function(query, cb){
 		if (!shoe.room || !query.start) return;
@@ -255,18 +278,6 @@ function handleUserInRoom(socket, completeUser){
 		})
 		.catch(err => console.log('ERR in PM :', err))
 		.finally(db.off);
-	})
-	.on('ban', function(ban){
-		console.log('ban event', ban);
-		auths.wsOnBan(shoe, ban);
-	})
-	.on('rm_ping', function(mid){
-		// remove the ping(s) related to that message and propagate to other sockets of same user
-		db.on([mid, shoe.publicUser.id])
-		.spread(db.deletePing)
-		.then(function(){
-			shoe.emitToAllSocketsOfUser('rm_ping', mid, true);
-		}).finally(db.off);
 	})
 	.on('disconnect', function(){
 		if (shoe.room) {
@@ -287,7 +298,7 @@ function handleUserInRoom(socket, completeUser){
 		popon(socketWaitingApproval, o => o.socket===socket );
 	})
 	.on('enter', function(entry){
-		var	op = bench.start("ws / Room Entry"),
+		var	op = bench.start("Room Entry"),
 			now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now); // time synchronization
 		if (typeof entry !== "object") {
@@ -367,6 +378,12 @@ function handleUserInRoom(socket, completeUser){
 				}
 			});
 		}).then(function(){
+			if (pendingEvent) {
+				var pe = pendingEvent;
+				console.log('pendingEvent:', pendingEvent);
+				pendingEvent = null;
+				routes.get(pe.eventType)(pe.arg);
+			}
 			op.end();
 		}).catch(db.NoRowError, function(){
 			shoe.error('Room not found');
@@ -374,30 +391,50 @@ function handleUserInRoom(socket, completeUser){
 			shoe.error(err);
 		}).finally(db.off)
 	})
-	.on('start_watch', function(){
-		db.on(completeUser.id)
-		.then(db.listUserWatches)
-		.then(function(watches){
-			socket.emit('wat', watches);
-			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
-			for (var w of watches) {
-				if (w.id!==shoe.room.id) {
-					socket.join('w'+w.id);
-					io.sockets.in(w.id).emit('enter', shoe.publicUser);
-				}
-				watchset.add(w.id);
-			}
-			socket.emit('watch_started');
+	.on('pre_request', function(request){ // not called from chat but from request.jade
+		var roomId = request.room, publicUser = shoe.publicUser;
+		console.log(publicUser.name + ' is on the request page for room ' + roomId);
+		socketWaitingApproval.push({
+			socket:socket, userId:publicUser.id, roomId:roomId
+		});
+	})
+	.on('request', function(request){ // not called from chat but from request.jade
+		var roomId = request.room, publicUser = shoe.publicUser;
+		var bo = bench.start("ws / request access");
+		console.log(publicUser.name + ' requests access to room ' + roomId);
+		db.on()
+		.then(function(){
+			return this.deleteAccessRequests(roomId, publicUser.id)
 		})
-		.catch(function(err){
-			shoe.error(err);
-		}).finally(db.off)
+		.then(function(){
+			return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0, 200))
+		})
+		.then(function(ar){
+			ar.user = publicUser;
+			socket.broadcast.to(roomId).to('w'+roomId).emit('request', ar);
+			popon(socketWaitingApproval, o => o.socket===socket ); // cleans the pre_request
+			socketWaitingApproval.push({
+				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
+			});
+			bo.end();
+		})
+		.catch(err => console.log(err)) // well...
+		.finally(db.off);
 	})
 	.on('error', function(e){
 		console.log('socket.io error:', e);
-	})
-	.on('get_around', function(data){
-		var bo = bench.start("ws / get_around");
+	});
+
+	//-----------------
+	// standard event handlers
+
+	on('ban', function(ban, done){
+		console.log('ban event', ban);
+		auths.wsOnBan(shoe, ban);
+		done();
+	});
+
+	on('get_around', function(data, done){
 		db.on()
 		.then(function(){
 			return emitMessages.call(this, shoe, false, nbMessagesBeforeTarget+1, '<=', data.target)
@@ -405,10 +442,11 @@ function handleUserInRoom(socket, completeUser){
 			return emitMessages.call(this, shoe, true, nbMessagesAfterTarget, '>', data.target)
 		}).then(function(){
 			socket.emit('go_to', data.target);
-			bo.end();
+			done();
 		}).finally(db.off);
-	})
-	.on('get_message', function(mid){
+	});
+
+	on('get_message', function(mid, done){
 		db.on(+mid)
 		.then(db.getMessage)
 		.then(function(m){
@@ -416,20 +454,27 @@ function handleUserInRoom(socket, completeUser){
 			shoe.pluginTransformAndSend(m, function(v, m){
 				shoe.emit(v, clean(m));
 			});
+			done();
 		}).finally(db.off);
-	})
-	.on('get_newer', function(cmd){
+	});
+
+	on('get_newer', function(cmd, done){
+		db.on([shoe, true, nbMessagesPerPage, '>=', cmd.from, '<', cmd.until])
+		.spread(emitMessages)
+		.then(done)
+		.finally(db.off);
+	});
+
+	on('get_older', function(cmd, done){
 		if (!shoe.room) return;
-		db.on([shoe, true, nbMessagesPerPage, '>=', cmd.from, '<', cmd.until]).spread(emitMessages).finally(db.off);
-	})
-	.on('get_older', function(cmd){
-		if (!shoe.room) return;
-		db.on([shoe, false, nbMessagesPerPage, '<=', cmd.from, '>', cmd.until]).spread(emitMessages).finally(db.off);
-	})
-	.on('grant_access', function(userId){
-		if (!shoe.room) return;
+		db.on([shoe, false, nbMessagesPerPage, '<=', cmd.from, '>', cmd.until])
+		.spread(emitMessages)
+		.then(done)
+		.finally(db.off);
+	});
+
+	on('grant_access', function(userId, done){
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		var bo = bench.start("ws / grant_access");
 		db.on(userId)
 		.then(db.getUserById)
 		.then(function(user){
@@ -445,13 +490,13 @@ function handleUserInRoom(socket, completeUser){
 			], shoe.publicUser.id, shoe.room);
 		}).then(function(){
 			exports.emitAccessRequestAnswer(shoe.room.id, userId, true);
-			bo.end();
+			done();
 		}).catch(function(e){
 			shoe.error(e);
 		}).finally(db.off);
-	})
-	.on('hist', function(search){ // request for histogram data
-		if (!shoe.room) return;
+	});
+
+	on('hist', function(search, done){ // request for histogram data
 		db.on(shoe.room.id)
 		.then(db.messageHistogram)
 		.then(function(hist){
@@ -469,13 +514,11 @@ function handleUserInRoom(socket, completeUser){
 				}
 			}
 			socket.emit('hist', {search:search, hist:hist});
+			done();
 		}).finally(db.off);
-	})
-	.on('message', function(message){
-		if (!shoe.room) {
-			console.log('no room. Asking client');
-			return socket.emit('get_room', message);
-		}
+	});
+
+	on('message', function(message, done){
 		message.content = message.content||"";
 		if (typeof message.content !== "string" || !(message.id||message.content)) {
 			console.log("invalid incoming message");
@@ -484,7 +527,6 @@ function handleUserInRoom(socket, completeUser){
 		var	now = Date.now(),
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
 			seconds = now/1000|0,
-			benchOp = bench.start("ws / message"),
 			content = message.content.replace(/\s+$/, '');
 		if (content.length>maxContentLength) {
 			shoe.error('Message too big, consider posting a link instead', content);
@@ -518,19 +560,23 @@ function handleUserInRoom(socket, completeUser){
 			}
 		}
 
-		db.on().then(function(){
+		db.on()
+		.then(function(){
 			if (otherDialogRoomUser) {
 				return this.tryInsertWatch(shoe.room.id, otherDialogRoomUser.id);
 			}
-		}).then(function(){
+		})
+		.then(function(){
 			return commands.onMessage.call(this, shoe, m);
-		}).then(function(ct){
+		})
+		.then(function(ct){
 			commandTask = ct;
 			return [
 				commandTask.nostore && !m.id ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition),
 				commandTask
 			]
-		}).spread(function(m, commandTask){
+		})
+		.spread(function(m, commandTask){
 			var pings = []; // names of pinged users that weren't in the room
 			if (commandTask.silent) return pings;
 			if (m.changed) {
@@ -568,7 +614,8 @@ function handleUserInRoom(socket, completeUser){
 				}
 			}
 			return pings;
-		}).reduce(function(pings, ping){ // expanding special pings (i.e. @room)
+		})
+		.reduce(function(pings, ping){ // expanding special pings (i.e. @room)
 			if (ping==='room') {
 				if (!shoe.room.private && shoe.room.auth!=='admin' && shoe.room.auth!=='own') {
 					shoe.error("Only an admin can ping @room in a public room");
@@ -583,12 +630,15 @@ function handleUserInRoom(socket, completeUser){
 			}
 			pings.push(ping.toLowerCase());
 			return pings;
-		}, []).reduce(function(pings, ping){ // removing duplicates
+		}, [])
+		.reduce(function(pings, ping){ // removing duplicates
 			if (!~pings.indexOf(ping)) pings.push(ping);
 			return pings;
-		}, []).then(function(pings){
+		}, [])
+		.then(function(pings){
 			return pings
-		}).filter(function(unsentping){
+		})
+		.filter(function(unsentping){
 			if (botMgr.onPing(unsentping, shoe, m)) return false; // it's a bot
 			if (shoe.userSocket(unsentping)) return false; // no need to ping
 			if (!shoe.room.private) return true;
@@ -599,7 +649,8 @@ function handleUserInRoom(socket, completeUser){
 				// todo different message for no user
 				shoe.error(unsentping+" has no right to this room and wasn't pinged");
 			});
-		}).then(function(remainingpings){
+		})
+		.then(function(remainingpings){
 			if (remainingpings.length) {
 				for (var username of remainingpings) {
 					// user can enter the room, we notify him with a cross-room ping in the other rooms
@@ -616,13 +667,17 @@ function handleUserInRoom(socket, completeUser){
 				}
 				return this.storePings(shoe.room.id, remainingpings, m.id);
 			}
-		}).then(function(){
-			benchOp.end();
-		}).catch(function(e){
+		})
+		.then(function(){
+			done()
+		})
+		.catch(function(e){
 			shoe.error(e, m.content);
-		}).finally(db.off)
-	})
-	.on('mod_delete', function(ids){
+		})
+		.finally(db.off)
+	});
+
+	on('mod_delete', function(ids, done){
 		if (!shoe.room) return;
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
 		db.on(ids)
@@ -633,62 +688,72 @@ function handleUserInRoom(socket, completeUser){
 						// to mod_delete a message of another room
 			m.content = "!!deleted by:" + shoe.publicUser.id + ' on:'+ now + ' ' + m.content;
 			return this.storeMessage(m, true)
-		}).map(function(m){
+		})
+		.map(function(m){
 			io.sockets.in(shoe.room.id).emit('message', clean(m));
-		}).catch(function(err){
+		})
+		.then(done)
+		.catch(function(err){
 			shoe.error('error in mod_delete');
 			console.log('error in mod_delete', err);
-		}).finally(db.off);
-	})
-	.on('pm', function(otherUserId){
+		})
+		.finally(db.off);
+	});
+
+	on('pm', function(otherUserId, done){
 		db.on(otherUserId)
 		.then(function(){
 			return pm.openPmRoom.call(this, shoe, otherUserId);
-		}).finally(db.off);
-	})
-	.on('pre_request', function(request){ // not called from chat but from request.jade
-		var roomId = request.room, publicUser = shoe.publicUser;
-		console.log(publicUser.name + ' is on the request page for room ' + roomId);
-		socketWaitingApproval.push({
-			socket:socket, userId:publicUser.id, roomId:roomId
-		});
-	})
-	.on('request', function(request){ // not called from chat but from request.jade
-		var roomId = request.room, publicUser = shoe.publicUser;
-		var bo = bench.start("ws / request access");
-		console.log(publicUser.name + ' requests access to room ' + roomId);
-		db.on()
-		.then(function(){
-			return this.deleteAccessRequests(roomId, publicUser.id)
 		})
-		.then(function(){
-			return this.insertAccessRequest(roomId, publicUser.id, (request.message||'').slice(0, 200))
-		})
-		.then(function(ar){
-			ar.user = publicUser;
-			socket.broadcast.to(roomId).to('w'+roomId).emit('request', ar);
-			popon(socketWaitingApproval, o => o.socket===socket ); // cleans the pre_request
-			socketWaitingApproval.push({
-				socket:socket, userId:publicUser.id, roomId:roomId, ar:ar
-			});
-			bo.end();
-		})
-		.catch(err => console.log(err)) // well...
+		.then(done)
 		.finally(db.off);
-	})
-	.on('search', function(search){
-		if (!shoe.room) return;
+	});
+
+	on('rm_ping', function(mid, done){
+		// remove the ping(s) related to that message and propagate to other sockets of same user
+		db.on([mid, shoe.publicUser.id])
+		.spread(db.deletePing)
+		.then(function(){
+			shoe.emitToAllSocketsOfUser('rm_ping', mid, true);
+			done();
+		}).finally(db.off);
+	});
+
+	on('search', function(search, done){
 		db.on([search, shoe.publicUser.id, shoe.room])
 		.spread(fixSearchOptions)
 		.then(db.search)
-		.filter(m => !/^!!deleted /.test(m.content) )
+		.filter(m => !/^!!deleted /.test(m.content))
 		.map(clean)
 		.then(function(results){
 			socket.emit('found', {results, search, mayHaveMore:results.length===search.pageSize});
-		}).finally(db.off);
+			done();
+		})
+		.finally(db.off);
+	});
+
+	on('start_watch', function(_, done){
+		db.on(completeUser.id)
+		.then(db.listUserWatches)
+		.then(function(watches){
+			socket.emit('wat', watches);
+			shoe.emitToAllSocketsOfUser('watch_raz', shoe.room.id);
+			for (var w of watches) {
+				if (w.id!==shoe.room.id) {
+					socket.join('w'+w.id);
+					io.sockets.in(w.id).emit('enter', shoe.publicUser);
+				}
+				watchset.add(w.id);
+			}
+			socket.emit('watch_started');
+			done();
+		})
+		.catch(function(err){
+			shoe.error(err);
+		}).finally(db.off)
 	})
-	.on('unpin', function(mid){
-		if (!shoe.room) return;
+
+	on('unpin', function(mid, done){
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
 		db.on([shoe.room.id, shoe.publicUser.id, mid])
 		.spread(db.unpin)
@@ -698,10 +763,12 @@ function handleUserInRoom(socket, completeUser){
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
 			return memroom.updateNotables(this);
 		})
+		.then(done)
 		.catch(err => console.log('ERR in vote handling:', err))
 		.finally(db.off);
-	})
-	.on('unwat', function(roomId){
+	});
+
+	on('unwat', function(roomId, done){
 		console.log(shoe.publicUser.name+' unwatches '+roomId);
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.deleteWatch)
@@ -713,16 +780,16 @@ function handleUserInRoom(socket, completeUser){
 			}
 			socket.broadcast.to(roomId).emit('leave', shoe.publicUser);
 			watchset.delete(roomId);
+			done();
 		})
 		.finally(db.off);
-	})
-	.on('vote', function(vote){
-		if (check()) return;
+	});
+
+	on('vote', function(vote, done){
 		var	changedMessageIsInNotables,
 			updatedMessage,
 			strIds = memroom.notables.map(m => m.id ).join(' ');
 		if (vote.level==='pin' && !(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		var bo = bench.start("ws / vote");
 		db.on([shoe.room.id, shoe.publicUser.id, vote.mid, vote.level])
 		.spread(db[vote.action==='add'?'addVote':'removeVote'])
 		.then(function(um){ // TODO most often we don't need the message, don't query it
@@ -763,10 +830,11 @@ function handleUserInRoom(socket, completeUser){
 		.catch(err => console.log('ERR in vote handling:', err))
 		.finally(function(){
 			this.off();
-			bo.end();
+			done();
 		});
-	})
-	.on('wat', function(roomId){
+	});
+
+	on('wat', function(roomId, done){
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.insertWatch) // we don't check the authorization because it's checked at selection
 		.then(function(){
@@ -781,14 +849,15 @@ function handleUserInRoom(socket, completeUser){
 				s.emit('wat', [{id:r.id, name:r.name, private:r.private, dialog:r.dialog}]);
 			}
 			socket.broadcast.to(roomId).emit('enter', shoe.publicUser);
+			done();
 		})
 		.catch(function(err){
 			shoe.error(err);
 		})
 		.finally(db.off);
-	})
-	.on('watch_raz', function(roomId){
-		if (!shoe.room) return;
+	});
+
+	on('watch_raz', function(roomId, done){
 		if (!roomId) {
 			roomId = shoe.room.id;
 		}
@@ -800,11 +869,11 @@ function handleUserInRoom(socket, completeUser){
 		.then(function(mr){
 			return this.updateWatch(roomId, shoe.publicUser.id, mr.lastMessageId);
 		})
+		.then(done)
 		.finally(db.off);
 	});
 
-
-	socket.emit('ready');
+	socket.emit('ready'); // tells the client it can starts entering the room, everything's bound
 }
 
 exports.listen = function(server, sessionStore, cookieParser){

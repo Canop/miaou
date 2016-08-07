@@ -51,6 +51,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 					return +this.getAttribute("mid");
 				}).get().filter(Number).pop();
 			}
+			if (info.state === "entering" || info.state === "connected") {
+				console.log("already " + info.state);
+				return;
+			}
 			info.state = 'entering';
 			console.log("-> enter", entry);
 			socket.emit("enter", entry);

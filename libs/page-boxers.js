@@ -21,7 +21,6 @@ function dequeue(){
 	currentTask = task;
 	var box = cache.get(task.line);
 	if (box !== undefined) {
-		console.log('box', task.line, 'found in cache');
 		return setTimeout(function(){
 			currentTask = null;
 			if (box) task.send('box', {mid:task.mid, from:task.line, to:box});
