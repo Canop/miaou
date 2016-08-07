@@ -28,14 +28,12 @@ class Accumulator{
 		this.n = 0; // number of completed operations
 		this.mean = 0;
 		this.m2 = 0;
-		this.sum = 0;
 	}
 	add(micros){
 		this.n++;
 		var delta = micros - this.mean;
 		this.mean += delta / this.n;
 		this.m2 += delta*(micros - this.mean);
-		this.sum += micros;
 	}
 	avg(){
 		return this.mean;
@@ -48,6 +46,9 @@ class Accumulator{
 	}
 	stdDev(){
 		return Math.sqrt(this.m2/this.n);
+	}
+	sum(){
+		return this.mean * this.n;
 	}
 }
 
@@ -105,7 +106,7 @@ function doCommand(ct){
 		+ b.n  + "|"
 		+ fmt(b.avg()/1e3) + "|"
 		+ fmt(b.stdDev()/1e3) + "|"
-		+ (Math.round(b.sum/1e6) || ' ')
+		+ (Math.round(b.sum()/1e6) || ' ')
 	)
 	.join("\n");
 	ct.reply(c);
