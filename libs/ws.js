@@ -605,7 +605,7 @@ function handleUserInRoom(socket, completeUser){
 				if (m.id>memroom.lastMessageId) {
 					io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
 				}
-				var r = /(?:^|\s)@(\w[\w\-]{2,})\b/g, ping;
+				var r = /(?:^|\s)@(\w[\w\-]{2,19})\b/g, ping;
 				while ((ping=r.exec(m.content))) {
 					pings.push(ping[1]);
 				}
