@@ -11,7 +11,7 @@
 				cursor: pointer;
 				&.active {
 					cursor: auto;
-					color: blue;
+					color: $emphasis-text-color;
 				}	
 			}
 		}
