@@ -217,8 +217,14 @@ miaou(function(fmt){
 
 	fmt.mdMcToHtml = function(md, username){
 		return md.replace(/^(?:@(\w[\w\-]{2,})#(\d+)\s?)?([\s\S]*)/, function(_, name, num, text){
-			return (num ? '<span class=reply rn="'+name+'" to='+num+'>&#xe81a;</span>' : '')
-				+ _mdTextToHtml(text, username);
+			var html = _mdTextToHtml(text, username);
+			if (num) {
+				html = '<span class=reply rn="'+name+'" to='+num+'>'
+				+ '&#xe82c;' // fontello icon-up-small
+				+ '</span>'
+				+ html;
+			}
+			return html;
 		});
 	}
 

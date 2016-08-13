@@ -117,7 +117,7 @@
 			width: 20px;
 			padding-top: 8px;
 			&::before {
-				content:"\e820";
+				content:"\e820"; // fontello icon-left-big
 			}
 		}
 		&.top {
@@ -127,7 +127,7 @@
 			top: 0;
 			padding-top: 4px;
 			&::before {
-				content:"\e822";
+				content:"\e822"; // fontello icon-top-big
 			}
 		}
 		&.right {
@@ -137,7 +137,7 @@
 			bottom: 20px;
 			padding-top: 8px;
 			&::before {
-				content:"\e821";
+				content:"\e821"; // fontello icon-right-big
 			}
 		}
 		&.bottom {
@@ -147,7 +147,7 @@
 			bottom: 0;
 			padding-top: 4px;
 			&::before {
-				content:"\e81f";
+				content:"\e81f"; // fontello icon-down-big
 			}
 		}
 		&:hover {

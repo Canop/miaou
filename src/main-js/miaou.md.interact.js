@@ -56,9 +56,16 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		infos.push(time.formatRelativeTime(message.created));
 		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ';
 		if (message.id) {
-			h += '<a class=link target=_blank href="'+links.permalink(message)+
-				'" title="permalink : right-click to copy">&#xe815;</a> ';
-			if (!gui.mobile) h += '<a class=makemwin title="float">&#xe81d;</a> ';
+			h += '<a class=link target=_blank href="'
+			+ links.permalink(message)
+			+ '" title="permalink : right-click to copy">'
+			+ '&#xe80e;' // fontello icon-link
+			+ '</a> ';
+			if (!gui.mobile) {
+				h += '<a class=makemwin title="float">'
+				+ '&#xe82a;' // fontello icon-window
+				+ '</a> ';
+			}
 			var possibleVotes = [];
 			if (usr.checkAuth('admin')) possibleVotes.push(chat.voteLevels[0]); // pin
 			if (message.author!==locals.me.id || usr.checkAuth('admin')) {

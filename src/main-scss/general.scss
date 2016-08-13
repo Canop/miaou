@@ -1,13 +1,8 @@
-@font-face {
-	font-family: 'fontello';
-	src: url('../../fontello.woff?5e35d164') format('woff');
-}
 .fontello {
 	font-family: "fontello";
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-
 body {
 	background: $bg-color;
 	font-family: Tahoma, Geneva, sans-serif;

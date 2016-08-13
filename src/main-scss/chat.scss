@@ -459,7 +459,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		color: $deleted-message-color;	
 	}
 	&::before {
-		content: "\e80d  deleted";
+		content: "\e81b  deleted"; // fontello icon-trash
 	}
 }
 
@@ -582,7 +582,7 @@ body.mobile .message-menu .vote {
 }
 #notable-messages:empty:after {
 	font-family: "fontello";
-	content: "\e813 Pin or \e808 Star a message to move it here";
+	content: "\e810 Pin or \e805 Star a message to move it here"; // fontello icon-pin icon-star
 	font-size: 85%;
 	opacity: .5;
 	text-align: center;
@@ -928,14 +928,6 @@ div#notifs {
 	font-family: "fontello";
 }
 
-// .private::before {
-// 	font-family: "fontello";
-// 	content:"\e814";
-// 	margin-right: 3px;
-// 	opacity: 0.7;
-// 	padding-right: 1px;
-// 	font-size: 70%;
-// }
 .notification {
 	padding: 5px;
 	background-color: $notifications-bg-color;

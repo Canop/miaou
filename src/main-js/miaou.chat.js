@@ -11,10 +11,10 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
 	chat.commands = {}; // all known commands issued with !! (value=description)
 	chat.voteLevels = [
-		{key:'pin', icon:'&#xe813;'},
-		{key:'star', icon:'&#xe808;'},
-		{key:'up', icon:'&#xe800;'},
-		{key:'down', icon:'&#xe801;'}
+		{key:'pin', icon:'&#xe810;'},	// fontello icon-pin
+		{key:'star', icon:'&#xe805;'},	// fontello icon-star
+		{key:'up', icon:'&#xe815;'},	// fontello icon-thumbs-up-alt
+		{key:'down', icon:'&#xe816;'}	// fontello icon-thumbs-down-alt
 	];
 
 	var listeners = {};

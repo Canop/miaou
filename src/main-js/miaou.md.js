@@ -366,12 +366,14 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			}
 		}
 		if (message.content && message.changed) {
-			var $pen = $('<div>&#xe80c;</div>').addClass('decoration pen').appendTo($decorations);
+			var $pen = $('<div>&#xe817;</div>') // fontello icon-pencil
+			.addClass('decoration pen').appendTo($decorations);
 			if (message.previous) $pen.addClass('clickable').attr('title', 'Click for message history');
 		}
 		if (!message.id) {
 			var desc = "only sent to people currently in the room, and will disappear if you refresh the page";
-			$('<div>&#xe826;</div>').appendTo($decorations)
+			$('<div>&#xe82d;</div>') // fontello icon-snow
+			.appendTo($decorations)
 			.addClass('decoration snap')
 			.attr('title', "Flake : "+desc);
 		}

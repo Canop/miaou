@@ -76,22 +76,22 @@
 }
 #menu-settings::before {
 	font-family: "fontello";
-	content: "\e828 ";
+	content: "\e81d "; // fontello icon-sliders
 	margin-right: 5px;
 }
 #menu-logout::before {
 	font-family: "fontello";
-	content: "\e829 ";
+	content: "\e81e "; // fontello icon-logout
 	margin-right: 5px;
 }
 #menu-help::before {
 	font-family: "fontello";
-	content: "\e810 ";
+	content: "\e80b "; // fontello icon-help-circled
 	margin-right: 5px;
 }
 #menu-home::before {
 	font-family: "fontello";
-	content: "\e812 ";
+	content: "\e80d "; // fontello icon-home
 	margin-right: 5px;
 }
 
@@ -267,17 +267,17 @@ body.desktop #rooms-page {
 }
 
 #room-edit::before {
-	content: '\e80c';
+	content: '\e817'; // fontello icon-pencil
 }
 #auths::before {
-	content: '\e832';
+	content: '\e832'; // fontello icon-users
 }
 #room-watch::before {
 	margin: 0 5px 0 5px;
-	content: '\e82a';
+	content: '\e811'; // fontello icon-eye
 }
 #room-unwatch::before {
-	content: '\e82b';
+	content: '\e812'; // fontello icon-eye-off
 }
 
 #room-search-input {
