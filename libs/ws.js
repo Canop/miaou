@@ -191,6 +191,9 @@ exports.botMessage = function(bot, roomId, content, cb){
 				memroom.lastMessageId = m.id;
 			}
 			emitToRoom(roomId, 'message', m);
+			if (m.id) {
+				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
+			}
 			if (cb) return cb.call(this, m);
 		})
 		.finally(db.off);
