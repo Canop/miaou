@@ -62,6 +62,7 @@ module.exports = {
 		"./plugins/graph/plugin.js",
 		"./plugins/hashcolor/plugin.js",
 		"./plugins/shield/plugin.js",
+		"./plugins/table-controls/plugin.js", 
 	],
 
 	// specific configurations required by plugins
