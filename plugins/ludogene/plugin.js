@@ -17,7 +17,7 @@ var gametypes = {
 	Tribo: require('./client-scripts/Tribo.js'),
 };
 
-exports.init = function(miaou, pluginpath){
+exports.init = function(miaou){
 	bot = miaou.bot;
 	db = miaou.db;
 	tournament.init(miaou);

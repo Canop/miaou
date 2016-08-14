@@ -38,10 +38,10 @@ function initProvider(p){
 	});
 }
 
-exports.init = function(miaou, pluginpath){
+exports.init = function(miaou){
 	config = miaou.config;
 	db = miaou.db;
-	db.upgrade(exports.name, path.resolve(pluginpath, 'sql'));
+	db.upgrade(exports.name, path.resolve(__dirname, 'sql'));
 	db.on(providers)
 	.each(initProvider)
 	.finally(db.off);

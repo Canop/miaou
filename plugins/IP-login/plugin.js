@@ -30,7 +30,7 @@ IPLoginStrategy.prototype.authenticate = function(req){
 	}).finally(db.off);
 }
 
-exports.init = function(miaou, pluginpath){
+exports.init = function(miaou){
 	config = miaou.config;
 	db = miaou.db;
 	passport.use(new IPLoginStrategy);

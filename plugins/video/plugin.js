@@ -6,12 +6,12 @@ var	Promise = require("bluebird"),
 	webRtcConfig,
 	cache = require('bounded-cache')(200);
 
-exports.init = function(miaou, pluginpath){
+exports.init = function(miaou){
 	webRtcConfig = miaou.conf("pluginConfig", "video", "webRTC") || {};
 }
 
 function makeVD(shoe, message){
-	var match = message.content.match(/^(?:@\w[\w\-]{2,}#?\d*\s+)?!!\w+\s*@(\w[\w_\-\d]{2,})/);
+	var match = message.content.match(/^(?:@\w[\w\-]{2,19}#?\d*\s+)?!!\w+\s*@(\w[\w_\-\d]{2,19})/);
 	if (!match) throw  'Bad syntax. Use `!!video @somebody` or `!!audio @somebody`';
 	var vd = {
 		usernames:[message.authorname, match[1]],

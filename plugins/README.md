@@ -108,9 +108,9 @@ At server start, if the plugin is enabled, scripts whose number is greater than 
 That behavior is triggered at plugin start in the init function of the plugin:
 
 
-	exports.init = function(miaou, pluginpath){
+	exports.init = function(miaou){
 		db = miaou.db;
-		db.upgrade(exports.name, path.resolve(pluginpath, 'sql'));
+		db.upgrade(exports.name, path.resolve(__dirname, 'sql'));
 	}
 
 
@@ -354,11 +354,11 @@ Called before the server goes live, this is typically where plugins fetch their 
 
 Example:
 
-	exports.init = function(miaou, pluginpath){
+	exports.init = function(miaou){
 		db = miaou.db; // store locally a reference to the DB facade
 		miaouBot = miaou.bot; // store a reference to the bot, for later use
 		threshold = miaou.conf("pluginConfig", "myPlugin", "threshold") || 33; // read a plugin's configuration property
-		return db.upgrade(exports.name, path.resolve(pluginpath, 'sql')); // ensure the plugin's tables are up to date
+		return db.upgrade(exports.name, path.resolve(__dirname, 'sql')); // ensure the plugin's tables are up to date
 	}
 
 ## registerCommands

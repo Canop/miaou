@@ -6,9 +6,9 @@ var	db;
 
 exports.name = "attention";
 
-exports.init = function(miaou, pluginpath){
+exports.init = function(miaou){
 	db = miaou.db;
-	db.upgrade(exports.name, path.resolve(pluginpath, 'sql'));
+	db.upgrade(exports.name, path.resolve(__dirname, 'sql'));
 }
 
 function addAlert(roomId, messageId, userId){

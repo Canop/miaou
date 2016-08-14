@@ -105,7 +105,7 @@ exports.registerCommands = function(cb){
 }
 
 
-exports.init = function(miaou, pluginpath){
+exports.init = function(miaou){
 	db = miaou.db;
-	db.upgrade('survey', path.resolve(pluginpath, 'sql'));
+	db.upgrade('survey', path.resolve(__dirname, 'sql'));
 }
