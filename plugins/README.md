@@ -410,6 +410,10 @@ This is most commonly used for communication between the client and server parts
 
 For example the client side part of the Ludogene plugin (which lets you play Tribo game) does this when a player does a move:
 
+	ws.emit('ludo.move', {
+		mid: panel.m.id,
+		move: Tribo.encodeMove({p:panel.u, x:i, y:j})
+	});
 
 And the server part handles it this way:
 

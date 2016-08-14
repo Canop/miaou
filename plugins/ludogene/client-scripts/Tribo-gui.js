@@ -101,7 +101,8 @@ miaou(function(games, locals, notif, skin, ws){
 									}
 								}).on('click', function(){
 									ws.emit('ludo.move', {
-										mid:panel.m.id, move:Tribo.encodeMove({p:panel.u, x:i, y:j})
+										mid: panel.m.id,
+										move: Tribo.encodeMove({p:panel.u, x:i, y:j})
 									});
 									notif.userAct();
 								}).attr({cursor:'pointer'});
