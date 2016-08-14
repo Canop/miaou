@@ -13,6 +13,7 @@ const	apiversion = 60,
 	botMgr = require('./bots.js'),
 	server = require('./server.js'),
 	rooms = require('./rooms.js'),
+	pageBoxer = require('./page-boxers.js'),
 	langs = require('./langs.js'),
 	shoes = require('./shoes.js');
 
@@ -157,7 +158,7 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 			for (var j=0; j<onSendMessagePlugins.length; j++) {
 				onSendMessagePlugins[j].onSendMessage(shoe, messages[i], shoe.emit);
 			}
-			miaou.pageBoxer.onSendMessage(shoe, messages[i], shoe.emit);
+			pageBoxer.onSendMessage(shoe, messages[i], shoe.emit);
 		}
 		shoe.emit('messages', messages);
 	});
@@ -181,7 +182,7 @@ exports.botMessage = function(bot, roomId, content, cb){
 			m.avk = bot.avatarkey;
 			m.bot = true;
 			m.room = roomId;
-			miaou.pageBoxer.onSendMessage(this, m, function(t, c){
+			pageBoxer.onSendMessage(this, m, function(t, c){
 				emitToRoom(roomId, t, c);
 			});
 			return [rooms.mem.call(this, roomId), m];
@@ -597,7 +598,7 @@ function handleUserInRoom(socket, completeUser){
 			for (var p of onSendMessagePlugins) {
 				p.onSendMessage(this, m, send);
 			}
-			miaou.pageBoxer.onSendMessage(this, m, send);
+			pageBoxer.onSendMessage(this, m, send);
 			send('message', m);
 			if (commandTask.replyContent) {
 				var txt = commandTask.replyContent;

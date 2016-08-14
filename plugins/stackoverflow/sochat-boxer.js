@@ -21,7 +21,7 @@ function abstract($, line, id){
 }
 
 exports.init = function(miaou){
-	miaou.pageBoxer.register({
+	miaou.lib("page-boxers").register({
 		name: "SO Chat",
 		pattern:/^\s*https?:\/\/chat\.stackoverflow\.com\/transcript\/(?:\d+\?m=|message\/)(\d+)\S*\s*$/,
 		urler:function(line, id){

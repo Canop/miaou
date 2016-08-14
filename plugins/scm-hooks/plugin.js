@@ -8,10 +8,10 @@
 // }
 
 const	providers = [require("./github.js").provider],
-	ws = require('../../libs/ws.js'),
 	path = require('path');
 
 var	config,
+	ws,
 	db;
 
 exports.name = "SCM-Hooks";
@@ -41,10 +41,13 @@ function initProvider(p){
 exports.init = function(miaou){
 	config = miaou.config;
 	db = miaou.db;
-	db.upgrade(exports.name, path.resolve(__dirname, 'sql'));
-	db.on(providers)
-	.each(initProvider)
-	.finally(db.off);
+	ws = miaou.lib("ws");
+	return db.upgrade(exports.name, path.resolve(__dirname, 'sql'))
+	.then(function(){
+		return db.on(providers)
+		.each(initProvider)
+		.finally(db.off);
+	});
 }
 
 // gives the normal callback that must be configured provider-side

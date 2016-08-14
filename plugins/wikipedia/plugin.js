@@ -47,7 +47,7 @@ function abstract($, line){
 }
 
 exports.init = function(miaou){
-	miaou.pageBoxer.register({
+	miaou.lib("page-boxers").register({
 		name: "Wikipedia",
 		pattern: /^\s*https?:\/\/(\w{2})(?:\.m)?\.wikipedia\.org\/([^ ]+)\s*$/,
 		box: abstract,

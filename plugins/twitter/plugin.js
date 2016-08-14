@@ -31,7 +31,7 @@ function abstract($, line){
 }
 
 exports.init = function(miaou){
-	miaou.pageBoxer.register({
+	miaou.lib("page-boxers").register({
 		name: "Twitter",
 		pattern:/^\s*https?:\/\/twitter\.com\/\w+\/status\/\d+\s*$/,
 		box:abstract

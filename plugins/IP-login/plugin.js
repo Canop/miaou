@@ -1,9 +1,9 @@
 
 const	passport = require('passport'),
-	server = require('../../libs/server.js'),
 	util = require('util');
 
 var	db,
+	server,
 	config;
 
 function IPLoginStrategy(){
@@ -33,6 +33,7 @@ IPLoginStrategy.prototype.authenticate = function(req){
 exports.init = function(miaou){
 	config = miaou.config;
 	db = miaou.db;
+	server = miaou.lib("server");
 	passport.use(new IPLoginStrategy);
 }
 exports.registerRoutes = function(map){

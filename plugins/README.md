@@ -110,7 +110,7 @@ That behavior is triggered at plugin start in the init function of the plugin:
 
 	exports.init = function(miaou){
 		db = miaou.db;
-		db.upgrade(exports.name, path.resolve(__dirname, 'sql'));
+		return db.upgrade(exports.name, path.resolve(__dirname, 'sql'));
 	}
 
 
@@ -257,12 +257,12 @@ The most usual server-side boxing follows this logic:
 1. it stores that abstract in the cache
 1. the server sends a instruction to the browser (and to all other browsers which may have requested that message during the asynchronous fetching of the boxable content), telling it to replace a specific line of a specific message by the new content
 
-Doing this correctly and efficiently is tedious, that's why there's a standard utility in Miaou making it easy for plugins to register boxings. You use it by registering your pattern and abstracting function using the `miaou.pageBoxer.register` function.
+Doing this correctly and efficiently is tedious, that's why there's a standard utility in Miaou making it easy for plugins to register boxings. You use it by registering your pattern and abstracting function using the `miaou.lib("page-boxers").register` function.
 
 Here's for example how is done the urbandictionary boxing:
 
 	exports.init = function(miaou){
-		miaou.pageBoxer.register({
+		miaou.lib("page-boxers").register({
 			name: "urban",
 			pattern: /^\s*https?:\/\/(www\.)?urbandictionary\.com\/define\.php\?term=[^ ]*\s*$/,
 			box: abstract
@@ -348,9 +348,11 @@ Follow the Express API: https://expressjs.com/en/4x/api.html#app.use
 
 ## init
 
-	init(miaou, pluginPath)
+	init(miaou)
 
 Called before the server goes live, this is typically where plugins fetch their configuration, the global bot, the database facade or launch initializations.
+
+When its action is asynchronous, the init function should return a promise (unless the server can immediately start).
 
 Example:
 

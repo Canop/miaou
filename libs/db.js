@@ -984,11 +984,12 @@ proto.getComponentVersion = function(component){
 // applies the not yet applied patches for a component. This is automatically called
 //  for the core of miaou but it may also be called by plugins (including for
 //  initial installation of the plugin)
-exports.upgrade = function(component, patchSubDirectory, cb){
+//  Returns a promise
+exports.upgrade = function(component, patchSubDirectory){
 	let	patchDirectory = path.resolve(__dirname, '..', patchSubDirectory),
 		startVersion,
 		endVersion;
-	var p = on(component)
+	return on(component)
 	.then(proto.getComponentVersion)
 	.then(version => {
 		console.log('Component '+component+' : current version='+version);
@@ -1043,7 +1044,6 @@ exports.upgrade = function(component, patchSubDirectory, cb){
 		});
 	})
 	.finally(proto.off);
-	if (cb) p.then(cb);
 }
 
 //////////////////////////////////////////////// #global API
@@ -1081,7 +1081,8 @@ var ps = exports.ps = function(sql, conditions, postConditions){
 }
 
 // must be called before any call to connect
-exports.init = function(miaouConfig, cb){
+// Returns a promise which is resolved when the db is ready
+exports.init = function(miaouConfig){
 	config = miaouConfig;
 	if (config.database.native_pg) {
 		console.log("Using native driver to connect to PostgreSQL");
@@ -1091,15 +1092,15 @@ exports.init = function(miaouConfig, cb){
 	}
 	pg.defaults.parseInt8 = true;
 	pool = new pg.Pool(config.database);
-	pool.connect()
+	return pool.connect()
 	.then(function(client){
 		console.log('Connection to PostgreSQL database successful');
-		exports.upgrade('core', 'sql/patches', cb);
+		return exports.upgrade('core', 'sql/patches');
 	})
 	.catch(function(err){
 		console.log('Connection to PostgreSQL database failed');
 		console.log(err);
-	})
+	});
 }
 
 // returns a promise bound to a connection, available to issue queries

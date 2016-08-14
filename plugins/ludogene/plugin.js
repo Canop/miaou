@@ -6,11 +6,11 @@ const	cache = require('bounded-cache')(300),
 	suggest = require('./suggest.js'),
 	tournament = require('./tournament.js'),
 	tribostats = require('./tribostats.js'),
-	rooms = require('../../libs/rooms.js'),
-	ws = require('../../libs/ws.js'),
 	elo = require('./elo.js');
 
 var	db,
+	rooms,
+	ws,
 	bot;
 
 var gametypes = {
@@ -20,6 +20,8 @@ var gametypes = {
 exports.init = function(miaou){
 	bot = miaou.bot;
 	db = miaou.db;
+	rooms = miaou.lib("rooms");
+	ws = miaou.lib("ws");
 	tournament.init(miaou);
 	setTimeout(function(){
 		require('./db.js').cleanOldInvitations(db, 50*24*60*60);

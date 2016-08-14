@@ -1,5 +1,10 @@
-const	server = require('../../libs/server.js'),
+var	server,
 	availableFlags = ["en", "fr", "it"];
+
+
+exports.init = function(miaou){
+	server = miaou.lib("server");
+}
 
 function onCommand(ct){
 	var	room = ct.shoe.room,

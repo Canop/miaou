@@ -207,42 +207,20 @@ exports.renderErr = function(res, err, base){
 	res.render('error.jade', { base:base||'', error:err.toString() });
 }
 
-function initPlugins(){
-	miaou.plugins = (miaou.config.plugins||[]).map(function(n){
-		var	pluginfilepath = path.resolve(__dirname, '..', n),
-			plugin = require(pluginfilepath);
-		if (plugin.init) plugin.init(miaou, path.dirname(pluginfilepath));
-		return plugin;
-	});
-}
 
 exports.start = function(config){
 	baseURL = config.server;
-	miaou = {
-		db,
-		config,
-		pageBoxer: require('./page-boxers.js')
-	};
-	miaou.conf = function(...token){
-		return token.reduce((o, t)=> o ? o[t] : undefined, miaou.config);
-	}
-	db.init(config, function(){
-		db.on("miaou")
-		.then(db.getBot)
-		.then(function(b){
-			miaou.bot = b;
-			if (config.botAvatar.src!==b.avatarsrc || config.botAvatar.key!==b.avatarkey) {
-				b.avatarsrc = config.botAvatar.src;
-				b.avatarkey = config.botAvatar.key;
-				return this.updateUser(b)
-			}
-		})
-		.finally(db.off)
-		.then(function(){
-			configureOauth2Strategies();
-			initPlugins();
-			startServer();
-		});
+	miaou = require("./Miaou.js")(config, db);
+	return db.init(config)
+	.then(function(){
+		return miaou.initBot()
+	})
+	.then(function(){
+		return miaou.initPlugins()
+	})
+	.then(function(){
+		configureOauth2Strategies();
+		startServer();
 	});
 }
 
