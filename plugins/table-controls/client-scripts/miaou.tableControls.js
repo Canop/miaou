@@ -18,27 +18,23 @@ miaou(function(tableControls){
 
 	const sortFunctions = {
 		"number-up": function(a, b){
-			var	index = this,
-				na = toNumber(a.cells[index].textContent),
-				nb = toNumber(b.cells[index].textContent);
+			var	na = toNumber(a.cells[this].textContent),
+				nb = toNumber(b.cells[this].textContent);
 			return numDiff(na, nb);
 		},
 		"number-down": function(a, b){
-			var	index = this,
-				na = toNumber(a.cells[index].textContent),
-				nb = toNumber(b.cells[index].textContent);
+			var	na = toNumber(a.cells[this].textContent),
+				nb = toNumber(b.cells[this].textContent);
 			return numDiff(nb, na);
 		},
 		"name-up": function(a, b){
-			var	index = this,
-				na = a.cells[index].textContent.toLowerCase(),
-				nb = b.cells[index].textContent.toLowerCase();
+			var	na = a.cells[this].textContent.toLowerCase(),
+				nb = b.cells[this].textContent.toLowerCase();
 			return diff(na, nb);
 		},
 		"name-down": function(a, b){
-			var	index = this,
-				na = a.cells[index].textContent.toLowerCase(),
-				nb = b.cells[index].textContent.toLowerCase();
+			var	na = a.cells[this].textContent.toLowerCase(),
+				nb = b.cells[this].textContent.toLowerCase();
 			return diff(nb, na);
 		}
 	};
@@ -69,11 +65,13 @@ miaou(function(tableControls){
 	}
 		
 	ColumnController.prototype.show = function(){
-		var cc = this;
-		var $c = $("<div>").addClass("column-controller").appendTo(this.$th);
+		var	cc = this,
+			$c = $("<div>").addClass("column-controller").appendTo(this.$th);
 		function addIcon(key){
 			var $i = $("<span>").addClass("icon-sort-"+key)
-			.click(cc.sort.bind(cc, key))
+			.click(function(){
+				cc.tblCon.sort(key, cc.index);
+			})
 			.appendTo($c);
 			if (cc.tblCon.lastApplied == key + cc.index) {
 				$i.addClass("active");
@@ -89,14 +87,6 @@ miaou(function(tableControls){
 		}
 	};
 
-
-	ColumnController.prototype.sort = function(key){
-		this.tblCon.sort(key, this.index);
-		$(".column-controller span").each(function(){
-			this.classList.toggle("active", this.classList.contains("icon-sort-"+key));
-		});
-	}
-
 	function TableController($table){
 		this.$table = $table;
 		this.$rows = $table.find("tr");
@@ -110,10 +100,21 @@ miaou(function(tableControls){
 	}
 
 	TableController.prototype.sort = function(key, index){
-		this.lastApplied = key+index;
 		var rows = this.$table.find("tr").slice(1).remove().get();
-		rows.sort(sortFunctions[key].bind(index));
+		if (this.lastApplied == key+index) {
+			// reset to original ordering
+			rows = this.$rows;
+			this.lastApplied = null;
+			key = null;
+		} else {
+			// sort according to supplied key
+			rows.sort(sortFunctions[key].bind(index));
+			this.lastApplied = key+index;
+		}
 		this.$table.append(rows);
+		$(".column-controller span").each(function(){
+			this.classList.toggle("active", this.classList.contains("icon-sort-"+key));
+		});
 	}
 
 	TableController.prototype.showOnColumn = function($th){
@@ -137,7 +138,6 @@ miaou(function(tableControls){
 		}
 		if (!con) {
 			if (!isTableControllable($table)) {
-				console.log("table not controllable");
 				return;
 			}
 			$table.dat(DAT_KEY, con = new TableController($table))
