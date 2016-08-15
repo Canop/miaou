@@ -4,12 +4,11 @@
 function abstract($, line){
 	var	$box = $('<div/>').addClass('twitter'),
 		$twitterBody = $('#permalink-overlay, #permalink-overlay-body, body').eq(0),
-		$tweet = $twitterBody.find('.tweet').first(),
-		$tweetHead = $twitterBody.find('.content').eq(0),
+		$tweet = $twitterBody.find('.tweet').last(),
+		$tweetHead = $tweet.find('.content'),
 		time = $twitterBody.find('.client-and-actions .metadata').eq(0).text(),
 		$text = $twitterBody.find('.tweet-text').eq(0),
-		$media = $twitterBody.find('.cards-media-container').eq(0)
-	
+		$media = $twitterBody.find('.cards-media-container').eq(0);
 	$box
 	.append(
 		$('<div>').addClass('tweet-first-line')
@@ -25,6 +24,10 @@ function abstract($, line){
 	)
 	.append($media)
 	$box.find('a').attr('target', '_blank').attr('href', function(_, href){
+		if (/^https?:\/\/t\.co/.test(href)) {
+			var expandedUrl = $(this).data("expanded-url");
+			if (expandedUrl) return expandedUrl;
+		}
 		return href[0]==='/' ? 'https://twitter.com'+href : href;
 	});
 	return $('<div>').append($box).html();
