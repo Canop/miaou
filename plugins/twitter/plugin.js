@@ -5,7 +5,7 @@ function abstract($, line){
 	var	$box = $('<div/>').addClass('twitter'),
 		$twitterBody = $('#permalink-overlay, #permalink-overlay-body, body').eq(0),
 		$tweet = $twitterBody.find('.tweet').first(),
-		$tweetHead = $tweet.find('.content').eq(0),
+		$tweetHead = $twitterBody.find('.content').eq(0),
 		time = $twitterBody.find('.client-and-actions .metadata').eq(0).text(),
 		$text = $twitterBody.find('.tweet-text').eq(0),
 		$media = $twitterBody.find('.cards-media-container').eq(0)
