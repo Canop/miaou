@@ -1,0 +1,59 @@
+.box .twitter {
+	padding: 5px;
+
+	.tweet-first-line {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+
+	a {
+		text-decoration: none;
+		.icon-twitter::before {
+			font-size: 36px;
+			color: #1da1f2;
+			flex-shrink: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+	}
+
+	.avatar {
+		margin-right: 5px;
+		flex-shrink: 0;
+		max-width: 50px;
+		max-height: 50px;
+		border-radius: 5px;
+	}
+
+	.tweet-core {
+		flex-grow: 1;
+	}
+
+	.fullname {
+		margin-left: 10px;
+		span {
+			display: none;
+		}
+	}
+
+	.username, .box .twitter .time {
+		font-size: 90%;
+		opacity: .8;
+		padding: 10px;
+		text-decoration: none;
+	}
+
+	s {
+		text-decoration: none;
+	}
+
+	.cards-media-container {
+		text-align: center;
+	}
+}
+
+
+

@@ -13,7 +13,7 @@ function abstract($, line){
 	$box
 	.append(
 		$('<div>').addClass('tweet-first-line')
-		.append($('<a><span>&#xe81e;</span></a>').attr('href', line).addClass('twitter-icon'))
+		.append($('<a>').attr('href', line).append($("<i>").addClass("icon-twitter")))
 		.append($tweetHead.find('.avatar'))
 		.append(
 			$('<div>').addClass('tweet-core')
