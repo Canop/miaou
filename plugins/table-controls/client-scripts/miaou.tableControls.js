@@ -124,7 +124,6 @@ miaou(function(tableControls){
 	function isTableControllable($table){
 		var $rows = $table.find("tr");
 		return	$table.length
-			&& /^tbl\d+$/.test($table.attr("id"))
 			&& $rows.length > 4
 			&& $rows.eq(0).find("th").length>1;
 	}
