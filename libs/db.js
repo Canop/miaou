@@ -466,7 +466,7 @@ proto.insertWatch = function(roomId, userId){
 		"insert_watch"
 	);
 }
-//
+
 // inserts a watch if there's none. Return true if an insert was done
 proto.tryInsertWatch = function(roomId, userId){
 	return this.execute(
@@ -724,46 +724,7 @@ proto.getMessage = function(messageId, userId){
 	}
 }
 
-// if id is set, updates the message if the author & room matches
-// else stores a message and sets its id
-proto.storeMessage = function(m, dontCheckAge){
-	if (!m.room||!m.author) {
-		console.log("Invalid message:", m);
-		throw new Error("invalid message");
-	}
-	if (m.id) {
-		var	savedAuthorname = m.authorname,
-			args = [m.content, m.changed||0, m.id, m.room, m.author],
-			name = "update_message",
-			sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
-		if (dontCheckAge) {
-			name += "_recent";
-		} else {
-			args.push(now()-config.maxAgeForMessageEdition);
-			sql += ' and created>$6';
-		}
-		sql += ' returning *';
-		return this.queryRow(
-			sql, args, name
-		)
-		.then(function(m){
-			m.authorname = savedAuthorname;
-			if (m.content.length || m.created<now()-config.maxAgeForMessageTotalDeletion) return m;
-			return this.execute(
-				"delete from ping where message=$1", [m.id], "delete_message_ping"
-			).then(function(){
-				return this.execute(
-					"delete from message_vote where message=$1", [m.id], "delete_message_vote"
-				)
-			}).then(function(){
-				return this.execute(
-					"delete from message where id=$1", [m.id], "delete_message"
-				)
-			}).then(function(){
-				return m
-			});
-		});
-	}
+proto._insertMessage = function(m){
 	return this.queryRow(
 		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
 		[m.room, m.author, m.content, m.created],
@@ -772,6 +733,53 @@ proto.storeMessage = function(m, dontCheckAge){
 		m.id = row.id;
 		return m;
 	});
+}
+
+
+proto._updateMessage = function(m, dontCheckAge){
+	var	savedAuthorname = m.authorname,
+		args = [m.content, m.changed||0, m.id, m.room, m.author],
+		name = "update_message",
+		sql = 'update message set content=$1, changed=$2 where id=$3 and room=$4 and author=$5';
+	if (dontCheckAge) {
+		name += "_recent";
+	} else {
+		args.push(now()-config.maxAgeForMessageEdition);
+		sql += ' and created>$6';
+	}
+	sql += ' returning *';
+	return this.queryRow(sql, args, name)
+	.then(function(m){
+		m.authorname = savedAuthorname;
+		if (m.content.length || m.created<now()-config.maxAgeForMessageTotalDeletion) return m;
+		return this.execute(
+			"delete from ping where message=$1", [m.id], "delete_message_ping"
+		).then(function(){
+			return this.execute(
+				"delete from message_vote where message=$1", [m.id], "delete_message_vote"
+			)
+		}).then(function(){
+			return this.execute(
+				"delete from message where id=$1", [m.id], "delete_message"
+			)
+		}).then(function(){
+			return m
+		});
+	});
+}
+
+// if id is set, updates the message if the author & room matches
+// else stores a message and sets its id
+proto.storeMessage = function(m, dontCheckAge){
+	if (!m.room||!m.author) {
+		console.log("Invalid message:", m);
+		throw new Error("invalid message");
+	}
+	if (m.id) {
+		return this._updateMessage(m, dontCheckAge);
+	} else {
+		return this._insertMessage(m);
+	}
 }
 
 proto.updateGetMessage = function(messageId, expr, userId){
@@ -894,7 +902,7 @@ proto.addVote = function(roomId, userId, messageId, level){
 		args = [messageId, userId, level, roomId];
 		break;
 	default:
-		throw new Error('Unknown vote level');
+		throw new Error('Unknown vote level:', level);
 	}
 	return this.queryOptionalRow(
 		sql,
@@ -1020,7 +1028,7 @@ exports.upgrade = function(component, patchSubDirectory){
 				.map(s => s.trim()).filter(Boolean)
 			).map(function(statement){
 				console.log(' Next statement :', statement);
-				return this.execute(statement)
+				return this.executeRaw(statement)
 			});
 		}, 'see https://github.com/petkaantonov/bluebird/issues/70')
 		.then(function(){
@@ -1201,6 +1209,11 @@ proto.execute = function(sql, args, name, useANamedPreparedStatement){
 	.spread((rows, res) => res);
 }
 
+proto.executeRaw = function(sql){
+	return this._query(sql, null, "raw_statement", false)
+	.spread((rows, res) => res);
+}
+
 proto.queryOptionalRow = function(sql, args, name, useANamedPreparedStatement){
 	return this._query(sql, args, name, useANamedPreparedStatement)
 	.spread((rows, res) => {
@@ -1223,6 +1236,8 @@ proto.queryRow = function(sql, args, name, useANamedPreparedStatement){
 		} else if (res.rowCount) {
 			return res.rowCount;
 		} else {
+			console.log("Unexpectedly Missing Row in");
+			logQuery(sql, args);
 			throw new NoRowError();
 		}
 	});
@@ -1280,7 +1295,7 @@ proto.lookForPreparedStatement = function(psname){
 
 ;['begin', 'rollback', 'commit'].forEach(function(s){
 	proto[s] = function(arg){
-		return this.execute(s)
+		return this.executeRaw(s)
 		.then(function(){
 			return arg
 		})
