@@ -1,6 +1,6 @@
 # Anatomy
 
-Plugins are extensions of Miaou, installed on the server, and having those (optional) parts:
+Plugins are extensions of Miaou, installed on the server, and having those parts:
 
 1. some server-side javascript code, executed in the same process than Miaou
 1. some client-side javascript code, concatenated and minified with Miaou's core javascript code
@@ -101,7 +101,7 @@ While a plugin can technically do anything in database using the core API, it sh
 
 It should instead install, update and query its own tables.
 
-To same mechanism used for core table update is available for plugins: A plugin shoud contain a list of SQL scripts named sql/number-name.sql where number starts at 1 and is incremented for every new script.
+The same mechanism used for core table update is available for plugins: A plugin shoud contain a list of SQL scripts named sql/number-name.sql where number starts at 1 and is incremented for every new script.
 
 At server start, if the plugin is enabled, scripts whose number is greater than the last executed script for that plugin are executed, in order.
 
