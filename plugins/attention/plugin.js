@@ -1,5 +1,7 @@
 // the attention plugin makes it possible for room admin to
 // bring attention to pinned messages
+// Note that the room parameter in some queries is a security
+// measure preventing a user to see in other rooms
 
 const	path = require('path');
 var	db;
