@@ -500,7 +500,11 @@ proto.watchRaz = function(roomId, userId){
 }
 
 proto.deleteWatch = function(roomId, userId){
-	return this.execute("delete from watch where room=$1 and player=$2", [roomId, userId]);
+	return this.execute(
+		"delete from watch where room=$1 and player=$2",
+		[roomId, userId],
+		"delete_watch"
+	);
 }
 
 proto.listUserWatches = function(userId){
@@ -683,6 +687,7 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 }
 
 // builds an histogram, each record relative to a utc day
+// optm: what takes most time is the min(id) fetching
 proto.messageHistogram = function(roomId, pattern, lang){
 	return pattern
 	? this.queryRows(
