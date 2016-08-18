@@ -104,7 +104,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 		logmaxn = Math.log(maxn);
 		$('#hist')[n>30?'removeClass':'addClass']('zoomed');
 		function day(d, n, m, sn, sm){
-			var date = new Date(d*24*60*60*1000),
+			var	date = new Date(d*24*60*60*1000),
 				month = time.MMM[date.getMonth()]+' '+date.getFullYear();
 			if (month != lastMonth) {
 				$month = $('<div>').addClass('month').append(

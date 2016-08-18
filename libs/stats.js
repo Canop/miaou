@@ -72,7 +72,7 @@ function doStats(ct){
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
 		orderingCol = /^active-/i.test(topic) ? 2 : 1;
-		from = "from player where bot is false and name is not null order by c"+orderingCol+" desc limit "+n;
+		from = "from player where name is not null order by c"+orderingCol+" desc limit "+n;
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
 		cols = [
@@ -82,7 +82,7 @@ function doStats(ct){
 			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star' and room=$1)"},
 			{name:"Total Messages", value:"(select count(*) from message where author=player.id)"},
 		];
-		from = "from player where bot is false and exists(select id from message where author=player.id and room=$1) order by c1 desc limit "+n;
+		from = "from player where exists(select id from message where author=player.id and room=$1) order by c1 desc limit "+n;
 		args.push(room.id);
 		title = "Room Users Statistics (top "+n+")";
 	} else if (topic[0]==='@') {
@@ -106,7 +106,8 @@ function doStats(ct){
 		cols = [
 			{name:"Id", value:"id", fmt:row => row.c4 ? row.c0 : ' '},
 			{name:"Name", value:"name", fmt:row => {
-				return row.c4 ? "["+naming.makeMarkdownCompatible(row.c1)+"]("+row.c0+"#)" : "*a discreet room*";
+				var name = naming.makeMarkdownCompatible(row.c1);
+				return row.c4 ? "["+name+"]("+row.c0+"#)" : name;
 			}},
 			{name:"Language", value:"lang"},
 			{name:"Public", value:"private", fmt:(_, b) => b ? ' ' : '✓'},
