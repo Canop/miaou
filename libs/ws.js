@@ -831,7 +831,10 @@ function handleUserInRoom(socket, completeUser){
 				shoe.emitToRoom('notableIds', notablesUpdate);
 			}
 		})
-		.catch(err => console.log('ERR in vote handling:', err))
+		.catch(err => {
+			console.log('ERR in handling vote:', vote);
+			console.log('err:', err);
+		})
 		.finally(function(){
 			this.off();
 			done();
