@@ -1,7 +1,7 @@
 
 The "attention" plugin makes it possible for admins of a room to get the attention of everybody to a pinned message.
 
-## Description
+## Usage
 
 The right area displaying starred and pinned messages normally looks like this:
 
