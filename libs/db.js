@@ -936,13 +936,13 @@ proto.removeVote = function(roomId, userId, messageId, level){
 proto.unpin = function(roomId, userId, messageId){
 	return this.queryRow(
 		"update message_vote set vote='star' where message=$1 and player!=$2 and vote='pin'" +
-		" and exists(select * from message where id=$1 and room=$3 and author!=player)",
+		" and exists(select * from message where id=$1 and room=$3)",
 		[messageId, userId, roomId],
 		"unpin_message"
 	).then(function(nbconversions){
 		return [
 			nbconversions,
-			this.queryRow(
+			this.execute(
 				"delete from message_vote where message=$1 and vote='pin'",
 				[messageId],
 				"remove_pin_vote"
