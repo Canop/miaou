@@ -54,7 +54,7 @@ function describeSOProfileCreation(user){
 		"to validate you're the owner of this SO account, please put the following link in your SO profile :",
 		"<code>["+user.name+" @ Miaou]("+config.server+"/user/"+user.id+")</code>",
 		"As StackOverflow doesn't immediately update the public profile,",
-		+ " you might have to wait 2 minutes before hitting the <i>Save</i> button below.",
+		" you might have to wait 2 minutes before hitting the <i>Save</i> button below.",
 		"You'll be able to remove the link once the profile is checked. It would be nice to keep it, though.",
 	].join('<br>');
 }
