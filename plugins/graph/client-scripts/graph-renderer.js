@@ -11,7 +11,9 @@ miaou(function(md, plugins){
 	}
 
 	function TGCol($table, i){
-		this.rawvals = $table.find('tr td:nth-child('+(i+1)+')').map(function(){ return $(this).text() }).get();
+		this.rawvals = $table.find('tr td:nth-child('+(i+1)+')').map(function(){
+			return $(this).text();
+		}).get();
 		this.name = $table.find('th:nth-child('+(i+1)+')').text();
 		this.vals;
 		this.valid = false;
@@ -27,7 +29,8 @@ miaou(function(md, plugins){
 	}
 	TGCol.prototype.isAscending = function(){
 		for (var i=0, n=this.vals.length; i<n; i++) {
-			if ( !(this.vals[i].end> this.vals[i].start) || (i && (this.vals[i-1].end> this.vals[i].start)) ) {
+			if ( !(this.vals[i].end > this.vals[i].start) || (i && (this.vals[i-1].end > this.vals[i].start)) ) {
+				console.log("not ascending");
 				return false;
 			}
 		}
@@ -64,6 +67,15 @@ miaou(function(md, plugins){
 				label: nm3[(new Date(+m[1], m[2]-1)).getMonth()]+' '+m[1]
 			};
 		},
+		function(s){ // small sequential integers
+			var d = parseInt(s);
+			if (d!==d) return;
+			return {
+				start: d-.5,
+				end: d+.5,
+				label: s
+			};
+		}
 	];
 	var colors = [
 		'#e9967a', 'rgba(0,143,143,.4)', 'rgba(251, 170, 5, .4)',
@@ -80,7 +92,7 @@ miaou(function(md, plugins){
 		if (!m.content || !/(^|\s)#graph\b/.test(m.content)) return;
 
 		var $table = $c.find('table').eq(0);
-		if ($table.length!==1) return;
+		if (!$table.length) return;
 		var	xcol = new TGCol($table, 0),
 			ycols = [];
 		for (var ip=0; ip<xparsers.length; ip++) {
@@ -110,8 +122,13 @@ miaou(function(md, plugins){
 		}
 
 		var	xvals = xcol.vals,
+			maxXLabelLength = Math.max.apply(0, xvals.map(function(xv){ return xv.label.length })),
+			rotateXLabels = maxXLabelLength > 5,
+			mt = 2, // margin top
+			mr = 5, // margin right
+			mb = 60, // margin bottom
+			ml = rotateXLabels ? 35 : 5, // margin left
 			n = xvals.length,
-			mt = 2, mr = 5, mb = 60, ml = 35, // margins top, right, bottom and left
 			g = ù('<svg', $c[0]).css({ height:H, width:600 }),
 			gW = Math.max(50, Math.min(g.width()-mr-ml, 40*n*ycols.length)),
 			W = gW+mr+ml,
@@ -173,10 +190,12 @@ miaou(function(md, plugins){
 			});
 			var	x = xm,
 				y = h+mt+10;
-			ù('<text', g).text(xval.label).attr({
-				x:x, y:y, textAnchor:"end", alignmentBaseline:"middle", fontSize:"85%",
-				opacity:.9, transform:"rotate(-45 "+x+" "+y+")"
+			var text = ù('<text', g).text(xval.label).attr({
+				x:x, y:y, alignmentBaseline:"middle", fontSize:"85%", opacity:.9
 			});
+			if (rotateXLabels) {
+				text.attr({textAnchor:"end", transform:"rotate(-45 "+x+" "+y+")"});
+			}
 			ù('<rect', g).attr({
 				x:x1, width:x2-x1, y:0, height:h, fill:"transparent", cursor:'crosshair'
 			}).on('mouseenter', showPop).on('mouseleave', hidePop);
