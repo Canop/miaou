@@ -41,22 +41,18 @@ function createSOProfile(user, ppi, vals){
 // returns the HTML of the profile
 // or undefined if there's no profile
 function renderSOProfile(ppi){
-	if (ppi.num) {
-		var html = '<a target=_blank href=https://stackoverflow.com/users/'+ppi.num+'>';
-		html += '<img src=https://stackoverflow.com/users/flair/'+ppi.num+'.png>';
-		html += '</a>';
-		return html
-	}
+	if (!ppi.num) return;
+	return `<a target=_blank href=https://stackoverflow.com/users/${ppi.num}>
+	<img src=https://stackoverflow.com/users/flair/${ppi.num}.png>
+	</a>`;
 }
 
 function describeSOProfileCreation(user){
-	return [
-		"to validate you're the owner of this SO account, please put the following link in your SO profile :",
-		"<code>["+user.name+" @ Miaou]("+config.server+"/user/"+user.id+")</code>",
-		"As StackOverflow doesn't immediately update the public profile,",
-		" you might have to wait 2 minutes before hitting the <i>Save</i> button below.",
-		"You'll be able to remove the link once the profile is checked. It would be nice to keep it, though.",
-	].join('<br>');
+	return `to validate you're the owner of this SO account, please put the following link in your SO profile :<br>
+		<code>[${user.name} @ Miaou](${config.server}/user/${user.id})</code><br>
+		As StackOverflow doesn't immediately update the public profile,<br>
+		 you might have to wait 2 minutes before hitting the <i>Save</i> button below.<br>
+		You'll be able to remove the link once the profile is checked. It would be nice to keep it, though.`;
 }
 
 exports.externalProfile = {

@@ -55,16 +55,13 @@ function createProfile(user, ppi, vals){
 // returns the HTML of the profile
 // or undefined if there's no profile
 function renderProfile(ppi){
-	var html = '';
-	if (ppi.id) {
-		html += '<div style="background:white;padding:2px;min-height:30px;line-height:30px;color:black;">';
-		html += '<img align=left style="max-width:30px;max-height:30px; margin-right:10px;" src="'+ppi.avatar+'">';
-		html += '<a target=_blank style="color:black" href="'+ppi.url+'">'+ppi.login+'</a>';
-		html += '</div>';
-	} else {
-		html += '<i class=error>profil invalide</i>'
+	if (!ppi.id) {
+		return '<i class=error>profil invalide</i>';
 	}
-	return html;
+	return	`<div style="background:white;padding:2px;min-height:30px;line-height:30px;color:black;">
+		<img align=left style="max-width:30px;max-height:30px; margin-right:10px;" src="${ppi.avatar}">
+		<a target=_blank style="color:black" href="${ppi.url}">${ppi.login}</a>
+		</div>`;
 }
 
 function describeProfileCreation(user){
