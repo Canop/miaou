@@ -6,7 +6,9 @@ miaou(function(md, plugins){
 		Groumf.replaceTextWithHTMLInHTMLUsingRegex(
 			$c[0],
 			/(?:^|\s|\()#([0-9a-f]{3}|[0-9a-f]{6})\b/ig,
-			function(s, color){ return s+'<div class=hashcolor style="background:#'+color+'"/>' }
+			function(s, color){
+				return s+'<div class=hashcolor style="background:#'+color+'"/>';
+			}
 		);
 	}
 	
