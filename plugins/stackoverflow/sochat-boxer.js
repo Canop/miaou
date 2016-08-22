@@ -10,7 +10,7 @@ function abstract($, line, id){
 		$timestamp = $('.timestamp').eq(0);
 	$box.append($abstract);
 	$abstract.append(
-		$("<img>").attr("src", "https://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png")
+		$("<img>").attr("src", "static/plugins/stackoverflow/rsc/so-icon.png")
 		.addClass("so-small-icon")
 	);
 	$abstract.append($("<span class=username>").text($username.text()));
