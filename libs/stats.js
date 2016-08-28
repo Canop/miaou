@@ -26,21 +26,25 @@ function doStats(ct){
 	var	match = ct.args.match(/([@\w\-]+)(\s+[a-zA-Z]+)?(\s+\d+)?/),
 		room = ct.shoe.room,
 		topic = 'server',
-		psname = "stats / " + topic,
 		subtopic,
 		ranking = true,
+		hasLimit = false,
 		n = 10;
 	if (match) {
 		topic = match[1];
 		subtopic = match[2];
-		n = Math.min(+match[3] || n, 500);
-		psname = null; // we can't use the same prepared statement as args number changes
+		n = Math.min(+match[3]||n, 500);
 	}
 	if (/^socket/i.test(topic)) {
 		return siostats.doStats(ct, miaou.io);
 	}
 	if (/^me$/i.test(topic)) topic = '@'+ct.username();
-	var cols, from, title, args=[], orderingCol;
+	var	psname = "stats / " + topic,
+		cols,
+		from,
+		title,
+		orderingCol,
+		args=[];
 
 	/* eslint-disable max-len */
 
@@ -78,7 +82,8 @@ function doStats(ct){
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
 		orderingCol = /^active-/i.test(topic) ? 2 : 1;
-		from = "from player where name is not null order by c"+orderingCol+" desc limit "+n;
+		from = "from player where name is not null order by c"+orderingCol+" desc";
+		hasLimit = true;
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
 		cols = [
@@ -88,7 +93,8 @@ function doStats(ct){
 			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star' and room=$1)"},
 			{name:"Total Messages", value:"(select count(*) from message where author=player.id)"},
 		];
-		from = "from player where exists(select id from message where author=player.id and room=$1) order by c1 desc limit "+n;
+		from = "from player where exists(select id from message where author=player.id and room=$1) order by c1 desc";
+		hasLimit = true;
 		args.push(room.id);
 		title = "Room Users Statistics (top "+n+")";
 	} else if (topic[0]==='@') {
@@ -107,6 +113,7 @@ function doStats(ct){
 		];
 		from = "from player where name=$1";
 		args.push(topic.slice(1), room.id);
+		psname = "stats / user";
 		title = "Statistics for user "+topic;
 	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
@@ -123,7 +130,8 @@ function doStats(ct){
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
 		orderingCol = /^active-/i.test(topic) ? 6 : 5;
-		from = "from room order by c"+orderingCol+" desc limit "+n;
+		from = "from room order by c"+orderingCol+" desc";
+		hasLimit = true;
 		title = "Rooms Statistics (top "+n+")";
 	} else if (/^room$/i.test(topic)) {
 		cols = [
@@ -147,20 +155,29 @@ function doStats(ct){
 			{name:"Number", value:"count(*)"},
 		];
 		from = "from pref"
-		if (subtopic) from += " where name='"+subtopic.trim()+"'";
-		else ranking=false;
-		from += " group by name, value order by name, c2 desc limit "+n;
+		if (subtopic) {
+			from += " where name=$1";
+			args.push(subtopic.trim());
+			psname += " / specific";
+		} else {
+			ranking=false;
+		}
+		from += " group by name, value order by name, c2 desc";
+		hasLimit = true;
 		title = "Preferences Statistics";
 	} else {
 		throw "Wrong statistics request. Use `!!stats [server|me|@user|users|room|rooms] [n]`.";
 	}
 	var sql = "select " + cols.map((col, i) => (col.value||col.name)+' c'+i).join(',');
 	if (from) sql += ' '+from;
+	if (hasLimit) {
+		args.push(n);
+		sql += ' limit $' + args.length;
+	}
 
 	/* eslint-enable max-len */
 
-	var query = psname ? this.queryRows(sql, args, psname) : this.queryRows(sql, args, "fuzzy stats", false);
-	return query.then(function(rows){
+	return this.queryRows(sql, args, psname).then(function(rows){
 		var c;
 		if (!rows.length) {
 			c = "nothing found";
