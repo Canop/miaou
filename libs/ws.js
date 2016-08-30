@@ -241,6 +241,8 @@ function handleUserInRoom(socket, completeUser){
 		pendingEvent,
 		welcomed = false,
 		send;
+
+	console.log(completeUser.name, "connects from IP", socket.handshake.address);
 	
 	// maps an event-type to a callback, for all events
 	// which need a room.

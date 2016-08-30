@@ -687,7 +687,8 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 }
 
 // builds an histogram, each record relative to a utc day
-// optm: what takes most time is the min(id) fetching
+// optm: What takes most time is the min(id) fetching
+//       Those queries are even slower when using named prepared statements
 proto.messageHistogram = function(roomId, pattern, lang){
 	return pattern
 	? this.queryRows(
