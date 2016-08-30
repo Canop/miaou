@@ -54,7 +54,7 @@ function dequeue(){
 // intercepts links and sends boxed abstracts.
 // Requests are queued and only one at a time is done.
 exports.onSendMessage = function(shoe, m, send){
-	if (!m.content || !m.id ||!boxers.length) return;
+	if (!m.content || !m.id) return;
 	var bo = bench.start("Boxer - analyze");
 	m.content.split('\n').forEach(function(line){
 		for (var i=0; i<boxers.length; i++) {
