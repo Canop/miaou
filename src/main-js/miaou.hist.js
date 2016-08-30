@@ -28,7 +28,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 		var $selected = $('#search-results .message').eq(i).addClass('selected');
 		if ($selected.length) {
 			md.focusMessage(+$selected.attr('mid'));
-			var mtop = $selected.offset().top,
+			var	mtop = $selected.offset().top,
 				$scroller = $('#right'), stop = $scroller.offset().top, sst = $scroller.scrollTop();
 			if (mtop<stop+sst) {
 				$scroller.scrollTop(mtop-stop+-25);
@@ -93,9 +93,13 @@ miaou(function(hist, gui, locals, md, time, ws){
 		$('#hist').empty();
 		var records = res.hist;
 		if (!records || !records.length) return;
-		var	d = records[0].d, n = records[records.length-1].d - d,
-			$hist = $('#hist'), maxn = 0, logmaxn,
-			$month, lastMonth;
+		var	d = records[0].d,
+			n = records[records.length-1].d - d,
+			$hist = $('#hist'),
+			maxn = 0,
+			logmaxn,
+			$month,
+			lastMonth;
 		$('#search-results .message.selected').removeClass('selected');
 		records.forEach(function(r){
 			maxn = Math.max(maxn, r.n);
@@ -103,7 +107,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 		if (n<0 || n>5000 || maxn==0) return console.log('invalid data', res);
 		logmaxn = Math.log(maxn);
 		$('#hist')[n>30?'removeClass':'addClass']('zoomed');
-		function day(d, n, m, sn, sm){
+		function day(d, n, sn, sm){
 			var	date = new Date(d*24*60*60*1000),
 				month = time.MMM[date.getMonth()]+' '+date.getFullYear();
 			if (month != lastMonth) {
@@ -115,12 +119,11 @@ miaou(function(hist, gui, locals, md, time, ws){
 			var $bar = $('<div/>').addClass('bar').css('width', Math.log(n)*80/logmaxn+'%');
 			if (sm) $bar.addClass('hit');
 			var $day = $('<div/>').addClass('day').append($bar).attr('d', d).attr('n', n).appendTo($month);
-			if (m) $day.attr('m', m);
 			if (sm) $day.attr('sm', sm).attr('sn', sn);
 		}
 		records.forEach(function(r){
 			for (d++;d<r.d;d++) day(d, 0);
-			day(d=r.d, r.n, r.m, r.sn, r.sm);
+			day(d=r.d, r.n, r.sn, r.sm);
 		});
 		$('#hist').scrollTop($('#hist')[0].scrollHeight);
 		hist.showPage();
@@ -142,9 +145,10 @@ miaou(function(hist, gui, locals, md, time, ws){
 		});
 	}
 
-	$('#hist').on('click', '[m]', function(){
-		md.focusMessage(+($(this).attr('sm')||$(this).attr('m')));
-	}).on('mouseenter', '[m]', function(){
+	$('#hist').on('click', '.day', function(){
+		var d = +$(this).attr('d');
+		ws.emit("get_after_time", d*24*60*60);
+	}).on('mouseenter', '.day', function(){
 		var	sn = +$(this).attr('sn'),
 			n = +$(this).attr('n'),
 			d = +$(this).attr('d'),
@@ -153,10 +157,9 @@ miaou(function(hist, gui, locals, md, time, ws){
 		if (sn) h += '<br>' + sn + ' match';
 		if (sn>1) h += 'es';
 		$(this).append($('<div>').addClass('bubble').html(h));
-	}).on('mouseleave', '[m]', function(){
+	}).on('mouseleave', '.day', function(){
 		$('#hist .bubble').remove();
 	});
-
 
 	function startSearch(){
 		var options = buildSearchOptions();

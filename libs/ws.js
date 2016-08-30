@@ -1,4 +1,4 @@
-const	apiversion = 60,
+const	apiversion = 61,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -438,6 +438,23 @@ function handleUserInRoom(socket, completeUser){
 		console.log('ban event', ban);
 		auths.wsOnBan(shoe, ban);
 		done();
+	});
+
+	on('get_after_time', function(time, done){
+		var mid;
+		db.on([shoe.room.id, time])
+		.spread(db.getIdFirstMessageAfter)
+		.then(function(row){
+			mid = row.mid;
+			return emitMessages.call(this, shoe, false, nbMessagesBeforeTarget, '<=', mid)
+		}).then(function(){
+			return emitMessages.call(this, shoe, true, nbMessagesAfterTarget, '>', mid)
+		})
+		.then(function(){
+			socket.emit('go_to', mid);
+			done();
+		})
+		.finally(db.off);
 	});
 
 	on('get_around', function(data, done){

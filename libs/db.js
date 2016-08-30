@@ -609,6 +609,14 @@ proto.getNextMessageId = function(roomId, mid, asc){
 	}
 }
 
+proto.getIdFirstMessageAfter = function(roomId, time){
+	return this.queryRow(
+		"select min(id) mid from message where room=$1 and created>=$2",
+		[roomId, time],
+		"first_message_after"
+	);
+}
+
 proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
 		'select message.id, author, player.name as authorname, player.bot, room, content,'+
@@ -687,18 +695,16 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 }
 
 // builds an histogram, each record relative to a utc day
-// optm: What takes most time is the min(id) fetching
-//       Those queries are even slower when using named prepared statements
 proto.messageHistogram = function(roomId, pattern, lang){
 	return pattern
 	? this.queryRows(
-		"select count(*) n, min(id) m, floor(created/86400) d from message where room=$1"+
+		"select count(*) n, floor(created/86400) d from message where room=$1"+
 		" and to_tsvector($2, content) @@ plainto_tsquery($2,$3)"+
 		" group by d order by d",
 		[roomId, lang, pattern],
 		"histogram_with_patthern"
 	) : this.queryRows(
-		"select count(*) n, min(id) m, floor(created/86400) d"+
+		"select count(*) n, floor(created/86400) d"+
 		" from message where room=$1 group by d order by d",
 		[roomId],
 		"histogram_without_pattern"
@@ -1154,10 +1160,9 @@ proto.off = function(v){
 // * sql: the SQL query, with $x placeholders
 // * args: an array of arguments, in order of placeholder numbers
 // * name: both for the named prepared statement and perf logging
-// * useANamedPreparedStatement: specifies whether a named prepared statement is to
-//     be used
+// * useANamedPreparedStatement: specifies whether a named prepared statement is to be used:
 //     - true: always use one
-//     - false: never use one (this MUST be the case if the sql isn't constant for that name
+//     - false: never use one (this MUST be the case if the sql isn't constant for that name)
 //     - undefined: unspecified (right now it means it's random)
 proto._query = function(sql, args, name, useANamedPreparedStatement){
 	var	opts = { text: sql };
