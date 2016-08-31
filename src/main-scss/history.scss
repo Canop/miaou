@@ -39,9 +39,7 @@
 			height: 4px;
 			text-align: right;
 			background: $hist-normal-day-background;
-			&[m] {
-				cursor: pointer;
-			}	
+			cursor: pointer;
 			.bar {
 				position: absolute;
 				right: 0;

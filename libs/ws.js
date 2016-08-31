@@ -1,4 +1,4 @@
-const	apiversion = 61,
+const	apiversion = 62,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -341,7 +341,6 @@ function handleUserInRoom(socket, completeUser){
 			if (ban) throw new Error('Banned user');
 			r.path = server.roomPath(r);
 			shoe.room = r;
-			//console.log(shoe.publicUser.name, 'enters room', shoe.room.id, ':', shoe.room.name);
 			socket.emit('room', shoe.room).join(shoe.room.id);
 			socket.emit('config', clientConfig);
 			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);
@@ -440,10 +439,13 @@ function handleUserInRoom(socket, completeUser){
 		done();
 	});
 
-	on('get_after_time', function(time, done){
-		var mid;
-		db.on([shoe.room.id, time])
-		.spread(db.getIdFirstMessageAfter)
+	on('get_after_time', function(data, done){
+		var	mid,
+			search = data.search || {};
+		search.minCreated = data.minCreated;
+		db.on([search, shoe.publicUser.id, shoe.room])
+		.spread(fixSearchOptions)
+		.then(db.searchFirstId)
 		.then(function(row){
 			mid = row.mid;
 			return emitMessages.call(this, shoe, false, nbMessagesBeforeTarget, '<=', mid)
@@ -520,20 +522,20 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('hist', function(search, done){ // request for histogram data
-		db.on(shoe.room.id)
-		.then(db.messageHistogram)
-		.then(function(hist){
-			return [
-				hist,
-				search.pattern ? this.messageHistogram(shoe.room.id, search.pattern, 'english') : null
-			]
+		db.on()
+		.then(function(s){
+			var r = [this.rawHistogram(shoe.room.id)];
+			if (search) {
+				search = fixSearchOptions(search, shoe.publicUser.id, shoe.room);
+				r.push(this.searchHistogram(search));
+			}
+			return r;
 		}).spread(function(hist, shist){
 			if (shist) {
 				for (var ih=0, ish=0; ish<shist.length; ish++) {
 					var sh = shist[ish];
 					while (hist[ih].d<sh.d) ih++;
 					hist[ih].sn = sh.n;
-					hist[ih].sm = sh.m;
 				}
 			}
 			socket.emit('hist', {search:search, hist:hist});

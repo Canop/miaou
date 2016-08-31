@@ -16,6 +16,11 @@ miaou(function(hist, gui, locals, md, time, ws){
 		);
 	}
 
+	function isSearchEmpty(s){
+		s = s || currentSearch;
+		return !s || !(s.pattern || s.starred || s.starrer || s.author || s.authorName);
+	}
+
 	// arg : +1 or -1
 	function moveSelect(d){
 		var i, $s = $('#search-results .message.selected');
@@ -41,7 +46,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 	hist.open = function(){
 		visible = true;
 		$('#hist').show();
-		hist.fetchHistogram($('#search-input').val().trim());
+		hist.fetchHistogram(isSearchEmpty() ? null : currentSearch);
 	}
 
 	hist.close = function(){
@@ -61,7 +66,6 @@ miaou(function(hist, gui, locals, md, time, ws){
 		if (!options.page) options.page = 0;
 		currentSearch = options;
 		$("#search-load-bar").addClass("active");
-		console.log("emit Search", options);
 		ws.emit('search', options);
 	}
 
@@ -73,7 +77,6 @@ miaou(function(hist, gui, locals, md, time, ws){
 			return;
 		}
 		$("#search-load-bar").removeClass("active");
-		console.log('search results:', res);
 		md.showMessages(res.results, $('#search-results'), res.search.page);
 		if (res.mayHaveMore) {
 			$('<div id=search-next-page>').text('more results')
@@ -107,7 +110,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 		if (n<0 || n>5000 || maxn==0) return console.log('invalid data', res);
 		logmaxn = Math.log(maxn);
 		$('#hist')[n>30?'removeClass':'addClass']('zoomed');
-		function day(d, n, sn, sm){
+		function day(d, n, sn){
 			var	date = new Date(d*24*60*60*1000),
 				month = time.MMM[date.getMonth()]+' '+date.getFullYear();
 			if (month != lastMonth) {
@@ -116,14 +119,16 @@ miaou(function(hist, gui, locals, md, time, ws){
 				).appendTo($hist);
 				lastMonth = month;
 			}
-			var $bar = $('<div/>').addClass('bar').css('width', Math.log(n)*80/logmaxn+'%');
-			if (sm) $bar.addClass('hit');
+			var $bar = $('<div/>').addClass('bar').css('width', Math.log(n+1)*80/logmaxn+'%');
 			var $day = $('<div/>').addClass('day').append($bar).attr('d', d).attr('n', n).appendTo($month);
-			if (sm) $day.attr('sm', sm).attr('sn', sn);
+			if (sn) {
+				$bar.addClass('hit');
+				$day.attr('sn', sn);
+			}
 		}
 		records.forEach(function(r){
 			for (d++;d<r.d;d++) day(d, 0);
-			day(d=r.d, r.n, r.sn, r.sm);
+			day(d=r.d, r.n, r.sn);
 		});
 		$('#hist').scrollTop($('#hist')[0].scrollHeight);
 		hist.showPage();
@@ -146,8 +151,12 @@ miaou(function(hist, gui, locals, md, time, ws){
 	}
 
 	$('#hist').on('click', '.day', function(){
-		var d = +$(this).attr('d');
-		ws.emit("get_after_time", d*24*60*60);
+		var	sn = +$(this).attr('sn'),
+			d = +$(this).attr('d');
+		ws.emit("get_after_time", {
+			search: sn ? currentSearch : null,
+			minCreated: d*24*60*60
+		});
 	}).on('mouseenter', '.day', function(){
 		var	sn = +$(this).attr('sn'),
 			n = +$(this).attr('n'),
@@ -164,13 +173,13 @@ miaou(function(hist, gui, locals, md, time, ws){
 	function startSearch(){
 		var options = buildSearchOptions();
 		if (isCurrentSearch(options)) return;
-		if (options.pattern || options.starred || options.starrer || options.author || options.authorName) {
+		if (!isSearchEmpty(options)) {
 			hist.search(options);
 			hist.fetchHistogram(options);
 		} else {
 			currentSearch = options;
 			$('#search-results').empty();
-			$('#hist .bar').removeClass('hit').removeAttr('sm sn');
+			$('#hist .bar').removeClass('hit').removeAttr('sn');
 		}
 	}
 

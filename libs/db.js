@@ -609,14 +609,6 @@ proto.getNextMessageId = function(roomId, mid, asc){
 	}
 }
 
-proto.getIdFirstMessageAfter = function(roomId, time){
-	return this.queryRow(
-		"select min(id) mid from message where room=$1 and created>=$2",
-		[roomId, time],
-		"first_message_after"
-	);
-}
-
 proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
 		'select message.id, author, player.name as authorname, player.bot, room, content,'+
@@ -647,6 +639,11 @@ proto._searchConditions = function(s, args, conditions){
 		psname += "_author";
 		args.push(s.author);
 		conditions.push("author=$1");
+	}
+	if (s.minCreated) {
+		psname += "_minCreated";
+		args.push(s.minCreated);
+		conditions.push("created>=$1");
 	}
 	if (s.authorName) {
 		psname += "_authorName";
@@ -682,6 +679,19 @@ proto.search = function(s){
 	);
 }
 
+proto.searchFirstId = function(s){
+	var	psname = "search",
+		args = [],
+		conditions = [],
+		sql = "select min(message.id) as mid from message inner join player on author=player.id";
+	psname += this._searchConditions(s, args, conditions);
+	return this.queryRow(
+		ps(sql, conditions),
+		args,
+		psname
+	);
+}
+
 // accepts a tsquery for example 'dog&!cat' (find dogs but filter out cats)
 proto.search_tsquery = function(roomId, tsquery, lang, N){
 	return this.queryRows(
@@ -694,20 +704,28 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 	);
 }
 
+// builds an histogram, each record relative to a utc day having at least one search match
+proto.searchHistogram = function(s){
+	var	psname = "search_histogram",
+		args = [],
+		conditions = [],
+		sql = "select count(*) n, floor(created/86400) d from message"+
+		" inner join player on author=player.id";
+	psname += this._searchConditions(s, args, conditions);
+	return this.queryRows(
+		ps(sql, conditions, " group by d order by d"),
+		args,
+		psname
+	);
+}
+
 // builds an histogram, each record relative to a utc day
-proto.messageHistogram = function(roomId, pattern, lang){
-	return pattern
-	? this.queryRows(
-		"select count(*) n, floor(created/86400) d from message where room=$1"+
-		" and to_tsvector($2, content) @@ plainto_tsquery($2,$3)"+
-		" group by d order by d",
-		[roomId, lang, pattern],
-		"histogram_with_patthern"
-	) : this.queryRows(
+proto.rawHistogram = function(roomId){
+	return this.queryRows(
 		"select count(*) n, floor(created/86400) d"+
 		" from message where room=$1 group by d order by d",
 		[roomId],
-		"histogram_without_pattern"
+		"raw_histogram"
 	);
 }
 
@@ -1080,8 +1098,7 @@ function logQuery(sql, args){ // used in debug
 }
 
 // concatenate the conditions to the base query, ensuring the proper numbering
-// of ps arguments (psql needs a dense numbering)
-// while allowing repetitions
+// of ps arguments (psql needs a dense numbering) while allowing repetitions
 var ps = exports.ps = function(sql, conditions, postConditions){
 	var nn = 0;
 	conditions = conditions.map(s=>{
