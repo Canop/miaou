@@ -120,6 +120,15 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 
 	$('#users').on('click', '.user', prof.toggle);
 
+	$('#uploadOpen').click(function(){
+		$('#upload-panel').show();
+		$('#input-panel').hide();
+	});
+	$('#cancelUpload').click(function(){
+		$('#upload-panel').hide();
+		$('#input-panel').show();
+	});
+
 	watch.enabled = true;
 	chat.start();
 

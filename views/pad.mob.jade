@@ -22,10 +22,20 @@ html
 			#mpad-tab-watches.mpad-tab
 				.mpad-tab-label.fontello#global-watch.mpad-icon.icon-eye
 		#mpad-page-write.mpad-page
-			.mpad-row
+			#input-panel.mpad-row
 				textarea#input
+			#upload-panel.mpad-row
+				#upload-controls
+					input(type="file",id="file")
+					br
+					button#uploadSend Send Image
+					button#cancelUpload Cancel Upload
+				#upload-wait(style="display:none")
+					p Uploading image to imgur...
+					img(src="static/ajax-loader-bar.gif")
 			.mpad-row
 				.mpad-button#cancel-write Cancel
+				.mpad-button#uploadOpen Upload
 				.mpad-button#send Send
 		#mpad-bottom-tabs.mpad-tabs
 			#mpad-tab-users.mpad-tab

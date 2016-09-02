@@ -681,12 +681,6 @@ code {
 		}
 	}
 }
-body.mobile #input-panel {
-	display: block;
-	position: fixed;
-	bottom:0; left:0; right:0;
-	height: $minput-height + 10px;
-}
 $input-buttons-width: 74px;
 #input {
 	width: calc(100% - 16px - #{$input-buttons-width}); 
@@ -735,13 +729,20 @@ body.mobile #input-panel button {
 	@include flex-grow(0);
 	display: none;
 }
-#upload-panel {
+body.desktop #upload-panel {
 	background: $bg-color;
 	width:100%;
 	height: $input-height + 8px;
 	flex-grow: 0;
 	display: none;
 	padding: 10px;
+	text-align: center;
+}
+body.mobile #upload-panel {
+	width:100%;
+	flex-grow: 0;
+	display: none;
+	padding: 4px;
 	text-align: center;
 }
 #upload-wait {
