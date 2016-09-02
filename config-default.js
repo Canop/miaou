@@ -7,6 +7,8 @@ module.exports = {
 	server: "http://yourdomain:8204", // the URL of Miaou as seen by the browser
 	base: "/", 	// path to Miaou as seen by the browser
 	port: 8204, // port on which to start Miaou (might be hidden from the browser by a proxy)
+
+	trustProxy: false, // set to true when you add a front-end proxy 
 	
 	// If your server is behind a proxy, the config may be different. 
 	// Here's the example of the Miaou server on http://dystroy.org/miaou
