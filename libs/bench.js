@@ -91,7 +91,7 @@ function fmtDuration(t){
 }
 
 function doCommand(ct){
-	var c = "Miaou Server started on " + Date(startTime) + "\n";
+	var c = "Miaou Server started on " + new Date(startTime) + "\n";
 	c += "Uptime: " + fmtDuration((Date.now()-startTime))+ "\n";
 	c += "Operation Durations:\n";
 	c += "Type | Operations | Average (ms) | Std Dev (ms) | Sum (s)\n";
