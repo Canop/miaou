@@ -1,5 +1,5 @@
 
-This plugin introduces the `!!survey` command which changes messages containing lists into survey where every user can vote once.
+This plugin introduces the `!!survey` command which changes a message containing a list into a survey where every user can vote once.
 
 ![survey](doc/survey-edit.png)
 
