@@ -19,7 +19,6 @@ exports.appGetJsonLastMessages = function(req, res){
 	db.on([roomId, req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
-		if (!room) throw "room \""+roomId+"\" not found";
 		if (room.private && !auths.checkAtLeast(room.auth, 'write')) {
 			throw "unauthorized";
 		}
@@ -30,6 +29,11 @@ exports.appGetJsonLastMessages = function(req, res){
 		if (!messages.length) return;
 		var oldestMessageId = messages[messages.length-1].id;
 		return this.deleteLastRoomPings(roomId, req.user.id, oldestMessageId);
+	})
+	.catch(db.NoRowError, function(){
+		var e = "no room found for id" + roomId;
+		console.log(e);
+		res.json({error: e});
 	})
 	.catch(function(err){
 		console.log("error in appGetJsonLastMessages:", err);

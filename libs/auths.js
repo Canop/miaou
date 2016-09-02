@@ -57,7 +57,6 @@ exports.appGetAuths = function(req, res){
 	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(room){
-		if (!room) throw new db.NoRowError();
 		room.path = server.roomPath(room);
 		return [
 			this.listRoomAuths(room.id),
@@ -91,7 +90,6 @@ exports.appPostAuths = function(req, res){
 	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
 	.then(function(r){
-		if (!r) throw new db.NoRowError();
 		room = r;
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);
 		if (!exports.checkAtLeast(room.auth, 'admin')) {

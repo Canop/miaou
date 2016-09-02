@@ -32,11 +32,6 @@ exports.appGet = function(req, res){
 		]
 	})
 	.spread(function(room, ban, userPrefs){
-		if (!room) {
-			console.log("no room found for id", roomId);
-			res.redirect(server.url('/rooms'));
-			return;
-		}
 		room.path = server.roomPath(room);
 		req.session.room = room;
 		var theme = prefs.theme(userPrefs, req.query.theme);
@@ -62,7 +57,13 @@ exports.appGet = function(req, res){
 		} else {
 			res.render('pad.jade', {vars:locals, theme:theme});
 		}
-	}).catch(function(err){
+	})
+	.catch(db.NoRowError, function(){
+		console.log("no room found for id", roomId);
+		res.redirect(server.url('/rooms'));
+	})
+	.catch(function(err){
 		server.renderErr(res, err);
-	}).finally(db.off);
+	})
+	.finally(db.off);
 }

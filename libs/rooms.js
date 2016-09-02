@@ -94,9 +94,11 @@ exports.updateMessage = function(message){
 // room admin page GET
 exports.appGetRoom = function(req, res){
 	var theme;
-	db.on().then(function(){
+	db.on()
+	.then(function(){
 		return prefs.get.call(this, req.user.id);
-	}).then(function(userPrefs){
+	})
+	.then(function(userPrefs){
 		theme = prefs.theme(userPrefs, req.query.theme);
 		return this.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
 	})
@@ -107,13 +109,17 @@ exports.appGetRoom = function(req, res){
 		res.render('room.jade', {
 			vars:{ room, error:null, langs:langs.legal }, theme
 		});
-	}).catch(db.NoRowError, function(){
+	})
+	.catch(db.NoRowError, function(){
+		// that's where we go in case of room creation
 		res.render('room.jade', { // TODO ???
 			vars:{ error:null, langs:langs.legal }, theme
 		});
-	}).catch(function(err){
+	})
+	.catch(function(err){
 		server.renderErr(res, err);
-	}).finally(db.off);
+	})
+	.finally(db.off);
 }
 
 // room admin page POST
