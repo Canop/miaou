@@ -143,7 +143,11 @@ exports.toUrlDecoration = function(roomName){
 }
 
 exports.isValidUsername = function(username){
-	return !!(username && /^[a-zA-Z][\w\-]{2,19}$/.test(username));
+	return /^[a-zA-Z][\w\-]{2,19}$/.test(username);
+}
+
+exports.isPing = function(token){
+	return /^@[a-zA-Z][\w\-]{2,19}$/.test(token);
 }
 
 exports.isUsernameForbidden = function(n){

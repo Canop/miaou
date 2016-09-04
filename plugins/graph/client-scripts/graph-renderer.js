@@ -44,6 +44,16 @@ miaou(function(md, plugins){
 		return false;
 	}
 
+	function min(a, b){
+		if (a!=a || a==undefined) return b;
+		return b<a ? b : a;
+	}
+
+	function max(a, b){
+		if (a!=a || a==undefined) return b;
+		return b>a ? b : a;
+	}
+
 	var nm3 = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 	var m3 = {};
 	for (var i=0; i<nm3.length; i++) m3[nm3[i]]=i+1;
@@ -89,7 +99,15 @@ miaou(function(md, plugins){
 	}
 
 	function render($c, m){
-		if (!m.content || !/(^|\s)#graph\b/.test(m.content)) return;
+		if (!m.content) return;
+		var match = m.content.match(/(?:^|\s)#graph(\([^\)]+\))?(?:$|\s)/);
+		if (!match) return;
+		var options= {};
+		if (match[1]) {
+			match[1].split(/\W+/).forEach(function(k){
+				if (k) options[k] = true;
+			});
+		}
 
 		var $table = $c.find('table').eq(0);
 		if (!$table.length) return;
@@ -113,7 +131,7 @@ miaou(function(md, plugins){
 			if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
 		}
 
-		var	H = 170,
+		var	H = 180,
 			nbycols = ycols.length;
 
 		if (!nbycols) {
@@ -129,25 +147,94 @@ miaou(function(md, plugins){
 			mb = 60, // margin bottom
 			ml = rotateXLabels ? 35 : 5, // margin left
 			n = xvals.length,
-			g = ù('<svg', $c[0]).css({ height:H, width:600 }),
+			g = ù('<svg', $c[0]).css({ height:H, width:800 }),
 			gW = Math.max(50, Math.min(g.width()-mr-ml, 40*n*ycols.length)),
 			W = gW+mr+ml,
 			xmin = xvals[0].start,
+			miny,
+			maxy,
+			minsumy = 0,
+			maxsumy = 0,
 			w = W-ml-mr, h = H-mt-mb,
 			rx = w / (xvals[n-1].end-xvals[0].start);
 
 		ycols.forEach(function(ycol, j){
-			ycol.max = Math.max.apply(0, ycol.vals);
-			ycol.min = Math.min.apply(0, ycol.vals);
+			ycol.max;
+			ycol.min;
+			ycol.minsum = 0;
+			ycol.maxsum = 0;
+			var sum = 0;
+			for (var i=0; i<ycol.vals.length; i++) {
+				var v = ycol.vals[i];
+				if (v!=v) continue;
+				sum += v;
+				ycol.minsum = min(sum, ycol.minsum);
+				ycol.maxsum = max(sum, ycol.maxsum);
+				ycol.min = min(v, ycol.min);
+				ycol.max = max(v, ycol.max);
+			}
+			
 			if (ycol.min>0 && ycol.min<.9*ycol.max) ycol.min = 0;
-			ycol.r = h / (ycol.max-ycol.min);
+			miny = min(miny, ycol.min);
+			maxy = max(maxy, ycol.max);
+			minsumy = min(minsumy, ycol.minsum);
+			maxsumy = max(maxsumy, ycol.maxsum);
 			ycol.color = colors[j%colors.length];
 		});
+
+		ycols.forEach(function(ycol, j){
+			if (options.compare) {
+				ycol.min = miny;
+				ycol.max = maxy;
+				ycol.minsum = minsumy;
+				ycol.maxsum = maxsumy;
+			}
+			var range = ycol.max-ycol.min;
+			if (options.sum) range *= 1.5;
+			ycol.r = h/range;
+			ycol.sumr = h/(ycol.maxsum-ycol.minsum);
+			ycol.sum = 0; // will be incremented during drawing
+		});
+
 		xvals.forEach(function(xval, i){
 			var	x1 = Math.floor(ml+(xvals[i].start-xmin)*rx)+2,
 				x2 = ml+(xvals[i].end-xmin)*rx-3,
 				xm = (x1+x2)/2,
 				barWidth = Math.floor((x2-x1-5)/nbycols);
+			ycols.forEach(function(ycol, j){
+				var	val = ycol.vals[i],
+					y;
+				if (val) ycol.sum += val;
+				if (options.compare) {
+					y = mt + h - Math.floor((val-miny)*ycol.r);
+				} else {
+					y = mt + h - Math.floor((val-ycol.min)*ycol.r);
+				}
+				var	height = Math.ceil(h-y+mt),
+					xbar = x1+(barWidth+2)*j+4;
+				if (height) {
+					ù('<rect', g).attr({
+						x:xbar, y:y, width:barWidth, height:height,
+						fill:ycol.color
+					});
+				}
+				if (options.sum||options["sum"+j]) {
+					if (!i) {
+						y = mt + h - Math.floor((0-ycol.minsum)*ycol.sumr);
+						ycol.sumPath = "M"+x1+" "+y;
+					}
+					y = mt + h - Math.floor((ycol.sum-ycol.minsum)*ycol.sumr);
+					ycol.sumPath += "L"+x2+" "+y;
+				}
+			});
+			var	x = xm,
+				y = h+mt+10;
+			var text = ù('<text', g).text(xval.label).attr({
+				x:x, y:y, alignmentBaseline:"middle", fontSize:"85%", opacity:.9
+			});
+			if (rotateXLabels) {
+				text.attr({textAnchor:"end", transform:"rotate(-45 "+x+" "+y+")"});
+			}
 			var showPop = function(){
 				var l = 70;
 				if (xm-l<10) l = 10;
@@ -178,30 +265,20 @@ miaou(function(md, plugins){
 					});
 				});
 			}
-			ycols.forEach(function(ycol, j){
-				var	val = ycol.vals[i],
-					y = mt + h - Math.floor((val-ycol.min)*ycol.r),
-					height = Math.ceil(h-y+mt),
-					xbar = x1+(barWidth+2)*j+4;
-				ù('<rect', g).attr({
-					x:xbar, y:y, width:barWidth, height:height,
-					fill:ycol.color
-				});
-			});
-			var	x = xm,
-				y = h+mt+10;
-			var text = ù('<text', g).text(xval.label).attr({
-				x:x, y:y, alignmentBaseline:"middle", fontSize:"85%", opacity:.9
-			});
-			if (rotateXLabels) {
-				text.attr({textAnchor:"end", transform:"rotate(-45 "+x+" "+y+")"});
-			}
 			ù('<rect', g).attr({
 				x:x1, width:x2-x1, y:0, height:h, fill:"transparent", cursor:'crosshair'
 			}).on('mouseenter', showPop).on('mouseleave', hidePop);
 			ù('<line', g).attr({
 				x1:x1-.5, x2:x1-.5, y1:mt+h-2, y2:mt+h+1,
 				stroke:"#666", strokeWidth:1
+			});
+		});
+
+		ycols.forEach(function(ycol){
+			if (!ycol.sumPath) return;
+			ù('<path', g).attr({
+				d: ycol.sumPath, fill: "transparent",
+				stroke: ycol.color, opacity: .8, strokeWidth: 3, lineJoin: "round"
 			});
 		});
 

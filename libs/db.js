@@ -1211,7 +1211,7 @@ proto._query = function(sql, args, name, useANamedPreparedStatement){
 	return new Promise((resolve, reject)=>{
 		this.client.query(opts, function(err, res){
 			var duration = bo.end() * .001;
-			if (duration>100) {
+			if (duration>200) {
 				console.log("Slow query", name, "(" + duration + " ms)");
 				logQuery(sql, args);
 			}
