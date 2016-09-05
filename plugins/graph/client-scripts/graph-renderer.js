@@ -78,14 +78,14 @@ miaou(function(md, plugins){
 			};
 		},
 		function(s){ // small sequential integers
-			var d = parseInt(s);
+			var d = parseInt(s.replace(/\s+/g, ""));
 			if (d!==d) return;
 			return {
 				start: d-.5,
 				end: d+.5,
 				label: s
 			};
-		}
+		},
 	];
 	var colors = [
 		'#e9967a', 'rgba(0,143,143,.4)', 'rgba(251, 170, 5, .4)',
@@ -127,7 +127,9 @@ miaou(function(md, plugins){
 
 		for (var i=1, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
 			var ycol = new TGCol($table, i);
-			ycol.parse(Number);
+			ycol.parse(function(s){
+				return parseFloat(s.replace(/\s+/g, ""));
+			});
 			if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
 		}
 
