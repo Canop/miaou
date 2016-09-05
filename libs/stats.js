@@ -76,9 +76,6 @@ function doStats(ct){
 	if (/^socket/i.test(topic)) {
 		return siostats.doStats(ct, miaou.io);
 	}
-	if (/^user/.test(topic)) {
-		if (!usernames.length) throw "User stats need a ping as parameter";
-	}
 	var	psname = "stats / " + topic,
 		cols,
 		from,
@@ -106,6 +103,7 @@ function doStats(ct){
 		title = "Server Statistics #graph(sum0)";
 		ranking = false;
 	} else if (/^user-graph$/i.test(topic)) {
+		if (!usernames.length) throw "User stats need a ping as parameter";
 		if (usernames.length===1) {
 			cols = [
 				{name:"Month", value:sqlMonth("created"), fmt:fmtMonth},
@@ -150,6 +148,7 @@ function doStats(ct){
 		args.push(room.id);
 		title = "Room Users Statistics (top "+n+")";
 	} else if (/^user$/i.test(topic)) {
+		if (!usernames.length) throw "User stats need a ping as parameter";
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{
