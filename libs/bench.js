@@ -10,6 +10,7 @@
 // all timings here are in microseconds
 
 const	process = require("process"),
+	fmt = require("./fmt.js"),
 	startTime = Date.now(),
 	benchs = new Map;
 
@@ -79,36 +80,34 @@ exports.start = function(name){
 	return new BenchOperation(bench);
 }
 
-function fmt(num, prec){
+function fmtSmallDuration(num){
 	if (!num) return ' ';
-	if (num<100) return num.toPrecision(prec||2);
+	num /= 1e3;
+	if (num<100) return num.toPrecision(2);
 	return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
 }
 
-function fmtDuration(t){
-	var d = t/86400000|0;
-	return (d ? d+"d ":"")+(new Date(t-d|0)).toUTCString().replace(/.*(\d{2}):(\d{2}):(\d{2}).*/, "$1h $2m $3s");
-}
-
 function doCommand(ct){
-	var c = "Miaou Server started on " + new Date(startTime) + "\n";
-	c += "Uptime: " + fmtDuration((Date.now()-startTime))+ "\n";
-	c += "Operation Durations:\n";
-	c += "Type | Operations | Average (ms) | Std Dev (ms) | Sum (s)\n";
-	c += ":-|:-:|:-:|:-:|:-:\n";
-	c += Array.from(benchs.values())
+	var rows = Array.from(benchs.values())
 	.filter(b => b.n > 2)
 	.sort((a, b) =>
 		a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
 	)
-	.map(b =>
-		b.name + "|"
-		+ b.n  + "|"
-		+ fmt(b.avg()/1e3) + "|"
-		+ fmt(b.stdDev()/1e3) + "|"
-		+ (Math.round(b.sum()/1e6) || ' ')
-	)
-	.join("\n");
+	.map(b => [
+		b.name,
+		b.n,
+		fmtSmallDuration(b.avg()),
+		fmtSmallDuration(b.stdDev()),
+		Math.round(b.sum()/1e6) || ' '
+	]);
+	var c = "Miaou Server started on " + new Date(startTime) + "\n";
+	c += "Uptime: " + fmt.duration((Date.now()-startTime))+ "\n";
+	c += "Operation Durations:\n";
+	c += fmt.tbl({
+		cols: ["Type ", " Operations ", " Average (ms) ", " Std Dev (ms) ", " Sum (s)"],
+		aligns: "l",
+		rows
+	});
 	ct.reply(c);
 }
 

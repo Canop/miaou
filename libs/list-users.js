@@ -12,7 +12,7 @@ function la(ct){
 		ct.nostore = true;
 		var lines = [
 			"Room admins:", "user|level", ":-:|:-:",
-			...auths.map(a => a.name + "|" + a.auth)
+			...auths.map(a => a.name + "|" + a.auth).sort()
 		];
 		ct.reply(lines.join("\n"), true);
 	});
