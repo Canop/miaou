@@ -2,6 +2,7 @@
 
 const	fmt = require('./fmt.js'),
 	naming = require('./naming.js'),
+	monthstats = require('./stats-months.js'),
 	siostats = require('./stats-sockets.js');
 
 var	miaou;
@@ -11,23 +12,12 @@ exports.configure = function(_miaou){
 	return this;
 }
 
-function raw(_, num){
-	return num ? ''+num : ' ';
-}
-
 function fmtPlayerName(_, name){
 	var mdname = naming.makeMarkdownCompatible(name);
 	if (!naming.isValidUsername(name)) return mdname;
 	return "["+mdname+"](u/"+name+")";
 }
 
-function sqlMonth(col){
-	return `extract(year from to_timestamp(${col}))*100+extract(month from to_timestamp(${col}))`;
-}
-function fmtMonth(row){
-	var c0 = ''+row.c0;
-	return c0.slice(0, 4)+"/"+c0.slice(-2);
-}
 
 // Exemples of args:
 //	 "sockets"
@@ -60,9 +50,7 @@ function doStats(ct){
 		topic = match[1],
 		params = match[2].split(/[\s,]+/),
 		n = Math.min(+match[3]||10, 500),
-		ranking = true,
-		usernames = [],
-		hasLimit = false;
+		usernames = [];
 		
 	params = params.map(n => /^me$/i.test(n) ? '@'+ct.username() : n);
 	usernames = params.filter(p => naming.isPing(p)).map(p => p.slice(1));
@@ -81,7 +69,6 @@ function doStats(ct){
 		from,
 		title,
 		room = ct.shoe.room,
-		orderingCol,
 		args=[];
 	/* eslint-disable max-len */
 	if (/^server$/i.test(topic)) {
@@ -94,53 +81,37 @@ function doStats(ct){
 		];
 		title = "Server Statistics";
 	} else if (/^server-graph$/i.test(topic)) {
-		cols = [
-			{name:"Month", value:sqlMonth("created"), fmt:fmtMonth},
-			{name:"Messages", value:"count(*)", fmt:raw},
-			{name:"Authors", value:"count(distinct author)", fmt:raw},
-		];
-		from = "from message group by c0 order by c0";
-		title = "Server Statistics #graph(sum0)";
-		ranking = false;
+		return monthstats.doServerStats(this, ct);
 	} else if (/^user-graph$/i.test(topic)) {
 		if (!usernames.length) throw "User stats need a ping as parameter";
-		if (usernames.length===1) {
-			cols = [
-				{name:"Month", value:sqlMonth("created"), fmt:fmtMonth},
-				{name:"Messages", value:"count(*)", fmt:raw},
-			];
-			from = "from message where author=(select id from player where name=$1) group by c0 order by c0";
-			args.push(usernames[0]);
-		} else {
-			usernames = usernames.slice(0, 4);
-			psname += " / " + usernames.length;
-			cols = [{name:"Month", value:"month", fmt:fmtMonth}].concat(usernames.map((name, i) => ({
-				name,
-				value:`(select count(*) from message m${i} where `+sqlMonth(`m${i}.created`)+`=month and author=(select id from player where name=$${i+1}))`
-			})));
-			from = "from (select "+sqlMonth("created")+" as month from message group by month order by month) as months";
-			[].push.apply(args, usernames);
-		}
-		title = "User Statistics #graph(compare,sum)";
-		ranking = false;
-	} else if (/^(active-)?users$/i.test(topic)) {
+		return monthstats.doUsersStats(this, ct, usernames);
+	} else if (/^active-users$/i.test(topic)) {
 		cols = [
-			{name:"Name", value:"name", fmt:fmtPlayerName},
-			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
-			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
-			{name:"Stars", value:"(select sum(star) from message where author=player.id)"},
-			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
+			{name:"Name", value:"(select name from player where player.id=pid)", fmt:fmtPlayerName},
+			{name:"Messages", value:"(select count(*) from message where author=pid)"},
+			{name:"Last Two Days Messages", value:"n"},
+			{name:"Rooms", value:"(select count(distinct room) from message where author=pid)"},
 		];
-		orderingCol = /^active-/i.test(topic) ? 2 : 1;
-		from = "from player where name is not null order by c"+orderingCol+" desc";
-		hasLimit = true;
+		from = "from (select author pid, count(*) n from message where created>$1 group by author order by n desc limit $2) s";
+		args.push((Date.now()/1000|0) - 2*24*60*60);
+		args.push(n);
+		title = "Users Statistics (top "+n+")";
+	} else if (/^users$/i.test(topic)) {
+		cols = [
+			{name:"Name", value:"(select name from player where player.id=pid)", fmt:fmtPlayerName},
+			{name:"Messages", value:"n"},
+			{name:"Last Two Days Messages", value:"(select count(*) n from message where created>$1 and author=pid)"},
+			{name:"Rooms", value:"(select count(distinct room) from message where author=pid)"},
+		];
+		from = "from (select author pid, count(*) n from message group by author order by n desc limit $2) s";
+		args.push((Date.now()/1000|0) - 2*24*60*60);
+		args.push(n);
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
 		cols = [
 			{name:"Name", value:"name", fmt:fmtPlayerName},
 			{name:"Room Messages", value:"(select count(*) from message where author=player.id and room=$1)"},
 			{name:"Last Two Days Room Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id and room=$1)"},
-			{name:"Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star' and room=$1)"},
 			{name:"Total Messages", value:"(select count(*) from message where author=player.id)"},
 		];
 		from = "from player where exists(select id from message where author=player.id and room=$1) order by c1 desc";
@@ -179,9 +150,9 @@ function doStats(ct){
 			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
-		orderingCol = /^active-/i.test(topic) ? 6 : 5;
-		from = "from room order by c"+orderingCol+" desc";
-		hasLimit = true;
+		var orderingCol = /^active-/i.test(topic) ? 6 : 5;
+		from = "from room order by c"+orderingCol+" desc limit $1";
+		args.push(n);
 		title = "Rooms Statistics (top "+n+")";
 	} else if (/^room$/i.test(topic)) {
 		cols = [
@@ -220,35 +191,25 @@ function doStats(ct){
 	}
 	var sql = "select " + cols.map((col, i) => (col.value||col.name)+' c'+i).join(',');
 	if (from) sql += ' '+from;
-	if (hasLimit) {
-		args.push(n);
-		sql += ' limit $' + args.length;
-	}
-	console.log("stats", psname);
+	console.log("STATS", psname);
 
 	/* eslint-enable max-len */
 
 	return this.queryRows(sql, args, psname).then(function(rows){
-		var c;
 		if (!rows.length) {
-			c = "nothing found";
-		} else {
-			ranking = ranking && rows.length>1;
-			c = title+"\n";
-			if (ranking) c += '#|';
-			c += cols.map(c => c.name).join('|')+'\n';
-			if (ranking) c += '-:|';
-			c += cols.map(()=> ':-:').join('|')+'\n';
-			c += rows.map(function(row, l){
-				var line='';
-				if (ranking) line += l+1+'|';
-				for (var i=0; i<cols.length; i++) {
-					var num = row['c'+i];
-					line += ( cols[i].fmt ? cols[i].fmt(row, num) : fmt.int(num) ) + '|';
-				}
-				return line;
-			}).join('\n');
+			return ct.reply("nothing", false);
 		}
+		var c = title+"\n";
+		c += fmt.tbl({
+			rank: true,
+			cols: cols.map(col => col.name),
+			rows: rows.map(row => cols.map(
+				(col, i) => {
+					var num = row['c'+i];
+					return cols[i].fmt ? cols[i].fmt(row, num) : fmt.int(num);
+				}
+			))
+		});
 		ct.reply(c, ct.nostore = c.length>800);
 	})
 }
