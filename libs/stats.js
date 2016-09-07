@@ -18,6 +18,9 @@ function fmtPlayerName(_, name){
 	return "["+mdname+"](u/"+name+")";
 }
 
+function twoDaysBefore(){
+	return (Date.now()/1000|0) - 2*24*60*60;
+}
 
 // Exemples of args:
 //	 "sockets"
@@ -61,30 +64,36 @@ function doStats(ct){
 		if (usernames.length) topic = "user-graph";
 		else topic = "server-graph";
 	}
+
 	if (/^socket/i.test(topic)) {
 		return siostats.doStats(ct, miaou.io);
 	}
+	if (/^server-graph$/i.test(topic)) {
+		return monthstats.doServerStats(this, ct);
+	}
+	if (/^user-graph$/i.test(topic)) {
+		if (!usernames.length) throw "User stats need a ping as parameter";
+		return monthstats.doUsersStats(this, ct, usernames);
+	}
+
 	var	psname = "stats / " + topic,
 		cols,
 		from,
 		title,
 		room = ct.shoe.room,
 		args=[];
-	/* eslint-disable max-len */
 	if (/^server$/i.test(topic)) {
 		cols = [
 			{name:"Users", value:"(select count(*) from player where name is not null)"},
 			{name:"Public Rooms", value:"(select count(*) from room where private=false)"},
 			{name:"Private Rooms", value:"(select count(*) from room where private=true)"},
 			{name:"Messages", value:"(select count(*) from message)"},
-			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800)"},
+			{
+				name:"Last Two Days Messages",
+				value:"(select count(*) from message where created>extract(epoch from now())-172800)"
+			},
 		];
 		title = "Server Statistics";
-	} else if (/^server-graph$/i.test(topic)) {
-		return monthstats.doServerStats(this, ct);
-	} else if (/^user-graph$/i.test(topic)) {
-		if (!usernames.length) throw "User stats need a ping as parameter";
-		return monthstats.doUsersStats(this, ct, usernames);
 	} else if (/^active-users$/i.test(topic)) {
 		cols = [
 			{name:"Name", value:"(select name from player where player.id=pid)", fmt:fmtPlayerName},
@@ -92,8 +101,9 @@ function doStats(ct){
 			{name:"Last Two Days Messages", value:"n"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=pid)"},
 		];
-		from = "from (select author pid, count(*) n from message where created>$1 group by author order by n desc limit $2) s";
-		args.push((Date.now()/1000|0) - 2*24*60*60);
+		from = "from (select author pid, count(*) n from messages"
+	       		+ " where created>$1 group by author order by n desc limit $2) s";
+		args.push(twoDaysBefore());
 		args.push(n);
 		title = "Users Statistics (top "+n+")";
 	} else if (/^users$/i.test(topic)) {
@@ -104,19 +114,22 @@ function doStats(ct){
 			{name:"Rooms", value:"(select count(distinct room) from message where author=pid)"},
 		];
 		from = "from (select author pid, count(*) n from message group by author order by n desc limit $2) s";
-		args.push((Date.now()/1000|0) - 2*24*60*60);
+		args.push(twoDaysBefore());
 		args.push(n);
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
 		cols = [
-			{name:"Name", value:"name", fmt:fmtPlayerName},
-			{name:"Room Messages", value:"(select count(*) from message where author=player.id and room=$1)"},
-			{name:"Last Two Days Room Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id and room=$1)"},
-			{name:"Total Messages", value:"(select count(*) from message where author=player.id)"},
+			{name:"Name", value:"(select name from player where player.id=pid)", fmt:fmtPlayerName},
+			{name:"Room Messages", value:"n"},
+			{
+				name:"Last Two Days Room Messages",
+				value:"(select count(*) n from message where room=$1 and created>$2 and author=pid)"
+			},
+			{name:"Total Messages", value:"(select count(*) from message where author=pid)"},
 		];
-		from = "from player where exists(select id from message where author=player.id and room=$1) order by c1 desc";
-		hasLimit = true;
-		args.push(room.id);
+		from = "from (select author pid, count(*) n from message"
+			+ " where room=$1 group by author order by n desc limit $3) s";
+		args.push(room.id, twoDaysBefore(), n);
 		title = "Room Users Statistics (top "+n+")";
 	} else if (/^user$/i.test(topic)) {
 		if (!usernames.length) throw "User stats need a ping as parameter";
@@ -127,14 +140,21 @@ function doStats(ct){
 				value:"(select min(created) from message where author=player.id)",
 				fmt: (r, c) => fmt.date(c, "DD MMM YYYY")
 			},
-			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and author=player.id)"},
-			{name:"Received Stars", value:"(select count(*) from message_vote, message where author=player.id and message_vote.message=message.id and vote='star')"},
+			{
+				name:"Last Two Days Messages",
+				value:"(select count(*) from message where created>$3 and author=player.id)"
+			},
+			{
+				name:"Received Stars",
+				value:"(select count(*) from message_vote, message"
+			       		+ " where author=player.id and message_vote.message=message.id and vote='star')"
+			},
 			{name:"Given Stars", value:"(select count(*) from message_vote where player=player.id and vote='star')"},
 			{name:"Messages In This Room", value:"(select count(*) from message where room=$2 and author=player.id)"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
 		from = "from player where name=$1";
-		args.push(usernames[0], room.id);
+		args.push(usernames[0], room.id, twoDaysBefore());
 		title = "Statistics for user "+usernames[0];
 	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
@@ -147,17 +167,20 @@ function doStats(ct){
 			{name:"Public", value:"private", fmt:(_, b) => b ? ' ' : '✓'},
 			{name:"Listed", value:"listed", fmt:(_, b) => b ? '✓' : ' '},
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
-			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=room.id)"},
+			{name:"Last Two Days Messages", value:"(select count(*) from message where created>$1 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
 		var orderingCol = /^active-/i.test(topic) ? 6 : 5;
-		from = "from room order by c"+orderingCol+" desc limit $1";
-		args.push(n);
+		from = "from room order by c"+orderingCol+" desc limit $2";
+		args.push(twoDaysBefore(), n);
 		title = "Rooms Statistics (top "+n+")";
 	} else if (/^room$/i.test(topic)) {
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where room=$1)"},
-			{name:"Last Two Days Messages", value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=$1)"},
+			{
+				name:"Last Two Days Messages",
+				value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=$1)"
+			},
 			{name:"Users", value:"(select count(distinct author) from message where room=$1)"},
 		];
 		args.push(room.id);
@@ -193,7 +216,6 @@ function doStats(ct){
 	if (from) sql += ' '+from;
 	console.log("STATS", psname);
 
-	/* eslint-enable max-len */
 
 	return this.queryRows(sql, args, psname).then(function(rows){
 		if (!rows.length) {
