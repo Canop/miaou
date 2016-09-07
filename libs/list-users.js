@@ -22,7 +22,7 @@ function lu(ct){
 	return this.listRoomUsers(ct.shoe.room.id).then(function(names){
 		ct.nostore = true;
 		ct.reply(
-			"Room users:"+names.map(u => "\n* "+u.name).join(''),
+			"Room users:"+names.map(u => "\n* "+u.name).sort().join(''),
 			true
 		);
 	});
