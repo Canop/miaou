@@ -101,7 +101,7 @@ function doStats(ct){
 			{name:"Last Two Days Messages", value:"n"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=pid)"},
 		];
-		from = "from (select author pid, count(*) n from messages"
+		from = "from (select author pid, count(*) n from message"
 	       		+ " where created>$1 group by author order by n desc limit $2) s";
 		args.push(twoDaysBefore());
 		args.push(n);
