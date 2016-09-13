@@ -1,6 +1,6 @@
 # Miaou
 
-A chat server with authentication, persistent and searchable history, rich markdown formatting, video, private rooms, conversation highlighting, plugins, persisted notifications, code and table rendering, specialized link boxing, githbub hooks, bots, and many other features.
+A chat server with authentication, persistent and searchable history, rich markdown formatting, video, private rooms, conversation highlighting, plugins, persisted notifications, code and table rendering, specialized link boxing, github hooks, bots, and many other features.
 
 ![screenshot](https://i.imgur.com/75O8963.png)
 
