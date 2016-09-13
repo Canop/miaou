@@ -103,7 +103,7 @@ proto.getUserByName = function(username){
 
 // updates the name, avatar_src and avatar_key
 proto.updateUser = function(user){
-	return this.queryRow(
+	return this.execute(
 		'update player set name=$1, avatarsrc=$2, avatarkey=$3 where id=$4',
 		[user.name, user.avatarsrc, user.avatarkey, user.id],
 		"update_user"
@@ -112,7 +112,7 @@ proto.updateUser = function(user){
 
 // saves the additional optional user info (location, description, lang, website)
 proto.updateUserInfo = function(id, info){
-	return this.queryRow(
+	return this.execute(
 		"update player set description=$1, location=$2, url=$3, lang=$4 where id=$5",
 		[info.description, info.location, info.url, info.lang, id],
 		"update_user_info"
@@ -216,13 +216,13 @@ proto.createRoom = function(r, owners){
 
 proto.updateRoom = function(r, author, authlevel){
 	if (authlevel==="own") {
-		return this.queryRow(
+		return this.execute(
 			"update room set name=$1, private=$2, listed=$3, dialog=$4, description=$5, lang=$6 where id=$7",
 			[r.name, r.private, r.listed, r.dialog, r.description||'', r.lang, r.id],
 			"update_room_as_owner"
 		);
 	} else { // implied : "admin"
-		return this.queryRow(
+		return this.execute(
 			"update room set name=$1, listed=$2, description=$3, lang=$4 where id=$5",
 			[r.name, r.listed, r.description||'', r.lang, r.id],
 			"update_room_as_admin"
@@ -425,7 +425,7 @@ proto.changeRights = function(actions, userId, room){
 			args = [a.id, room.id];
 			break;
 		}
-		return this.queryRow(sql, args, "change_rights", false);
+		return this.execute(sql, args, "change_rights", false);
 	});
 }
 
@@ -813,7 +813,7 @@ proto.storeMessage = function(m, dontCheckAge){
 }
 
 proto.updateGetMessage = function(messageId, expr, userId){
-	return this.queryRow(
+	return this.execute(
 		"update message set "+expr+" where id=$1",
 		[messageId],
 		"update_message_expr",
@@ -959,7 +959,7 @@ proto.removeVote = function(roomId, userId, messageId, level){
 
 // the administrative unpin removes all pins. Pins of other users are converted to stars (except the message's author).
 proto.unpin = function(roomId, userId, messageId){
-	return this.queryRow(
+	return this.execute(
 		"update message_vote set vote='star' where message=$1 and player!=$2 and vote='pin'" +
 		" and exists(select * from message where id=$1 and room=$3)",
 		[messageId, userId, roomId],
