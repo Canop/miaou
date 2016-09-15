@@ -964,9 +964,9 @@ proto.unpin = function(roomId, userId, messageId){
 		" and exists(select * from message where id=$1 and room=$3)",
 		[messageId, userId, roomId],
 		"unpin_message"
-	).then(function(nbconversions){
+	).then(function(res){
 		return [
-			nbconversions,
+			res.rowCount,
 			this.execute(
 				"delete from message_vote where message=$1 and vote='pin'",
 				[messageId],
