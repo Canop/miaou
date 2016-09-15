@@ -134,7 +134,7 @@ miaou(function(md, plugins){
 			if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
 		}
 
-		var	H = 180,
+		var	H = 230,
 			nbycols = ycols.length;
 
 		if (!nbycols) {
@@ -147,7 +147,7 @@ miaou(function(md, plugins){
 			rotateXLabels = maxXLabelLength > 5,
 			mt = 2, // margin top
 			mr = 5, // margin right
-			mb = 60, // margin bottom
+			mb = Math.max(58, 27+16*nbycols), // margin bottom
 			ml = rotateXLabels ? 35 : 5, // margin left
 			n = xvals.length,
 			g = ù('<svg', $c[0]).css({ height:H, width:800 }),
@@ -240,15 +240,16 @@ miaou(function(md, plugins){
 				text.attr({textAnchor:"end", transform:"rotate(-45 "+x+" "+y+")"});
 			}
 			var showPop = function(){
-				var l = 70;
+				var	bubbleHeight = nbycols*16+20,
+					l = 80;
 				if (xm-l<10) l = 10;
 				else if (xm+l>W-10) l = 135;
 				var path = "M "+(xm)+" "+(mt+h-5.5)
 					+ " l 10 10"
 					+ " h "+(140-l)
-					+ " v 52"
+					+ " v "+bubbleHeight
 					+ " h -160"
-					+ " v-52"
+					+ " v-"+bubbleHeight
 					+ " h "+l
 					+ " l 10 -10";
 				var xmr = xm + 70 - l;
