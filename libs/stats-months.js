@@ -2,7 +2,9 @@ const	Promise = require("bluebird"),
 	fmt = require("./fmt.js"),
 	bench = require("./bench.js");
 
-var cacheMonths = [];
+var	cacheMonths = [],
+	promisesWaitingForCacheMonths = null;
+
 
 class Month{
 	constructor(year, month){
@@ -37,6 +39,13 @@ class Month{
 }
 
 function buildMonths(con){
+	if (promisesWaitingForCacheMonths) {
+		return new Promise(function(resolve){
+			promisesWaitingForCacheMonths.push(resolve);
+		});
+	} else {
+		promisesWaitingForCacheMonths = [];
+	}
 	var bo = bench.start("build_months");
 	return con.queryRow("select id, created from message order by id limit 1", null, "first_message_in_db")
 	.then(function(first){
@@ -59,9 +68,14 @@ function buildMonths(con){
 				m.minId = row.minid;
 				m.maxId = row.maxid;
 			});
-		})).then(function(){
+		}))
+		.then(function(){
 			bo.end();
 			cacheMonths = months;
+			var p;
+			while ((p=promisesWaitingForCacheMonths.shift())) {
+				p(months);
+			}
 			return months;
 		});
 	});
@@ -120,4 +134,14 @@ exports.doUsersStats = function(con, ct, usernames){
 		});
 		ct.reply(c, ct.nostore = c.length>800);
 	});
+}
+
+exports.preloadCache = function(db){
+	setTimeout(function(){
+		db.on()
+		.then(function(){
+			return getMonths(this);
+		})
+		.finally(db.off);
+	}, 3*60*1000);
 }

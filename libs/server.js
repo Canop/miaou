@@ -150,7 +150,7 @@ function startServer(){
 	server = http.createServer(app);
 	app.disable('x-powered-by');
 	app.use(require('compression')());
-	app.set("trust proxy", !!miaou.config.trustProxy);
+	// app.set("trust proxy", !!miaou.config.trustProxy);
 	app.set('views', path.resolve(__dirname, '..', 'views'));
 	app.set('view engine', 'jade');
 	app.set("view options", { layout: false });

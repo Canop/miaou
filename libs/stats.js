@@ -9,6 +9,7 @@ var	miaou;
 
 exports.configure = function(_miaou){
 	miaou = _miaou;
+	monthstats.preloadCache(miaou.db);
 	return this;
 }
 
