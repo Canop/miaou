@@ -17,6 +17,7 @@ miaou(function(md, plugins){
 		this.name = $table.find('th:nth-child('+(i+1)+')').text();
 		this.vals;
 		this.valid = false;
+		this.i = i;
 	}
 	TGCol.prototype.parse = function(parser){
 		var vals = new Array(this.rawvals.length);
@@ -161,8 +162,10 @@ miaou(function(md, plugins){
 			rx = w / (xvals[n-1].end-xvals[0].start);
 
 		ycols.forEach(function(ycol, j){
-			ycol.max;
-			ycol.min;
+			ycol.color = colors[j%colors.length];
+			$table.find("th").eq(ycol.i).append(
+				$("<i class=graph-legend>").css("background", ycol.color)
+			);
 			ycol.minsum = 0;
 			ycol.maxsum = 0;
 			var sum = 0;
@@ -181,7 +184,6 @@ miaou(function(md, plugins){
 			maxy = max(maxy, ycol.max);
 			minsumy = min(minsumy, ycol.minsum);
 			maxsumy = max(maxsumy, ycol.maxsum);
-			ycol.color = colors[j%colors.length];
 		});
 
 		ycols.forEach(function(ycol, j){

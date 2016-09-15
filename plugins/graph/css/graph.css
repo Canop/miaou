@@ -8,3 +8,11 @@
 	background: white;
 	margin: 2px;
 }
+
+.graph-legend {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin: 0 2px;
+	vertical-align: middle;
+}
