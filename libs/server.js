@@ -183,6 +183,11 @@ function startServer(){
 
 	app.locals.theme = miaou.config.themes[0]; // default theme
 
+	app.locals.inlineJSON = function(obj){
+		var json = JSON.stringify(obj);
+		return json.replace(/<([/!])/g, '\\u003c$1');
+	};
+
 	defineAppRoutes();
 	var port = miaou.config.port;
 	console.log('Miaou server starting on port', port);
