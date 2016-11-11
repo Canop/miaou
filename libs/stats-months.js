@@ -108,6 +108,34 @@ exports.doServerStats = function(con, ct){
 	});
 }
 
+exports.doRoomsStats = function(con, ct, roomIds){
+	return getMonths(con)
+	.map(function(month){
+		return Promise.map(roomIds, function(roomId){
+			return con.queryOptionalRow(
+				"select count(id) n from message"
+				+ " where room=$1"
+				+ " and created>=$2 and created<$3",
+				[roomId, month.startTime(), month.next().startTime()],
+				"room_messages_in_month"
+			).then(function(row){
+				return row.n;
+			});
+		}).then(function(roomstats){
+			month.roomstats = roomstats;
+			return month;
+		});
+	})
+	.then(function(months){
+		var c = "Rooms Statistics #graph(compare,sum)\n";
+		c += fmt.tbl({
+			cols: ["Month", ...roomIds],
+			rows: months.map(m=>[m.label(), ...m.roomstats.map(v=>fmt.int(v))])
+		});
+		ct.reply(c, ct.nostore = c.length>800);
+	});
+}
+
 exports.doUsersStats = function(con, ct, usernames){
 	return getMonths(con)
 	.map(function(month){

@@ -42,6 +42,9 @@ function twoDaysBefore(){
 // 	 "users 500"
 // 	 "users"
 // 	 "room"
+// 	 "#3"
+// 	 "graph #3"
+// 	 "graph #3 #7"
 // 	 "roomusers"
 // 	 "roomusers 20"
 // 	 "prefs"
@@ -50,20 +53,34 @@ function twoDaysBefore(){
 // 	 "votes"
 function doStats(ct){
 	// regex parsing: (topic) (parameters) (n)
-	var	match = ct.args.match(/^([\w-]+)?\s*(.*?)\s*(\d+)?$/),
-		topic = match[1],
-		params = match[2].split(/[\s,]+/),
-		n = Math.min(+match[3]||10, 500),
+	var	params = ct.args.split(/[\s,]+/),
+		n = 10,
+		topic = params.shift(),
+		lastToken = params[params.length-1],
+		room = ct.shoe.room,
+		roomIds = [],
 		usernames = [];
-		
+	if (lastToken==+lastToken) {
+		n = Math.min(+lastToken, 500);
+		params.pop();
+	}
+
+	console.log('params:', params);
+	roomIds = params.filter(p=>/^(#\d+|room)$/.test(p)).map(p => p=="room" ? room.id : +(p.slice(1)));
+	console.log('roomIds:', roomIds);
 	params = params.map(n => /^me$/i.test(n) ? '@'+ct.username() : n);
 	usernames = params.filter(p => naming.isPing(p)).map(p => p.slice(1));
 	if (!topic) {
 		if (usernames.length) topic = "user";
 		else topic = "server";
 	} else if (topic=="graph") {
-		if (usernames.length) topic = "user-graph";
-		else topic = "server-graph";
+		if (usernames.length) {
+			topic = "user-graph";
+		} else if (roomIds.length) {
+			topic = "room-graph";
+		} else {
+			topic = "server-graph";
+		}
 	}
 
 	if (/^socket/i.test(topic)) {
@@ -76,12 +93,15 @@ function doStats(ct){
 		if (!usernames.length) throw "User stats need a ping as parameter";
 		return monthstats.doUsersStats(this, ct, usernames);
 	}
+	if (/^room-graph$/i.test(topic)) {
+		if (!roomIds.length) throw "Room stats need a id as parameter";
+		return monthstats.doRoomsStats(this, ct, roomIds);
+	}
 
 	var	psname = "stats / " + topic,
 		cols,
 		from,
 		title,
-		room = ct.shoe.room,
 		args=[];
 	if (/^server$/i.test(topic)) {
 		cols = [
