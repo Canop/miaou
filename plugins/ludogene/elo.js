@@ -170,8 +170,10 @@ function table(cols, rows){
 // If userId is provided, the table contains only the relevant line
 function ratingsTable(data, userId){
 	return "## Rating"+(userId?'':'s')+":\n" + table(
-		["Rank", "Player", "Games", "Opponents", "Wins", "Losses", "Drops",
-		"Elo 1st player", "Elo 2nd player", "Malus", "Global Rating"],
+		[
+			"Rank", "Player", "Games", "Opponents", "Wins", "Losses", "Drops",
+			"Elo 1st player", "Elo 2nd player", "Malus", "Global Rating"
+		],
 		data.ratings
 		.filter(function(r, i){
 			r.rank = i+1;
