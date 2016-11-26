@@ -43,6 +43,7 @@ function abstract($, line){
 		return url.resolve(line, u)
 	});
 	$box.append('<div style="clear:both"/>');
+	$box.find("script,noscript").remove();
 	return $('<div>').append($box).html();
 }
 
