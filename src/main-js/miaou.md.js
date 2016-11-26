@@ -418,13 +418,17 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		var $from = $('<div>'+miaou.fmt.mdTextToHtml(args.from)+'</div>'),
 			$m = $('.message[mid='+args.mid+']'),
 			wab = gui.isAtBottom();
-		$m.find('.content').addClass('wide').html(function(_, h){
-			return h.replace(
-				$from.html(),
-				'<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>'
-			);
-		}).find('a[href]').attr('target', '_blank');
-		resize($m, wab);
+		try {
+			$m.find('.content').addClass('wide').html(function(_, h){
+				return h.replace(
+					$from.html(),
+					'<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>'
+				);
+			}).find('a[href]').attr('target', '_blank');
+			resize($m, wab);
+		} catch (e) {
+			console.log("boxing failed", args);
+		}
 	}
 
 });
