@@ -1,4 +1,4 @@
-miaou(function(games, locals, notif, skin, ws){
+miaou(function(games, gui, locals, notif, skin, ws){
 
 	var	T = 10, // size of the board in cells (not expected to change)
 		CS = 20, // size of a cell in pixels
@@ -188,12 +188,117 @@ miaou(function(games, locals, notif, skin, ws){
 			});
 		}
 	}
-	
+
 	Panel.prototype.showMoveLines = function(move){
 		if (!move.lines) return;
 		move.lines.forEach(function(line){
 			this.lineMark(line, move.p).animate({strokeOpacity:0}, 6000, ù.remove);
 		}, this);
+	}
+
+	Panel.prototype.addReplayPlayer = function($c){
+		var	p = this,
+			mode,
+			savedMoves,
+			timer;
+		var $button = $('<button>').addClass('small ludo-tribo-button')
+		.text('replay')
+		.click(function(){
+			console.log("open replay player");
+			$button.hide();
+			$player.show();
+			savedMoves = p.g.moves;
+			goToStart();
+		});
+		function playMove(){
+			if (savedMoves.length===p.g.moves.length) return pause();
+			var	cm = savedMoves[p.g.moves.length],
+				move = Tribo.decodeMove(cm);
+			p.g.moves += cm;
+			Tribo.apply(p.g, move);
+			p.drawScores();
+			p.drawBoard();
+			p.showMoveLines(move);
+			if (mode==="playing") timer = setTimeout(playMove, 600);
+		}
+		function goToStart(){
+			console.log("start");
+			pause();
+			p.g.moves = "";
+			p.g.zones = [];
+			p.g.cellZone = null;
+			Tribo.restore(p.g);
+			p.s.empty();
+			p.buildBoard();
+			p.buildScores();
+			p.drawScores();
+			p.drawBoard();
+		}
+		function stepBackward(){
+			console.log("stepBackward");
+			p.g.moves = p.g.moves.slice(0, -1);
+			Tribo.restore(p.g);
+			pause();
+			p.s.empty();
+			p.buildBoard();
+			p.buildScores();
+			p.drawScores();
+			p.drawBoard();
+		}
+		function pause(){
+			console.log("pause");
+			$play.show();
+			$pause.hide();
+			mode = "paused";
+			clearTimeout(timer);
+		}
+		function run(){
+			console.log("run");
+			$pause.show();
+			$play.hide();
+			mode = "playing";
+			if (p.g.moves===savedMoves) {
+				p.g.moves = "";
+				p.g.zones = [];
+				p.g.cellZone = null;
+			}
+			Tribo.restore(p.g);
+			p.s.empty();
+			p.buildBoard();
+			p.buildScores();
+			playMove();
+		}
+		function stepForward(){
+			console.log("stepForward");
+			pause();
+			playMove();
+		}
+		function goToEnd(){
+			console.log("end", mode);
+			clearTimeout(timer);
+			mode = "paused";
+			p.g.moves = savedMoves;
+			Tribo.restore(p.g);
+			p.drawScores();
+			p.drawBoard();
+		}
+		function close(){
+			console.log("close");
+			goToEnd();
+			$button.show();
+			$player.hide();
+		}
+		var $player = $("<div>").addClass("ludo-tribo-replay-player").hide();
+		$("<button>").text("⏮").appendTo($player).click(goToStart);
+		var $pause = $("<button>").text("⏸").appendTo($player).click(pause).hide();
+		var $play = $("<button>").text("▶️").appendTo($player).click(run);
+		$("<button>").text("↶").appendTo($player).click(stepBackward);
+		$("<button>").text("↷").appendTo($player).click(stepForward);
+		$("<button>").text("⏭").appendTo($player).click(goToEnd);
+		$("<button>").text("⏹").appendTo($player).click(close);
+		$player.add($button)
+		.css({ position:"absolute", top:this.LHS*2.7, left:this.XS })
+		.appendTo($c);
 	}
 
 	Panel.prototype.addReplayStopButton = function($c){
@@ -261,8 +366,8 @@ miaou(function(games, locals, notif, skin, ws){
 			p.drawBoard();
 			p.buildScores();
 			p.drawScores();
-			if (!abstract) {
-				p.addReplayStopButton($c);
+			if (!p.abstract && !gui.mobile) {
+				p.addReplayPlayer($c);
 			}
 			return p;
 		},
@@ -284,9 +389,9 @@ miaou(function(games, locals, notif, skin, ws){
 			}
 			panel.drawBoard();
 			panel.drawScores();
-			if (!panel.abstract) {
+			if (!panel.abstract && !gui.mobile) {
 				panel.showMoveLines(move);
-				panel.addReplayStopButton($c);
+				panel.addReplayPlayer($c);
 			}
 			return newmove;
 		},

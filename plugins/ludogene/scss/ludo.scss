@@ -1,3 +1,19 @@
 .ludo-tribo-board-bg {
 	background-color: #4d8080;
 }
+
+.ludo-tribo-button, .ludo-tribo-replay-player button {
+	background: #2a4646;
+	color: white;
+	&.active {
+		color: #ffeb3b;
+	}
+}
+
+.ludo-tribo-replay-player {
+	button {
+		padding: 0;
+		width: 20px;
+		text-align: center;
+	}
+}
