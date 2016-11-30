@@ -22,7 +22,7 @@ $square-description-opacifier-bg: rgba(243, 243, 245, .35) !default;
 $square-room-description-text-shadow: 0 0 1px white !default;
 $square-room-name-color: #222 !default;
 $square-room-box-shadow: 1px 1px 2px #999 !default;
-$square-room-hover-box-shadow: 2px 2px 4px #555 !default;
+$square-room-hover-box-shadow: 1px 1px 4px #222 !default;
 $square-description-color: $general-text-color !default;
 $square-room-last-created-color: #eee !default;
 $square-room-hover-bg: rgba(43, 72, 142, .7) !default;
@@ -84,7 +84,7 @@ $message-menu-vote-on-color: $general-text-color !default;
 $message-menu-link-color: #336 !default;
 
 $message-me-user-bg: inherit !default;
-$message-me-user-color: inherit !default;			
+$message-me-user-color: inherit !default;
 
 $user-in-messages-bg: linear-gradient(to bottom left, rgba(240,234,214,0.7) 0%,rgba(0,0,0,0) 25px) !default;
 
@@ -94,7 +94,7 @@ $message-votes-color: black !default;
 
 $ping-border-left-width: 2px !default;
 $ping-bg: rgba(100,100,100,.2) !default;
-$ping-me-bg: rgb(255, 235, 186) !default; 
+$ping-me-bg: rgb(255, 235, 186) !default;
 $slashme-color: #333 !default;
 $citation-border-color: #bbb !default;
 $h3-underline-color: black !default;
@@ -160,7 +160,7 @@ $chat-tabs-border-width: 1px !default;
 $chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.01),rgba(0,0,0,0.07)) !default;
 $chat-tabs-selected-bg-image: none !default;
 $chat-tabs-unselected-bg-color: transparent !default;
-$chat-tabs-selected-bg-color: white !default; 
+$chat-tabs-selected-bg-color: white !default;
 $chat-page-selected-bg: white !default;
 
 // side messages
@@ -227,7 +227,7 @@ $mobile-tab-color: transparentize($title-text-color, 0.5) !default;
 $mobile-tab-selected-color: $title-text-color !default;
 
 // dialog
-$dialog-bg: white !default; 
+$dialog-bg: white !default;
 $dialog-color: black !default;
 $dialog-title-bg: #E3DAC9 !default;
 $dialog-title-color: black !default;

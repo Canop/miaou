@@ -52,9 +52,9 @@ body.home.mobile .room-list {
 				text-decoration: none;
 			}
 		}
-		&:hover a.room-title {	
-			text-decoration: underline;
-		}
+		// &:hover a.room-title {
+		// 	text-decoration: underline;
+		// }
 		.under-room-description {
 			background-size: cover;
 			background-position: center center;
@@ -106,7 +106,7 @@ body.home.mobile .room-list {
 		}
 	}
 }
-.watch-count { 
+.watch-count {
 	background: rgba(255,255,255,.4);
 	color: $watch-count-color;
 	opacity: .8;
