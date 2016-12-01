@@ -67,7 +67,7 @@ function clientGlobals(){
 	];
 }
 
-gulp.task("server-js", ()=> 
+gulp.task("server-js", ()=>
 	gulp.src(globs["server-js"])
 	.pipe(eslint({
 		"parserOptions": {
@@ -104,7 +104,7 @@ gulp.task("server-js", ()=>
 			"no-throw-literal": 0, // TODO fix errors in Miaou server code
 			"no-useless-call": 2,
 			"no-void": 2,
-			"max-depth": [ 2, 4], 
+			"max-depth": [ 2, 4],
 			"no-unneeded-ternary": 2,
 			"operator-assignment": [ 2, "always" ],
 			"space-before-function-paren": [ 2, "never" ],
@@ -161,7 +161,7 @@ gulp.task("lint-client-js", ()=>
 			"no-throw-literal": 2,
 			"no-useless-call": 2,
 			"no-void": 2,
-			"max-depth": [ 2, 6], 
+			"max-depth": [ 2, 6],
 			"no-unneeded-ternary": 2,
 			"operator-assignment": [ 2, "always" ],
 			"space-before-function-paren": [ 2, "never" ],

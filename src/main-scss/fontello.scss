@@ -1,40 +1,40 @@
 @font-face {
   font-family: 'fontello';
-  src: url('../../fontello.eot?59817666#iefix') format('embedded-opentype'),
-       url('../../fontello.woff2?59817666') format('woff2'),
-       url('../../fontello.woff?59817666') format('woff'),
-       url('../../fontello.ttf?59817666') format('truetype'),
-       url('../../fontello.svg?59817666#fontello') format('svg');
+  src: url('../../fontello/fontello.eot?b003ea20#iefix') format('embedded-opentype'),
+       url('../../fontello/fontello.woff2?b003ea20') format('woff2'),
+       url('../../fontello/fontello.woff?b003ea20') format('woff'),
+       url('../../fontello/fontello.ttf?b003ea20') format('truetype'),
+       url('../../fontello/fontello.svg?b003ea20#fontello') format('svg');
 }
- 
+
  [class^="icon-"]:before {
   font-family: "fontello";
   font-style: normal;
   font-weight: normal;
   speak: none;
- 
+
   display: inline-block;
   text-decoration: inherit;
   width: 1em;
   margin-right: .2em;
   text-align: center;
- 
+
   /* For safety - reset parent styles, that can break glyph codes*/
   font-variant: normal;
   text-transform: none;
- 
+
   /* Animation center compensation - margins should be symmetric */
   /* remove if not needed */
   margin-left: .2em;
- 
+
   /* Font smoothing. That was taken from TWBS */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
- 
+
   /* Uncomment for 3D effect */
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
- 
+
 .icon-search:before { content: '\e800'; } /* '' */
 .icon-mail:before { content: '\e801'; } /* '' */
 .icon-mail-alt:before { content: '\e802'; } /* '' */

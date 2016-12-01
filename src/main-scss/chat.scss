@@ -28,7 +28,7 @@
 	top:0; right:0; bottom:0;
 	width: $right-panel-width;
 	background: $right-background;
-	overflow-y: auto;	
+	overflow-y: auto;
 	overflow-x: hidden;
 }
 
@@ -110,7 +110,7 @@ section {
 		font-style: italic;
 		font-size: 95%;
 		span {
-			color: $user-text-color-in-user-list;		
+			color: $user-text-color-in-user-list;
 		}
 		&.connected {
 			span {
@@ -157,7 +157,7 @@ body.pad #me {
 		border-bottom: $message-normal-border-bottom;
 		&.me {
 			border-top: $message-me-normal-border-top;
-			border-bottom: $message-me-normal-border-bottom;		
+			border-bottom: $message-me-normal-border-bottom;
 		}
 		&.before-disrupt .content {
 			border-bottom: $content-border-bottom-before-disrupt;
@@ -197,7 +197,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		border-top: $user-messages-me-border-top;
 		border-bottom: $user-messages-me-border-bottom;
 		.user {
-			color: $message-me-user-color;			
+			color: $message-me-user-color;
 		}
 	}
 	.user {
@@ -231,12 +231,12 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		border-right: $user-in-messages-border-right;
 	}
 	&:hover .user {
-		border-right: $hovered-user-in-messages-border-right;	
+		border-right: $hovered-user-in-messages-border-right;
 		box-shadow: $hovered-user-color-shadow-in-messages;
 		transition: box-shadow .3s;
 	}
 	.user.profiled, &:hover .user.profiled {
-		border-right: none;	
+		border-right: none;
 	}
 	.user {
 		.avatar-wrapper {
@@ -299,7 +299,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 	.content, .rendered {
 		border-radius: $message-content-border-radius;
 		padding: $message-content-padding;
-		background: $message-content-bg; 
+		background: $message-content-bg;
 		word-wrap: break-word;
 		&.closed {
 			max-height: 132px;
@@ -346,7 +346,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		}
 	}
 	div.tablewrap {
-		overflow-x: auto;		
+		overflow-x: auto;
 		overflow-y: auto;
 		display: inline-block;
 		max-width: 100%;
@@ -393,7 +393,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 			line-height: $message-content-line-height;
 			@include flex-grow($message-content-flex-grow);
 			&.wide {
-				@include flex-grow($message-wide-content-flex-grow);			
+				@include flex-grow($message-wide-content-flex-grow);
 			}
 		}
 		.mdate {
@@ -415,10 +415,10 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		padding: 0 3px;
 		margin-right: 2px;
 		&:last-child {
-			margin-right: 12px;		
+			margin-right: 12px;
 		}
 		border-radius: $decoration-button-border-radius;
-		box-shadow: $message-decoration-button-box-shadow;		
+		box-shadow: $message-decoration-button-box-shadow;
 		font-size: 10px;
 		line-height: 14px;
 		overflow: hidden;
@@ -456,7 +456,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 	margin-right: 4px;
 	font-size: 80%;
 	a {
-		color: $deleted-message-color;	
+		color: $deleted-message-color;
 	}
 	&::before {
 		content: "\e81b  deleted"; // fontello icon-trash
@@ -517,7 +517,7 @@ table.list .rendered img, .rooms-list .rendered img {
 		}
 	}
 	.unpin {
-		cursor: pointer;	
+		cursor: pointer;
 		margin: 0 4px;
 	}
 	.link, .makemwin {
@@ -551,11 +551,11 @@ body.mobile .message-menu .vote {
 }
 #notable-messages, #search-results {
 	.message {
-		border-top: $side-message-border-top;		
+		border-top: $side-message-border-top;
 	}
 	.message {
 		font-size: 12px;
-		border-bottom: $side-message-border-bottom;	
+		border-bottom: $side-message-border-bottom;
 		&:nth-child(odd) {
 			background: $side-message-even-background;
 		}
@@ -564,7 +564,7 @@ body.mobile .message-menu .vote {
 			transition: background 0.2s;
 		}
 		&.selected {
-			background: $side-message-selected-bg;		
+			background: $side-message-selected-bg;
 			transition: background 0.2s;
 		}
 		cursor: pointer;
@@ -677,17 +677,17 @@ code {
 			border: thin solid #666;
 		}
 		&:hover {
-			background: rgba(255,255,255,.4);		
+			background: rgba(255,255,255,.4);
 		}
 	}
 }
 $input-buttons-width: 74px;
 #input {
-	width: calc(100% - 16px - #{$input-buttons-width}); 
+	width: calc(100% - 16px - #{$input-buttons-width});
 	height: $input-height;
 	margin-top: 1px;
 	margin-left: 2px;
-	resize: none; 
+	resize: none;
 	float: left;
 	background: $input-bg;
 	color: $input-text-color;
@@ -755,7 +755,7 @@ h1 {
 	margin-bottom: 5px;
 	a {
 		margin: 5px;
-		text-decoration: none;	
+		text-decoration: none;
 	}
 }
 h2 {
@@ -766,7 +766,7 @@ h2 {
 	margin-bottom: 2px;
 	padding-left: 3px;
 	a {
-		text-decoration: none;	
+		text-decoration: none;
 		color: $title-text-color;
 	}
 }
@@ -800,7 +800,7 @@ span.warning {
 	&::before {
 		content: '';
 		display: inline-block;
-		height: 100%; 
+		height: 100%;
 		vertical-align: middle;
 	}
 }
@@ -887,7 +887,7 @@ body.home .list, .list {
 		text-align: left;
 		color: $list-cell-color;
 		a {
-			color: $list-cell-color;		
+			color: $list-cell-color;
 			&:hover {
 				color: $list-cell-hover-link-color;
 			}
@@ -897,7 +897,7 @@ body.home .list, .list {
 		th, td {
 			background: $list-even-cell-bg;
 		}
-	} 
+	}
 	td.role {
 		width: 45px;
 	}
@@ -983,7 +983,7 @@ div#notifs {
 	padding: 12px 0;
 }
 .newerLoader + .olderLoader {
-	border-top:solid 7px #ccc;	
+	border-top:solid 7px #ccc;
 }
 
 @media (max-height: 400px) {
