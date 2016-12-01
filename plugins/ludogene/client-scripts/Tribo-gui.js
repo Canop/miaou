@@ -317,7 +317,7 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			p.drawBoard();
 			p.buildScores();
 			p.drawScores();
-			if (!p.abstract && !gui.mobile) {
+			if (!p.abstract && !gui.mobile && p.g.status==="finished") {
 				p.addReplayPlayer($c);
 			}
 			return p;
@@ -340,7 +340,7 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			}
 			panel.drawBoard();
 			panel.drawScores();
-			if (!panel.abstract && !gui.mobile) {
+			if (!panel.abstract && !gui.mobile && panel.g.status==="finished") {
 				panel.showMoveLines(move);
 				panel.addReplayPlayer($c);
 			}

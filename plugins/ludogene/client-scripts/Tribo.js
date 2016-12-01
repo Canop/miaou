@@ -3,7 +3,7 @@
 // A move is encoded in one character
 
 (function(){
-	
+
 	// returns a square matrix filled with the provided value
 	function matrix(s, v){
 		var i, row = [], m = [];
