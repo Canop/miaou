@@ -98,7 +98,7 @@ function onCommand(ct){
 	if (/\[Tournament\]/i.test(shoe.room.description)) {
 		throw "You can't propose a game in a Tournament room";
 	}
-	if (otherUserName===shoe.publicUser.name) throw "You can't play against yourself";
+	if (otherUserName===shoe.publicUser.name) throw "You can't play against yourself (you would lose anyway)";
 	return this.getUserByName(otherUserName).then(function(otherUser){
 		if (!otherUser) throw "User @"+otherUserName+" not found";
 		storeInMess(m, {

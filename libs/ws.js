@@ -1,4 +1,4 @@
-const	apiversion = 62,
+const	apiversion = 63,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -243,7 +243,7 @@ function handleUserInRoom(socket, completeUser){
 		send;
 
 	console.log(completeUser.name, "connects from IP", socket.handshake.address);
-	
+
 	// maps an event-type to a callback, for all events
 	// which need a room.
 	// Can't be used for event types using a callback
@@ -271,7 +271,7 @@ function handleUserInRoom(socket, completeUser){
 	//-----------------
 	// special event handlers
 	// (either allow no route to be set, or are callback based)
-	
+
 	socket
 	.on('completeusername', function(query, cb){
 		if (!shoe.room || !query.start) return;

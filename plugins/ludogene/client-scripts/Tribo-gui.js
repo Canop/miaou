@@ -197,6 +197,8 @@ miaou(function(games, gui, locals, notif, skin, ws){
 	}
 
 	Panel.prototype.addReplayPlayer = function($c){
+		// FIXME remove old button and div!
+		$c.find(".ludo-tribo-button, ludo-tribo-replay-player").remove();
 		var	p = this,
 			mode,
 			savedMoves,
@@ -289,67 +291,16 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			$player.hide();
 		}
 		var $player = $("<div>").addClass("ludo-tribo-replay-player").hide();
-		$("<button>").text("⏮").appendTo($player).click(goToStart);
-		var $pause = $("<button>").text("⏸").appendTo($player).click(pause).hide();
-		var $play = $("<button>").text("▶️").appendTo($player).click(run);
-		$("<button>").text("↶").appendTo($player).click(stepBackward);
-		$("<button>").text("↷").appendTo($player).click(stepForward);
-		$("<button>").text("⏭").appendTo($player).click(goToEnd);
-		$("<button>").text("⏹").appendTo($player).click(close);
+		$("<button>").html("&#xe838;").appendTo($player).click(goToStart);
+		var $pause = $("<button>").html("&#xe83c;").appendTo($player).click(pause).hide();
+		var $play = $("<button>").html("&#xe835;").appendTo($player).click(run);
+		$("<button>").html("&#xe83a;").appendTo($player).click(stepBackward);
+		$("<button>").html("&#xe83b;").appendTo($player).click(stepForward);
+		$("<button>").html("&#xe839;").appendTo($player).click(goToEnd);
+		$("<button>").html("&#xe837;").appendTo($player).click(close);
 		$player.add($button)
 		.css({ position:"absolute", top:this.LHS*2.7, left:this.XS })
 		.appendTo($c);
-	}
-
-	Panel.prototype.addReplayStopButton = function($c){
-		var	p = this,
-			playing = false,
-			savedMoves,
-			$button,
-			timer;
-		if (p.g.status !== 'finished') return;
-		function stop(){
-			clearTimeout(timer);
-			playing = false;
-			$button.text('replay');
-			p.g.moves = savedMoves;
-			Tribo.restore(p.g);
-			p.drawScores();
-			p.drawBoard();
-		}
-		function playMove(){
-			if (savedMoves.length===p.g.moves.length) return stop();
-			var	cm = savedMoves[p.g.moves.length],
-				move = Tribo.decodeMove(cm);
-			p.g.moves += cm;
-			Tribo.apply(p.g, move);
-			p.drawScores();
-			p.drawBoard();
-			p.showMoveLines(move);
-			timer = setTimeout(playMove, 600);
-		}
-		$button = $('<button>').addClass('small').css({
-			background:'#2a4646', color:'white'
-		})
-		.text('replay')
-		.css({ position:"absolute", top:this.LHS*2.7, left:this.XS }).appendTo($c)
-		.click(function(){
-			if (!playing) {
-				playing = true;
-				savedMoves = p.g.moves;
-				$(this).text('stop replay');
-				p.g.moves = "";
-				p.g.zones = [];
-				p.g.cellZone = null;
-				Tribo.restore(p.g);
-				p.s.empty();
-				p.buildBoard();
-				p.buildScores();
-				playMove();
-			} else {
-				stop();
-			}
-		});
 	}
 
 	games.Tribo = {
