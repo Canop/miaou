@@ -197,8 +197,7 @@ miaou(function(games, gui, locals, notif, skin, ws){
 	}
 
 	Panel.prototype.addReplayPlayer = function($c){
-		// FIXME remove old button and div!
-		$c.find(".ludo-tribo-button, ludo-tribo-replay-player").remove();
+		$c.find(".ludo-tribo-button, .ludo-tribo-replay-player").remove();
 		var	p = this,
 			mode,
 			savedMoves,
@@ -317,7 +316,7 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			p.drawBoard();
 			p.buildScores();
 			p.drawScores();
-			if (!p.abstract && !gui.mobile && p.g.status==="finished") {
+			if (!abstract && !gui.mobile && p.g.status==="finished") {
 				p.addReplayPlayer($c);
 			}
 			return p;
@@ -340,8 +339,10 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			}
 			panel.drawBoard();
 			panel.drawScores();
-			if (!panel.abstract && !gui.mobile && panel.g.status==="finished") {
+			if (!panel.abstract) {
 				panel.showMoveLines(move);
+			}
+			if (!panel.abstract && !gui.mobile && panel.g.status==="finished") {
 				panel.addReplayPlayer($c);
 			}
 			return newmove;
