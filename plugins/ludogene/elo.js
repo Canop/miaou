@@ -83,7 +83,11 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		r[+!winnerIndex].l++;
 		this.s = g.scores[0];
 		var minc = Math.min(r[0].c, r[1].c) + 1;
-		if ( (opo.c>50 && opo.c-50>.2*(minc-50)) || (opo.c>10 && opo.c-10>.5*(minc-10)) ) {
+		if (
+			(opo.c>150 && opo.c-150>.1*(minc-150)) ||
+			(opo.c>50 && opo.c-50>.2*(minc-50)) ||
+			(opo.c>10 && opo.c-10>.5*(minc-10))
+		) {
 			this.t = "ignored";
 			return;
 		}
