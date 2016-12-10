@@ -3,19 +3,19 @@
 // If necessary, you can build the config object dynamically
 
 module.exports = {
-	
+
 	server: "http://yourdomain:8204", // the URL of Miaou as seen by the browser
 	base: "/", 	// path to Miaou as seen by the browser
 	port: 8204, // port on which to start Miaou (might be hidden from the browser by a proxy)
 
-	trustProxy: false, // set to true when you add a front-end proxy 
-	
-	// If your server is behind a proxy, the config may be different. 
+	trustProxy: false, // set to true when you add a front-end proxy
+
+	// If your server is behind a proxy, the config may be different.
 	// Here's the example of the Miaou server on http://dystroy.org/miaou
 	// 		server: "http://dystroy.org/miaou",
 	// 		base: "/miaou/",
 	// 		port: 8204,
-	
+
 	// If you're installing locally in order to develop,
 	//  here's a recommended configuration:
 	//		server: "http://127.0.0.1:8204",
@@ -28,18 +28,18 @@ module.exports = {
 	maxAgeForMessageTotalDeletion:	200,	// in seconds
 
 	secret: "some string you should keep secret",
-	
+
 	// bot avatar
 	botAvatar: {
 		src:"url", key:"http://dystroy.org/miaou/static/M-150.png"
-		
+
 		// you may use another type of avatar. Examples :
 		// "src":"facebook", "key":"123456789"
 		// "src":"gravatar", "key":"some@email"
 		// "src":"gravatar", "key":"0a74859ec2d68811668fc44bb32b53e5"
-		// "src":"twitter", "key":"123456789"		
+		// "src":"twitter", "key":"123456789"
 	},
-	
+
 	database: {
 		database: "miaou",
 		user: "miaou",
@@ -47,7 +47,7 @@ module.exports = {
 		native_pg: false // let it to false unless you're a wizard
 	},
 
-	// connect-redis session store options. Leave empty to use default ones 
+	// connect-redis session store options. Leave empty to use default ones
 	redisStore: {
 	},
 
@@ -64,7 +64,7 @@ module.exports = {
 		"./plugins/graph/plugin.js",
 		"./plugins/hashcolor/plugin.js",
 		"./plugins/shield/plugin.js",
-		"./plugins/table-controls/plugin.js", 
+		"./plugins/table-controls/plugin.js",
 	],
 
 	// specific configurations required by plugins
@@ -78,17 +78,20 @@ module.exports = {
 		}
 	},
 
-	// available themes. The first one is both the default theme and the one
-	//  used on smartphones
-	themes: [
+	// available themes. The first one is the default theme
+	"themes": [
+		"snobbish-goldfish",
 		"stingy-ray",
 		"boring-goose",
+		"slippery-seal",
 		"perverse-otter",
 		"sadistic-otter",
-		"slippery-seal",
 		"stoned-bear",
 	],
-	
+
+	// the theme to use on mobile phones
+	"mobileTheme": "stingy-ray",
+
 	// OAuth providers. Remove or comment the ones you don't want to use
 	oauth2: {
 		"google": { // create one at https://code.google.com/apis/console/
@@ -108,21 +111,21 @@ module.exports = {
 			"clientSecret": "your client secret"
 		}
 	},
-	
+
 	// an imgur account is needed for image uploading
 	// Create one at https://imgur.com/account/settings/apps
 	imgur: {
 		"clientID": "your client ID"
 	},
-	
+
 	// Possible room languages (ISO lang codes)
 	langs: ["en", "fr", "it"],
-	
+
 	// regular expressions of the names you want to forbid
 	// Note that it's only verified at creation, it won't apply
 	// to already created names
 	forbiddenUsernames: ["miaou", "^server", "bot$", "^chat", "^every", "^all", "admin"],
-	
+
 	// identifiants of the rooms that are proposed as entry point to new users
 	// (regular users of the server should be invited to watch those rooms)
 	// Don't fill this array until you created the rooms

@@ -23,17 +23,20 @@ const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 var	db,
 	langs,
 	themes,
+	mobileTheme,
 	plugins;
 
 exports.configure = function(miaou){
 	db = miaou.db;
 	langs = require('./langs.js').configure(miaou);
 	themes = miaou.config.themes;
+	mobileTheme = miaou.conf("mobileTheme") || themes[0];
 	plugins = (miaou.config.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
 	return this;
 }
 
-exports.theme = function(prefs, requestedTheme){
+exports.theme = function(prefs, requestedTheme, isMobile){
+	if (isMobile) return mobileTheme;
 	if (requestedTheme && ~themes.indexOf(requestedTheme)) return requestedTheme;
 	if (prefs && prefs.theme && prefs.theme!=='default') return prefs.theme;
 	return themes[0];

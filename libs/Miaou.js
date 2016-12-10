@@ -4,7 +4,7 @@
 
 const	path = require('path'),
 	Promise = require('bluebird');
-	
+
 class Miaou{
 
 	constructor(config, db){

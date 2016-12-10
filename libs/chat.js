@@ -34,7 +34,8 @@ exports.appGet = function(req, res){
 	.spread(function(room, ban, userPrefs){
 		room.path = server.roomPath(room);
 		req.session.room = room;
-		var theme = prefs.theme(userPrefs, req.query.theme);
+		var	isMobile = server.mobile(req),
+			theme = prefs.theme(userPrefs, req.query.theme, isMobile);
 		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
 			if (room.dialog) {
 				return server.renderErr(res, "You can't enter this room");
@@ -52,11 +53,7 @@ exports.appGet = function(req, res){
 			userPrefs,
 			pluginsToStart: clientSidePluginNames
 		};
-		if (server.mobile(req)) {
-			res.render('pad.mob.jade', {vars:locals});
-		} else {
-			res.render('pad.jade', {vars:locals, theme:theme});
-		}
+		res.render(isMobile ? 'pad.mob.jade' : 'pad.jade', {vars:locals, theme});
 	})
 	.catch(db.NoRowError, function(){
 		console.log("no room found for id", roomId);
