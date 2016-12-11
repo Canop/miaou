@@ -13,6 +13,7 @@ $input-height: 50px;
 	margin: 0;
 	#messages {
 		padding-top: 10px;
+		margin-bottom: -8px;
 	}
 }
 #mpad-page-write.open ~ #messages {
@@ -224,7 +225,7 @@ $input-height: 50px;
 }
 
 $watch-count-new: rgb(255,255,0);
-$watch-count-ping: rgb(255,0,0); 
+$watch-count-ping: rgb(255,0,0);
 #global-watch {
 	&.has-unseen {
 		color: $watch-count-new;
