@@ -239,10 +239,13 @@ function handleUserInRoom(socket, completeUser){
 		watchset = new Set, // set of watched rooms ids (if any)
 		routes = new Map,
 		pendingEvent,
-		welcomed = false,
-		send;
+		welcomed = false;
 
 	console.log(completeUser.name, "connects from IP", socket.handshake.address);
+
+	function send(v, m){
+		io.sockets.in(shoe.room.id).emit(v, clean(m));
+	}
 
 	// maps an event-type to a callback, for all events
 	// which need a room.
@@ -320,9 +323,6 @@ function handleUserInRoom(socket, completeUser){
 			return;
 		}
 		socket.emit('apiversion', apiversion);
-		send = function(v, m){
-			io.sockets.in(entry.roomId).emit(v, clean(m));
-		}
 		db.on()
 		.then(function(){
 			return rooms.mem.call(this, entry.roomId);
