@@ -19,8 +19,8 @@ function fmtPlayerName(_, name){
 	return "["+mdname+"](u/"+name+")";
 }
 
-function twoDaysBefore(){
-	return (Date.now()/1000|0) - 2*24*60*60;
+function oneWeekBefore(){
+	return (Date.now()/1000|0) - 7*24*60*60;
 }
 
 // Exemples of args:
@@ -55,7 +55,7 @@ function doStats(ct){
 	// regex parsing: (topic) (parameters) (n)
 	var	params = ct.args.split(/[\s,]+/),
 		n = 10,
-		topic = params.shift(),
+		topic = /^@\S+/.test(params[0]) ? null : params.shift(),
 		lastToken = params[params.length-1],
 		room = ct.shoe.room,
 		roomIds = [],
@@ -65,9 +65,7 @@ function doStats(ct){
 		params.pop();
 	}
 
-	console.log('params:', params);
 	roomIds = params.filter(p=>/^(#\d+|room)$/.test(p)).map(p => p=="room" ? room.id : +(p.slice(1)));
-	console.log('roomIds:', roomIds);
 	params = params.map(n => /^me$/i.test(n) ? '@'+ct.username() : n);
 	usernames = params.filter(p => naming.isPing(p)).map(p => p.slice(1));
 	if (!topic) {
@@ -110,8 +108,8 @@ function doStats(ct){
 			{name:"Private Rooms", value:"(select count(*) from room where private=true)"},
 			{name:"Messages", value:"(select count(*) from message)"},
 			{
-				name:"Last Two Days Messages",
-				value:"(select count(*) from message where created>extract(epoch from now())-172800)"
+				name:"Last Week Messages",
+				value:"(select count(*) from message where created>extract(epoch from now())-604800)"
 			},
 		];
 		title = "Server Statistics";
@@ -119,23 +117,23 @@ function doStats(ct){
 		cols = [
 			{name:"Name", value:"(select name from player where player.id=pid)", fmt:fmtPlayerName},
 			{name:"Messages", value:"(select count(*) from message where author=pid)"},
-			{name:"Last Two Days Messages", value:"n"},
+			{name:"Last Week Messages", value:"n"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=pid)"},
 		];
 		from = "from (select author pid, count(*) n from message"
 	       		+ " where created>$1 group by author order by n desc limit $2) s";
-		args.push(twoDaysBefore());
+		args.push(oneWeekBefore());
 		args.push(n);
 		title = "Users Statistics (top "+n+")";
 	} else if (/^users$/i.test(topic)) {
 		cols = [
 			{name:"Name", value:"(select name from player where player.id=pid)", fmt:fmtPlayerName},
 			{name:"Messages", value:"n"},
-			{name:"Last Two Days Messages", value:"(select count(*) n from message where created>$1 and author=pid)"},
+			{name:"Last Week Messages", value:"(select count(*) n from message where created>$1 and author=pid)"},
 			{name:"Rooms", value:"(select count(distinct room) from message where author=pid)"},
 		];
 		from = "from (select author pid, count(*) n from message group by author order by n desc limit $2) s";
-		args.push(twoDaysBefore());
+		args.push(oneWeekBefore());
 		args.push(n);
 		title = "Users Statistics (top "+n+")";
 	} else if (/^roomusers$/i.test(topic)) {
@@ -143,14 +141,14 @@ function doStats(ct){
 			{name:"Name", value:"(select name from player where player.id=pid)", fmt:fmtPlayerName},
 			{name:"Room Messages", value:"n"},
 			{
-				name:"Last Two Days Room Messages",
+				name:"Last Week Room Messages",
 				value:"(select count(*) n from message where room=$1 and created>$2 and author=pid)"
 			},
 			{name:"Total Messages", value:"(select count(*) from message where author=pid)"},
 		];
 		from = "from (select author pid, count(*) n from message"
 			+ " where room=$1 group by author order by n desc limit $3) s";
-		args.push(room.id, twoDaysBefore(), n);
+		args.push(room.id, oneWeekBefore(), n);
 		title = "Room Users Statistics (top "+n+")";
 	} else if (/^user$/i.test(topic)) {
 		if (!usernames.length) throw "User stats need a ping as parameter";
@@ -162,7 +160,7 @@ function doStats(ct){
 				fmt: (r, c) => fmt.date(c, "DD MMM YYYY")
 			},
 			{
-				name:"Last Two Days Messages",
+				name:"Last Week Messages",
 				value:"(select count(*) from message where created>$3 and author=player.id)"
 			},
 			{
@@ -175,7 +173,7 @@ function doStats(ct){
 			{name:"Rooms", value:"(select count(distinct room) from message where author=player.id)"},
 		];
 		from = "from player where name=$1";
-		args.push(usernames[0], room.id, twoDaysBefore());
+		args.push(usernames[0], room.id, oneWeekBefore());
 		title = "Statistics for user "+usernames[0];
 	} else if (/^(active-)?rooms$/i.test(topic)) {
 		cols = [
@@ -188,19 +186,19 @@ function doStats(ct){
 			{name:"Public", value:"private", fmt:(_, b) => b ? ' ' : '✓'},
 			{name:"Listed", value:"listed", fmt:(_, b) => b ? '✓' : ' '},
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
-			{name:"Last Two Days Messages", value:"(select count(*) from message where created>$1 and room=room.id)"},
+			{name:"Last Week Messages", value:"(select count(*) from message where created>$1 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
 		var orderingCol = /^active-/i.test(topic) ? 6 : 5;
 		from = "from room order by c"+orderingCol+" desc limit $2";
-		args.push(twoDaysBefore(), n);
+		args.push(oneWeekBefore(), n);
 		title = "Rooms Statistics (top "+n+")";
 	} else if (/^room$/i.test(topic)) {
 		cols = [
 			{name:"Messages", value:"(select count(*) from message where room=$1)"},
 			{
-				name:"Last Two Days Messages",
-				value:"(select count(*) from message where created>extract(epoch from now())-172800 and room=$1)"
+				name:"Last Week Messages",
+				value:"(select count(*) from message where created>extract(epoch from now())-604800 and room=$1)"
 			},
 			{name:"Users", value:"(select count(distinct author) from message where room=$1)"},
 		];
@@ -266,8 +264,8 @@ exports.registerCommands = function(registerCommand){
 			"\n* `!!stats users` : list of the users having posted the most messages"+
 			"\n* `!!stats rooms 100` : list of the 100 rooms having the most messages"+
 			"\n* `!!stats @someuser` : some stats about that user"+
-			"\n* `!!stats active-rooms` : list of the rooms having the most messages in the two last days"+
-			"\n* `!!stats active-users 20` : list of the 20 users having posted the most messages in the two last days"+
+			"\n* `!!stats active-rooms` : list of the rooms having the most messages in last week"+
+			"\n* `!!stats active-users 20` : list of the 20 users having posted the most messages in the last week"+
 			"\n* `!!stats prefs` : stats of user preferences"+
 			"\n* `!!stats prefs theme` : stats of user preferences regarding themes"+
 			"\n* `!!stats` : basic stats"+
