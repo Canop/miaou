@@ -2,13 +2,16 @@
 	background: $bg-color;
 	padding: 10px 10px 10px 210px;
 	overflow-y: auto;
+	a, a:visited {
+		color: $help-link-color;
+	}
 }
 h1 {
 	text-align: center;
 	@include flex(0 0 20px);
 }
 #help-nav {
-	background: rgba(9,30,90,.84); //rgba(9,15,60,.8); //$pad-background;
+	background: $help-nav-bg;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -83,12 +86,10 @@ h1 {
 	}
 	pre {
 		display: inline-block;
-		background: #ddd;
 		padding: 8px;
 	}
 	code {
 		font-family: monospace;
-		color: #333;
 		white-space: pre;
 	}
 	.vote {
@@ -98,7 +99,6 @@ h1 {
 	.message-content {
 		display:inline-block;
 		word-wrap: break-word;
-		background: white;
 		display: inline-block;
 		padding: 8px;
 		border: thin dashed rgba(100,100,100,.4);

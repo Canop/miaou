@@ -27,7 +27,7 @@ html
 				h3 Italic and Bold
 				div
 					p You can set some text in italic or in bold by writing it between stars or double stars.
-					pre *This sentence is in italic.* Not this one. **This one is in bold.**
+					pre.prettyprint *This sentence is in italic.* Not this one. **This one is in bold.**
 					p would appear as
 					div.message-content <i>This sentence is in italic.</i> Not this one. <b>This one is in bold.</b>
 					p But you don't <i>have</i> to write the stars yourself, you can select some text and hit <kbd>ctrl</kbd><kbd>I</kbd> or <kbd>ctrl</kbd><kbd>B</kbd>.
@@ -36,7 +36,7 @@ html
 					p A citation appears like this :
 					div.message-content: span.citation this is a citation
 					p You can write the markdown yourself :
-					pre > this is a citation
+					pre.prettyprint > this is a citation
 					p Or you can select some text and hit <kbd>ctrl</kbd><kbd>Q</kbd>.
 					p If you want to set just one line in citation, you can put your cursor in the line before hitting <kbd>ctrl</kbd><kbd>Q</kbd> without selecting the whole line.
 				h3 Links
@@ -46,11 +46,11 @@ html
 					p If you want to give a specific label, as in
 					div.message-content: A link : <a href=http://dystroy.org/miaou/help#Links>How to do links</a>
 					p then you may use this Markdown syntax :
-					pre link : [How to do links](http://dystroy.org/miaou/help#Links)
+					pre.prettyprint link : [How to do links](http://dystroy.org/miaou/help#Links)
 				h3 Images
 				div
 					p If the URL of an image is the only thing you have in one line of your message, then the image is boxed. For example the message
-					pre http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg
+					pre.prettyprint http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg
 					p is rendered as
 					div.message-content(style="width:500px"): a(href="http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg",target="_blank"): img(src="http://dystroy.org/re7210/img/tartines-saint-jacques-850-02.jpg")
 					p If the image you want to display isn't available on internet but is on your computer, hit the <kbd>Upload</kbd> button. You'll then be presented a file selection dialog. The chosen image will be uploaded to imgur and inserted in your message.
@@ -60,7 +60,7 @@ html
 					p Code can be inlined in the text :
 					div.message-content You can use <code>Array.apply(0,Array(N)).map(Math.random)</code> to generate an array of N random numbers.
 					p This is done using backtick quotes :
-					pre You can use `Array.apply(0,Array(N)).map(Math.random)` to generate an array of N random numbers.
+					pre.prettyprint You can use `Array.apply(0,Array(N)).map(Math.random)` to generate an array of N random numbers.
 					p You can also have whole blocks of code :
 					div.message-content Here's a fast replacement for jQuery's old <code>toggle</code> function :<code class=indent><br>$.fn.toggleFuncs = function() {<br>    var functions = Array.prototype.slice.call(arguments);<br>    var _this = this.click(function(){<br>        var i = _this.data('func_count') || 0;<br>        functions[i%functions.length].call(_this);<br>        _this.data('func_count', i+1);<br>    });<br>}</code>
 					p To do that, indent the whole block of code with four spaces or a tabulation :
@@ -81,7 +81,7 @@ html
 				h3 Ping and reply
 				div
 					p You can alert another user by typing an arobase followed by her username in a message, as in
-					pre Hello @dystroy !
+					pre.prettyprint Hello @dystroy !
 					p If the user checked the "Be notified on ping" checkbox, she'll see a silent notification.
 					p By hovering the name of a user in the list at the left, you reveal a <i>ping</i> button which inserts the related ping in the message area.
 					p If you choose to type the name instead of using the button, it's autocompleted. Hit the <kbd>tab</kbd> and <kbd>esc</kbd> keys to navigate through proposals. Users having been seen recently in the room are listed first but you can also ping somebody who never came to the room, she will get an invitation to join it.

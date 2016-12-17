@@ -11,7 +11,7 @@ $title-text-color: #fb0;
 $emphasis-text-color: #fb0;
 $message-list-bg: linear-gradient(#444, #111);
 $ping-bg: rgb(27, 27, 27);
-$ping-me-bg: rgb(68, 51, 0); 
+$ping-me-bg: rgb(68, 51, 0);
 
 // room controls
 $room-control-bg: none;
@@ -55,7 +55,7 @@ $square-room-last-created-text-shadow: 0 0 2px black;
 $logo-bg-color: #fb0;
 
 // dialogs
-$dialog-bg: #222; 
+$dialog-bg: #222;
 $dialog-color: #aaa;
 $dialog-title-bg: #444;
 $dialog-title-color: #750;
@@ -97,7 +97,7 @@ $message-link-color: rgb(178, 139, 121);
 $code-text-color: #888;
 $goingto-bg: #000;
 $slashme-color: #777;
-$unseen-message-bg: rgba(255,255,0,0.2); 
+$unseen-message-bg: rgba(255,255,0,0.2);
 
 // message menu
 $message-menu-bg: #444;
@@ -113,7 +113,7 @@ $message-votes-color: #970;
 $input-panel-bg-color: $bg-color;
 $input-bg: #111;
 $input-text-color: #bbb;
-$input-border-color: #333; 
+$input-border-color: #333;
 
 // table
 $message-content-table-border-color: #555;
@@ -179,7 +179,7 @@ $chat-tabs-border-color: #750; // #fb0;
 $chat-tabs-border-width: 1px;
 $chat-tabs-selected-bg-image: none;
 $chat-tabs-unselected-bg-color: transparent;
-$chat-tabs-selected-bg-color: #151515; 
+$chat-tabs-selected-bg-color: #151515;
 $chat-page-selected-bg: #151515;
 
 // side messages
@@ -211,6 +211,19 @@ $profile-avatar-filter: drop-shadow(0 0 2px white);
 $autocomplete-border: thin solid #777;
 $autocomplete-bg: #333;
 $autocomplete-selected-bg: #320;
+
+// help page
+$help-nav-bg: #222;
+$help-link-color: #fb0;
+
+#help-body #help-content kbd {
+	background: black;
+	color: white;
+	box-shadow: none;
+	text-shadow: none;
+	font-size: 12px;
+	border: none;
+}
 
 // ---------------
 // specific things
