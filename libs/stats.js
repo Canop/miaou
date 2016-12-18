@@ -222,11 +222,8 @@ function doStats(ct){
 			from += " where name=$1";
 			args.push(params[0]);
 			psname += " / specific";
-		} else {
-			ranking=false;
 		}
 		from += " group by name, value order by name, c2 desc";
-		hasLimit = true;
 		title = "Preferences Statistics";
 	} else {
 		throw "Wrong statistics request. Use `!!help stats` to learn about the possible uses";
