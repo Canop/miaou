@@ -1,16 +1,19 @@
-const	fs = require('fs'),
+const	Promise = require("bluebird"),
+	fs = require('fs'),
 	path = require('path'),
 	auths = require('./auths.js'),
 	prefs = require('./prefs.js'),
 	server = require('./server.js');
 
 var	clientSidePluginNames,
+	accessRequestPlugins,
 	db;
 
 exports.configure = function(miaou){
 	clientSidePluginNames = (miaou.config.plugins||[]).filter(function(n){
 		return fs.existsSync(path.resolve(__dirname, '..', n, '..', 'client-scripts'))
 	}).map(p=>p.split('/').slice(-2, -1)[0]);
+	accessRequestPlugins = miaou.plugins.filter(p => p.beforeAccessRequest);
 	db = miaou.db;
 	return this;
 }
@@ -40,11 +43,23 @@ exports.appGet = function(req, res){
 			if (room.dialog) {
 				return server.renderErr(res, "You can't enter this room");
 			}
-			return this.getLastAccessRequest(room.id, req.user.id).then(function(ar){
-				res.render('request.jade', {
-					vars:{ room },
-					lastAccessRequest:ar, theme:theme
-				});
+			console.log("USER:", req.user);
+			return this.getLastAccessRequest(room.id, req.user.id)
+			.then(function(ar){
+				var args = {
+					vars: { room },
+					room,
+					lastAccessRequest:ar,
+					theme,
+					canQueryAccess: true,
+					specificMessage: null
+				};
+				return Promise.reduce(accessRequestPlugins, function(args, p){
+					return p.beforeAccessRequest(args, req.user);
+				}, args);
+			})
+			.then(function(args){
+				res.render('request.jade', args);
 			});
 		}
 		var locals = {
