@@ -34,7 +34,7 @@ miaou(function(horn, gui, locals, md){
 					close();
 				});
 				$('<button>').appendTo($c).text('Change Settings').click(function(){
-					window.location = 'prefs?room='+locals.room.id+'#notifs';
+					window.location = 'prefs?room='+locals.room.id+'#Notifications';
 				});
 			});
 		}

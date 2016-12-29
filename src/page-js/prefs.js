@@ -14,12 +14,17 @@ miaou(function(locals){
 	miaou.horn.init();
 
 	function selectTab(i){
+		if (typeof i === "string" && i!=+i) {
+			var tabs = $(".home-tab").map(function(){ return $(this).text().toLowerCase(); }).get();
+			i = tabs.indexOf(i.toLowerCase());
+			if (i<0) return;
+		}
 		$('.home-tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
 		var $container = $('#prefs-main-content');
 		$container.find('.home-page').removeClass('selected').eq(i).addClass('selected');
 		if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
 	}
-	if (location.hash==="#notifs") selectTab(2);
+	if (location.hash) selectTab(location.hash.slice(1));
 	else selectTab(0);
 	$('.home-tab').click(function(){
 		selectTab($(this).index());
