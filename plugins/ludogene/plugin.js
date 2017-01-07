@@ -26,6 +26,10 @@ exports.init = function(miaou){
 	setTimeout(function(){
 		require('./db.js').cleanOldInvitations(db, 50*24*60*60);
 	}, 5*60*1000);
+	return miaou.requestTag({
+		name: "Tribo",
+		description: "The Bestest Game.\nInvite a player with\n\t!!tribo @username"
+	});
 }
 
 // returns a bound promise opening a connection to the db

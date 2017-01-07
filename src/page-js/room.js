@@ -19,9 +19,14 @@ miaou(function(locals){
 		if (room.auth!=='own') $('#private').prop('disabled', true);
 		$('#lang').val(room.lang || langs[0].key);
 		$('#id').val(room.id);
-		$('#cancel').click(function(){ location = room.id });
+		$("#tags").val(room.tags.join(" ")).editTagSet();
+		$('#cancel').click(function(){
+			location = room.id
+		});
 	} else {
-		$('#cancel').click(function(){ location = 'rooms' });
+		$('#cancel').click(function(){
+			location = 'rooms'
+		});
 	}
 	if (error) {
 		$('#err').text(error);
@@ -43,6 +48,12 @@ miaou(function(locals){
 		$('#room-description').html(miaou.fmt.mdTextToHtml($('#description').val()));
 	}
 	$('#description').keyup(format);
+
+	$(window).on("keydown", function(e){
+		if (e.which==13) {
+			return false;
+		}
+	});
 	format();
 
 });

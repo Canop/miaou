@@ -7,7 +7,7 @@ function rollDices(ct){
 		nbSides = +m[2],
 		constant = m[3] ? +m[3].replace(/\s+/g, '') : 0;
 	if (nbDices<1) throw "you can't roll less than one dice";
-	if (nbSides<2 || nbSides>500) throw "there's no such dice";
+	if (nbSides<2 || nbSides>5000) throw "there's no such dice";
 	if (nbDices>200) throw "Dices Overflow Error: Rolling Pad is flooded";
 	var	sum = constant,
 		exp = constant,

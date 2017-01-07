@@ -103,6 +103,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 				true
 			);
 			$('#room-description').html(htmldesc);
+			$("#room-tags").empty().append(locals.room.tags.map(function(t){
+				return $("<span class=tag>").text(t);
+			}));
 			$('#room-panel-bg').css('background-image', function(){
 				var m = htmldesc.match(/^<img (?:href="?[^"> ]+"? )?src="?([^">]+)"?[^>]*>(<br>|$)/);
 				return m ? 'url('+m[1]+')' : '';

@@ -1,10 +1,17 @@
 .prettyprint {
-  background: rgba(200,255,200,.2);
-  font-family: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.5;
-  border: 1px solid #7E7C79;
-  padding: 10px;
+
+	background: rgba(200,255,200,.2);
+	font-family: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	border: 1px solid #7E7C79;
+	padding: 10px;
+
+	/* Specify class=linenums on a pre to get line numbering */
+	ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE } /* IE indents via margin-left */
+	li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
+	/* Alternate shading for lines */
+	li.L1,li.L3,li.L5,li.L7,li.L9 { }
 }
 
 /* desert scheme ported from vim to google prettify */
@@ -22,8 +29,3 @@ pre .atn { color: #bdb76b; font-weight: bold } /* attribute name  - khaki */
 pre .atv { color: #ffa0a0 } /* attribute value - pink */
 pre .dec { color: #98fb98 } /* decimal         - lightgreen */
 
-/* Specify class=linenums on a pre to get line numbering */
-ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE } /* IE indents via margin-left */
-li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
-/* Alternate shading for lines */
-li.L1,li.L3,li.L5,li.L7,li.L9 { }

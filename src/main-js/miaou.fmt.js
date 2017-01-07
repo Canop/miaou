@@ -19,6 +19,10 @@ miaou(function(fmt){
 		return s.split('`').map(function(t, i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
+			.replace( // example: [tag:Mounty-Hall]
+				/\[tag:([\w-]{2,50})\]/g,
+				'<span class=tag>$1</span>'
+			)
 			.replace( // example : [dystroy](http://dystroy.org)
 				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'

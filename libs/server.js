@@ -74,6 +74,7 @@ function configureOauth2Strategies(){
 function defineAppRoutes(){
 	var	auths = require('./auths.js').configure(miaou),
 		rooms = require('./rooms.js').configure(miaou),
+		tags = require('./tags.js').configure(miaou),
 		messages = require('./messages.js').configure(miaou),
 		upload = require('./upload.js').configure(miaou),
 		clienterrors = require('./clienterrors.js').configure(miaou),
@@ -130,6 +131,8 @@ function defineAppRoutes(){
 	map('get', '/intro', intro.appGetIntro, true, true);
 	map('post', '/upload', upload.appPostUpload, true);
 	map('post', '/error', clienterrors.appPostError, true, true);
+	map('get', '/json/tags', tags.appGetJsonTags);
+	map('get', '/json/tag', tags.appGetJsonTag);
 	map('get', '/json/rooms', rooms.appGetJsonRooms);
 	map('get', '/json/messages/last', messages.appGetJsonLastMessages);
 

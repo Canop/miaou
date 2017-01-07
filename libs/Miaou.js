@@ -64,6 +64,16 @@ class Miaou{
 			console.error(err);
 		});
 	}
+
+	// returns a promise
+	requestTag(tag){
+		return this.db.on(tag.name)
+		.then(this.db.getTag)
+		.then(function(existingTag){
+			if (!existingTag) return this.createTag(tag.name, tag.description);
+		})
+		.finally(this.db.off);
+	}
 }
 
 module.exports = function(config, db){

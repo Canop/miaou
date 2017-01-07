@@ -19,6 +19,10 @@ var	db,
 exports.init = function(miaou){
 	db = miaou.db;
 	bot = miaou.bot;
+	return miaou.requestTag({
+		name: "Tournament",
+		description: "Rooms with this tag are dedicated to game tournaments"
+	});
 }
 
 function write(roomId, content){

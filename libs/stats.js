@@ -13,6 +13,9 @@ exports.configure = function(_miaou){
 	return this;
 }
 
+function fmtTag(_, name){
+	return "[tag:"+name+"]";
+}
 function fmtPlayerName(_, name){
 	var mdname = naming.makeMarkdownCompatible(name);
 	if (!naming.isValidUsername(name)) return mdname;
@@ -50,6 +53,7 @@ function oneWeekBefore(){
 // 	 "prefs"
 // 	 "prefs beta"
 // 	 "prefs theme 3"
+// 	 "tags"
 // 	 "votes"
 function doStats(ct){
 	// regex parsing: (topic) (parameters) (n)
@@ -211,6 +215,18 @@ function doStats(ct){
 		];
 		from = "from message_vote group by vote order by c1 desc";
 		title = "Voting Statistics";
+	} else if (/^tags$/i.test(topic)) {
+		cols = [
+			{name:"Name", value:"name", fmt:fmtTag},
+			{name:"Rooms", value:"(select count(*) from room_tag where room_tag.tag=name)"},
+		];
+		from = "from tag"
+		if (params.length) {
+			from += " where name=$1";
+			args.push(params[0]);
+			psname += " / specific";
+		}
+		title = "Tags Statistics";
 	} else if (/^prefs$/i.test(topic)) {
 		cols = [
 			{name:"Name", value:"name"},

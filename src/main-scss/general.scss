@@ -5,7 +5,9 @@
 }
 body {
 	background: $bg-color;
-	font-family: Tahoma, Geneva, sans-serif;
+	font-family: "Helvetica Neue", "Calibri Light", Roboto, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	font-size: 14px;
 	color: $general-text-color;
 	margin:0;
@@ -43,7 +45,7 @@ button, input[type=button], input[type=submit], input[type=reset] {
 		border-color: $button-hover-border-color;
 		color: $button-hover-text-color;
 		background-color: $button-hover-bg-color;
-	}    
+	}
 }
 
 div.radios {
@@ -71,10 +73,10 @@ div.radios {
 			}
 			cursor: auto;
 			box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3);
-		}	
+		}
 		border-radius: 0;
-		border-left: none;	
-		border-right: none;	
+		border-left: none;
+		border-right: none;
 	}
 	:not(.radio) + span.radio {
 		border-radius: 7px 0 0 7px;
@@ -86,7 +88,7 @@ div.radios {
 		border-radius: 0;
 	}
 	span.radio:last-child {
-		border-radius: 0 7px 7px 0;		
+		border-radius: 0 7px 7px 0;
 		border-left: 1px solid #999;
 		border-right: 1px solid #999;
 		padding-right: 4px;

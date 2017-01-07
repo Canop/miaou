@@ -202,7 +202,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 		}
 		return options;
 	}
-	
+
 	$('#search-button').click(startSearch);
 	$("#search input").change(startSearch);
 	if (!gui.mobile) {

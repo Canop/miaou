@@ -35,6 +35,7 @@ exports.appGet = function(req, res){
 		]
 	})
 	.spread(function(room, ban, userPrefs){
+		console.log('room:', room);
 		room.path = server.roomPath(room);
 		req.session.room = room;
 		var	isMobile = server.mobile(req),

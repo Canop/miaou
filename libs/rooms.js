@@ -134,12 +134,17 @@ exports.appPostRoom = function(req, res){
 		listed: req.body.listed==="on",
 		dialog: false,
 		description: req.body.description.replace(/\r\n?/g, '\n'),
+		tags: (req.body.tags||"").split(/\s+/),
 		lang: req.body.lang
 	};
+	console.log('room:', room);
 	db.on().then(function(){
 		if (!roomId) {
 			// room creation
-			return this.createRoom(room, [req.user]);
+			return this.createRoom(room, [req.user])
+			.then(function(room){
+				return this.setRoomTags(room.id, room.tags);
+			});
 		} else {
 			// room edition
 			return this.fetchRoomAndUserAuth(roomId, req.user.id)
@@ -154,7 +159,10 @@ exports.appPostRoom = function(req, res){
 					room.private = true;
 					room.listed = false;
 				}
-				return this.updateRoom(room, req.user, oldroom.auth);
+				return	this.updateRoom(room, req.user, oldroom.auth)
+				.then(function(){
+					return this.setRoomTags(room.id, room.tags);
+				});
 			})
 		}
 	}).then(function(){

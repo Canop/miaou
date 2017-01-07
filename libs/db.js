@@ -214,6 +214,7 @@ proto.createRoom = function(r, owners){
 	})
 }
 
+// note: doesn't update the tags
 proto.updateRoom = function(r, author, authlevel){
 	if (authlevel==="own") {
 		return this.execute(
@@ -273,7 +274,9 @@ proto.getLounge = function(userA, userB){
 // returns an existing room found by its id
 proto.fetchRoom = function(id){
 	return this.queryRow(
-		'select id, name, description, private, listed, dialog, lang from room where id=$1',
+		"select id, name, description, private, listed, dialog, lang,"+
+		" (select array(select tag from room_tag where room=$1)) as tags"+
+		" from room where id=$1",
 		[id],
 		"fetch_room"
 	);
@@ -283,7 +286,9 @@ proto.fetchRoom = function(id){
 proto.fetchRoomAndUserAuth = function(roomId, userId){
 	if (!roomId) return Promise.reject(new NoRowError());
 	return this.queryRow(
-		"select id, name, description, private, listed, dialog, lang, auth from room"+
+		"select id, name, description, private, listed, dialog, lang, auth,"+
+		" (select array(select tag from room_tag where room=$2)) as tags"+
+		" from room"+
 		" left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2",
 		[userId, roomId],
 		"fetch_room_and_user_auth"
@@ -295,6 +300,7 @@ proto.fetchRoomAndUserAuth = function(roomId, userId){
 proto.listFrontPageRooms = function(userId, pattern){
 	var	psname = "list_front_page_rooms",
 		sql = "select r.id, r.name, r.description, private, listed, dialog, r.lang, a.auth,"+
+		" (select array(select tag from room_tag where room_tag.room=r.id)) as tags,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
 		" (select exists (select 1 from message m where m.room = r.id and m.author=$1)) as hasself,"+
 		" otheruser.avatarsrc as avs, otheruser.avatarkey as avk"+
@@ -313,6 +319,7 @@ proto.listFrontPageRooms = function(userId, pattern){
 	return this.queryRows(sql, args, psname);
 }
 
+// FIXME remove this
 proto.listRecentUserRooms = function(userId){
 	return this.queryRows(
 		"select m.id, m.number, m.last_created, r.name, r.description, r.private, r.listed, r.dialog, r.lang"+
@@ -329,6 +336,66 @@ proto.listRecentUserRooms = function(userId){
 		"list_recent_user_rooms", true
 	);
 }
+
+///////////////////////////////////////////// #tags
+
+proto.searchTags = function(pattern){
+	return this.queryRows(
+		"select name, description from tag where name ilike $1",
+		[pattern+"%"],
+		"search_tags"
+	);
+}
+
+proto.setRoomTags = function(roomId, tags){
+	var	values = [],
+		args = [],
+		i = 1;
+	tags.forEach(t=>{
+		values.push("($"+(i++)+",$"+(i++)+")");
+		args.push(roomId, t);
+	});
+	return this.execute(
+		"delete from room_tag where room=$1",
+		[roomId],
+		"delete_room_tags"
+	).then(function(){
+		if (!args.length) return;
+		return this.execute(
+			"insert into room_tag (room, tag) values " + values.join(","),
+			args,
+			"insert_room_tags",
+			false
+		);
+	});
+}
+
+proto.getTag = function(name){
+	return this.queryOptionalRow(
+		"select name, description from tag where lower(name)=$1",
+		[name.toLowerCase()],
+		"get_tag"
+	);
+}
+
+proto.createTag = function(name, description){
+	return this.execute(
+		"insert into tag (name, description) values ($1, $2)",
+		[name, description],
+		"create_tag",
+		false
+	);
+}
+
+proto.updateTag = function(name, description){
+	return this.execute(
+		"update tag set description=$2 where name=$1",
+		[name, description],
+		"update_tag",
+		false
+	);
+}
+
 
 ///////////////////////////////////////////// #auths
 
