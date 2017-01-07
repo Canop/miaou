@@ -132,19 +132,25 @@ miaou(function(tagger, fish, fmt, locals){
 		return this;
 	}
 
-	// display tag description in bubbles when hovering tags
+	tagger.blower = function($c){
+		$c.text("loading...");
+		$.get("json/tag?name="+encodeURIComponent(this.text()), function(data){
+			if (!data.tag) {
+				$c.text("Unknown Tag");
+				return;
+			}
+			$c.html(fmt.mdTextToHtml(data.tag.description));
+		});
+	}
 
-	$("#messages, #room-tags, #rooms-page").bubbleOn(".tag", {
-		blower: function($c){
-			$c.text("loading...");
-			$.get("json/tag?name="+encodeURIComponent(this.text()), function(data){
-				if (!data.tag) {
-					$c.text("Unknown Tag");
-					return;
-				}
-				$c.html(fmt.mdTextToHtml(data.tag.description));
-			});
-		},
+	// display tag description in bubbles when hovering tags
+	$("#messages").bubbleOn(".tag", {
+		blower: tagger.blower,
 		classes: "tag-bubble",
+	});
+	$("#room-tags").bubbleOn(".tag", {
+		blower: tagger.blower,
+		classes: "tag-bubble",
+		side: "left"
 	});
 });
