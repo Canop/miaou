@@ -2,7 +2,7 @@ CREATE TABLE db_version (
 	component varchar(30) primary key,
 	version integer NOT NULL
 );
-insert into db_version (component, version) values('core', 20);
+insert into db_version (component, version) values('core', 22);
 
 CREATE TABLE room (
 	id serial primary key,
@@ -16,7 +16,7 @@ CREATE TABLE room (
 
 CREATE TABLE player (
 	id serial primary key,
-	name varchar(20) UNIQUE,
+	name varchar(20),
 	email varchar(254),
 	oauthprovider varchar(50),
 	oauthid varchar(150),
@@ -128,6 +128,18 @@ create table watch (
 	room integer references room(id),
 	last_seen bigint,
 	primary key(player, room)
+);
+
+CREATE TABLE tag (
+	name varchar(50) NOT NULL PRIMARY KEY,
+	description text NOT NULL
+);
+CREATE UNIQUE INDEX tag_lower_name_index on  tag(lower(name));
+
+CREATE TABLE room_tag (
+	room integer references room(id),
+	tag varchar(50) references tag(name),
+	primary key(room, tag)
 );
 
 ALTER TABLE message SET (autovacuum_vacuum_scale_factor = 0.0);  
