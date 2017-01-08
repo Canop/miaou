@@ -19,7 +19,7 @@ miaou(function(locals){
 		if (room.auth!=='own') $('#private').prop('disabled', true);
 		$('#lang').val(room.lang || langs[0].key);
 		$('#id').val(room.id);
-		$("#tags").val(room.tags.join(" ")).editTagSet();
+		$("#tags").val(room.tags.join(" "));
 		$('#cancel').click(function(){
 			location = room.id
 		});
@@ -28,6 +28,7 @@ miaou(function(locals){
 			location = 'rooms'
 		});
 	}
+	$("#tags").editTagSet();
 	if (error) {
 		$('#err').text(error);
 	}

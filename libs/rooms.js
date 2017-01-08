@@ -142,7 +142,7 @@ exports.appPostRoom = function(req, res){
 		if (!roomId) {
 			// room creation
 			return this.createRoom(room, [req.user])
-			.then(function(room){
+			.then(function(){
 				return this.setRoomTags(room.id, room.tags);
 			});
 		} else {
