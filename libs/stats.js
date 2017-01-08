@@ -220,7 +220,7 @@ function doStats(ct){
 			{name:"Name", value:"name", fmt:fmtTag},
 			{name:"Rooms", value:"(select count(*) from room_tag where room_tag.tag=name)"},
 		];
-		from = "from tag"
+		from = "from tag order by c1 desc"
 		if (params.length) {
 			from += " where name=$1";
 			args.push(params[0]);
