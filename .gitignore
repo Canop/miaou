@@ -17,9 +17,12 @@ sql/postgres.alter.sql
 trav
 pub
 graphics/*.png
+
+# imported plugins
 plugins/miaou.bot
 plugins/mountyhall
 plugins/fireworks
+plugins/snow
 plugins/miaou.static-user-list/
 
 # edition byproducts
