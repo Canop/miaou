@@ -319,24 +319,6 @@ proto.listFrontPageRooms = function(userId, pattern){
 	return this.queryRows(sql, args, psname);
 }
 
-// FIXME remove this
-proto.listRecentUserRooms = function(userId){
-	return this.queryRows(
-		"select m.id, m.number, m.last_created, r.name, r.description, r.private, r.listed, r.dialog, r.lang"+
-		" from ("+
-			"select m.room as id, count(*) number, max(created) last_created"+
-			" from message m"+
-			" where author=$1"+
-			" group by room "+
-		") m"+
-		" join room r on r.id = m.id"+
-		" where r.listed is true"+
-		" order by m.last_created desc limit 10",
-		[userId],
-		"list_recent_user_rooms", true
-	);
-}
-
 ///////////////////////////////////////////// #tags
 
 proto.searchTags = function(pattern){

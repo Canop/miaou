@@ -127,17 +127,10 @@ exports.appGetUser = function(req, res){
 	}).map(function(ppi, i){
 		if (ppi) externalProfileInfos[i].html = externalProfileInfos[i].ep.render(ppi.info);
 	}).then(function(){
-		return [
-			this.getUserInfo(user.id),
-			this.listRecentUserRooms(user.id)
-		]
-	}).spread(function(info, rooms){
-		rooms.forEach(function(r){
-			r.path = '../'+server.roomPath(r)
-		});
+		return this.getUserInfo(user.id);
+	}).then(function(info){
 		let vars = {
-			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
-			rooms:rooms
+			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey)
 		};
 		res.render('user.jade', { vars:vars, externalProfileInfos:externalProfileInfos });
 	}).catch(db.NoRowError, function(){
