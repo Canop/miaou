@@ -18,7 +18,7 @@ $notifications-bg-color: #eee;
 $notification-text-color: black;
 
 $ping-bg: rgba(100,100,100,.1);
-$ping-me-bg: rgba(255, 235, 186, .8); 
+$ping-me-bg: rgba(255, 235, 186, .8);
 $ping-border-left-width: 1px;
 
 // room controls
@@ -110,7 +110,7 @@ $list-even-cell-bg: #efefef;
 $chat-tabs-border-color: #555;
 $chat-tabs-border-width: 1px;
 $chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.01),rgba(0,0,0,0.07));
-$chat-tabs-selected-bg-image: none; 
+$chat-tabs-selected-bg-image: none;
 $chat-tabs-unselected-bg-color: transparent;
 $chat-tabs-selected-bg-color: #f0f0f0;
 $chat-page-selected-bg: $chat-tabs-selected-bg-color;
@@ -151,7 +151,7 @@ $minput-height: 50px; // height of input in mobile interface
 $mtab-height: 39px;   // height of the top tabs in mobile interface
 
 // dialog
-$dialog-bg: white; 
+$dialog-bg: white;
 $dialog-color: black;
 $dialog-title-bg: #E3DAC9;
 
@@ -175,6 +175,15 @@ $pad-room-desc-bg: rgba(255,255,255,.5);
 $pad-room-last-message-bg: white;
 $pad-room-last-message-border-top: solid thin #ddd;
 
+// tags
+$tag-color: #222;
+$tag-background-color: rgba(187, 187, 187, .3);
+$tag-bubble-background-color: #889;
+$tag-bubble-color: #eee;
+.tag-bubble pre.prettyprint {
+	color: #333;
+}
+
 // miaou logo
 $miaou-logo-color: #111;
 
@@ -196,7 +205,7 @@ img.avatar {
 #messages, #notable-messages, .messages {
 
 	// "not serious"
-	.content.content-rating-not-serious, 
+	.content.content-rating-not-serious,
 	.has-opener .content.content-rating-not-serious.closed {
 		-webkit-filter: grayscale(100%) contrast(40%) brightness(1.5);
 		filter: grayscale(100%) contrast(40%) brightness(1.5);
@@ -210,7 +219,7 @@ img.avatar {
 	}
 
 	// "nsfw"
-	.content.content-rating-nsfw, 
+	.content.content-rating-nsfw,
 	.has-opener .content.content-rating-nsfw.closed,
 	.has-opener .content.content-rating-nsfw.closed:hover {
 		-webkit-filter: grayscale(100%) contrast(40%) brightness(1.5);

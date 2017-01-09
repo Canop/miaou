@@ -35,7 +35,6 @@ exports.appGet = function(req, res){
 		]
 	})
 	.spread(function(room, ban, userPrefs){
-		console.log('room:', room);
 		room.path = server.roomPath(room);
 		req.session.room = room;
 		var	isMobile = server.mobile(req),
@@ -44,7 +43,6 @@ exports.appGet = function(req, res){
 			if (room.dialog) {
 				return server.renderErr(res, "You can't enter this room");
 			}
-			console.log("USER:", req.user);
 			return this.getLastAccessRequest(room.id, req.user.id)
 			.then(function(ar){
 				var args = {

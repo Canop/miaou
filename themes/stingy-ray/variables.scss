@@ -11,7 +11,7 @@ $message-list-bg: linear-gradient(#EFF1F3, white);
 $general-text-color: #222;
 $title-text-color: #333;
 $ping-bg: rgba(100,100,200,.19);
-$ping-me-bg: rgb(255, 235, 186); 
+$ping-me-bg: rgb(255, 235, 186);
 
 // home
 $home-top-bg: #51608a;
@@ -35,7 +35,7 @@ $home-tab-unselected-color: #444;
 $logo-bg-color: #e5e7eb;
 
 // dialogs
-$dialog-bg: white; 
+$dialog-bg: white;
 $dialog-color: #222;
 $dialog-title-bg: #51608a;
 $dialog-title-color: #eee;
@@ -122,7 +122,7 @@ $chat-tabs-border-color: #bbc;
 $chat-tabs-border-width: 1px;
 $chat-tabs-selected-bg-image: none;
 $chat-tabs-unselected-bg-color: transparent;
-$chat-tabs-selected-bg-color: white; 
+$chat-tabs-selected-bg-color: white;
 $chat-page-selected-bg: white;
 
 // side messages
@@ -142,6 +142,13 @@ $wzin-link-bg: rgba(222, 1, 80, .35);
 $menu-item-color: white;
 $menu-background: rgba(9,30,90,.89);
 $menu-item-hover-bg: rgba(9,30,90,.95);
+
+// tags
+// $tag-color: #e5e7eb;
+// $tag-background-color: #51608b;
+.tag-bubble pre.prettyprint {
+	color: #333;
+}
 
 // miaou logo
 //~ $miaou-logo-color: orange;

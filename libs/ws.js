@@ -1,4 +1,4 @@
-const	apiversion = 67,
+const	apiversion = 68,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -794,7 +794,6 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('unwat', function(roomId, done){
-		console.log(shoe.publicUser.name+' unwatches '+roomId);
 		db.on([roomId, shoe.publicUser.id])
 		.spread(db.deleteWatch)
 		.then(function(){

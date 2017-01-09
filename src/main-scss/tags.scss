@@ -3,22 +3,25 @@
 	flex: 0 0 auto;
 	white-space: nowrap;
 	display: inline-block;
-	color: #115586;
-	background-color: #afd3ef;
+	color: $tag-color;
+	background-color: $tag-background-color;
 	margin: 2px;
 	padding: 3px 5px;
 }
-.message .tag {
+.message .content .tag {
 	padding: 1px 4px;
+	a {
+		color: $tag-color;
+	}
 }
 
 .bubble.tag-bubble {
 	.bubble-content, .bubble-content a {
-		background-color: #115586;
-		color: #afd3ef;
+		background-color: $tag-bubble-background-color;
+		color: $tag-bubble-color;
 	}
 	.bubble-arrow {
-		color: #115586; // used for propagation as currentColor to borders
+		color: $tag-bubble-background-color; // used for propagation as currentColor to borders
 	}
 }
 
@@ -94,4 +97,8 @@
 			border: thin solid #999;
 		}
 	}
+}
+
+#room-area #room-tags.tag-set {
+	padding: 0 4px;
 }
