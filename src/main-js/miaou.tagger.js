@@ -18,6 +18,7 @@ miaou(function(tagger, fish, fmt, locals){
 			$menu = $("<div>").addClass("autocomplete-tags").hide().appendTo("body");
 		$tagSet.on("click", ".tag", function(){
 			this.remove();
+			$(".bubble").remove(); // the bubble system currently doesn't detect target removal
 			$field.val(alreadyPresentTags().join(" "));
 		});
 		function alreadyPresentTags(){
@@ -144,7 +145,7 @@ miaou(function(tagger, fish, fmt, locals){
 	}
 
 	// display tag description in bubbles when hovering tags
-	$("#messages").bubbleOn(".tag", {
+	$("#messages, body.home").bubbleOn(".tag", {
 		blower: tagger.blower,
 		classes: "tag-bubble",
 	});
