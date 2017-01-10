@@ -134,7 +134,7 @@ exports.appPostRoom = function(req, res){
 		listed: req.body.listed==="on",
 		dialog: false,
 		description: req.body.description.replace(/\r\n?/g, '\n'),
-		tags: (req.body.tags||"").split(/\s+/),
+		tags: (req.body.tags||"").split(/\s+/).filter(Boolean),
 		lang: req.body.lang
 	};
 	console.log('room:', room);
