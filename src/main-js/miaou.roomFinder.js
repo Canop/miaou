@@ -112,9 +112,11 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 			fillSquareTitle($roomHead, r);
 			if (r.avk) fillDialogSquareDescription($room, r);
 			else fillSquareDescription($room, r);
-			$tagSet = $("<div class=tag-set>").appendTo($room).append(r.tags.map(function(t){
-				return $("<span class=tag>").text(t);
-			}));
+			if (!r.dialog) {
+				$("<div class=tag-set>").appendTo($room).append(r.tags.map(function(t){
+					return $("<span class=tag>").text(t);
+				}));
+			}
 			var w = getWatch(r.id);
 			if (w) {
 				var $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
