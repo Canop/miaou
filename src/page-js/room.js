@@ -50,11 +50,6 @@ miaou(function(locals){
 	}
 	$('#description').keyup(format);
 
-	$(window).on("keydown", function(e){
-		if (e.which==13) {
-			return false;
-		}
-	});
 	format();
 
 });
