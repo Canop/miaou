@@ -41,7 +41,7 @@
 	.bubble-arrow { // arrow pointing to the right
 		border-width: 10px 0 10px 17px;
 		border-color: transparent transparent transparent currentColor;
-		margin-top: 7px;
+		margin-top: 6px;
 	}
 }
 .left-top-bubble {
@@ -93,7 +93,7 @@
 	.bubble-arrow { // arrow pointing to the top
 		border-width: 0 10px 17px 10px;
 		border-color: transparent transparent currentColor transparent;
-		margin-left: 3px;
+		margin-left: 8px;
 	}
 }
 .top-bubble {
@@ -117,7 +117,7 @@
 	flex-direction: column;
 	align-items: flex-start;
 	.bubble-arrow { // arrow pointing to the bottom
-		margin-left: 3px;
+		margin-left: 8px;
 		border-width: 17px 10px 0 10px;
 		border-color: currentColor transparent transparent transparent;
 	}

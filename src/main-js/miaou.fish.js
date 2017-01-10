@@ -27,6 +27,7 @@
 			+ "-"
 			+ (targetRect.left<ww/2 ? "right" : "left");
 		}
+		console.log('side:', side);
 		switch (side) {
 		case "bottom-left": // at the bottom right of the target, going towards left
 			css = {
@@ -55,7 +56,7 @@
 		case "left-bottom": // at the left of the target, going towards the bottom
 			css = {
 				right: ww-targetRect.left+5,
-				top: targetRect.top-7
+				top: targetRect.top-5
 			};
 			break;
 		case "left-top":
