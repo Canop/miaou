@@ -13,3 +13,13 @@ $room-hover-control-color: rgba(0,0,0,.9);
 $autocomplete-border: thin solid #777;
 $autocomplete-bg: #F0EAD6;
 $autocomplete-selected-bg: #fffcc5;
+
+
+// tags
+$tag-color: #695d50;
+$tag-background-color: #e6ddbd;
+$tag-bubble-background-color: #695d50;
+$tag-bubble-color: #ddd;
+.tag-bubble pre.prettyprint {
+	color: #333;
+}
