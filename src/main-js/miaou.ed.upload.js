@@ -30,13 +30,14 @@ miaou(function(ed){
 					if (i<img.width*.9) propositions.push({w:i, h:Math.round(i*img.height/img.width)});
 					if (i<img.height*.9) propositions.push({h:i, w:Math.round(i*img.width/img.height)});
 				}
-				var $content = $("<div>");
-				$(img).appendTo($content);
-				$("<p>").text(isTooBig ? TOO_BIG : BIG).appendTo($content);
-				$("<p>").text(CHOOSE).appendTo($content);
+				var $content = $("<div class=upload-resize-dialog>");
+				$(img).addClass("upload-thumb").appendTo($content);
+				var $div = $("<div>").appendTo($content);
+				$("<p>").text(isTooBig ? TOO_BIG : BIG).appendTo($div);
+				var $p = $("<p>").text(CHOOSE).appendTo($div);
 				var $select = $("<select>").append(propositions.map(function(p){
 					return $("<option>").text(p.w + " x " + p.h);
-				})).appendTo($content);
+				})).appendTo($p);
 				var dialog = {
 					title: isTooBig ? "Image too big for upload" : "Big image",
 					content: $content,
