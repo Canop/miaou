@@ -175,6 +175,14 @@ $pad-room-desc-bg: rgba(255,255,255,.5);
 $pad-room-last-message-bg: white;
 $pad-room-last-message-border-top: solid thin #ddd;
 
+// bubbles
+$bubble-bg: #888;
+$bubble-color: #eee;
+
+.room-bubble.bubble .no-access {
+	color: #f5adc7;
+}
+
 // tags
 $tag-color: #222;
 $tag-background-color: rgba(187, 187, 187, .3);

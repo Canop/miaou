@@ -134,6 +134,7 @@ function defineAppRoutes(){
 	map('get', '/json/tags', tags.appGetJsonTags);
 	map('get', '/json/tag', tags.appGetJsonTag);
 	map('get', '/json/rooms', rooms.appGetJsonRooms);
+	map('get', '/json/room', rooms.appGetJsonRoom);
 	map('get', '/json/messages/last', messages.appGetJsonLastMessages);
 
 

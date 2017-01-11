@@ -7,8 +7,8 @@
 	min-width: 100px;
 	max-width: 400px;
 	.bubble-content {
-		background: #222;
-		color: #ccc;
+		background: $bubble-bg;
+		color: $bubble-color;
 		flex: 1 1 auto;
 		padding: 8px;
 		border-radius: 4px;
@@ -20,7 +20,7 @@
 		width: 0;
 		height: 0;
 		border-style: solid;
-		color: #222;
+		color: $bubble-bg;
 	}
 	ul {
 		margin-before: 5px;

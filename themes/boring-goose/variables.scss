@@ -14,6 +14,13 @@ $autocomplete-border: thin solid #777;
 $autocomplete-bg: #F0EAD6;
 $autocomplete-selected-bg: #fffcc5;
 
+// bubbles
+$bubble-bg: #9d957c;
+$bubble-color: #222;
+
+.room-bubble.bubble .no-access {
+	color: black;
+}
 
 // tags
 $tag-color: #695d50;

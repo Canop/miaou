@@ -84,12 +84,25 @@
 		return this;
 	}
 
+	// registers options for bubbling:
+	//   $(parentElement).bubbleOn("delegateSelector", options);
+	//   $(bubblingElement).bubbleOn(options);
+	// Options:
+	//   side (optional): where the bubble should open
+	//   blower: function called on the element with bubble content element as argument
 	$.fn.bubbleOn = function(selector, options){
-		$(this).on("mouseenter", selector, function(e){
+		if (!options) {
+			options = selector;
+			selector = null;
+		}
+		var args = [options, function(e){
 			$(this).bubble(options).one('mouseleave', function(){
 				$('.bubble').remove();
 			});
-		})
+		}];
+		if (selector) args.unshift(selector);
+		args.unshift("mouseenter");
+		$.fn.on.apply(this, args);
 	}
 
 });

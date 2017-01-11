@@ -1,4 +1,4 @@
-miaou(function(links, gui, locals, md, skin){
+miaou(function(links, gui, locals, md, roomFinder, skin){
 
 	var linkwzin;
 
@@ -15,12 +15,16 @@ miaou(function(links, gui, locals, md, skin){
 	}
 
 	function transformLinksToMiaou($c){
+		var server = (location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1];
 		$c.find('a[href]').each(function(){
 			var	$link = $(this),
 				parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
-			if (parts && parts.length===5 && parts[1]===(location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1]) {
+			console.log('parts:', parts);
+			if (parts && parts.length===5 && parts[1]===server) {
+				var roomId = +parts[2];
+				console.log('roomId:', roomId);
 				// it's an url towards a room or message on this server
-				if (locals.room && locals.room.id===+parts[2]) {
+				if (locals.room && locals.room.id===roomId) {
 					// it's an url for the same room
 					var mid = +parts[4];
 					if (mid) {
@@ -47,6 +51,24 @@ miaou(function(links, gui, locals, md, skin){
 					$link.click(function(e){
 						location = this.href;
 						return false;
+					}).bubbleOn({
+						classes: "room-bubble",
+						blower:function($c){
+							$.get("json/room?id="+roomId, function(data){
+								console.log("room data:", data);
+								var room = data.room;
+								if (!room) {
+									$c.text("Unknown Room:" + roomId);
+									return;
+								}
+								roomFinder.$square(room).appendTo($c);
+								if (room.private && !room.auth) {
+									$("<div class=no-access>")
+									.text("You don't have access to this room")
+									.appendTo($c);
+								}
+							});
+						}
 					});
 				}
 			} else {

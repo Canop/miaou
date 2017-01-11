@@ -98,6 +98,22 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 		$underDescription.css('background-image', 'url("'+usr.avatarsrc(r)+'")');
 	}
 
+	roomFinder.$square = function(r){
+		var $room = $("<div>").addClass("room");
+		$room.addClass(r.lang).addClass(r.private?'private':'public');
+		if (r.dialog) $room.addClass("dialog-square");
+		var $roomHead = $("<div>").addClass("room-head").appendTo($room);
+		fillSquareTitle($roomHead, r);
+		if (r.avk) fillDialogSquareDescription($room, r);
+		else fillSquareDescription($room, r);
+		if (!r.dialog) {
+			$("<div class=tag-set>").appendTo($room).append(r.tags.map(function(t){
+				return $("<span class=tag>").text(t);
+			}));
+		}
+		return $room;
+	}
+
 	function showRooms(rooms){
 		$("#room-search-input").focus();
 		var $container = $('#rooms-page').empty();
@@ -105,19 +121,8 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 		var $t = $('<div>').addClass('room-list');
 		rooms.forEach(function(r){
 			if (locals.room && r.id===locals.room.id) return;
-			var $room = $("<div>").addClass("room");
-			$room.addClass(r.lang).addClass(r.private?'private':'public');
-			if (r.dialog) $room.addClass("dialog-square");
-			var $roomHead = $("<div>").addClass("room-head").appendTo($room);
-			fillSquareTitle($roomHead, r);
-			if (r.avk) fillDialogSquareDescription($room, r);
-			else fillSquareDescription($room, r);
-			if (!r.dialog) {
-				$("<div class=tag-set>").appendTo($room).append(r.tags.map(function(t){
-					return $("<span class=tag>").text(t);
-				}));
-			}
-			var w = getWatch(r.id);
+			var	$room = roomFinder.$square(r),
+				w = getWatch(r.id);
 			if (w) {
 				var $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
 				var txt = "You're watching this room.";
@@ -133,7 +138,7 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 					$unseen.addClass('has-ping');
 					txt += " You were pinged here.";
 				}
-				$unseen.attr('title', txt).appendTo($roomHead);
+				$unseen.attr('title', txt).appendTo($room.find(".room-head"));
 			}
 			if (connected) {
 				var $hover = $("<div>").addClass("room-hover").appendTo($room);

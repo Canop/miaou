@@ -15,7 +15,7 @@ body.home.mobile .room-list {
 	justify-content: center;
 }
 
-.room-list {
+.room-list, .room-bubble {
 	display: flex;
 	flex-wrap: wrap;
 	.room {
@@ -127,4 +127,13 @@ body.home.mobile .room-list {
 }
 .room-title-cell .watch-count {
 	position: absolute;
+}
+
+.room-bubble {
+	.no-access {
+		margin-top: 5px;
+		max-width: 125px;
+		color: red;
+	}
+
 }

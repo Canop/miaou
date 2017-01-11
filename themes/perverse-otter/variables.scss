@@ -76,7 +76,7 @@ $connected-user-text-color-in-user-list: #bbb;
 $connected-user-bg-color-in-user-list: rgba(0,0,0,0.4);
 
 $user-text-color-in-user-list: #666;
-$message-me-user-color: PaleVioletRed;			
+$message-me-user-color: PaleVioletRed;
 
 $code-text-color: #888;
 
@@ -204,6 +204,10 @@ $pad-room-last-message-border-top: solid thin PaleVioletRed;
 $watch-has-requests-box-shadow: 0 0 10px $accent;
 $watch-has-requests-color: inherit;
 $watch-requests-color: $accent-plus;
+
+// bubbles
+$bubble-bg: #111;
+$bubble-color: #eee;
 
 // miaou logo
 $miaou-logo-color: $general-text-color;

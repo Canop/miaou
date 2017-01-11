@@ -216,7 +216,22 @@ exports.appGetRooms = function(req, res){
 	.finally(db.off);
 }
 
+exports.appGetJsonRoom = function(req, res){
+	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
+	db.on([req.query.id, req.user.id])
+	.spread(db.fetchRoomAndUserAuth)
+	.then(function(room){
+		room.path = server.roomPath(room)
+		res.json({ room });
+	})
+	.catch(function(err){
+		res.json({error: err.toString()});
+	})
+	.finally(db.off);
+}
+
 exports.appGetJsonRooms = function(req, res){
+	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 	db.on([req.user.id, req.query.pattern])
 	.spread(db.listFrontPageRooms)
 	.then(function(rooms){

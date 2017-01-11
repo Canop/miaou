@@ -26,7 +26,7 @@ miaou(function(ed){
 				if (tbl) {
 					ed.tbl.askAboutPastedTable(tbl, files[i], initialText);
 				} else {
-					ed.uploadFile(files[i]);
+					ed.handleImageFile(files[i]);
 				}
 				return false;
 			}

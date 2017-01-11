@@ -1,7 +1,7 @@
 miaou(function(){
-	
+
 	var dialogs = [];
-		
+
 	// opens a dialog
 	// Properties of the options object :
 	//  title (optional)
@@ -49,14 +49,14 @@ miaou(function(){
 		dialogs.push(d);
 		return d;
 	}
-	
+
 	// returns true if a dialog is currently open
 	miaou.dialog.has = function(){
 		return !!dialogs.length;
 	}
-	
+
 	miaou.dialog.closeAll = function(){
 		while (dialogs.length) dialogs.pop().close();
 	}
-	
+
 });
