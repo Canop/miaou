@@ -505,6 +505,18 @@ proto.getAuthLevelByUsername = function(roomId, username){
 	);
 }
 
+// returns a list of admins and owners of that room, ordered by date of last message on the server
+proto.listRecentRoomAdmins = function(roomId, limit){
+	return this.queryRows(
+		"select p.id, p.name,"+
+		" (select max(id) from message where author=a.player) as lastmid"+
+		" from room_auth a join player p on p.id=a.player"+
+		" where a.room=$1 order by lastmid desc limit $2",
+		[roomId, limit],
+		"recent_room_admins"
+	);
+}
+
 //////////////////////////////////////////////// #watch
 
 proto.insertWatch = function(roomId, userId){

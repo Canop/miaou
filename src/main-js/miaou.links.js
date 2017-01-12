@@ -62,11 +62,18 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 									return;
 								}
 								roomFinder.$square(room).appendTo($c);
-								if (room.private && !room.auth) {
-									$("<div class=no-access>")
-									.text("You don't have access to this room")
-									.appendTo($c);
-								}
+								if (!room.private || room.auth) return;
+								$("<div class=no-access>")
+								.text("You don't have access to this room")
+								.appendTo($c);
+								if (!room.recentAdmins) return;
+								$("<div>")
+								.addClass("room-contacts")
+								.text("Contacts: "+room.recentAdmins.map(function(a){
+									return "@"+a.name;
+								}).join(", "))
+								.appendTo($c);
+
 							});
 						}
 					});

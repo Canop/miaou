@@ -218,10 +218,16 @@ exports.appGetRooms = function(req, res){
 
 exports.appGetJsonRoom = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
-	db.on([req.query.id, req.user.id])
-	.spread(db.fetchRoomAndUserAuth)
-	.then(function(room){
+	db.on()
+	.then(function(){
+		return [
+			this.fetchRoomAndUserAuth(req.query.id, req.user.id),
+			this.listRecentRoomAdmins(req.query.id)
+		];
+	})
+	.spread(function(room, recentAdmins){
 		room.path = server.roomPath(room)
+		room.recentAdmins = recentAdmins;
 		res.json({ room });
 	})
 	.catch(function(err){
