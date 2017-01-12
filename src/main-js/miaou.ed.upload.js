@@ -26,9 +26,15 @@ miaou(function(ed){
 					return ed.uploadFile(file);
 				}
 				var propositions = [];
-				for (var i=200; i<=1000; i+=100) {
-					if (i<img.width*.9) propositions.push({w:i, h:Math.round(i*img.height/img.width)});
-					if (i<img.height*.9) propositions.push({h:i, w:Math.round(i*img.width/img.height)});
+				function addIfNotPresent(dim){
+					for (var i=0; i<propositions.length; i++) {
+						if (propositions[i].w===dim.w && propositions[i].h===dim.h) return;
+					}
+					propositions.push(dim);
+				}
+				for (var i=200; i<=1200; i+=100) {
+					if (i<img.width*.9) addIfNotPresent({w:i, h:Math.round(i*img.height/img.width)});
+					if (i<img.height*.9) addIfNotPresent({h:i, w:Math.round(i*img.width/img.height)});
 				}
 				var $content = $("<div class=upload-resize-dialog>");
 				$(img).addClass("upload-thumb").appendTo($content);
