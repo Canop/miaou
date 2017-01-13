@@ -1,10 +1,10 @@
 var	fmt = require("./miaou.format.node.js"),
 	buster = require("buster");
-	
+
 function t(s,r){
 	return function(){
 		try {
-			buster.assert.equals(fmt.reset().mdTextToHtml(s), r);		
+			buster.assert.equals(fmt.reset().mdTextToHtml(s), r);
 		} catch (e) {
 			console.log("Erroring markdown :");
 			console.log(s);
@@ -86,6 +86,10 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 	"false style - one star then two": t(
 		'*one star then two**',
 		'*one star then two**'
+	),
+	"checked, unchecked box": t(
+		'[ ] simple box *now checked and in italic [x]* or not: [x]',
+		'☐ simple box <i>now checked and in italic ☑</i> or not: ☑'
 	),
 	"xml entities": t(
 		'*a &acute;*',

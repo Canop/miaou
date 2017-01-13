@@ -42,6 +42,8 @@ miaou(function(fmt){
 				/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig,
 				'$1<a target=_blank href="$2">$2</a>'
 			)
+			.replace(/\[ \]/g, "☐")
+			.replace(/\[x]/ig, "☑")
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_, a, b, c){
 				// do replacements only on what isn't in a tag
 				return a
