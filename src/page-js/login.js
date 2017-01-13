@@ -19,7 +19,7 @@ miaou(function(locals){
 	} else {
 		var names = {
 			google: "<span class=icon-gplus></span> Google",
-			stackexchange: "<span class=icon-stackoverflow></span> StackExchange",
+			stackexchange: "<span class=icon-stackoverflow></span> StackOverflow",
 			github: "<span class=icon-github></span> GitHub",
 			reddit: "<span class=icon-reddit></span> reddit"
 		};
