@@ -963,15 +963,31 @@ div#notifs {
 	&:hover .nextping {
 		border-radius: 2px 0 0 2px;
 	}
-	.clearpings {
-		visibility: hidden;
-		margin-left: -1px;
-		padding-left: 2px;
-		padding-right: 2px;
+}
+
+body.desktop {
+	.pingroom {
+		.clearpings {
+			visibility: hidden;
+			margin-left: -1px;
+			padding-left: 2px;
+			padding-right: 2px;
+		}
+		&:hover .clearpings {
+			visibility: visible;
+			border-radius: 0 2px 2px 0;
+		}
 	}
-	&:hover .clearpings {
-		visibility: visible;
-		border-radius: 0 2px 2px 0;
+}
+
+body.mobile {
+	.pingroom {
+		.clearpings {
+			margin-left: -1px;
+			padding-left: 2px;
+			padding-right: 2px;
+			border-radius: 0 2px 2px 0;
+		}
 	}
 }
 
