@@ -55,6 +55,7 @@ function oneWeekBefore(){
 // 	 "prefs theme 3"
 // 	 "tags"
 // 	 "votes"
+// 	 "tzoffsets"
 function doStats(ct){
 	// regex parsing: (topic) (parameters) (n)
 	var	params = ct.args.split(/[\s,]+/),
@@ -215,6 +216,13 @@ function doStats(ct){
 		];
 		from = "from message_vote group by vote order by c1 desc";
 		title = "Voting Statistics";
+	} else if (/^tzoffsets$/i.test(topic)) {
+		cols = [
+			{name:"Timezone Offset", value:"tzoffset", fmt:(_, tz) => tz==+tz ? tz : "unknown"},
+			{name:"Number", value:"count(*)"},
+		];
+		from = "from player group by tzoffset order by c1 desc";
+		title = "Timezones";
 	} else if (/^tags$/i.test(topic)) {
 		cols = [
 			{name:"Name", value:"name", fmt:fmtTag},
@@ -283,6 +291,7 @@ exports.registerCommands = function(registerCommand){
 			"\n* `!!stats prefs theme` : stats of user preferences regarding themes"+
 			"\n* `!!stats` : basic stats"+
 			"\n* `!!stats server-graph` : monthly histogram"+
+			"\n* `!!stats tzoffsets` : timezone offsets"+
 			"\n* `!!stats sockets` : stats about current connections"
 
 	});
