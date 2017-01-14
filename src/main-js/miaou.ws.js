@@ -43,7 +43,8 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		function enter(){
 			var entry = {
 				roomId: locals.room.id,
-				nbEntries: nbEntries
+				nbEntries: nbEntries,
+				tzoffset: (new Date).getTimezoneOffset()
 			};
 			if (nbEntries++) {
 				console.log("preparing RE-entry");

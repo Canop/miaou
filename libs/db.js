@@ -55,7 +55,8 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 		provider = profile.provider;
 	if (!oauthid) throw new Error('no id found in OAuth profile');
 	var	resolver = Promise.defer(),
-		email = null, returnedCols = 'id, name, lang, oauthprovider, oauthdisplayname, email',
+		email = null,
+		returnedCols = 'id, name, lang, oauthprovider, oauthdisplayname, email, tzoffset',
 		sql = 'select '+returnedCols+' from player where oauthprovider=$1 and oauthid=$2';
 	if (profile.emails && profile.emails.length) email = profile.emails[0].value; // google, github
 	this.client.query(sql, [provider, oauthid], (err, result)=>{
@@ -83,7 +84,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 // Private fields are included in the returned object
 proto.getUserById = function(id){
 	return this.queryRow(
-		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey'+
+		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey'+
 		' from player where id=$1',
 		[id],
 		"user_by_id"
@@ -94,7 +95,7 @@ proto.getUserById = function(id){
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
 	return this.queryOptionalRow(
-		'select id, name, oauthprovider, oauthdisplayname, email, bot, avatarsrc, avatarkey'+
+		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey'+
 		' from player where lower(name)=$1',
 		[username.toLowerCase()],
 		"user_by_name", false
@@ -108,6 +109,14 @@ proto.updateUser = function(user){
 		[user.name, user.avatarsrc, user.avatarkey, user.id],
 		"update_user"
 	).then(this.fixAllDialogRooms);
+}
+
+proto.updatePlayerTzoffset = function(player){
+	return this.execute(
+		"update player set tzoffset=$1 where id=$2",
+		[player.tzoffset, player.id],
+		"update_player_tzoffset"
+	);
 }
 
 // saves the additional optional user info (location, description, lang, website)

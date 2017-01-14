@@ -1,4 +1,4 @@
-const	apiversion = 68,
+const	apiversion = 69,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -324,6 +324,17 @@ function handleUserInRoom(socket, completeUser){
 		}
 		socket.emit('apiversion', apiversion);
 		db.on()
+		.then(function(){
+			if (entry.tzoffset>=-720 && entry.tzoffset<=840) {
+				if (entry.tzoffset != shoe.publicUser.tzoffset) {
+					shoe.publicUser.tzoffset = shoe.completeUser.tzoffset = entry.tzoffset;
+					console.log("new tzoffset", shoe.publicUser);
+					return this.updatePlayerTzoffset(shoe.publicUser);
+				}
+			} else {
+				console.log("invalid time zone offset:", shoe.publicUser.name, entry);
+			}
+		})
 		.then(function(){
 			return rooms.mem.call(this, entry.roomId);
 		})

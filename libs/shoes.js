@@ -21,7 +21,11 @@ exports.setOnSendMessagePlugins = function(ps){
 function Shoe(socket, completeUser){
 	this.socket = socket;
 	this.completeUser = completeUser;
-	this.publicUser = {id:completeUser.id, name:completeUser.name};
+	this.publicUser = {
+		id: completeUser.id,
+		name: completeUser.name,
+		tzoffset: completeUser.tzoffset
+	};
 	if (completeUser.avatarkey) {
 		this.publicUser.avs = completeUser.avatarsrc;
 		this.publicUser.avk = completeUser.avatarkey;
