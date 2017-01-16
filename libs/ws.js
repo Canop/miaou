@@ -167,6 +167,7 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 // to be used by bots, creates a message, store it in db and emit it to the room
 // There's a delay because most often this is used to answer a command and
 // we don't want the answer to come first
+// Note that this doesn't send pings
 exports.botMessage = function(bot, roomId, content, cb){
 	if (!roomId) throw "missing room Id";
 	setTimeout(function(){
@@ -199,6 +200,22 @@ exports.botMessage = function(bot, roomId, content, cb){
 		})
 		.finally(db.off);
 	}, 300);
+}
+
+// this simplified ping function isn't used for normal messages but for bots
+// context of the call must be a connected db
+exports.pingUser = function(room, username, mid, authorname, content){
+	console.log("PINGUSER", room, username, mid, authorname, content);
+	for (var clientId in io.sockets.connected) {
+		var socket = io.sockets.connected[clientId];
+		if (socket && socket.publicUser && socket.publicUser.name===username) {
+			socket.emit('pings', [{
+				r:room.id, rname:room.name, mid,
+				authorname, content
+			}]);
+		}
+	}
+	return this.storePings(room.id, [username], mid);
 }
 
 // builds an unpersonnalized message. This avoids requerying the DB for the user
@@ -329,7 +346,7 @@ function handleUserInRoom(socket, completeUser){
 				if (entry.tzoffset != shoe.publicUser.tzoffset) {
 					shoe.publicUser.tzoffset = shoe.completeUser.tzoffset = entry.tzoffset;
 					console.log("new tzoffset", shoe.publicUser);
-					return this.updatePlayerTzoffset(shoe.publicUser);
+					return this.updateUserTzoffset(shoe.publicUser);
 				}
 			} else {
 				console.log("invalid time zone offset:", shoe.publicUser.name, entry);
@@ -637,6 +654,9 @@ function handleUserInRoom(socket, completeUser){
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
 			}
+			if (commandTask.withSavedMessage && m.id) {
+				commandTask.withSavedMessage(shoe, m);
+			}
 			if (m.content && m.id) {
 				if (m.id>memroom.lastMessageId) {
 					io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
@@ -671,9 +691,6 @@ function handleUserInRoom(socket, completeUser){
 			if (!~pings.indexOf(ping)) pings.push(ping);
 			return pings;
 		}, [])
-		.then(function(pings){
-			return pings
-		})
 		.filter(function(unsentping){
 			if (botMgr.onPing(unsentping, shoe, m)) return false; // it's a bot
 			if (shoe.userSocket(unsentping)) return false; // no need to ping

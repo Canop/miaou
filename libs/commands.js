@@ -16,6 +16,7 @@ function CommandTask(cmd, args, shoe, message){
 	this.replyContent = null;
 	this.replyAsFlake = false;
 	this.alwaysPing = false; // do cross room pings even if the user has no authorization
+	this.withSavedMessage = null; // commands can set a callback which will be called with (shoe, message)
 	this.ignoreMaxAgeForEdition = false;
 }
 CommandTask.prototype.exec = function(con){

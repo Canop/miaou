@@ -111,7 +111,9 @@ proto.updateUser = function(user){
 	).then(this.fixAllDialogRooms);
 }
 
-proto.updatePlayerTzoffset = function(player){
+// updates the timezone offset
+// we store the offset, not the timezone, because there's no cheap way to guess it
+proto.updateUserTzoffset = function(player){
 	return this.execute(
 		"update player set tzoffset=$1 where id=$2",
 		[player.tzoffset, player.id],

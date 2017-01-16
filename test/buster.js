@@ -16,5 +16,6 @@ config["all"] = {
         "naming/name-cleaning.js",
 	"db/sql.js",
 	"bench/Accumulator.js",
-    ]	
+	"pingme/parse.js",
+    ]
 };

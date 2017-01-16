@@ -92,6 +92,11 @@ Shoes.checkAuth = function(requiredLevel){
 	}
 }
 
+// replies to a message of this room & user
+Shoes.botReply = function(bot, mid, text){
+	ws.botMessage(bot, this.room.id, "@"+this.publicUser.name+"#"+mid+" "+text);
+}
+
 // returns the socket of the passed user if he's in the same room
 Shoes.userSocket = function(userIdOrName, includeWatchers){
 	var ioroom = io.sockets.adapter.rooms[this.room.id];
@@ -125,6 +130,7 @@ Shoes.userSocket = function(userIdOrName, includeWatchers){
 		}
 	}
 }
+
 // to be used by bots, creates a message, store it in db and emit it to the room
 Shoes.botMessage = function(bot, content){
 	ws.botMessage(bot, this.room.id, content);

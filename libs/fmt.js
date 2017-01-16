@@ -1,18 +1,23 @@
 
 const MMM = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	
+
+// returns the integer formatted with two digits (e.g. "03")
+function td(num){
+	return (num<10 ? "0": "") + num;
+}
+
 exports.date = function(seconds, pat){
-	console.log(seconds);
+	console.log(Date(seconds*1000));
 	var	date = new Date(seconds*1000),
-		day = date.getDate(),
 		month = date.getMonth();
-	console.log(date, day, month);
 	return pat
-		.replace(/DD/g, (day<10 ? '0' : '') + day)
+		.replace(/DD/g, td(date.getDate()))
 		.replace(/MMM/g, MMM[date.getMonth()])
-		.replace(/MM/g, (month<10 ? '0' : '') + month)
+		.replace(/MM/g, td(month+1))
 		.replace(/YYYY/g, date.getFullYear())
-		.replace(/YY/g, date.getYear());
+		.replace(/YY/g, date.getYear())
+		.replace(/hh/g, td(date.getHours()))
+		.replace(/mm/g, td(date.getMinutes()));
 }
 
 // formats a duration in milliseconds (ex: " 08h 37m 27s")
