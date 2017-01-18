@@ -27,7 +27,7 @@
 	// callback.
 	Groumf.prototype.add = function(expr,  value){
 		if (expr.length<3) return console.log('Expression "'+expr+'" ignored : too short');
-		var root = expr.slice(0, 3).toLowerCase(),
+		var	root = expr.slice(0, 3).toLowerCase(),
 			tree = this.forest[root];
 		if (!tree) tree = this.forest[root] = [];
 		tree.push({p:expr.toLowerCase(), v:value||expr});
@@ -39,7 +39,7 @@
 	// searches the added expressions for a case insensitive equivalent.
 	// returns the originally added expression or its value if any.
 	Groumf.prototype.get = function(expr){
-		var lexpr = expr.toLowerCase(),
+		var	lexpr = expr.toLowerCase(),
 			tree = this.forest[lexpr.slice(0, 3)];
 		if (!tree) return;
 		for (var i=0; i<tree.length; i++) {
@@ -49,13 +49,13 @@
 
 	Groumf.prototype.replaceInString = function(input, cb, arg3){
 		if (arg3 !== undefined) return input.replace(cb, arg3);
-		var end = input.length-2,
+		var	end = input.length-2,
 			output = [],
 			copied = 0,
 			char;
 		for (var p=0; p<end; p++) {
 			if (this.dontCutWords && p && WordCharRegex.test(input[p-1])) continue;
-			var root = input.slice(p, p+3).toLowerCase(),
+			var	root = input.slice(p, p+3).toLowerCase(),
 				tree = this.forest[root];
 			if (!tree) continue;
 			for (var i=0; i<tree.length; i++) {
@@ -91,19 +91,19 @@
 
 	Groumf.prototype.replaceTextWithHTMLInHTMLUsingRegex = function(element, regex, cb){
 		var nodes = [].slice.call(element.childNodes);
-		for (var i=nodes.length; i--;) {
+		for (var i=0; i<nodes.length; i++) {
 			var node = nodes[i];
 			if (node.nodeType===3) {
 				var	input = node.nodeValue,
 					copied = 0,
 					res;
-				while ((res = regex.exec(input))) {
+				while (res = regex.exec(input)) {
 					if (res.index) element.insertBefore(document.createTextNode(input.slice(copied, res.index)), node);
-					var	r = cb.apply(null, res.concat(res.index, res.input)),
+					var r = cb.apply(null, res.concat(res.index, res.input)),
 						div=document.createElement('div');
 					div.innerHTML = r;
 					var childNode;
-					while ((childNode = div.firstChild)) {
+					while (childNode = div.firstChild) {
 						element.insertBefore(childNode, node);
 					}
 					copied = res.index+res[0].length;
@@ -123,7 +123,7 @@
 	Groumf.prototype.replaceTextWithHTMLInHTML = function(element, cb, arg3){
 		if (arg3) return this.replaceTextWithHTMLInHTMLUsingRegex(element, cb, arg3);
 		var nodes = [].slice.call(element.childNodes);
-		for (var i=nodes.length; i--;) {
+		for (var i=0; i<nodes.length; i++) {
 			var node = nodes[i];
 			if (node.nodeType===3) {
 				var	input = node.nodeValue,
@@ -141,7 +141,7 @@
 						var cur = input.slice(p, p+pat.length);
 						if (cur.toLowerCase()===pat) {
 							if (p) element.insertBefore(document.createTextNode(input.slice(copied, p)), node);
-							var	r = cb ? cb(cur, tree[j].v) : tree[j].v,
+							var r = cb ? cb(cur, tree[j].v) : tree[j].v,
 								div=document.createElement('div');
 							div.innerHTML = r;
 							for (var k=0, newNodes=div.childNodes, nnl=newNodes.length; k<nnl; k++) {
@@ -185,7 +185,7 @@
 		};
 	});
 
-	if (typeof module !== "undefined") module.exports = Groumf; //eslint-disable-line
+	if (typeof module !== "undefined") module.exports = Groumf;
 	else if (window) window.Groumf = Groumf;
 
 })();
