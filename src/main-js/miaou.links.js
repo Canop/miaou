@@ -19,10 +19,8 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 		$c.find('a[href]').each(function(){
 			var	$link = $(this),
 				parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
-			console.log('parts:', parts);
 			if (parts && parts.length===5 && parts[1]===server) {
 				var roomId = +parts[2];
-				console.log('roomId:', roomId);
 				// it's an url towards a room or message on this server
 				if (locals.room && locals.room.id===roomId) {
 					// it's an url for the same room
@@ -55,7 +53,6 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 						classes: "room-bubble",
 						blower:function($c){
 							$.get("json/room?id="+roomId, function(data){
-								console.log("room data:", data);
 								var room = data.room;
 								if (!room) {
 									$c.text("Unknown Room:" + roomId);
