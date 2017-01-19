@@ -67,7 +67,7 @@ $connected-user-text-color-in-user-list: #bbb;
 $connected-user-bg-color-in-user-list: rgba(0,0,0,0.4);
 
 $user-text-color-in-user-list: #666;
-$message-me-user-color: $accent-minus;			
+$message-me-user-color: $accent-minus;
 
 $user-text-color-in-message: inherit; // gives to the username the color of the user
 $code-text-color: #888;
@@ -153,7 +153,14 @@ $small-button-box-shadow: none;
 
 $right-panel-width: 450px;
 
-
+// tags
+$tag-color: #ddd;
+$tag-background-color: rgba(255,0,100,.2);
+$tag-bubble-background-color: #502233;
+$tag-bubble-color: #ddd;
+.tag-bubble pre.prettyprint {
+	color: #ccc;
+}
 
 ::-webkit-scrollbar {
 	width: 8px;

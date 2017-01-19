@@ -44,7 +44,7 @@ $square-room-last-created-color: #eee;
 $square-room-last-created-text-shadow: 0 0 2px black;
 
 // dialogs
-$dialog-bg: white; 
+$dialog-bg: white;
 $dialog-color: #222;
 $dialog-title-bg: $mes-brown;
 $dialog-title-color: $bear-text;
@@ -121,7 +121,7 @@ $profile-avatar-filter: drop-shadow(0 0 4px);
 $chat-tabs-border-color: rgba(0,0,0,0.2);
 $chat-tabs-border-width: 1px;
 $chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.08));
-$chat-tabs-selected-bg-image: none; 
+$chat-tabs-selected-bg-image: none;
 $chat-tabs-unselected-bg-color: transparent;
 $chat-tabs-selected-bg-color: transparent;
 $chat-page-selected-bg: $chat-tabs-selected-bg-color;
@@ -168,6 +168,14 @@ $button-hover-border-color: #888;
 	background: $mes-me-brown;
 }
 
+// tags
+$tag-color: $general-text-color;
+$tag-background-color: #1b2f2f;
+$tag-bubble-background-color: #2c3838;
+$tag-bubble-color: #ddd;
+.tag-bubble pre.prettyprint {
+	color: #ccc;
+}
 
 // wzins
 $wzin-conv-bg : ( rgba(176,224,230,0.32), rgba(255,255,102,0.3), rgba(188,143,143,0.3), rgba(255,235,215,0.3) );
