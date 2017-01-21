@@ -1,6 +1,6 @@
 const	Promise = require("bluebird"),
-	fmt = require("./fmt.js"),
-	bench = require("./bench.js");
+	fmt = require("../../libs/fmt.js"),
+	bench = require("../../libs/bench.js");
 
 var	cacheMonths = [],
 	promisesWaitingForCacheMonths = null;

@@ -53,6 +53,7 @@ module.exports = {
 
 	// list of the plugins you want to activate. You may add your ones
 	plugins: [
+		"./plugins/stats/plugin.js",
 		"./plugins/stackoverflow/plugin.js",
 		"./plugins/wikipedia/plugin.js",
 		"./plugins/github-identity/plugin.js",

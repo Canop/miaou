@@ -1,17 +1,10 @@
 // !!stats command
 
-const	fmt = require('./fmt.js'),
-	naming = require('./naming.js'),
+const	fmt = require('../../libs/fmt.js'),
+	naming = require('../../libs/naming.js'),
 	monthstats = require('./stats-months.js'),
 	siostats = require('./stats-sockets.js');
 
-var	miaou;
-
-exports.configure = function(_miaou){
-	miaou = _miaou;
-	monthstats.preloadCache(miaou.db);
-	return this;
-}
 
 function fmtTag(_, name){
 	return "[tag:"+name+"]";
@@ -56,7 +49,7 @@ function oneWeekBefore(){
 // 	 "tags"
 // 	 "votes"
 // 	 "tzoffsets"
-function doStats(ct){
+exports.doStats = function(ct, miaou){
 	// regex parsing: (topic) (parameters) (n)
 	var	params = ct.args.split(/[\s,]+/).map(n => /^me$/i.test(n) ? '@'+ct.username() : n),
 		n = 10,
@@ -275,23 +268,3 @@ function doStats(ct){
 	})
 }
 
-exports.registerCommands = function(registerCommand){
-	registerCommand({
-		name:'stats', fun:doStats,
-		help:"Usage : `!!stats [server|me|@user|users|room|roomusers|rooms|votes|...] [n]`",
-		detailedHelp: "Examples:"+
-			"\n* `!!stats me` : some stats about you"+
-			"\n* `!!stats users` : list of the users having posted the most messages"+
-			"\n* `!!stats rooms 100` : list of the 100 rooms having the most messages"+
-			"\n* `!!stats @someuser` : some stats about that user"+
-			"\n* `!!stats active-rooms` : list of the rooms having the most messages in last week"+
-			"\n* `!!stats active-users 20` : list of the 20 users having posted the most messages in the last week"+
-			"\n* `!!stats prefs` : stats of user preferences"+
-			"\n* `!!stats prefs theme` : stats of user preferences regarding themes"+
-			"\n* `!!stats` : basic stats"+
-			"\n* `!!stats server-graph` : monthly histogram"+
-			"\n* `!!stats tzoffsets` : timezone offsets"+
-			"\n* `!!stats sockets` : stats about current connections"
-
-	});
-}
