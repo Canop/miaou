@@ -246,6 +246,7 @@ function opponentsTable(data, r){
 	return s;
 }
 
+// handles the !!triboladder command
 exports.onCommand = function(ct){
 	console.log("==========================\nELO COMPUTING "+ct.args);
 	var	benchOperation = bench.start("Tribo / ladder"),

@@ -119,6 +119,9 @@ miaou(function(games, chat, ed, locals, md, ms, notif, plugins, ws){
 				});
 			});
 			ed.registerCommandArgAutocompleter("tribostats", ["games", "players", "matrix"]);
+			ed.registerCommandArgAutocompleter("triboladder", function(ac){
+				if (/^@\S{3,}$/.test(ac.previous)) return ["games", "opponents"];
+			});
 		}
 	}
 });
