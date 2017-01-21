@@ -143,65 +143,6 @@ exports.onCommand = function(ct, id){
 			});
 			break;
 
-		case "twc":
-			title = "Tribo World Cup Style Running Scoring";
-			cols = [
-				"Player", "Finished Games", "Wins", "Losses", "Unfinished",
-				"Avg Score", "TWC Score", "Avg TWC Score"
-			];
-			players = playersInfos(messages, function(p){
-				p.t = 2*p.w + p.s; // total twc score
-				p.r = p.t / p.f;   // ranking value
-			});
-			console.log(players);
-			rows = players.map(function(p){
-				return [
-					p.name,
-					p.f,
-					p.w,
-					p.l,
-					p.n-p.f,
-					(p.s/p.f).toFixed(2),
-					p.t.toFixed(2),
-					(p.t/p.f).toFixed(2)
-				];
-			});
-			break;
-
-		case "twc-final":
-			title = "Tribo World Cup Style End Scoring (players without enough games are eliminated)";
-			cols = ["Player", "Finished Games", "Wins", "Losses", "Avg Score", "Sum TWC Score", "Avg TWC Score"];
-			// doing it in two passages : first counting games, then computing on players having played enough games
-			players = playersInfos(messages, function(p){
-				p.r = p.f;
-			});
-			if (players.length<2) {
-				rows = [];
-				break;
-			}
-			var threshold = players[0].f / 2;
-			console.log("threshold:", threshold);
-			var authorizedplayers = new Set;
-			players.forEach(function(p){
-				if (p.f>=threshold) authorizedplayers.add(p.id)
-			});
-			players = playersInfos(messages, function(p){
-				p.t = 2*p.w + p.s; // total twc score
-				p.r = p.t / p.f;   // ranking value
-			}, authorizedplayers);
-			rows = players.map(function(p){
-				return [
-					p.name,
-					p.f,
-					p.w,
-					p.l,
-					(p.s/p.f).toFixed(2),
-					p.t.toFixed(2),
-					(p.t/p.f).toFixed(2)
-				];
-			});
-			break;
-
 		case "players":
 			title = title || "Tribo players results in this room";
 			cols = cols || ["Player", "Games", "Wins", "Losses", "Drops", "Avg Score"];

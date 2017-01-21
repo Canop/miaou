@@ -191,7 +191,7 @@ exports.registerCommands = function(cb){
 	});
 	cb({
 		name:'tribostats', fun:tribostats.onCommand,
-		help:"compute Tribo related stats for the room. Type `!!tribostats [games|players|twc|twc-final|matrix]`"
+		help:"compute Tribo related stats for the room. Type `!!tribostats [games|players|matrix]`"
 	});
 	cb({
 		name:'triboladder', fun:elo.onCommand,
