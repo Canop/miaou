@@ -5,12 +5,17 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	var	$input, input,
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
 		stash, // save of the unsent message edition, if any
+		commandArgAutocompleters = new Map, // map commandName -> (argStart, previousTokens)=>possibleValues
 		editedMessage, 	// currently edited message, if any
 				// (if you cycle through messages, their edited content
 				// is saved in a property stash)
 		savedValue, $autocompleter, editwzin, replywzin;
 
 	ed.stateBeforePaste = null; // {selectionStart,selectionEnd,value}
+
+	ed.registerCommandArgAutocompleters = function(commandName, matcher){
+		commandArgAutocompleters.set(commandName, matcher);
+	}
 
 	ed.toggleLines = function(s, r, insert){
 		var	lines = s.split('\n'),
@@ -70,16 +75,48 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	// returns the currently autocompletable typed name, if any
 	function getacname(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(^|\W)@(\w\S*)$/);
-		return m ? m[2].toLowerCase() : null;
-	}
-	// returns the currently autocompletable typed command, if any
-	function getaccmd(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(^|\W)!!(\w+)$/);
-		return m ? m[2].toLowerCase() : null;
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)@(\w\S*)$/);
+		return m ? m[1].toLowerCase() : null;
 	}
 
-	function tryautocomplete(){
+	// returns the currently autocompletable typed command, if any
+	function getaccmd(){
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!!(\w+)$/);
+		if (m) return m[1].toLowerCase();
+	}
+
+	// returns the parts needed for command arg autocompletion:
+	// {
+	//    cmd: the commandName
+	//    previous: what's between the command name and the currently typed argument (no newline)
+	//    arg: start of the currently typed command argument
+	// }
+	function getacarg(){
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!!(\w+)(.*)?\s+(\w*)$/);
+		if (!m) return;
+		var matcher = commandArgAutocompleters.get(m[1]);
+		if (!matcher) return;
+		return { cmd:m[1], previous:m[2], arg:m[3], matcher:matcher };
+	}
+
+	function getacargToken(){
+		var acarg = getacarg();
+		if (acarg) return acarg.arg;
+	}
+
+	function addAutocompleteMatches(matches){
+		savedValue = input.value;
+		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
+		matches.forEach(function(name){
+			$('<span>').text(name).appendTo($autocompleter).click(function(){
+				$input.replaceSelection(name.slice(accmd.length));
+				$autocompleter.remove();
+				$autocompleter = null;
+			});
+		});
+	}
+
+	function tryAutocomplete(){
 		if ($autocompleter) {
 			$autocompleter.remove();
 			$autocompleter = null;
@@ -90,34 +127,35 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			ed.proposepings(usr.recentNamesStartingWith(acname));
 			return ws.emit('completeusername', {start:acname}, ed.proposepings);
 		}
-		// should we display the command autocompleting menu ?
+		// should we display the command name autocompleting menu ?
 		var accmd = getaccmd();
 		if (accmd) {
-			savedValue = input.value;
-			$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
-			Object.keys(chat.commands).filter(function(n){
+			var matches = Object.keys(chat.commands).filter(function(n){
 				return !n.indexOf(accmd)
-			}).sort().forEach(function(name){
-				$('<span>').text(name).appendTo($autocompleter).click(function(){
-					$input.replaceSelection(name.slice(accmd.length));
-					$autocompleter.remove();
-					$autocompleter = null;
-				});
-			});
+			}).sort();
+			addAutocompleteMatches(matches);
+		}
+		// should we display command argument autocompleting menu ?
+		var acarg = getacarg();
+		if (acarg) {
+			var matches = acarg.matcher(acarg);
+			if (matches && matches.length) {
+				addAutocompleteMatches(matches);
+			}
 		}
 	}
 
-	function tabautocomplete(){
+	function tabAutocomplete(){
 		var	index = ($autocompleter.find('.selected').index()+1) % $autocompleter.find('span').length,
 			name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected').text(),
-			accmd = getaccmd();
-		if (accmd) {
-			input.selectionStart = input.selectionEnd - accmd.length;
+			actoken = getaccmd() || getacargToken();
+		if (actoken != undefined) {
+			input.selectionStart = input.selectionEnd - actoken.length;
 			$input.replaceSelection(name);
 			input.selectionStart = input.selectionEnd;
-		} else {
-			ed.ping(name);
+			return;
 		}
+		ed.ping(name);
 	}
 
 	function insertLink(){
@@ -295,7 +333,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			} else if (e.which===27) { // esc
 				if ($autocompleter && $autocompleter.length && input.value!=savedValue) {
 					input.value = savedValue;
-					tryautocomplete();
+					tryAutocomplete();
 				} else if (replywzin) {
 					gui.scrollToBottom();
 					ed.cancelReply();
@@ -308,7 +346,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 				return false;
 			} else if (e.which===9) { // tab
 				if ($autocompleter && $autocompleter.length) {
-					tabautocomplete();
+					tabAutocomplete();
 					return false;
 				}
 			}
@@ -321,7 +359,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			if (e.which===9) return false; // tab
 		})
 		.on('input', function(){
-			tryautocomplete();
+			tryAutocomplete();
 			if (!gui.mobile) updateReplyWzin();
 		})
 		.on('click', ed.code.onMove)
