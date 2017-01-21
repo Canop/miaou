@@ -58,7 +58,7 @@ function oneWeekBefore(){
 // 	 "tzoffsets"
 function doStats(ct){
 	// regex parsing: (topic) (parameters) (n)
-	var	params = ct.args.split(/[\s,]+/),
+	var	params = ct.args.split(/[\s,]+/).map(n => /^me$/i.test(n) ? '@'+ct.username() : n),
 		n = 10,
 		topic = /^@\S+/.test(params[0]) ? null : params.shift(),
 		lastToken = params[params.length-1],
@@ -71,7 +71,6 @@ function doStats(ct){
 	}
 
 	roomIds = params.filter(p=>/^(#\d+|room)$/.test(p)).map(p => p=="room" ? room.id : +(p.slice(1)));
-	params = params.map(n => /^me$/i.test(n) ? '@'+ct.username() : n);
 	usernames = params.filter(p => naming.isPing(p)).map(p => p.slice(1));
 	if (!topic) {
 		if (usernames.length) topic = "user";
