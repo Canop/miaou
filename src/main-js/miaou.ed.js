@@ -13,7 +13,13 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	ed.stateBeforePaste = null; // {selectionStart,selectionEnd,value}
 
-	ed.registerCommandArgAutocompleters = function(commandName, matcher){
+	ed.registerCommandArgAutocompleter = function(commandName, matcher){
+		if (Array.isArray(matcher)) {
+			var arr = matcher;
+			matcher = function(ac){
+				return ac.previous ? null : arr;
+			}
+		}
 		commandArgAutocompleters.set(commandName, matcher);
 	}
 
@@ -92,7 +98,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	//    arg: start of the currently typed command argument
 	// }
 	function getacarg(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!!(\w+)(.*)?\s+(\w*)$/);
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!!(\w+)(?:(?:\s+)?(.*?))?\s+(\w*)$/);
 		if (!m) return;
 		var matcher = commandArgAutocompleters.get(m[1]);
 		if (!matcher) return;
@@ -104,12 +110,16 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (acarg) return acarg.arg;
 	}
 
-	function addAutocompleteMatches(matches){
+	function addAutocompleteMatches(s, matches){
+		matches = matches.filter(function(n){
+			return !n.indexOf(s);
+		});
+		if (!matches.length) return;
 		savedValue = input.value;
 		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
 		matches.forEach(function(name){
 			$('<span>').text(name).appendTo($autocompleter).click(function(){
-				$input.replaceSelection(name.slice(accmd.length));
+				$input.replaceSelection(name.slice(s));
 				$autocompleter.remove();
 				$autocompleter = null;
 			});
@@ -130,18 +140,14 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		// should we display the command name autocompleting menu ?
 		var accmd = getaccmd();
 		if (accmd) {
-			var matches = Object.keys(chat.commands).filter(function(n){
-				return !n.indexOf(accmd)
-			}).sort();
-			addAutocompleteMatches(matches);
+			var matches = Object.keys(chat.commands).sort();
+			addAutocompleteMatches(accmd, matches);
 		}
 		// should we display command argument autocompleting menu ?
 		var acarg = getacarg();
 		if (acarg) {
 			var matches = acarg.matcher(acarg);
-			if (matches && matches.length) {
-				addAutocompleteMatches(matches);
-			}
+			if (matches) addAutocompleteMatches(acarg.arg, matches);
 		}
 	}
 
