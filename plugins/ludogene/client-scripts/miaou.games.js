@@ -1,4 +1,4 @@
-miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
+miaou(function(games, chat, ed, locals, md, ms, notif, plugins, ws){
 
 	function send(m, game, verb, o){
 		o = o || {};
@@ -19,14 +19,14 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 			$p.append("<i>"+names[1]+"</i> proposed a game of "+game.type+" to <i>"+names[0]+"</i>.");
 		}
 	}
-	
+
 	function renderRefused($c, m, game){
 		$c.empty();
 		var	$p = $('<div>').addClass('game-proposal').appendTo($c),
 			names = game.players.map(function(p){ return p.name });
 		$p.append("<i>"+names[0]+"</i> refused a game of "+game.type+" proposed by <i>"+names[1]+"</i>.");
 	}
-	
+
 	// renders the message when it's in small or side containers
 	function renderAbstract($c, m, game){
 		$c.empty();
@@ -118,6 +118,7 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 					}
 				});
 			});
+			ed.registerCommandArgAutocompleter("tribostats", ["games", "players", "matrix"]);
 		}
 	}
 });
