@@ -15,6 +15,7 @@ miaou(function(plugins, ed){
 		["tags"],
 		["tzoffsets"],
 		["votes"],
+		["sockets"],
 	];
 	const NB_DEEP_ARGS = 2;
 	const firstArgs = argSequences.map(function(v){

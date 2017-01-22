@@ -4,17 +4,20 @@ const	stats = require('./stats.js'),
 
 var	miaou;
 
-exports.configure = function(_miaou){
+exports.init = function(_miaou){
+	console.log("configure stats");
 	miaou = _miaou;
 	monthstats.preloadCache(miaou.db);
-	return this;
 }
 
-
 exports.registerCommands = function(registerCommand){
+	console.log('miaou:', miaou);
 	registerCommand({
-		name:'stats', fun:stats.doStats,
-		help:"Usage : `!!stats [server|me|@user|users|room|roomusers|rooms|votes|...] [n]`",
+		name: 'stats',
+		fun: function(ct){
+			return stats.doStats(ct, miaou);
+		},
+		help: "Usage : `!!stats [server|me|@user|users|room|roomusers|rooms|votes|...] [n]`",
 		detailedHelp: "Examples:"+
 			"\n* `!!stats me` : some stats about you"+
 			"\n* `!!stats users` : list of the users having posted the most messages"+
