@@ -284,6 +284,9 @@ function doCommandCancelAlarm(ct, num){
 }
 
 function onCommand(ct){
+	if (!ct.args) {
+		return ct.reply("The `!!pingme` command needs argument. Try `!!help pingme` for more information.", true);
+	}
 	if (/^list\b/i.test(ct.args)) return doCommandListAlarms.call(this, ct);
 	var m = ct.args.match(/^cancel\s+(\d+)\b/i);
 	if (m) return doCommandCancelAlarm.call(this, ct, +m[1]);
