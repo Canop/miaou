@@ -7,7 +7,6 @@ function td(num){
 }
 
 exports.date = function(seconds, pat){
-	console.log(Date(seconds*1000));
 	var	date = new Date(seconds*1000),
 		month = date.getMonth();
 	return pat

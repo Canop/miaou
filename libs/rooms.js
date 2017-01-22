@@ -137,7 +137,6 @@ exports.appPostRoom = function(req, res){
 		tags: (req.body.tags||"").split(/\s+/).filter(Boolean),
 		lang: req.body.lang
 	};
-	console.log('room:', room);
 	db.on().then(function(){
 		if (!roomId) {
 			// room creation

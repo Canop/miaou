@@ -5,13 +5,11 @@ const	stats = require('./stats.js'),
 var	miaou;
 
 exports.init = function(_miaou){
-	console.log("configure stats");
 	miaou = _miaou;
 	monthstats.preloadCache(miaou.db);
 }
 
 exports.registerCommands = function(registerCommand){
-	console.log('miaou:', miaou);
 	registerCommand({
 		name: 'stats',
 		fun: function(ct){
