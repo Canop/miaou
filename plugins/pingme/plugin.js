@@ -268,7 +268,11 @@ function doCommandCancelAlarm(ct, num){
 	return getUserActiveAlarms(ct, this)
 	.then(function(alarms){
 		var removed = alarms.splice(num-1, 1);
-		if (!removed.length) return ct.reply("Alarm not found");
+		if (!removed.length) {
+			return ct.reply(
+				"Alarm not found.\nUse `!!pingme list` to see alarms and their id"
+			);
+		}
 		ct.reply("Alarm removed.\n" + alarmsListMarkdown(alarms));
 		return this.execute(
 			"delete from pingme_alarm where message=$1",
