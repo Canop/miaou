@@ -111,15 +111,18 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	}
 
 	function addAutocompleteMatches(s, matches){
+		s = s.toLowerCase();
 		matches = matches.filter(function(n){
-			return !n.indexOf(s);
+			return !n.toLowerCase().indexOf(s);
 		});
 		if (!matches.length) return;
 		savedValue = input.value;
 		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
 		matches.forEach(function(name){
 			$('<span>').text(name).appendTo($autocompleter).click(function(){
-				$input.replaceSelection(name.slice(s));
+				input.selectionStart = input.selectionEnd - s.length;
+				$input.replaceSelection(name);
+				input.selectionStart = input.selectionEnd;
 				$autocompleter.remove();
 				$autocompleter = null;
 			});
