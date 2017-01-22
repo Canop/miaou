@@ -15,7 +15,7 @@ exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name: 'stats',
 		fun: function(ct){
-			return stats.doStats(ct, miaou);
+			return stats.doStats.call(this, ct, miaou);
 		},
 		help: "Usage : `!!stats [server|me|@user|users|room|roomusers|rooms|votes|...] [n]`",
 		detailedHelp: "Examples:"+
