@@ -78,6 +78,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('set_enter_time', time.setRoomEnterTime)
 		.on('server_commands', function(commands){
 			for (var key in commands) chat.commands[key] = commands[key];
+			ed.registerCommandArgAutocompleter("help", Object.keys(commands));
 		})
 		.on('get_room', function(unhandledMessage){
 			// this should be mostly useless now
