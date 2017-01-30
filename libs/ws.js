@@ -1,4 +1,4 @@
-const	apiversion = 69,
+const	apiversion = 70,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -205,7 +205,6 @@ exports.botMessage = function(bot, roomId, content, cb){
 // this simplified ping function isn't used for normal messages but for bots
 // context of the call must be a connected db
 exports.pingUser = function(room, username, mid, authorname, content){
-	console.log("PINGUSER", room, username, mid, authorname, content);
 	for (var clientId in io.sockets.connected) {
 		var socket = io.sockets.connected[clientId];
 		if (socket && socket.publicUser && socket.publicUser.name===username) {

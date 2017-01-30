@@ -57,13 +57,13 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 				return;
 			}
 			info.state = 'entering';
-			console.log("-> enter", entry);
+			// console.log("-> enter", entry);
 			socket.emit("enter", entry);
 		}
 
 		socket
 		.on('ready', function(){
-			console.log("<- ready");
+			// console.log("<- ready");
 			enter();
 		})
 		.on('apiversion', function(vers){
@@ -129,7 +129,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			enter();
 		})
 		.on('welcome', function(){
-			console.log("<- welcome");
+			// console.log("<- welcome");
 			info.state = 'connected';
 			gui.entered = true;
 			gui.scrollToBottom();
@@ -189,7 +189,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('watch_incr', watch.incr)
 		.on('watch_raz', watch.raz)
 		.on('watch_started', function(){
-			console.log("<- watch_started");
+			// console.log("<- watch_started");
 			watch.started();
 		})
 		.on('unwat', watch.remove)
