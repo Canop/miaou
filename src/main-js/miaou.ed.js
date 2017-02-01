@@ -9,7 +9,8 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		editedMessage, 	// currently edited message, if any
 				// (if you cycle through messages, their edited content
 				// is saved in a property stash)
-		savedValue, $autocompleter, editwzin, replywzin;
+		savedValue, $autocompleter, editwzin, replywzin,
+		acStartIndex;
 
 	ed.stateBeforePaste = null; // {selectionStart,selectionEnd,value}
 
@@ -98,29 +99,33 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	//    arg: start of the currently typed command argument
 	// }
 	function getacarg(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!!(\w+)(?:(?:\s+)?(.*?))?\s+(\w*)$/);
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!!(\w+)\s+(.*)$/);
 		if (!m) return;
 		var matcher = commandArgAutocompleters.get(m[1]);
 		if (!matcher) return;
-		return { cmd:m[1], previous:m[2], arg:m[3], matcher:matcher };
+		var	tokens = m[2].split(/\s+/),
+			ac = { cmd:m[1], matcher:matcher, args: m[2] };
+		ac.arg = tokens.pop();
+		ac.previous = tokens.pop();
+		return ac;
 	}
 
-	function getacargToken(){
-		var acarg = getacarg();
-		if (acarg) return acarg.arg;
-	}
-
-	function addAutocompleteMatches(s, matches){
+	function addAutocompleteMatches(s, matches, mustCheck){
+		if (!matches) return;
 		s = s.toLowerCase();
-		matches = matches.filter(function(n){
-			return !n.toLowerCase().indexOf(s);
-		});
+		if (mustCheck) {
+			matches = matches.filter(function(n){
+				return !n.toLowerCase().indexOf(s);
+			});
+		}
 		if (!matches.length) return;
 		savedValue = input.value;
 		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
+		acStartIndex = input.selectionEnd - s.length;
 		matches.forEach(function(name){
-			$('<span>').text(name).appendTo($autocompleter).click(function(){
-				input.selectionStart = input.selectionEnd - s.length;
+			$('<span>').text(name)
+			.appendTo($autocompleter).click(function(){
+				input.selectionStart = acStartIndex;
 				$input.replaceSelection(name);
 				input.selectionStart = input.selectionEnd;
 				$autocompleter.remove();
@@ -144,27 +149,32 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		var accmd = getaccmd();
 		if (accmd) {
 			var matches = Object.keys(chat.commands).sort();
-			addAutocompleteMatches(accmd, matches);
+			addAutocompleteMatches(accmd, matches, true);
+			return;
 		}
 		// should we display command argument autocompleting menu ?
 		var acarg = getacarg();
-		if (acarg) {
-			var matches = acarg.matcher(acarg);
-			if (matches) addAutocompleteMatches(acarg.arg, matches);
+		if (!acarg) return;
+		var ret = acarg.matcher(acarg);
+		if (!ret) return;
+		if (Array.isArray(ret)) {
+			ret = {
+				matches: ret,
+				replaced: acarg.arg,
+				mustCheck: true
+			};
 		}
+		addAutocompleteMatches(ret.replaced, ret.matches, ret.mustCheck);
 	}
 
 	function tabAutocomplete(){
 		var	index = ($autocompleter.find('.selected').index()+1) % $autocompleter.find('span').length,
-			name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected').text(),
-			actoken = getaccmd() || getacargToken();
-		if (actoken != undefined) {
-			input.selectionStart = input.selectionEnd - actoken.length;
-			$input.replaceSelection(name);
-			input.selectionStart = input.selectionEnd;
-			return;
-		}
-		ed.ping(name);
+			$name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected'),
+			name = $name.text();
+		input.selectionStart = acStartIndex;
+		$input.replaceSelection(name);
+		input.selectionStart = input.selectionEnd;
+		//ed.ping(name);
 	}
 
 	function insertLink(){
@@ -496,6 +506,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (!names.length) return;
 		if ($autocompleter) $autocompleter.remove();
 		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
+		acStartIndex = input.selectionEnd - acname.length;
 		names.forEach(function(name){
 			var $span = $('<span>').text(name).appendTo($autocompleter).click(function(){
 				ed.ping(name);
