@@ -40,10 +40,11 @@ miaou(function(ed){
 				$(img).addClass("upload-thumb").appendTo($content);
 				var $div = $("<div>").appendTo($content);
 				$("<p>").text(isTooBig ? TOO_BIG : BIG).appendTo($div);
-				var $p = $("<p>").text(CHOOSE).appendTo($div);
+				$("<p>").text("Current Dimensions: " + img.width + " x " + img.height + ".").appendTo($div);
+				$("<p>").text(CHOOSE).appendTo($div);
 				var $select = $("<select>").append(propositions.map(function(p){
 					return $("<option>").text(p.w + " x " + p.h);
-				})).appendTo($p);
+				})).appendTo($div);
 				var dialog = {
 					title: isTooBig ? "Image too big for upload" : "Big image",
 					content: $content,
