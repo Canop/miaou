@@ -36,6 +36,10 @@
 	}
 }
 
+.room .tag-set {
+	flex-wrap: nowrap;
+}
+
 .tag-set.edited {
 	background: white;
 	border: thin solid #aab;
