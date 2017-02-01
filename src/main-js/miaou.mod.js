@@ -17,6 +17,7 @@ miaou(function(mod, chat, md, ws){
 			).append($('<label>').attr('for', idval).text(text));
 			return $r;
 		}
+		radio('m1', '1 minute');
 		radio('m10', '10 minutes').prop('checked', true);
 		radio('m30', '30 minutes');
 		radio('h2', '2 hours');
