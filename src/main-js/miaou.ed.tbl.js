@@ -4,12 +4,13 @@ miaou(function(ed){
 	ed.tbl = {};
 
 	// return the passed string as a {rows:[]} object if it looks
-	//  like a table
+	//  like a table (with cell separator being the tab)
 	// if almost all first "cells" are emtpy, it's probably indented code
 	//  instead of a table
 	ed.tbl.textAsTable = function(str){
 		var lines = str.split('\n');
 		if (lines.length<2) return;
+		if (!/\t/.test(lines[0])) return;
 		var	nbcols = 0,
 			nbrows = 0,
 			nbNotEmptyFirstCell = 0,
@@ -78,7 +79,6 @@ miaou(function(ed){
 
 	ed.tbl.onCtrlV = function(pasted, initialText){
 		var tbl = ed.tbl.textAsTable(pasted);
-
 		if (!tbl) return;
 		ed.tbl.askAboutPastedTable(tbl, null, initialText);
 	}
