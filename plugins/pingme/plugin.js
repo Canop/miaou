@@ -317,7 +317,6 @@ function setBigTimeout(fun, delay){
 function programPing(alarm){
 	var existingAlarm = alarmMap.get(alarm.message); // not defined if previous alarm already done
 	if (existingAlarm && existingAlarm.timeout) existingAlarm.timeout.clear();
-	var startTime = Date.now();
 	alarm.timeout = setBigTimeout(function(){
 		console.log("Ringing alarm:", alarm);
 		var text = alarm.text||"drrriiiiiinnnngggg!";
