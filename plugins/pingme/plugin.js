@@ -273,10 +273,15 @@ function doCommandCancelAlarm(ct, num){
 				"Alarm not found.\nUse `!!pingme list` to see alarms and their id"
 			);
 		}
+		removed = removed[0];
+		var existingAlarm = alarmMap.get(removed.message); // not defined if previous alarm already done
+		if (existingAlarm.timeout) {
+			existingAlarm.timeout.clear();
+		}
 		ct.reply("Alarm removed.\n" + alarmsListMarkdown(alarms));
 		return this.execute(
 			"delete from pingme_alarm where message=$1",
-			[removed[0].message],
+			[removed.message],
 			"delete_pingme",
 			false
 		);
@@ -293,11 +298,27 @@ function onCommand(ct){
 	return doCommandNewAlarm(ct);
 }
 
+// node's setTimeout doesn't handle delays of more than about 24 days
+function setBigTimeout(fun, delay){
+	const MAX_STEP_TIMEOUT = 2147483647; // 2^31-1
+	var timer;
+	(function step(){
+		if (delay<=0) return fun();
+		timer = setTimeout(step, Math.min(MAX_STEP_TIMEOUT, delay));
+		delay -= MAX_STEP_TIMEOUT;
+	})();
+	return {
+		clear: function(){
+			clearTimeout(timer);
+		}
+	};
+}
+
 function programPing(alarm){
-	console.log('programming alarm:', alarm);
 	var existingAlarm = alarmMap.get(alarm.message); // not defined if previous alarm already done
-	if (existingAlarm) clearTimeout(existingAlarm.timeout);
-	alarm.timeout = setTimeout(function(){
+	if (existingAlarm && existingAlarm.timeout) existingAlarm.timeout.clear();
+	var startTime = Date.now();
+	alarm.timeout = setBigTimeout(function(){
 		console.log("Ringing alarm:", alarm);
 		var text = alarm.text||"drrriiiiiinnnngggg!";
 		ws.botMessage(bot, alarm.room, "@"+alarm.username+"#"+alarm.message+" "+text, function(m){
