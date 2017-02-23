@@ -87,7 +87,8 @@ proto.getUserById = function(id){
 		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey'+
 		' from player where id=$1',
 		[id],
-		"user_by_id"
+		"user_by_id",
+		true
 	);
 }
 
@@ -134,7 +135,8 @@ proto.getUserInfo = function(id){
 	return this.queryRow(
 		"select description, location, url, lang from player where id=$1",
 		[id],
-		"get_user_info"
+		"get_user_info",
+		true
 	);
 }
 
@@ -302,7 +304,8 @@ proto.fetchRoomAndUserAuth = function(roomId, userId){
 		" from room"+
 		" left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2",
 		[userId, roomId],
-		"fetch_room_and_user_auth"
+		"fetch_room_and_user_auth",
+		true
 	);
 }
 
@@ -512,7 +515,8 @@ proto.getAuthLevelByUsername = function(roomId, username){
 	return this.queryOptionalRow(
 		"select auth from room_auth,player where lower(name)=$1 and room=$2 and room_auth.player=player.id;",
 		[username.toLowerCase(), roomId],
-		"auth_level_by_username"
+		"auth_level_by_username",
+		true
 	);
 }
 
@@ -547,7 +551,8 @@ proto.tryInsertWatch = function(roomId, userId){
 		" where not exists ( select * from watch where room=$1 and player=$2 )"+
 		")",
 		[roomId, userId],
-		"try_insert_watch"
+		"try_insert_watch",
+		true
 	).then(function(res){
 		return !!res.rowCount;
 	});
@@ -676,7 +681,8 @@ proto.getNextMessageId = function(roomId, mid, asc){
 		return this.queryRow(
 			"select max(id) mid from message where room=$1 and id<$2",
 			[roomId, mid],
-			"previous_message_id"
+			"previous_message_id",
+			true
 		);
 	}
 }
@@ -830,7 +836,8 @@ proto._insertMessage = function(m){
 	return this.queryRow(
 		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
 		[m.room, m.author, m.content, m.created],
-		"insert_message"
+		"insert_message",
+		true
 	).then(function(row){
 		m.id = row.id;
 		return m;
@@ -955,7 +962,8 @@ proto.deleteLastRoomPings = function(roomId, userId, messageId){
 	return this.execute(
 		"delete from ping where room=$1 and player=$2 and message>=$3",
 		[roomId, userId, messageId],
-		"delete_last_room_pings"
+		"delete_last_room_pings",
+		true
 	);
 }
 
@@ -1066,7 +1074,8 @@ proto.getPlayerPluginInfo = function(plugin, userId){
 	return this.queryOptionalRow(
 		"select * from plugin_player_info where plugin=$1 and player=$2",
 		[plugin, userId],
-		"player_plugin_info"
+		"player_plugin_info",
+		true
 	);
 }
 

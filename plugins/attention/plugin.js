@@ -49,7 +49,8 @@ function getAlert(messageId, userId){
 		" from attention_alert a left join attention_seen s on a.message=s.message"+
 		" where a.message=$1",
 		[messageId],
-		"attention / get_alert"
+		"attention / get_alert",
+		true
 	);
 }
 exports.onNewShoe = function(shoe){
