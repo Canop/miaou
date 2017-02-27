@@ -122,7 +122,19 @@ $message-content-table-border-color: #555;
 $user-profile-title-color: rgba(255,255,255,.9);
 $user-def-color: rgba(255,255,255,.75);
 $profile-text-color: rgba(255,255,255,.9);
-$profile-bg: #555;
+$profile-bg: #111;
+.desktop {
+	.profile {
+		border-top: thin solid #972;
+		border-right: thin solid #972;
+		border-bottom: thin solid #972;
+	}
+	.profiled {
+		border-top: thin solid #972;
+		border-bottom: thin solid #972;
+		border-left: thin solid #972;
+	}
+}
 $profile-box-shadow: none;
 
 // buttons
