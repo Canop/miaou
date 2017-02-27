@@ -11,7 +11,8 @@ body.mobile {
 		width: 75px;
 	}
 	#me {
-		color: $mtab-color;	
+		color: $mtab-color;
+		font-size: 14px;
 	}
 }
 
@@ -75,7 +76,7 @@ body.mobile {
 	width: 48%;
 	position: fixed;
 	z-index: 2;
-	top: 0;	
+	top: 0;
 	bottom: $minput-height + 20px;
 	overflow-y: auto;
 	padding-top: $mtab-height + 4px;

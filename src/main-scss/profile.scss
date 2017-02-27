@@ -20,7 +20,7 @@ div.externalProfile {
 			}
 			&[type=checkbox]{
 				width: initial;
-				margin: 2px 8px 0 0;			
+				margin: 2px 8px 0 0;
 			}
 		}
 		div.inputs {
@@ -33,19 +33,14 @@ div.externalProfile {
 		font-size: 110%;
 	}
 	h3 {
-		font-size: 100%;	
+		font-size: 100%;
 	}
 }
 
 .profile {
-	position: fixed;
-	z-index: 31;
 	padding: 5px;
 	box-shadow: $profile-box-shadow;
-	width: 216px;
-	min-height: 100px;
 	color: $profile-text-color;
-	background: $profile-bg;
 	.avatar {
 		display: block;
 		margin: auto;
@@ -54,7 +49,7 @@ div.externalProfile {
 		filter: $profile-avatar-filter;
 	}
 	a {
-		color: $profile-text-color;	
+		color: $profile-text-color;
 	}
 	h1 {
 		width: 100%;
@@ -69,6 +64,39 @@ div.externalProfile {
 	}
 	p {
 		padding: 0;
+	}
+}
+.desktop .profile {
+	width: 216px;
+	min-height: 100px;
+}
+.mobile .profile {
+	overflow-y: scroll;
+}
+.desktop .profile, .mobile .profile-page {
+	position: fixed;
+	background: $profile-bg;
+	z-index: 31;
+}
+.profile-page {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+}
+.profile-buttons {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 5px;
+	button, i {
+		flex: 1 1 auto;
+	}
+	i {
+		text-align: center;
+		color: $profile-text-color;
 	}
 }
 
@@ -98,7 +126,7 @@ div.externalProfile {
 	background: $profile-bg;
 	z-index: 6;
 	span {
-		color: $profile-text-color;	
+		color: $profile-text-color;
 	}
 }
 

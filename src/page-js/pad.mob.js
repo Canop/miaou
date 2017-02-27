@@ -2,14 +2,14 @@
 miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 
 	// Global working of all tabs
-	var tabs = {};
+	var tabs = chat.tabs = {};
 	function Tab(id){
 		this.id = id;
 		this.$tab = $('#mpad-tab-'+id);
 		this.$page = $('#mpad-page-'+id).hide();
 		this.bindEvents();
 	}
-	function closeAllTabs(){
+	chat.closeAllTabs = function(){ // for now this only exists when the chat is mobile
 		for (var tabId in tabs) {
 			tabs[tabId].close();
 		}
@@ -31,7 +31,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 			if (tab.$tab.hasClass('open')) {
 				tab.close();
 			} else {
-				closeAllTabs();
+				chat.closeAllTabs();
 				tab.open();
 			}
 		});
@@ -39,7 +39,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 	;['room', 'notables', 'search', 'watches', 'users', 'menu', 'write'].forEach(function(tabId){
 		tabs[tabId] = new Tab(tabId);
 	});
-	$('#mpad-untabber').click(closeAllTabs);
+	$('#mpad-untabber').click(chat.closeAllTabs);
 
 	// "room" tab
 	tabs["room"].open = function(cb){
@@ -54,7 +54,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 			if (cb) cb();
 		});
 	}
-	$('#notable-messages,#search-results').on('click', '.message', closeAllTabs);
+	$('#notable-messages,#search-results').on('click', '.message', chat.closeAllTabs);
 
 	// "search" tab
 	tabs["search"].open = function(cb){
@@ -82,12 +82,12 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		$('.mpad-tabs').show();
 	}
 	$('#cancel-write').click(function(){
-		closeAllTabs();
+		chat.closeAllTabs();
 		ed.cancelEdit();
 		ed.cancelReply();
 	});
-	$('#send').click(closeAllTabs);
-	chat.on("sending_message", closeAllTabs);
+	$('#send').click(chat.closeAllTabs);
+	chat.on("sending_message", chat.closeAllTabs);
 
 	$('#messages').on('click', '.replyButton,.editButton', function(){
 		tabs['write'].open();
