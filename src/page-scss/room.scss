@@ -1,0 +1,26 @@
+
+.room-edition {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	#room-edition-fields {
+		flex: 1 1 auto;
+	}
+	h3 {
+		text-align: center;
+	}
+}
+#room-preview {
+	flex: 1 1 auto;
+	margin: 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+@media (max-width: 900px) {
+	.room-edition {
+		display: flex;
+		flex-direction: column;
+	}
+}
+

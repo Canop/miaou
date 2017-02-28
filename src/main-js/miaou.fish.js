@@ -13,7 +13,9 @@
 		if (options.classes) $b.addClass(options.classes);
 		$('<div>').addClass('bubble-arrow').appendTo($b);
 		if (options.side) {
-			if (options.side === "vertical") {
+			if (/-/.test(options.side)) {
+				side = options.side;
+			} else if (options.side === "vertical") {
 				side = targetRect.top<wh/2 ? "bottom" : "top";
 			} else if ((match=options.side.match(/^(top|bottom)/))) {
 				side = match[1] + "-" + (targetRect.left<ww/2 ? "right" : "left");
@@ -80,7 +82,8 @@
 			break;
 		}
 		$b.css(css).addClass(side+'-bubble');
-		options.blower.call(this, $c);
+		if (options.text) $c.text(options.text);
+		if (options.blower) options.blower.call(this, $c);
 		return this;
 	}
 

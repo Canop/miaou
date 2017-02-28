@@ -34,7 +34,7 @@
 		text-decoration: none;
 		display: block;
 		padding: 10px;
-		cursor: pointer;		
+		cursor: pointer;
 		&:hover {
 			background: $menu-item-hover-bg;
 		}
@@ -53,11 +53,11 @@
 	overflow: hidden;
 }
 #Miaou-logo-wrapper:after { // to make the link clickable, as events don't bubble out of the svg document
-	content: ""; 
-	position: absolute; 
-	top: 0; 
-	right: 0; 
-	bottom: 0; 
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
 	left: 0;
 }
 #M-menu:hover #Miaou-logo-wrapper {
@@ -117,7 +117,6 @@
 		opacity: 0;
 		transition: opacity 1s;
 	}
-	//~ position: relative;
 }
 #room-panel:hover button {
 	opacity: 1;
@@ -138,11 +137,11 @@
 	@include flexbox(row, stretch);
 	&.closed {
 		height: 0;
-		transition: height .5s;	
+		transition: height .5s;
 	}
 	&.open {
 		height: 71vh;
-		transition: height .5s;	
+		transition: height .5s;
 	}
 }
 #rooms {
@@ -178,7 +177,7 @@
 			color: $selected-room-tab-color;
 			background-image: $chat-tabs-selected-bg-image;
 			background-color: $room-tab-bg-color;
-			border-width: $chat-tabs-border-width $chat-tabs-border-width 0 $chat-tabs-border-width;	
+			border-width: $chat-tabs-border-width $chat-tabs-border-width 0 $chat-tabs-border-width;
 		}
 		.watch-count {
 			margin-left: 2px;
@@ -194,7 +193,7 @@
 #rooms-panel #rooms-page {
 	border-style:solid;
 	border-color: $chat-tabs-border-color;
-	border-width: 0 $chat-tabs-border-width $chat-tabs-border-width $chat-tabs-border-width;	
+	border-width: 0 $chat-tabs-border-width $chat-tabs-border-width $chat-tabs-border-width;
 }
 
 body.desktop #rooms-page {
@@ -206,15 +205,23 @@ body.desktop #rooms-page {
 	#left, #right, #center {
 		top: 40px;
 	}
-	#left, #right {
+	#left {
 		padding-top: 5px;
 	}
 	#right {
-		//overflow-y: scroll;
+		overflow-y: scroll;
 	}
 }
 
 #right #room-area {
+	position: relative;
+	background-size: cover;
+	background-position: center center;
+	-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0,0,0,1)), color-stop(0.6, rgba(0,0,0,1)), color-stop(0.8, rgba(0,0,0,.8)), color-stop(1, rgba(0,0,0,0)));
+	margin-bottom: 15px;
+	& > div {
+		background: $square-description-opacifier-bg;
+	}
 	#room-controls {
 		height: 0;
 		overflow: hidden;
@@ -225,21 +232,37 @@ body.desktop #rooms-page {
 		min-height: 30px;
 		max-height: 60px;
 		overflow: hidden;
-		margin-bottom: 10px;
+		padding-bottom: 20px;
 		transition: max-height .4s .2s;
 		position: relative;
-		-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0,0,0,1)), color-stop(0.6, rgba(0,0,0,1)), color-stop(0.8, rgba(0,0,0,.8)), color-stop(1, rgba(0,0,0,0)));
+		a {
+			color: inherit;
+		}
 	}
 }
 #right #room-area:hover {
 	#room-controls {
 		height: 30px;
 		transition: height .2s .2s;
+		padding-bottom: 4px;
 	}
 	#room-description {
 		max-height: 500px;
 		-webkit-mask-image: none;
-		transition: max-height .4s .2s;
+		transition: all .4s .2s;
+		transition: height .2s .2s;
+		min-height: 200px;
+		a {
+			color: $roomname-color;
+		}
+	}
+}
+#right #room-area.has-background-image:hover {
+	#room-description {
+		color: $square-description-color;
+		text-shadow: $square-room-description-text-shadow;
+		// color: $roomname-color;
+		// text-shadow: $roomname-text-shadow;
 	}
 }
 

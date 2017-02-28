@@ -42,7 +42,7 @@ function load(){
 			);
 		})
 		.then(function(alarms){
-			console.log('LOADED ALARMS:', alarms.length);
+			console.log('loaded alarms:', alarms.length);
 			alarms.forEach(function(alarm){
 				programPing(alarm);
 			});

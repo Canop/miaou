@@ -2,15 +2,11 @@
 // manages the lists of rooms for
 // - /rooms
 // - the desktop pad
-// - the mobile pad (not yet)
-//
-
 miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
 	var	rooms = [],
 		initialized = false,
 		connected,
-		descImageRegex = /^<img[^>]*><br>/,
 		hasPing,
 		getWatch;
 
@@ -39,7 +35,6 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 		"Dialog Rooms": function(){
 			return rooms.filter(function(r){ return r.dialog });
 		},
-
 	};
 
 	function fetchRooms(callback){
@@ -81,16 +76,11 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
 	function fillSquareDescription($room, r){
 		var	html = miaou.fmt.mdTextToHtml(r.description),
-			floatImage = descImageRegex.test(html);
-		if (floatImage) html = html.replace(/<br>/, '');
-		var $underDescription = $('<div>').addClass('under-room-description')
-		.appendTo($room);
-		var $description = $('<div>').addClass('room-description rendered').html(html)
-		.appendTo($underDescription);
-		if (floatImage) {
-			var bgsrc = $description.find('img:eq(0)').remove().attr('src');
-			$underDescription.css('background-image', 'url("'+bgsrc+'")');
+			$underDescription = $('<div>').addClass('under-room-description').appendTo($room);
+		if (r.img) {
+			$underDescription.css('background-image', 'url("'+r.img+'")');
 		}
+		$('<div>').addClass('room-description rendered').html(html).appendTo($underDescription);
 	}
 
 	function fillDialogSquareDescription($room, r){
@@ -167,7 +157,6 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 		});
 		return $container.append($t);
 	}
-
 
 	function cssFitSquares(selector, minSize, pageWidth){
 		var	nbSquares = Math.max(pageWidth/ minSize | 0, 2),

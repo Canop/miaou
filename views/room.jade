@@ -5,6 +5,7 @@ html
 		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
+		link(rel='stylesheet', href='static/room.css')
 		script(src="static/jquery-2.1.3.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
 		script(src="static/miaou.min.js")
@@ -23,46 +24,49 @@ html
 			div.thinMP
 				h2 Room Edition
 		section#home-main
-			div.thinMP
+			.MP
 				form(method="post")
-					input(type="hidden", name="secret", value=secret)
-					input#id(type="hidden", name="id")
-					table.form
-						tr
-							th Name
-							td
-								input#name(type="text", name="name", pattern="[^\\[\\]]{2,50}")
-						tr
-							th Privacy
-							td
-								select#private(name="private")
-									option(value="on") Private Room
-									option(value="off") Public Room
-						tr
-							th Listings
-							td
-								select#listed(name="listed")
-									option(value="on") Listed Room
-									option(value="off") Discreet Room
-						tr
-							th Language
-							td
-								select#lang(name="lang")
-						tr
-							th Tags
-							td
-								input#tags(name="tags")
-						tr
-							th Description
-							td
-								textarea#description(name="description")
+					.room-edition
+						#room-edition-fields
+							input(type="hidden", name="secret", value=secret)
+							input#id(type="hidden", name="id")
+							table.form
+								tr
+									th Name
+									td
+										input#name(type="text", name="name", pattern="[^\\[\\]]{2,50}")
+								tr
+									th Privacy
+									td
+										select#private(name="private")
+											option(value="on") Private Room
+											option(value="off") Public Room
+								tr
+									th Listings
+									td
+										select#listed(name="listed")
+											option(value="on") Listed Room
+											option(value="off") Discreet Room
+								tr
+									th Language
+									td
+										select#lang(name="lang")
+								tr
+									th Illustration
+									td
+										input#img(type="url", name="img", pattern="https://\\S+")
+								tr
+									th Description
+									td
+										textarea#description(name="description")
+								tr
+									th Tags
+									td
+										input#tags(name="tags")
+						div
+							h3 Preview
+							#room-preview
 					p#err.error
 					div.dialog-buttons
 						input#cancel(type="button", value="Cancel")
 						input#submit(type='submit', value='Save')
-					table.form
-						tr
-							td Description Preview
-							td
-								div.rendered.input#room-description
-		

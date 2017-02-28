@@ -211,9 +211,9 @@ proto.getPrefs = function(userId){
 
 proto.createRoom = function(r, owners){
 	return this.queryRow(
-		'insert into room (name, private, listed, dialog, description, lang)'+
-		' values ($1, $2, $3, $4, $5, $6) returning id',
-		[r.name, r.private, r.listed, r.dialog, r.description||'', r.lang||'en'],
+		'insert into room (name, private, listed, dialog, img, description, lang)'+
+		' values ($1, $2, $3, $4, $5, $6, $7) returning id',
+		[r.name, r.private, r.listed, r.dialog, r.img, r.description||'', r.lang||'en'],
 		"insert_room"
 	).then(function(row){
 		r.id = row.id;
@@ -231,14 +231,14 @@ proto.createRoom = function(r, owners){
 proto.updateRoom = function(r, author, authlevel){
 	if (authlevel==="own") {
 		return this.execute(
-			"update room set name=$1, private=$2, listed=$3, dialog=$4, description=$5, lang=$6 where id=$7",
-			[r.name, r.private, r.listed, r.dialog, r.description||'', r.lang, r.id],
+			"update room set name=$1, private=$2, listed=$3, dialog=$4, img=$5, description=$6, lang=$7 where id=$8",
+			[r.name, r.private, r.listed, r.dialog, r.img, r.description||'', r.lang, r.id],
 			"update_room_as_owner"
 		);
 	} else { // implied : "admin"
 		return this.execute(
-			"update room set name=$1, listed=$2, description=$3, lang=$4 where id=$5",
-			[r.name, r.listed, r.description||'', r.lang, r.id],
+			"update room set name=$1, listed=$2, img=$3, description=$4, lang=$5 where id=$6",
+			[r.name, r.listed, r.img, r.description||'', r.lang, r.id],
 			"update_room_as_admin"
 		);
 	}
@@ -287,7 +287,7 @@ proto.getLounge = function(userA, userB){
 // returns an existing room found by its id
 proto.fetchRoom = function(id){
 	return this.queryRow(
-		"select id, name, description, private, listed, dialog, lang,"+
+		"select id, name, img, description, private, listed, dialog, lang,"+
 		" (select array(select tag from room_tag where room=$1)) as tags"+
 		" from room where id=$1",
 		[id],
@@ -299,7 +299,7 @@ proto.fetchRoom = function(id){
 proto.fetchRoomAndUserAuth = function(roomId, userId){
 	if (!roomId) return Promise.reject(new NoRowError());
 	return this.queryRow(
-		"select id, name, description, private, listed, dialog, lang, auth,"+
+		"select id, name, img, description, private, listed, dialog, lang, auth,"+
 		" (select array(select tag from room_tag where room=$2)) as tags"+
 		" from room"+
 		" left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2",
@@ -313,7 +313,7 @@ proto.fetchRoomAndUserAuth = function(roomId, userId){
 // use index message_room_author
 proto.listFrontPageRooms = function(userId, pattern){
 	var	psname = "list_front_page_rooms",
-		sql = "select r.id, r.name, r.description, private, listed, dialog, r.lang, a.auth,"+
+		sql = "select r.id, r.name, r.img, r.description, private, listed, dialog, r.lang, a.auth,"+
 		" (select array(select tag from room_tag where room_tag.room=r.id)) as tags,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
 		" (select exists (select 1 from message m where m.room = r.id and m.author=$1)) as hasself,"+

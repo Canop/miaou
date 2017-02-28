@@ -128,11 +128,15 @@ exports.appPostRoom = function(req, res){
 	if (req.body.name && !/^[^\[\]]{2,50}$/.test(req.body.name)) {
 		return server.renderErr(res, "invalid room name");
 	}
+	if (req.body.img && !/^https:\/\/\S{4,220}$/.test(req.body.img)) {
+		return server.renderErr(res, "invalid room illustration:" + req.body.img);
+	}
 	var room = {
 		name: req.body.name,
 		private: req.body.private==="on",
 		listed: req.body.listed==="on",
 		dialog: false,
+		img: req.body.img,
 		description: req.body.description.replace(/\r\n?/g, '\n'),
 		tags: (req.body.tags||"").split(/\s+/).filter(Boolean),
 		lang: req.body.lang

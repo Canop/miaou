@@ -15,7 +15,7 @@ body.home.mobile .room-list {
 	justify-content: center;
 }
 
-.room-list, .room-bubble {
+.room-list, .room-bubble, #room-preview {
 	display: flex;
 	flex-wrap: wrap;
 	.room {
@@ -52,9 +52,6 @@ body.home.mobile .room-list {
 				text-decoration: none;
 			}
 		}
-		// &:hover a.room-title {
-		// 	text-decoration: underline;
-		// }
 		.under-room-description {
 			background-size: cover;
 			background-position: center center;
@@ -64,6 +61,7 @@ body.home.mobile .room-list {
 		.room-description {
 			background: $square-description-opacifier-bg;
 			color: $square-description-color;
+			text-shadow: $square-room-description-text-shadow;
 			overflow: hidden;
 			font-size: 90%;
 			text-overflow: ellipsis;
@@ -73,7 +71,6 @@ body.home.mobile .room-list {
 			top: 0;
 			right: 0;
 			bottom: 0;
-			text-shadow: $square-room-description-text-shadow;
 			a, a:visited {
 				color: $square-description-color;
 			}

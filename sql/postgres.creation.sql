@@ -11,6 +11,7 @@ CREATE TABLE room (
 	listed boolean NOT NULL default true,
 	dialog boolean NOT NULL default false,
 	lang varchar(2) NOT NULL default 'en',
+	img varchar(255),
 	description text NOT NULL
 );
 
@@ -27,7 +28,8 @@ CREATE TABLE player (
 	url varchar(255),
 	lang varchar(2) NOT NULL default 'en',
 	avatarsrc varchar(20),
-	avatarkey varchar(255)
+	avatarkey varchar(255),
+	tzoffset smallint
 );
 CREATE UNIQUE INDEX player_lower_name_index on  player (lower(name));
 

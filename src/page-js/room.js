@@ -1,4 +1,4 @@
-miaou(function(locals){
+miaou(function(locals, roomFinder){
 
 	$(document.body).addClass(
 		/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
@@ -13,6 +13,7 @@ miaou(function(locals){
 	if (room) {
 		$('.dialog-title').text('Room Edition');
 		$('#name').val(room.name);
+		$('#img').val(room.img);
 		$('#description').val(room.description);
 		$('#private').val(room.private ? 'on' : 'off');
 		$('#listed').val(room.listed ? 'on' : 'off');
@@ -45,11 +46,22 @@ miaou(function(locals){
 			$('#submit').prop('disabled', false);
 		}
 	});
-	function format(){
-		$('#room-description').html(miaou.fmt.mdTextToHtml($('#description').val()));
+	function updatePreview(){
+		$("#room-preview").empty().append(roomFinder.$square({
+			name: $('#name').val(),
+			img: $('#img').val(),
+			description: $('#description').val(),
+			tags: $("#tags").val().split(" ").filter(Boolean),
+		}));
 	}
-	$('#description').keyup(format);
+	$('form').on("input blur focus", "input,textarea", updatePreview);
 
-	format();
+
+	$("#img").closest("tr").bubbleOn({
+		side: "top-left",
+		text: "Optional. Must be the HTTPS URL of an image."
+	});
+
+	updatePreview();
 
 });

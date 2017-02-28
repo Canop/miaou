@@ -108,10 +108,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			$("#room-tags").empty().append(locals.room.tags.map(function(t){
 				return $("<span class=tag>").text(t);
 			}));
-			$('#room-panel-bg').css('background-image', function(){
-				var m = htmldesc.match(/^<img (?:href="?[^"> ]+"? )?src="?([^">]+)"?[^>]*>(<br>|$)/);
-				return m ? 'url('+m[1]+')' : '';
-			});
+			$('#room-panel-bg, #room-area')
+			.toggleClass("has-background-image", !!locals.room.img)
+			.css('background-image', 'url("'+locals.room.img+'")');
 		})
 		.on('box', md.box)
 		.on('notables', function(notableMessages){
