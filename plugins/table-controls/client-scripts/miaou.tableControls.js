@@ -40,7 +40,7 @@ miaou(function(tableControls){
 	};
 
 	function toNumber(s){
-		var m = s.replace(/\s+/g, '').match(/\d+(\.\d+)?/);
+		var m = s.replace(/\s+/g, '').match(/-?\d+(\.\d+)?/);
 		return m ? +m[0] : NaN;
 	}
 
@@ -63,7 +63,7 @@ miaou(function(tableControls){
 			|| (this.nbNumCells >= .9*this.nbAlphaCells && this.nbNumCells>2);
 		this.isAlphaSortable = this.nbAlphaCells >= n*.6 && this.nbNumCells < .9*n;
 	}
-		
+
 	ColumnController.prototype.show = function(){
 		var	cc = this,
 			$c = $("<div>").addClass("column-controller").appendTo(this.$th);
