@@ -85,8 +85,6 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			ed.replyToMessage($m);
 			return false;
 		})
-		.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
-		.on('mouseleave', '.replyButton,.deleteButton,.editButton', prof.shownow)
 		.on('click', '.reply', function(e){
 			var	$m = $(this).closest('.message');
 			notif.userAct($m.dat('message').id);
@@ -169,7 +167,9 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$('#users')
 			.on('mouseenter', '.user', usr.showUserHoverButtons)
 			.on('mouseleave', '.user', usr.hideUserHoverButtons)
-			.on('mouseenter', '.user', prof.show);
+			.on('mouseenter', '.user', prof.show)
+			.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
+			.on('mouseleave', '.replyButton,.deleteButton,.editButton', prof.shownow);
 			// When the window is resized, all the messages have to be resized too.
 			$(window).on('resize', md.resizeAll);
 		}
