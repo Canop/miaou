@@ -19,7 +19,7 @@
 #home-blurb, #prefs-notifs {
 	color: $notif-color;
 	h2 {
-		color: $notif-color;		
+		color: $notif-color;
 	}
 	a {
 		color: $notif-color;
@@ -30,7 +30,9 @@
 }
 
 #home-blurb {
-	@include flexbox(row, flex-start, space-between);
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
 }
 
 #home-search {
@@ -63,7 +65,10 @@ body.home {
 	#home-main {
 		position: absolute;
 		left:0; right:0;
-		@include flexbox(row, center, center);
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
 		z-index: 3;
 		background: $home-tab-bg;
 		box-shadow: $home-main-shadows;
@@ -77,7 +82,7 @@ body.home {
 		margin-top: 6px;
 	}
 	&.mobile #logo {
-		margin-top: 0;	
+		margin-top: 0;
 	}
 	p.links {
 		margin-top: 5px;

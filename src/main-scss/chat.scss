@@ -18,7 +18,7 @@
 	overflow-y: auto;
 }
 #center {
-	@include flexbox(row);
+	display: flex;
 	top:0;
 	bottom: 0;
 	box-shadow: $center-shadow;
@@ -59,19 +59,20 @@
 
 
 #vert-center {
-	@include flexbox(column);
+	display: flex;
+	flex-direction: column;
 	height: 100%;
-	@include flex(1 0 0);
+	flex: 1 0 0;
 	min-width: 0;
 }
 
 #message-scroller {
 	overflow-y: scroll;
 	overflow-x: hidden; // prevents Chrome from having an horizontal scrollbar here
-	@include flex(1 0 0);
+	flex: 1 0 0;
 }
 #notifications {
-	@include flex-grow(0);
+	flex-grow: 0;
 }
 
 .table {
@@ -97,13 +98,16 @@ section {
 #users {
 	padding-top: 2px;
 	height: 95%;
-	@include flexbox(column);
+	display: flex;
+	flex-direction: column;
 	.user, .user.profiled {
 		position: relative;
-		@include flex(1 0 18px);
+		flex: 1 0 18px;
 		max-height: 30px;
 		cursor: pointer;
-		@include flexbox(row, center);
+		display: flex;
+	flex-direction: row;
+	align-items: center;
 		padding: 1px 5px;
 		text-overflow: ellipsis;
 		overflow: hidden;
@@ -208,7 +212,10 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		padding: $user-padding-in-message;
 		width: 110px;
 		z-index: 6;
-		@include flexbox(row, center, center);
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
 		background: $user-in-messages-bg;
 		box-shadow: $user-color-shadow-in-messages;
 		transition: box-shadow .3s;
@@ -266,7 +273,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 			width: 100%;
 			text-align: center;
 		}
-		@include flex-direction(column);
+		flex-direction: column;
 	}
 	.user.size3 {
 		.avatar-wrapper {
@@ -278,7 +285,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 			width: 100%;
 			text-align: center;
 		}
-		@include flex-direction(column);
+		flex-direction: column;
 	}
 	.user.size4 {
 		.avatar-wrapper {
@@ -290,7 +297,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 			width: 100%;
 			text-align: center;
 		}
-		@include flex-direction(column);
+		flex-direction: column;
 	}
 }
 
@@ -382,23 +389,27 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 #messages, .messages {
 	.message, .error, .access_request {
 		min-height: $message-min-height;
-		@include flexbox(row, stretch);
+		display: flex;
+	flex-direction: row;
+	align-items: stretch;
 		.user {
-			@include align-self(stretch);
-			@include flex(0 0 120px);
-			@include flexbox(row, center);
+			align-self: stretch;
+			flex: 0 0 120px;
+			display: flex;
+	flex-direction: row;
+	align-items: center;
 		}
 		.content {
 			margin: $message-content-margin;
 			line-height: $message-content-line-height;
-			@include flex-grow($message-content-flex-grow);
+			flex-grow: $message-content-flex-grow;
 			&.wide {
-				@include flex-grow($message-wide-content-flex-grow);
+				flex-grow: $message-wide-content-flex-grow;
 			}
 		}
 		.mdate {
-			@include align-self(flex-start);
-			@include flex(0 0 90px);
+			align-self: flex-start;
+			flex: 0 0 90px;
 			text-align: right;
 			font-size: 80%;
 			padding: 2px;
@@ -408,8 +419,10 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 
 .decorations {
 	z-index: 7;
-	@include flex(0 0 120px);
-	@include flexbox(row, center, flex-end);
+	flex: 0 0 120px;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
 	button {
 		text-align: center;
 		padding: 0 3px;
@@ -426,7 +439,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 	.decoration {
 		font-family: "fontello";
 		margin: 1px;
-		@include flex(0 0 15px);
+		flex: 0 0 15px;
 		cursor: default;
 		color: $decoration-color;
 		&.clickable {
@@ -626,7 +639,7 @@ code {
 #input-panel {
 	position: relative;
 	background: $input-panel-bg-color;
-	@include flex(0 0 ($input-height + 8px) );
+	flex: 0 0 ($input-height + 8px) ;
 	z-index: 10;
 }
 #autocompleter {
@@ -661,7 +674,9 @@ code {
 	background: $bg-color;
 	box-shadow: 0 -1px 1px black;
 	padding: 2px 0 0 5px;
-	@include flexbox(row, center);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 	overflow: hidden;
 	span.lang {
 		margin: 4px;
@@ -723,7 +738,7 @@ body.mobile #input-panel button {
 	background: $bg-color;
 	width:100%;
 	height: $input-height + 8px;
-	@include flex-grow(0);
+	flex-grow: 0;
 	display: none;
 }
 body.desktop #upload-panel {
@@ -743,7 +758,10 @@ body.mobile #upload-panel {
 	text-align: center;
 }
 #upload-wait {
-	@include flexbox(column, center, space-around);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
 }
 h1 {
 	color: $title-text-color;
@@ -1072,14 +1090,16 @@ body.mobile {
 
 
 .search-input-line {
-	@include flexbox(row, center);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 	padding: 4px;
 }
 #search-input {
-	@include flex(1 1);
+	flex: 1 1;
 }
 #search-options-open {
-	@include flex(0 0 20px);
+	flex: 0 0 20px;
 	font-family: "fontello";
 	text-align: center;
 	height: 20px;
@@ -1107,7 +1127,7 @@ body.mobile {
 		transition: height .2s;
 	}
 	.search-input-line {
-		@include flex(row center);
+		flex: row center;
 		label:first-of-type {
 			width: 48px;
 		}

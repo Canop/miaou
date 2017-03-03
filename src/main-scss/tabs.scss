@@ -2,7 +2,9 @@
 // styling the tabs of the /rooms, /prefs and similar pages.
 
 .home-tabs {
-	@include flexbox(row, stretch);
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
 	height: 30px;
 	.home-tab, .tab {
 		background: $home-tab-bg;

@@ -4,7 +4,7 @@ body.pad #rooms-page {
 }
 
 #rooms-page {
-	@include flex(1 1);
+	flex: 1 1;
 	max-width: 1205px;
 }
 
@@ -99,7 +99,9 @@ body.home.mobile .room-list {
 		}
 		.room-buttons {
 			height: 30px;
-			@include flexbox(row, center, space-around);
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
 		}
 	}
 }

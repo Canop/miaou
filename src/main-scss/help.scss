@@ -8,7 +8,7 @@
 }
 h1 {
 	text-align: center;
-	@include flex(0 0 20px);
+	flex: 0 0 20px;
 }
 #help-nav {
 	background: $help-nav-bg;
@@ -17,7 +17,8 @@ h1 {
 	left: 0;
 	bottom: 0;
 	width: 200px;
-	@include flexbox(column);
+	display: flex;
+	flex-direction: column;
 	color: $home-top-color;
 	h1, h2, h3 {
 		color: $home-top-color;
@@ -26,7 +27,7 @@ h1 {
 }
 #help-miaou-logo-wrapper {
 	display: block;
-	@include flex(0 0 110px);
+	flex: 0 0 110px;
 	.Miaou-logo {
 		margin: 15px;
 		cursor: pointer;
