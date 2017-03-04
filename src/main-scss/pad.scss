@@ -12,7 +12,8 @@
 	}
 }
 #stripe-top {
-	@include flexbox(row);
+	display: flex;
+	flex-direction: row;
 	min-height: 40px;
 }
 
@@ -111,7 +112,9 @@
 	opacity: 0.6;
 }
 #room-panel {
-	@include flexbox(row, center);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 	padding: 0 4px;
 	button {
 		opacity: 0;
@@ -124,7 +127,7 @@
 	z-index: 2;
 }
 #room-title {
-	@include flex(1 0);
+	flex: 1 0;
 	#roomname {
 		color: $roomname-color;
 		text-decoration: none;
@@ -134,7 +137,9 @@
 }
 
 #rooms-panel {
-	@include flexbox(row, stretch);
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
 	&.closed {
 		height: 0;
 		transition: height .5s;
@@ -145,19 +150,24 @@
 	}
 }
 #rooms {
-	@include flexbox(row, stretch);
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
 }
 #rooms-content {
-	@include flex(1 0);
+	flex: 1 0;
 }
 #rooms-content {
-	@include flexbox(column, stretch);
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
 	padding: 5px;
 }
 
 .pad .rooms-tabs {
-	@include flexbox(row);
-	@include flex(0 0 34px);
+	display: flex;
+	flex-direction: row;
+	flex: 0 0 34px;
 	.tab, .aftertabs {
 		line-height: 24px;
 		text-align: center;
@@ -185,8 +195,10 @@
 		}
 	}
 	.aftertabs {
-		@include flex(1 0);
-		@include flexbox(row, center, space-around);
+		flex: 1 0;
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
 	}
 }
 
@@ -226,7 +238,9 @@ body.desktop #rooms-page {
 	#room-controls {
 		height: 0;
 		overflow: hidden;
-		@include flexbox(row, stretch);
+		display: flex;
+	flex-direction: row;
+	align-items: stretch;
 		transition: height .2s .2s;
 	}
 	#room-description {
@@ -269,7 +283,7 @@ body.desktop #rooms-page {
 
 .room-control {
 	font-size: 95%;
-	@include flex(1);
+	flex: 1;
 	cursor: pointer;
 	text-align: center;
 	line-height: 30px;

@@ -1,6 +1,10 @@
 #watches {
-	@include flex(1 1);
-	@include flexbox(row, center, null, wrap);
+	flex: 1 1;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: null;
+      	flex-wrap: wrap;
 	padding: 2px;
 }
 .watch {
@@ -9,7 +13,8 @@
 	margin: 2px 4px;
 	font-size: 0.8em;
 	cursor: pointer;
-	@include flexbox(row);
+	display: flex;
+	flex-direction: row;
 	text-decoration: none;
 	color: inherit;
 	position: relative;
@@ -71,10 +76,13 @@
 	}
 	.watch-panel-top { // inside watch-panel
 		height: 25px;
-		@include flexbox(row, center, space-between);
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
 		margin-bottom: 5px;
 		span {
-			@include flex(1 0);
+			flex: 1 0;
 			text-align: center;
 			font-weight: bold;
 		}
@@ -93,7 +101,7 @@
 			opacity: 1;
 		}
 		.message.unseen {
-			background: $unseen-message-bg; 
+			background: $unseen-message-bg;
 		}
 	}
 }

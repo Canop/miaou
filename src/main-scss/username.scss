@@ -3,7 +3,7 @@ body.username {
 	color: $usename-page-color;
 	#user-miaou-logo-wrapper {
 		border-bottom: thin solid $usename-page-color;
-		padding-bottom: 15px;	
+		padding-bottom: 15px;
 		margin-bottom: 15px;
 		cursor: auto;
 	}
@@ -16,7 +16,10 @@ body.username {
 }
 
 #buttons {
-	@include flexbox(row, center, center);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 	border-top: thin solid $usename-page-color;
 	padding-top: 15px;
 }

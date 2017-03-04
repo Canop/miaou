@@ -15,7 +15,7 @@
 }
 
 #hist {
-	@include flex(0 0 $hist-width);
+	flex: 0 0 $hist-width;
 	background: $hist-bg;
 	display: none;
 	overflow-y: scroll;
@@ -70,4 +70,4 @@
 #hist.zoomed .month .day {
 	height: 10px;
 }
-	
+

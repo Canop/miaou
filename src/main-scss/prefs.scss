@@ -14,19 +14,21 @@ body.prefs {
 				white-space: nowrap;
 				text-overflow: ellipsis;
 				overflow: hidden;
-				padding: 4px;				
-			}		
+				padding: 4px;
+			}
 		}
 	}
 
 	#prefs-tabs {
-		@include flexbox(row, stretch);
+		display: flex;
+	flex-direction: row;
+	align-items: stretch;
 		height: 30px;
 		.tab {
 			background: $home-tab-bg;
 			text-align: center;
 			padding: 8px;
-			margin-right: 10px;	
+			margin-right: 10px;
 			z-index: 2;
 			cursor: pointer;
 			box-shadow: $home-mi-shadows;
@@ -55,14 +57,17 @@ body.prefs {
 					z-index: 6;
 					content: ' ';
 				}
-				
+
 			}
 		}
 	}
 
 	#prefs-main {
 		position: relative;
-		@include flexbox(row, center, center);
+		display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 		z-index: 3;
 		background: $home-tab-bg;
 		box-shadow: $home-main-shadows;
@@ -119,21 +124,29 @@ body.prefs {
 }
 
 #avatar-edit {
-	@include flexbox(row, stretch);
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
 }
 #avatar-fields {
 	flex: 1;
-	@include flexbox(column);
+	display: flex;
+	flex-direction: column;
 }
 .avatar-fields-row {
-	@include flexbox(row, center);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 	input, select, label, p {
 		margin: 8px 4px;
 	}
 }
 #avatar-preview {
-	@include flex(1 0 220px);
-	@include flexbox(row, center, center);
+	flex: 1 0 220px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 	height: 220px;
 	img {
 		max-height: 220px;
@@ -141,7 +154,7 @@ body.prefs {
 	}
 }
 body.mobile #avatar-preview {
-	@include flex(1 0 100px);
+	flex: 1 0 100px;
 	height: 100px;
 	img {
 		max-height: 100px;
