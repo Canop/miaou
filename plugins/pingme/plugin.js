@@ -270,7 +270,7 @@ function doCommandCancelAlarm(ct, num){
 		var removed = alarms.splice(num-1, 1);
 		if (!removed.length) {
 			return ct.reply(
-				"Alarm not found.\nUse `!!pingme list` to see alarms and their id"
+				"Alarm not found.\nUse `!!pingme list` to see alarms and their id", true
 			);
 		}
 		removed = removed[0];
@@ -278,7 +278,7 @@ function doCommandCancelAlarm(ct, num){
 		if (existingAlarm.timeout) {
 			existingAlarm.timeout.clear();
 		}
-		ct.reply("Alarm removed.\n" + alarmsListMarkdown(alarms));
+		ct.reply("Alarm removed.\n" + alarmsListMarkdown(alarms), true);
 		return this.execute(
 			"delete from pingme_alarm where message=$1",
 			[removed.message],

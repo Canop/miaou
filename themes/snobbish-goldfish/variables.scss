@@ -124,15 +124,14 @@ $user-def-color: rgba(255,255,255,.75);
 $profile-text-color: rgba(255,255,255,.9);
 $profile-bg: #111;
 .desktop {
-	.profile {
-		border-top: thin solid #972;
-		border-right: thin solid #972;
-		border-bottom: thin solid #972;
+	.profiled, .profile {
+		border: thin solid #972 !important;
+		box-shadow: none !important;
 	}
-	.profiled {
+	.profile-join {
+		background: #111;
 		border-top: thin solid #972;
 		border-bottom: thin solid #972;
-		border-left: thin solid #972;
 	}
 }
 $profile-box-shadow: none;

@@ -18,6 +18,22 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 		prof.hide();
 	}
 
+	function joinDivs($1, $2, cl){
+		$("."+cl).remove();
+		var	o1 = $1[0].getBoundingClientRect(),
+			o2 = $2[0].getBoundingClientRect(),
+			top = Math.max(o1.top, o2.top),
+			bottom = Math.min(o1.top+o1.height, o2.top+o2.height);
+		$('<div class="'+cl+'">').appendTo(document.body).css({
+			position: "fixed",
+			left: o2.left-1,
+			top: top,
+			width: 2,
+			height: bottom - top - 2, // -2: bad hack to account for borders
+			zIndex: 32
+		});
+	}
+
 	prof.shownow = function(){
 		if ($('.dialog').length) return;
 		var $user = $(this).closest('.user');
@@ -71,7 +87,9 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 				if ($p.offset().top-$(window).scrollTop()+$p.height()>wh) {
 					$p.css('bottom', '0').css('top', 'auto');
 				}
+				joinDivs($user, $p, "profile-join");
 			});
+			joinDivs($user, $p, "profile-join");
 			$(window).on('mousemove', prof.checkOverProfile);
 		}
 	}
@@ -84,7 +102,7 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 
 	prof.hide = function(){
 		clearTimeout(showTimer);
-		$('.profile, .profile-page').remove();
+		$('.profile, .profile-page, .profile-join').remove();
 		$('.profiled').removeClass('profiled');
 		$(window).off('mousemove', prof.checkOverProfile);
 	}
@@ -96,4 +114,6 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 	prof.toggle = function(){
 		prof[prof.displayed() ? 'hide' : 'show'].call(this);
 	}
+
+	$("#message-scroller").on("scroll", prof.hide);
 });
