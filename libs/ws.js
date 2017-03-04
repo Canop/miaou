@@ -615,7 +615,23 @@ function handleUserInRoom(socket, completeUser){
 		db.on()
 		.then(function(){
 			if (otherDialogRoomUser) {
-				return this.tryInsertWatch(shoe.room.id, otherDialogRoomUser.id);
+				return this.tryInsertWatch(shoe.room.id, otherDialogRoomUser.id)
+				.then(inserted=>{
+					if (inserted) {
+						exports.userSockets(otherDialogRoomUser.id).forEach(s=>{
+							s.emit('wat', [{
+								id: shoe.room.id,
+								name: shoe.room.name,
+								private: true,
+								dialog: true,
+								auth: 'own',
+								nbunseen: 1,
+								nbrequests: 0,
+								last_seen: inserted.last_seen
+							}]);
+						});
+					}
+				});
 			}
 		})
 		.then(function(){

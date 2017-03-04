@@ -543,19 +543,17 @@ proto.insertWatch = function(roomId, userId){
 	);
 }
 
-// inserts a watch if there's none. Return true if an insert was done
+// inserts a watch if there's none
 proto.tryInsertWatch = function(roomId, userId){
-	return this.execute(
+	return this.queryOptionalRow(
 		"insert into watch(room, player, last_seen) ("+
 		" select $1, $2, (select max(id) from message where room=$1)"+
 		" where not exists ( select * from watch where room=$1 and player=$2 )"+
-		")",
+		") returning *",
 		[roomId, userId],
 		"try_insert_watch",
 		true
-	).then(function(res){
-		return !!res.rowCount;
-	});
+	);
 }
 
 proto.updateWatch = function(roomId, userId, lastUnseen){
