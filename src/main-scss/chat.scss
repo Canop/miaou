@@ -928,7 +928,8 @@ div#notifs {
 
 .notification {
 	padding: 5px;
-	background-color: $notifications-bg-color;
+	background: $notifications-bg;
+	border: $notifications-border;
 	color: $notification-text-color;
 	.user {
 		font-style:italic;

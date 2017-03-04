@@ -145,7 +145,7 @@ $menu-item-hover-bg: rgba(9,30,90,.95);
 
 // tags
 $tag-color: #eee;
-$tag-background-color: #7882a3;
+$tag-background: linear-gradient(to bottom, #5367a9, #30448c);
 .tag-bubble pre.prettyprint {
 	color: #333;
 }

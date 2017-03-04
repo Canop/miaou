@@ -13,6 +13,8 @@ $title-text-color: #655 !default;
 $emphasis-text-color: #44d !default;
 $message-list-bg: white !default;
 $message-me-bg: rgba(240,234,214,0.5) !default;
+$notifications-bg: linear-gradient(to bottom, #fffa9e, #eacb75) !default;
+$notifications-border: thin solid #f3de7a !default;
 $notifications-bg-color: #fffa9e !default;
 $notification-text-color: black !default;
 
@@ -301,6 +303,7 @@ $bubble-color: #ccc !default;
 // tags
 $tag-color: #115586 !default;
 $tag-background-color: #afd3ef !default;
+$tag-background: linear-gradient(to bottom, #5367a9, #243a88) !default;
 $tag-bubble-background-color: #115586 !default;
 $tag-bubble-color: #afd3ef !default;
 

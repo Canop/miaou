@@ -14,7 +14,8 @@ $general-text-color: black;
 $title-text-color: black;
 $message-list-bg: white;
 $message-me-bg: #f7f7f7;
-$notifications-bg-color: #eee;
+$notifications-bg: #eee;
+$notifications-border: none;
 $notification-text-color: black;
 
 $ping-bg: rgba(100,100,100,.1);
@@ -185,7 +186,7 @@ $bubble-color: #eee;
 
 // tags
 $tag-color: #222;
-$tag-background-color: rgba(187, 187, 187, .3);
+$tag-background: rgba(187, 187, 187, .3);
 $tag-bubble-background-color: #889;
 $tag-bubble-color: #eee;
 .tag-bubble pre.prettyprint {

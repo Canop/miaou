@@ -170,7 +170,7 @@ $button-hover-border-color: #888;
 
 // tags
 $tag-color: $general-text-color;
-$tag-background-color: #1b2f2f;
+$tag-background: linear-gradient(to bottom, #2b5f5f, #1a4040);
 $tag-bubble-background-color: #2c3838;
 $tag-bubble-color: #ddd;
 .tag-bubble pre.prettyprint {

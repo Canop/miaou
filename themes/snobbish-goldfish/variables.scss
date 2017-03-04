@@ -116,7 +116,7 @@ $input-text-color: #bbb;
 $input-border-color: #333;
 
 // table
-$message-content-table-border-color: #555;
+$message-content-table-border-color: #444;
 
 // profile
 $user-profile-title-color: rgba(255,255,255,.9);
@@ -214,7 +214,7 @@ $menu-item-hover-bg: #333;
 
 // tags
 $tag-color: #999;
-$tag-background-color: #444;
+$tag-background: linear-gradient(to bottom, #444, #211901);
 $tag-bubble-background-color: #222;
 $tag-bubble-color: #fb0;
 .tag-bubble pre.prettyprint {

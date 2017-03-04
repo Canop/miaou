@@ -13,6 +13,7 @@ $general-text-color: #bbb;
 $title-text-color: #bbb;
 $emphasis-text-color: $accent-plus;
 $hovered-message-content-bg: black;
+$message-content-table-border-color: #333;
 
 $ping-me-bg: #44153B;
 
@@ -32,7 +33,6 @@ $square-description-color: #aaa;
 $square-room-hover-bg: rgba(50,30,50, .4);
 $square-room-last-created-color: #eee;
 $square-room-last-created-text-shadow: 0 0 2px black;
-
 
 $input-border-color: #222;
 $chat-tabs-border-color: $accent-minus;
@@ -71,10 +71,11 @@ $message-me-user-color: $accent-minus;
 
 $user-text-color-in-message: inherit; // gives to the username the color of the user
 $code-text-color: #888;
-$user-color-shadow-in-messages: none;
-$user-color-shadow-in-messages: inset 1px 0 1px;
-$hovered-user-color-shadow-in-messages: inset 1px 0 1px;
-//~ $hovered-user-color-shadow-in-messages: inset 35px 0 70px;
+//$user-color-shadow-in-messages: none;
+//$user-color-shadow-in-messages: inset 1px 0 1px;
+//$user-color-shadow-in-messages: inset 35px 0 70px;
+//$hovered-user-color-shadow-in-messages: inset 1px 0 1px;
+//$hovered-user-color-shadow-in-messages: inset 35px 0 70px;
 
 
 $citation-border-color: #666;
@@ -155,7 +156,7 @@ $right-panel-width: 450px;
 
 // tags
 $tag-color: #ddd;
-$tag-background-color: rgba(255,0,100,.2);
+$tag-background: rgba(255,0,100,.2);
 $tag-bubble-background-color: #502233;
 $tag-bubble-color: #ddd;
 .tag-bubble pre.prettyprint {
