@@ -21,6 +21,12 @@ $user-text-color-in-user-list: $bear-green;
 $ping-bg: rgba(99, 91, 73, 0.53);
 $ping-me-bg: #635B49;
 
+// opener & closer backgrounds
+$opener-bg: rgba( $bg-color , 0.22);
+$opener-hover-bg: rgba(255,255,255,0.3);
+$closer-bg: rgba( $bg-color , 0.18);
+$closer-hover-bg: rgba(255,255,255,0.3);
+
 // home
 $home-top-color: $general-text-color;
 $home-hover-link-color: $title-text-color;
