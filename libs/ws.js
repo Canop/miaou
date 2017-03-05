@@ -525,23 +525,29 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	});
 
-	on('grant_access', function(userId, done){
+	on('grant_access', function(grant, done){ // grant: {user:{id,name}, pingId, pingContent}
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		db.on(userId)
+		db.on(grant.user.id)
 		.then(db.getUserById)
 		.then(function(user){
-			if (!user) throw 'User "'+userId+'" not found';
+			if (!user) throw 'User "'+grant.userId+'" not found';
 			return [user, this.getAuthLevel(shoe.room.id, user.id)]
 		})
 		.spread(function(user, authLevel){
 			if (authLevel) throw "you can't grant access to this user, he has already access to the room";
-			let text = "*"+user.name+"* has been granted access by *"+shoe.publicUser.name+"*";
+			let text = "@"+user.name+" has been granted access by @"+shoe.publicUser.name;
 			shoe.emitBotFlakeToRoom(bot, text, shoe.room.id);
 			return this.changeRights([
 				{cmd:"insert_auth", user:user.id, auth:"write"}, {cmd:"delete_ar", user:user.id}
 			], shoe.publicUser.id, shoe.room);
 		}).then(function(){
-			exports.emitAccessRequestAnswer(shoe.room.id, userId, true);
+			exports.emitAccessRequestAnswer(shoe.room.id, grant.user.id, true);
+			if (grant.pingId) {
+				exports.pingUser.call(
+					this, shoe.room,
+					grant.user.name, grant.pingId, shoe.publicUser.name, grant.pingContent
+				);
+			}
 			done();
 		}).catch(function(e){
 			shoe.error(e);

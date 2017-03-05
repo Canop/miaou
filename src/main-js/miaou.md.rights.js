@@ -22,13 +22,16 @@ miaou(function(md, gui, locals, notif, usr, watch, ws){
 			}
 			var $p = $('<div>').html(h);
 			$c.append($p).dat('user', ar.user);
+			$('<button>').text('Check profile').click(function(){
+				window.open("user/"+ar.user.name);
+			}).appendTo($p);
 			if (usr.checkAuth('admin')) {
 				$('<button>').text('Manage Users').click(function(){
 					location = 'auths?id='+locals.room.id;
 					close();
 				}).appendTo($p);
 				$('<button>').text('Grant Access').click(function(){
-					ws.emit('grant_access', ar.user.id);
+					ws.emit('grant_access', {user:ar.user});
 					close();
 				}).appendTo($p);
 				notif.touch();
@@ -44,14 +47,16 @@ miaou(function(md, gui, locals, notif, usr, watch, ws){
 	}
 
 	// if this is called, me is supposed to be an admin of the room
-	md.showGrantAccessDialog = function(user){
+	md.showGrantAccessDialog = function(grant){ // grant: {user:{id,name}, pingId, pingContent}
 		md.notificationMessage(function($c, close){
-			var h = "Please confirm you want to invite <span class=user>"+user.name+"</span>";
-			h += " (you may check his profile by hovering his name).";
+			var h = "Please confirm you want to invite <span class=user>"+grant.user.name+"</span>";
 			var $p = $('<div>').html(h);
-			$c.append($p).dat('user', user);
+			$c.append($p).dat('user', grant.user);
+			$('<button>').text('Check profile').click(function(){
+				window.open("user/"+grant.user.name);
+			}).appendTo($p);
 			$('<button>').text('Grant Access').click(function(){
-				ws.emit('grant_access', user.id);
+				ws.emit('grant_access', grant);
 				close();
 			}).appendTo($p);
 		});
