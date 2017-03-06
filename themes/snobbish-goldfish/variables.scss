@@ -177,6 +177,19 @@ $watch-count-ping-bg: rgba(255,0,0,.6);
 $open-watch-bg: #111;
 $watch-has-requests-color: inherit;
 $watch-requests-color: #CAC5C5;
+.desktop .watch {
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+}
+.desktop .watch.open {
+	border-image: linear-gradient(to bottom, #fb0, black) 1 20%;
+}
+.desktop .watch-panel {
+	border-style: solid;
+	border-width: 1px;
+	border-image: linear-gradient(to top, #fb0, black) 1 20%;
+}
 
 // history
 $hist-bg: $left-background;
