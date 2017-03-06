@@ -15,8 +15,9 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 
 	function updateDimensions(){
 		if (gui.mobile) return;
-		$('.watch .name').toggleClass('compact', $('#stripe-top').height()>60);
-		$('#left, #right, #center').css('top', $('#stripe-top').height());
+		var stripeHeight = document.getElementById('stripe').offsetHeight;
+		$('.watch .name').toggleClass('compact', stripeHeight>60);
+		$('#left, #right, #center').css('top', stripeHeight);
 	}
 
 	if ($('#non-top').length) $(window).resize(updateDimensions);
