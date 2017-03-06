@@ -1,4 +1,8 @@
 
+// variables for color generation
+$user-min-color: #555;
+$user-max-color: #ffffff;
+
 $accent: purple;
 $accent-plus: rgb(255, 0, 255);
 $accent-minus: rgb(189, 51, 164);
@@ -39,7 +43,7 @@ $chat-tabs-border-color: $accent-minus;
 
 $message-content-border-color: #333;
 $content-border-bottom-before-disrupt: none;
-$content-border-top-after-disrupt: thin solid #222;
+$content-border-top-after-disrupt: none;
 
 $decoration-color: $accent-minus;
 $decoration-clickable-color: $accent;
@@ -132,9 +136,9 @@ $profile-avatar-filter: drop-shadow(0 0 2px);
 
 // message sizing
 $message-min-height: 34px;
-$message-content-padding: 6px 10px;
-$message-content-border-radius: 5px;
-$message-content-margin: 4px;
+$message-content-padding: 3px 5px;
+$message-content-border-radius: 0;
+$message-content-margin: 2px;
 
 // room controls
 $room-control-bg: $accent;
@@ -201,8 +205,8 @@ $menu-item-hover-bg: $accent-minus;
 $roomname-text-shadow: 0 0 2px black;
 $watch-bg: $profile-bg;
 $watch-panel-bg: $profile-bg;
-$watch-count-new-bg: rgba(255,255,0,.4);
-$watch-count-ping-bg: rgba(255,0,0,.2);
+$watch-count-new-bg: rgba(255,255,0,.7);
+$watch-count-ping-bg: rgba(255,0,0,.9);
 $pad-room-desc-bg: rgba(0,0,0,.1);
 $pad-room-hover-bg: black;
 $pad-room-last-message-bg: $pad-room-hover-bg;

@@ -2,6 +2,10 @@
 //  with a variables.scss file and copy from here
 //  the variables you want to override.
 
+// variables for color generation
+$user-min-color: #000000 !default;
+$user-max-color: #ffffff !default;
+
 // chat colors
 $bg-color: #F0EAD6 !default;
 $left-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) ) !default;

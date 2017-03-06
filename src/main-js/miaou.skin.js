@@ -31,7 +31,18 @@ miaou(function(skin){
 		reply: skin.getCssValue(/^\.wzin-reply$/, "background-color"),
 		link:  skin.getCssValue(/^\.wzin-link$/, "background-color")
 	}
-	
+
+	skin.getColourRange = function(selector){
+		return ["background-", ""].map(function(k){
+			var c = skin.getCssValue(selector, k + "color"); // received as rgb(x,x,x)
+			return c.match(/[\d]+/g).map(function(v){
+				return parseInt(v, 10);
+			});
+		});
+	}
+
+	skin.foregroundColourRange = skin.getColourRange(/^\.generated-color$/);
+
 	skin.stringToColour = function(str){
 		if (!str) return "#888";
 		var	i,
@@ -42,6 +53,9 @@ miaou(function(skin){
 		var colour = '#';
 		for (i=0; i<3; i++) {
 			var value = (hash >> (i * 8)) & 0xFF;
+			var	min = skin.foregroundColourRange[0][i],
+				max = skin.foregroundColourRange[1][i];
+			value = min + (max-min)*value/255|0;
 			colour += ('00' + value.toString(16)).substr(-2);
 		}
 		return colour;

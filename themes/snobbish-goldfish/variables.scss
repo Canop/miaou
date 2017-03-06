@@ -1,4 +1,7 @@
 
+// variables for color generation
+$user-min-color: #333;
+$user-max-color: #ffffff;
 
 $bg-color: #1a1a1a;
 $left-background: #111;
@@ -12,6 +15,8 @@ $emphasis-text-color: #fb0;
 $message-list-bg: linear-gradient(#444, #111);
 $ping-bg: rgb(27, 27, 27);
 $ping-me-bg: rgb(68, 51, 0);
+
+$content-border-top-after-disrupt: thin dashed #483b0e;
 
 // room controls
 $room-control-bg: none;
@@ -98,6 +103,9 @@ $code-text-color: #888;
 $goingto-bg: #000;
 $slashme-color: #777;
 $unseen-message-bg: rgba(255,255,0,0.2);
+$opener-closer-color: rgba(255,200,0,0.5);
+$opener-hover-bg: rgba(255,200,0,0.3);
+$closer-hover-bg: rgba(255,200,0,0.3);
 
 // message menu
 $message-menu-bg: #444;
@@ -215,6 +223,11 @@ $side-message-border-bottom: thin solid rgba(0,0,0,0.1);
 $side-message-even-background: rgba(0,0,0,0.03);
 $side-message-hover-bg: rgba(9,30,90,.2);
 $side-message-selected-bg: rgba(9,30,90,.4);
+
+// reply box
+$reply-box-bg: #333;
+$reply-box-hover-bg: black;
+$reply-box-color: #aaa;
 
 // wzins
 $wzin-conv-bg: ( rgba(139, 69, 19, .4), rgba(42, 18, 234, .4), rgba(180, 237, 228, .7), rgba(192, 169, 244, .7) );
