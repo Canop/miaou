@@ -124,6 +124,9 @@ $user-def-color: rgba(255,255,255,.75);
 $profile-text-color: rgba(255,255,255,.9);
 $profile-bg: #111;
 .desktop {
+	#users .user {
+		box-sizing: border-box; // so that the profiled border doesn't move elements
+	}
 	.profiled, .profile {
 		border: thin solid #972 !important;
 		box-shadow: none !important;
