@@ -1,4 +1,10 @@
 
+body.desktop {
+	font-size: 13px;
+	font-family: monospace;
+	letter-spacing: -.02em;
+}
+
 // variables for color generation
 $user-min-color: #555;
 $user-max-color: #ffffff;
@@ -13,8 +19,8 @@ $bg-color: black;
 $left-background: black;
 $right-background: black;
 $box-background: rgba(255, 255, 255, 0.8);
-$general-text-color: #bbb;
-$title-text-color: #bbb;
+$general-text-color: #aaa;
+$title-text-color: #aaa;
 $emphasis-text-color: $accent-plus;
 $hovered-message-content-bg: black;
 $message-content-table-border-color: #333;
@@ -67,7 +73,7 @@ $center-shadow: none;
 $message-list-bg: black;
 $message-me-bg: transparent;
 
-$connected-user-text-color-in-user-list: #bbb;
+$connected-user-text-color-in-user-list: #aaa;
 $connected-user-bg-color-in-user-list: rgba(0,0,0,0.4);
 
 $user-text-color-in-user-list: #666;
@@ -88,7 +94,7 @@ $h4-underline-color: #666;
 $h5-underline-color: #666;
 
 $input-bg: #0a0a0a;
-$input-text-color: #bbb;
+$input-text-color: #aaa;
 $message-normal-border-top: none;
 $message-normal-border-bottom: none;
 $message-decoration-button-box-shadow: none;
@@ -135,10 +141,10 @@ $profile-text-color: #ccc;
 $profile-avatar-filter: drop-shadow(0 0 2px);
 
 // message sizing
-$message-min-height: 34px;
-$message-content-padding: 3px 5px;
+$message-min-height: 24px;
+$message-content-padding: 1px 1px;
 $message-content-border-radius: 0;
-$message-content-margin: 2px;
+$message-content-margin: 1px;
 
 // room controls
 $room-control-bg: $accent;
@@ -148,7 +154,7 @@ $room-hover-control-color: rgba(255,255,255,.9);
 
 // buttons
 $button-bg-color: $accent;
-$button-text-color: #bbb;
+$button-text-color: #aaa;
 $button-box-shadow: none;
 $button-border: none;
 $button-hover-text-color: white;
@@ -190,7 +196,7 @@ $tag-bubble-color: #ddd;
 // dialog
 
 $dialog-bg: #1a1a1a;
-$dialog-color: #bbb;
+$dialog-color: #aaa;
 $dialog-title-bg: #333;
 
 $mwin-bg: rgba(30,30,30,0.7);
@@ -198,7 +204,7 @@ $mwin-content-bg: #111;
 $mwin-shadow: none;
 
 // wzins
-$wzin-conv-bg : ( rgba(176,224,230,0.35), rgba(255,255,102,0.3), rgba(188,143,143,0.3), rgba(255,235,215,0.3) );
+$wzin-conv-bg : ( rgba(176,224,230,0.25), rgba(255,255,102,0.2), rgba(188,143,143,0.2), rgba(255,235,215,0.2) );
 
 // pad
 $menu-item-hover-bg: $accent-minus;
@@ -214,7 +220,20 @@ $pad-room-last-message-border-top: solid thin PaleVioletRed;
 $watch-has-requests-box-shadow: 0 0 10px $accent;
 $watch-has-requests-color: red;
 $watch-requests-color: $accent-plus;
-$unseen-message-bg: rgba(255, 187, 0, 0.25);
+$unseen-message-bg: rgba(255, 187, 0, 0.15);
 
 // miaou logo
 $miaou-logo-color: $accent;
+
+#messages .user-messages .user {
+	justify-content: flex-end;
+	&.size2, &.size3, &.size4 {
+		justify-content: flex-start;
+	}
+	.avatar-wrapper {
+		display: none;
+	}
+	&>span {
+		text-align: right;
+	}
+}
