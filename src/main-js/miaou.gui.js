@@ -156,6 +156,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$('#messages')
 			.on('mouseenter', '.message', wz.onmouseenter)
 			.on('mouseleave', '.message', wz.onmouseleave)
+			.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
+			.on('mouseleave', '.replyButton,.deleteButton,.editButton', prof.shownow);
 			$('#messages, #notifications')
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
 			.on('mouseleave', md.hideMessageHoverInfos)
@@ -167,9 +169,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$('#users')
 			.on('mouseenter', '.user', usr.showUserHoverButtons)
 			.on('mouseleave', '.user', usr.hideUserHoverButtons)
-			.on('mouseenter', '.user', prof.show)
-			.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
-			.on('mouseleave', '.replyButton,.deleteButton,.editButton', prof.shownow);
+			.on('mouseenter', '.user', prof.show);
 			// When the window is resized, all the messages have to be resized too.
 			$(window).on('resize', md.resizeAll);
 		}
