@@ -1,7 +1,7 @@
 
 # Theming in Miaou
 
-For now, themes only apply to the chat rooms and only the desktop version. The reason is nobody probably wants to do all the tests you need to do in order to buid a global theme applying to all parts.
+For now, themes don't apply to the mobile version of Miaou. The reason is nobody probably wants to do all the tests you need to do in order to buid a global theme applying to all parts.
 
 ## How to create a theme
 
