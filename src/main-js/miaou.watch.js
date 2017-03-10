@@ -46,12 +46,13 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 			var href = ''+w.id; // TODO add the room name
 			var $w = $('<a>').addClass('watch').attr('rid', w.id)
 			.dat('watch', w)
-			.append($('<span>').addClass('count').text(w.nbunseen||''))
 			.append($name)
 			.attr('href', href)
 			.appendTo('#watches');
+			var $c = $('<span>').addClass('count').text(w.nbunseen||'').prependTo($w);
 			if (w.nbunseen) $w.addClass('has-unseen');
 			if (w.nbrequests && (w.auth==="admin"||w.auth==="own")) $w.addClass('has-requests');
+			if (notif.hasPing(w.id)) $c.addClass('ping');
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a, b){
 			var wa = $(a).dat('watch'), wb = $(b).dat('watch');
