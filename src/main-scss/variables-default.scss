@@ -247,6 +247,8 @@ $wzin-link-bg: rgba(222, 1, 80, .25) !default;
 // pad (non mobile chat)
 $roomname-color: inherit !default;
 $pad-background: $left-background !default;
+$closed-stripe-shadow: 0 0 2px black !default;
+$open-stripe-shadow: 0 0 12px black !default;
 $menu-item-color: inherit !default;
 $menu-background: $left-background !default;
 $menu-item-hover-bg: rgba(255,255,255,.7) !default;

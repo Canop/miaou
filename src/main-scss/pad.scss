@@ -5,10 +5,10 @@
 	top: 0;
 	right: 0;
 	z-index: 50;
-	box-shadow: 0 0 2px black;
+	box-shadow: $closed-stripe-shadow;
 	background: $pad-background;
 	&.open {
-		box-shadow: 0 0 12px black;
+		box-shadow: $open-stripe-shadow;
 	}
 }
 #stripe-top {

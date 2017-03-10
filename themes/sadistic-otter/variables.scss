@@ -207,6 +207,8 @@ $mwin-shadow: none;
 $wzin-conv-bg : ( rgba(176,224,230,0.25), rgba(255,255,102,0.2), rgba(188,143,143,0.2), rgba(255,235,215,0.2) );
 
 // pad
+$closed-stripe-shadow: 0 0 5px $accent-minus;
+$open-stripe-shadow: 0 0 300px $accent-minus;
 $menu-item-hover-bg: $accent-minus;
 $roomname-text-shadow: 0 0 2px black;
 $watch-bg: $profile-bg;
