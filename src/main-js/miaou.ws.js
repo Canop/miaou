@@ -110,7 +110,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			}));
 			$('#room-panel-bg, #room-area')
 			.toggleClass("has-background-image", !!locals.room.img)
-			.css('background-image', 'url("'+locals.room.img+'")');
+			.css('background-image', locals.room.img ? 'url("'+locals.room.img+'")' : 'none');
 		})
 		.on('box', md.box)
 		.on('notables', function(notableMessages){
