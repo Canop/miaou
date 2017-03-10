@@ -16,9 +16,9 @@ For now, themes don't apply to the mobile version of Miaou. The reason is nobody
 
 A theme may only set SCSS variables. No direct CSS rule is allowed. Except when it is.
 
-Of course `!important` is totally too.
+Of course `!important` is forbidden.
 
 When something doesn't seem possible or convenient enough because there's no suitable variable, the common style and variables list may be changed by the core developpers.
 
-These limitations will make it possible to have Miaou still evolving and being maintained.
+These limitations make it possible to have Miaou still evolving and being maintained.
 
