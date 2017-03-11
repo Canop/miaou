@@ -323,7 +323,7 @@ function programPing(alarm){
 		ws.botMessage(bot, alarm.room, "@"+alarm.username+"#"+alarm.message+" "+text, function(m){
 			return ws.pingUser.call(
 				this,
-				{id:alarm.room, name:"room "+alarm.room},
+				alarm.room,
 				alarm.username,
 				m.id,
 				"!!pingme",
