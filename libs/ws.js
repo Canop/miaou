@@ -205,16 +205,24 @@ exports.botMessage = function(bot, roomId, content, cb){
 // this simplified ping function isn't used for normal messages but for bots
 // context of the call must be a connected db
 exports.pingUser = function(room, username, mid, authorname, content){
-	for (var clientId in io.sockets.connected) {
-		var socket = io.sockets.connected[clientId];
-		if (socket && socket.publicUser && socket.publicUser.name===username) {
-			socket.emit('pings', [{
-				r:room.id, rname:room.name, mid,
-				authorname, content
-			}]);
-		}
+	var promise;
+	if (typeof room === "number") {
+		promise = this.fetchRoom(room);
+	} else {
+		promise = Promise.resolve(room);
 	}
-	return this.storePings(room.id, [username], mid);
+	return promise.then(function(room){
+		for (var clientId in io.sockets.connected) {
+			var socket = io.sockets.connected[clientId];
+			if (socket && socket.publicUser && socket.publicUser.name===username) {
+				socket.emit('pings', [{
+					r:room.id, rname:room.name, mid,
+					authorname, content
+				}]);
+			}
+		}
+		return this.storePings(room.id, [username], mid);
+	})
 }
 
 // builds an unpersonnalized message. This avoids requerying the DB for the user
