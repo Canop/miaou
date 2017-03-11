@@ -145,6 +145,20 @@ exports.accept = function(mid, accepter){
 	}).finally(db.off);
 }
 
+// must be called with context a connected db
+function pingOpponents(move, game, message){
+	var	player = game.players[move.p],
+		opponents = game.players.filter((_, i) => i!==move.p);
+	console.log('opponents:', opponents);
+	opponents.forEach(opponent=>{
+		ws.pingUser.call(
+			this,
+			message.room, opponent.name, message.id, player.name,
+			player.name + " made a move"
+		);
+	});
+}
+
 // todo: for a greater security we should pass a checked playerId
 exports.move = function(mid, encodedMove){
 	dbGetGame(mid).spread(function(m, game){
@@ -157,7 +171,9 @@ exports.move = function(mid, encodedMove){
 			ws.emitToRoom(m.room, 'ludo.move', {mid:m.id, move:move});
 			m.changed = Date.now()/1000|0;
 			rooms.updateMessage(m);
-			return this.storeMessage(m, true);
+			return this.storeMessage(m, true).then(function(m){
+				return pingOpponents.call(this, move, game, m);
+			});
 		} else {
 			console.log('ludo : illegal move', move);
 		}
