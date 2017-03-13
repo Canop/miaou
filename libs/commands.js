@@ -81,7 +81,7 @@ var getHelpText = exports.getHelpText = function(room, cmdname){
 		var cmd = commands[cmdname];
 		if (!cmd) return "Command `"+cmdname+"` not found";
 		if (cmd.filter!==undefined && !cmd.filter(room)) return "Command `"+cmdname+"` not available in this room";
-		var h = '`!!' + cmd.name + '` : ' + cmd.help;
+		var h = '`!!' + cmd.name + '` : ' + (cmd.help||"*secret command*");
 		if (cmd.detailedHelp) h += '\n'+cmd.detailedHelp;
 		return h;
 	} else {
