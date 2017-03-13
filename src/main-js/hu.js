@@ -5,7 +5,7 @@
 
 	"use strict";
 
-	var nn = 1, // counter for dynamically generated def id
+	var	nn = 1, // counter for dynamically generated def id
 		U = function(n){ this.n = n },
 		fn = U.prototype,
 		nopx = { // css properties which don't need a unit
@@ -132,12 +132,16 @@
 		return this;
 	}
 
+	// attr namespace:name value
 	// attr name value
-	fn.attrnv = function(name, value){
-		name = rcc(name);
-		if (value === undefined) return this.n.getAttributeNS(null, name);
+	fn.attrnv = function(nsn, value){
+		var	match = nsn.match(/(?:([^:]+):)?(.+)/),
+			namespace = match[1]||null,
+			name = rcc(match[2]);
+		if (namespace==="xlink") namespace = "http://www.w3.org/1999/xlink";
+		if (value === undefined) return this.n.getAttributeNS(namespace, name);
 		if (value instanceof U) value = "url(#"+value.n.id+")";
-		this.n.setAttributeNS(null, name, value);
+		this.n.setAttributeNS(namespace, name, value);
 		return this;
 	}
 
