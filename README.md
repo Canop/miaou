@@ -2,7 +2,7 @@
 
 A chat server with authentication, persistent and searchable history, rich markdown formatting, video, private rooms, conversation highlighting, plugins, persisted notifications, code and table rendering, specialized link boxing, github hooks, bots, and many other features.
 
-![screenshot](https://i.imgur.com/75O8963.png)
+![screenshot](https://i.imgur.com/gqHo9Mu.png)
 
 [![Build Status](https://travis-ci.org/Canop/miaou.svg?branch=master)](https://travis-ci.org/Canop/miaou)
 [![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-en.svg?v=1)](https://dystroy.org/miaou/1?Miaou)
@@ -10,9 +10,9 @@ A chat server with authentication, persistent and searchable history, rich markd
 
 **[Introduction/Gallery](http://dystroy.org/miaou/static/intro.html)**
 
-You can see it in action or use it on http://dystroy.org/miaou (anybody can create a room for public or private use on this server).
+You can see it in action or use it on https://dystroy.org/miaou (anybody can create a room for public or private use on this server).
 
-To discuss the code and feature of Miaou, please come to [the dedicated room](http://dystroy.org/miaou/1?Miaou).
+To discuss the code and feature of Miaou, please come to [the dedicated room](https://dystroy.org/miaou/1?Miaou).
 
 # Installing a server
 
@@ -26,7 +26,7 @@ And if you run your own server, please tell us.
 
 # Contributing
 
-As described in [the help](http://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Jade, Passport.js, hu.js, jQuery, sass/scss, Uglify-js, gulp, travis-ci, and nginx.
+As described in [the help](https://dystroy.org/miaou/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Jade, Passport.js, hu.js, jQuery, sass/scss, Uglify-js, gulp, travis-ci, and nginx.
 
 Many features are implemented as plugins, and that's where you should look first: [Plugin developpement](plugins/README.md).
 
@@ -41,4 +41,4 @@ Help is welcome but remember:
 
 Most of Miaou follows the [MIT License](http://opensource.org/licenses/MIT). Exceptions are specified [here](license.md).
 
-Copyright (c) 2014 Denys Séguret <[http://dystroy.org/](http://dystroy.org/)>
+Copyright (c) 2014 Denys Séguret <[https://dystroy.org/](https://dystroy.org/)>
