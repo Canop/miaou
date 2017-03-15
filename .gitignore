@@ -23,7 +23,9 @@ plugins/miaou.bot
 plugins/mountyhall
 plugins/fireworks
 plugins/snow
-plugins/miaou.static-user-list/
+plugins/miaou.static-user-list
+plugins/local-dev
+plugins/ufo
 
 # edition byproducts
 *.swp
