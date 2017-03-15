@@ -82,7 +82,10 @@
 		}
 		$b.css(css).addClass(side+'-bubble');
 		if (options.text) $c.text(options.text);
-		if (options.blower) options.blower.call(this, $c);
+		if (options.blower) {
+			var r = options.blower.call(this, $c);
+			if (r == false) $b.remove();
+		}
 		return this;
 	}
 
@@ -92,6 +95,7 @@
 	// Options:
 	//   side (optional): where the bubble should open
 	//   blower: function called on the element with bubble content element as argument
+	//		(may return false to prevent the bubble)
 	$.fn.bubbleOn = function(selector, options){
 		if (!options) {
 			options = selector;

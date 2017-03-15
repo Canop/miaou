@@ -134,6 +134,7 @@ miaou(function(tagger, fish, fmt, locals){
 	}
 
 	tagger.blower = function($c){
+		if (this.closest(".prettyprint").length) return false; // it's a prettyprint .tag...
 		$c.text("loading...");
 		$.get("json/tag?name="+encodeURIComponent(this.text()), function(data){
 			if (!data.tag) {
