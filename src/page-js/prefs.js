@@ -1,5 +1,5 @@
 
-miaou(function(locals){
+miaou(function(locals, usr){
 
 	var	valid = locals.valid,
 		langs = locals.langs,
@@ -69,14 +69,33 @@ miaou(function(locals){
 		}
 	});
 
+	$("#avatar-fields").on("click", "#gravatar-compute-hash", function(){
+		var email = $("#gravatar-email").val().trim();
+		if (!email) {
+			alert("you must give an email");
+		} else {
+			$.get('json/stringToMd5?input='+encodeURIComponent(email), function(data){
+				$("#avatar-key").val(data.md5);
+			});
+		}
+		return false;
+	});
+
 	// Avatar preferences management
 	var avatarSources = {
 		gravatar:{
-			keyLabel: 'hash or email',
+			keyLabel: 'hash',
 			description: 'Gravatar is a free service'+
-				' providing avatars globally identified by your email. You can upload your portrait'+
-				' at <a href=https://gravatar.com target=gravatar>gravatar.com</a>.',
-			key: locals.email
+				' providing avatars. You can upload your portrait'+
+				' at <a href=https://gravatar.com target=gravatar>gravatar.com</a>.'+
+				'<br>Gravatar hash is computed from your email.'+
+				'If you don\'t know your hash, Miaou can compute it for you:',
+			postCode: function($con){
+				$("<div>").text("email:").appendTo($con).append(
+					$("<input id=gravatar-email>").val(locals.email),
+					$("<button id=gravatar-compute-hash>").text("compute")
+				);
+			}
 		},
 		twitter:{
 			keyLabel: 'Twitter&nbsp;id'
@@ -95,14 +114,16 @@ miaou(function(locals){
 	}
 
 	function avatarTry(){
-		var srcname = $('#avatar-src').val(),
+		var	srcname = $('#avatar-src').val(),
 			src = avatarSources[srcname],
-			key = src.key || $('#avatar-key').val().trim();
+			key = $('#avatar-key').val().trim() || src.key ;
 		if (key.length<1) {
 			$('#avatar-preview').empty();
 			return;
 		}
-		var url = src.keyLabel ? "https://avatars.io/"+srcname+"/"+key+'?size=large' : key;
+		var url = usr.avatarsrc({
+			avs: srcname, avk: key
+		});
 		console.log("Try", url);
 		$('#avatar-preview').empty();
 		$('<img>').on('load', function(){
@@ -113,6 +134,7 @@ miaou(function(locals){
 			$('#avatar-preview').html('<p>Image not found</p>');
 		}).attr('src', url).appendTo('#avatar-preview').hide();
 	}
+
 	function onchangeAvatarSrc(){
 		$('#avatar-preview').empty();
 		var src = avatarSources[$('#avatar-src').val()];
@@ -125,6 +147,9 @@ miaou(function(locals){
 				$('#avatar-key').val('').hide();
 			}
 			$('#avatar-src-description').html(src.description||'');
+			if (src.postCode) {
+				src.postCode($("<div>").appendTo($('#avatar-src-description')));
+			}
 		} else {
 			$('#avatar-key-label').html('');
 			$('#avatar-src-description').html('');
@@ -143,6 +168,9 @@ miaou(function(locals){
 			src.key = locals.avatarkey;
 			$('#avatar-key-label').html(src.keyLabel+':');
 			$('#avatar-src-description').html(src.description||'');
+			if (src.postCode) {
+				src.postCode($("<div>").appendTo($('#avatar-src-description')));
+			}
 		} else {
 			$('#avatar-key').val('').hide();
 		}

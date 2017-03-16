@@ -21,8 +21,8 @@ body.prefs {
 
 	#prefs-tabs {
 		display: flex;
-	flex-direction: row;
-	align-items: stretch;
+		flex-direction: row;
+		align-items: stretch;
 		height: 30px;
 		.tab {
 			background: $home-tab-bg;
@@ -65,9 +65,9 @@ body.prefs {
 	#prefs-main {
 		position: relative;
 		display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
 		z-index: 3;
 		background: $home-tab-bg;
 		box-shadow: $home-main-shadows;
@@ -129,7 +129,7 @@ body.prefs {
 	align-items: stretch;
 }
 #avatar-fields {
-	flex: 1;
+	flex: 1 1 320px;
 	display: flex;
 	flex-direction: column;
 }

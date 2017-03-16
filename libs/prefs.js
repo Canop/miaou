@@ -110,14 +110,6 @@ exports.appAllPrefs = function(req, res){
 			var	name = req.body.name.trim(),
 				avatarsrc = req.body['avatar-src'],
 				avatarkey = req.body['avatar-key'];
-
-			// in the very specific case of a user having choosed gravatar and
-			//  having given a clear email, we hash it so that it's never displayed
-			//  to other users through the URL of the avatar
-			if (avatarsrc==='gravatar' && /@/.test(avatarkey)) {
-				avatarkey = crypto.createHash('md5').update(avatarkey.trim().toLowerCase()).digest('hex');
-			}
-
 			if (!naming.isValidUsername(name)) return;
 			if (name!==req.user.name && naming.isUsernameForbidden(name)) {
 				error = "Sorry, that username is reserved.";
@@ -199,4 +191,14 @@ exports.appAllPrefs = function(req, res){
 		server.renderErr(res, err);
 	}).finally(db.off)
 }
+
+
+// used to allow conversion of email to MD5 for gravatar
+exports.appGetJsonStringToMD5 = function(req, res){
+	console.log("md5 hashing " + req.query.input);
+	res.json({
+		md5: crypto.createHash('md5').update(req.query.input).digest('hex')
+	});
+}
+
 

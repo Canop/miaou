@@ -124,6 +124,7 @@ function defineAppRoutes(){
 	map('post', '/auths', auths.appPostAuths);
 	map('all', '/username', profile.appAllUsername, true);
 	map('all', '/prefs', prefs.appAllPrefs, true);
+	map('get', '/json/stringToMD5', prefs.appGetJsonStringToMD5);
 	map('get', '/publicProfile', profile.appGetPublicProfile, true, true);
 	map('get', /^\/user\/([\w-]+)$/, profile.appGetUser, true, true);
 	map('get', '/help', help.appGetHelp, true, true);
