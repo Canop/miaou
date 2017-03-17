@@ -112,6 +112,16 @@ proto.updateUser = function(user){
 	).then(this.fixAllDialogRooms);
 }
 
+// stores a record in the player_name_change table
+proto.insertNameChange = function(user){
+	return this.execute(
+		'insert into player_name_change (player, new_name, changed)'+
+		' values ($1, $2, $3)',
+		[user.id, user.name, now()],
+		"insert_player_name_change", false
+	);
+}
+
 // updates the timezone offset
 // we store the offset, not the timezone, because there's no cheap way to guess it
 proto.updateUserTzoffset = function(player){

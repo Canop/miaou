@@ -45,7 +45,9 @@ exports.appAllUsername = function(req, res){
 			}
 			if (name!=req.user.name && naming.isValidUsername(name)) {
 				req.user.name = name;
-				return this.updateUser(req.user);
+				return this.updateUser(req.user).then(function(){
+					return this.insertNameChange(req.user);
+				});
 			}
 		}
 	}).catch(function(err){

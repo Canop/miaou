@@ -84,7 +84,7 @@
 		if (options.text) $c.text(options.text);
 		if (options.blower) {
 			var r = options.blower.call(this, $c);
-			if (r == false) $b.remove();
+			if (r === false) $b.remove();
 		}
 		return this;
 	}

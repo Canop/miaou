@@ -108,10 +108,11 @@ exports.appAllPrefs = function(req, res){
 	}).then(function(){
 		if (req.method==='POST') {
 			var	name = req.body.name.trim(),
+				nameChanges = req.user.name != name,
 				avatarsrc = req.body['avatar-src'],
 				avatarkey = req.body['avatar-key'];
 			if (!naming.isValidUsername(name)) return;
-			if (name!==req.user.name && naming.isUsernameForbidden(name)) {
+			if (nameChanges && naming.isUsernameForbidden(name)) {
 				error = "Sorry, that username is reserved.";
 				return;
 			}
@@ -122,7 +123,9 @@ exports.appAllPrefs = function(req, res){
 			req.user.name = name;
 			req.user.avatarsrc = avatarsrc;
 			req.user.avatarkey = avatarkey;
-			return this.updateUser(req.user);
+			return this.updateUser(req.user).then(function(){
+				if (nameChanges) return this.insertNameChange(req.user);
+			});
 		}
 	}).then(function(){
 		if (req.method==='POST') {

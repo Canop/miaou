@@ -50,7 +50,7 @@ Now that the plugin is enabled, it will be available next time you restart Miaou
 
 Most server side operations of a plugins are exported functions called by Miaou's core. Those functions have conventionnal names (see the "server side hooks" chapter), which avoids the task of registering them: the core calls the function if it is found in the plugin, doesn't call anything otherwise.
 
-Exemples of those functions are 
+Exemples of those functions are
 
 * the `exports.init` function, usually dedicated to fetching some configuration or starting some periodic task
 * the `exports.registerRoutes` function, in which a plugin can declare Express routes to directly answer HTTP requests
@@ -155,7 +155,7 @@ The `fun` function is passed as argument an instance of `CommandTask` whose prop
 
 Additionnaly, this object offers the following methods:
 
-- `reply(content, asFlake)`: sends a reply to the command's message 
+- `reply(content, asFlake)`: sends a reply to the command's message
 - `text`:  set or get the content of the command message
 
 Example: a command replying "pong" to every !!ping command would be defined with
@@ -295,7 +295,7 @@ Most plugins ensuring the boxing of URLs also provide a companion feature, the b
 
 the plugin should responds to that command with a message containing
 
-	http://www.urbandictionary.com/define.php?term=chat  
+	http://www.urbandictionary.com/define.php?term=chat
 
 and this message would then be intercepted to be boxed.
 
@@ -424,16 +424,16 @@ And the server part handles it this way:
 		shoe.socket
 		.on('ludo.move', function(arg){
 			var messageId = arg.mid;
-			
+
 			// here we fetch the message, check the move, update the state of the game, save it in db
 			// then we propagate that move to all the users currently in the game message's room:
-			
+
 			ws.emitToRoom(messageId, "ludo.move", {mid: messageId, move: move});
 		})
 		.on('ludo.accept', function(arg){
-			
+
 			// start of a game: we do about the same thing than for incoming moves
-			
+
 		});
 	}
 
