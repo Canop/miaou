@@ -12,7 +12,7 @@ While everything is optional, a server side file is necessary for plugin activat
 
 There's no sandboxing, plugins can read, change, and break everything. A plugin must thus be validated by the server owner before being installed.
 
-Before messing with plugins, installing them, or making new ones, you should be familiar with the general working of Miaou and have a server [installed](../installation.md). While the present document should provide a complete enough description of plugin, looking at the existing standard plugins should be considered the next logical step to acquire familiarity.
+Before messing with plugins, installing them, or making new ones, you should be familiar with the general working of Miaou and have a server [installed](../installation.md). While the present document should provide a complete enough description of plugins, looking at the existing standard plugins should be considered the next logical step to acquire familiarity.
 
 # Adding a plugin to Miaou
 
@@ -56,7 +56,7 @@ Exemples of those functions are
 * the `exports.registerRoutes` function, in which a plugin can declare Express routes to directly answer HTTP requests
 * the `exports.registerCommands` function, in which all !! commands of a plugin are declared
 
-Additionnaly to those functions, it's good practice to export also the name of the plugin, as exports.name = `"somestring";`.
+Additionnaly to those functions, it's good practice to export also the name of the plugin, as `exports.name = "somestring";`.
 
 ## Client Side Operation
 
