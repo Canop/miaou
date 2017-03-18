@@ -106,6 +106,7 @@ function parseAsAt(tokens, tzoffset, now){
 			year = todayWithOffset.getUTCFullYear();
 			month = todayWithOffset.getUTCMonth();
 			day = todayWithOffset.getUTCDate();
+			daySet = true;
 		} else if (!hourSet && (m = token.match(/(\d{1,2})[:h](\d{2})?,?/))) {
 			hour = +m[1];
 			minute = +m[2] || 0;

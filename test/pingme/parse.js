@@ -28,9 +28,11 @@ buster.testCase("pingme/parse", {
 	},
 
 	"tomorrow": function(){
+		check("tomorrow 23h", 0, "2017-05-08T23:00");
+		check("tomorrow 22h45", -60, "2017-05-08T21:45");
+		check("tomorrow 21h45", -60, "2017-05-08T20:45");
 		check("tomorrow 23h, Irish Coffee", -60, "2017-05-08T22:00", "Irish Coffee");
 		check("tomorrow 2h", -60, "2017-05-08T01:00");
-		check("tomorrow 0h minuit!", -60, "2017-05-07T23:00", "minuit!");
 	},
 
 	"complete date": function(){
