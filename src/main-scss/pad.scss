@@ -239,8 +239,8 @@ body.desktop #rooms-page {
 		height: 0;
 		overflow: hidden;
 		display: flex;
-	flex-direction: row;
-	align-items: stretch;
+		flex-direction: row;
+		align-items: stretch;
 		transition: height .2s .2s;
 	}
 	#room-description {
@@ -276,8 +276,6 @@ body.desktop #rooms-page {
 	#room-description {
 		color: $square-description-color;
 		text-shadow: $square-room-description-text-shadow;
-		// color: $roomname-color;
-		// text-shadow: $roomname-text-shadow;
 	}
 }
 

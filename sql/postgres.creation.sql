@@ -117,7 +117,6 @@ CREATE TABLE ban (
 );
 create index ban_idx on ban(room, banned, expires);
 
-
 CREATE TABLE pref (
 	player integer references player(id),
 	name varchar(6) not null,

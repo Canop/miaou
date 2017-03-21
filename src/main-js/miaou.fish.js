@@ -81,7 +81,7 @@
 			break;
 		}
 		$b.css(css).addClass(side+'-bubble');
-		if (options.text) $c.text(options.text);
+		if (options.text) $c[0].innerText = options.text;
 		if (options.blower) {
 			var r = options.blower.call(this, $c);
 			if (r === false) $b.remove();
@@ -109,6 +109,7 @@
 		if (selector) args.unshift(selector);
 		args.unshift("mouseenter");
 		$.fn.on.apply(this, args);
+		return this;
 	}
 
 });

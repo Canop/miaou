@@ -6,12 +6,12 @@ miaou(function(time){
 		roomEnterTime; // in seconds since epoch, server time
 
 	time.MMM = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-		
+
 	time.setRoomEnterTime = function(serverTime){
 		roomEnterTime = serverTime;
 		offsetWithServer = time.now() - serverTime;
 	}
-	
+
 	time.isNew = function(message){
 		return (message.changed||message.created)>roomEnterTime;
 	}
@@ -60,5 +60,5 @@ miaou(function(time){
 	time.now = function(){
 		return Date.now()/1000|0;
 	}
-	
+
 });
