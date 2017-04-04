@@ -29,15 +29,16 @@ class Miaou{
 
 	// returns a promise
 	initBot(){
-		var botAvatar = this.conf("botAvatar");
+		var	miaou = this,
+			botAvatar = this.conf("botAvatar");
 		return this.db.on("miaou")
 		.then(this.db.getBot)
-		.then(b=>{
-			this.bot = b;
+		.then(function(b){
+			miaou.bot = b;
 			if (botAvatar.src!==b.avatarsrc || botAvatar.key!==b.avatarkey) {
 				b.avatarsrc = botAvatar.src;
 				b.avatarkey = botAvatar.key;
-				return this.updateUser(b)
+				return this.updateUser(b);
 			}
 		})
 		.finally(this.db.off);
