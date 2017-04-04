@@ -15,8 +15,10 @@
 		if (options.side) {
 			if (/-/.test(options.side)) {
 				side = options.side;
+			} else if (options.side === "horizontal") {
+				side = (targetRect.left<ww/2 ? "right" : "left") + "-" + (targetRect.top<wh/2 ? "bottom" : "top");
 			} else if (options.side === "vertical") {
-				side = targetRect.top<wh/2 ? "bottom" : "top";
+				side = (targetRect.top<wh/2 ? "bottom" : "top") + "-" + (targetRect.left<ww/2 ? "right" : "left");
 			} else if ((match=options.side.match(/^(top|bottom)/))) {
 				side = match[1] + "-" + (targetRect.left<ww/2 ? "right" : "left");
 			} else {
@@ -101,8 +103,10 @@
 			options = selector;
 			selector = null;
 		}
+		if (typeof options === "string") options = {text: options};
+		else if (typeof options === "function") options = {blower: options};
 		var args = [options, function(e){
-			$(this).bubble(options).one('mouseleave', function(){
+			$(this).bubble(options).one('mouseleave wheel', function(){
 				$('.bubble').remove();
 			});
 		}];

@@ -63,7 +63,7 @@
 }
 #M-menu:hover #Miaou-logo-wrapper {
 	width: 200px;
-	transition: width 1.5s .2s;
+	transition: width .9s .2s;
 }
 #Miaou-logo {
 	height: 40px;
@@ -232,6 +232,10 @@ body.desktop #rooms-page {
 	-webkit-mask-image: linear-gradient(black, black, transparent);
 	mask-image: linear-gradient(black, black, transparent);
 	margin-bottom: 15px;
+	height: 90px;
+	transition: all .5s .9s;
+	display: flex;
+	flex-direction: column;
 	& > div {
 		background: $square-description-opacifier-bg;
 	}
@@ -241,14 +245,13 @@ body.desktop #rooms-page {
 		display: flex;
 		flex-direction: row;
 		align-items: stretch;
-		transition: height .2s .2s;
+		transition: all .5s .9s;
 	}
 	#room-description {
-		min-height: 30px;
-		max-height: 60px;
+		flex: 1 1;
 		overflow: hidden;
 		padding-bottom: 20px;
-		transition: max-height .4s .2s;
+		transition: all .5s .9s;
 		position: relative;
 		a {
 			color: inherit;
@@ -256,17 +259,17 @@ body.desktop #rooms-page {
 	}
 }
 #right #room-area:hover {
+	height: 350px;
+	transition: all .5s;
 	#room-controls {
 		height: 30px;
-		transition: height .2s .2s;
+		transition: all .5s;
 		padding-bottom: 4px;
 	}
 	#room-description {
-		max-height: 500px;
 		-webkit-mask-image: none;
-		transition: all .4s .2s;
-		transition: height .2s .2s;
-		min-height: 200px;
+		transition: all .5s;
+		overflow-y: hidden;
 		a {
 			color: $roomname-color;
 		}

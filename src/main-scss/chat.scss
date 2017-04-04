@@ -1129,7 +1129,9 @@ body.mobile {
 		transition: height .2s;
 	}
 	.search-input-line {
-		flex: row center;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 		label:first-of-type {
 			width: 48px;
 		}
