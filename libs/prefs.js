@@ -176,14 +176,14 @@ exports.appAllPrefs = function(req, res){
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
 			themes: themes, externalProfileInfos: externalProfileInfos,
 			vars:{
-				userPrefs: userPrefs,
+				userPref,
 				valid : hasValidName,
 				langs: langs.legal,
-				userinfo: userinfo,
+				userinfo,
 				email: req.user.email,
 				avatarsrc: req.user.avatarsrc,
 				avatarkey: req.user.avatarkey,
-				pluginAvatars: pluginAvatars
+				pluginAvatars
 			}
 		};
 		if (!server.mobile(req)) {
@@ -204,4 +204,24 @@ exports.appGetJsonStringToMD5 = function(req, res){
 	});
 }
 
+function handleSetCommand(ct){
+	var match = ct.args.match(/^local\s+(\S+)(?:\s+(\S+))?\s*$/);
+	if (!match) {
+		// non local, not yet handled
+		throw "Non local settings aren't handled yet";
+	}
+	ct.nostore = true;
+	if (!match[2]) ct.silent = true;
+}
+
+// registers the !!set command, which is used for local browser preferences
+// (will probably allow server managed preferences in the future)
+exports.registerCommands = function(registerCommand){
+	registerCommand({
+		name: 'set',
+		fun: handleSetCommand,
+		help: "sets a preference: `!!set local fun max`",
+		detailedHelp: "Only local browser prefs are managed this way today",
+	});
+}
 

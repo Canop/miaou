@@ -388,17 +388,22 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 }
 
 #messages, .messages {
+	.error {
+	       .user {
+			justify-content: center;
+		}
+	}
 	.message, .error, .access_request {
 		min-height: $message-min-height;
 		display: flex;
-	flex-direction: row;
-	align-items: stretch;
+		flex-direction: row;
+		align-items: stretch;
 		.user {
 			align-self: stretch;
 			flex: 0 0 120px;
 			display: flex;
-	flex-direction: row;
-	align-items: center;
+			flex-direction: row;
+			align-items: center;
 		}
 		.content {
 			margin: $message-content-margin;
@@ -950,6 +955,7 @@ div#notifs {
 	background: $notifications-bg;
 	border: $notifications-border;
 	color: $notification-text-color;
+	line-height: 27px;
 	.user {
 		font-style:italic;
 		z-index: 8;

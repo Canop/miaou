@@ -69,7 +69,7 @@ exports.configure = function(miaou){
 		help:'get help about commands. Usage : `!!help !!commandname`',
 		detailedHelp:"You can also get a list of all commands with just `!!help`"
 	});
-	['afk', 'ban', 'bans', 'bench', 'flake', 'list-users', 'pm', 'summon', 'tag-command']
+	['afk', 'ban', 'bans', 'bench', 'flake', 'list-users', 'pm', 'prefs', 'summon', 'tag-command']
 	.forEach(function(module){
 		require('./'+module+'.js').configure(miaou).registerCommands(registerCommand);
 	});
