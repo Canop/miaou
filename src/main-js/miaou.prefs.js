@@ -25,6 +25,12 @@ miaou(function(prefs, chat, ed, local, md){
 		return localPref(name) || local.userPrefs[name];
 	}
 
+	prefs.funLowerThan = function(min){
+		var	value = prefs.get("fun"),
+			values = localSettingsDefinitions.fun;
+		return value && values.indexOf(min)>values.indexOf(value);
+	}
+
 	chat.on("ready", function(){
 		ed.registerCommandArgAutocompleter("set", autocompleteArg);
 	})
