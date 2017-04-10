@@ -441,7 +441,7 @@ And the server part handles it this way:
 
 This function is called when a message is received from a browser.
 
-The incoming message may be new (it has a strictly positive `id`) or a modified one (no `id`).
+The incoming message may be new (no `id`) or a modified one (strictly positive `id`).
 
 This function is called with arguments
 
