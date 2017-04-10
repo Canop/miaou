@@ -6,7 +6,6 @@ miaou(function(prefs, chat, ed, local, md){
 	};
 
 	function autocompleteArg(ac){
-		console.log('ac:', ac);
 		if (!ac.previous) return ["local"];
 		if (ac.previous==="local") return Object.keys(localSettingsDefinitions);
 		return localSettingsDefinitions[ac.previous];
