@@ -176,7 +176,7 @@ exports.appAllPrefs = function(req, res){
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
 			themes: themes, externalProfileInfos: externalProfileInfos,
 			vars:{
-				userPref,
+				userPrefs,
 				valid : hasValidName,
 				langs: langs.legal,
 				userinfo,
