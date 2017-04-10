@@ -71,10 +71,17 @@ Shoes.allSocketsOfUser = function(){
 	}
 	return sockets;
 }
-Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
-	io.sockets.in(roomId||this.room.id).emit('message', {
+Shoes.emitPersonalBotFlake = function(bot, content){
+	this.socket.emit('message', {
 		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
 		created:Date.now()/1000|0, bot:true, room:this.room.id, content:content
+	});
+}
+Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
+	roomId = roomId||this.room.id;
+	io.sockets.in(roomId).emit('message', {
+		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
+		created:Date.now()/1000|0, bot:true, room:roomId, content:content
 	});
 }
 Shoes.pluginTransformAndSend = function(m, sendFun){
