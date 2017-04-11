@@ -34,27 +34,27 @@ function dequeue(){
 		args = line.match(task.boxer.pattern);
 	Promise.resolve(
 		task.boxer.urler ? task.boxer.urler.apply(null, args) : url
-	).then(url => {
-		if (!url) {
-			cache.set(line, null, TTL);
-			console.log("urler returned no url when boxing", line);
-			return;
-		}
+	)
+	.then(url => {
 		request(url, function(error, res, body){
 			console.log('box', url, 'fetched');
+			if (error || !res || res.statusCode!==200) {
+				throw new Error(error);
+			}
 			currentTask = null;
 			setTimeout(dequeue, 0);
-			if (error || !res || res.statusCode!==200) {
-				cache.set(line, null, TTL);
-				console.log("Error in box fetching", url, error);
-				return;
-			}
 			args.unshift($$.load(body));
 			var box = task.boxer.box.apply(null, args);
 			cache.set(line, box, task.boxer.TTL);
 			benchOperation.end();
 			task.send('box', {mid:task.mid, from:line, to:box});
 		});
+	})
+	.catch(function(err){
+		console.log("error while boxing", line, err);
+		currentTask = null;
+		cache.set(line, null, TTL);
+		setTimeout(dequeue, 0);
 	});
 }
 
@@ -66,6 +66,7 @@ exports.onSendMessage = function(shoe, m, send){
 	m.content.split('\n').forEach(function(line){
 		for (var i=0; i<boxers.length; i++) {
 			if (boxers[i].pattern.test(line)) {
+				console.log("adding task for", boxers[i].name);
 				tasks.push({
 					line:line.trim(),
 					mid:m.id,
