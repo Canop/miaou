@@ -48,7 +48,7 @@ miaou(function(fmt){
 				// do replacements only on what isn't in a tag
 				return a
 				+ b
-				.replace(/(^|\W)(@[a-zA-Z][\w\-]{2,19})\b/g, function(_, sp, ping){ // ping
+				.replace(/(^|[^\w\/-])(@[a-zA-Z][\w\-]{2,19})\b/g, function(_, sp, ping){ // ping
 					var isme = miaou.locals && miaou.locals.me && miaou.locals.me.name===ping.slice(1);
 					return sp+'<span class="ping'+(isme?' ping-me':'')+'">'+ping+'</span>';
 				})
