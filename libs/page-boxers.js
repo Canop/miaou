@@ -1,4 +1,5 @@
 const	request = require('request'),
+	Promise = require("bluebird"),
 	$$ = require('cheerio'),
 	bench = require('./bench.js'),
 	cache = require('bounded-cache')(300),
@@ -31,23 +32,29 @@ function dequeue(){
 		url = line,
 		benchOperation = bench.start("Boxer / " + task.boxer.name),
 		args = line.match(task.boxer.pattern);
-	if (task.boxer.urler) {
-		url = task.boxer.urler.apply(null, args);
-	}
-	request(url, function(error, res, body){
-		console.log('box', url, 'fetched');
-		currentTask = null;
-		setTimeout(dequeue, 0);
-		if (error || !res || res.statusCode!==200) {
+	Promise.resolve(
+		task.boxer.urler ? task.boxer.urler.apply(null, args) : url
+	).then(url => {
+		if (!url) {
 			cache.set(line, null, TTL);
-			console.log("Error in box fetching", url, error);
+			console.log("urler returned no url when boxing", line);
 			return;
 		}
-		args.unshift($$.load(body));
-		var box = task.boxer.box.apply(null, args);
-		cache.set(line, box, task.boxer.TTL);
-		benchOperation.end();
-		task.send('box', {mid:task.mid, from:line, to:box});
+		request(url, function(error, res, body){
+			console.log('box', url, 'fetched');
+			currentTask = null;
+			setTimeout(dequeue, 0);
+			if (error || !res || res.statusCode!==200) {
+				cache.set(line, null, TTL);
+				console.log("Error in box fetching", url, error);
+				return;
+			}
+			args.unshift($$.load(body));
+			var box = task.boxer.box.apply(null, args);
+			cache.set(line, box, task.boxer.TTL);
+			benchOperation.end();
+			task.send('box', {mid:task.mid, from:line, to:box});
+		});
 	});
 }
 
