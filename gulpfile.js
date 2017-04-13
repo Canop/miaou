@@ -257,4 +257,4 @@ gulp.task("watch", ["set-watch-mode", "build"], ()=>{
 
 });
 
-gulp.task("default", ["watch"]);
+gulp.task("default", ["build"]);
