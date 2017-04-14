@@ -120,13 +120,21 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	notif.pings = function(pings){
 		var	changed = false,
 			visible = vis(),
+			lastUserActionAge = Date.now()-lastUserAction,
 			map = notifications.reduce(function(map, n){ map[n.mid]=1;return map; }, {});
 		console.log("received pings:", pings);
 		pings.forEach(function(ping){
 			if (map[ping.mid]) return;
+			if (ping.r===locals.room.id && lastUserActionAge < 15000) {
+				ws.emit("rm_ping", ping.mid);
+				return;
+			}
 			notifications.push(ping);
 			changed = true;
-			if (locals.userPrefs.notif!=="never" && (!visible || locals.userPrefs.nifvis==="yes")) {
+			if (
+				locals.userPrefs.notif!=="never"
+				&& (!visible || locals.userPrefs.nifvis==="yes")
+			) {
 				horn.show(ping.mid, ping.rname, ping.authorname, ping.content);
 			}
 		});
@@ -166,7 +174,8 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	// FIXME : it's also called if the message isn't really new (loading old pages)
 	notif.touch = function(mid, ping, from, text, r, $md){
 		r = r || locals.room;
-		var	visible = vis(), lastUserActionAge = Date.now()-lastUserAction;
+		var	visible = vis(),
+			lastUserActionAge = Date.now()-lastUserAction;
 		if (ping && (mid||$md) && !$('#mwin[mid='+mid+']').length) {
 			if (visible  && lastUserActionAge<2000) {
 				md.goToMessageDiv(mid||$md);
