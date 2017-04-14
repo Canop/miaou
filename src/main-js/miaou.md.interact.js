@@ -110,7 +110,8 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		$hoveredMessage = null;
 		return false;
 	}
-	md.toggleMessageHoverInfos = function(){
+	md.toggleMessageHoverInfos = function(e){
+		if (["A", "INPUT", "SELECT"].includes(e.target.tagName)) return;
 		(
 			$('.message-menu, .editButton, .replyButton, .deleteButton', this).length
 			? md.hideMessageHoverInfos
