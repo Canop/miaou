@@ -189,7 +189,7 @@ exports.appAllPrefs = function(req, res){
 		if (!server.mobile(req)) {
 			data.theme = exports.theme(userPrefs, req.query.theme);
 		}
-		res.render('prefs.jade', data);
+		res.render('prefs.pug', data);
 	}).catch(function(err){
 		server.renderErr(res, err);
 	}).finally(db.off)

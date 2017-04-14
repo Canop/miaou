@@ -25,5 +25,5 @@ exports.mobile = function(req){
 
 exports.renderErr = function(res, err, base){
 	console.log(err);
-	res.render('error.jade', { base:base||'', error: err.toString() });
+	res.render('error.pug', { base:base||'', error: err.toString() });
 }

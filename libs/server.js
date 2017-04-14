@@ -157,7 +157,7 @@ function startServer(){
 	app.use(require('compression')());
 	// app.set("trust proxy", !!miaou.config.trustProxy);
 	app.set('views', path.resolve(__dirname, '..', 'views'));
-	app.set('view engine', 'jade');
+	app.set('view engine', 'pug');
 	app.set("view options", { layout: false });
 	app.use('/static', express.static(path.resolve(__dirname, '..', 'static')));
 	app.use(bodyParser.json());
@@ -215,7 +215,7 @@ exports.mobile = function(req){
 }
 exports.renderErr = function(res, err, base){
 	console.log(err);
-	res.render('error.jade', { base:base||'', error:err.toString() });
+	res.render('error.pug', { base:base||'', error:err.toString() });
 }
 
 

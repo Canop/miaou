@@ -431,14 +431,14 @@ function handleUserInRoom(socket, completeUser){
 			shoe.error(err);
 		}).finally(db.off)
 	})
-	.on('pre_request', function(request){ // not called from chat but from request.jade
+	.on('pre_request', function(request){ // not called from chat but from request.pug
 		var roomId = request.room, publicUser = shoe.publicUser;
 		console.log(publicUser.name + ' is on the request page for room ' + roomId);
 		socketWaitingApproval.push({
 			socket:socket, userId:publicUser.id, roomId:roomId
 		});
 	})
-	.on('request', function(request){ // not called from chat but from request.jade
+	.on('request', function(request){ // not called from chat but from request.pug
 		var roomId = request.room, publicUser = shoe.publicUser;
 		var bo = bench.start("ws / request access");
 		console.log(publicUser.name + ' requests access to room ' + roomId);

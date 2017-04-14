@@ -58,7 +58,7 @@ exports.appAllUsername = function(req, res){
 	}).then(function(userPrefs){
 		var hasValidName = naming.isValidUsername(req.user.name),
 			theme = prefs.theme(userPrefs, req.query.theme);
-		res.render('username.jade', {
+		res.render('username.pug', {
 			vars: {valid : hasValidName},
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
 			error,
@@ -102,7 +102,7 @@ exports.appGetPublicProfile = function(req, res){
 		return this.getUserInfo(userId);
 	}).then(function(info){
 		externalProfileInfos = externalProfileInfos.filter(epi => epi.html);
-		res.render('publicProfile.jade', {
+		res.render('publicProfile.pug', {
 			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
 			isServerAdmin:auths.isServerAdmin(user),
 			auth:auth, externalProfileInfos:externalProfileInfos
@@ -134,7 +134,7 @@ exports.appGetUser = function(req, res){
 		let vars = {
 			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey)
 		};
-		res.render('user.jade', { vars:vars, externalProfileInfos:externalProfileInfos });
+		res.render('user.pug', { vars:vars, externalProfileInfos:externalProfileInfos });
 	}).catch(db.NoRowError, function(){
 		server.renderErr(res, "User not found", '../');
 	}).catch(function(err){

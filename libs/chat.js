@@ -58,7 +58,7 @@ exports.appGet = function(req, res){
 				}, args);
 			})
 			.then(function(args){
-				res.render('request.jade', args);
+				res.render('request.pug', args);
 			});
 		}
 		var locals = {
@@ -67,7 +67,7 @@ exports.appGet = function(req, res){
 			userPrefs,
 			pluginsToStart: clientSidePluginNames
 		};
-		res.render(isMobile ? 'pad.mob.jade' : 'pad.jade', {vars:locals, theme});
+		res.render(isMobile ? 'pad.mob.pug' : 'pad.pug', {vars:locals, theme});
 	})
 	.catch(db.NoRowError, function(){
 		console.log("no room found for id", roomId);

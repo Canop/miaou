@@ -73,7 +73,7 @@ exports.appGetAuths = function(req, res){
 		recentUsers.forEach(function(u){
 			if (!dontlistasrecent[u.id]) unauthorizedUsers.push(u);
 		});
-		res.render('auths.jade', {
+		res.render('auths.pug', {
 			vars:{room},
 			room, auths, requests, unauthorizedUsers, bans:bans
 		});

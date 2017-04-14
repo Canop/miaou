@@ -106,13 +106,13 @@ exports.appGetRoom = function(req, res){
 		if (!auths.checkAtLeast(room.auth, 'admin')) {
 			return server.renderErr(res, "Admin level is required to manage the room");
 		}
-		res.render('room.jade', {
+		res.render('room.pug', {
 			vars:{ room, error:null, langs:langs.legal }, theme
 		});
 	})
 	.catch(db.NoRowError, function(){
 		// that's where we go in case of room creation
-		res.render('room.jade', { // TODO ???
+		res.render('room.pug', { // TODO ???
 			vars:{ error:null, langs:langs.legal }, theme
 		});
 	})
@@ -171,7 +171,7 @@ exports.appPostRoom = function(req, res){
 	}).then(function(){
 		res.redirect(server.roomUrl(room));	// executes the room get
 	}).catch(function(err){
-		res.render('room.jade', {vars:{ room, error:err.toString() }});
+		res.render('room.pug', {vars:{ room, error:err.toString() }});
 	}).finally(db.off);
 }
 
@@ -207,10 +207,10 @@ exports.appGetRooms = function(req, res){
 			user: req.user, pings
 		};
 		if (mobile) {
-			res.render('rooms.mob.jade', data);
+			res.render('rooms.mob.pug', data);
 		} else {
 			data.theme = prefs.theme(userPrefs, req.query.theme);
-			res.render('rooms.jade', data);
+			res.render('rooms.pug', data);
 		}
 	})
 	.catch(function(err){
