@@ -14,6 +14,9 @@
 		color: $tag-color;
 	}
 }
+.message .content pre.prettyprint span.tag {
+	background: transparent;
+}
 
 .bubble.tag-bubble {
 	.bubble-content, .bubble-content a {
