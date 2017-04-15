@@ -18,9 +18,9 @@ let mode = {
 	watch: false,
 };
 
-function miaouModulesIn(paths){
+function miaouModules(){
 	var modules = [];
-	paths.forEach(path=>{
+	globs["main-js"].forEach(path=>{
 		glob.sync(path).forEach(name=>{
 			let match = name.match(/(?:^|\/)miaou\.([a-zA-Z\d]+)\.js$/);
 			if (match) modules.push(match[1]);
@@ -29,16 +29,11 @@ function miaouModulesIn(paths){
 	return modules;
 }
 
-function miaouModules(){
-	return miaouModulesIn(globs["main-js"]);
-}
-
-function miaouBibili(){
+function miaouBabili(){
 	var blacklist = {};
 	miaouModules().forEach(m=>{
 		blacklist[m] = true;
 	});
-	console.log('blacklist:', blacklist);
 	return babili({
 		warnings: true,
 		mangle: { blacklist }
@@ -198,7 +193,7 @@ gulp.task("main-js", ()=>
 	gulp.src(globs["main-js"])
 	.pipe(concat("miaou.concat.js"))
 	.pipe(gulp.dest("static"))
-	.pipe(miaouBibili())
+	.pipe(mode.watch ? gutil.noop() : miaouBabili())
 	.on("error", jsErrHandler)
 	.pipe(rename("miaou.min.js"))
 	.pipe(gulp.dest("static"))
@@ -206,7 +201,7 @@ gulp.task("main-js", ()=>
 
 gulp.task("page-js", ()=>
 	gulp.src(globs["page-js"])
-	.pipe(miaouBibili())
+	.pipe(mode.watch ? gutil.noop() : miaouBabili())
 	.on("error", jsErrHandler)
 	.pipe(rename({ suffix:'.min' }))
 	.pipe(gulp.dest("static"))
