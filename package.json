@@ -44,6 +44,7 @@
   "devDependencies": {
     "del": ">=2.2.0",
     "gulp": ">=3.9.1",
+    "gulp-babili": "0.0.2",
     "gulp-concat": ">=2.6.0",
     "gulp-eslint": ">=2.0.0",
     "gulp-if": ">=2.0.0",
