@@ -71,6 +71,7 @@ $hovered-user-color-shadow-in-messages: 4px 0 0;
 
 // message
 $message-me-bg: rgba(229,231,235,0.45);
+$citation-background: rgba(255,255,153, .7);
 
 // profile
 $user-profile-title-color: rgba(255,255,255,.9);
@@ -161,11 +162,6 @@ $profile-avatar-filter: drop-shadow(0 0 2px white);
 
 // ---------------
 // specific things
-
-body.pad #messages .content .citation {
-	background: rgba(255,255,153, .7);
-	min-width: 70%;
-}
 
 .user-messages .bot .avatar {
 	border-radius: 0;

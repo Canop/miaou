@@ -82,14 +82,10 @@ $message-me-user-color: $accent-minus;
 
 $user-text-color-in-message: inherit; // gives to the username the color of the user
 $code-text-color: #888;
-//$user-color-shadow-in-messages: none;
-//$user-color-shadow-in-messages: inset 1px 0 1px;
-//$user-color-shadow-in-messages: inset 35px 0 70px;
-//$hovered-user-color-shadow-in-messages: inset 1px 0 1px;
-//$hovered-user-color-shadow-in-messages: inset 35px 0 70px;
-
 
 $citation-border-color: #666;
+$citation-background: rgba(31, 31, 15, 0.7);
+
 $h3-underline-color: #666;
 $h4-underline-color: #666;
 $h5-underline-color: #666;
