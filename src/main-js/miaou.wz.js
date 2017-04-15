@@ -27,7 +27,15 @@ miaou(function(wz, gui, skin){
 		while ((w=wzins.pop())) w.remove();
 		for (var ui=ci, i=ci; i-- && messages[ui].repliesTo;) {
 			if (messages[i].id===messages[ui].repliesTo) {
-				wzins.push(wzin($messages.eq(ui), $messages.eq(i), opts));
+				var self = messages[i].author===messages[ui].author;
+				wzins.push(wzin(
+					$messages.eq(ui),
+					$messages.eq(i),
+					$.extend({
+						side: self ? "right" : "left",
+					}, opts)
+
+				));
 				ui = i;
 			}
 		}
@@ -35,10 +43,14 @@ miaou(function(wz, gui, skin){
 		(function down(si, colorIndex){
 			for (var i=si+1; i<messages.length; i++) {
 				if (messages[i].repliesTo && messages[i].repliesTo===messages[si].id) { // be wary of flakes
+					var self = messages[i].author===messages[si].author;
 					wzins.push(wzin(
 						$messages.eq(si),
 						$messages.eq(i),
-						$.extend({fill:colors[colorIndex]}, opts)
+						$.extend({
+							fill: colors[colorIndex],
+							side: self ? "right" : "left",
+						}, opts)
 					));
 					down(i, colorIndex);
 					colorIndex = (colorIndex+1)%colors.length;

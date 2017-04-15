@@ -215,7 +215,8 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	function replyPreviousOrNext(dif){
 		var messages = md.getMessages().filter(function(m){
-			return m.id && m.content && m.author !== locals.me.id && !(editedMessage && m.id>editedMessage.id);
+			ms.updateStatus(m);
+			return m.status.answerable || m.status.continuable;
 		});
 		var	index = -1,
 			m = input.value.match(replyRegex);
@@ -259,15 +260,20 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 		if (!$message && m) $message = $('#messages .message[mid='+m[2]+']');
 		if ($message && $message.length) {
-			var mtop = $message.offset().top, $scroller = gui.$messageScroller;
+			var	mtop = $message.offset().top,
+				author = $message.dat("message").author,
+				$scroller = gui.$messageScroller;
 			if (mtop<0) {
 				$scroller.scrollTop(mtop+$scroller.scrollTop()-25);
 			} else if ($scroller.height()+$scroller.scrollTop()<$scroller[0].scrollHeight) {
 				$scroller.scrollTop(Math.min(mtop+$scroller.scrollTop()-25, $scroller[0].scrollHeight));
 			}
 			replywzin = wzin($message, $('#input'), {
-				zIndex:5, fill:skin.wzincolors.reply,
-				scrollable:gui.$messageScroller, parent:document.body
+				zIndex: 5,
+				side: author!==locals.me.id ? "left" : "right",
+				fill: skin.wzincolors.reply,
+				scrollable: gui.$messageScroller,
+				parent: document.body
 			});
 		}
 	}

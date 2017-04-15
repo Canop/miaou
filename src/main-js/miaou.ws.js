@@ -26,7 +26,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 				}
 				var $md = md.addMessage(message, shouldStickToBottom);
 				$md.addClass(visible||info.state!=='connected' ? 'rvis' : 'rnvis');
-				var ping = pingRegex.test(message.content);
+				var ping = pingRegex.test(message.content) && message.author!=locals.me.id;
 				if (message.id) md.updateNotableMessage(message);
 				if (
 					(message.id||ping) && time.isNew(message) && message.content

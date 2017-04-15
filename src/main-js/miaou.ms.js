@@ -7,6 +7,8 @@
 //  - old         : boolean
 //  - editable    : boolean
 //  - deletable   : boolean
+//  - answerable  : boolean
+//  - continuable : boolean
 
 miaou(function(ms, chat, locals, time, usr){
 
@@ -24,13 +26,15 @@ miaou(function(ms, chat, locals, time, usr){
 
 	ms.registerStatusModifier(function(message, status){
 		if (!message.id) {
-			status.answerable = status.deletable = status.editable = false;
+			status.continuable = status.answerable = status.deletable = status.editable = false;
 			return;
 		}
 		var	created = time.local(message.created),
 			deleted = !message.content,
-			modDeleted = /^!!deleted/.test(message.content);
+			modDeleted = /^!!deleted/.test(message.content),
+			isLast = message.id==$("#messages .message").last().attr("mid");
 		status.answerable = !deleted && message.author!==locals.me.id;
+		status.continuable = !deleted && !isLast && message.author===locals.me.id;
 		status.old =  time.now() - created > chat.config.maxAgeForMessageEdition;
 		status.deletable = status.editable =
 			!deleted

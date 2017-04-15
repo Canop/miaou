@@ -79,7 +79,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			notif.userAct(message.id);
 			return false;
 		})
-		.on('click', '.replyButton', function(){
+		.on('click', '.replyButton,.continueButton', function(){
 			var	$m = $(this).closest('.message');
 			notif.userAct($m.dat('message').id);
 			ed.replyToMessage($m);
@@ -156,8 +156,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$('#messages')
 			.on('mouseenter', '.message', wz.onmouseenter)
 			.on('mouseleave', '.message', wz.onmouseleave)
-			.on('mouseenter', '.replyButton,.deleteButton,.editButton', prof.hide)
-			.on('mouseleave', '.replyButton,.deleteButton,.editButton', prof.shownow);
+			.on('mouseenter', '.continueButton,.replyButton,.deleteButton,.editButton', prof.hide)
+			.on('mouseleave', '.continueButton,.replyButton,.deleteButton,.editButton', prof.shownow);
 			$('#messages, #notifications')
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
 			.on('mouseleave', md.hideMessageHoverInfos)

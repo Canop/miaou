@@ -94,10 +94,13 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		$hoveredMessage = $message;
 		ms.updateStatus(message);
 		if (message.status.deletable || message.status.mod_deletable) {
-			$('<button>').addClass('deleteButton').text('delete').prependTo($decs);
+			$('<button>').addClass('deleteButton').text('del.').attr("title", "delete").prependTo($decs);
 		}
 		if (message.status.editable) {
 			$('<button>').addClass('editButton').text('edit').prependTo($decs);
+		}
+		if (message.status.continuable) {
+			$('<button>').addClass('continueButton').text('cont.').attr("title", "continue").prependTo($decs);
 		}
 		if (message.status.answerable) {
 			$('<button>').addClass('replyButton').text('reply').prependTo($decs);
@@ -106,7 +109,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		return false;
 	}
 	md.hideMessageHoverInfos = function(){
-		$('.message-menu, .editButton, .replyButton, .deleteButton').remove();
+		$('.message-menu,.editButton,.continueButton,.replyButton,.deleteButton').remove();
 		$hoveredMessage = null;
 		return false;
 	}
