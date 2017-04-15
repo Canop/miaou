@@ -218,21 +218,14 @@ exports.renderErr = function(res, err, base){
 	res.render('error.pug', { base:base||'', error:err.toString() });
 }
 
-
-exports.start = function(config){
+exports.start = async function(config){
 	baseURL = config.server;
 	miaou = require("./Miaou.js")(config, db);
-	return db.init(config)
-	.then(function(){
-		return miaou.initBot()
-	})
-	.then(function(){
-		return miaou.initPlugins()
-	})
-	.then(function(){
-		configureOauth2Strategies();
-		startServer();
-	});
+	await db.init(config)
+	await miaou.initBot()
+	await miaou.initPlugins()
+	configureOauth2Strategies();
+	startServer();
 }
 
 exports.stop = function(cb){
