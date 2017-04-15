@@ -10,25 +10,38 @@ let	gulp = require("gulp"),
 	eslint = require('gulp-eslint'),
 	gutil = require("gulp-util"),
 	del = require("del"),
+	glob = require("glob"),
 	gulpif = require("gulp-if"),
-	uglify = require("gulp-uglify");
-
+	babili = require("gulp-babili");
 
 let mode = {
 	watch: false,
 };
 
-function miaouModules(){
-	return fs.readdirSync("src/main-js").map(name=>{
-		let match = name.match(/^miaou\.([a-zA-Z\d]+)\.js$/);
-		if (match) return match[1];
-	}).filter(Boolean);
+function miaouModulesIn(paths){
+	var modules = [];
+	paths.forEach(path=>{
+		glob.sync(path).forEach(name=>{
+			let match = name.match(/(?:^|\/)miaou\.([a-zA-Z\d]+)\.js$/);
+			if (match) modules.push(match[1]);
+		});
+	});
+	return modules;
 }
 
-function miaouUglify(){
-	return uglify({
+function miaouModules(){
+	return miaouModulesIn(globs["main-js"]);
+}
+
+function miaouBibili(){
+	var blacklist = {};
+	miaouModules().forEach(m=>{
+		blacklist[m] = true;
+	});
+	console.log('blacklist:', blacklist);
+	return babili({
 		warnings: true,
-		mangle: { except:miaouModules() },
+		mangle: { blacklist }
 	});
 }
 
@@ -185,7 +198,7 @@ gulp.task("main-js", ()=>
 	gulp.src(globs["main-js"])
 	.pipe(concat("miaou.concat.js"))
 	.pipe(gulp.dest("static"))
-	.pipe(miaouUglify())
+	.pipe(miaouBibili())
 	.on("error", jsErrHandler)
 	.pipe(rename("miaou.min.js"))
 	.pipe(gulp.dest("static"))
@@ -193,7 +206,7 @@ gulp.task("main-js", ()=>
 
 gulp.task("page-js", ()=>
 	gulp.src(globs["page-js"])
-	.pipe(miaouUglify())
+	.pipe(miaouBibili())
 	.on("error", jsErrHandler)
 	.pipe(rename({ suffix:'.min' }))
 	.pipe(gulp.dest("static"))
@@ -254,7 +267,6 @@ gulp.task("watch", ["set-watch-mode", "build"], ()=>{
 	}
 	gulp.watch(["themes/**/*.scss", "plugins/**/*.scss", "plugins/**/*.css", "src/**/*.scss"], ["themes"])
 	gulp.watch(["src/*-js/*.js", "plugins/*/client-scripts/*.js"], ["lint-client-js"]);
-
 });
 
 gulp.task("default", ["build"]);
