@@ -10,9 +10,7 @@ function fmtTag(_, name){
 	return "[tag:"+name+"]";
 }
 function fmtPlayerName(_, name){
-	var mdname = naming.makeMarkdownCompatible(name);
-	if (!naming.isValidUsername(name)) return mdname;
-	return "["+mdname+"](u/"+name+")";
+	return fmt.playerLink(name);
 }
 
 function oneWeekBefore(){

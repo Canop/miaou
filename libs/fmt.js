@@ -1,3 +1,4 @@
+const naming = require('./naming.js');
 
 const MMM = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -57,4 +58,14 @@ exports.tbl = function(o){
 		return line;
 	}).join("\n");
 	return c;
+}
+
+exports.playerLink = function(name){
+	var mdname = naming.makeMarkdownCompatible(name);
+	if (!naming.isValidUsername(name)) return mdname;
+	return "["+mdname+"](u/"+name+")";
+}
+
+exports.roomLink = function(room){
+	return "["+naming.makeMarkdownCompatible(room.name)+"]("+room.id+"#)";
 }

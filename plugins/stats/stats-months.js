@@ -127,12 +127,22 @@ exports.doRoomsStats = function(con, ct, roomIds){
 		});
 	})
 	.then(function(months){
-		var c = "Rooms Statistics #graph(compare,sum)\n";
-		c += fmt.tbl({
-			cols: ["Month", ...roomIds],
-			rows: months.map(m=>[m.label(), ...m.roomstats.map(v=>fmt.int(v))])
+		return Promise.map(roomIds, con.fetchRoom.bind(con)).then(function(rooms){
+			var c = "Rooms Statistics #graph(compare,sum)\n";
+			var rows = months
+			.filter(m =>{
+				for (var i=m.roomstats.length; i--;) {
+					if (m.roomstats[i]) return true;
+				}
+			})
+			.map(m=>[m.label(), ...m.roomstats.map(v=>fmt.int(v))]);
+			c += fmt.tbl({
+				cols: ["Month", ...rooms.map(fmt.roomLink)],
+				rows
+			});
+			ct.reply(c, ct.nostore = c.length>800);
+
 		});
-		ct.reply(c, ct.nostore = c.length>800);
 	});
 }
 
@@ -156,9 +166,16 @@ exports.doUsersStats = function(con, ct, usernames){
 	})
 	.then(function(months){
 		var c = "Users Statistics #graph(compare,sum)\n";
+		var rows = months
+		.filter(m =>{
+			for (var i=m.userstats.length; i--;) {
+				if (m.userstats[i]) return true;
+			}
+		})
+		.map(m=>[m.label(), ...m.userstats.map(v=>fmt.int(v))])
 		c += fmt.tbl({
 			cols: ["Month", ...usernames],
-			rows: months.map(m=>[m.label(), ...m.userstats.map(v=>fmt.int(v))])
+			rows
 		});
 		ct.reply(c, ct.nostore = c.length>800);
 	});
