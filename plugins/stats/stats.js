@@ -175,16 +175,18 @@ exports.doStats = function(ct, miaou){
 			{name:"Id", value:"id", fmt:row => row.c4 ? row.c0 : ' '},
 			{name:"Name", value:"name", fmt:row => {
 				var name = naming.makeMarkdownCompatible(row.c1);
-				return row.c4 ? "["+name+"]("+row.c0+"#)" : name;
+				if (row.c5) name = "*a dialog room*";
+				return (row.c4) ? "["+name+"]("+row.c0+"#)" : name;
 			}},
 			{name:"Language", value:"lang"},
 			{name:"Public", value:"private", fmt:(_, b) => b ? ' ' : '✓'},
 			{name:"Listed", value:"listed", fmt:(_, b) => b ? '✓' : ' '},
+			{name:"Dialog", value:"dialog", fmt:(_, b) => b ? '✓' : ' '},
 			{name:"Messages", value:"(select count(*) from message where room=room.id)"},
 			{name:"Last Week Messages", value:"(select count(*) from message where created>$1 and room=room.id)"},
 			{name:"Users", value:"(select count(distinct author) from message where room=room.id)"},
 		];
-		var orderingCol = /^active-/i.test(topic) ? 6 : 5;
+		var orderingCol = /^active-/i.test(topic) ? 7 : 6;
 		from = "from room order by c"+orderingCol+" desc limit $2";
 		args.push(oneWeekBefore(), n);
 		title = "Rooms Statistics (top "+n+")";
