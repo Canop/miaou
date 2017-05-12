@@ -2,7 +2,9 @@
 // A valid game (even before accept) is always stored like this :
 // maybeAPingOrReply !!game @otherPlayer jsonEncodedGame
 // The state of a game isn't sent at each move : clients update it themselves using the moves
-const	cache = require('bounded-cache')(300),
+
+const	Promise = require("bluebird"),
+	cache = require('bounded-cache')(300),
 	suggest = require('./suggest.js'),
 	tournament = require('./tournament.js'),
 	tribostats = require('./tribostats.js'),
@@ -51,7 +53,7 @@ function dbGetGame(mid){
 
 exports.startGame = function(roomId, type, players, running){
 	var	gametype = gametypes[type],
-		game = { type:type, status:running?"running":"ask"};
+		game = { type:type, status:running?"running":"ask" };
 	if (!gametype) throw "unknown game type: "+type;
 	game.players = players.map(function(p){
 		var gp = {name:p.name};
@@ -59,13 +61,17 @@ exports.startGame = function(roomId, type, players, running){
 		return gp;
 	});
 	var	content = '!!game @' + players[0].name + " " + JSON.stringify(game);
-	ws.botMessage(bot, roomId, content, function(m){
-		if (gametype.observers) {
-			gametype.observers.forEach(function(fun){
-				setTimeout(fun, 1500, m, game);
-			});
-		}
-	});
+	gametype.restore(game);
+	return new Promise(function(resolve){
+		ws.botMessage(bot, roomId, content, function(m){
+			resolve(m);
+			if (gametype.observers) {
+				gametype.observers.forEach(function(fun){
+					setTimeout(fun, 1500, m, game);
+				});
+			}
+		});
+	})
 }
 
 // serializes the game in the message and asynchronously notifies observers
@@ -149,7 +155,6 @@ exports.accept = function(mid, accepter){
 function pingOpponents(move, game, message){
 	var	player = game.players[move.p],
 		opponents = game.players.filter((_, i) => i!==move.p);
-	console.log('opponents:', opponents);
 	opponents.forEach(opponent=>{
 		ws.pingUser.call(
 			this,
@@ -229,22 +234,22 @@ exports.registerGameObserver = function(type, cb){
 // This function is just on for a temporary time.
 // Its goal is to let the AI see games again when some of them
 // were forgotten
-// exports.onSendMessage = function(shoe, m, send){
-// 	if (/^!!game /.test(m.content)) {
-// 		var match = m.content.match(/!!game @\S{3,} (.*)$/);
-// 		if (match) {
-// 			let	g = JSON.parse(match[1]),
-// 				gametype = gametypes[g.type];
-// 			if (gametype && gametype.observers && g.status !== "finished") {
-// 				console.log("re-observing game ", m.id);
-// 				gametype.restore(g);
-// 				gametype.observers.forEach(function(fun){
-// 					setTimeout(fun, 200, m, g);
-// 				});
-// 			}
-// 		}
-// 	}
-// }
+//exports.onSendMessage = function(shoe, m, send){
+//	if (/^!!game /.test(m.content)) {
+//		var match = m.content.match(/!!game @\S{3,} (.*)$/);
+//		if (match) {
+//			let	g = JSON.parse(match[1]),
+//				gametype = gametypes[g.type];
+//			if (gametype && gametype.observers && g.status !== "finished") {
+//				console.log("re-observing game ", m.id);
+//				gametype.restore(g);
+//				gametype.observers.forEach(function(fun){
+//					setTimeout(fun, 200, m, g);
+//				});
+//			}
+//		}
+//	}
+//}
 
 // This function is just on for a temporary time.
 // Its goal is to cure messages containing games with the old saving format
