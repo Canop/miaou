@@ -78,11 +78,7 @@ Shoes.emitPersonalBotFlake = function(bot, content){
 	});
 }
 Shoes.emitBotFlakeToRoom = function(bot, content, roomId){
-	roomId = roomId||this.room.id;
-	io.sockets.in(roomId).emit('message', {
-		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
-		created:Date.now()/1000|0, bot:true, room:roomId, content:content
-	});
+	return ws.botFlake(bot, roomId||this.room.id, content);
 }
 Shoes.pluginTransformAndSend = function(m, sendFun){
 	for (var i=0; i<onSendMessagePlugins.length; i++) {

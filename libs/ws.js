@@ -1,4 +1,4 @@
-const	apiversion = 76,
+const	apiversion = 79,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -171,22 +171,26 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 exports.botMessage = function(bot, roomId, content, cb){
 	if (!roomId) throw "missing room Id";
 	setTimeout(function(){
-		db.on({content:content, author:bot.id, room:roomId, created:Date.now()/1000|0})
-		.then(function(m){
-			commands.onBotMessage(bot, m);
-			return m;
+		var message = {content, author:bot.id, room:roomId, created:Date.now()/1000|0};
+		message.authorname = bot.name;
+		db.on()
+		.then(function(){
+			return commands.onBotMessage.call(this, bot, message);
 		})
-		.then(db.storeMessage)
+		.then(function(){
+			return this.storeMessage(message);
+		})
 		.then(function(m){
-			m.authorname = bot.name;
-			m.avs = bot.avatarsrc;
-			m.avk = bot.avatarkey;
-			m.bot = true;
-			m.room = roomId;
+			message = m;
+			message.authorname = bot.name;
+			message.avs = bot.avatarsrc;
+			message.avk = bot.avatarkey;
+			message.bot = true;
+			message.room = roomId;
 			pageBoxer.onSendMessage(this, m, function(t, c){
 				emitToRoom(roomId, t, c);
 			});
-			return [rooms.mem.call(this, roomId), m];
+			return [rooms.mem.call(this, roomId), message];
 		})
 		.spread(function(memroom, m){
 			if (!(m.id<=memroom.lastMessageId)) {
@@ -198,8 +202,18 @@ exports.botMessage = function(bot, roomId, content, cb){
 			}
 			if (cb) return cb.call(this, m);
 		})
+		.catch(function(e){
+			console.log('error in botMessage:', e);
+		})
 		.finally(db.off);
 	}, 300);
+}
+
+exports.botFlake= function(bot, roomId, content){
+	io.sockets.in(roomId).emit('message', {
+		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
+		created:Date.now()/1000|0, bot:true, room:roomId, content:content
+	});
 }
 
 // this simplified ping function isn't used for normal messages but for bots
