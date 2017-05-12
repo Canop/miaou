@@ -62,7 +62,7 @@
 		// (re)builds the state of the game from the moves (checks absolutely nothing)
 		restore: function(g){
 			g.cells = matrix(10, -1);
-			if (g.moves) {
+			if (g.moves && g.moves.length) {
 				var moves = [].map.call(g.moves, Tribo.decodeMove), lastMove = moves[moves.length-1];
 				moves.forEach(function(move){
 					g.cells[move.x][move.y] = move.p;
@@ -83,7 +83,7 @@
 		},
 		//
 		computeZonesAndScores: function(g){
-			var nbmoves = g.moves.length;
+			var nbmoves = g.moves ? g.moves.length : 0;
 			if (nbmoves<6) return g.scores = [nbmoves+1>>1, nbmoves>>1];
 			g.cellZone = matrix(10, null); // holds a pointer to the zone containing the cell
 			var	c = g.cells,
