@@ -128,7 +128,7 @@ Then restart pg :
 
 You'll need this shell every time you want to mess with the tables, or for the first installation. Here's how it's launched :
 
-	psql -U miaou -W miaou
+	psql -U miaou -h 127.0.0.1 -W miaou
 	
 ## Create the tables
 
