@@ -16,13 +16,11 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		{key:'up', icon:'&#xe815;'},	// fontello icon-thumbs-up-alt
 		{key:'down', icon:'&#xe816;'}	// fontello icon-thumbs-down-alt
 	];
+	chat.lastMessageId = 0;
 
 	var listeners = {};
 
 	function renderMessage($c, message, oldMessage){
-		// if (oldMessage && message.content===oldMessage.content && $c.text().length) {
-		// 	return; // mainly to avoid removing boxed content
-		// }
 		if (!message.content) {
 			$c.empty().closest('.message').addClass('deleted');
 			return true;
@@ -40,6 +38,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 				message.content, message.authorname
 			));
 			// ping and reply colorization
+			// optm: the following calls to css provoke reflows...
 			$c.find('.ping').css('border-color', function(){
 				return skin.stringToColour(this.textContent.trim().slice(1));
 			});

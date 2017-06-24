@@ -166,14 +166,14 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		return notification;
 	}
 
-	function resizeUser($u){
+	md.resizeUser = function($u){
 		$u.removeClass('size0 size1 size2 size3 size4');
 		$u.addClass('size'+Math.min($u.height()/22|0, 4));
 	}
 
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
-	function resize($md, wasAtBottom){
+	md.resize = function($md, wasAtBottom){
 		var $content = $md.find('.content');
 		var resize = function(){
 			$content.removeClass("closed");
@@ -208,7 +208,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			t.$content.addClass("closed").height();
 		});
 		$messages.find('.user').each(function(){
-			resizeUser($(this));
+			md.resizeUser($(this));
 		});
 		if (wasAtBottom) gui.scrollToBottom();
 	}
@@ -385,11 +385,6 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			var $mdate = $('<div>').addClass('mdate').text(time.formatTime(message.created)).appendTo($md);
 			if (locals.userPrefs.datdpl!=="always") $mdate.hide();
 		}
-		resize($md, shouldStickToBottom);
-		resizeUser($md.siblings('.user'));
-		if (shouldStickToBottom && (!message.id || message.id==$('#messages .message').last().attr('mid'))) {
-			gui.scrollToBottom($md);
-		}
 		return $md;
 	}
 
@@ -425,7 +420,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 					'<div class=box'+(args.class ? (' class='+args.class) : '')+'>'+args.to+'</div>'
 				);
 			}).find('a[href]').attr('target', '_blank');
-			resize($m, wab);
+			md.resize($m, wab);
 		} catch (e) {
 			console.log("boxing failed", args);
 		}

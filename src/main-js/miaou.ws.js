@@ -16,6 +16,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 				isAtBottom = gui.isAtBottom(),
 				shouldStickToBottom = isAtBottom || info.state!=='connected';
 			messages = Array.isArray(messages) ? messages.sort(function(m1, m2){ return m1.id-m2.id }) : [messages];
+			var	addedMD = [],
+				lastMessageId,
+				$lastMd;
 			messages.forEach(function(message){
 				if (chat.trigger('incoming_message', message) === false) return;
 				if (shouldStickToBottom && !visible) {
@@ -27,13 +30,27 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 				var $md = md.addMessage(message, shouldStickToBottom);
 				$md.addClass(visible||info.state!=='connected' ? 'rvis' : 'rnvis');
 				var ping = pingRegex.test(message.content) && message.author!=locals.me.id;
-				if (message.id) md.updateNotableMessage(message);
+				if (message.id) {
+					if (message.id>chat.lastMessageId) {
+						chat.lastMessageId = lastMessageId = message.id;
+						$lastMd = $md;
+					}
+					md.updateNotableMessage(message);
+				}
 				if (
 					(message.id||ping) && time.isNew(message) && message.content
 				) {
 					notif.touch(message.id, ping, message.authorname, message.content, locals.room, $md);
 				}
+				addedMD.push($md);
 			});
+			addedMD.forEach(function($md){
+				md.resize($md, shouldStickToBottom);
+				md.resizeUser($md.siblings('.user'));
+			});
+			if (shouldStickToBottom && lastMessageId === chat.lastMessageId) {
+				gui.scrollToBottom($lastMd);
+			}
 			md.updateLoaders();
 			md.showMessageFlowDisruptions();
 			if (typeof prettyPrint !== 'undefined') prettyPrint();

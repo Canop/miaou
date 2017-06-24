@@ -21,7 +21,7 @@ miaou(function(prefs, chat, ed, local, md){
 	}
 
 	prefs.get = function(name){
-		return localPref(name) || local.userPrefs[name];
+		return localPref(name) || (local.userPrefs||{})[name];
 	}
 
 	prefs.funLowerThan = function(min){
