@@ -30,7 +30,7 @@
     "pug": ">=2.0.0-beta11",
     "redis": ">=0.9.1",
     "request": ">=2.34.0",
-    "socket.io": ">=1.0.6"
+    "socket.io": ">=2.0.1"
   },
   "engines": {
     "node": ">=7.0.0"
