@@ -89,8 +89,10 @@ exports.appPostAuths = function(req, res){
 	var room;
 	db.on([+req.query.id, +req.user.id])
 	.spread(db.fetchRoomAndUserAuth)
-	.then(function(r){
+	.then(async function(r){
 		room = r;
+		var	author = req.user.name,
+			messageLines = [];
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);
 		if (!exports.checkAtLeast(room.auth, 'admin')) {
 			return server.renderErr(res, "Admin auth is required");
@@ -98,32 +100,40 @@ exports.appPostAuths = function(req, res){
 		if (r.dialog) {
 			return server.renderErr(res, "You can't change authorizations of a dialog room");
 		}
-		var m, modifiedUserId, actions = [];
+		var m, modifiedUser, actions = [];
 		for (var key in req.body) {
 			if ((m = key.match(/^answer_request_(\d+)$/))) {
 				var	accepted = req.body[key]==='grant',
 					denyMessage = req.body['deny_message_'+m[1]];
-				modifiedUserId = +m[1];
+				modifiedUser = await this.getUserById(+m[1]);
 				if (accepted) {
-					actions.push({cmd:'insert_auth', auth:'write', user:modifiedUserId});
-					actions.push({cmd:'delete_ar', user:modifiedUserId});
+					messageLines.push(`@${author} gave *write* right to @${modifiedUser.name}.`);
+					actions.push({cmd:'insert_auth', auth:'write', user:modifiedUser.id});
+					actions.push({cmd:'delete_ar', user:modifiedUser.id});
 				} else {
-					actions.push({cmd:'deny_ar', user:modifiedUserId, message:denyMessage||''});
+					actions.push({cmd:'deny_ar', user:modifiedUser.id, message:denyMessage||''});
 				}
-				ws.emitAccessRequestAnswer(room.id, modifiedUserId, accepted, denyMessage);
+				ws.emitAccessRequestAnswer(room.id, modifiedUser.id, accepted, denyMessage);
 			} else if ((m = key.match(/^insert_auth_(\d+)$/))) {
-				if (req.body[key]!='none') actions.push({cmd:'insert_auth', auth:req.body[key], user:+m[1]});
+				if (req.body[key]!='none') {
+					modifiedUser = await this.getUserById(+m[1]);
+					var auth = req.body[key];
+					messageLines.push(`@${author} gave *${auth}* authorization to @${modifiedUser.name}.`);
+					actions.push({cmd:'insert_auth', auth, user:modifiedUser.id});
+				}
 			} else if ((m = key.match(/^change_auth_(\d+)$/))) {
 				var new_auth = req.body[key];
-				modifiedUserId = +m[1];
+				modifiedUser = await this.getUserById(+m[1]);
 				if (new_auth==='none') {
-					actions.push({cmd:'delete_auth', user:modifiedUserId});
+					actions.push({cmd:'delete_auth', user:modifiedUser.id});
+					messageLines.push(`@${author} removed all rights of @${modifiedUser.name}.`);
 					if (r.private) {
-						ws.throwOut(modifiedUserId, r.id, 'Your rights to this room have been revoked');
-						ws.throwOut(modifiedUserId, 'w'+r.id);
+						ws.throwOut(modifiedUser.id, r.id, 'Your rights to this room have been revoked');
+						ws.throwOut(modifiedUser.id, 'w'+r.id);
 					}
 				} else {
-					actions.push({cmd:'update_auth', user:modifiedUserId, auth:new_auth});
+					messageLines.push(`@${author} changed rights of @${modifiedUser.name} to *${new_auth}*.`);
+					actions.push({cmd:'update_auth', user:modifiedUser.id, auth:new_auth});
 				}
 			} else if ((m = key.match(/^unban_(\d+)_(\d+)$/))) {
 				var banid = +m[1], banned = +m[2];
@@ -131,6 +141,9 @@ exports.appPostAuths = function(req, res){
 				actions.push({cmd:'delete_ar', user:banned});
 				ws.emitAccessRequestAnswer(room.id, banned, true);
 			}
+		}
+		if (messageLines.length) {
+			ws.botMessage(null, room.id, messageLines.join("\n"));
 		}
 		return this.changeRights(actions, req.user.id, r);
 	}).then(function(){
