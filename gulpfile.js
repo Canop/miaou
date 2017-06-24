@@ -89,7 +89,9 @@ gulp.task("server-js", ()=>
 			"complexity": [	0, 10 ],
 			"dot-location": [ 2, "property"	],
 			"no-extra-label": [ 2 ],
-			"indent": [ 2, "tab" ],
+			"indent": [ 2, "tab", {
+				"MemberExpression": "off"
+			}],
 			"brace-style": [ 2, "1tbs" ],
 			"linebreak-style": [ 2, "unix" ],
 			"no-eval": 2,
@@ -145,7 +147,9 @@ gulp.task("lint-client-js", ()=>
 			"complexity": [	0, 10 ],
 			"dot-location": [ 2, "property"	],
 			"no-extra-label": [ 2 ],
-			"indent": [ 2, "tab" ],
+			"indent": [ 2, "tab", {
+				"MemberExpression": 0
+			}],
 			"brace-style": [ 0, "1tbs" ],
 			"linebreak-style": [ 2, "unix" ],
 			"no-eval": 2,

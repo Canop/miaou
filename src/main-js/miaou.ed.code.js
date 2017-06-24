@@ -38,15 +38,17 @@ miaou(function(ed){
 			ed.code.onMove();
 			return;
 		}
-		if ((
-			this.selectionStart===this.selectionEnd
-		) || (
-			~val.slice(this.selectionStart, this.selectionEnd+1).indexOf('\n')
-		) || (
-			this.selectionEnd===val.length && this.selectionStart===this.selectionEnd
-		) || (
-			this.selectionEnd===val.length && (this.selectionStart===0||val[this.selectionEnd-1]==='\n')
-		)) {
+		if (
+			(
+				this.selectionStart===this.selectionEnd
+			) || (
+				~val.slice(this.selectionStart, this.selectionEnd+1).indexOf('\n')
+			) || (
+				this.selectionEnd===val.length && this.selectionStart===this.selectionEnd
+			) || (
+				this.selectionEnd===val.length && (this.selectionStart===0||val[this.selectionEnd-1]==='\n')
+			)
+		) {
 			$input.selectLines().replaceSelection(toggleLinesCode);
 		} else {
 			$input.replaceSelection(function(s){ return /^`[\s\S]*`$/.test(s) ? s.slice(1, -1) : '`'+s+'`' });
@@ -67,7 +69,7 @@ miaou(function(ed){
 		}
 		return true;
 	}
-	
+
 	// analyse du code sous le curseur
 	function BlockAnalysis(){
 		var input = this.input = document.getElementById('input');
@@ -88,7 +90,7 @@ miaou(function(ed){
 			}
 		}
 	}
-	
+
 	// show or hide the code controls, depending whether the cursor is over some code
 	BlockAnalysis.prototype.showHideControls = function(){
 		if (!this.isCode) {
@@ -133,13 +135,13 @@ miaou(function(ed){
 		input.selectionEnd += ds;
 		input.focus();
 	}
-	
+
 	$('#input-panel').on('click', '.lang', function(){
 		var lang = $(this).text();
 		var ba = new BlockAnalysis();
 		ba.setLang(lang);
 	});
-	
+
 	ed.code.onMove = function(){
 		var ba = new BlockAnalysis();
 		ba.showHideControls();

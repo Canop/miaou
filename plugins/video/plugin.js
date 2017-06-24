@@ -28,13 +28,15 @@ function makeVD(shoe, message){
 // Sets a missing shoe whenever possible
 function getVD(shoe, mid){
 	var vd = cache.get(mid);
-	return (
-		vd
-		? Promise.cast(vd)
-		: shoe.db.on(mid).then(shoe.db.getMessage).then(function(m){
+	var p;
+	if (vd) {
+		p = Promise.cast(vd);
+	} else {
+		p = shoe.db.on(mid).then(shoe.db.getMessage).then(function(m){
 			return makeVD(shoe, m);
-		}).finally(shoe.db.off)
-	).then(function(vd){
+		}).finally(shoe.db.off);
+	}
+	return p.then(function(vd){
 		var index = -1;
 		if (vd.usernames[0]===shoe.publicUser.name) vd.shoes[index=0] = shoe;
 		else if (vd.usernames[1]===shoe.publicUser.name) vd.shoes[index=1] = shoe;

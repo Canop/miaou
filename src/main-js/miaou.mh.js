@@ -8,8 +8,8 @@ miaou(function(mh, time){
 			$('<div>').addClass('item').append(
 				$('<span>').addClass('mtime').text(
 					current.changed
-					? ("edition : " + time.formatTime(current.changed))
-					: ("creation : " + time.formatTime(current.created))
+						? ("edition : " + time.formatTime(current.changed))
+						: ("creation : " + time.formatTime(current.created))
 				)
 			).append(
 				$('<div>').append(current.content.split('\n').map(function(t){ return $('<div>').text(t) }))

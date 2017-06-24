@@ -32,7 +32,7 @@ There are various valid ways to install them. Be sure to install a recent versio
 You must install and start redis. There's no specific configuration to do for Miaou (it's preferable to configure redis to *not* save on disk, as we only use it as a session cache making it possible to restart miaou without the users noticing).
 
 	sudo apt-get install redis-server
-	
+
 There's several ways to start it. Here's the simplest one:
 
 	redis-server &
@@ -56,7 +56,7 @@ When you'll want to update Miaou later, you'll do
 ## Fetch the npm dependencies
 
 	npm install
-	
+
 ## Build Miaou
 
 To build the application, run
@@ -97,7 +97,7 @@ but it might be a little harder...
 First create the DB and user, and grant the rights.
 
 	> sudo su postgres
-	[sudo] password for youruser: 
+	[sudo] password for youruser:
 	postgres@yourcomputer:/home/youruser$ psql
 	psql (9.4.0)
 	Type "help" for help.
@@ -109,7 +109,7 @@ First create the DB and user, and grant the rights.
 	postgres=# grant all privileges on database "miaou" to miaou;
 	GRANT
 	postgres=# SHOW hba_file;
-				   hba_file			   
+				   hba_file
 	--------------------------------------
 	 /etc/postgresql/9.4/main/pg_hba.conf
 	(1 row)
@@ -123,13 +123,13 @@ Add the following at the start of the list of authentication methods:
 Then restart pg :
 
 	sudo /etc/init.d/postgresql restart
-	
+
 ## Start the pg shell
 
 You'll need this shell every time you want to mess with the tables, or for the first installation. Here's how it's launched :
 
 	psql -U miaou -W miaou
-	
+
 ## Create the tables
 
 The easiest solution is to copy-paste the content of /sql/postgres-creation.sql into the pg shell. Note that you won't have to update the tables yourself, Miaou takes care of this updating when the schema changes or when a plugin needs a specific table.
@@ -147,7 +147,7 @@ In the config.js file, set up the required configuration :
 
 You need to set up at least one OAuth provider.
 
-* Google: create an OAuth account on https://code.google.com/apis/console/ 
+* Google: create an OAuth account on https://code.google.com/apis/console/
 * StackExchange: create an OAuth account on http://stackapps.com/apps/oauth/
 * Github: create an OAuth account on https://github.com/settings/applications
 
@@ -189,24 +189,24 @@ Copy (and maybe complete) this:
 
 	 server {
 		listen 80;
-		
+
 		# remove the following lines if you don't want to serve miaou over https
 		listen 443 ssl;
 		if ($ssl_protocol = "") {
 			rewrite ^ https://$host$request_uri? permanent;
 		}
 		ssl_certificate some-path.crt;
-		ssl_certificate_key some-other-path.key; 
-		
+		ssl_certificate_key some-other-path.key;
+
 		root /var/www/miaou;
 		index index.html;
 		server_name www.yourdomain;
-		error_page 404 /404.html;	  	  
-	  
+		error_page 404 /404.html;
+
 		# a reverse proxy for miaou, apart static which can be directly served
 		#  (assuming the deploy script copies the static directory in /var/www/miaou/static)
 		location / {
-			access_log off;	
+			access_log off;
 			proxy_pass http://www.yourdomain:8204/;
 			proxy_http_version 1.1;
 			proxy_set_header Upgrade $http_upgrade;
@@ -219,7 +219,7 @@ Copy (and maybe complete) this:
 			}
 		}
 		location /socket.io/ {
-			access_log off;	
+			access_log off;
 			proxy_pass http://www.yourdomain:8204/socket.io/;
 			proxy_http_version 1.1;
 			proxy_set_header Upgrade $http_upgrade;
@@ -228,6 +228,6 @@ Copy (and maybe complete) this:
 	  }
 
 Restart nginx:
-	
+
 	service nginx restart
-	  
+

@@ -118,12 +118,12 @@ function eventToMarkdown(event, data){
 	}
 	if (data.commits && data.commits.length) {
 		small.push("|Commit|Committer|Message|\n"
-		+ "|:-:|:-:|:-|\n"
-		+ data.commits.map(function(c){
-			return '|'+link(c, c.timestamp.replace("T", " ").replace(/:\d+\+/, " GMT+"))+'|'
-			+ link(c.committer)+'|'
-			+ c.message.split('\n', 1)[0]+'|\n';
-		}).join(''));
+			+ "|:-:|:-:|:-|\n"
+			+ data.commits.map(function(c){
+				return '|'+link(c, c.timestamp.replace("T", " ").replace(/:\d+\+/, " GMT+"))+'|'+
+					link(c.committer)+'|'+
+					c.message.split('\n', 1)[0]+'|\n';
+			}).join(''));
 	}
 	return big.map(t => "**"+t+"**\n")
 	+ small.join('\n');

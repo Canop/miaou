@@ -1,4 +1,4 @@
-const	apiversion = 79,
+const	apiversion = 80,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -170,6 +170,7 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 // Note that this doesn't send pings
 exports.botMessage = function(bot, roomId, content, cb){
 	if (!roomId) throw "missing room Id";
+	if (!bot) bot = miaou.bot;
 	setTimeout(function(){
 		var message = {content, author:bot.id, room:roomId, created:Date.now()/1000|0};
 		message.authorname = bot.name;
@@ -207,6 +208,13 @@ exports.botMessage = function(bot, roomId, content, cb){
 		})
 		.finally(db.off);
 	}, 300);
+}
+
+exports.botReply = function(bot, message, txt, cb){
+	let content = "@"+message.authorname;
+	if (message.id) content += "#"+message.id;
+	content += " " + txt;
+	exports.botMessage(bot||miaou.bot, message.room, content, cb);
 }
 
 exports.botFlake= function(bot, roomId, content){
@@ -780,8 +788,10 @@ function handleUserInRoom(socket, completeUser){
 		.map(db.getMessage)
 		.map(function(m){
 			var now = (Date.now()/1000|0);
-			m.room = shoe.room.id;  // to trigger a security exception if user tried
-						// to mod_delete a message of another room
+			// We fix the room in the message
+			// to trigger a security exception if user tried
+			// to mod_delete a message of another room
+			m.room = shoe.room.id;
 			m.content = "!!deleted by:" + shoe.publicUser.id + ' on:'+ now + ' ' + m.content;
 			return this.storeMessage(m, true)
 		})

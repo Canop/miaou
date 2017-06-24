@@ -4,11 +4,9 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	var	$input, input,
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
-		stash, // save of the unsent message edition, if any
+		stash, // saves the unsent messages editions, if any
 		commandArgAutocompleters = new Map, // map commandName -> (argStart, previousTokens)=>possibleValues
-		editedMessage, 	// currently edited message, if any
-				// (if you cycle through messages, their edited content
-				// is saved in a property stash)
+		editedMessage, 	// currently edited message
 		savedValue, $autocompleter, editwzin, replywzin,
 		acStartIndex;
 

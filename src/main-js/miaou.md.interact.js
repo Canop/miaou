@@ -115,11 +115,11 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	}
 	md.toggleMessageHoverInfos = function(e){
 		if (["A", "INPUT", "SELECT"].includes(e.target.tagName)) return;
-		(
-			$('.message-menu, .editButton, .replyButton, .deleteButton', this).length
-			? md.hideMessageHoverInfos
-			: md.showMessageHoverInfos
-		).call(this);
+		if ($('.message-menu, .editButton, .replyButton, .deleteButton', this).length) {
+			md.hideMessageHoverInfos.call(this);
+		} else {
+			md.showMessageHoverInfos.call(this);
+		}
 		return false;
 	}
 	// mainly a workaround for some mouseleave events I can't catch
