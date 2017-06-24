@@ -2,21 +2,23 @@
 miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, win, ws, wz){
 
 	var	$scroller = gui.$messageScroller = $('#message-scroller,#mpad').eq(0),
+		scrollerPaddingTop = parseInt($scroller.css('padding-top')),
 		scroller = $scroller[0];
 
 	gui.mobile = $(document.body).hasClass('mobile');
 
 	// FIXME use only one solution (but it's not easy)
-	gui.isAtBottom = gui.mobile
-	? function(){
-		return window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
-	}
-	: function(){
-		var	$messages = $('#messages'),
-			lastMessage = $messages.find('.message').last(),
-			pt = parseInt($scroller.css('padding-top'));
-		if (!lastMessage.length) return false;
-		return lastMessage.offset().top + lastMessage.height() < $scroller.offset().top + $scroller.height() + pt + 5;
+	if (gui.mobile) {
+		gui.isAtBottom = function(){
+			return window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+		};
+	} else {
+		gui.isAtBottom = function(){
+			var lm = document.getElementById("messages").lastChild; // last user message element
+			if (!lm) return false;
+			var messagesBottom = $scroller.offset().top + scroller.offsetHeight + scrollerPaddingTop + 5;
+			return $(lm).offset().top + lm.offsetHeight < 	messagesBottom;
+		}
 	}
 
 	function _scrollToBottom(){
