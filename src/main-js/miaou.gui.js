@@ -14,7 +14,9 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		};
 	} else {
 		gui.isAtBottom = function(){
-			var lm = document.getElementById("messages").lastChild; // last user message element
+			var messages = document.getElementById("messages");
+			if (!messages) return false;
+			var lm = messages.lastChild; // last user message element
 			if (!lm) return false;
 			var messagesBottom = $scroller.offset().top + scroller.offsetHeight + scrollerPaddingTop + 5;
 			return $(lm).offset().top + lm.offsetHeight < 	messagesBottom;
