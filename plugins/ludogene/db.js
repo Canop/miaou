@@ -46,3 +46,17 @@ exports.cleanOldInvitations = function(db, age){
 		console.log("Removed", res.rowCount, "old invitation(s)");
 	}).finally(db.off);
 }
+
+exports.cleanOldForgottenGames = function(db, age){
+	db.on().then(function(){
+		return this.execute(
+			`update message set content = replace(content, '"running"', '"refused"') where content `
+			+ `~ '!!game @\\w[\\w-]{2,19} \\{"type":"\\w+","status":"running".*moves":"[^"]{0,3}"\\}$'`
+			+ " and created<$1",
+			[(Date.now()/1000-age)|0],
+			"ludogene / auto_end_forgotten"
+		);
+	}).then(function(res){
+		console.log("Removed", res.rowCount, "old forgotten game(s)");
+	}).finally(db.off);
+}

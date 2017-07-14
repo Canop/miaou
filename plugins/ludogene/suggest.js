@@ -15,7 +15,8 @@ module.exports = function(ct, gameType){
 		local = ct.shoe.room.private || /\[tournament\]/i.test(ct.shoe.room.description);
 	return ludodb.getGameMessages(this,  local ? ct.shoe.room.id : 0)
 	.filter(function(m){
-		return	m.g.type===gameType && m.g.status!=="finished"
+		return	m.g.type===gameType
+			&& (m.g.status==="running" || m.g.status==="ask")
 			&& (m.g.players[0].name===p.name || m.g.players[1].id===p.id);
 	})
 	.then(function(messages){

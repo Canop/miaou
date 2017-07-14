@@ -26,7 +26,10 @@ exports.init = function(miaou){
 	ws = miaou.lib("ws");
 	tournament.init(miaou);
 	setTimeout(function(){
-		require('./db.js').cleanOldInvitations(db, 50*24*60*60);
+		require('./db.js').cleanOldInvitations(db, 5*24*60*60);
+	}, 15*60*1000);
+	setTimeout(function(){
+		require('./db.js').cleanOldForgottenGames(db, 30*24*60*60);
 	}, 5*60*1000);
 	return miaou.requestTag({
 		name: "Tribo",
