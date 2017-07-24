@@ -621,11 +621,13 @@ code {
 }
 .citation {
 	border-left: medium solid $citation-border-color;
-	margin-left: 15px;
 	padding-left: 5px;
 	display: inline-block;
 	background: $citation-background;
 	min-width: 70%;
+}
+.desktop .citation {
+	margin-left: 15px;
 }
 .h1 {
 	font-weight: bold;
