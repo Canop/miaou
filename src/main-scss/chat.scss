@@ -431,8 +431,8 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 	justify-content: flex-end;
 	button {
 		text-align: center;
-		padding: 0 3px;
-		margin-right: 2px;
+		padding: 0 2px;
+		margin: 0 1px;
 		&:last-child {
 			margin-right: 12px;
 		}
