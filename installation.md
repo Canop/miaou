@@ -162,7 +162,7 @@ For example with Google OAuth2, the registered callbacks used for the dystroy Mi
 
 The first one is for the local tests, the second one for the public server.
 
-With the new OAuth2 Google provider (passport-google-oauth2) you need to enable the Google+ API in the Google console developper unless Miaou will not be allowed to use it. Simply go to https://console.developers.google.com then look for "Google+" API in the Enable API menu.
+Hint: With Google as provider you now need to enable the Google+ API in the Google console developper (simply go to https://console.developers.google.com then look for "Google+" API in the Enable API menu).
 
 Hint: OAuth providers often need a small delay before propagating the changes so you might have to wait a few minutes before it works.
 
