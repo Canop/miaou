@@ -94,13 +94,11 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 
 	$('#create-room').click(function(){ location="room" });
 
-	$('#Miaou-logo').on('load', function(){
-		$('#M-menu').on('mouseenter', function(){
-			hideRoomsPanel();
-			$(this).addClass('open');
-		}).on('mouseleave', function(){
-			$(this).removeClass('open');
-		});
+	$('#M-menu').on('mouseenter', function(){
+		hideRoomsPanel();
+		$(this).addClass('open');
+	}).on('mouseleave', function(){
+		$(this).removeClass('open');
 	});
 
 	$(window).on('keydown', function(e){

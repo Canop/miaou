@@ -62,8 +62,19 @@ miaou(function(skin){
 	}
 
 
-	$('.Miaou-logo').on('load', function(){
-		$('path', this.getSVGDocument()).css('stroke', skin.getCssValue(/^\.Miaou-logo$/, 'color'));
+	function colorize(logo){
+		$('path', logo.getSVGDocument()).css('stroke', skin.getCssValue(/^\.Miaou-logo$/, 'color'));
+	}
+	$(".Miaou-logo").each(function(){
+		if (this.getSVGDocument()) {
+			console.log("logo already loaded");
+			colorize(this);
+			return;
+		}
+		this.addEventListener("load", function(){
+			console.log("logo loaded after ready");
+			colorize(this);
+		});
 	});
 
 });
