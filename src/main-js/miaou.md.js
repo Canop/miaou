@@ -198,7 +198,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		$messages.find('.closed').removeClass('closed');
 		$messages.find('.opener').remove();
 		$messages.each(function(){
-			var $md = $(this),
+			var	$md = $(this),
 				$content = $md.find('.content'),
 				h = $content.height();
 			if (h>158) todo.push({$md:$md, $content:$content});
