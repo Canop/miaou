@@ -3,7 +3,7 @@
 
 miaou(function(games, locals, ws){
 
-	var T = 8, // FIXME duplication with Flore.js
+	var	T = 8, // FIXME duplication with Flore.js
 		NO_CELL = -2,
 		CS = 24, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
@@ -69,47 +69,45 @@ miaou(function(games, locals, ws){
 		).attr({fill:this.colors[p], fillOpacity:0.6}).prependTo(this.s);
 	}
 
+	Panel.prototype.drawCell = function(i, j){
+		var cell = this.g.cells[i][j];
+		if (cell===NO_CELL) return;
+		if (this.holes[i][j]) this.holes[i][j].remove();
+		var	panel = this,
+			c = this.holes[i][j] = this.s.circle(this.XB+i*CS+CS/2, this.YB+j*CS+CS/2, BR);
+			userIsCurrentPlayer = this.g.current!==-1 && this.u===this.g.current;
+		if (cell!==-1) {
+			c.attr({fill:this.grads[cell]});
+			return;
+		}
+		c.attr({fill: this.holeGrad});
+		if (!userIsCurrentPlayer) return;
+		if (Flore.canPlay(this.g, i, j)) {
+			c.attr({cursor:'pointer'}).hover(
+				function(){
+					c.attr({fill: panel.colors[panel.u]});
+				},
+				function(){
+					c.attr({fill: panel.holeGrad});
+				}
+			).click(function(){
+				ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
+			});
+		} else { // hum... je pense que c'est une branche morte avec les règles actuelles, ça...
+			c.hover(
+				function(){ c.attr({fill: 'red'}) },
+				function(){ c.attr({fill: panel.holeGrad}) }
+			).click(function(){
+				ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
+			});
+		}
+	}
+
 	Panel.prototype.drawBoard = function(){
 		if (this.abstract) return;
-		var	panel = this,
-			s = this.s,
-			cells = this.g.cells,
-			XB = this.XB, YB = this.YB,
-			userIsCurrentPlayer = panel.g.current!==-1 && panel.u===panel.g.current;
 		for (var i=0; i<T; i++) {
 			for (var j=0; j<T; j++) {
-				if (cells[i][j]===NO_CELL) continue;
-				(function(i, j){
-					if (panel.holes[i][j]) panel.holes[i][j].remove();
-					var	cell = cells[i][j],
-						c = panel.holes[i][j] = s.circle(XB+i*CS+CS/2, YB+j*CS+CS/2, BR);
-					if (cell===-1) {
-						c.attr({fill: panel.holeGrad});
-						if (userIsCurrentPlayer) {
-							if (Flore.canPlay(panel.g, i, j)) {
-								c.attr({cursor:'pointer'}).hover(
-									function(){
-										c.attr({fill: panel.colors[panel.u]});
-									},
-									function(){
-										c.attr({fill: panel.holeGrad});
-									}
-								).click(function(){
-									ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
-								});
-							} else { // hum... je pense que c'est une branche morte, ça...
-								c.hover(
-									function(){ c.attr({fill: 'red'}) },
-									function(){	c.attr({fill: panel.holeGrad}) }
-								).click(function(){
-									ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
-								});
-							}
-						}
-					} else {
-						c.attr({fill:panel.grads[cell]});
-					}
-				})(i,j);
+				this.drawCell(i, j);
 			}
 		}
 	}
@@ -148,12 +146,11 @@ miaou(function(games, locals, ws){
 	games.Flore = {
 		render: function($c, m, g, abstract){
 			Flore.restore(g);
-			$c.empty().css('background', bg).closest('.message').removeClass('edited');
-			var id = 'flore_board_'+ boardCount++,
-				$s = $('<svg id='+id+'></svg>').appendTo($c),
-				s = Snap('#'+id), // <- there's probably something cleaner when you have the element, I don't know snapsvg well enough
+			$c.empty().addClass('wide content-rating-not-serious').css('background', bg)
+			.closest('.message').removeClass('edited');
+			var	s = ù('<svg', $c),
 				p = new Panel(m, g, s, $c.width(), abstract);
-			$s.width(p.W).height(p.H);
+			s.width(p.W).height(p.H);
 			$c.dat('ludo-panel', p);
 			if (g.status !== "ask") m.locked = true;
 			p.buildBoard();
@@ -163,11 +160,24 @@ miaou(function(games, locals, ws){
 		},
 		move: function($c, m, _, move){
 			var panel = $c.dat('ludo-panel');
+			if (!panel) {
+				console.log("Missing ludo-panel for move", m.id, $c);
+				return null;
+			}
 			m.locked = true;
-			panel.g.moves += Flore.encodeMove(move);
-			Flore.apply(panel.g, move);
+			if (newmove) {
+				panel.g.moves += movechar;
+				Flore.apply(panel.g, move);
+			}
 			panel.drawBoard();
 			panel.drawScores();
+			if (!panel.abstract) {
+				panel.showMoveLines(move);
+			}
+			if (!panel.abstract && !gui.mobile && panel.g.status==="finished") {
+				panel.addReplayPlayer($c);
+			}
+			return newmove;
 		},
 		fillHelp: function($div){
 			$div.css({
