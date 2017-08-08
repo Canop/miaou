@@ -18,7 +18,7 @@ function abstract($, line){
 			"XKCD: " + $("#ctitle").text()
 		)
 	));
-	$abstract.append($("<p>").append('#comic img'));
+	$abstract.append($("<p>").append($('#comic img')));
 	$abstract.append(
 		$("<a>")
 		.attr("href", explainBase+id )

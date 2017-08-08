@@ -7,13 +7,13 @@
 	max-width: 100%;
 }
 
-.xkcd a.xkcd-link:hover, .xkcd a.xkcd-link:focus {
+.box .xkcd .abstract  a.xkcd-link:hover, .box .xkcd .abstract a.xkcd-link:focus {
 	background-color: #FFF;
 	color: #6E7B91;
 	box-shadow: none;
 }
 
-.xkcd a.xkcd-link {
+.box .xkcd .abstract a.xkcd-link {
 	background-color: #6E7B91;
 	color: #FFF;
 	border: 1px solid #333;
