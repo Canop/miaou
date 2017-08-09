@@ -3,24 +3,24 @@
 
 miaou(function(games, locals, ws){
 
-	var	T = 8, // FIXME duplication with Flore.js
-		NO_CELL = -2,
+	var	NO_CELL = -2,
 		CS = 24, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
-		bg = Snap.hsb(.2, .7, .3),
-		boardCount = 0;
+		colors = ['#ADD8E6', 'red'], // blue, red
+		textColors = ['#ADD8E6', '#FA8072'],
+		Flore = window.Flore,
+		T = Flore.T,
+		bg = "#17672b";
 
 	function Panel(m, g, s, availableWidth, abstract){
 		this.m = m;
 		this.g = g; // game
 		this.s = s; // snap thing
 		this.u = -1; // user index in the game
-		this.colors = ['FloralWhite', 'LightPink'],
-		this.grads = this.colors.map(function(c){ return s.gradient("r(0.3,0.3,1)"+c+"-(0,0,0)") });
-		g.players.forEach(function(p, i){
-			  if (p.id===locals.me.id) this.u=i;
-		}, this);
-		this.holeGrad = s.gradient("r(0.3,0.3,1)rgba(0,0,0,0.5)-"+bg);
+		this.colors = ['FloralWhite', 'LightPink'];
+		this.grads = colors.map(function(c){ return s.rgrad(0.3, 0.3, 1, c, '#000') });
+		this.holeGrad = s.rgrad(0.3, 0.3, 1, 'rgba(0,0,0,0.5)', bg);
+		g.players.forEach((p, i)=>{ if (p.id===locals.me.id) this.u=i });
 		if (abstract) {
 			this.layout = "row";
 			this.W = availableWidth;
@@ -33,10 +33,10 @@ miaou(function(games, locals, ws){
 		} else if (availableWidth>400) {
 			this.layout = "row";
 			this.W = Math.min(700, 400+.3*(availableWidth-400)); // width of the whole drawed area
-			this.H = 215; // height of the whole drawed area
+			this.H = 150; // height of the whole drawed area
 			this.XB = (this.W - T*CS); // X of the board
 			this.RS = this.XB - 15; // right of the scores
-			this.YB = (this.H - T*CS)/2;
+			this.YB = (this.H - T*CS)/2+2;
 			this.XS = Math.max(20, this.XB-194);
 			this.LHS = 28; // height of a score line
 		} else {
@@ -44,7 +44,7 @@ miaou(function(games, locals, ws){
 			this.layout = "column";
 			this.W = T*CS;
 			this.W += Math.max(4, (availableWidth-this.W)/2);
-			this.H = 280;
+			this.H = 220;
 			this.XB = (this.W - T*CS);
 			this.RS = this.W - 15;
 			this.YB = 70;
@@ -60,13 +60,13 @@ miaou(function(games, locals, ws){
 		for (var i=0; i<T; i++) this.holes[i] = [];
 	}
 
-	Panel.prototype.lineMark = function(line, p){
-		return this.s.rect(
-			this.XB+line.x*CS, this.YB+line.y*CS,
-			line.d==='v' ? CS : CS*3,
-			line.d==='h' ? CS : CS*3,
-			CS/2, CS/2
-		).attr({fill:this.colors[p], fillOpacity:0.6}).prependTo(this.s);
+	Panel.prototype.drawFlower = function(cx, cy, color, radius, hole){
+		var r = radius*.6;
+		ù('<circle', hole).attr({cx:cx, cy:cy-r, r:r, fill:color});
+		ù('<circle', hole).attr({cx:cx+r, cy:cy, r:r, fill:color});
+		ù('<circle', hole).attr({cx:cx, cy:cy+r, r:r, fill:color});
+		ù('<circle', hole).attr({cx:cx-r, cy:cy, r:r, fill:color});
+		ù('<circle', hole).attr({cx:cx, cy:cy, r:r*.6, fill:"#FFD700", strokeWidth:1});
 	}
 
 	Panel.prototype.drawCell = function(i, j){
@@ -74,30 +74,36 @@ miaou(function(games, locals, ws){
 		if (cell===NO_CELL) return;
 		if (this.holes[i][j]) this.holes[i][j].remove();
 		var	panel = this,
-			c = this.holes[i][j] = this.s.circle(this.XB+i*CS+CS/2, this.YB+j*CS+CS/2, BR);
+			cx = this.XB+i*CS,
+			cy = this.YB+j*CS,
+			d = CS/2,
+			hole = this.holes[i][j] = ù('<svg', this.s).attr({x:cx, y:cy}),
+			c = ù('<circle', hole).attr({cx:d, cy:d, r:BR, fill: this.holeGrad}),
 			userIsCurrentPlayer = this.g.current!==-1 && this.u===this.g.current;
 		if (cell!==-1) {
-			c.attr({fill:this.grads[cell]});
+			this.drawFlower(d, d, this.grads[cell], BR, hole);
 			return;
 		}
-		c.attr({fill: this.holeGrad});
 		if (!userIsCurrentPlayer) return;
 		if (Flore.canPlay(this.g, i, j)) {
-			c.attr({cursor:'pointer'}).hover(
-				function(){
-					c.attr({fill: panel.colors[panel.u]});
-				},
-				function(){
-					c.attr({fill: panel.holeGrad});
-				}
-			).click(function(){
+			c.attr({cursor:'pointer'})
+			.on('mouseenter', function(){
+				c.attr({fill: panel.colors[panel.u]});
+			})
+			.on('mouseleave click', function(){
+				c.attr({fill: panel.holeGrad});
+			})
+			.on('click', function(){
 				ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
 			});
 		} else { // hum... je pense que c'est une branche morte avec les règles actuelles, ça...
-			c.hover(
-				function(){ c.attr({fill: 'red'}) },
-				function(){ c.attr({fill: panel.holeGrad}) }
-			).click(function(){
+			c.on('mouseenter', function(){
+				c.attr({fill: 'red'})
+			})
+			.on('mouseleave', function(){
+				c.attr({fill: panel.holeGrad})
+			})
+			.on('click', function(){
 				ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
 			});
 		}
@@ -115,31 +121,34 @@ miaou(function(games, locals, ws){
 	Panel.prototype.buildScores = function(){
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
-			var name = player.name,
-				attr = { fill:panel.colors[i] };
-			if (!panel.abstract) attr.fontWeight = 'bold';
-			return s.text(XS, panel.LHS*(i+1), name.length>21 ? name.slice(0,18)+'…' : name).attr(attr);
+			var name = player.name;
+			var text = ù('<text', s)
+			.text(name.length>21 ? name.slice(0, 18)+'…' : name)
+			.attr({ x:XS, y:panel.LHS*(i+1), fill:textColors[i] });
+			return text;
 		});
 		panel.scores = panel.g.players.map(function(player, i){
-			return s.text(RS, panel.LHS*(i+1), '0').attr({
-				fill: panel.colors[i],
-				fontWeight: 'bold', textAnchor: 'end'
-			})
+			return ù('<text', s).text('0').attr({
+				x:RS, y:panel.LHS*(i+1), fill:textColors[i],
+				fontWeight:'bold', textAnchor:'end'
+			});
 		});
 	}
 
 	Panel.prototype.drawScores = function(){
-		this.scores[0].node.innerHTML = (this.g.scores[0]); // Q : what's the proper way to do this using snapsvg ?
-		this.scores[1].node.innerHTML = (this.g.scores[1]);
+		var g = this.g;
+		this.scores.forEach(function(s, i){ s.text(g.scores[i]) });
 		if (this.currentPlayerMark) this.currentPlayerMark.remove();
 		if (this.g.current >= 0) {
-			this.currentPlayerMark = this.s.text(this.XS-15, this.LHS*(this.g.current+1), "►").attr({
-				fill: this.grads[this.g.current], fontWeight: 'bold'
-			})
+			this.currentPlayerMark = ù('<text', this.s).text("►").attr({
+				x:this.XS-15, y:this.LHS*(g.current+1),
+				fill:this.grads[g.current], fontWeight:'bold'
+			});
 		} else {
-			this.currentPlayerMark = this.s.text(this.XS-18, this.LHS*((this.g.scores[1]>this.g.scores[0])+1), "♛").attr({
-				fill: "Goldenrod", fontWeight: 'bold', fontSize: "140%"
-			})
+			this.currentPlayerMark = ù('<text', this.s).text("♛").attr({
+				x:this.XS-18, y:this.LHS*((g.scores[1]>=g.scores[0])+1),
+				fill:"Goldenrod", fontWeight:'bold', fontSize:"140%"
+			});
 		}
 	}
 
@@ -164,6 +173,8 @@ miaou(function(games, locals, ws){
 				console.log("Missing ludo-panel for move", m.id, $c);
 				return null;
 			}
+			var	movechar = Tribo.encodeMove(move),
+				newmove = panel.g.moves.slice(-1) !== movechar;
 			m.locked = true;
 			if (newmove) {
 				panel.g.moves += movechar;
@@ -171,12 +182,6 @@ miaou(function(games, locals, ws){
 			}
 			panel.drawBoard();
 			panel.drawScores();
-			if (!panel.abstract) {
-				panel.showMoveLines(move);
-			}
-			if (!panel.abstract && !gui.mobile && panel.g.status==="finished") {
-				panel.addReplayPlayer($c);
-			}
 			return newmove;
 		},
 		fillHelp: function($div){
@@ -187,8 +192,9 @@ miaou(function(games, locals, ws){
 					textAlign:'center', fontSize:'120%', fontWeight:'bold', margin:'4px'
 				})
 			).append($('<p>').html(
-				'When a flower is surrounded by more than three flowers, it dies and the other player gains one point.<br>'+
-				'First player with ten points wins.<br>'+
+				'When a flower is surrounded by more than three flowers,'+
+				' it dies and the other player gains one point.<br>'+
+				`First player with ${Flore.GOAL} points wins.<br>`+
 				'To start a new game, just type <i>!!flore&nbsp;@somename</i>'
 			));
 		}

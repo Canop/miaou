@@ -2,13 +2,14 @@
 
 var Flore = (function(){
 
-	var	T = 8,
-		S = T-2,
-		GOAL = 10,
+	var	T = 6,
+		GOAL = 5,
 		NO_CELL = -2,
 		NO_PLAYER = -1;
 
 	return {
+		T: T,
+		GOAL: GOAL,
 		encodeMove: function(move){
 			return String.fromCharCode(move.y*T+move.x + (move.p*100) + 40);
 		},
@@ -25,10 +26,10 @@ var Flore = (function(){
 		//~ },
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y){
-			return !!(x%S+y%S && g.cells[x][y]===NO_PLAYER);
+			return g.cells[x][y]===NO_PLAYER;
 		},
 		isValid: function(g, move){
-			return !!(move.p===g.current && move.x%S+move.y%S && g.cells[move.x][move.y]===NO_PLAYER);
+			return move.p===g.current && g.cells[move.x][move.y]===NO_PLAYER;
 		},
 		addAround: function(g, x, y, d){
 			if (x>0) {
@@ -112,12 +113,16 @@ var Flore = (function(){
 					g.cells[i] = [];
 					g.flowersAround[i] = [];
 					for (var j=0; j<T; j++) {
-						g.cells[i][j] = i%S+j%S ? NO_PLAYER : NO_CELL;
+						g.cells[i][j] = NO_PLAYER;
 						g.flowersAround[i][j] = 0;
 					}
 				}
-				for (var i=Math.random()*2+2|0; i-->0;) {
-					g.cells[1+Math.random()*(S-1)|0][1+Math.random()*(S-1)|0] = NO_CELL
+				g.cells[0][0] = NO_CELL;
+				g.cells[0][T-1] = NO_CELL;
+				g.cells[T-1][0] = NO_CELL;
+				g.cells[T-1][T-1] = NO_CELL;
+				for (var i=Math.random()*2+3|0; i-->0;) {
+					g.cells[Math.random()*T|0][Math.random()*T|0] = NO_CELL
 				}
 			} else {
 				for (var i=0; i<T; i++) {
@@ -133,7 +138,7 @@ var Flore = (function(){
 						}
 					}
 				}
-				g.current = g.finished ? -1 : g.moves.length%2;
+				g.current = g.status==="finished" ? -1 : g.moves.length%2;
 			}
 		}
 	}

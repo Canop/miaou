@@ -17,9 +17,10 @@ var	db,
 
 var gametypes = {
 	Tribo: require('./client-scripts/Tribo.js'),
+	Flore: require('./client-scripts/Flore.js'),
 };
 
-exports.init = function(miaou){
+exports.init = async function(miaou){
 	bot = miaou.bot;
 	db = miaou.db;
 	rooms = miaou.lib("rooms");
@@ -31,9 +32,13 @@ exports.init = function(miaou){
 	setTimeout(function(){
 		require('./db.js').cleanOldForgottenGames(db, 30*24*60*60);
 	}, 5*60*1000);
-	return miaou.requestTag({
+	await miaou.requestTag({
 		name: "Tribo",
 		description: "The Bestest Game.\nInvite a player with\n\t!!tribo @username"
+	});
+	await miaou.requestTag({
+		name: "Flore",
+		description: "A game with flowers (in development).\nInvite a player with\n\t!!flore @username"
 	});
 }
 
@@ -212,6 +217,10 @@ exports.registerCommands = function(cb){
 	cb({
 		name:'tribo', fun:onCommand, botfun:onBotCommand,
 		help:"propose a game of Tribo. Type `!!tribo @somebody`"
+	});
+	cb({
+		name:'flore', fun:onCommand, botfun:onBotCommand,
+		help:"propose a game of Flore. Type `!!flore @somebody`"
 	});
 	cb({
 		name:'tribostats', fun:tribostats.onCommand,
