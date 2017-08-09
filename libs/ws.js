@@ -285,9 +285,12 @@ function handleUserInRoom(socket, completeUser){
 		watchset = new Set, // set of watched rooms ids (if any)
 		routes = new Map,
 		pendingEvent,
+		userIP = socket.handshake.headers["x-forwarded-for"]||socket.request.connection.remoteAddress,
 		welcomed = false;
 
-	console.log(completeUser.name, "connects from IP", socket.handshake.address);
+
+	console.log(completeUser.name, "connects from IP (m1)", userIP);
+	console.log(completeUser.name, "connects from IP (m3)", socket.request.connection.remoteAddress);
 
 	function send(v, m){
 		io.sockets.in(shoe.room.id).emit(v, clean(m));

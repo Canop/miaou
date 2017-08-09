@@ -114,7 +114,7 @@ miaou(function(games, chat, ed, locals, md, ms, notif, plugins, ws){
 						games[game.type].move($message.find('.content'), m, game, arg.move)
 						&& game.players[+!arg.move.p].id===locals.me.id
 					) {
-						notif.touch(m.id, true, playername, playername + ' made a move in your Tribo game');
+						notif.touch(m.id, true, playername, playername + ' made a move in your game');
 					}
 				});
 			});
