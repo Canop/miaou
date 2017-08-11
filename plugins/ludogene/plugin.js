@@ -58,18 +58,24 @@ function dbGetGame(mid){
 	});
 }
 
+function newGame(type, players){
+	var	gametype = gametypes[type],
+		g = { type, status:'ask', players };
+	if (!gametype) throw "unknown game type: "+type;
+	if (gametype.init) gametype.init(g);
+	gametype.restore(g);
+	return g;
+}
 
 exports.startGame = function(roomId, type, players, running){
-	var	gametype = gametypes[type],
-		game = { type:type, status:running?"running":"ask" };
-	if (!gametype) throw "unknown game type: "+type;
-	game.players = players.map(function(p){
+	var	players = players.map(function(p){
 		var gp = {name:p.name};
 		if (p.id) gp.id = p.id;
 		return gp;
 	});
+	var	game = newGame(type, players);
 	var	content = '!!game @' + players[0].name + " " + JSON.stringify(game);
-	gametype.restore(game);
+	var	gametype = gametypes[type];
 	return new Promise(function(resolve){
 		ws.botMessage(bot, roomId, content, function(m){
 			resolve(m);
@@ -100,6 +106,7 @@ function storeInMess(m, game){
 	}
 }
 
+
 function onCommand(ct){
 	var	m = ct.message,
 		cmd = ct.cmd.name,
@@ -119,14 +126,10 @@ function onCommand(ct){
 	if (otherUserName===shoe.publicUser.name) throw "You can't play against yourself (you would lose anyway)";
 	return this.getUserByName(otherUserName).then(function(otherUser){
 		if (!otherUser) throw "User @"+otherUserName+" not found";
-		storeInMess(m, {
-			players: [
-				{name:otherUserName}, // id will be resolved later
-				{id:m.author, name:m.authorname}
-			],
-			type: gameType,
-			status:'ask'
-		});
+		storeInMess(m, newGame(gameType, [
+			{name:otherUserName}, // id will be resolved later
+			{id:m.author, name:m.authorname}
+		]));
 	});
 }
 
@@ -137,14 +140,10 @@ function onBotCommand(cmd, args, bot, m){
 		console.log("wrong command from a bot", m);
 		return;
 	}
-	storeInMess(m, {
-		players: [
-			{name:match[1]}, // id will be resolved later
-			{id:bot.id, name:bot.name}
-		],
-		type: gameType,
-		status:'ask'
-	});
+	storeInMess(m, newGame(gameType, [
+		{name:match[1]}, // id will be resolved later
+		{id:bot.id, name:bot.name}
+	]));
 }
 
 exports.accept = function(mid, accepter){
@@ -246,22 +245,22 @@ exports.registerGameObserver = function(type, cb){
 // This function is just on for a temporary time.
 // Its goal is to let the AI see games again when some of them
 // were forgotten
-//exports.onSendMessage = function(shoe, m, send){
-//	if (/^!!game /.test(m.content)) {
-//		var match = m.content.match(/!!game @\S{3,} (.*)$/);
-//		if (match) {
-//			let	g = JSON.parse(match[1]),
-//				gametype = gametypes[g.type];
-//			if (gametype && gametype.observers && g.status !== "finished") {
-//				console.log("re-observing game ", m.id);
-//				gametype.restore(g);
-//				gametype.observers.forEach(function(fun){
-//					setTimeout(fun, 200, m, g);
-//				});
-//			}
-//		}
-//	}
-//}
+exports.onSendMessage = function(shoe, m, send){
+	if (/^!!game /.test(m.content)) {
+		var match = m.content.match(/!!game @\S{3,} (.*)$/);
+		if (match) {
+			let	g = JSON.parse(match[1]),
+				gametype = gametypes[g.type];
+			if (gametype && gametype.observers && g.status !== "finished") {
+				console.log("re-observing game ", m.id);
+				gametype.restore(g);
+				gametype.observers.forEach(function(fun){
+					setTimeout(fun, 200, m, g);
+				});
+			}
+		}
+	}
+}
 
 // This function is just on for a temporary time.
 // Its goal is to cure messages containing games with the old saving format

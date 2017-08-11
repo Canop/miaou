@@ -100,46 +100,46 @@ var Flore = (function(){
 			obj.scores = g.scores;
 			obj.cells = g.cells;
 		},
+		init: function(g){
+			g.current = 0;
+			g.scores = [0, 0];
+			g.moves = "";
+			g.cells = [];
+			for (var i=0; i<T; i++) {
+				g.cells[i] = [];
+				for (var j=0; j<T; j++) {
+					g.cells[i][j] = NO_PLAYER;
+				}
+			}
+			g.cells[0][0] = NO_CELL;
+			g.cells[0][T-1] = NO_CELL;
+			g.cells[T-1][0] = NO_CELL;
+			g.cells[T-1][T-1] = NO_CELL;
+			for (var i=Math.random()*2+3|0; i-->0;) {
+				g.cells[Math.random()*T|0][Math.random()*T|0] = NO_CELL
+			}
+		},
 		// (re)builds the state of the game
-		// In case of a new game, initializes a random board
 		restore: function(g){
 			g.flowersAround = [];
 			if (!g.cells) {
-				g.current = 0;
-				g.scores = [0, 0];
-				g.moves = "";
-				g.cells = [];
-				for (var i=0; i<T; i++) {
-					g.cells[i] = [];
-					g.flowersAround[i] = [];
-					for (var j=0; j<T; j++) {
-						g.cells[i][j] = NO_PLAYER;
-						g.flowersAround[i][j] = 0;
-					}
-				}
-				g.cells[0][0] = NO_CELL;
-				g.cells[0][T-1] = NO_CELL;
-				g.cells[T-1][0] = NO_CELL;
-				g.cells[T-1][T-1] = NO_CELL;
-				for (var i=Math.random()*2+3|0; i-->0;) {
-					g.cells[Math.random()*T|0][Math.random()*T|0] = NO_CELL
-				}
-			} else {
-				for (var i=0; i<T; i++) {
-					g.flowersAround[i] = [];
-					for (var j=0; j<T; j++) {
-						g.flowersAround[i][j] = 0;
-					}
-				}
-				for (var i=0; i<T; i++) {
-					for (var j=0; j<T; j++) {
-						if (g.cells[i][j]>=0) {
-							Flore.addAround(g, i, j, 1);
-						}
-					}
-				}
-				g.current = g.status==="finished" ? -1 : g.moves.length%2;
+				console.log("Uninitialized Flore Game!", g);
+				Flore.init(g);
 			}
+			for (var i=0; i<T; i++) {
+				g.flowersAround[i] = [];
+				for (var j=0; j<T; j++) {
+					g.flowersAround[i][j] = 0;
+				}
+			}
+			for (var i=0; i<T; i++) {
+				for (var j=0; j<T; j++) {
+					if (g.cells[i][j]>=0) {
+						Flore.addAround(g, i, j, 1);
+					}
+				}
+			}
+			g.current = g.status==="finished" ? -1 : g.moves.length%2;
 		}
 	}
 
