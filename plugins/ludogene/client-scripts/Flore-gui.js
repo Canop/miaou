@@ -10,7 +10,7 @@ miaou(function(games, locals, ws){
 		textColors = ['#ADD8E6', '#FA8072'],
 		Flore = window.Flore,
 		T = Flore.T,
-		bg = "#17672b";
+		bg = "linear-gradient(#17672b, #031)";
 
 	function Panel(m, g, s, availableWidth, abstract){
 		this.m = m;
