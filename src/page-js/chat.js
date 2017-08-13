@@ -42,7 +42,7 @@ miaou(function(chat, locals){
 	});
 
 	$(window).on('keydown', function(e){
-		if (e.which===70 && e.ctrlKey) {
+		if (e.which===70 && e.ctrlKey && !e.altKey) {
 			tab("search");
 			return false;
 		}
