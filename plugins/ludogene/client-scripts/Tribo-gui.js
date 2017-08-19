@@ -66,55 +66,57 @@ miaou(function(games, gui, locals, notif, skin, ws){
 		});
 	}
 
+	Panel.prototype.drawCell = function(i, j){
+		var	cell = this.g.cells[i][j],
+			panel = this,
+			s = this.s,
+			userIsCurrentPlayer = panel.g.current!==-1 && panel.u===panel.g.current;
+		if (panel.holes[i][j]) panel.holes[i][j].remove();
+		var	c = panel.holes[i][j] = ù('<circle', s).attr({cx:this.XB+i*CS+CS/2, cy:this.YB+j*CS+CS/2, r:BR});
+		if (cell!==-1) {
+			c.attr('fill', panel.grads[cell]);
+			return;
+		}
+		c.attr('fill', panel.holeGrad);
+		var zone = panel.g.cellZone ? panel.g.cellZone[i][j] : null;
+		if (zone && zone.owner!==undefined) {
+			c = ù('<g', s).append(c);
+			ù('<circle', c).attr({
+				cx:this.XB+i*CS+(CS+1)/2, cy:this.YB+j*CS+(CS+1)/2, r:BR/2, fill:panel.grads[zone.owner]
+			});
+		}
+		if (!userIsCurrentPlayer) return;
+		if (Tribo.canPlay(panel.g, i, j, panel.u)) {
+			var	lines = Tribo.getLines(panel.g, i, j, panel.u) || [],
+				lineMarks;
+			c.on('mouseenter', function(){
+				c.attr('fill', colors[panel.u]);
+				lineMarks = lines.map(function(line){
+					return panel.lineMark(line, panel.u)
+				});
+			}).on('mouseleave click', function(){
+				c.attr('fill', panel.holeGrad);
+				for (var k=0; lineMarks && k<lineMarks.length; k++) {
+					lineMarks[k].remove();
+				}
+			}).on('click', function(){
+				ws.emit('ludo.move', {
+					mid: panel.m.id,
+					move: Tribo.encodeMove({p:panel.u, x:i, y:j})
+				});
+				notif.userAct();
+			}).attr({cursor:'pointer'});
+		} else {
+			c.on('mouseenter', function(){ c.attr('fill', 'red') })
+			.on('mouseleave', function(){ c.attr('fill', panel.holeGrad) });
+		}
+	}
+
 	Panel.prototype.drawBoard = function(){
 		if (this.abstract) return;
-		var	panel = this, s = this.s, cells = this.g.cells, XB = this.XB, YB = this.YB,
-			userIsCurrentPlayer = panel.g.current!==-1 && panel.u===panel.g.current;
 		for (var i=0; i<T; i++) {
 			for (var j=0; j<T; j++) {
-				(function(i, j){
-					if (panel.holes[i][j]) panel.holes[i][j].remove();
-					var	cell = cells[i][j],
-						c = panel.holes[i][j] = ù('<circle', s).attr({cx:XB+i*CS+CS/2, cy:YB+j*CS+CS/2, r:BR});
-					if (cell===-1) {
-						c.attr('fill', panel.holeGrad);
-						var zone = panel.g.cellZone ? panel.g.cellZone[i][j] : null;
-						if (zone && zone.owner!==undefined) {
-							c = ù('<g', s).append(c);
-							ù('<circle', c).attr({
-								cx:XB+i*CS+(CS+1)/2, cy:YB+j*CS+(CS+1)/2, r:BR/2, fill:panel.grads[zone.owner]
-							});
-						}
-						if (userIsCurrentPlayer) {
-							if (Tribo.canPlay(panel.g, i, j, panel.u)) {
-								var	lines = Tribo.getLines(panel.g, i, j, panel.u) || [],
-									lineMarks;
-								c.on('mouseenter', function(){
-									c.attr('fill', colors[panel.u]);
-									lineMarks = lines.map(function(line){
-										return panel.lineMark(line, panel.u)
-									});
-								}).on('mouseleave click', function(){
-									c.attr('fill', panel.holeGrad);
-									for (var k=0; lineMarks && k<lineMarks.length; k++) {
-										lineMarks[k].remove();
-									}
-								}).on('click', function(){
-									ws.emit('ludo.move', {
-										mid: panel.m.id,
-										move: Tribo.encodeMove({p:panel.u, x:i, y:j})
-									});
-									notif.userAct();
-								}).attr({cursor:'pointer'});
-							} else {
-								c.on('mouseenter', function(){ c.attr('fill', 'red') })
-								.on('mouseleave', function(){ c.attr('fill', panel.holeGrad) });
-							}
-						}
-					} else {
-						c.attr('fill', panel.grads[cell]);
-					}
-				})(i, j);
+				this.drawCell(i, j);
 			}
 		}
 	}
