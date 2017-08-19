@@ -1,6 +1,3 @@
-// This is a temporary implementation for the Flore GUI
-// Hopefully I'll have a prettier rendering
-
 miaou(function(games, locals, ws){
 
 	var	NO_CELL = -2,
@@ -118,6 +115,38 @@ miaou(function(games, locals, ws){
 		}
 	}
 
+	Panel.prototype.removeLastMoves = function(){
+		if (!this.lastMoves) return;
+		for (var lm; (lm = this.lastMoves.shift());) lm.remove();
+	}
+
+	Panel.prototype.drawLastMoves = function(playerIndex){
+		this.removeLastMoves();
+		var	panel = this,
+			lastMoves = [],
+			found = false;
+		for (var i=this.g.moves.length; i-->0;) {
+			var move = Flore.decodeMove(this.g.moves.charAt(i));
+			if (move.p === playerIndex) {
+				found = true;
+				lastMoves.push(move);
+			} else if (found) {
+				break;
+			}
+		}
+		this.lastMoves = lastMoves.map(function(move){
+			console.log('move:', move);
+			return ù('<circle', panel.s).attr({
+				cx: panel.XB+move.x*CS+CS/2,
+				cy: panel.YB+move.y*CS+CS/2,
+				r: BR+1,
+				fill: "none",
+				stroke: "GoldenRod",
+				strokeWidth: 2
+			});
+		});
+	}
+
 	Panel.prototype.buildScores = function(){
 		var panel = this, s = panel.s, XS = this.XS, RS = this.RS;
 		panel.names = panel.g.players.map(function(player, i){
@@ -125,6 +154,11 @@ miaou(function(games, locals, ws){
 			var text = ù('<text', s)
 			.text(name.length>21 ? name.slice(0, 18)+'…' : name)
 			.attr({ x:XS, y:panel.LHS*(i+1), fill:textColors[i] });
+			if (!panel.abstract) {
+				text.on('mouseenter', panel.drawLastMoves.bind(panel, i))
+				.on('mouseleave', panel.removeLastMoves.bind(panel))
+				.attr({ fontWeight:'bold', cursor:"help" });
+			}
 			return text;
 		});
 		panel.scores = panel.g.players.map(function(player, i){
@@ -173,7 +207,7 @@ miaou(function(games, locals, ws){
 				console.log("Missing ludo-panel for move", m.id, $c);
 				return null;
 			}
-			var	movechar = Tribo.encodeMove(move),
+			var	movechar = Flore.encodeMove(move),
 				newmove = panel.g.moves.slice(-1) !== movechar;
 			m.locked = true;
 			if (newmove) {
