@@ -1,22 +1,24 @@
-miaou(function(games, locals, ws){
+miaou(function(games, gui, locals, ws){
 
-	var	NO_CELL = -2,
+	var	Flore = window.Flore,
+		T = Flore.T,
+		NO_CELL = Flore.NO_CELL,
+		NO_PLAYER = Flore.NO_PLAYER,
+		DEATH_START = Flore.DEATH_START,
+		DEATH_END = Flore.DEATH_END,
 		CS = 24, // size of a cell in pixels
 		BR = CS/2-2, // radius of a board dot
 		colors = ['#ADD8E6', 'red'], // blue, red
 		textColors = ['#ADD8E6', '#FA8072'],
-		Flore = window.Flore,
-		T = Flore.T,
 		bg = "linear-gradient(#17672b, #031)";
 
 	function Panel(m, g, s, availableWidth, abstract){
 		this.m = m;
 		this.g = g; // game
-		this.s = s; // snap thing
+		this.s = s; // svg root
 		this.u = -1; // user index in the game
-		this.colors = ['FloralWhite', 'LightPink'];
 		this.grads = colors.map(function(c){ return s.rgrad(0.3, 0.3, 1, c, '#000') });
-		this.holeGrad = s.rgrad(0.3, 0.3, 1, 'rgba(0,0,0,0.5)', bg);
+		this.holeGrad = s.rgrad(0.3, 0.3, 1, 'rgba(0,5,0,0.5)', 'rgba(0,50,10,.5)');
 		g.players.forEach((p, i)=>{ if (p.id===locals.me.id) this.u=i });
 		if (abstract) {
 			this.layout = "row";
@@ -58,18 +60,24 @@ miaou(function(games, locals, ws){
 	}
 
 	Panel.prototype.drawFlower = function(cx, cy, color, radius, hole){
-		var r = radius*.6;
-		ù('<circle', hole).attr({cx:cx, cy:cy-r, r:r, fill:color});
-		ù('<circle', hole).attr({cx:cx+r, cy:cy, r:r, fill:color});
-		ù('<circle', hole).attr({cx:cx, cy:cy+r, r:r, fill:color});
-		ù('<circle', hole).attr({cx:cx-r, cy:cy, r:r, fill:color});
-		ù('<circle', hole).attr({cx:cx, cy:cy, r:r*.6, fill:"#FFD700", strokeWidth:1});
+		var	r = radius*.6,
+			flower = ù('<svg', hole);
+		ù('<circle', flower).attr({cx:cx, cy:cy-r, r:r, fill:color});
+		ù('<circle', flower).attr({cx:cx+r, cy:cy, r:r, fill:color});
+		ù('<circle', flower).attr({cx:cx, cy:cy+r, r:r, fill:color});
+		ù('<circle', flower).attr({cx:cx-r, cy:cy, r:r, fill:color});
+		ù('<circle', flower).attr({cx:cx, cy:cy, r:r*.6, fill:"#FFD700", strokeWidth:1});
+		return flower;
 	}
 
 	Panel.prototype.drawCell = function(i, j){
-		var cell = this.g.cells[i][j];
+		var	cell = this.g.cells[i][j];
 		if (cell===NO_CELL) return;
-		if (this.holes[i][j]) this.holes[i][j].remove();
+		// 	-> détection de kill de fleur, animation puis suppression
+		var	hole = this.holes[i][j];
+		if (this.holes[i][j]) {
+			this.holes[i][j].remove();
+		}
 		var	panel = this,
 			cx = this.XB+i*CS,
 			cy = this.YB+j*CS,
@@ -77,28 +85,23 @@ miaou(function(games, locals, ws){
 			hole = this.holes[i][j] = ù('<svg', this.s).attr({x:cx, y:cy}),
 			c = ù('<circle', hole).attr({cx:d, cy:d, r:BR, fill: this.holeGrad}),
 			userIsCurrentPlayer = this.g.current!==-1 && this.u===this.g.current;
-		if (cell!==-1) {
+		if (cell>=0) { // has living flower
 			this.drawFlower(d, d, this.grads[cell], BR, hole);
+			return;
+		}
+		if (cell<=DEATH_END) {
+			var ratio = .8 - (cell-DEATH_START)*.45/(DEATH_END-DEATH_START);
+			this.drawFlower(d, d, "white", BR*ratio, hole).attr("opacity", .2);
 			return;
 		}
 		if (!userIsCurrentPlayer) return;
 		if (Flore.canPlay(this.g, i, j)) {
 			c.attr({cursor:'pointer'})
 			.on('mouseenter', function(){
-				c.attr({fill: panel.colors[panel.u]});
+				c.attr({fill: textColors[panel.u]});
 			})
 			.on('mouseleave click', function(){
 				c.attr({fill: panel.holeGrad});
-			})
-			.on('click', function(){
-				ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
-			});
-		} else { // hum... je pense que c'est une branche morte avec les règles actuelles, ça...
-			c.on('mouseenter', function(){
-				c.attr({fill: 'red'})
-			})
-			.on('mouseleave', function(){
-				c.attr({fill: panel.holeGrad})
 			})
 			.on('click', function(){
 				ws.emit('ludo.move', {mid:panel.m.id, move:Flore.encodeMove({p:panel.u, x:i, y:j})});
@@ -135,7 +138,6 @@ miaou(function(games, locals, ws){
 			}
 		}
 		this.lastMoves = lastMoves.map(function(move){
-			console.log('move:', move);
 			return ù('<circle', panel.s).attr({
 				cx: panel.XB+move.x*CS+CS/2,
 				cy: panel.YB+move.y*CS+CS/2,
@@ -186,6 +188,113 @@ miaou(function(games, locals, ws){
 		}
 	}
 
+	Panel.prototype.addReplayPlayer = function($c){
+		$c.find(".ludo-flore-button, .ludo-flore-replay-player").remove();
+		var	p = this,
+			mode,
+			savedMoves,
+			timer;
+		var $button = $('<button>').addClass('small ludo-flore-button')
+		.text('replay')
+		.click(function(){
+			$button.hide();
+			$player.show();
+			savedMoves = p.g.moves;
+			goToStart();
+		});
+		function restoreFromMoves(g){
+			g.status = "running";
+			g.scores = [0, 0];
+			for (var i=0; i<T; i++) {
+				for (var j=0; j<T; j++) {
+					if (g.cells[i][j]!==NO_CELL) g.cells[i][j]=NO_PLAYER;
+				}
+			}
+			Flore.restore(g);
+			[].forEach.call(g.moves, function(cm){
+				var move = Flore.decodeMove(cm);
+				Flore.apply(g, move);
+			});
+		}
+		function playMove(){
+			if (savedMoves.length===p.g.moves.length) return pause();
+			var	cm = savedMoves[p.g.moves.length],
+				move = Flore.decodeMove(cm);
+			p.g.moves += cm;
+			Flore.apply(p.g, move);
+			p.drawScores();
+			p.drawBoard();
+			if (mode==="playing") timer = setTimeout(playMove, 600);
+		}
+		function goToStart(){
+			pause();
+			p.g.moves = "";
+			restoreFromMoves(p.g);
+			p.s.empty();
+			p.buildBoard();
+			p.buildScores();
+			p.drawScores();
+			p.drawBoard();
+		}
+		function stepBackward(){
+			p.g.moves = p.g.moves.slice(0, -1);
+			restoreFromMoves(p.g);
+			pause();
+			p.s.empty();
+			p.buildBoard();
+			p.buildScores();
+			p.drawScores();
+			p.drawBoard();
+		}
+		function pause(){
+			$play.show();
+			$pause.hide();
+			mode = "paused";
+			clearTimeout(timer);
+		}
+		function run(){
+			$pause.show();
+			$play.hide();
+			mode = "playing";
+			if (p.g.moves===savedMoves) {
+				p.g.moves = "";
+			}
+			restoreFromMoves(p.g);
+			p.s.empty();
+			p.buildBoard();
+			p.buildScores();
+			playMove();
+		}
+		function stepForward(){
+			pause();
+			playMove();
+		}
+		function goToEnd(){
+			clearTimeout(timer);
+			mode = "paused";
+			p.g.moves = savedMoves;
+			restoreFromMoves(p.g);
+			p.drawScores();
+			p.drawBoard();
+		}
+		function close(){
+			goToEnd();
+			$button.show();
+			$player.hide();
+		}
+		var $player = $("<div>").addClass("ludo-flore-replay-player").hide();
+		$("<button>").html("&#xe838;").appendTo($player).click(goToStart);
+		var $pause = $("<button>").html("&#xe83c;").appendTo($player).click(pause).hide();
+		var $play = $("<button>").html("&#xe835;").appendTo($player).click(run);
+		$("<button>").html("&#xe83a;").appendTo($player).click(stepBackward);
+		$("<button>").html("&#xe83b;").appendTo($player).click(stepForward);
+		$("<button>").html("&#xe839;").appendTo($player).click(goToEnd);
+		$("<button>").html("&#xe837;").appendTo($player).click(close);
+		$player.add($button)
+		.css({ position:"absolute", top:this.LHS*2.7, left:this.XS })
+		.appendTo($c);
+	}
+
 	games.Flore = {
 		render: function($c, m, g, abstract){
 			Flore.restore(g);
@@ -200,6 +309,10 @@ miaou(function(games, locals, ws){
 			p.drawBoard();
 			p.buildScores();
 			p.drawScores();
+			if (!abstract && !gui.mobile && p.g.status==="finished") {
+				p.addReplayPlayer($c);
+			}
+			return p;
 		},
 		move: function($c, m, _, move){
 			var panel = $c.dat('ludo-panel');
@@ -216,6 +329,9 @@ miaou(function(games, locals, ws){
 			}
 			panel.drawBoard();
 			panel.drawScores();
+			if (!panel.abstract && !gui.mobile && panel.g.status==="finished") {
+				panel.addReplayPlayer($c);
+			}
 			return newmove;
 		},
 		fillHelp: function($div){

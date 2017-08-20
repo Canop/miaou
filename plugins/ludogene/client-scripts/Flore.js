@@ -1,15 +1,26 @@
 // Flore game logic
 
+// The cells matrix contains, for each cell
+// 	* NO_CELL when there's no hole in which to plant flowers
+// 	* NO_PLAYER when the hole is empty (it's thus possible to play here)
+// 	* >=0 (0 or 1) when there's a flower owned by player 0 or 1
+// 	* DEATH_START to DEATH_END when there's a flower corpse (preventing new flowers)
 var Flore = (function(){
 
 	var	T = 6,
 		GOAL = 5,
 		NO_CELL = -2,
-		NO_PLAYER = -1;
+		NO_PLAYER = -1,
+		DEATH_START = -6,
+		DEATH_END = -3;
 
 	return {
 		T: T,
 		GOAL: GOAL,
+		NO_CELL: NO_CELL,
+		NO_PLAYER: NO_PLAYER,
+		DEATH_START: DEATH_START,
+		DEATH_END: DEATH_END,
 		encodeMove: function(move){
 			return String.fromCharCode(move.y*T+move.x + (move.p*100) + 40);
 		},
@@ -21,9 +32,6 @@ var Flore = (function(){
 			}
 			return {p:player, x:code%T, y:Math.floor(code/T)};
 		},
-		// returns the flowers which would be killed by a move at some position
-		//~ kills: function(g, i, j){
-		//~ },
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y){
 			return g.cells[x][y]===NO_PLAYER;
@@ -47,8 +55,9 @@ var Flore = (function(){
 		},
 		apply: function(g, move){
 			var	x = move.x,
-				y = move.y;
-			g.cells[x][y] = move.p;
+				y = move.y,
+				cells = g.cells;
+			cells[x][y] = move.p;
 			move.deaths = [];
 			if (x>0) {
 				if (y>0) g.flowersAround[x-1][y-1]++;
@@ -64,15 +73,21 @@ var Flore = (function(){
 			}
 			for (var i=0; i<T; i++) {
 				for (var j=0; j<T; j++) {
-					if (g.cells[i][j]>=0 && g.flowersAround[i][j]>3 && (i!==x||j!=y)) {
-						move.deaths.push({p:g.cells[i][j], x:i, y:j});
+					if (i===x && j===y) continue;
+					var cell = cells[i][j];
+					if (cell<DEATH_END) {
+						cells[i][j]++;
+					} else if (cell===DEATH_END) {
+						cells[i][j] = NO_PLAYER;
+					} else if (cell>=0 && g.flowersAround[i][j]>3) {
+						move.deaths.push({p:cell, x:i, y:j});
 					}
 				}
 			}
 			move.deaths.forEach(function(d){
 				var	x = d.x,
 					y = d.y;
-				g.cells[d.x][d.y] = NO_PLAYER;
+				cells[d.x][d.y] = DEATH_START;
 				g.scores[+!d.p]++;
 				if (x>0) {
 					if (y>0) g.flowersAround[x-1][y-1]--;
