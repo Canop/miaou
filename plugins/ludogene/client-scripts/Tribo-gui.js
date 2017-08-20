@@ -207,7 +207,6 @@ miaou(function(games, gui, locals, notif, skin, ws){
 		var $button = $('<button>').addClass('small ludo-tribo-button')
 		.text('replay')
 		.click(function(){
-			console.log("open replay player");
 			$button.hide();
 			$player.show();
 			savedMoves = p.g.moves;
@@ -225,7 +224,6 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			if (mode==="playing") timer = setTimeout(playMove, 600);
 		}
 		function goToStart(){
-			console.log("start");
 			pause();
 			p.g.moves = "";
 			p.g.zones = [];
@@ -238,7 +236,6 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			p.drawBoard();
 		}
 		function stepBackward(){
-			console.log("stepBackward");
 			p.g.moves = p.g.moves.slice(0, -1);
 			Tribo.restore(p.g);
 			pause();
@@ -249,14 +246,12 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			p.drawBoard();
 		}
 		function pause(){
-			console.log("pause");
 			$play.show();
 			$pause.hide();
 			mode = "paused";
 			clearTimeout(timer);
 		}
 		function run(){
-			console.log("run");
 			$pause.show();
 			$play.hide();
 			mode = "playing";
@@ -272,12 +267,10 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			playMove();
 		}
 		function stepForward(){
-			console.log("stepForward");
 			pause();
 			playMove();
 		}
 		function goToEnd(){
-			console.log("end", mode);
 			clearTimeout(timer);
 			mode = "paused";
 			p.g.moves = savedMoves;
@@ -286,7 +279,6 @@ miaou(function(games, gui, locals, notif, skin, ws){
 			p.drawBoard();
 		}
 		function close(){
-			console.log("close");
 			goToEnd();
 			$button.show();
 			$player.hide();
