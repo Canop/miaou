@@ -122,7 +122,6 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 			visible = vis(),
 			lastUserActionAge = Date.now()-lastUserAction,
 			map = notifications.reduce(function(map, n){ map[n.mid]=1;return map; }, {});
-		console.log("received pings:", pings);
 		pings.forEach(function(ping){
 			if (map[ping.mid]) return;
 			if (ping.r===locals.room.id && lastUserActionAge < 15000) {
@@ -139,7 +138,6 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 			}
 		});
 		notifications.sort(function(a, b){ return a.mid-b.mid });
-		console.log("notifications:", notifications);
 		if (changed) notif.updatePingsList();
 	}
 
@@ -150,7 +148,6 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		// we assume here there's at most one notification to a given message
 		for (var i=0; i<notifications.length; i++) {
 			if (notifications[i].mid==mid) {
-				console.log('removePing', mid);
 				if (flash) {
 					var $md = $('#messages .message[mid='+mid+']');
 					if ($md.length) {
