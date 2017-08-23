@@ -5,6 +5,7 @@ const	Promise = require("bluebird"),
 	prefs = require('./prefs.js'),
 	maxAgeForNotableMessages = 1*24*60*60, // in seconds
 	memobjects = new Map,
+	ws = require('./ws.js'),
 	clean = require('./ws.js').clean;
 
 var	langs,
@@ -162,6 +163,7 @@ exports.appPostRoom = function(req, res){
 					room.private = true;
 					room.listed = false;
 				}
+				ws.botMessage(null, roomId, `@${req.user.name} edited the room`);
 				return	this.updateRoom(room, req.user, oldroom.auth)
 				.then(function(){
 					return this.setRoomTags(room.id, room.tags);
