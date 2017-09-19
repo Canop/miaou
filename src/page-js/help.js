@@ -1,8 +1,8 @@
 $(function(){
 	var h2hash;
 	$('h2, h3').each(function(){
-		var hash = '#' + $(this).text().replace(/\W+/g, '_');
-		if (hash==location.hash) {
+		var hash = $(this).text().replace(/\W+/g, '_');
+		if ('#' + hash==location.hash) {
 			$('html,body').scrollTop($(this).offset().top);
 		}
 		if (this.tagName==='H2') h2hash = hash;
@@ -16,7 +16,7 @@ $(function(){
 	$('#help-summary h3').hide();
 	$('h2, h3').click(function(){
 		var hash = $(this).attr('hash');
-		location.hash = hash;
+		location.hash = '#' + hash;
 		$('html,body').animate({
 			scrollTop: $('#help-content [hash='+hash+']').offset().top
 		}, 500);
