@@ -219,6 +219,9 @@ exports.renderErr = function(res, err, base){
 }
 
 exports.start = async function(config){
+	process.on('unhandledRejection', (reason, p) => {
+		console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+	});
 	baseURL = config.server;
 	miaou = require("./Miaou.js")(config, db);
 	await db.init(config)
