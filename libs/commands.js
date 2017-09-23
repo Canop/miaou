@@ -13,6 +13,7 @@ function CommandTask(cmd, args, shoe, message){
 	this.shoe = shoe;
 	this.nostore = false; // commands can set it true to prevent source message to be stored
 	this.silent = false; // commands can set it true to prevent source message to be distributed (and stored)
+	this.replyer = null; // will be the miaou bot if undefined
 	this.replyContent = null;
 	this.replyAsFlake = false;
 	this.alwaysPing = false; // do cross room pings even if the user has no authorization
