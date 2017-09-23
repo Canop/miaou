@@ -8,7 +8,7 @@ html
 		script(src="static/jquery-3.2.1.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
 		script(src="static/miaou.min.js")
-		script(src="static/login.min.js?v=2")
+		script(src="static/login.min.js?v=3")
 		style.
 			#buttons {
 				line-height: 40px;
@@ -17,8 +17,11 @@ html
 		div.dialog.intro
 			div.dialog-title Authentication
 			div.dialog-content
-				p Miaou is a multi-room persistent chat server. It's free to use and anybody can create public or private rooms.
-				p.toRemoveWhenLogin To prevent impersonation, users must be logged in. Sign In With :
+				#no-crash
+					p Miaou is a multi-room persistent chat server. It's free to use and anybody can create public or private rooms.
+					p.toRemoveWhenLogin To prevent impersonation, users must be logged in. Sign In With :
+				#crash
+					p Sorry. Your browser doesn't seem to support Miaou or there was an error.
 			div.dialog-buttons#buttons
 
 		a(href="https://github.com/Canop/miaou",target="github")

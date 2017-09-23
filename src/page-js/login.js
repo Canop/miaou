@@ -42,4 +42,7 @@ miaou(function(locals){
 		}
 	}
 
+	$("#no-crash").show();
+	$("#crash").remove();
+
 });
