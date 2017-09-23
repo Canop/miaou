@@ -233,9 +233,6 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 		div.avatar { // no avatar available
 			background: $no-avatar-bg;
 		}
-		//~ .avatar {
-			//~ margin: 4px;
-		//~ }
 		border-right: $user-in-messages-border-right;
 	}
 	&:hover .user {
