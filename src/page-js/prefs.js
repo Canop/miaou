@@ -124,7 +124,6 @@ miaou(function(locals, usr){
 		var url = usr.avatarsrc({
 			avs: srcname, avk: key
 		});
-		console.log("Try", url);
 		$('#avatar-preview').empty();
 		$('<img>').on('load', function(){
 			$(this).show();

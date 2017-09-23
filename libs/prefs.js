@@ -18,6 +18,7 @@ const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 		theme:	'default',	// theme
 		otowat:	'on_post',	// autowatch : on_visit|on_post|never
 		beta:	'default',	// beta : user is a beta-tester
+		mclean: '-1',		// messages auto clean threshold (-1 = no auto clean)
 	};
 
 var	db,

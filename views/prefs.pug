@@ -8,7 +8,7 @@ html
 		script(src="static/jquery-3.2.1.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
 		script(src="static/miaou.min.js?v=21")
-		script(src="static/prefs.min.js")
+		script(src="static/prefs.min.js?v=2")
 		style.
 			.CL, .CR {
 				background: $bg-color;
@@ -169,6 +169,15 @@ html
 									br
 									input#date_display_always(type="radio", name="datdpl", value="always")
 									label(for="date_display_always") Always
+							tr
+								th Auto-Clean Messages
+								td
+									select#mclean(name="mclean")
+										option(value="-1") disabled
+										option(value=100)= 100
+										option(value=200)= 200
+										option(value=500)= 500
+										option(value=1000)= 1000
 							//- tr
 							//- 	th Message Mobile Interface
 							//- 	td

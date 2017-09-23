@@ -1,7 +1,7 @@
 // md is short for "message display"
 // Here are functions related to the display of messages in the chat and to the various message element lists
 
-miaou(function(md, chat, gui, hist, locals, skin, time, usr){
+miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 
 	var renderers = [], unrenderers = [];
 
@@ -423,6 +423,32 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			md.resize($m, wab);
 		} catch (e) {
 			console.log("boxing failed", args);
+		}
+	}
+
+	// cleaning of #messages .messages when there are too many of them
+	md.startAutoCleaner = function(){
+		var nbMessagesThreshold = +prefs.get("mclean");
+		if (nbMessagesThreshold>50) {
+			setInterval(function(){
+				if (!gui.isAtBottom()) return;
+				var userMessages = Array.from(document.querySelectorAll("#messages .user-messages"));
+				var	nbMessages = 0,
+					remove = false;
+				for (var i=userMessages.length; i--;) {
+					var um = userMessages[i];
+					if (remove) {
+						um.remove();
+						continue;
+					}
+					for (var j=um.children.length; j--;) {
+						if (um.children[j].classList.contains("message")) {
+							nbMessages++;
+						}
+					}
+					if (nbMessages>nbMessagesThreshold) remove = true;
+				}
+			}, 5000);
 		}
 	}
 

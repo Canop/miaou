@@ -62,6 +62,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		links.init();
 		gui.init();
 		md.registerRenderer(renderMessage);
+		md.startAutoCleaner();
 		plugins.start();
 	}
 
