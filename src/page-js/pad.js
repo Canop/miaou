@@ -28,6 +28,7 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 		else openRoomsPanel();
 	}
 
+	$('#watches').on('mouseenter', '.watch', hideRoomsPanel);
 	$('#room-panel').on('mouseenter', function(){
 		openpaneltimer = setTimeout(openRoomsPanel, 180);
 	})
