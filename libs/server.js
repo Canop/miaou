@@ -37,11 +37,14 @@ function configureOauth2Strategies(){
 				'https://www.googleapis.com/auth/userinfo.profile',
 				'https://www.googleapis.com/auth/userinfo.email'
 			]
-		}, stackexchange: {
+		},
+		stackexchange: {
 			strategyConstructor: require('./passport-stackexchange.js').Strategy
-		}, github: {
-			strategyConstructor: require('passport-github').Strategy
-		}, reddit: {
+		},
+		github: {
+			strategyConstructor: require('passport-github2').Strategy
+		},
+		reddit: {
 			strategyConstructor: require('passport-reddit').Strategy,
 			scope: 'identity'
 		}
