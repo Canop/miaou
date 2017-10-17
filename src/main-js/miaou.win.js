@@ -2,7 +2,7 @@
 //   can display a message
 
 miaou(function(win, chat, gui, md, ws){
-	
+
 	if (gui.mobile) return;
 
 	var sides = ['left', 'bottom', 'right'];

@@ -1,3 +1,6 @@
+// Computes the Elo ladder for the Tribo game.
+// (doesn't work on non Tribo games)
+
 const	ludodb = require('./db.js'),
 	bench = require('../../libs/bench.js'),
 	K = 40,
@@ -244,6 +247,17 @@ function opponentsTable(data, r){
 	});
 	s += table(["Opponent", "Games", "Counted Games", "Recent Counted Games"], rows);
 	return s;
+}
+
+// computes the Tribo Ladder
+exports.getLadder = async function(con){
+	var messages = await ludodb.getGameMessages(con);
+	messages = messages.filter(function(m){
+		return	m.g.type==="Tribo"
+			&& m.g.scores
+			&& (m.g.status==="running"||m.g.status==="finished");
+	});
+	return compute(messages);
 }
 
 // handles the !!triboladder command

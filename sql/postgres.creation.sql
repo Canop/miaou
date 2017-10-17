@@ -31,7 +31,7 @@ CREATE TABLE player (
 	avatarkey varchar(255),
 	tzoffset smallint
 );
-CREATE UNIQUE INDEX player_lower_name_index on  player (lower(name));
+CREATE UNIQUE INDEX player_lower_name_index on player (lower(name));
 
 CREATE TABLE message (
 	id bigserial primary key,

@@ -8,7 +8,8 @@ const	Promise = require("bluebird"),
 	suggest = require('./suggest.js'),
 	tournament = require('./tournament.js'),
 	tribostats = require('./tribostats.js'),
-	elo = require('./elo.js');
+	elo = require('./elo.js'),
+	badges = require('./badges.js');
 
 var	db,
 	rooms,
@@ -40,6 +41,7 @@ exports.init = async function(miaou){
 		name: "Flore",
 		description: "A game with flowers (in development).\nInvite a player with\n\t!!flore @username"
 	});
+	await badges.init(miaou);
 }
 
 // returns a bound promise opening a connection to the db
