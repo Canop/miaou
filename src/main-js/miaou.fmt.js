@@ -13,16 +13,22 @@ miaou(function(fmt){
 	//  defining the column alignements.
 	// This is how we recognize a table in Markdown
 	var	coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
-		coderegex = /^( {4}|\t)/;
+		coderegex = /^( {4}|\t)/,
+		braceSpanClassWhitelist = (new Set).add("tag"); // tokens allowed as class in [class:something]
+
+	fmt.whiteListBraceSpanClass = function(clas){
+		braceSpanClassWhitelist.add(clas);
+	}
 
 	fmt.mdStringToHtml = function(s, username){
 		return s.split('`').map(function(t, i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
-			.replace( // example: [tag:Mounty-Hall]
-				/\[tag:([\w-]{2,50})\]/g,
-				'<span class=tag>$1</span>'
-			)
+			.replace(/\[([\w-]{3,50}):([\w-\s\/]{2,50})\]/g, function(s, clas, con){
+				 // example: [tag:Mounty-Hall]
+				if (!braceSpanClassWhitelist.has(clas)) return s;
+				return '<span class='+clas+'>'+con+'</span>';
+			})
 			.replace( // example : [dystroy](http://dystroy.org)
 				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
