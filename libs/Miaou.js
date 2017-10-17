@@ -2,8 +2,7 @@
 // It's provided to plugins and serves as proxy to access
 // libs, sockets, etc.
 
-const	path = require('path'),
-	Promise = require('bluebird');
+const	path = require('path');
 
 class Miaou{
 
@@ -20,14 +19,19 @@ class Miaou{
 		return module.require("./"+name+".js");
 	}
 
-	// returns a config element by path, undefined if missing
+	// return an already configured plugin, if available
+	plugin(name){
+		return this.plugins.find(p => p.name===name);
+	}
+
+	// return a config element by path, undefined if missing
 	// example:
 	//   var timeout = miaou.conf("deep", "config", "timeout") || 0;
 	conf(...token){
 		return token.reduce((o, t)=> o ? o[t] : undefined, this.config);
 	}
 
-	// returns a promise
+	// return a promise
 	initBot(){
 		var	miaou = this,
 			botAvatar = this.conf("botAvatar");
@@ -45,25 +49,21 @@ class Miaou{
 	}
 
 	// returns a promise
-	initPlugins(){
+	async initPlugins(){
 		this.plugins = [];
-		return Promise.all(this.conf("plugins").reverse().map(n => {
+		var files = this.conf("plugins");
+		for (var i=0; i<files.length; i++) {
 			try {
-				var	pluginfilepath = path.resolve(__dirname, '..', n),
-					plugin = require(pluginfilepath),
-					init = plugin.init ? plugin.init(this) : null;
-				return Promise.resolve(init)
-				.then(()=>{
-					this.plugins.push(plugin);
-				})
-			} catch (e) {
-				console.log("ERRR:", e);
+				var	file = files[i],
+					pluginfilepath = path.resolve(__dirname, '..', file),
+					plugin = require(pluginfilepath);
+				if (plugin.init) await plugin.init(this);
+				this.plugins.push(plugin);
+			} catch (err) {
+				console.log("Error in plugin initialization");
+				console.error(err);
 			}
-		}))
-		.catch(err=>{
-			console.log("Error in plugin initialization");
-			console.error(err);
-		});
+		}
 	}
 
 	// returns a promise
