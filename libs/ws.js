@@ -1,4 +1,4 @@
-const	apiversion = 80,
+const	apiversion = 85,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -169,45 +169,44 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 // we don't want the answer to come first
 // Note that this doesn't send pings
 exports.botMessage = function(bot, roomId, content, cb){
-	if (!roomId) throw "missing room Id";
-	if (!bot) bot = miaou.bot;
 	setTimeout(function(){
-		var message = {content, author:bot.id, room:roomId, created:Date.now()/1000|0};
-		message.authorname = bot.name;
 		db.on()
 		.then(function(){
-			return commands.onBotMessage.call(this, bot, message);
-		})
-		.then(function(){
-			return this.storeMessage(message);
+			return exports.botSendMessage(this, bot, roomId, content);
 		})
 		.then(function(m){
-			message = m;
-			message.authorname = bot.name;
-			message.avs = bot.avatarsrc;
-			message.avk = bot.avatarkey;
-			message.bot = true;
-			message.room = roomId;
-			pageBoxer.onSendMessage(this, m, function(t, c){
-				emitToRoom(roomId, t, c);
-			});
-			return [rooms.mem.call(this, roomId), message];
-		})
-		.spread(function(memroom, m){
-			if (!(m.id<=memroom.lastMessageId)) {
-				memroom.lastMessageId = m.id;
-			}
-			emitToRoom(roomId, 'message', m);
-			if (m.id) {
-				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
-			}
-			if (cb) return cb.call(this, m);
-		})
-		.catch(function(e){
-			console.log('error in botMessage:', e);
+			if (cb) cb.call(this, m);
 		})
 		.finally(db.off);
 	}, 300);
+}
+
+// to be used by bot, store a message in DB, sends it. Doesn't ping users.
+// There's no delay.
+// Asynchronously returns the sent message (with id).
+exports.botSendMessage = async function(con, bot, roomId, content){
+	if (!roomId) throw new Error("missing room Id");
+	if (!bot) bot = miaou.bot;
+	var message = {content, author:bot.id, authorname:bot.name, room:roomId, created:Date.now()/1000|0};
+	await commands.onBotMessage.call(con, bot, message);
+	message = await con.storeMessage(message);
+	message.authorname = bot.name;
+	message.avs = bot.avatarsrc;
+	message.avk = bot.avatarkey;
+	message.bot = true;
+	message.room = roomId;
+	pageBoxer.onSendMessage(con, message, function(t, c){
+		emitToRoom(roomId, t, c);
+	});
+	var memroom = rooms.mem.call(con, roomId);
+	if (!(message.id<=memroom.lastMessageId)) {
+		memroom.lastMessageId = message.id;
+	}
+	emitToRoom(roomId, 'message', message);
+	if (message.id) {
+		io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:message.id, f:message.author});
+	}
+	return message;
 }
 
 exports.botReply = function(bot, message, txt, cb){
@@ -289,8 +288,7 @@ function handleUserInRoom(socket, completeUser){
 		welcomed = false;
 
 
-	console.log(completeUser.name, "connects from IP (m1)", userIP);
-	console.log(completeUser.name, "connects from IP (m3)", socket.request.connection.remoteAddress);
+	console.log(completeUser.name, "connects from IP", userIP);
 
 	function send(v, m){
 		io.sockets.in(shoe.room.id).emit(v, clean(m));
@@ -362,7 +360,7 @@ function handleUserInRoom(socket, completeUser){
 		if (typeof entry !== "object") {
 			entry = { roomId: +entry };
 		}
-		console.log(entry.nbEntries ? "RE-ENTRY" : "Entry", shoe.publicUser.name, entry);
+		// console.log(entry.nbEntries ? "RE-ENTRY" : "Entry", shoe.publicUser.name, entry);
 		if (!entry.roomId) {
 			console.log("WARN : user enters no room");
 			return;
@@ -706,7 +704,8 @@ function handleUserInRoom(socket, completeUser){
 			if (commandTask.replyContent) {
 				var txt = commandTask.replyContent;
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
-				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](bot, txt);
+				var replyer = commandTask.replyer || bot;
+				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](replyer, txt);
 			}
 			if (commandTask.withSavedMessage && m.id) {
 				commandTask.withSavedMessage(shoe, m);
