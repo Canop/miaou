@@ -1,0 +1,30 @@
+
+.bronze-badge, .silver-badge, .gold-badge {
+	border-radius: 3px;
+	padding: 2px 5px;
+	background-color: rgba(206, 224, 237, 0.41);
+	box-shadow: 0 0 1px rgba(0, 0, 0, .4);
+	color: #222244;
+	line-height: 1.9;
+}
+
+.bronze-badge::before {
+	content: "⚫";
+	color: #d1a684;
+	text-shadow: 0 0 1px rgba(255,255,255,.5);
+	margin: 0 4px 0 0;
+}
+
+.silver-badge::before {
+	content: "⚫";
+	color: #b4b8bc;
+	text-shadow: 0 0 1px rgba(255,255,255,.5);
+	margin: 0 4px 0 0;
+}
+
+.gold-badge::before {
+	content: "⚫";
+	color: #fdcc02;
+	text-shadow: 0 0 1px rgba(255,255,255,.5);
+	margin: 0 4px 0 0;
+}
