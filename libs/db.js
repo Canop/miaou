@@ -1331,6 +1331,16 @@ proto.executeRaw = function(sql){
 	.spread((rows, res) => res);
 }
 
+proto.queryValue = function(sql, args, name, useANamedPreparedStatement){
+	return this._query(sql, args, name, useANamedPreparedStatement)
+	.spread((rows, res) => {
+		if (rows.length) {
+			for (var key in rows[0]) return rows[0][key];
+		}
+		return null;
+	});
+}
+
 proto.queryOptionalRow = function(sql, args, name, useANamedPreparedStatement){
 	return this._query(sql, args, name, useANamedPreparedStatement)
 	.spread((rows, res) => {
