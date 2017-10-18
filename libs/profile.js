@@ -110,7 +110,6 @@ exports.appGetPublicProfile = async function(req, res){
 			}
 			if (plugin.getPublicProfileAdditions) {
 				let additions = await plugin.getPublicProfileAdditions(con, user, room, ppi);
-				console.log('additions:', additions);
 				[].push.apply(pluginAdditions, additions);
 			}
 		}

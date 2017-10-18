@@ -123,7 +123,6 @@ exports.registerRoutes = map=>{
 
 exports.getPublicProfileAdditions = async function(con, user, room){
 	var counts = await exports.getBadgeCounts(con, user.id);
-	console.log('counts:', counts);
 	var html = "<div class=badge-counts>";
 	;["gold", "silver", "bronze"].forEach(level=>{
 		if (!counts[level]) return;
