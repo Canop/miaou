@@ -21,6 +21,18 @@ exports.getBadgeByTagName = async function(con, tag, name){
 	);
 }
 
+exports.getBadgeCounts = async function(con, playerId){
+	var rows = await con.queryRows(
+		"select level, count(*) n from player_badge join badge on id=badge where player=$1 group by level",
+		[playerId],
+		"badge_player_counts"
+	);
+	return rows.reduce((c, r)=>{
+		c[r.level] = r.n;
+		return c;
+	}, {});
+}
+
 exports.md = function(badge){
 	return `[${badge.level}-badge:${badge.tag}/${badge.name}]`;
 }
@@ -75,6 +87,13 @@ exports.registerCommands = function(cb){
 		name: "badge",
 		fun: onCommand,
 		help: "do things related to badges",
+		detailedHelp:
+			"Exemples: "+
+			'\n `!!badge list Miaou` : list all badges related to the "Miaou" tag'+
+			'\n `!!badge @someuser` : list all badges of a user'+
+			'\n `!!badge list gold` : list all gold badges'+
+			'\n `!!badge list bronze silver Miaou Tribo` : '+
+			'list all silver and bronze badges related to the "Miaou" and "Tribo" tags.'
 	});
 }
 
@@ -85,7 +104,12 @@ exports.registerRoutes = map=>{
 			badgeName = req.query.name;
 		db.on()
 		.then(function(){
-			return exports.getBadgeByTagName(this, badgeTag, badgeName);
+			return this.queryOptionalRow(
+				"select *, (select count(*) from player_badge where badge=badge.id) awards"+
+				" from badge where tag=$1 and name=$2",
+				[badgeTag, badgeName],
+				"badge_details_select_by_tag_name"
+			);
 		})
 		.then(function(badge){
 			res.json({badge});
@@ -95,4 +119,16 @@ exports.registerRoutes = map=>{
 		})
 		.finally(db.off);
 	});
-};
+}
+
+exports.getPublicProfileAdditions = async function(con, user, room){
+	var counts = await exports.getBadgeCounts(con, user.id);
+	console.log('counts:', counts);
+	var html = "<div class=badge-counts>";
+	;["gold", "silver", "bronze"].forEach(level=>{
+		if (!counts[level]) return;
+		html += `<span class=${level}-badge-count>${counts[level]}</span>`;
+	});
+	html += "</div>";
+	return [{ html }];
+}

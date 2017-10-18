@@ -8,23 +8,34 @@
 	line-height: 1.9;
 }
 
-.bronze-badge::before {
+.badge-counts {
+	font-size: 90%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.bronze-badge::before, .bronze-badge-count::before {
 	content: "⚫";
 	color: #d1a684;
 	text-shadow: 0 0 1px rgba(255,255,255,.5);
 	margin: 0 4px 0 0;
 }
 
-.silver-badge::before {
+.silver-badge::before, .silver-badge-count::before {
 	content: "⚫";
 	color: #b4b8bc;
 	text-shadow: 0 0 1px rgba(255,255,255,.5);
 	margin: 0 4px 0 0;
 }
 
-.gold-badge::before {
+.gold-badge::before, .gold-badge-count::before {
 	content: "⚫";
 	color: #fdcc02;
 	text-shadow: 0 0 1px rgba(255,255,255,.5);
 	margin: 0 4px 0 0;
+}
+
+.faded-8 {
+	opacity: .8;
 }
