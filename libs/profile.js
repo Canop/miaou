@@ -2,6 +2,7 @@ const	auths = require('./auths.js'),
 	path = require('path'),
 	naming = require('./naming.js'),
 	prefs = require('./prefs.js'),
+	bench = require('./bench.js'),
 	server = require('./server.js');
 
 var	db,
@@ -70,46 +71,62 @@ exports.appAllUsername = function(req, res){
 	}).finally(db.off)
 }
 
+function authToRole(auth, rprivate){
+	if (auth==='write') return "writer";
+	if (auth==='admin') return "admin";
+	if (auth==='own') return "owner";
+	return rprivate ? "no access" : "none";
+}
+
 // handles GET on '/publicProfile'
 // used to fill the popup seen when hovering a user name
-exports.appGetPublicProfile = function(req, res){
+exports.appGetPublicProfile = async function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
-	var	userId = +req.query.user,
+	let	userId = +req.query.user,
 		roomId = +req.query.room;
-	var externalProfileInfos = plugins.filter(p => p.externalProfile).map(function(p){
-		return { name:p.name, ep:p.externalProfile }
-	});
-	if (!userId || !roomId) return server.renderErr(res, 'room and user must be provided');
-	var user, auth;
-	db.on(userId)
-	.then(db.getUserById)
-	.then(function(u){
-		user = u;
-		return this.fetchRoomAndUserAuth(roomId, userId);
-	}).then(function(r){
-		switch (r.auth) {
-		case 'write': auth='writer'; break;
-		case 'admin': auth='admin'; break;
-		case 'own'  : auth='owner'; break;
-		case null: case undefined: auth= r.private ? 'no access' : 'none';
+	if (!userId || !roomId) {
+		return server.renderErr(res, 'room and user must be provided');
+	}
+	let bo = bench.start("publicProfile");
+	db.on().then(async function(){
+		let con = this;
+		let user = await con.getUserById(userId);
+		let room = await con.fetchRoomAndUserAuth(roomId, userId);
+		let userinfo = await con.getUserInfo(userId);
+		let auth = authToRole(room.auth, room.private);
+		let externalProfileInfos = [];
+		let pluginAdditions = [];
+		for (let i=0; i<plugins.length; i++) {
+			let plugin = plugins[i];
+			let ppi = await con.getPlayerPluginInfo(plugin.name, userId);
+			if (ppi && plugin.externalProfile) {
+				let html = plugin.externalProfile.render(ppi.info);
+				if (html) {
+					externalProfileInfos.push({
+						name: plugin.name,
+						html
+					});
+				}
+			}
+			if (plugin.getPublicProfileAdditions) {
+				let additions = await plugin.getPublicProfileAdditions(con, user, room, ppi);
+				console.log('additions:', additions);
+				[].push.apply(pluginAdditions, additions);
+			}
 		}
-		return externalProfileInfos;
-	}).map(function(epi){
-		return this.getPlayerPluginInfo(epi.name, userId);
-	}).map(function(ppi, i){
-		if (ppi) externalProfileInfos[i].html = externalProfileInfos[i].ep.render(ppi.info);
-	}).then(function(){
-		return this.getUserInfo(userId);
-	}).then(function(info){
-		externalProfileInfos = externalProfileInfos.filter(epi => epi.html);
 		res.render('publicProfile.pug', {
-			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
-			isServerAdmin:auths.isServerAdmin(user),
-			auth:auth, externalProfileInfos:externalProfileInfos
+			user,
+			userinfo,
+			avatar: avatarsrc(user.avatarsrc, user.avatarkey),
+			isServerAdmin: auths.isServerAdmin(user),
+			auth,
+			pluginAdditions,
+			externalProfileInfos
 		});
 	}).catch(function(err){
-		server.renderErr(res, err)
+		server.renderErr(res, err);
 	}).finally(db.off);
+	bo.end();
 }
 
 exports.appGetUser = function(req, res){

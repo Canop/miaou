@@ -1,6 +1,8 @@
 if avatar
 	img.avatar(src=avatar)
 h1= user.name
+each pa in pluginAdditions
+	| !{pa.html}
 div#userinfo
 	if isServerAdmin
 		.user-title
