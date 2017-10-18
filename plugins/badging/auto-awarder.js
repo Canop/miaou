@@ -1,6 +1,7 @@
 
 const	checks = [],
-	DELAY_BEFORE_START = 15 * 60 * 1000,
+	DELAY_BEFORE_START = 1 * 60 * 1000,
+	//DELAY_BEFORE_START = 5 * 1000,
 	DELAY_BETWEEN_GLOBAL_CHECKS = 7 * 60 * 60 * 1000;
 
 var	db,
@@ -54,7 +55,8 @@ async function award(con, player, badges, bot, roomId){
 			"insert_player_badge"
 		);
 	}
-	await ws.pingUser.call(con, roomId, player.name, message.id, message.authorname, content);
+	// let's disable pings during the initial feature launch...
+	//await ws.pingUser.call(con, roomId, player.name, message.id, message.authorname, content);
 }
 
 exports.checkAll = async function(con){
@@ -80,7 +82,7 @@ exports.checkAll = async function(con){
 				"select_player_badge_ids"
 			);
 			var ownedBadgesIds = playerBadges.reduce((s, b) => s.add(b.badge), new Set);
-			var awardedBadges = [];
+			var awardedBadges = new Map; // awardRoom -> []
 			for (var j=0; j<checks.length; j++) {
 				var check = checks[j];
 				if (ownedBadgesIds.has(check.badge.id)) {
@@ -89,12 +91,16 @@ exports.checkAll = async function(con){
 				var boc = bench.start(`badging / check  ${check.badge.tag}/${check.badge.name}`);
 				if (await check.checkPlayer(con, p)) {
 					console.log(`${p.name} receives badge ${check.badge.tag}/${check.badge.name}`);
-					awardedBadges.push(check.badge);
+					var arr = awardedBadges.get(check.awardRoom);
+					if (!arr) {
+						awardedBadges.set(check.awardRoom, arr=[]);
+					}
+					arr.push(check.badge);
 				}
 				boc.end();
 			}
-			if (awardedBadges.length) {
-				await award(con, p, awardedBadges, null, check.awardRoom);
+			for (let [room, arr] of awardedBadges) {
+				await award(con, p, arr, null, room);
 			}
 			bop.end();
 		}
