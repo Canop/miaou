@@ -1,5 +1,14 @@
 miaou(function(plugins, fmt, md){
 
+	function nv(n, v){
+		return "<span class=faded-8>" + n + ":</span> " + v;
+	}
+
+	function nbu(nb){
+		if (!nb) return "nobody";
+		if (nb===1) return "1 user";
+		return nb + " users";
+	}
 
 	function blower($c){
 		var	match = $c.text().match(/^\s*([\w-]{3,50})\s*\/\s*(.*\S)\s*$/);
@@ -15,12 +24,14 @@ miaou(function(plugins, fmt, md){
 				$c.text("Unknown Badge");
 				return;
 			}
-			$c.html(
-				"<span class="+badge.level+"-badge>"+badge.name+"</span><br><br>"+
-				"tag: " + badge.tag + "<br>"+
-				"level: " + badge.level + "<br>"+
-				"condition: " + fmt.mdTextToHtml(badge.condition)
-			);
+			$c.html([
+				"<span class="+badge.level+"-badge>"+badge.name+"</span><br>",
+				fmt.mdTextToHtml(badge.condition) + "<br>",
+				nv("tag", badge.tag),
+				nv("level", badge.level),
+				nv("attribution", (badge.manual ? "manual" : "automated")),
+				nv("awarded to", nbu(badge.awards))
+			].join("<br>"));
 		});
 	}
 
