@@ -90,7 +90,7 @@ miaou(function(fmt){
 	function _mdTextToHtml(md, username, noThumb){
 		var	table,
 			lang, // current code language, set with a #lang-* pragma
-			ul, ol, code, // arrays : their elements make multi lines structures
+			ul, ol, code, citation, // arrays : their elements make multi lines structures
 			lin = md.replace(/(\n\s*\n)+/g, '\n\n').replace(/^(\s*\n)+/g, '').replace(/(\s*\n\s*)+$/g, '').split('\n'),
 			lout = []; // lines out
 		for (var l=0; l<lin.length; l++) {
@@ -177,8 +177,18 @@ miaou(function(fmt){
 				continue;
 			}
 			s = fmt.mdStringToHtml(s, username, noThumb);
-			if ((m=s.match(/^(?:&gt;\s*)(.*)$/))) {
-				lout.push('<span class=citation>'+(m[1]||'&nbsp;')+'</span>');
+
+			m=s.match(/^(?:&gt;\s*)(.*)$/);
+			if (citation) {
+				if (m) {
+					citation.push(m[1]);
+					continue;
+				} else {
+					lout.push('<div class=citation>' + citation.join('<br>') + '</div>');
+					citation = null;
+				}
+			} else if (m) {
+				citation = [m[1]];
 				continue;
 			}
 
@@ -218,6 +228,7 @@ miaou(function(fmt){
 		}
 		if (table) lout.push(table.html(username));
 		if (code) lout.push(wrapCode(code, lang));
+		if (citation) lout.push('<div class=citation>' + citation.join('<br>') + '</div>');
 		if (ol) lout.push('<ol>'+ol.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ol>');
 		if (ul) lout.push('<ul>'+ul.map(function(i){ return '<li>'+i+'</li>' }).join('')+'</ul>');
 		return lout.join('<br>');
