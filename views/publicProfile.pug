@@ -1,6 +1,7 @@
 if avatar
 	img.avatar(src=avatar)
-h1= user.name
+h1
+	a(target="_blank", href="user/"+user.name)= user.name
 each pa in pluginAdditions
 	| !{pa.html}
 div#userinfo
