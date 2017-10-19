@@ -172,7 +172,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		input.selectionStart = acStartIndex;
 		$input.replaceSelection(name);
 		input.selectionStart = input.selectionEnd;
-		//ed.ping(name);
+		ed.ping(name);
 	}
 
 	function insertLink(){
@@ -401,8 +401,20 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			r = new RegExp('\s?@'+username+'\\s*$', 'i'),
 			acname = getacname();
 		if (acname) {
-			input.value = val.slice(0, e-acname.length) + username + val.slice(e);
-			input.selectionStart = input.selectionEnd = e + username.length - acname.length;
+			input.value = val = val.slice(0, e-acname.length) + username + val.slice(e);
+			s = input.selectionStart = input.selectionEnd = e + username.length - acname.length;
+			var untilSpace = val.slice(input.selectionEnd).match(/^\S*/)[0];
+			if (untilSpace) {
+				// there are some letters just after the new ping
+				if (untilSpace.length<username.length) {
+					// those letters are very probably an artefact of a cursor badly located
+					// when applying an autocompletion, we remove them
+					input.value = val.slice(0, s) + val.slice(s + untilSpace.length);
+				} else {
+					// A space is probably missing
+					input.value = val.slice(0, s) + " " + val.slice(s);
+				}
+			}
 		} else if (r.test(val)) {
 			input.value = val.replace(r, '');
 		} else {
