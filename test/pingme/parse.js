@@ -1,10 +1,10 @@
 var	buster = require("buster"),
-	now = new Date("2017-05-07T22:30"), // assumed as UTC because in ISO format
+	now = new Date("2017-05-07 22:30 +0000"),
 	parse = require('../../plugins/pingme/plugin.js').parse;
 
 function check(str, tzoffset, utcDate, text){
 	var c = parse(str, tzoffset, now);
-	buster.assert.equals(new Date(c.date*1000), new Date(utcDate));
+	buster.assert.equals(new Date(c.date*1000), new Date(utcDate.replace(/T/, ' ')+" +0000"));
 	buster.assert.equals(c.text, text||"");
 }
 
