@@ -172,7 +172,6 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		input.selectionStart = acStartIndex;
 		$input.replaceSelection(name);
 		input.selectionStart = input.selectionEnd;
-		ed.ping(name);
 	}
 
 	function insertLink(){
