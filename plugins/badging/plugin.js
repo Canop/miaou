@@ -1,6 +1,7 @@
 
 const	path = require("path"),
 	doList = require("./command-list.js").doList,
+	doAward = require("./command-award.js").doAward,
 	autoAwarder = require("./auto-awarder.js");
 
 var	db;
@@ -78,6 +79,9 @@ async function onCommand(ct){
 		args = match[2];
 	if (!verb || verb==="list") {
 		return await doList(con, ct, args||"");
+	}
+	if (verb==="award") {
+		return await doAward(con, ct, args||"");
 	}
 	throw new Error("Command not understood");
 }
