@@ -55,8 +55,7 @@ async function award(con, player, badges, bot, roomId){
 			"insert_player_badge"
 		);
 	}
-	// let's disable pings during the initial feature launch...
-	//await ws.pingUser.call(con, roomId, player.name, message.id, message.authorname, content);
+	await ws.pingUser.call(con, roomId, player.name, message.id, message.authorname, content);
 }
 
 exports.checkAll = async function(con){

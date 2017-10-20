@@ -1,14 +1,6 @@
 
 const	badging = require("./plugin.js");
 
-//async function getAllBadges(con){
-//	return await con.queryRows(
-//		"select * from badge order by level desc",
-//		null,
-//		"list all badges"
-//	);
-//}
-
 function mdBadgesByTag(badges){
 	if (!badges.length) return "*no badge*";
 	var	tags = [],
@@ -27,19 +19,14 @@ function mdBadgesByTag(badges){
 	).join("\n");
 }
 
-//async function listAllBadges(con){
-//	var	badges = await getAllBadges(con);
-//	return "# All badges\n" + mdBadgesByTag(badges);
-//}
 
 // !!badge list
-// !!badge list all
 // !!badge list Miaou/
 // !!badge list bronze
 // !!badge list Miaou
 // !!badge list @dystroy
+// !!badge list bronze silver Miaou Tribo
 exports.doList = async function(con, ct, args){
-	console.log('args:', args);
 	var	tokens = args.match(/\S+/g),
 		levels = [],
 		userid,
