@@ -30,14 +30,10 @@ function mdBadges(badges){
 }
 
 function callChecks(){
-	return db.on()
-	.then(function(){
-		return exports.checkAll(this);
-	})
-	.then(function(){
+	db.do(async function(con){
+		await exports.checkAll(con);
 		setTimeout(callChecks, DELAY_BETWEEN_GLOBAL_CHECKS);
-	})
-	.finally(db.off);
+	});
 }
 
 exports.registerCheck = function(options){

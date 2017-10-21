@@ -1261,6 +1261,23 @@ proto.off = function(v){
 	return v;
 }
 
+// simplified function to be used with async functions, opening and releasing the connection
+// fun must be an async function taking an open connection as argument
+proto.do = function(fun, onerror){
+	return this.on()
+	.then(function(){
+		return fun(this);
+	})
+	.catch(function(err){
+		if (onerror) {
+			onerror(err);
+		} else {
+			console.error(err);
+		}
+	})
+	.finally(this.off);
+}
+
 // Queries the database. Returns a promise resolved with an array [rows, res]
 // Arguments:
 // * sql: the SQL query, with $x placeholders

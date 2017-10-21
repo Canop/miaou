@@ -31,17 +31,12 @@ exports.doAward = async function(con, ct, args){
 	if (exists) throw new Error("Badge already awarded");
 	ct.reply(`@${user.name} is awarded the [${badge.level}-badge:${badgetag}/${badgename}] badge`);
 	ct.withSavedMessage = function(_, message){
-		return db.on()
-		.then(function(){
-			return con.execute(
+		db.do(async function(con){
+			await con.execute(
 				"insert into player_badge (player, badge, message) values($1, $2, $3)",
 				[user.id, badge.id, message.id],
 				"insert_player_badge"
 			);
-		})
-		.catch(function(e){
-			console.error(e);
-		})
-		.finally(db.off);
+		});
 	};
 }
