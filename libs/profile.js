@@ -88,8 +88,7 @@ exports.appGetPublicProfile = async function(req, res){
 		return server.renderErr(res, 'room and user must be provided');
 	}
 	let bo = bench.start("publicProfile");
-	db.on().then(async function(){
-		let con = this;
+	db.do(async function(con){
 		let user = await con.getUserById(userId);
 		let room = await con.fetchRoomAndUserAuth(roomId, userId);
 		let userinfo = await con.getUserInfo(userId);
@@ -122,38 +121,53 @@ exports.appGetPublicProfile = async function(req, res){
 			pluginAdditions,
 			externalProfileInfos
 		});
-	}).catch(function(err){
+	}, function(err){
 		server.renderErr(res, err);
-	}).finally(db.off);
+	});
 	bo.end();
 }
 
+// answer to queries for the user page
 exports.appGetUser = function(req, res){
-	var	userIdOrName = req.params[0],
-		user;
-	var externalProfileInfos = plugins.filter(p => p.externalProfile).map(function(p){
-		return { name:p.name, ep:p.externalProfile }
-	});
-	db.on().then(function(){
-		return userIdOrName==+userIdOrName ? this.getUserById(userIdOrName) : this.getUserByName(userIdOrName)
-	}).then(function(u){
-		user = u;
-		if (!user) throw new db.NoRowError();
-		return externalProfileInfos;
-	}).map(function(epi){
-		return this.getPlayerPluginInfo(epi.name, user.id);
-	}).map(function(ppi, i){
-		if (ppi) externalProfileInfos[i].html = externalProfileInfos[i].ep.render(ppi.info);
-	}).then(function(){
-		return this.getUserInfo(user.id);
-	}).then(function(info){
-		let vars = {
-			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey)
-		};
-		res.render('user.pug', { vars:vars, externalProfileInfos:externalProfileInfos });
-	}).catch(db.NoRowError, function(){
-		server.renderErr(res, "User not found", '../');
-	}).catch(function(err){
+	let	userIdOrName = req.params[0];
+	db.do(async function(con){
+		let user;
+		if (userIdOrName==+userIdOrName) {
+			user = await con.getUserById(+userIdOrName);
+		} else {
+			user = await con.getUserByName(userIdOrName);
+		}
+		if (!user) throw new Error("User not found");
+		let userinfo = await con.getUserInfo(user.id);
+		let externalProfileInfos = [];
+		let pluginAdditions = [];
+		for (let i=0; i<plugins.length; i++) {
+			let plugin = plugins[i];
+			let ppi = await con.getPlayerPluginInfo(plugin.name, user.id);
+			if (ppi && plugin.externalProfile) {
+				let html = plugin.externalProfile.render(ppi.info);
+				if (html) {
+					externalProfileInfos.push({
+						name: plugin.name,
+						html
+					});
+				}
+			}
+			if (plugin.getUserPageAdditions) {
+				let additions = await plugin.getUserPageAdditions(con, user, ppi);
+				[].push.apply(pluginAdditions, additions);
+			}
+		}
+		res.render('user.pug', {
+			vars: {
+				user,
+				userinfo,
+				avatar: avatarsrc(user.avatarsrc, user.avatarkey)
+			},
+			pluginAdditions,
+			externalProfileInfos
+		});
+	}, function(err){
 		server.renderErr(res, err, '../');
-	}).finally(db.off);
+	});
 }

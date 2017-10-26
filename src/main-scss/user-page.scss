@@ -25,6 +25,9 @@ body.user {
 	h2 {
 		font-size: 105%;
 	}
+	h3 {
+		font-size: 95%;
+	}
 }
 #user-main-profile {
 	display: flex;
@@ -37,12 +40,11 @@ body.user {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
-	//align-items: flex-start;
+	margin-left: 10px;
 }
 .user-field {
 	display: flex;
 	flex-direction: row;
-	//flex: 0 0 40px;
 }
 
 .user-field-name {

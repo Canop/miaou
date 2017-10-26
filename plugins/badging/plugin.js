@@ -23,7 +23,7 @@ exports.getBadgeByTagName = async function(con, tag, name){
 }
 
 exports.getBadgeCounts = async function(con, playerId){
-	var rows = await con.queryRows(
+	let rows = await con.queryRows(
 		"select level, count(*) n from player_badge join badge on id=badge where player=$1 group by level",
 		[playerId],
 		"badge_player_counts"
@@ -73,7 +73,7 @@ exports.register = async function(con, options){
 }
 
 async function onCommand(ct){
-	var	con = this,
+	let	con = this,
 		match = ct.args.match(/^\s*(\w+)?\s*(.*)$/),
 		verb = match[1],
 		args = match[2];
@@ -104,7 +104,7 @@ exports.registerCommands = function(cb){
 exports.registerRoutes = map=>{
 	map("get", /^\/json\/badge$/, function(req, res, next){
 		res.setHeader("Cache-Control", "public, max-age=60000"); // 60 minutes
-		var	badgeTag = req.query.tag,
+		let	badgeTag = req.query.tag,
 			badgeName = req.query.name;
 		db.on()
 		.then(function(){
@@ -126,12 +126,40 @@ exports.registerRoutes = map=>{
 }
 
 exports.getPublicProfileAdditions = async function(con, user, room){
-	var counts = await exports.getBadgeCounts(con, user.id);
-	var html = "<div class=badge-counts>";
+	let counts = await exports.getBadgeCounts(con, user.id);
+	let html = "<div class=badge-counts>";
 	;["gold", "silver", "bronze"].forEach(level=>{
 		if (!counts[level]) return;
 		html += `<span class=${level}-badge-count>${counts[level]}</span>`;
 	});
 	html += "</div>";
 	return [{ html }];
+}
+
+exports.getUserPageAdditions = async function(con, user){
+	let badges = await con.queryRows(
+		"select * from player_badge join badge on badge=id where player=$1",
+		[user.id],
+		"list user badges"
+	);
+	let	tags = [],
+		badgesByTag = new Map;
+	badges.forEach(b=>{
+		let arr = badgesByTag.get(b.tag);
+		if (!arr) {
+			tags.push(b.tag);
+			arr = [];
+			badgesByTag.set(b.tag, arr);
+		}
+		arr.push(b);
+	});
+	let html = tags.sort().map(tag=>
+		`<h3>${tag}</h3>` + badgesByTag.get(tag).map(
+			b=>`<span class=${b.level}-badge>${b.name}</span>`
+		).join(" ")
+	).join("\n");
+	return [{
+		title: "Badges",
+		content: "<div class=badge-list>"+html+"</div>"
+	}];
 }
