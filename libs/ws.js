@@ -25,6 +25,7 @@ var	miaou,
 	plugins,
 	onSendMessagePlugins,
 	onNewShoePlugins,
+	allowSearchExactExpressions,
 	onReceiveMessagePlugins;
 
 exports.configure = function(_miaou){
@@ -34,6 +35,7 @@ exports.configure = function(_miaou){
 	var config = miaou.config;
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
+	allowSearchExactExpressions = miaou.conf("search", "searchExactExpressions"),
 	plugins = (config.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
 	onSendMessagePlugins = plugins.filter(p => p.onSendMessage );
 	onNewShoePlugins = plugins.filter(p => p.onNewShoe );
@@ -265,6 +267,12 @@ function fixSearchOptions(search, userId, room){
 	search.lang = langs.pgLang(room.lang);
 	search.pageSize = 20;
 	search.page = search.page>0 ? search.page : 0;
+	if (allowSearchExactExpressions) {
+		let match = search.pattern.match(/^"(.*)"$/);
+		if (match) { // string between quotes: exact expression required
+			search.regex = match[1].replace(/[!$()*+.:<=>?[\\\]^{|}-]/g, "\\&$");
+		}
+	}
 	if (search.starrer && search.starrer!==userId) {
 		throw new Error("Unauthorized search");
 	}
