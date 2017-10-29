@@ -713,7 +713,11 @@ proto._searchConditions = function(s, args, conditions){
 	if (s.regex) {
 		psname += "_regex";
 		args.push(s.regex);
-		conditions.push("content ~* $1");
+		if (s.caseInsensitive) {
+			conditions.push("content ~* $1");
+		} else {
+			conditions.push("content ~ $1");
+		}
 	} else if (s.pattern) {
 		psname += "_pattern";
 		args.push(s.pattern);

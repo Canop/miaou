@@ -26,6 +26,7 @@ var	miaou,
 	onSendMessagePlugins,
 	onNewShoePlugins,
 	allowSearchExactExpressions,
+	allowSearchRegularExpressions,
 	onReceiveMessagePlugins;
 
 exports.configure = function(_miaou){
@@ -35,7 +36,8 @@ exports.configure = function(_miaou){
 	var config = miaou.config;
 	maxContentLength = config.maxMessageContentSize || 500;
 	minDelayBetweenMessages = config.minDelayBetweenMessages || 5000;
-	allowSearchExactExpressions = miaou.conf("search", "searchExactExpressions"),
+	allowSearchExactExpressions = miaou.conf("search", "exactExpressions"),
+	allowSearchRegularExpressions = miaou.conf("search", "regularExpressions"),
 	plugins = (config.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
 	onSendMessagePlugins = plugins.filter(p => p.onSendMessage );
 	onNewShoePlugins = plugins.filter(p => p.onNewShoe );
@@ -271,6 +273,14 @@ function fixSearchOptions(search, userId, room){
 		let match = search.pattern.match(/^"(.*)"$/);
 		if (match) { // string between quotes: exact expression required
 			search.regex = match[1].replace(/[!$()*+.:<=>?[\\\]^{|}-]/g, "\\&$");
+			search.caseInsensitive = true;
+		}
+	}
+	if (allowSearchRegularExpressions) {
+		let match = search.pattern.match(/^\/(.*)\/(i)?$/);
+		if (match) { // string between slashes: regular expression
+			search.regex = match[1];
+			search.caseInsensitive = !!match[2];
 		}
 	}
 	if (search.starrer && search.starrer!==userId) {
