@@ -1,7 +1,10 @@
 
 const	path = require("path"),
-	doList = require("./command-list.js").doList,
-	doAward = require("./command-award.js").doAward,
+	commands = {
+		list: require("./command-list.js").doList,
+		award: require("./command-award.js").doAward,
+		ladder: require("./command-ladder.js").doLadder,
+	},
 	autoAwarder = require("./auto-awarder.js");
 
 var	db;
@@ -77,13 +80,9 @@ async function onCommand(ct){
 		match = ct.args.match(/^\s*(\w+)?\s*(.*)$/),
 		verb = match[1],
 		args = match[2];
-	if (!verb || verb==="list") {
-		return await doList(con, ct, args||"");
-	}
-	if (verb==="award") {
-		return await doAward(con, ct, args||"");
-	}
-	throw new Error("Command not understood");
+	var fun = commands[verb||"list"];
+	if (!fun) throw new Error("Command not understood");
+	await fun(con, ct, args||"");
 }
 
 exports.registerCommands = function(cb){

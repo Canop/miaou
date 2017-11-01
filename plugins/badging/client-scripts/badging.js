@@ -1,4 +1,9 @@
-miaou(function(plugins, fmt, md){
+miaou(function(plugins, ed, fmt, md){
+
+	setTimeout(function(){
+		ed.registerCommandArgAutocompleter("badge", ["award", "ladder", "list"]);
+	}, 500);
+
 
 	function nv(n, v){
 		return "<span class=faded-8>" + n + ":</span> " + v;
