@@ -1,4 +1,5 @@
 const	dedent = require("../../libs/template-tags.js").dedent,
+	badging = require("./plugin.js"),
 	fmt = require("../../libs/fmt.js");
 
 // applicable to global ladder (no tag) or a specific tag
@@ -76,21 +77,48 @@ async function getLastToGetMd(con, tag){
 		c += `${badge} was awarded to ${fmt.oxford(players)}\n`;
 	}
 	return c;
+}
 
+// only applicable to the tag+name case
+async function getRecipientsMd(con, badge){
+	let count = await con.queryValue(
+		"select count(*) from player_badge where badge=$1",
+		[badge.id],
+		"count_badge_awards"
+	);
+	let c = `The ${badging.md(badge)} badge has been awarded to ${count} user${count>1?"s":""}`;
+	if (count<50) {
+		c += ":\n";
+		let playernames = await con.queryRows(
+			"select name from player_badge join player on player.id=player where badge=$1 order by message",
+			[badge.id],
+			"list_badge_players"
+		);
+		c += fmt.oxford(playernames.map(r=>"@"+r.name));
+	}
+	return c;
 }
 
 // !!badge ladder
 // !!badge ladder Tribo
 // !!badge ladder Tribo / Champion
 exports.doLadder = async function(con, ct, args){
-	let [, tag, name] = args.match(/^\s*([^\/]+)?\s*(?:\/\s*(.*?)\s*)?$/);
-	console.log('name:', name);
+	let [, tagname, name] = args.match(/^\s*([^\/]+\S)?\s*(?:\/\s*(.*?)\s*)?$/);
+	if (tagname) {
+		let tag = await con.getTag(tagname);
+		if (!tag) {
+			throw new Error(`No tag found with name "${tagname}"`);
+		}
+		tagname = tag.name; // might fix an invalid case in user query
+	}
 	let c = "";
-	if (!name) {
-		c += await getLadderMd(con, tag);
-		c += await getLastToGetMd(con, tag);
+	if (name) {
+		var badge = await badging.getBadgeByTagName(con, tagname, name);
+		if (!badge) throw new Error(`No ${tagname} / ${name} badge found̀`);
+		c += await getRecipientsMd(con, badge);
 	} else {
-		c += "Command not yet implemented as is";
+		c += await getLadderMd(con, tagname);
+		c += await getLastToGetMd(con, tagname);
 	}
 	ct.reply(c, ct.nostore = true);
 }
