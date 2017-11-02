@@ -3,12 +3,16 @@
 #
 
 # Based on docker official node image
-FROM node:5.10.1
+FROM node:latest
 
 # Install "nodemon" and "buster" globally
+RUN chown -R node:node /usr/local/lib/node_modules
+RUN chown -R node:node /usr/local/bin
+USER node
 RUN npm install -g nodemon buster
 
 # Setup workspace
+USER root
 RUN mkdir -p /var/www/miaou
 WORKDIR /var/www/miaou
 
@@ -24,4 +28,4 @@ RUN npm run build
 EXPOSE 8204
 
 # Define default command
-CMD ["node", "--use_strict", "main.js"]
+CMD ["node", "main.js"]

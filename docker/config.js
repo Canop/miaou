@@ -26,7 +26,11 @@ module.exports = {
 	},
 
 	database: {
-		url: "postgres://miaou:miaou@postgres:5432/miaou",
+    database: "miaou",
+    user: "miaou",
+    password: "miaou",
+    host: "postgres",
+    port: "5432",
 		native_pg: false // let it to false unless you're a wizard
 	},
 
@@ -48,7 +52,7 @@ module.exports = {
 		"./plugins/survey/plugin.js",
 		"./plugins/graph/plugin.js",
 		"./plugins/hashcolor/plugin.js",
-		"./plugins/shield/plugin.js",
+		"./plugins/shield/plugin.js"
 	],
 
 	// available themes. The first one is both the default theme and the one
@@ -65,8 +69,8 @@ module.exports = {
 	// OAuth providers. Remove or comment the ones you don't want to use
 	oauth2: {
 		"google": { // create one at https://code.google.com/apis/console/
-			"clientID": "azertyazertyazertyazerty.apps.googleusercontent.com",
-			"clientSecret": "azertyazerty"
+			"clientID": "822940944352-8mfvgno19jkcio7401cfms46l09d63eh.apps.googleusercontent.com",
+			"clientSecret": "_smcz8jQ2eWc1bKyiQiVXdFE"
 		}
 		//"stackexchange": { // create one at http://stackapps.com/apps/oauth/
 		//	"clientID": "your client ID",
