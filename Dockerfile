@@ -3,7 +3,7 @@
 #
 
 # Based on docker official node image
-FROM node:latest
+FROM node:8
 
 # Install "nodemon" and "buster" globally
 RUN chown -R node:node /usr/local/lib/node_modules
@@ -28,4 +28,4 @@ RUN npm run build
 EXPOSE 8204
 
 # Define default command
-CMD ["node", "main.js"]
+CMD ["node", "--use_strict", "main.js"]

@@ -69,8 +69,8 @@ module.exports = {
 	// OAuth providers. Remove or comment the ones you don't want to use
 	oauth2: {
 		"google": { // create one at https://code.google.com/apis/console/
-			"clientID": "822940944352-8mfvgno19jkcio7401cfms46l09d63eh.apps.googleusercontent.com",
-			"clientSecret": "_smcz8jQ2eWc1bKyiQiVXdFE"
+			"clientID": "azertyazertyazertyazerty.apps.googleusercontent.com",
+			"clientSecret": "azertyazerty"
 		}
 		//"stackexchange": { // create one at http://stackapps.com/apps/oauth/
 		//	"clientID": "your client ID",
