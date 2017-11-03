@@ -16,25 +16,22 @@
 	align-items: center;
 }
 
-.bronze-badge::before, .bronze-badge-count::before {
-	content: "⚫";
-	color: #d1a684;
-	text-shadow: 0 0 1px rgba(255,255,255,.5);
-	margin: 0 4px 0 0;
-}
-
-.silver-badge::before, .silver-badge-count::before {
-	content: "⚫";
-	color: #b4b8bc;
-	text-shadow: 0 0 1px rgba(255,255,255,.5);
-	margin: 0 4px 0 0;
-}
-
+.bronze-badge::before, .bronze-badge-count::before,
+.silver-badge::before, .silver-badge-count::before,
 .gold-badge::before, .gold-badge-count::before {
 	content: "⚫";
-	color: #fdcc02;
 	text-shadow: 0 0 1px rgba(255,255,255,.5);
 	margin: 0 4px 0 0;
+	font-size: 16px;
+}
+.bronze-badge::before, .bronze-badge-count::before {
+	color: #d1a684;
+}
+.silver-badge::before, .silver-badge-count::before {
+	color: #b4b8bc;
+}
+.gold-badge::before, .gold-badge-count::before {
+	color: #fdcc02;
 }
 
 .bronze-badge-bount, .silver-badge-count, .gold-badge-bount {
