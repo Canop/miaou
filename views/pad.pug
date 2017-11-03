@@ -7,7 +7,7 @@ html
 		script(src="socket.io/socket.io.js")
 		script(src="static/jquery-3.2.1.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
-		script(src="static/miaou.min.js?v=7")
+		script(src="static/miaou.min.js?v=8")
 		script(src="static/pad.min.js?v=8")
 	body.pad.desktop
 		#non-top
@@ -55,25 +55,26 @@ html
 				.page.selected#notablemessagespage
 					#notable-messages
 				.page#search
-					.search-input-line
-						input#search-input(autocomplete="off")
-						span#search-options-open.icon-cog
-					#search-options.open
+					#search-query
 						.search-input-line
-							input(type="checkbox")#search-starred
-							label(for="search-starred") starred
-							.search-options-details
-								input(type="checkbox")#search-starred-by-me
-								label(for="search-starred-by-me") by me
-						.search-input-line
-							input(type="checkbox")#search-written
-							label(for="search-written") written
-							.search-options-details
-								input(type="radio",name="search-written-by",checked="checked")#search-written-by-me
-								label(for="search-written-by-me") by me
-								input(type="radio",name="search-written-by")#search-written-by
-								label(for="search-written-by") by @
-								input.username(type="text")#search-author
+							input#search-input(autocomplete="off")
+							span#search-options-open.icon-cog
+						#search-options.open
+							.search-input-line
+								input(type="checkbox")#search-starred
+								label(for="search-starred") starred
+								.search-options-details
+									input(type="checkbox")#search-starred-by-me
+									label(for="search-starred-by-me") by me
+							.search-input-line
+								input(type="checkbox")#search-written
+								label(for="search-written") written
+								.search-options-details
+									input(type="radio",name="search-written-by",checked="checked")#search-written-by-me
+									label(for="search-written-by-me") by me
+									input(type="radio",name="search-written-by")#search-written-by
+									label(for="search-written-by") by @
+									input.username(type="text")#search-author
 					#search-load-bar.load-bar
 					#search-results
 						i

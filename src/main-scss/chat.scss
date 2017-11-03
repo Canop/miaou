@@ -491,6 +491,10 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 	cursor: pointer;
 }
 
+#search-query {
+	box-shadow: $chat-page-side-top-panel-shadow;
+}
+
 #search-results .content img, #notable-messages .content img, .messages .content img,
 table.list .rendered img, .rooms-list .rendered img {
 	max-height: 70px;

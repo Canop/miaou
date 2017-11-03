@@ -706,8 +706,8 @@ proto.getNotableMessages = function(roomId, createdAfter){
 	);
 }
 
-// appends to the args and conditions arrays, from the s search options
-// returns the completed ps name
+// append to the args and conditions arrays, from the s search options
+// return the completed ps name
 proto._searchConditions = function(s, args, conditions){
 	var psname = "";
 	if (s.regex) {
@@ -748,7 +748,7 @@ proto._searchConditions = function(s, args, conditions){
 		psname += "_starrer";
 		args.push(s.starrer);
 		conditions.push(
-			"exists (select * from message_vote mv where mv.player=$1 and mv.message=message.id and mv.vote='star')"
+			"exists (select * from message_vote where player=$1 and message=message.id and vote='star')"
 		);
 	} else if (s.starred) {
 		psname += "_starred";

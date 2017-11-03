@@ -49,6 +49,14 @@ $square-room-hover-bg: transparentize( $mes-me-brown , 0.3 );
 $square-room-last-created-color: #eee;
 $square-room-last-created-text-shadow: 0 0 2px black;
 
+// history
+$hist-color: #ddd;
+$hist-month-border-bottom: thin solid #5a6a5f;
+$hist-vis-day-background: rgba(45, 38, 36, 0.6);
+$hist-hover-day-background: #51608a;
+$hist-bar-color: #b7bda0;
+$hist-bubble-background: #51608a;
+
 // dialogs
 $dialog-bg: white;
 $dialog-color: #222;
@@ -127,7 +135,7 @@ $profile-avatar-filter: drop-shadow(0 0 4px);
 
 
 // side tabs
-$chat-tabs-border-color: rgba(0,0,0,0.2);
+$chat-tabs-border-color: rgba(0,0,0,0.3);
 $chat-tabs-border-width: 1px;
 $chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.08));
 $chat-tabs-selected-bg-image: none;

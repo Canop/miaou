@@ -111,13 +111,14 @@ $list-odd-cell-bg: #f9f9f9;
 $list-even-cell-bg: #efefef;
 
 // side tabs
-$chat-tabs-border-color: #555;
+$chat-tabs-border-color: #999;
 $chat-tabs-border-width: 1px;
 $chat-tabs-unselected-bg-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0),rgba(0,0,0,0.01),rgba(0,0,0,0.07));
 $chat-tabs-selected-bg-image: none;
 $chat-tabs-unselected-bg-color: transparent;
 $chat-tabs-selected-bg-color: #f0f0f0;
 $chat-page-selected-bg: $chat-tabs-selected-bg-color;
+$chat-page-side-top-panel-shadow: 0 1px 1px rgba(0, 0, 0, .2);
 
 // message sizing
 $message-min-height: 30px;
