@@ -1,4 +1,4 @@
-const	apiversion = 86,
+const	apiversion = 87,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -269,14 +269,14 @@ function fixSearchOptions(search, userId, room){
 	search.lang = langs.pgLang(room.lang);
 	search.pageSize = 20;
 	search.page = search.page>0 ? search.page : 0;
-	if (allowSearchExactExpressions) {
+	if (allowSearchExactExpressions && search.pattern) {
 		let match = search.pattern.match(/^"(.*)"$/);
 		if (match) { // string between quotes: exact expression required
 			search.regex = match[1].replace(/[!$()*+.:<=>?[\\\]^{|}-]/g, "\\&$");
 			search.caseInsensitive = true;
 		}
 	}
-	if (allowSearchRegularExpressions) {
+	if (allowSearchRegularExpressions && search.pattern) {
 		let match = search.pattern.match(/^\/(.*)\/(i)?$/);
 		if (match) { // string between slashes: regular expression
 			search.regex = match[1];
