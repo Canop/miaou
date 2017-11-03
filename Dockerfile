@@ -6,9 +6,9 @@
 FROM node:8
 
 # Install "nodemon" and "buster" globally
-RUN chown -R node:node /usr/local/lib/node_modules
-RUN chown -R node:node /usr/local/bin
 USER node
+RUN mkdir ~/.npm-global
+ENV NPM_CONFIG_PREFIX ~/.npm-global
 RUN npm install -g nodemon buster
 
 # Setup workspace

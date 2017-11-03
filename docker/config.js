@@ -26,11 +26,11 @@ module.exports = {
 	},
 
 	database: {
-    database: "miaou",
-    user: "miaou",
-    password: "miaou",
-    host: "postgres",
-    port: "5432",
+                database: "miaou",
+                user: "miaou",
+                password: "miaou",
+                host: "postgres",
+                port: "5432",
 		native_pg: false // let it to false unless you're a wizard
 	},
 
@@ -52,7 +52,7 @@ module.exports = {
 		"./plugins/survey/plugin.js",
 		"./plugins/graph/plugin.js",
 		"./plugins/hashcolor/plugin.js",
-		"./plugins/shield/plugin.js"
+		"./plugins/shield/plugin.js",
 	],
 
 	// available themes. The first one is both the default theme and the one
