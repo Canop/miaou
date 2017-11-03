@@ -621,6 +621,9 @@ code {
 	padding-left: 5px;
 	background: $citation-background;
 	min-width: 70%;
+	& + br {
+		display: none;
+	}
 }
 .desktop .citation {
 	margin-left: 15px;
