@@ -70,6 +70,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 
 	// receive search results sent by the server
 	hist.found = function(res){
+		console.log('res:', res);
 		if (!isCurrentSearch(res.search)) {
 			console.log('received results of another search', $('#search-input').val().trim(), res);
 			return;

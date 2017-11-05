@@ -212,7 +212,6 @@ body.desktop #rooms-page {
 	padding: 5px 0;
 }
 
-
 #non-top {
 	#left, #right, #center {
 		top: 40px;
@@ -221,11 +220,14 @@ body.desktop #rooms-page {
 		padding-top: 5px;
 	}
 	#right {
-		overflow-y: scroll;
+		overflow-y: hidden;
+		display: flex;
+		flex-direction: column;
 	}
 }
 
 #right #room-area {
+	flex: 0 0 auto;
 	position: relative;
 	background-size: cover;
 	background-position: center center;

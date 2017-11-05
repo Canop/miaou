@@ -495,6 +495,7 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 }
 
 #search-results-navigator {
+	flex: 0 0 auto;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -606,6 +607,9 @@ body.mobile .message-menu .vote {
 	margin: 0 4px;
 }
 #notable-messages, #search-results {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	.message {
 		border-top: $side-message-border-top;
 	}
@@ -1135,8 +1139,11 @@ body.mobile {
 .page {
 	width: 100%;
 	display: none;
+	overflow: hidden;
 	&.selected {
-		display: block;
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
 	}
 }
 .pad .page.selected {
@@ -1145,6 +1152,7 @@ body.mobile {
 
 
 .search-input-line {
+	flex: 0 0 auto;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -1174,22 +1182,23 @@ body.mobile {
 }
 
 #search-options {
+	//flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
 	height: 0;
 	overflow-y: hidden;
 	transition: height .3s;
 	&.open {
-		height: 60px;
+		height: 68px;
 		transition: height .2s;
 	}
 	.search-input-line {
+		flex: 0 0 auto;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
 		label:first-of-type {
 			width: 48px;
-		}
-		.search-options-details {
-			opacity: .4;
 		}
 		input:first-of-type:checked ~ .search-options-details {
 			opacity: 1;
@@ -1197,6 +1206,12 @@ body.mobile {
 		}
 		input.username {
 			margin-left: 4px;
+		}
+		.search-options-details {
+			opacity: .4;
+			input {
+				max-width: 100px;
+			}
 		}
 	}
 }
