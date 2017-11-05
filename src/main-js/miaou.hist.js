@@ -2,7 +2,8 @@
 miaou(function(hist, gui, locals, md, time, ws){
 
 	var	visible = false,
-		currentSearch;
+		currentSearch,
+		currentResult;
 
 	function isCurrentSearch(s){
 		return (
@@ -70,11 +71,12 @@ miaou(function(hist, gui, locals, md, time, ws){
 
 	// receive search results sent by the server
 	hist.found = function(res){
-		console.log('res:', res);
 		if (!isCurrentSearch(res.search)) {
 			console.log('received results of another search', $('#search-input').val().trim(), res);
 			return;
 		}
+		currentSearch = res.search;
+		currentResult = res.result;
 		$("#search-load-bar").removeClass("active");
 		$("#search-results-navigator").addClass("enabled");
 		if (!res.result.count) {
@@ -111,6 +113,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 		if (n<0 || n>5000 || maxn==0) return console.log('invalid data', res);
 		logmaxn = Math.log(maxn);
 		$('#hist')[n>30?'removeClass':'addClass']('zoomed');
+		var sum = 0;
 		function day(d, n, sn){
 			var	date = new Date(d*24*60*60*1000),
 				month = time.MMM[date.getMonth()]+' '+date.getFullYear();
@@ -121,11 +124,14 @@ miaou(function(hist, gui, locals, md, time, ws){
 				lastMonth = month;
 			}
 			var $bar = $('<div/>').addClass('bar').css('width', Math.log(n+1)*80/logmaxn+'%');
-			var $day = $('<div/>').addClass('day').append($bar).attr('d', d).attr('n', n).appendTo($month);
+			var $day = $('<div/>').addClass('day').append($bar)
+			.attr('d', d).attr('n', n).attr("sum", Math.floor(sum))
+			.appendTo($month);
 			if (sn) {
 				$bar.addClass('hit');
 				$day.attr('sn', sn);
 			}
+			if (sn) sum += sn;
 		}
 		records.forEach(function(r){
 			for (d++;d<r.d;d++) day(d, 0);
@@ -152,12 +158,18 @@ miaou(function(hist, gui, locals, md, time, ws){
 	}
 
 	$('#hist').on('click', '.day', function(){
-		var	sn = +$(this).attr('sn'),
-			d = +$(this).attr('d');
+		var	$this = $(this),
+			sn = +$this.attr('sn'),
+			d = +$this.attr('d');
 		ws.emit("get_after_time", {
 			search: sn ? currentSearch : null,
 			minCreated: d*24*60*60
 		});
+		if (currentResult && currentResult.count) {
+			var page = Math.floor((currentResult.count-$this.attr("sum"))/currentSearch.pageSize);
+			currentSearch.page = page;
+			hist.search(currentSearch);
+		}
 	}).on('mouseenter', '.day', function(){
 		var	sn = +$(this).attr('sn'),
 			n = +$(this).attr('n'),
