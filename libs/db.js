@@ -757,20 +757,27 @@ proto._searchConditions = function(s, args, conditions){
 	return psname;
 }
 
-proto.search = function(s){
-	var	psname = "search",
-		args = [],
-		conditions = [],
-		sql = "select message.id, author, player.name as authorname, room, content, created,"+
+proto.search = async function(s){
+	console.log('s:', s);
+	let	args = [],
+		conditions = [];
+	let psname = "search" + this._searchConditions(s, args, conditions);
+	let count = await this.queryValue(
+		ps("select count(*) from message inner join player on author=player.id", conditions),
+		args,
+		psname+"_count"
+	);
+	if (!count) return {count, messages:[]};
+	let	sql = "select message.id, author, player.name as authorname, room, content, created,"+
 		" pin, star, up, down, score from message"+
 		" inner join player on author=player.id";
-	psname += this._searchConditions(s, args, conditions);
 	args.push(s.pageSize, s.page*s.pageSize||0);
-	return this.queryRows(
+	let messages = await this.queryRows(
 		ps(sql, conditions, "order by message.id desc limit $1 offset $2"),
 		args,
 		psname
 	);
+	return {count, messages};
 }
 
 proto.searchFirstId = function(s){

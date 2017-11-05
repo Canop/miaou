@@ -492,7 +492,47 @@ body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
 }
 
 #search-query {
+}
+
+#search-results-navigator {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	font-size: 12px;
 	box-shadow: $chat-page-side-top-panel-shadow;
+	user-select: none;
+	height: 0;
+	overflow-y: hidden;
+	transition: height .3s;
+	&.enabled {
+		height: 24px;
+		transition: height .3s;
+	}
+}
+#mpad #search-results-navigator {
+	&.enabled {
+		height: 36px;
+		transition: height .3s;
+	}
+}
+
+#search-results-count {
+	flex: 1 1 auto;
+	text-align: center;
+}
+
+#search-results-previous-page, #search-results-next-page {
+	font-size: 14px;
+	opacity: .3;
+	&.enabled {
+		cursor: pointer;
+		opacity: 1;
+	}
+}
+
+#search-results-previous-page, #search-results-page, #search-results-next-page {
+	flex: 0 0 auto;
+	margin: 0 4px;
 }
 
 #search-results .content img, #notable-messages .content img, .messages .content img,

@@ -845,17 +845,18 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);
 	});
 
-	on('search', function(search, done){
-		db.on([search, shoe.publicUser.id, shoe.room])
-		.spread(fixSearchOptions)
-		.then(db.search)
-		.filter(m => !/^!!deleted /.test(m.content))
-		.map(clean)
-		.then(function(results){
-			socket.emit('found', {results, search, mayHaveMore:results.length===search.pageSize});
+	on('search', async function(search, done){
+		db.do(async function(con){
+			fixSearchOptions(search, shoe.publicUser.id, shoe.room);
+			let result = await con.search(search);
+			if (result.messages) {
+				result.messages = result.messages
+				.filter(m => !/^!!deleted /.test(m.content))
+				.map(clean);
+			}
+			socket.emit('found', {result, search});
 			done();
-		})
-		.finally(db.off);
+		});
 	});
 
 	on('start_watch', function(_, done){

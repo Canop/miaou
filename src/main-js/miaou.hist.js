@@ -1,5 +1,4 @@
 // histogram and search functions
-
 miaou(function(hist, gui, locals, md, time, ws){
 
 	var	visible = false,
@@ -72,23 +71,24 @@ miaou(function(hist, gui, locals, md, time, ws){
 	// receive search results sent by the server
 	hist.found = function(res){
 		if (!isCurrentSearch(res.search)) {
-			console.log("NO", currentSearch, res.search);
 			console.log('received results of another search', $('#search-input').val().trim(), res);
 			return;
 		}
 		$("#search-load-bar").removeClass("active");
-		md.showMessages(res.results, $('#search-results'), res.search.page);
-		if (res.mayHaveMore) {
-			$('<div id=search-next-page>').text('more results')
-			.click(function(){
-				$(this).remove();
-				res.search.page = (res.search.page||0) + 1;
-				hist.search(res.search);
-			})
-			.appendTo('#search-results');
-		} else {
-			$('#search-next-page').remove();
+		$("#search-results-navigator").addClass("enabled");
+		if (!res.result.count) {
+			$('#search-results-count').text("no result");
+			$('#search-results').empty();
+			return;
 		}
+		let	page = res.search.page||0,
+			nbPages = Math.ceil(res.result.count / res.search.pageSize);
+		$("#search-results").empty();
+		md.showMessages(res.result.messages, $('#search-results'), page);
+		$('#search-results-count').text(res.result.count + " messages found");
+		$("#search-results-page").text((page+1)+" / "+nbPages);
+		$("#search-results-previous-page").toggleClass("enabled", page>0);
+		$("#search-results-next-page").toggleClass("enabled", page<nbPages-1);
 	}
 
 	// display search results histogram sent by the server
@@ -179,6 +179,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 		} else {
 			currentSearch = options;
 			$('#search-results').empty();
+			$("#search-results-navigator").removeClass("enabled");
 			$('#hist .bar').removeClass('hit').removeAttr('sn');
 		}
 	}
@@ -226,4 +227,15 @@ miaou(function(hist, gui, locals, md, time, ws){
 			}
 		});
 	}
+
+	$("#search-results-previous-page").click(function(){
+		if (!currentSearch || !this.classList.contains("enabled")) return;
+		currentSearch.page--;
+		hist.search(currentSearch);
+	});
+	$("#search-results-next-page").click(function(){
+		if (!currentSearch || !this.classList.contains("enabled")) return;
+		currentSearch.page++;
+		hist.search(currentSearch);
+	});
 });
