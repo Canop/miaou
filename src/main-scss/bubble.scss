@@ -15,6 +15,9 @@
 		.bubble-title {
 			font-weight: bold;
 		}
+		code {
+			color: $bubble-color;
+		}
 	}
 	.bubble-arrow {
 		width: 0;
