@@ -18,7 +18,6 @@ exports.configure = function(miaou){
 function startPeriodicAccessRequestCleaning(miaou){
 	var maxAge = miaou.conf("cleaning-frequencies", "old-access-requests") || 2*60*60; // 2 hours
 	var checkInterval = Math.max(10, Math.min(1000, maxAge/5|0));
-	console.log('Periodic Access Request Cleaning: checkInterval:', checkInterval, 'maxAge:', maxAge);
 	setInterval(function(){
 		console.log("checking access requests");
 		db.on().then(function(){

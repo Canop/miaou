@@ -20,7 +20,6 @@ function dequeue(){
 	var task = tasks.shift();
 	if (!task) return;
 	currentTask = task;
-	console.log('currentTask:', currentTask.line);
 	var box = cache.get(task.line);
 	if (box !== undefined) {
 		return setTimeout(function(){
@@ -37,16 +36,10 @@ function dequeue(){
 		task.boxer.urler ? task.boxer.urler.apply(null, args) : url
 	)
 	.then(url => {
-		// console.log('line:', line);
-		// console.log('url:', url);
 		request(url, function(error, res, body){
-			console.log('box', url, 'fetched');
 			currentTask = null;
 			setTimeout(dequeue, 0);
 			if (error || !res || res.statusCode!==200) {
-				console.log('line:', line);
-				console.log('url:', url);
-				console.log("request error:", error);
 				return;
 			}
 			args.unshift($$.load(body));
@@ -72,7 +65,6 @@ exports.onSendMessage = function(shoe, m, send){
 	m.content.split('\n').forEach(function(line){
 		for (var i=0; i<boxers.length; i++) {
 			if (boxers[i].pattern.test(line)) {
-				console.log("adding task for", boxers[i].name);
 				tasks.push({
 					line:line.trim(),
 					mid:m.id,

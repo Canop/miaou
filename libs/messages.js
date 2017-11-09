@@ -10,7 +10,6 @@ exports.configure = function(miaou){
 // params : n, room
 exports.appGetJsonLastMessages = function(req, res){
 	if (!req.user) {
-		console.log("no user in appGetJsonLastMessages");
 		res.json({error: "no connected user"});
 		return;
 	}
