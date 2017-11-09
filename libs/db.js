@@ -256,7 +256,6 @@ proto.updateRoom = function(r, author, authlevel){
 
 // ensures the name and lang of every dialog room is correct according to user names and lang
 proto.fixAllDialogRooms = function(){
-	console.log("Fixing all dialog room names");
 	return this.execute(
 		"update room set name=concat(u1.name,' & ',u2.name), lang=coalesce(u1.lang,u2.lang,'en')"+
 		" from player u1, room_auth a1, player u2, room_auth a2"+
@@ -708,51 +707,59 @@ proto.getNotableMessages = function(roomId, createdAfter){
 
 // append to the args and conditions arrays, from the s search options
 // return the completed ps name
-proto._searchConditions = function(s, args, conditions){
+proto._searchConditions = function(s, args, cons){
 	var psname = "";
 	if (s.regex) {
 		psname += "_regex";
 		args.push(s.regex);
 		if (s.caseInsensitive) {
-			conditions.push("content ~* $1");
+			cons.push("content ~* $1");
 		} else {
-			conditions.push("content ~ $1");
+			cons.push("content ~ $1");
 		}
 	} else if (s.pattern) {
 		psname += "_pattern";
 		args.push(s.pattern);
 		// due to the indexing, the only possible language is "english"
-		conditions.push("to_tsvector('english', content) @@ plainto_tsquery('english',$1)");
+		cons.push("to_tsvector('english', content) @@ plainto_tsquery('english',$1)");
+	}
+	if (s.img) {
+		psname += "_img";
+		cons.push(`content ~* '(^|\\n)\\s*(https?:\/\/[^\\s<>"]+\/[^\\s<>"]+)\\.(png|webp|gif|jpe?g|svg)\\s*($|\\n)'`);
+	}
+	if (s.link) {
+		psname += "_link";
+		cons.push(`content ~* 'https?:\/\/(?!i\\.imgur|dystroy\\.org)\\w+'`);
 	}
 	if (s.roomId) {
 		psname += "_room";
 		args.push(s.roomId);
-		conditions.push("room=$1");
+		cons.push("room=$1");
 	}
 	if (s.author) {
 		psname += "_author";
 		args.push(s.author);
-		conditions.push("author=$1");
+		cons.push("author=$1");
 	}
 	if (s.minCreated) {
 		psname += "_minCreated";
 		args.push(s.minCreated);
-		conditions.push("created>=$1");
+		cons.push("created>=$1");
 	}
 	if (s.authorName) {
 		psname += "_authorName";
 		args.push(s.authorName);
-		conditions.push("player.name=$1");
+		cons.push("player.name=$1");
 	}
 	if (s.starrer) {
 		psname += "_starrer";
 		args.push(s.starrer);
-		conditions.push(
+		cons.push(
 			"exists (select * from message_vote where player=$1 and message=message.id and vote='star')"
 		);
 	} else if (s.starred) {
 		psname += "_starred";
-		conditions.push("star<>0")
+		cons.push("star<>0")
 	}
 	return psname;
 }

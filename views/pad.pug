@@ -7,7 +7,7 @@ html
 		script(src="socket.io/socket.io.js")
 		script(src="static/jquery-3.2.1.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
-		script(src="static/miaou.min.js?v=8")
+		script(src="static/miaou.min.js?v=9")
 		script(src="static/pad.min.js?v=8")
 	body.pad.desktop
 		#non-top
@@ -58,8 +58,7 @@ html
 					#search-query
 						.search-input-line
 							input#search-input(autocomplete="off")
-							span#search-options-open.icon-cog
-						#search-options.open
+						#search-options
 							.search-input-line
 								input(type="checkbox")#search-starred
 								label(for="search-starred") starred
@@ -75,6 +74,11 @@ html
 									input(type="radio",name="search-written-by")#search-written-by
 									label(for="search-written-by") by @
 									input.username(type="text")#search-author
+							.search-input-line
+								input(type="checkbox")#search-img
+								label(for="search-img") image
+								input(type="checkbox")#search-link
+								label(for="search-link") external link
 					#search-results-navigator
 						#search-results-count
 						#search-results-previous-page ◀

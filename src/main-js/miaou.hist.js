@@ -12,13 +12,15 @@ miaou(function(hist, gui, locals, md, time, ws){
 			&& currentSearch.starred == s.starred
 			&& currentSearch.starrer == s.starrer
 			&& currentSearch.author == s.author
+			&& currentSearch.img == s.img
+			&& currentSearch.link == s.link
 			&& currentSearch.authorName == s.authorName
 		);
 	}
 
 	function isSearchEmpty(s){
 		s = s || currentSearch;
-		return !s || !(s.pattern || s.starred || s.starrer || s.author || s.authorName);
+		return !s || !(s.pattern || s.img || s.link || s.starred || s.starrer || s.author || s.authorName);
 	}
 
 	// arg : +1 or -1
@@ -214,6 +216,8 @@ miaou(function(hist, gui, locals, md, time, ws){
 				options.authorName = $("#search-author").val().trim();
 			}
 		}
+		options.img = $("#search-img").prop("checked");
+		options.link = $("#search-link").prop("checked");
 		return options;
 	}
 
@@ -227,6 +231,8 @@ miaou(function(hist, gui, locals, md, time, ws){
 				startSearch();
 			}
 		}).on("change blur", startSearch);
+		$("#search-img").on("change", startSearch);
+		$("#search-link").on("change", startSearch);
 		$('#search-input').on('keyup', function(e){
 			if (e.which===27 && typeof window.righttab === "function") { // esc
 				window.righttab("notablemessagespage"); // defined in page-js/pad.js
@@ -251,4 +257,27 @@ miaou(function(hist, gui, locals, md, time, ws){
 		currentSearch.page++;
 		hist.search(currentSearch);
 	});
+
+	if (!gui.mobile) {
+		var lines = [];
+		lines.push(
+			"Variations of words are found too, not just the exact occurence.",
+			"If you type several words, all messages with one of those words will be found.\n"
+		);
+		if (locals.features.search.exactExpressions) {
+			lines.push(
+				"To search for an exact expression, or for part of a word, put it between double quotes.",
+				`Example: \`"A B"\` (which wouldn't match "B A")\n`
+			);
+		}
+		if (locals.features.search.regularExpressions) {
+			lines.push(
+				"To search for regular expressions, put them between slashes: `/\\mcar+ot+/i`\n"
+			);
+		}
+		$("#search-input").bubbleOn({
+			side: "left",
+			md: lines.join("\n")
+		});
+	}
 });
