@@ -145,7 +145,7 @@ module.exports = {
 	"search": {
 		// If true, expressions between quotes are considered as exact expression searches.
 		// Right now this is costly and involves a full scan.
-		searchExactExpressions: false,
+		exactExpressions: false,
 		// Regular expressions are very powerful but they involve a full scan and they put
 		// you at the risk of catastrophic backtracking
 		regularExpressions: false,
