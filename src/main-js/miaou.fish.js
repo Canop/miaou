@@ -1,5 +1,5 @@
 // makes bubbles
-;miaou(function(fish){
+;miaou(function(fish, fmt){
 
 	$.fn.bubble = function(options){
 		var	side,
@@ -84,6 +84,7 @@
 		}
 		$b.css(css).addClass(side+'-bubble');
 		if (options.text) $c[0].innerText = options.text;
+		if (options.md) $c[0].innerHTML = fmt.mdTextToHtml(options.md);
 		if (options.blower) {
 			var r = options.blower.call(this, $c);
 			if (r === false) $b.remove();
