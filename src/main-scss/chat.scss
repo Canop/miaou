@@ -1161,37 +1161,12 @@ body.mobile {
 #search-input {
 	flex: 1 1;
 }
-#search-options-open {
-	flex: 0 0 20px;
-	font-family: "fontello";
-	text-align: center;
-	height: 20px;
-	line-height: 20px;
-	cursor: pointer;
-	margin-left: 4px;
-	transition: all 1s;
-	opacity: .7;
-	&:hover {
-		opacity: 1;
-	}
-	&.open {
-		transform: rotate(100deg);
-		opacity: 1;
-		transition: all 1s;
-	}
-}
 
 #search-options {
-	//flex: 0 0 auto;
+	flex: 0 0 auto;
 	display: flex;
 	flex-direction: column;
-	height: 0;
 	overflow-y: hidden;
-	transition: height .3s;
-	&.open {
-		height: 68px;
-		transition: height .2s;
-	}
 	.search-input-line {
 		flex: 0 0 auto;
 		display: flex;
