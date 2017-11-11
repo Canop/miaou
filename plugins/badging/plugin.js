@@ -45,9 +45,22 @@ exports.md = function(badge){
 exports.initBadge = async function(con, badge){
 	if (!/^\w+[\w\s-]+\w+$/.test(badge.name)) throw new Error("invalid badge name");
 	if (!badge.tag) throw new Error("missing tag in badge");
+	badge.manual = !!badge.manual;
 	var dbBadge = await exports.getBadgeByTagName(con, badge.tag, badge.name);
-	// TODO update other fields if necessary
-	if (!dbBadge) {
+	if (dbBadge) {
+		if (
+			badge.manual != dbBadge.manual
+			|| badge.level != dbBadge.level
+			|| badge.condition != dbBadge.condition
+		) {
+			dbBadge = await con.queryRow(
+				"update badge set level=$2, manual=$3, condition=$4 where id=$1 returning *",
+				[dbBadge.id, badge.level, badge.manual||false, badge.condition],
+				"update_badge",
+				false
+			);
+		}
+	} else {
 		dbBadge = await con.queryRow(
 			"insert into badge (tag, name, level, manual, condition)"+
 			" values ($1, $2, $3, $4, $5) returning *",
