@@ -151,7 +151,39 @@ You need to set up at least one OAuth provider.
 * StackExchange: create an OAuth account on http://stackapps.com/apps/oauth/
 * Github: create an OAuth account on https://github.com/settings/applications
 
-Fill the relevant parts of the configuration `config.js`.
+To fill the relevant parts of the configuration `config.js`, look for that commented part 
+
+        // OAuth providers. Remove or comment the ones you don't want to use
+
+Once found, put the relevant info.
+
+	// OAuth providers. Remove or comment the ones you don't want to use
+	oauth2: {
+		"google": { // create one at https://code.google.com/apis/console/
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"stackexchange": { // create one at http://stackapps.com/apps/oauth/
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"github": { // create one at https://github.com/settings/applications
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"reddit": {
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		}
+	},
+
+Addendum: The clientId for Google look like this 
+
+			"clientID": "883537075919-amp1s8ddogixnidpmu1kttvvhllqv1qt.apps.googleusercontent.com853539085919-amp1s8dqogiqnidump1kttvvhllqv1qt.apps.googleusercontent.com"
+			
+And the client secret for Google like this below
+
+			"clientSecret": "ceMq7gk81IltKHZZJiUVtU4Z"
 
 With Google at least the same account can be used both for your local tests and for the deployment on a public server. Don't forget to register the callback with address `127.0.0.1`, not `localhost`.
 
@@ -165,6 +197,29 @@ The first one is for the local tests, the second one for the public server.
 Hint: With Google as provider you now need to enable the Google+ API in the Google console developper (simply go to https://console.developers.google.com then look for "Google+" API in the Enable API menu).
 
 Hint: OAuth providers often need a small delay before propagating the changes so you might have to wait a few minutes before it works.
+
+Once you got your OAuth id, please fill the relevant part in `config.js`
+
+	oauth2: {
+		"google": { // create one at https://code.google.com/apis/console/
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"stackexchange": { // create one at http://stackapps.com/apps/oauth/
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"github": { // create one at https://github.com/settings/applications
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"reddit": {
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		}
+	},
+
+
 
 # start, stop, restart the application
 
