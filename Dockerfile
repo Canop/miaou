@@ -3,12 +3,16 @@
 #
 
 # Based on docker official node image
-FROM node:5.10.1
+FROM node:8
 
 # Install "nodemon" and "buster" globally
+USER node
+RUN mkdir ~/.npm-global
+ENV NPM_CONFIG_PREFIX ~/.npm-global
 RUN npm install -g nodemon buster
 
 # Setup workspace
+USER root
 RUN mkdir -p /var/www/miaou
 WORKDIR /var/www/miaou
 

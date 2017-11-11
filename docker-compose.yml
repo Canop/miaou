@@ -9,27 +9,19 @@ services:
     links:
       - postgres
       - redis
+    depends_on:
+      - postgres
+      - redis
     env_file:
       - docker/miaou-default.env # define default environment variables
       - docker/miaou.env # allow to override or add local environment variables
-    # Uncomment this to trigger automatic application restart when a file is modified (consider adding the option "-L" if you use shared folders)
-#    command: "nodemon --use_strict main.js"
-    # Uncomment this to mount watched directory/files listed below (to work with "nodemon" above)
-#    volumes:
-#      - ./libs:/var/www/miaou/libs
-#      - ./plugins:/var/www/miaou/plugins
-#      - ./src:/var/www/miaou/src
-#      - ./test:/var/www/miaou/test
-#      - ./themes:/var/www/miaou/themes
-#      - ./views:/var/www/miaou/views
-#      - ./config.js:/var/www/miaou/config.js
 
   postgres:
     image: postgres
     ports:
       - "5432"
     volumes:
-      - /var/lib/postgresql/data
+      - psql_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: miaou
       POSTGRES_PASSWORD: miaou
@@ -37,5 +29,11 @@ services:
 
   redis:
     image: redis
+    volumes:
+      - redis_data:/data
     ports:
       - "6379"
+
+volumes:
+  psql_data:
+  redis_data:
