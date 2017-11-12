@@ -15,6 +15,7 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 
 	function updateDimensions(){
 		if (gui.mobile) return;
+		if ($('#rooms-panel').hasClass('open')) return;
 		var stripeHeight = document.getElementById('stripe').offsetHeight;
 		$('.watch .name').toggleClass('compact', stripeHeight>60);
 		$('#left, #right, #center').css('top', stripeHeight);
