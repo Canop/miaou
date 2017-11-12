@@ -87,7 +87,7 @@ async function getRecipientsMd(con, badge){
 		"count_badge_awards"
 	);
 	let c = `The ${badging.md(badge)} badge has been awarded to ${count} user${count>1?"s":""}`;
-	if (count<50) {
+	if (count && count<50) {
 		c += ":\n";
 		let playernames = await con.queryRows(
 			"select name from player_badge join player on player.id=player where badge=$1 order by message",
