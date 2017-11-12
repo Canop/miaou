@@ -151,34 +151,35 @@ You need to set up at least one OAuth provider.
 * StackExchange: create an OAuth account on http://stackapps.com/apps/oauth/
 * Github: create an OAuth account on https://github.com/settings/applications
 
-To fill the relevant parts of the configuration config.js, look for that commented part
+To fill the relevant parts of the configuration config.js, look for that commented part:
 
-    // OAuth providers. Remove or comment the ones you don't want to use
+	// OAuth providers. Remove or comment the ones you don't want to use
+
 Once found, put the relevant info.
 
-oauth2: {
-	"google": { // create one at https://code.google.com/apis/console/
-		"clientID": "your client ID",
-		"clientSecret": "your client secret"
+	oauth2: {
+		"google": { // create one at https://code.google.com/apis/console/
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"stackexchange": { // create one at http://stackapps.com/apps/oauth/
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"github": { // create one at https://github.com/settings/applications
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		},
+		"reddit": {
+			"clientID": "your client ID",
+			"clientSecret": "your client secret"
+		}
 	},
-	"stackexchange": { // create one at http://stackapps.com/apps/oauth/
-		"clientID": "your client ID",
-		"clientSecret": "your client secret"
-	},
-	"github": { // create one at https://github.com/settings/applications
-		"clientID": "your client ID",
-		"clientSecret": "your client secret"
-	},
-	"reddit": {
-		"clientID": "your client ID",
-		"clientSecret": "your client secret"
-	}
-},
 
-Addendum: The clientId for Google look like this
+Note: The clientId for Google look like this
 
 		"clientID": "883537075919-amp1s8ddogixnidpmu1kttvvhllqv1qt.apps.googleusercontent.com853539085919-amp1s8dqogiqnidump1kttvvhllqv1qt.apps.googleusercontent.com"
-		
+
 And the client secret for Google like this below
 
 		"clientSecret": "ceMq7gk81IltKHZZJiUVtU4Z"
