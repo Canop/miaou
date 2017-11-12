@@ -1,6 +1,8 @@
 // histogram and search functions
 miaou(function(hist, gui, locals, md, time, ws){
 
+	if (!locals.features) return; // it just tests whether we're in a chat/search page
+
 	var	visible = false,
 		currentSearch,
 		currentResult;
