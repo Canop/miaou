@@ -112,7 +112,6 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 	watch.enabled = true;
 	chat.start();
 
-
 	$("#room-search-input").keyup(function(e){
 		if (e.which===27) { // esc
 			if (! this.value) {

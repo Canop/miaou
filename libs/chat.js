@@ -37,6 +37,9 @@ exports.appGet = function(req, res){
 		if (!room) throw new Error("No room with id " + roomId);
 		room.path = server.roomPath(room);
 		req.session.room = room;
+		let	userPrefs = await prefs.get.call(con, userId),
+			isMobile = server.mobile(req),
+			theme = prefs.theme(userPrefs, req.query.theme, isMobile);
 		let ban = await con.getRoomUserActiveBan(roomId, userId);
 		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
 			let lastAccessRequest = await con.getLastAccessRequest(roomId, userId);
@@ -49,14 +52,11 @@ exports.appGet = function(req, res){
 				specificMessage: null
 			};
 			for (let i=0; i<accessRequestPlugins.length; i++) {
-				args = await accessRequestPlugins.beforeAccessRequest(args, req.user);
+				args = await accessRequestPlugins[i].beforeAccessRequest(args, req.user);
 			}
 			res.render("request.pug", args);
 			return;
 		}
-		let	userPrefs = await prefs.get.call(con, userId),
-			isMobile = server.mobile(req),
-			theme = prefs.theme(userPrefs, req.query.theme, isMobile);
 		let locals = {
 			me: req.user,
 			room,
