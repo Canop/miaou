@@ -139,7 +139,7 @@ module.exports = {
 
 	"cleaning-frequencies": { // in seconds
 		"old-access-requests": 2*24*60*60
-	}
+	},
 
 	// parameterization of the search
 	"search": {
