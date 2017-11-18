@@ -1,6 +1,6 @@
 .attention-icon {
 	right: 5px;
-	top: -3px;
+	top: 0px;
 	z-index: 15;
 	position: absolute;
 	width: 28px;
@@ -57,7 +57,6 @@
 .attention-icon.attention-alert:not(.attention-seen) {
 	animation-name: pulse;
 	animation-duration: .6s;
-//	animation-timing-function: ease-out;
 }
 .attention-icon.attention-alert.attention-seen {
 	opacity: 0;
