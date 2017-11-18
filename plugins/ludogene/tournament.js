@@ -11,7 +11,7 @@ const	titles = {
 const	ws = require('../../libs/ws.js'),
 	ludo = require('./plugin.js');
 
-const	removedPlayers = new Set(['anthracite']);
+const	removedPlayers = new Set(['p4km4n']);
 
 var	db,
 	bot;

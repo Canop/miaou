@@ -122,7 +122,7 @@ function onCommand(ct){
 		return suggest.call(this, ct, gameType);
 	}
 	var otherUserName = match[1];
-	if (/\[Tournament\]/i.test(shoe.room.description)) {
+	if (shoe.room.tags.includes("Tournament")) {
 		throw "You can't propose a game in a Tournament room";
 	}
 	if (otherUserName===shoe.publicUser.name) throw "You can't play against yourself (you would lose anyway)";
