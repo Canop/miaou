@@ -446,8 +446,19 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 							nbMessages++;
 						}
 					}
-					if (nbMessages>nbMessagesThreshold) remove = true;
+					if (nbMessages>nbMessagesThreshold) {
+						// now we'll remove all older messages
+						remove = true;
+						// but we must restore the "prev" property of the message
+						var previousMessageElement = um.previousSibling.lastChild;
+						var previousMessage = $(previousMessageElement).dat("message");
+						if (previousMessage) { // null if there was a loader there (no restoring needed)
+							$(um).find(".message").first().dat("message").prev = previousMessage.id;
+						}
+						$('.olderLoader,.newerLoader').remove();
+					}
 				}
+				if (remove) md.updateLoaders();
 			}, 5000);
 		}
 	}
