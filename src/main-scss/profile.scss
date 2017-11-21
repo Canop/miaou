@@ -15,9 +15,6 @@ div.externalProfile {
 			width: 100px;
 			margin: 0;
 			padding: 0;
-			&[type=url] {
-				width: 450px;
-			}
 			&[type=checkbox]{
 				width: initial;
 				margin: 2px 8px 0 0;
@@ -35,6 +32,10 @@ div.externalProfile {
 	h3 {
 		font-size: 100%;
 	}
+}
+
+.desktop .externalProfiles input[type=url]{
+	width: 450px;
 }
 
 .profile {
