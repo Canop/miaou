@@ -66,7 +66,6 @@ exports.checkAll = async function(con){
 			"badging_find_recent_players"
 		);
 
-		console.log('recentAuthors:', recentAuthors);
 		for (var i=0; i<recentAuthors.length; i++) {
 			var p = await db.getUserById.call(con, recentAuthors[i].author);
 			console.log("checking", p.name);
