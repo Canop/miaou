@@ -27,12 +27,12 @@ exports.init = async function(miaou){
 	rooms = miaou.lib("rooms");
 	ws = miaou.lib("ws");
 	tournament.init(miaou);
-	//setTimeout(function(){
-	//	require('./db.js').cleanOldInvitations(db, 5*24*60*60);
-	//}, 15*60*1000);
-	//setTimeout(function(){
-	//	require('./db.js').cleanOldForgottenGames(db, 30*24*60*60);
-	//}, 5*60*1000);
+	setTimeout(function(){
+		require('./db.js').cleanOldInvitations(db, 5*24*60*60);
+	}, 15*60*1000);
+	setTimeout(function(){
+		require('./db.js').cleanOldForgottenGames(db, 30*24*60*60);
+	}, 5*60*1000);
 	await miaou.requestTag({
 		name: "Tribo",
 		description: "The Bestest Game.\nInvite a player with\n\t!!tribo @username"
