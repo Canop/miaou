@@ -698,10 +698,11 @@ proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
 		'select message.id, author, player.name as authorname, player.bot, room, content,'+
 		' created, pin, star, up, down, score from message'+
-		' inner join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
+		' join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
 		' order by pin desc, created desc, score desc limit 20',
 		[roomId, createdAfter],
-		"notable_messages"
+		"notable_messages",
+		false
 	);
 }
 
@@ -772,7 +773,8 @@ proto.search = async function(s){
 	let count = await this.queryValue(
 		ps("select count(*) from message inner join player on author=player.id", conditions),
 		args,
-		psname+"_count"
+		psname+"_count",
+		false
 	);
 	if (!count) return {count, messages:[]};
 	let	sql = "select message.id, author, player.name as authorname, room, content, created,"+
@@ -782,7 +784,8 @@ proto.search = async function(s){
 	let messages = await this.queryRows(
 		ps(sql, conditions, "order by message.id desc limit $1 offset $2"),
 		args,
-		psname
+		psname,
+		false
 	);
 	return {count, messages};
 }
@@ -1063,6 +1066,24 @@ proto.removeVote = function(roomId, userId, messageId, level){
 	.then(function(res){
 		if (res.rowCount) {
 			return this.updateGetMessage(messageId, level+"="+level+"-1", userId);
+		}
+	});
+}
+
+// to be used in the specific case a vote is changed (for example was "thumb up" and is now "star"
+proto.updateVote = function(roomId, userId, messageId, removedVoteLevel, addedVoteLevel){
+	return this.execute(
+		"update message_vote set vote=$3 where message=$1 and player=$2",
+		[messageId, userId, addedVoteLevel],
+		"update_vote"
+	)
+	.then(function(res){
+		if (res.rowCount) {
+			return this.updateGetMessage(
+				messageId,
+				removedVoteLevel+"="+removedVoteLevel+"-1,"+addedVoteLevel+"="+addedVoteLevel+"+1",
+				userId
+			);
 		}
 	});
 }

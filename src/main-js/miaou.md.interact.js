@@ -6,15 +6,15 @@
 
 miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz){
 
-	// o : {mid, level, diff, self, voter}
-	// diff  : +1 or -1
-	// level : up, down, star, pin
+	// o : {mid, add, remove, voter}
+	//	add and remove are in [ up, down, star, pin ] (optional)
 	md.applyVote = function(o){
 		$('.message[mid='+o.mid+']').each(function(){
 			var	$md = $(this),
 				m = $md.dat('message');
-			m[o.level] = (m[o.level]||0)+o.diff;
-			if (o.voter===locals.me.id) m.vote = o.diff>0 ? o.level : null;
+			if (o.add) m[o.add] = (m[o.add]||0)+1;
+			if (o.remove) m[o.remove] = (m[o.remove]||0)-1;
+			if (!o.voter || o.voter===locals.me.id) m.vote = o.add || null;
 			if ($md.closest('#messages').length) {
 				$md.find('.message-votes').remove();
 				$md.append($('<div/>').addClass('message-votes').html(md.votesAbstract(m)));

@@ -96,9 +96,14 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			e.stopPropagation();
 		})
 		.on('click', '.vote', function(){
-			var $e = $(this), message = $e.closest('.message').dat('message'), vote = $e.attr('vote-level');
-			if (message.vote) ws.emit('vote', {action:'remove', mid:message.id, level:message.vote});
-			if (message.vote!=vote) ws.emit('vote', {action:'add', mid:message.id, level:vote});
+			var	$e = $(this),
+				message = $e.closest('.message').dat('message'),
+				vote = $e.attr('vote-level'),
+				o = { mid:message.id};
+			if (message.vote) o.remove = message.vote;
+			if (message.vote!=vote) o.add = vote;
+			md.applyVote(o);
+			ws.emit('vote', o);
 			notif.userAct(message.id);
 			return false;
 		})

@@ -1,4 +1,4 @@
-const	apiversion = 88,
+const	apiversion = 89,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -304,7 +304,6 @@ function handleUserInRoom(socket, completeUser){
 		pendingEvent,
 		userIP = socket.handshake.headers["x-forwarded-for"]||socket.request.connection.remoteAddress,
 		welcomed = false;
-
 
 	console.log(completeUser.name, "connects from IP", userIP);
 
@@ -912,54 +911,43 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('vote', function(vote, done){
-		var	changedMessageIsInNotables,
-			updatedMessage,
-			strIds = memroom.notables.map(m => m.id ).join(' ');
-		if (vote.level==='pin' && !(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		db.on([shoe.room.id, shoe.publicUser.id, vote.mid, vote.level])
-		.spread(db[vote.action==='add'?'addVote':'removeVote'])
-		.then(function(um){ // TODO most often we don't need the message, don't query it
-			updatedMessage = clean(um);
-			changedMessageIsInNotables = false;
-			for (var i=0; i<memroom.notables.length; i++) {
-				if (memroom.notables[i].id===vote.mid) {
-					changedMessageIsInNotables = true;
-					break;
-				}
+		if (vote.add==='pin'||vote.remove==='pin') shoe.checkAuth('admin');
+		db.do(async function(con){
+			let	roomId = shoe.room.id,
+				userId = shoe.publicUser.id,
+				updatedMessage,
+				notableIdsBeforeUpdate = memroom.notables.map(m => m.id);
+			if (vote.remove && vote.add) {
+				updatedMessage = await con.updateVote(roomId, userId, vote.mid, vote.remove, vote.add);
+			} else if (vote.remove) {
+				updatedMessage = await con.removeVote(roomId, userId, vote.mid, vote.remove);
+			} else {
+				updatedMessage = await con.addVote(roomId, userId, vote.mid, vote.add);
 			}
-			return memroom.updateNotables(this);
-		})
-		.then(function(){
-			shoe.emitToRoom('vote', {
-				level: vote.level,
+			socket.broadcast.to(shoe.room.id).emit('vote', {
+				add: vote.add,
+				remove: vote.remove,
 				mid: vote.mid,
-				voter: shoe.publicUser.id,
-				diff: vote.action==='add' ? 1 : -1
+				voter: userId
 			});
-			var notableIds = memroom.notables.map(m => m.id);
-			if (notableIds.join(' ')!==strIds) {
+			await memroom.updateNotables(con);
+			let notableIdsAfterUpdate = memroom.notables.map(m => m.id);
+			if (notableIdsBeforeUpdate.join(' ')!==notableIdsAfterUpdate.join(' ')) {
 				// list of notables has changed, we send it
-				var notablesUpdate = { ids:notableIds };
-				if (!changedMessageIsInNotables) {
-					for (var i=0; i<memroom.notables.length; i++) {
-						if (memroom.notables[i].id===updatedMessage.id) {
-							// the voted message entered the notables, we should send it
-							// TODO useless if message is among the very recent ones (last page)
-							notablesUpdate.m = updatedMessage;
-							break;
-						}
-					}
+				let notablesUpdate = { ids:notableIdsAfterUpdate };
+				if (
+					!notableIdsBeforeUpdate.includes(vote.mid)
+					&& notableIdsAfterUpdate.includes(vote.mid)
+				) {
+					// the voted message entered the notables, we should send it
+					notablesUpdate.m = clean(updatedMessage);
 				}
 				shoe.emitToRoom('notableIds', notablesUpdate);
 			}
-		})
-		.catch(err => {
+			done();
+		}, function(err){
 			console.log('ERR in handling vote:', vote);
 			console.log('err:', err);
-		})
-		.finally(function(){
-			this.off();
-			done();
 		});
 	});
 
