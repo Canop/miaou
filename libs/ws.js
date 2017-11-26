@@ -302,6 +302,7 @@ function handleUserInRoom(socket, completeUser){
 		watchset = new Set, // set of watched rooms ids (if any)
 		routes = new Map,
 		pendingEvent,
+		usernameRegex = new RegExp("^"+completeUser.name+"$", "i"), // used to test for self pings
 		userIP = socket.handshake.headers["x-forwarded-for"]||socket.request.connection.remoteAddress,
 		welcomed = false;
 
@@ -757,8 +758,8 @@ function handleUserInRoom(socket, completeUser){
 			pings.push(ping.toLowerCase());
 			return pings;
 		}, [])
-		.reduce(function(pings, ping){ // removing duplicates
-			if (!~pings.indexOf(ping)) pings.push(ping);
+		.reduce(function(pings, ping){ // removing duplicates and self pings
+			if (!usernameRegex.test(ping) && !~pings.indexOf(ping)) pings.push(ping);
 			return pings;
 		}, [])
 		.filter(function(unsentping){
