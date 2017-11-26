@@ -74,8 +74,8 @@ function configureOauth2Strategies(){
 }
 
 // define the routes to be taken by GET and POST requests
-function defineAppRoutes(){
-	var	auths = require('./auths.js').configure(miaou),
+async function defineAppRoutes(){
+	var	auths = await require('./auths.js').configure(miaou),
 		rooms = require('./rooms.js').configure(miaou),
 		tags = require('./tags.js').configure(miaou),
 		messages = require('./messages.js').configure(miaou),
@@ -148,7 +148,7 @@ function defineAppRoutes(){
 }
 
 // starts the whole server, both regular http and websocket
-function startServer(){
+async function startServer(){
 	naming.configure(miaou);
 
 	var	cookieParser = require('cookie-parser')(miaou.config.secret),
@@ -196,7 +196,7 @@ function startServer(){
 		return json.replace(/<([/!])/g, '\\u003c$1');
 	};
 
-	defineAppRoutes();
+	await defineAppRoutes();
 	var port = miaou.config.port;
 	console.log('Miaou server starting on port', port);
 	server.listen(port);
@@ -231,7 +231,7 @@ exports.start = async function(config){
 	await miaou.initBot()
 	await miaou.initPlugins()
 	configureOauth2Strategies();
-	startServer();
+	await startServer();
 }
 
 exports.stop = function(cb){

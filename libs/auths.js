@@ -5,12 +5,20 @@ const	levels = ['read', 'write', 'admin', 'own'],
 	server = require('./server.js'),
 	ws = require('./ws.js');
 
-var	serverAdmins,
+var	serverAdminIds,
 	db;
 
-exports.configure = function(miaou){
-	serverAdmins = miaou.conf("serverAdmins")||[];
+exports.configure = async function(miaou){
 	db = miaou.db;
+	serverAdminIds = new Set;
+	db.do(async function(con){
+		for (let idOrName of miaou.conf("serverAdmins")||[]) {
+			let user;
+			if (typeof idOrName==="number") user = await con.getUserById(idOrName);
+			else user = await con.getUserByName(idOrName);
+			if (user) serverAdminIds.add(user.id);
+		}
+	});
 	startPeriodicAccessRequestCleaning(miaou);
 	return this;
 }
@@ -45,10 +53,7 @@ exports.checkAtLeast = function(auth, neededAuth){
 }
 
 exports.isServerAdmin = function(user){
-	for (let idOrName of serverAdmins) {
-		if (idOrName===user.id || idOrName===user.name) return true;
-	}
-	return false;
+	return serverAdminIds.has(user.id);
 }
 
 // handles GET of the auths /page
