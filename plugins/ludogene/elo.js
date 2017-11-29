@@ -127,9 +127,11 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	r[1].e1 += this.d1;
 }
 GameImpact.prototype.gameLink = function(data){
-	return "["+data.ratingsMap.get(this.p0).name+" ("+(this.s||'')
-		+") - "+data.ratingsMap.get(this.p1).name
-		+" ("+((100-this.s)||'')+")]("+this.r+"#"+this.m+")";
+	var	n0 = data.ratingsMap.get(this.p0).name,
+		n1 = data.ratingsMap.get(this.p1).name,
+		uri = this.r+"#"+this.m;
+	if (this.s) return `[${n0} (${this.s}) - ${n1} (${100-this.s})](${uri})`;
+	else return `[${n0} - ${n1}](${uri})`;
 }
 
 function userLink(data, userId){
