@@ -11,7 +11,6 @@ miaou(function(tagger, fish, fmt, locals){
 			tags = this.val().split(/\s+/g).filter(Boolean),
 			$tagSet = $("<div>").addClass("tag-set edited").append(tags.map(function(t){
 				return $("<span class=tag>").text(t);
-
 			})).insertBefore(this),
 			$input = $("<input>").appendTo($tagSet),
 			lastPat,

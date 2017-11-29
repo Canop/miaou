@@ -63,15 +63,6 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 								$("<div class=no-access>")
 								.text("You don't have access to this room")
 								.appendTo($c);
-								// room admins aren't sent anymore
-								// if (!room.recentAdmins) return;
-								// $("<div>")
-								// .addClass("room-contacts")
-								// .text("Contacts: "+room.recentAdmins.map(function(a){
-								// 	return "@"+a.name;
-								// }).join(", "))
-								// .appendTo($c);
-
 							});
 						}
 					});

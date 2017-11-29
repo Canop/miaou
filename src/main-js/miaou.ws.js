@@ -14,11 +14,16 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		function messagesIn(messages){
 			var	visible = vis(),
 				isAtBottom = gui.isAtBottom(),
-				shouldStickToBottom = isAtBottom || info.state!=='connected';
-			messages = Array.isArray(messages) ? messages.sort(function(m1, m2){ return m1.id-m2.id }) : [messages];
-			var	addedMD = [],
+				shouldStickToBottom = isAtBottom || info.state!=='connected',
+				addedMD = [],
 				lastMessageId,
 				$lastMd;
+			if (Array.isArray(messages)) {
+				messages = messages.sort(function(m1, m2){ return m1.id-m2.id });
+			} else {
+				messages = [messages];
+			}
+
 			messages.forEach(function(message){
 				if (chat.trigger('incoming_message', message) === false) return;
 				if (shouldStickToBottom && !visible) {

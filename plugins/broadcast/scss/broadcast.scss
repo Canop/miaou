@@ -1,0 +1,21 @@
+
+.broadcast-editor {
+	display: flex;
+	flex-direction: column;
+	.broadcast-langs, .broadcast-content, .broadcast-tags{
+		margin: 3px;
+		flex: 0 0 auto;
+		display: flex;
+		align-items: center;
+		label {
+			margin: 0 5px 0 -2px;
+		}
+		.tag-set {
+			font-size: 14px;
+		}
+	}
+	button {
+		font-size: 12px;
+		padding: 2px;
+	}
+}
