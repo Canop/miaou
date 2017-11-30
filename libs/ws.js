@@ -83,6 +83,20 @@ var roomSockets = exports.roomSockets = function(roomId){
 	return sockets;
 }
 
+// returns all userIds of the given sio roomId
+exports.roomUsers = function(roomId){
+	var	ioroom = io.sockets.adapter.rooms[roomId],
+		users = new Set;
+	if (!ioroom) {
+		return users;
+	}
+	for (var socketId in ioroom.sockets) {
+		var s = io.sockets.connected[socketId];
+		if (s && s.publicUser) users.add(s.publicUser);
+	}
+	return users;
+}
+
 var emitToRoom = exports.emitToRoom = function(roomId, key, m){
 	io.sockets.in(roomId).emit(key, clean(m));
 }
@@ -90,6 +104,17 @@ var emitToRoom = exports.emitToRoom = function(roomId, key, m){
 // returns an array of all the Miaou rooms to which at least one user is connected
 exports.roomIds = function(){
 	return Object.keys(io.sockets.adapter.rooms).filter(n => n==+n );
+}
+
+// returns a set of all rooms which are currently watched or open
+exports.watchedRoomIds = function(){
+	let	set = new Set,
+		keys = Object.keys(io.sockets.adapter.rooms);
+	for (let i=0; i<keys.length; i++) {
+		let m = keys[i].match(/^w?(\d+)$/);
+		if (m) set.add(+m[1]);
+	}
+	return set;
 }
 
 exports.userSockets = function(userIdOrName){
