@@ -1,5 +1,4 @@
 // citation related function of the miaou editor
-
 miaou(function(ed){
 
 	function toggleLinesCitation(s){

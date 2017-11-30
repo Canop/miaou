@@ -3,8 +3,10 @@
 // replace the selected part by rep, or what is returned by rep if it's a function
 $.fn.replaceSelection = function(rep){
 	return this.each(function(){
-		var v = this.value, s = this.selectionStart, e = this.selectionEnd;
-		var toReplace = v.slice(s, e),
+		var	v = this.value,
+			s = this.selectionStart,
+			e = this.selectionEnd,
+			toReplace = v.slice(s, e),
 			replacement = typeof rep === "function" ? rep.call(this, toReplace, v, s, e) : rep;
 		this.value = v.slice(0, s) + replacement + v.slice(e);
 		this.selectionEnd = e + replacement.length - toReplace.length;

@@ -14,7 +14,7 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 		linkwzin = null;
 	}
 
-	function transformLinksToMiaou($c){
+	links.transformLinksToMiaou = function($c){
 		var server = (location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1];
 		$c.find('a[href]').each(function(){
 			var	$link = $(this),
@@ -76,7 +76,7 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 	}
 
 	links.init = function(){
-		md.registerRenderer(transformLinksToMiaou, true);
+		md.registerRenderer(links.transformLinksToMiaou, true);
 	};
 
 	links.permalink = function(message){
