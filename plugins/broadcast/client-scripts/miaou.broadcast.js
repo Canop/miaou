@@ -1,8 +1,14 @@
-miaou(function(broadcast, fmt, locals, md, plugins, ws){
+miaou(function(broadcast, fmt, links, locals, md, ms, plugins, ws){
 
 	function show(bm){
+		console.log('bm:', bm);
 		md.notificationMessage(function($c){
-			$("<div>").html(fmt.mdTextToHtml(bm.content)).appendTo($c);
+			var md = "*@"+bm.author.name+
+				" broadcasts from room ["+bm.room.name+"]("+bm.room.id+"#"+bm.mid+"):*\n"+
+				bm.content;
+			var $div = $("<div>").html(fmt.mdTextToHtml(md));
+			links.transformLinksToMiaou($div);
+			$div.appendTo($c);
 		});
 	}
 
@@ -10,7 +16,7 @@ miaou(function(broadcast, fmt, locals, md, plugins, ws){
 		if (m.author!==locals.me.id || !/^!!broadcast/.test(m.content)) return;
 		var b = new broadcast.Broadcast(m.content);
 		if (!b.isValid()) return;
-		var editable = b.status === "draft";
+		if (b.status !== "draft") return;
 		$c.empty().addClass("broadcast-editor");
 
 		// title
@@ -27,7 +33,6 @@ miaou(function(broadcast, fmt, locals, md, plugins, ws){
 		var langCheckBoxes = [];
 		b.langs.forEach(function(lang){
 			var $cb = $("<input type=checkbox>").prop("checked", lang.on);
-			if (!editable) $cb.prop("disabled", true);
 			langCheckBoxes.push($cb[0]);
 			$("<label>").text(lang.lang).prepend($cb).appendTo($div);
 		});
@@ -36,7 +41,6 @@ miaou(function(broadcast, fmt, locals, md, plugins, ws){
 		$div = $("<div>").addClass("broadcast-content").appendTo($c);
 		$("<span>").text("Content:").appendTo($div);
 		var $content = $("<textarea>").val(b.content).appendTo($div);
-		if (!editable) $content.prop("disabled", true);
 
 		// status
 		if (b.status==="draft") {
@@ -51,23 +55,21 @@ miaou(function(broadcast, fmt, locals, md, plugins, ws){
 			});
 			b.tags = $tags.val().split(" ").filter(Boolean);
 		}
-		if (m.author===locals.me.id) {
-			var $div = $("<div>").addClass("broadcast-buttons").appendTo($c);
-			var addButton = function(name, status){
-				var but = document.createElement("button");
-				but.textContent = name;
-				but.onclick = function(){
-					update();
-					if (status) b.status = status;
-					m.content = b.md();
-					ws.emit("message", m);
-				};
-				$div.append(but);
-			}
-			if (b.status==="draft") {
-				addButton("save");
-				addButton("send", "sending");
-			}
+		var $div = $("<div>").addClass("broadcast-buttons").appendTo($c);
+		var addButton = function(name, status){
+			var but = document.createElement("button");
+			but.textContent = name;
+			but.onclick = function(){
+				update();
+				if (status) b.status = status;
+				m.content = b.md();
+				ws.emit("message", m);
+			};
+			$div.append(but);
+		}
+		if (b.status==="draft") {
+			addButton("save");
+			addButton("send", "sending");
 		}
 		return true; // meaning no other renderer should follow
 	}
@@ -75,6 +77,12 @@ miaou(function(broadcast, fmt, locals, md, plugins, ws){
 	plugins.add("broadcast", {
 		start: function(){
 			ws.on('broadcast.show', show);
+			ms.registerStatusModifier(function(message, status){
+				if (/^!!broadcast/.test(message.content)) {
+					status.editable = false;
+					status.deletable = false;
+				}
+			});
 			md.registerRenderer(renderMessage);
 		}
 	});
