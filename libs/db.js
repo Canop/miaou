@@ -232,7 +232,7 @@ proto.createRoom = function(r, owners){
 		return this.queryRow(
 			'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
 			[r.id, user.id, 'own', now()],
-			"insert_room_owner"
+			"insert_room_owner", false
 		);
 	})
 }
@@ -300,7 +300,8 @@ proto.fetchRoom = function(id){
 		" (select array(select tag from room_tag where room=$1)) as tags"+
 		" from room where id=$1",
 		[id],
-		"fetch_room"
+		"fetch_room",
+		true
 	);
 }
 
@@ -898,7 +899,7 @@ proto._updateMessage = function(m, dontCheckAge){
 			"delete from ping where message=$1", [m.id], "delete_message_ping"
 		).then(function(){
 			return this.execute(
-				"delete from message_vote where message=$1", [m.id], "delete_message_vote"
+				"delete from message_vote where message=$1", [m.id], "delete_message_vote", false
 			)
 		}).then(function(){
 			return this.execute(
@@ -970,7 +971,8 @@ proto.deletePing = function(mid, userId){
 	return this.execute(
 		"delete from ping where message=$1 and player=$2",
 		[mid, userId],
-		"delete_message_user_ping"
+		"delete_message_user_ping",
+		false
 	);
 }
 
@@ -1047,11 +1049,7 @@ proto.addVote = function(roomId, userId, messageId, level){
 	default:
 		throw new Error('Unknown vote level:', level);
 	}
-	return this.queryOptionalRow(
-		sql,
-		args,
-		"add_vote"
-	)
+	return this.queryOptionalRow(sql, args, "add_vote", false)
 	.then(function(nb){
 		if (nb) return this.updateGetMessage(messageId, level+"="+level+"+"+nb, userId);
 	});
