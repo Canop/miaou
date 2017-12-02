@@ -66,7 +66,7 @@ exports.doList = async function(con, ct, args){
 		conds++;
 	}
 	sql += " order by level desc, name";
-	var badges = await con.queryRows(sql, params, "list badges", false);
+	var badges = await con.queryRows(sql, params, "list badges");
 	var c = mdBadgesByTag(badges);
 	ct.reply(c, ct.nostore = c.length>800);
 }

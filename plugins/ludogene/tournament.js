@@ -59,7 +59,7 @@ function startTournament(ct, gameType){
 			" and content like '"+titles.list+"%'"+
 			" order by id desc limit 1",
 			[roomId, bot.id],
-			"ludogene / fuzzy", false
+			"ludogene / fuzzy"
 		);
 	}).then(function(m){
 		var players = [];
@@ -91,7 +91,7 @@ function getGames(roomId, gameType){
 		" and content like '"+titles.start+"%'"+
 		" order by id desc limit 1",
 		[roomId, bot.id],
-		"ludogene / fuzzy", false
+		"ludogene / fuzzy"
 	)
 	.then(function(tournamentStartMessage){
 		return this.queryRows(

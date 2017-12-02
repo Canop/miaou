@@ -249,7 +249,7 @@ exports.doStats = function(ct, miaou){
 	console.log("STATS", psname);
 
 
-	return this.queryRows(sql, args, psname, false).then(function(rows){
+	return this.queryRows(sql, args, psname).then(function(rows){
 		if (!rows.length) {
 			return ct.reply("nothing", false);
 		}

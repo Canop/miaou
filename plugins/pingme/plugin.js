@@ -200,8 +200,7 @@ function doCommandNewAlarm(ct){
 			return this.queryOptionalRow(
 				"select ping_date, alarm_text from pingme_alarm where message=$1",
 				[message.id],
-				"message_pingme",
-				false
+				"message_pingme"
 			);
 		})
 		.then(function(existingDbAlarm){
@@ -210,8 +209,7 @@ function doCommandNewAlarm(ct){
 			return this.execute(
 				"delete from pingme_alarm where message=$1",
 				[message.id],
-				"delete_pingme",
-				false
+				"delete_pingme"
 			);
 		})
 		.then(function(){
@@ -225,8 +223,7 @@ function doCommandNewAlarm(ct){
 				"insert into pingme_alarm (message, ping_date, creator, alarm_text)"+
 				" values ($1, $2, $3, $4)",
 				[message.id, alarm.date, shoe.publicUser.id, alarm.text],
-				"insert pingme_alarm",
-				false
+				"insert pingme_alarm"
 			);
 		})
 		.finally(db.off);

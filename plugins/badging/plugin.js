@@ -56,8 +56,7 @@ exports.initBadge = async function(con, badge){
 			dbBadge = await con.queryRow(
 				"update badge set level=$2, manual=$3, condition=$4 where id=$1 returning *",
 				[dbBadge.id, badge.level, badge.manual||false, badge.condition],
-				"update_badge",
-				false
+				"update_badge"
 			);
 		}
 	} else {
@@ -65,8 +64,7 @@ exports.initBadge = async function(con, badge){
 			"insert into badge (tag, name, level, manual, condition)"+
 			" values ($1, $2, $3, $4, $5) returning *",
 			[badge.tag, badge.name, badge.level, badge.manual||false, badge.condition],
-			"insert_badge",
-			false
+			"insert_badge"
 		);
 	}
 	return dbBadge

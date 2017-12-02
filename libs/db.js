@@ -26,7 +26,6 @@ const	Promise = require("bluebird"),
 	path = require("path");
 
 var	pg = require('pg'),
-	nbQueries = 0,
 	config,
 	pool;
 
@@ -87,8 +86,7 @@ proto.getUserById = function(id){
 		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey'+
 		' from player where id=$1',
 		[id],
-		"user_by_id",
-		true
+		"user_by_id"
 	);
 }
 
@@ -99,7 +97,7 @@ proto.getUserByName = function(username){
 		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey'+
 		' from player where lower(name)=$1',
 		[username.toLowerCase()],
-		"user_by_name", false
+		"user_by_name"
 	);
 }
 
@@ -118,7 +116,7 @@ proto.insertNameChange = function(user){
 		'insert into player_name_change (player, new_name, changed)'+
 		' values ($1, $2, $3)',
 		[user.id, user.name, now()],
-		"insert_player_name_change", false
+		"insert_player_name_change"
 	);
 }
 
@@ -145,8 +143,7 @@ proto.getUserInfo = function(id){
 	return this.queryRow(
 		"select description, location, url, lang from player where id=$1",
 		[id],
-		"get_user_info",
-		true
+		"get_user_info"
 	);
 }
 
@@ -158,7 +155,7 @@ proto.listRecentUsers = function(roomId, N){
 		" group by message.author order by mc desc limit $2) a"+
 		" join player on player.id=a.id and player.bot is false",
 		[roomId, N],
-		"list_recent_users", true
+		"list_recent_users"
 	);
 }
 
@@ -170,7 +167,7 @@ proto.listRoomUsers = function(roomId){
 		" union select player from watch where room=$1) a"+
 		" join player on player.id=a.author and player.bot is false",
 		[roomId],
-		"list_room_users", true
+		"list_room_users"
 	);
 }
 
@@ -213,7 +210,7 @@ proto.getPrefs = function(userId){
 	return this.queryRows(
 		"select name, value from pref where player=$1",
 		[userId],
-		"get_prefs", false
+		"get_prefs"
 	);
 }
 
@@ -232,7 +229,7 @@ proto.createRoom = function(r, owners){
 		return this.queryRow(
 			'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
 			[r.id, user.id, 'own', now()],
-			"insert_room_owner", false
+			"insert_room_owner"
 		);
 	})
 }
@@ -263,7 +260,7 @@ proto.fixAllDialogRooms = function(){
 		" and a2.room=room.id and a2.player>a1.player and a2.player=u2.id and a2.auth>='admin'"+
 		" and dialog is true",
 		null,
-		"fix_all_dialog_rooms", false
+		"fix_all_dialog_rooms"
 	);
 }
 
@@ -300,8 +297,7 @@ proto.fetchRoom = function(id){
 		" (select array(select tag from room_tag where room=$1)) as tags"+
 		" from room where id=$1",
 		[id],
-		"fetch_room",
-		true
+		"fetch_room"
 	);
 }
 
@@ -314,8 +310,7 @@ proto.fetchRoomAndUserAuth = function(roomId, userId){
 		" from room"+
 		" left join room_auth a on a.room=room.id and a.player=$1 where room.id=$2",
 		[userId, roomId],
-		"fetch_room_and_user_auth",
-		true
+		"fetch_room_and_user_auth"
 	);
 }
 
@@ -370,8 +365,7 @@ proto.setRoomTags = function(roomId, tags){
 		return this.execute(
 			"insert into room_tag (room, tag) values " + values.join(","),
 			args,
-			"insert_room_tags",
-			false
+			"insert_room_tags"
 		);
 	});
 }
@@ -388,8 +382,7 @@ proto.createTag = function(name, description){
 	return this.execute(
 		"insert into tag (name, description) values ($1, $2)",
 		[name, description],
-		"create_tag",
-		false
+		"create_tag"
 	);
 }
 
@@ -397,8 +390,7 @@ proto.updateTag = function(name, description){
 	return this.execute(
 		"update tag set description=$2 where name=$1",
 		[name, description],
-		"update_tag",
-		false
+		"update_tag"
 	);
 }
 
@@ -430,7 +422,7 @@ proto.listOpenAccessRequests = function(roomId, userId){
 		sql += " and player=?";
 		args.push(userId);
 	}
-	return this.queryRows(sql, args, "list_open_access_requests", false);
+	return this.queryRows(sql, args, "list_open_access_requests");
 }
 
 proto.getLastAccessRequest = function(roomId, userId){
@@ -498,7 +490,7 @@ proto.changeRights = function(actions, userId, room){
 			args = [a.id, room.id];
 			break;
 		}
-		return this.execute(sql, args, "change_rights", false);
+		return this.execute(sql, args, "change_rights");
 	});
 }
 
@@ -525,8 +517,7 @@ proto.getAuthLevelByUsername = function(roomId, username){
 	return this.queryOptionalRow(
 		"select auth from room_auth,player where lower(name)=$1 and room=$2 and room_auth.player=player.id;",
 		[username.toLowerCase(), roomId],
-		"auth_level_by_username",
-		true
+		"auth_level_by_username"
 	);
 }
 
@@ -561,8 +552,7 @@ proto.tryInsertWatch = function(roomId, userId){
 		" where not exists ( select * from watch where room=$1 and player=$2 )"+
 		") returning *",
 		[roomId, userId],
-		"try_insert_watch",
-		true
+		"try_insert_watch"
 	);
 }
 
@@ -666,7 +656,7 @@ proto.getMessages = function(roomId, userId, N, asc, c1, s1, c2, s2){
 		}
 	}
 	sql += ' order by message.id '+ ( asc ? 'asc' : 'desc') + ' limit $3';
-	return this.queryRows(sql, args, "get_messages", false)
+	return this.queryRows(sql, args, "get_messages")
 	.then(function(rows){
 		messages = rows;
 		return rows.length<N ? 0 : this.getNextMessageId(roomId, rows[rows.length-1].id, asc);
@@ -689,8 +679,7 @@ proto.getNextMessageId = function(roomId, mid, asc){
 		return this.queryRow(
 			"select max(id) mid from message where room=$1 and id<$2",
 			[roomId, mid],
-			"previous_message_id",
-			true
+			"previous_message_id"
 		);
 	}
 }
@@ -702,8 +691,7 @@ proto.getNotableMessages = function(roomId, createdAfter){
 		' join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
 		' order by pin desc, created desc, score desc limit 20',
 		[roomId, createdAfter],
-		"notable_messages",
-		false
+		"notable_messages"
 	);
 }
 
@@ -774,8 +762,7 @@ proto.search = async function(s){
 	let count = await this.queryValue(
 		ps("select count(*) from message inner join player on author=player.id", conditions),
 		args,
-		psname+"_count",
-		false
+		psname+"_count"
 	);
 	if (!count) return {count, messages:[]};
 	let	sql = "select message.id, author, player.name as authorname, room, content, created,"+
@@ -785,8 +772,7 @@ proto.search = async function(s){
 	let messages = await this.queryRows(
 		ps(sql, conditions, "order by message.id desc limit $1 offset $2"),
 		args,
-		psname,
-		false
+		psname
 	);
 	return {count, messages};
 }
@@ -812,7 +798,7 @@ proto.search_tsquery = function(roomId, tsquery, lang, N){
 		" inner join player on author=player.id"+
 		" where to_tsvector($1, content) @@ to_tsquery($1,$2) and room=$3 order by message.id desc limit $4",
 		[lang, tsquery, roomId, N],
-		"search_tsquery", false
+		"search_tsquery"
 	);
 }
 
@@ -870,8 +856,7 @@ proto._insertMessage = function(m){
 	return this.queryRow(
 		'insert into message (room, author, content, created) values ($1, $2, $3, $4) returning id',
 		[m.room, m.author, m.content, m.created],
-		"insert_message",
-		true
+		"insert_message"
 	).then(function(row){
 		m.id = row.id;
 		return m;
@@ -899,7 +884,7 @@ proto._updateMessage = function(m, dontCheckAge){
 			"delete from ping where message=$1", [m.id], "delete_message_ping"
 		).then(function(){
 			return this.execute(
-				"delete from message_vote where message=$1", [m.id], "delete_message_vote", false
+				"delete from message_vote where message=$1", [m.id], "delete_message_vote"
 			)
 		}).then(function(){
 			return this.execute(
@@ -929,8 +914,7 @@ proto.updateGetMessage = function(messageId, expr, userId){
 	return this.execute(
 		"update message set "+expr+" where id=$1",
 		[messageId],
-		"update_message_expr",
-		false
+		"update_message_expr"
 	)
 	.then(function(){
 		return this.getMessage(messageId, userId);
@@ -962,7 +946,7 @@ proto.storePings = function(roomId, users, messageId){
 		roomId + ", id, " + messageId +
 		" from player where lower(name) in (" + users.map(n => "'"+n.toLowerCase()+"'").join(',') + ")",
 		null,
-		"store_pings", false
+		"store_pings"
 	);
 }
 
@@ -971,8 +955,7 @@ proto.deletePing = function(mid, userId){
 	return this.execute(
 		"delete from ping where message=$1 and player=$2",
 		[mid, userId],
-		"delete_message_user_ping",
-		false
+		"delete_message_user_ping"
 	);
 }
 
@@ -989,7 +972,7 @@ proto.deleteRoomsPings = function(roomIds, userId){
 	return this.execute(
 		"delete from ping where room in ("+roomIds.join(',')+") and player=$1",
 		[userId],
-		"delete_rooms_pings", false
+		"delete_rooms_pings"
 	);
 }
 
@@ -997,8 +980,7 @@ proto.deleteLastRoomPings = function(roomId, userId, messageId){
 	return this.execute(
 		"delete from ping where room=$1 and player=$2 and message>=$3",
 		[roomId, userId, messageId],
-		"delete_last_room_pings",
-		true
+		"delete_last_room_pings"
 	);
 }
 
@@ -1049,7 +1031,7 @@ proto.addVote = function(roomId, userId, messageId, level){
 	default:
 		throw new Error('Unknown vote level:', level);
 	}
-	return this.queryOptionalRow(sql, args, "add_vote", false)
+	return this.queryOptionalRow(sql, args, "add_vote")
 	.then(function(nb){
 		if (nb) return this.updateGetMessage(messageId, level+"="+level+"+"+nb, userId);
 	});
@@ -1123,8 +1105,7 @@ proto.getPlayerPluginInfo = function(plugin, userId){
 	return this.queryOptionalRow(
 		"select * from plugin_player_info where plugin=$1 and player=$2",
 		[plugin, userId],
-		"player_plugin_info",
-		true
+		"player_plugin_info"
 	);
 }
 
@@ -1142,7 +1123,7 @@ proto.getComponentVersion = function(component){
 	return this.queryOptionalRow(
 		"select version from db_version where component=$1",
 		[component],
-		"component_version", false
+		"component_version"
 	)
 	.then(function(row){
 		return row ? row.version : 0;
@@ -1198,7 +1179,7 @@ exports.upgrade = function(component, patchSubDirectory){
 			return this.execute(
 				"insert into db_version (component,version) values($1,$2)",
 				[component, endVersion],
-				"insert_db_version", false
+				"insert_db_version"
 			)
 		})
 		.then(proto.commit)
@@ -1323,40 +1304,21 @@ proto.do = function(fun, onerror){
 // Arguments:
 // * sql: the SQL query, with $x placeholders
 // * args: an array of arguments, in order of placeholder numbers
-// * name: both for the named prepared statement and perf logging
-// * useANamedPreparedStatement: specifies whether a named prepared statement is to be used:
-//     - true: always use one
-//     - false: never use one (this MUST be the case if the sql isn't constant for that name)
-//     - undefined: unspecified (right now it means it's random)
+// * name: for perf logging
 proto._query = function(sql, args, name, useANamedPreparedStatement){
-	var	opts = { text: sql };
-	if (args) {
-		opts.values = args;
-		if (!args.map) {
-			console.log("bad arguments");
-			console.log('sql:', sql);
-			console.log('args:', args);
-		}
+	if (useANamedPreparedStatement !== undefined) {
+		console.log("_query call with useless named PS parameter", name);
 	}
-	nbQueries++;
 	if (!name) {
-		useANamedPreparedStatement = false;
 		name = "anonym query";
 		if (arguments.length>1) {
 			console.log("MISSING NAME IN QUERY");
 			logQuery(sql, args);
 		}
 	}
-	if (useANamedPreparedStatement === undefined) {
-		useANamedPreparedStatement = !(nbQueries%2);
-	}
-	if (useANamedPreparedStatement) {
-		opts.name = name;
-		name += " (named)";
-	}
 	var	bo = bench.start("db / " + name);
 	return new Promise((resolve, reject)=>{
-		this.client.query(opts, function(err, res){
+		this.client.query(sql, args, function(err, res){
 			var duration = bo.end() * .001;
 			if (duration>200) {
 				console.log("Slow query", name, "(" + duration + " ms)");
@@ -1385,7 +1347,7 @@ proto.execute = function(sql, args, name, useANamedPreparedStatement){
 }
 
 proto.executeRaw = function(sql){
-	return this._query(sql, null, "raw_statement", false)
+	return this._query(sql, null, "raw_statement")
 	.spread((rows, res) => res);
 }
 
@@ -1468,14 +1430,6 @@ proto.upsert = function(table, changedColumn, newValue, conditions){
 		});
 	});
 	return resolver.promise.bind(this);
-}
-
-proto.lookForPreparedStatement = function(psname){
-	return this.queryRows("select name from pg_prepared_statements where name=$1", [psname])
-	.then(function(rows){
-		if (rows.length) console.log("PS", psname, "FOUND");
-		else console.log("PS", psname, "NOT FOUND!");
-	});
 }
 
 ;['begin', 'rollback', 'commit'].forEach(function(s){
