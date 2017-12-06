@@ -1,6 +1,6 @@
 miaou(function(plugins, md){
 
-	var regex = /^\s*<a[^>]* href="https?:\/\/(?:www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=|youtu\.be\/)([a-zA-Z0-9-_]+)[\?&#\w\d=]*">[^<>]+<\/a>\s*$/;
+	var regex = /^\s*(<span[^>]+>[^<]+<\/span>)?\s*<a[^>]* href="https?:\/\/(?:www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=|youtu\.be\/)([a-zA-Z0-9-_]+)[\?&#\w\d=]*">[^<>]+<\/a>\s*$/;
 
 	function getEmbedLink(id){
 		return 'https://www.youtube.com/embed/' + id + '?html5=1';
@@ -38,11 +38,13 @@ miaou(function(plugins, md){
 			hasYoutubeLink = true;
 			// We want to calculate for each new video, the screen size may have changed.
 			var size = calculateVideoSize($c);
-			return '<iframe width=' + size.width +
+			var r = '<iframe width=' + size.width +
 				' height=' + size.height +
 				' sandbox="allow-forms allow-scripts allow-same-origin"' +
-				' src="' + getEmbedLink(match[1]) + '"' +
+				' src="' + getEmbedLink(match[2]) + '"' +
 				' frameborder=0 allowfullscreen></iframe>';
+			if (match[1]) r = match[1] + "<br>" + r;
+			return r;
 		});
 		if (hasYoutubeLink) $c.html(lines.join('<br>'));
 	}
