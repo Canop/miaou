@@ -1,4 +1,4 @@
-const	apiversion = 89,
+const	apiversion = 90,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -327,7 +327,7 @@ function handleUserInRoom(socket, completeUser){
 		watchset = new Set, // set of watched rooms ids (if any)
 		routes = new Map,
 		pendingEvent,
-		usernameRegex = new RegExp("^"+completeUser.name+"$", "i"), // used to test for self pings
+		usernameRegex = new RegExp("^"+completeUser.name.toLowerCase()+"$"), // used to test for self pings
 		userIP = socket.handshake.headers["x-forwarded-for"]||socket.request.connection.remoteAddress,
 		welcomed = false;
 
@@ -656,7 +656,7 @@ function handleUserInRoom(socket, completeUser){
 			console.log("invalid incoming message");
 			return;
 		}
-		var	now = Date.now(),
+		let	now = Date.now(),
 			roomId = shoe.room.id, // kept in closure to avoid sending a message asynchronously to bad room
 			seconds = now/1000|0,
 			content = message.content.replace(/\s+$/, '');
@@ -672,9 +672,8 @@ function handleUserInRoom(socket, completeUser){
 			return;
 		}
 		shoe.lastMessageTime = now;
-		var	u = shoe.publicUser,
-			m = { content:content, author:u.id, authorname:u.name, room:shoe.room.id},
-			commandTask;
+		let	u = shoe.publicUser,
+			m = { content, author:u.id, authorname:u.name, room:shoe.room.id };
 		if (u.avk) {
 			m.avk = u.avk;
 			m.avs = u.avs;
@@ -686,47 +685,36 @@ function handleUserInRoom(socket, completeUser){
 			m.created = seconds;
 		}
 		for (let i=0; i<onReceiveMessagePlugins.length; i++) {
-			var error = onReceiveMessagePlugins[i].onReceiveMessage(shoe, m);
-			if (error) { // we don't use trycatch for performance reasons
-				return shoe.error(error, m.content);
+			let error = onReceiveMessagePlugins[i].onReceiveMessage(shoe, m);
+			if (error) {
+				shoe.error(error, m.content);
+				return;d
 			}
 		}
 
-		db.on()
-		.then(function(){
+		db.do(async function(con){
 			if (otherDialogRoomUser) {
-				return this.tryInsertWatch(shoe.room.id, otherDialogRoomUser.id)
-				.then(inserted=>{
-					if (inserted) {
-						exports.userSockets(otherDialogRoomUser.id).forEach(s=>{
-							s.emit('wat', [{
-								id: shoe.room.id,
-								name: shoe.room.name,
-								private: true,
-								dialog: true,
-								auth: 'own',
-								nbunseen: 1,
-								nbrequests: 0,
-								last_seen: inserted.last_seen
-							}]);
-						});
-					}
-				});
+				let inserted = await con.tryInsertWatch(shoe.room.id, otherDialogRoomUser.id);
+				if (inserted) {
+					exports.userSockets(otherDialogRoomUser.id).forEach(s=>{
+						s.emit('wat', [{
+							id: shoe.room.id,
+							name: shoe.room.name,
+							private: true,
+							dialog: true,
+							auth: 'own',
+							nbunseen: 1,
+							nbrequests: 0,
+							last_seen: inserted.last_seen
+						}]);
+					});
+				}
 			}
-		})
-		.then(function(){
-			return commands.onMessage.call(this, shoe, m);
-		})
-		.then(function(ct){
-			commandTask = ct;
-			return [
-				commandTask.nostore && !m.id ? m : this.storeMessage(m, commandTask.ignoreMaxAgeForEdition),
-				commandTask
-			]
-		})
-		.spread(function(m, commandTask){
-			var pings = []; // names of pinged users that weren't in the room
-			if (commandTask.silent) return pings;
+			let commandTask = await commands.onMessage.call(con, shoe, m);
+			if (m.id || !commandTask.nostore) {
+				m = await con.storeMessage(m, commandTask.ignoreMaxAgeForEdition);
+			}
+			if (commandTask.silent) return;
 			if (m.changed) {
 				if (m.score) {
 					// we must update the notable cache
@@ -739,91 +727,81 @@ function handleUserInRoom(socket, completeUser){
 				}
 				m.vote = '?';
 			}
-			for (var p of onSendMessagePlugins) {
+			for (let p of onSendMessagePlugins) {
 				p.onSendMessage(this, m, send);
 			}
 			pageBoxer.onSendMessage(this, m, send);
 			send('message', m);
 			if (commandTask.replyContent) {
-				var txt = commandTask.replyContent;
+				let txt = commandTask.replyContent;
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
-				var replyer = commandTask.replyer || bot;
+				let replyer = commandTask.replyer || bot;
 				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](replyer, txt);
 			}
 			if (commandTask.withSavedMessage && m.id) {
 				commandTask.withSavedMessage(shoe, m);
 			}
-			if (m.content && m.id) {
-				if (m.id>memroom.lastMessageId) {
-					io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
-				}
-				var r = /(?:^|\s)@(\w[\w\-]{2,19})\b/g, ping;
-				while ((ping=r.exec(m.content))) {
-					pings.push(ping[1]);
-				}
-				if (!(m.id<=memroom.lastMessageId)) {
-					memroom.lastMessageId = m.id;
+			if (!m.id ||!m.content) return;
+			if (m.id>memroom.lastMessageId) {
+				io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:m.id, f:m.author});
+			}
+			if (!(m.id<=memroom.lastMessageId)) {
+				memroom.lastMessageId = m.id;
+			}
+			let	pings = [],
+				r = /(?:^|\s)@(\w[\w\-]{2,19})\b/g,
+				match;
+			while ((match=r.exec(m.content))) {
+				let ping = match[1].toLowerCase();
+				if (ping==="room") {
+					if (!shoe.room.private && shoe.room.auth!=='admin' && shoe.room.auth!=='own') {
+						shoe.error("Only an admin can ping @room in a public room");
+					} else {
+						let roomUsers = await con.listRoomUsers(shoe.room.id);
+						roomUsers.forEach(ru => {
+							pings.push(ru.name);
+						});
+					}
+				} else if (ping==="here") {
+					roomSockets(shoe.room.id)
+					.concat(roomSockets('w'+shoe.room.id))
+					.forEach(s => {
+						pings.push(s.publicUser.name);
+					});
+				} else {
+					pings.push(ping);
 				}
 			}
-			return pings;
-		})
-		.reduce(function(pings, ping){ // expanding special pings (i.e. @room)
-			if (ping==='room') {
-				if (!shoe.room.private && shoe.room.auth!=='admin' && shoe.room.auth!=='own') {
-					shoe.error("Only an admin can ping @room in a public room");
-					return pings;
-				}
-				return this.listRoomUsers(shoe.room.id).then(function(users){
-					return pings.concat(users.map(u => u.name ));
-				});
-			} else if (ping==='here') {
-				return roomSockets(shoe.room.id).concat(roomSockets('w'+shoe.room.id))
-				.map(s => s.publicUser.name );
-			}
-			pings.push(ping.toLowerCase());
-			return pings;
-		}, [])
-		.reduce(function(pings, ping){ // removing duplicates and self pings
-			if (!usernameRegex.test(ping) && !~pings.indexOf(ping)) pings.push(ping);
-			return pings;
-		}, [])
-		.filter(function(unsentping){
-			if (botMgr.onPing(unsentping, shoe, m)) return false; // it's a bot
-			if (shoe.userSocket(unsentping)) return false; // no need to ping
-			if (!shoe.room.private) return true;
-			// user isn't in the room, we check he can enter the room
-			return this.getAuthLevelByUsername(shoe.room.id, unsentping).then(function(oauth){
-				if (oauth) return true;
+			pings = pings.filter(ping => {
+				if (usernameRegex.test(ping)) return false; // self ping
+				if (shoe.userSocket(ping)) return false; // no need to ping
+				if (botMgr.onPing(ping, shoe, m)) return false; // it's a bot
+				if (pings.indexOf(ping)!==-1) return false; // duplicate
+				if (!shoe.room.private) return true;
+				let auth = con.getAuthLevelByUsername(shoe.room.id, ping);
+				if (auth) return true;
 				if (commandTask.cmd) return commandTask.alwaysPing;
 				// todo different message for no user
-				shoe.error(unsentping+" has no right to this room and wasn't pinged");
+				shoe.error(ping+" has no right to this room and wasn't pinged");
 			});
-		})
-		.then(function(remainingpings){
-			if (remainingpings.length) {
-				for (var username of remainingpings) {
-					// user can enter the room, we notify him with a cross-room ping in the other rooms
-					for (var clientId in io.sockets.connected) {
-						var socket = io.sockets.connected[clientId];
-						if (socket && socket.publicUser && socket.publicUser.name===username) {
-							socket.emit('pings', [{
-								// TODO rename r to room in pings
-								r:shoe.room.id, rname:shoe.room.name, mid:m.id,
-								authorname:m.authorname, content:m.content
-							}]);
-						}
+			if (!pings.length) return;
+			pings.forEach(username => {
+				// we notify the user with a cross-room ping in the other rooms
+				for (let clientId in io.sockets.connected) {
+					let socket = io.sockets.connected[clientId];
+					if (socket && socket.publicUser && socket.publicUser.name===username) {
+						socket.emit('pings', [{
+							// TODO rename r to room in pings
+							r:shoe.room.id, rname:shoe.room.name, mid:m.id,
+							authorname:m.authorname, content:m.content
+						}]);
 					}
 				}
-				return this.storePings(shoe.room.id, remainingpings, m.id);
-			}
-		})
-		.then(function(){
-			done()
-		})
-		.catch(function(e){
+			});
+			await con.storePings(shoe.room.id, pings, m.id);
+		}, function(err){
 			shoe.error(e, m.content);
-		})
-		.finally(db.off)
+		}).then(done);
 	});
 
 	on('mod_delete', function(ids, done){
