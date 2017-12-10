@@ -7,26 +7,38 @@ miaou(function(){
 	//  title (optional)
 	//  content : html | dom object | jquery object
 	//  buttons : map name->(func|null)
+	//  default : default button name (optional)
 	//  cssClass (optional)
 	miaou.dialog = function(options){
 		miaou.prof.hide();
 		var $d = $('<div class=dialog/>').hide().addClass(options.cssClass||'small');
 		$d.append($('<div class=dialog-title/>').text(options.title||''));
 		$d.append($('<div class=dialog-content/>').append(options.content));
-		var buttons = options.buttons||{OK:null},
+		var	buttons = options.buttons||{OK:null},
 			$buttons = $('<div class=dialog-buttons/>').appendTo($d);
 		var close = function(){
 			dialogs.splice(dialogs.indexOf(d), 1);
-			$d.fadeOut('fast', function(){$d.remove();});
+			$d.fadeOut('fast', $.fn.remove.bind($d));
 			$(window).off('keyup', handleKey);
 		}
 		var handleKey = function(e){
-			if (e.which===27 || (e.which===13&&Object.keys(buttons).length===1)) close();
+			if (e.which===13) {
+				if (options.default) {
+					if (buttons[options.default]()===false) return;
+					close();
+				}
+				if (Object.keys(buttons).length===1) {
+					close();
+				}
+			} else if (e.which===27) {
+				close();
+			}
 		}
 		$.each(buttons, function(name, func){
-			$buttons.append($('<button>').html(name).click(function(){
+			var $button = $('<button>').html(name).click(function(){
 				if (!(func && func()===false)) close();
-			}));
+			}).appendTo($buttons);
+			if (name===options.default) $button.addClass("default-button");
 		});
 		$d.appendTo(document.body);
 		var $mask = $('<div class=mask>').appendTo(document.body);

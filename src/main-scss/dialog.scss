@@ -13,7 +13,7 @@
 	&.intro { // intro dialog, displayed below the big Miaou logo
 		position:fixed;
 		right: 30%;
-		left: 30%;	
+		left: 30%;
 	}
 	&.centered {
 		min-width:500px;
@@ -61,7 +61,12 @@
 		border-color: red;
 	}
 }
-body.mobile .dialog.intro { 
+
+.default-button {
+	font-weight: bold;
+}
+
+body.mobile .dialog.intro {
 	right: 3%;
 	left: 3%;
 }
