@@ -34,7 +34,7 @@ function startPeriodicAccessRequestCleaning(miaou){
 				"update access_request set denied=$1, deny_message=$2"
 				+ " where denied is null and requested<$3",
 				[now, "Access Request Too Old - Automatic Deletion", now-maxAge],
-				"purge_old_access_requests", false
+				"purge_old_access_requests"
 			);
 		}).then(function(res){
 			console.log("Removed", res.rowCount, "old access request(s)");

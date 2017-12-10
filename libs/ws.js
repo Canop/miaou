@@ -1014,7 +1014,7 @@ exports.listen = function(server, sessionStore, cookieParser){
 			sessionStore.get(socket.handshake.signedCookies["connect.sid"], function(err, session){
 				socket.session = session;
 				if (!err && !session) err = new Error('session not found');
-				if (err) console.log('ERR in socket authentication :', err);
+				if (err) console.log('ERR in socket authentication', err.message||err);
 				next(err);
 			});
 		});
