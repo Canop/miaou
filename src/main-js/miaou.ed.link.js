@@ -24,6 +24,7 @@ miaou(function(ed, fmt){
 			if (!url) return; // we can do nothing, here
 			var link = text ? "["+text+"]("+url+")" : url;
 			input.value = input.value.slice(0, s) + link + input.value.slice(e);
+			input.focus();
 		}
 
 		$c.append(
@@ -36,22 +37,14 @@ miaou(function(ed, fmt){
 			$("<p>").html(fmt.mdTextToHtml(help.join("\n")))
 		);
 
-		$text.add($url).on('keyup', function(e){
-			switch (e.which) {
-			case 13: // enter
-				insertLink();
-			case 27: // esc
-				miaou.dialog.closeAll();
-			}
-		});
-
 		miaou.dialog({
 			title: 'Insert Hyperlink',
 			content: $c,
 			buttons: {
 				Cancel: null,
 				Insert: insertLink
-			}
+			},
+			default: "Insert"
 		});
 
 		$text.focus();
