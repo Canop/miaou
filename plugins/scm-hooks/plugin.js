@@ -12,6 +12,7 @@ const	providers = [require("./github.js").provider],
 
 var	config,
 	ws,
+	bots,
 	db;
 
 exports.name = "SCM-Hooks";
@@ -34,6 +35,7 @@ function initProvider(p){
 		return this.updateUserInfo(p.bot.id, p.botInfo);
 	})
 	.then(function(){
+		bots.register(p.bot);
 		return p;
 	});
 }
@@ -42,6 +44,7 @@ exports.init = function(miaou){
 	config = miaou.config;
 	db = miaou.db;
 	ws = miaou.lib("ws");
+	bots = miaou.lib("bots");
 	return db.upgrade(exports.name, path.resolve(__dirname, 'sql'))
 	.then(function(){
 		return db.on(providers)

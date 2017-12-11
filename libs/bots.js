@@ -1,14 +1,30 @@
 // some services for bots
-const	pingableBots = new Map; // Map lowercased bot name -> function(shoe,message)
+const	bots = new Map; // Map lowercased bot name -> options
 
-exports.registerPingableBot = function(bot, onPing){
-	pingableBots.set(bot.name.toLowerCase(), onPing);
+// can be called several times.
+// Known options:
+// 	- onPing : function
+exports.register = function(bot, options){
+	let	lname = bot.name.toLowerCase(),
+		bo = bots.get(lname);
+	console.log('register bot', lname);
+	if (!bo) {
+		bots.set(lname, bo = Object.create(null));
+	}
+	if (!options) return;
+	for (let k in options) {
+		bo[k] = options[k];
+	}
 }
 
-exports.onPing = function(ping, shoe, message){
-	var fun = pingableBots.get(ping);
-	if (fun) {
-		fun(shoe, message);
-		return true;
+// returns true when the bot has been found
+exports.onPing = async function(lname, shoe, message){
+	let	bo = bots.get(lname);
+	if (!bo) return false;
+	console.log("bot found");
+	if (bo.onPing) {
+		console.log("bot pinged");
+		await bo.onPing(shoe, message);
 	}
+	return true;
 }

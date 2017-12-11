@@ -2,7 +2,8 @@
 // It's provided to plugins and serves as proxy to access
 // libs, sockets, etc.
 
-const	path = require('path');
+const	path = require('path'),
+	bots = require("./bots.js");
 
 class Miaou{
 
@@ -31,21 +32,19 @@ class Miaou{
 		return token.reduce((o, t)=> o ? o[t] : undefined, this.config);
 	}
 
-	// return a promise
-	initBot(){
+	async initBot(){
 		var	miaou = this,
 			botAvatar = this.conf("botAvatar");
-		return this.db.on("miaou")
-		.then(this.db.getBot)
-		.then(function(b){
+		await miaou.db.do(async function(con){
+			let b = await con.getBot("miaou");
 			miaou.bot = b;
+			bots.register(b);
 			if (botAvatar.src!==b.avatarsrc || botAvatar.key!==b.avatarkey) {
 				b.avatarsrc = botAvatar.src;
 				b.avatarkey = botAvatar.key;
-				return this.updateUser(b);
+				await con.updateUser(b);
 			}
-		})
-		.finally(this.db.off);
+		});
 	}
 
 	// returns a promise

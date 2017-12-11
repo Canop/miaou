@@ -748,7 +748,7 @@ function handleUserInRoom(socket, completeUser){
 			if (!(m.id<=memroom.lastMessageId)) {
 				memroom.lastMessageId = m.id;
 			}
-			let	pings = [],
+			let	pingSet = new Set,
 				r = /(?:^|\s)@(\w[\w\-]{2,19})\b/g,
 				match;
 			while ((match=r.exec(m.content))) {
@@ -759,31 +759,33 @@ function handleUserInRoom(socket, completeUser){
 					} else {
 						let roomUsers = await con.listRoomUsers(shoe.room.id);
 						roomUsers.forEach(ru => {
-							pings.push(ru.name);
+							pingSet.add(ru.name);
 						});
 					}
 				} else if (ping==="here") {
 					roomSockets(shoe.room.id)
 					.concat(roomSockets('w'+shoe.room.id))
 					.forEach(s => {
-						pings.push(s.publicUser.name);
+						pingSet.add(s.publicUser.name);
 					});
 				} else {
-					pings.push(ping);
+					pingSet.add(ping);
 				}
 			}
-			pings = pings.filter(ping => {
-				if (usernameRegex.test(ping)) return false; // self ping
-				if (shoe.userSocket(ping)) return false; // no need to ping
-				if (botMgr.onPing(ping, shoe, m)) return false; // it's a bot
-				if (pings.indexOf(ping)!==-1) return false; // duplicate
-				if (!shoe.room.private) return true;
-				let auth = con.getAuthLevelByUsername(shoe.room.id, ping);
-				if (auth) return true;
-				if (commandTask.cmd) return commandTask.alwaysPing;
-				// todo different message for no user
-				shoe.error(ping+" has no right to this room and wasn't pinged");
-			});
+			let	pings = [];
+			for (let ping of pingSet) {
+				if (usernameRegex.test(ping)) continue; // self ping
+				if (shoe.userSocket(ping)) continue; // no need to ping
+				if (await botMgr.onPing(ping, shoe, m)) continue; // it's a bot
+				if (shoe.room.private && !commandTask.alwaysPing) {
+					let auth = await con.getAuthLevelByUsername(shoe.room.id, ping);
+					if (!auth) {
+						shoe.error(ping+" has no right to this room and wasn't pinged");
+						continue;
+					}
+				}
+				pings.push(ping);
+			}
 			if (!pings.length) return;
 			pings.forEach(username => {
 				// we notify the user with a cross-room ping in the other rooms
@@ -800,7 +802,7 @@ function handleUserInRoom(socket, completeUser){
 			});
 			await con.storePings(shoe.room.id, pings, m.id);
 		}, function(err){
-			shoe.error(e, m.content);
+			shoe.error(err, m.content);
 		}).then(done);
 	});
 

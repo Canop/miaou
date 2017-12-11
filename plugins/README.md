@@ -233,8 +233,10 @@ A plugin can read any message (see [onReceiveMessage](#onReceiveMessage)) but it
 	exports.init = function(miaou){
 		... bot initialization here ...
 		.then(function(){
-			bots.registerPingableBot(me, function(shoe, message){
-				shoe.botMessage(me, "Hi");
+			bots.register(me, {
+				onPing: async function(shoe, message){
+					shoe.botMessage(me, "Hi");
+				}
 			});
 		})
 		.finally(db.off);
