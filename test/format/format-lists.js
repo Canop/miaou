@@ -1,9 +1,9 @@
 var	fmt = require("./miaou.format.node.js"),
 	buster = require("buster");
-	
+
 function t(s,r){
 	return function(){
-		buster.assert.equals(fmt.mdTextToHtml(s), r);		
+		buster.assert.equals(fmt.mdTextToHtml(s), r);
 	}
 }
 
@@ -18,6 +18,6 @@ buster.testCase("Formatting - Lists", {
 	"UL": t(
 		"* a list item\n"+
 		"* followed by ---**many** _other ones_--- __another__ _one_",
-		"<ul><li>a list item</li><li>followed by <strike><b>many</b> <i>other ones</i></strike> <b>another</b> <i>one</i></li></ul>"
+		"<ul><li>a list item</li><li>followed by <strike><b>many</b> <i>other ones</i></strike> <u>another</u> <i>one</i></li></ul>"
 	),
 });

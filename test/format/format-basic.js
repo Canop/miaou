@@ -27,13 +27,9 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		" a sentence with *a few words italicized*",
 		" a sentence with <i>a few words italicized</i>"
 	),
-	"bold (underscore)": t(
-		"abc __def ghi__ wzzz...",
-		"abc <b>def ghi</b> wzzz..."
-	),
-	"italic (underscore)": t(
-		" a sentence with _a few words italicized_",
-		" a sentence with <i>a few words italicized</i>"
+	"underline (underscore)": t(
+		" a sentence with __a few words underline__",
+		" a sentence with <u>a few words underline</u>"
 	),
 	"strike": t(
 		"---first--- and ---third--- words as strike",
@@ -42,6 +38,10 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 	"two italicized words separated by just one space": t( // bug observed here : http://dystroy.org/miaou/73?Tribo_Room#538224
 		"*sob* *sob*",
 		"<i>sob</i> <i>sob</i>"
+	),
+	"italic, underline and bold": t(
+		"__***italic, underline and bold***__",
+		"<u><i><b>italic, underline and bold</b></i></u>"
 	),
 	"italic and bold nested": t(
 		"*This sentence is in italic and the end is **in bold too***",
@@ -55,9 +55,9 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"**Now the reverse : all in bold and the last word in *italic***",
 		'<b>Now the reverse : all in bold and the last word in <i>italic</i></b>'
 	),
-	"mix strike, italic and bold - 1": t(
-		"most of ---this sentence is striken, with some _italic_ and some __bold__---",
-		"most of <strike>this sentence is striken, with some <i>italic</i> and some <b>bold</b></strike>"
+	"mix strike, italic and underline - 1": t(
+		"most of ---this sentence is striken, with some _italic_ and some __underline__---",
+		"most of <strike>this sentence is striken, with some <i>italic</i> and some <u>underline</u></strike>"
 	),
 	"mix strike, italic and bold - 2": t(
 		"** bold sentence with ---striken *italicized words*---**",
