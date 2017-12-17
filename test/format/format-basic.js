@@ -15,31 +15,31 @@ function t(s,r){
 
 
 buster.testCase("Formatting - Bold, Italic, Strike", {
-    "no change": t(
+	"no change": t(
 		"simple one-line text",
 		"simple one-line text"
 	),
-    "bold (dash)": t(
+	"bold (dash)": t(
 		"abc **def ghi** wzzz...",
 		"abc <b>def ghi</b> wzzz..."
 	),
-    "italic (dash)": t(
+	"italic (dash)": t(
 		" a sentence with *a few words italicized*",
 		" a sentence with <i>a few words italicized</i>"
 	),
-    "bold (underscore)": t(
+	"bold (underscore)": t(
 		"abc __def ghi__ wzzz...",
 		"abc <b>def ghi</b> wzzz..."
 	),
-    "italic (underscore)": t(
+	"italic (underscore)": t(
 		" a sentence with _a few words italicized_",
 		" a sentence with <i>a few words italicized</i>"
 	),
-    "strike": t(
+	"strike": t(
 		"---first--- and ---third--- words as strike",
 		"<strike>first</strike> and <strike>third</strike> words as strike"
 	),
-    "two italicized words separated by just one space": t( // bug observed here : http://dystroy.org/miaou/73?Tribo_Room#538224
+	"two italicized words separated by just one space": t( // bug observed here : http://dystroy.org/miaou/73?Tribo_Room#538224
 		"*sob* *sob*",
 		"<i>sob</i> <i>sob</i>"
 	),
@@ -55,11 +55,11 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"**Now the reverse : all in bold and the last word in *italic***",
 		'<b>Now the reverse : all in bold and the last word in <i>italic</i></b>'
 	),
-    "mix strike, italic and bold - 1": t(
+	"mix strike, italic and bold - 1": t(
 		"most of ---this sentence is striken, with some _italic_ and some __bold__---",
 		"most of <strike>this sentence is striken, with some <i>italic</i> and some <b>bold</b></strike>"
 	),
-    "mix strike, italic and bold - 2": t(
+	"mix strike, italic and bold - 2": t(
 		"** bold sentence with ---striken *italicized words*---**",
 		"<b> bold sentence with <strike>striken <i>italicized words</i></strike></b>"
 	),
@@ -75,7 +75,7 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"**start is bold** but here are some stars : ** (*not boldening*)",
 		"<b>start is bold</b> but here are some stars : ** (<i>not boldening</i>)"
 	),
-    "mix on 3 lines": t(
+	"mix on 3 lines": t(
 		"some **bold** followed\nby\n2 *other lines*",
 		"some <b>bold</b> followed<br>by<br>2 <i>other lines</i>"
 	),
