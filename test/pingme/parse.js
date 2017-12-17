@@ -12,9 +12,9 @@ buster.testCase("pingme/parse", {
 
 	"invalid": function(){
 		["", "bla bla bla", "52h32 test"].forEach(str=>{
-		    buster.assert.exception(function(){
-			    parse(str, 0);
-		    });
+			buster.assert.exception(function(){
+				parse(str, 0);
+			});
 		});
 	},
 
