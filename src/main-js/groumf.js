@@ -4,9 +4,7 @@
 (function(){
 
 	"use strict";
-
-	// something a little less bad than the \w of ES5
-	var WordCharRegex = /[\d@A-Z_a-z~\xa1-\xac\xae-\xaf\xb5-\xba\xc0-\xfe]/;
+	var WordCharRegex = /[\d@A-Z_a-z~\xa1-\xac\xae-\xaf\xb5-\xba\xc0-\xfe\u0100-\u017F]/;
 
 	function Groumf(options){
 		this.forest = {};
