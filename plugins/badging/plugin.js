@@ -113,7 +113,7 @@ exports.registerCommands = function(cb){
 
 exports.registerRoutes = map=>{
 	map("get", /^\/json\/badge$/, function(req, res, next){
-		res.setHeader("Cache-Control", "public, max-age=60000"); // 60 minutes
+		res.setHeader("Cache-Control", "public, max-age=600"); // 10 minutes
 		let	badgeTag = req.query.tag,
 			badgeName = req.query.name;
 		db.on()
