@@ -1,18 +1,20 @@
 
 miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, win, ws, wz){
 
-	var	$scroller = gui.$messageScroller = $('#message-scroller,#mpad').eq(0),
-		scrollerPaddingTop = parseInt($scroller.css('padding-top')),
-		scroller = $scroller[0];
+	var $scroller = gui.$messageScroller = $('#message-scroller');
+	var scroller = $scroller[0] || document.getElementById("mpad");
+	if (!$scroller.length) {
+		// mpad - body scrolling doesn't consistently work, hence the use of window
+		$scroller = $(window);
+	}
 
 	gui.mobile = $(document.body).hasClass('mobile');
-
-	// FIXME use only one solution (but it's not easy)
 	if (gui.mobile) {
 		gui.isAtBottom = function(){
 			return window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
 		};
 	} else {
+		var scrollerPaddingTop = parseInt($scroller.css('padding-top'));
 		gui.isAtBottom = function(){
 			var messages = document.getElementById("messages");
 			if (!messages) return false;
