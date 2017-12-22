@@ -97,7 +97,8 @@ gulp.task("server-js", ()=>
 			"no-eval": 2,
 			"max-len": [2, {
 				"code": 120,
-				"ignorePattern": "^\\s*(var )?\\w+ = \\/.*\\/\\w*(,|;)$" // regex declarations
+				// "ignoreRegExpLiterals": true
+				//"ignorePattern": "^\\s*(var )?\\w+ = \\/.*\\/\\w*(,|;)$" // regex declarations
 			}],
 			"no-caller": 2,
 			"no-extra-bind": 2,
