@@ -297,7 +297,7 @@ function fixSearchOptions(search, userId, room){
 	if (allowSearchExactExpressions && search.pattern) {
 		let match = search.pattern.match(/^"(.*)"$/);
 		if (match) { // string between quotes: exact expression required
-			search.regex = match[1].replace(/[!$()*+.:<=>?[\\\]^{|}-]/g, "\\&$");
+			search.regex = match[1].replace(/[!$()*+.:<=>?[\\\]^{|}-]/g, "\\$&");
 			search.caseInsensitive = true;
 		}
 	}
