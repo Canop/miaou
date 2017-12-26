@@ -11,12 +11,16 @@ $input-height: 50px;
 	padding: $tabs-height 0;
 	overflow-x: hidden; // prevents Chrome from having an horizontal scrollbar here
 	margin: 0;
-	#messages {
-		padding-top: 10px;
-		margin-bottom: -8px;
+	#message-scroller {
+		position: fixed;
+		top: $tabs-height;
+		bottom: $tabs-height;
+		left: 0;
+		right: 0;
 	}
 }
-#mpad-page-write.open ~ #messages {
+#mpad-page-write.open ~ #message-scroller {
+	top: 0;
 	padding-bottom: $input-height + 8px;
 }
 .mpad-tabs {

@@ -4,12 +4,12 @@ html
 		title Miaou
 		meta(name="viewport",content="initial-scale=1,maximum-scale=1")
 		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=4')
-		link(rel='stylesheet', href='static/pad.mob.css?v=2')
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=5')
+		link(rel='stylesheet', href='static/pad.mob.css?v=3')
 		script(src="static/jquery-3.2.1.min.js")
 		script(src="socket.io/socket.io.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
-		script(src="static/miaou.min.js?v=2")
+		script(src="static/miaou.min.js?v=3")
 		script(src="static/pad.mob.min.js?v=4")
 	body#mpad.chat.mobile
 		#mpad-top-tabs.mpad-tabs
@@ -45,7 +45,8 @@ html
 					object.Miaou-logo#Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
 			#mpad-tab-write.mpad-tab
 				.mpad-tab-label write a message
-		#messages
+		#message-scroller
+			#messages
 		#notifications
 		#mpad-untabber
 		#mpad-page-room.mpad-page

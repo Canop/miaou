@@ -2,27 +2,17 @@
 miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, win, ws, wz){
 
 	var $scroller = gui.$messageScroller = $('#message-scroller');
-	var scroller = $scroller[0] || document.getElementById("mpad");
-	if (!$scroller.length) {
-		// mpad - body scrolling doesn't consistently work, hence the use of window
-		$scroller = $(window);
-	}
-
+	var scroller = $scroller[0];
+	gui.$messageScroller = $scroller;
 	gui.mobile = $(document.body).hasClass('mobile');
-	if (gui.mobile) {
-		gui.isAtBottom = function(){
-			return window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
-		};
-	} else {
-		var scrollerPaddingTop = parseInt($scroller.css('padding-top'));
-		gui.isAtBottom = function(){
-			var messages = document.getElementById("messages");
-			if (!messages) return false;
-			var lm = messages.lastChild; // last user message element
-			if (!lm) return false;
-			var messagesBottom = $scroller.offset().top + scroller.offsetHeight + scrollerPaddingTop + 5;
-			return $(lm).offset().top + lm.offsetHeight < 	messagesBottom;
-		}
+	var scrollerPaddingTop = parseInt($scroller.css('padding-top'));
+	gui.isAtBottom = function(){
+		var messages = document.getElementById("messages");
+		if (!messages) return false;
+		var lm = messages.lastChild; // last user message element
+		if (!lm) return false;
+		var messagesBottom = $scroller.offset().top + scroller.offsetHeight + scrollerPaddingTop + 5;
+		return $(lm).offset().top + lm.offsetHeight < 	messagesBottom;
 	}
 
 	function _scrollToBottom(){

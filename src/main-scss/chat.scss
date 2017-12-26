@@ -179,17 +179,6 @@ body.pad #me {
 	}
 }
 
-body.mobile #message-scroller { // FIXME remove when mobile pad is mainstream
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: $minput-height + 8px;
-	left: 0;
-	overflow-y: scroll;
-	margin:0;
-	padding: $mtab-height 0 0 0;
-}
-
 .user-messages {
 	position: relative;
 	margin-top: $user-messages-vmargin;
