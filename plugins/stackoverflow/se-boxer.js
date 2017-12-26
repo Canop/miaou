@@ -14,7 +14,6 @@ var	http = require('http'),
 	apikey, // necessary to get a bigger quota (10 000 instead of 300)
 	TTL = 15*60*1000,
 	tasks = new Deque(2000),
-	urlRegex,
 	currentTask;
 
 const icons = {
@@ -181,13 +180,14 @@ exports.init = function(miaou){
 	} catch (e) {
 		console.log("No API key for Stack Overflow boxing - reduced quota");
 	}
-	urlRegex = miaou.lib("rex").concat(
-		/(?:^|\n)\s*https?:\/\//,
-		/(meta\.)?(stackoverflow|askubuntu|([^.]+\.)?stackexchange|superuser|serverfault).com\//,
-		/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/,
-		"gm"
-	);
 }
+
+const	urlRegex = require("../../libs/rex.js").concat(
+	/(?:^|\n)\s*https?:\/\//,
+	/(meta\.)?(stackoverflow|askubuntu|([^.]+\.)?stackexchange|superuser|serverfault).com\//,
+	/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/,
+	"gm"
+);
 
 // read the text to find and analyze SE URL
 exports.rawTasks = function(text){
