@@ -14,6 +14,10 @@ You can see it in action or use it on https://dystroy.org/miaou (anybody can cre
 
 To discuss the code and feature of Miaou, please come to [the dedicated room](https://dystroy.org/miaou/1?Miaou).
 
+# Discussing features, bugs, problems, issues
+
+Please come discuss it in one of the dedicated chat rooms [![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-en.svg?v=1)](https://dystroy.org/miaou/1?Miaou) and [![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-fr.svg?v=1)](https://dystroy.org/miaou/3?Code_Croissants) before you create an issue in the GitHub tracker (please note that they're currently more active between 8 and 19 GMT).
+
 # Installing a server
 
 A [vagrant](http://www.vagrantup.com/) configuration is available to help you set up a development environment quickly. See more information at its [documentation](vagrant/vagrant.md).
