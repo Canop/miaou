@@ -86,7 +86,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	// returns the currently autocompletable typed command, if any
 	function getaccmd(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!!(\w+)$/);
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\s)!!(\w+)$/);
 		if (m) return m[1].toLowerCase();
 	}
 
