@@ -1,5 +1,5 @@
 // makes bubbles
-;miaou(function(fish, fmt){
+;miaou(function(fish, fmt, gui){
 
 	$.fn.bubble = function(options){
 		var	side,
@@ -116,5 +116,13 @@
 		$.fn.on.apply(this, args);
 		return this;
 	}
+
+	setTimeout(function(){
+		if (gui.mobile) {
+			$("#message-scroller").on("scroll", function(){
+				$(".bubble").remove();
+			});
+		}
+	}, 0);
 
 });
