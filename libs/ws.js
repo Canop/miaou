@@ -261,7 +261,7 @@ exports.pingUser = function(room, username, mid, authorname, content){
 	} else {
 		promise = Promise.resolve(room);
 	}
-	return promise.then(function(room){
+	return promise.then((room)=>{
 		for (var clientId in io.sockets.connected) {
 			var socket = io.sockets.connected[clientId];
 			if (socket && socket.publicUser && socket.publicUser.name===username) {
