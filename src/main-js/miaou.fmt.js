@@ -48,7 +48,7 @@ miaou(function(fmt){
 				/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig,
 				'$1<a target=_blank href="$2">$2</a>'
 			)
-			.replace(/\[ \]/g, "☐")
+			.replace(/\[[ .]\]/g, "☐")
 			.replace(/\[x]/ig, "☑")
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_, a, b, c){
 				// do replacements only on what isn't in a tag
@@ -66,13 +66,19 @@ miaou(function(fmt){
 				+ c;
 			})
 			.replace(/---[^<>]*?(<(\w{1,6})\b[^<>\-]*>[^<>\-]*<\/\2>[^<>\-]*)*---/g, function(s){
-				return s.length>6 ? '<strike>'+s.slice(3, -3)+'</strike>' : s
+				return s.length>6 ? '<strike>'+s.slice(3, -3)+'</strike>' : s;
 			})
 			.replace(/\*\*[^<>]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*\*/g, function(s){
-				return s.length>4 ? '<b>'+s.slice(2, -2)+'</b>' : s
+				return s.length>4 ? '<b>'+s.slice(2, -2)+'</b>' : s;
 			})
 			.replace(/\*[^<>\*]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*(?=[^\*]|$)/g, function(s){
-				return s.length>2 ? '<i>'+s.slice(1, -1)+'</i>' : s
+				return s.length>2 ? '<i>'+s.slice(1, -1)+'</i>' : s;
+			})
+			.replace(/\^([^ ^~]+)\^/g, function(_, s){
+				return '<sup>'+s+'</sup>';
+			})
+			.replace(/~([^ ^~]+)~/g, function(_, s){
+				return '<sub>'+s+'</sub>';
 			})
 		}).join('')
 		.replace(/^\/me(.*)$/ig, '<span class=slashme>'+(username||'/me')+'$1</span>')

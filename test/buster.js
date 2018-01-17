@@ -11,6 +11,7 @@ config["all"] = {
 		"format/format-code.js",
 		"format/format-quotes.js",
 		"format/format-tables.js",
+		"format/format-sub-sup.js",
 		"ludogene/tribo.js",
 		"stackoverflow/url.js",
 		"naming/name-cleaning.js",
