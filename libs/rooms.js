@@ -179,34 +179,34 @@ exports.appPostRoom = function(req, res){
 
 // rooms list GET (home page)
 exports.appGetRooms = function(req, res){
-	var userId = req.user.id;
-	db.on(welcomeRoomIds)
-	.map(function(roomId){
-		return this.fetchRoomAndUserAuth(roomId, userId, true)
-	})
-	.filter(function(welcomeRoom, i){
-		if (welcomeRoom) return true;
-		console.log("WARNING: missing welcome room (id is "+welcomeRoomIds[i]+")");
-	})
-	.then(function(welcomeRooms){
-		return [
-			this.fetchUserPingRooms(userId),
-			welcomeRooms,
-			prefs.get.call(this, userId),
-			this.listUserWatches(userId)
-		]
-	})
-	.spread(function(pings, welcomeRooms, userPrefs, watches){
-		welcomeRooms.forEach(function(r){
-			r.path = server.roomPath(r)
-		});
+	let userId = req.user.id;
+	db.do(async function(con){
+		let welcomeRooms = [];
+		for (let i=0; i<welcomeRoomIds.length; i++) {
+			let roomId = welcomeRoomIds[i];
+			try {
+				let room = await con.fetchRoomAndUserAuth(roomId, userId, true);
+				room.path = server.roomPath(room)
+				welcomeRooms.push(room);
+			} catch (e) {
+				console.error(`Error while fetching welcome room ${roomId}. Please check configuration.`);
+			}
+		}
+		let pings = await con.fetchUserPingRooms(userId);
+		let userPrefs = await prefs.get.call(con, userId);
+		let watches = await con.listUserWatches(userId);
 		var mobile = server.mobile(req);
 		let data = {
-			vars:{
-				langs: langs.legal, mobile, me: req.user,
-				welcomeRooms, watches, pings
+			vars: {
+				langs: langs.legal,
+				mobile,
+				me: req.user,
+				welcomeRooms,
+				watches,
+				pings
 			},
-			user: req.user, pings
+			user: req.user,
+			pings
 		};
 		if (mobile) {
 			res.render('rooms.mob.pug', data);
@@ -214,11 +214,9 @@ exports.appGetRooms = function(req, res){
 			data.theme = prefs.theme(userPrefs, req.query.theme);
 			res.render('rooms.pug', data);
 		}
-	})
-	.catch(function(err){
+	}, function(err){
 		server.renderErr(res, err);
-	})
-	.finally(db.off);
+	});
 }
 
 exports.appGetJsonRoom = function(req, res){
