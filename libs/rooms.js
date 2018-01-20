@@ -24,35 +24,22 @@ class MemRoom{
 		this.id = roomId;
 		this.resolvers = []; // set to null when loaded
 	}
-	load(con){
-		let	memroom = this,
-			roomId = this.id,
-			now = Date.now()/1000|0;
-		return con
-		.getNotableMessages(roomId, now-maxAgeForNotableMessages)
-		.then(function(notables){
-			for (var i=0; i<notables.lenght; i++) clean(notables[i]);
-			memroom.notables = notables;
-			return con.getLastMessageId(roomId);
-		}).then(function(m){
-			if (m) memroom.lastMessageId = m.id;
-			memobjects.set(roomId, memroom);
-			for (var i=0; i<memroom.resolvers.length; i++) {
-				memroom.resolvers[i].resolve(this);
-			}
-			memroom.resolvers = null;
-			return memroom;
-		});
+	async load(con){
+		await this.updateNotables(con);
+		let m = await con.getLastMessageId(this.id);
+		if (m) this.lastMessageId = m.id;
+		memobjects.set(this.id, this);
+		for (var i=0; i<this.resolvers.length; i++) {
+			this.resolvers[i].resolve(this);
+		}
+		this.resolvers = null;
+		return this;
 	}
-	updateNotables(con){
-		let memroom = this;
-		return con
-		.getNotableMessages(memroom.id, Date.now()/1000-maxAgeForNotableMessages|0)
-		.then(function(notables){
-			for (var i=0; i<notables.lenght; i++) clean(notables[i]);
-			memroom.notables = notables;
-			return notables;
-		});
+	async updateNotables(con){
+		let now = Date.now()/1000|0;
+		let notables = await con.getNotableMessages(this.id, now-maxAgeForNotableMessages);
+		for (var i=0; i<notables.lenght; i++) clean(notables[i]);
+		this.notables = notables;
 	}
 }
 
@@ -94,33 +81,29 @@ exports.updateMessage = function(message){
 
 // room admin page GET
 exports.appGetRoom = function(req, res){
-	var theme;
-	db.on()
-	.then(function(){
-		return prefs.get.call(this, req.user.id);
-	})
-	.then(function(userPrefs){
-		theme = prefs.theme(userPrefs, req.query.theme);
-		return this.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
-	})
-	.then(function(room){
-		if (!auths.checkAtLeast(room.auth, 'admin')) {
-			return server.renderErr(res, "Admin level is required to manage the room");
+	db.do(async function(con){
+		let userPrefs = await prefs.get.call(con, req.user.id);
+		let theme = await prefs.theme(userPrefs, req.query.theme);
+		let room;
+		try {
+			room = await con.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
+			if (!auths.checkAtLeast(room.auth, 'admin')) {
+				return server.renderErr(res, "Admin level is required to manage the room");
+			}
+			res.render('room.pug', {
+				vars:{ room, error:null, langs:langs.legal }, theme
+			});
+		} catch (e) {
+			console.log('ERROR:', e);
+			if (!(e instanceof db.NoRowError)) throw e;
+			// that's where we go in case of room creation
+			res.render('room.pug', { // TODO ???
+				vars:{ error:null, langs:langs.legal }, theme
+			});
 		}
-		res.render('room.pug', {
-			vars:{ room, error:null, langs:langs.legal }, theme
-		});
-	})
-	.catch(db.NoRowError, function(){
-		// that's where we go in case of room creation
-		res.render('room.pug', { // TODO ???
-			vars:{ error:null, langs:langs.legal }, theme
-		});
-	})
-	.catch(function(err){
+	}, function(err){
 		server.renderErr(res, err);
-	})
-	.finally(db.off);
+	});
 }
 
 // room admin page POST
@@ -142,39 +125,32 @@ exports.appPostRoom = function(req, res){
 		tags: (req.body.tags||"").split(/\s+/).filter(Boolean),
 		lang: req.body.lang
 	};
-	db.on().then(function(){
+	db.do(async function(con){
 		if (!roomId) {
 			// room creation
-			return this.createRoom(room, [req.user])
-			.then(function(){
-				return this.setRoomTags(room.id, room.tags);
-			});
+			await con.createRoom(room, [req.user]);
 		} else {
 			// room edition
-			return this.fetchRoomAndUserAuth(roomId, req.user.id)
-			.then(function(oldroom){
-				if (oldroom.auth!=='admin' && oldroom.auth!=='own') {
-					throw "Unauthorized user";
-				}
-				room.id = roomId;
-				if (oldroom.dialog) {
-					room.name = oldroom.name;
-					room.dialog = true;
-					room.private = true;
-					room.listed = false;
-				}
-				ws.botMessage(null, roomId, `@${req.user.name} edited the room`);
-				return	this.updateRoom(room, req.user, oldroom.auth)
-				.then(function(){
-					return this.setRoomTags(room.id, room.tags);
-				});
-			})
+			let oldroom = await con.fetchRoomAndUserAuth(roomId, req.user.id);
+			if (oldroom.auth!=='admin' && oldroom.auth!=='own') {
+				throw "Unauthorized user";
+			}
+			room.id = roomId;
+			if (oldroom.dialog) {
+				room.name = oldroom.name;
+				room.dialog = true;
+				room.private = true;
+				room.listed = false;
+			}
+			ws.botMessage(null, roomId, `@${req.user.name} edited the room`);
+			await con.updateRoom(room, req.user, oldroom.auth);
 		}
-	}).then(function(){
+		await con.setRoomTags(room.id, room.tags);
 		res.redirect(server.roomUrl(room));	// executes the room get
-	}).catch(function(err){
+	}, function(err){
+		console.error(err);
 		res.render('room.pug', {vars:{ room, error:err.toString() }});
-	}).finally(db.off);
+	});
 }
 
 // rooms list GET (home page)
@@ -221,48 +197,35 @@ exports.appGetRooms = function(req, res){
 
 exports.appGetJsonRoom = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
-	db.on([req.query.id, req.user.id])
-	.spread(db.fetchRoomAndUserAuth)
-	.then(function(room){
-		room.path = server.roomPath(room)
+	db.do(async function(con){
+		let room = await con.fetchRoomAndUserAuth(req.query.id, req.user.id);
+		room.path = server.roomPath(room);
 		res.json({ room });
-	})
-	.catch(function(err){
+	}, function(err){
 		res.json({error: err.toString()});
-	})
-	.finally(db.off);
+	});
 }
 
 exports.appGetJsonRooms = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
-	db.on([req.user.id, req.query.pattern])
-	.spread(db.listFrontPageRooms)
-	.then(function(rooms){
-		rooms.forEach(function(r){
-			r.path = server.roomPath(r)
+	db.do(async function(con){
+		let rooms = await con.listFrontPageRooms(req.user.id, req.query.pattern);
+		rooms.forEach(r => {
+			r.path = server.roomPath(r);
 		});
-		res.json(
-			{ rooms, langs:langs.legal }
-		);
-	})
-	.catch(function(err){
+		res.json({ rooms, langs:langs.legal });
+	}, function(err){
 		res.json({error: err.toString()});
-	})
-	.finally(db.off);
+	});
 }
 
 // rooms list POST
 exports.appPostRooms = function(req, res){
-	db.on()
-	.then(function(){
-		if (req.body.clear_pings) return this.deleteAllUserPings(req.user.id)
-	})
-	.then(function(){
-		res.redirect("rooms");	// executes the rooms list get
-	})
-	.catch(function(err){
+	db.do(async function(con){
+		if (req.body.clear_pings) await con.deleteAllUserPings(req.user.id)
+		res.redirect("rooms"); // executes the rooms list get
+	}, function(err){
 		server.renderErr(res, err);
-	})
-	.finally(db.off);
+	});
 }
 
