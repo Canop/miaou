@@ -1307,10 +1307,7 @@ proto.do = function(fun, onerror){
 // * sql: the SQL query, with $x placeholders
 // * args: an array of arguments, in order of placeholder numbers
 // * name: for perf logging
-proto._query = function(sql, args, name, useANamedPreparedStatement){
-	if (useANamedPreparedStatement !== undefined) {
-		console.log("_query call with useless named PS parameter", name);
-	}
+proto._query = function(sql, args, name){
 	if (!name) {
 		name = "anonym query";
 		if (arguments.length>1) {
@@ -1338,13 +1335,13 @@ proto._query = function(sql, args, name, useANamedPreparedStatement){
 	}).bind(this);
 }
 
-proto.queryRows = function(sql, args, name, useANamedPreparedStatement){
-	return this._query(sql, args, name, useANamedPreparedStatement)
+proto.queryRows = function(sql, args, name){
+	return this._query(sql, args, name)
 	.spread((rows, res) => rows);
 }
 
-proto.execute = function(sql, args, name, useANamedPreparedStatement){
-	return this._query(sql, args, name, useANamedPreparedStatement)
+proto.execute = function(sql, args, name){
+	return this._query(sql, args, name)
 	.spread((rows, res) => res);
 }
 
@@ -1353,8 +1350,8 @@ proto.executeRaw = function(sql){
 	.spread((rows, res) => res);
 }
 
-proto.queryValue = function(sql, args, name, useANamedPreparedStatement){
-	return this._query(sql, args, name, useANamedPreparedStatement)
+proto.queryValue = function(sql, args, name){
+	return this._query(sql, args, name)
 	.spread((rows, res) => {
 		if (rows.length) {
 			for (var key in rows[0]) return rows[0][key];
@@ -1363,8 +1360,8 @@ proto.queryValue = function(sql, args, name, useANamedPreparedStatement){
 	});
 }
 
-proto.queryOptionalRow = function(sql, args, name, useANamedPreparedStatement){
-	return this._query(sql, args, name, useANamedPreparedStatement)
+proto.queryOptionalRow = function(sql, args, name){
+	return this._query(sql, args, name)
 	.spread((rows, res) => {
 		if (rows.length) {
 			return rows[0];
@@ -1377,8 +1374,8 @@ proto.queryOptionalRow = function(sql, args, name, useANamedPreparedStatement){
 }
 
 // throws a NoRowError if no row was found (select) or affected (insert, delete, update)
-proto.queryRow = function(sql, args, name, useANamedPreparedStatement){
-	return this._query(sql, args, name, useANamedPreparedStatement)
+proto.queryRow = function(sql, args, name){
+	return this._query(sql, args, name)
 	.spread((rows, res) => {
 		if (rows.length) {
 			return rows[0];
