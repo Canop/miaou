@@ -330,9 +330,11 @@ proto.listFrontPageRooms = function(userId, pattern){
 		args = [userId];
 	if (pattern) {
 		psname += "_search";
-		sql += " and (r.name ilike $2 or r.description ilike $2)";
-		pattern = "%"+pattern+"%";
-		args.push(pattern);
+		sql += " and (";
+		sql += " r.name ilike $2 or r.description ilike $2";
+		sql += " or exists(select * from room_tag where room=r.id and tag ilike $2)";
+		sql += ")";
+		args.push("%"+pattern+"%");
 	}
 	sql += " order by lastcreated desc nulls last limit 200";
 	return this.queryRows(sql, args, psname);
