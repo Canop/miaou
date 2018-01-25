@@ -162,7 +162,7 @@ var Flore = (function(){
 
 if (typeof module !== 'undefined') {
 	for (var fname in Flore) {
-		if (Flore.hasOwnProperty(fname) && typeof Flore[fname] === "function") {
+		if (Flore.hasOwnProperty(fname)) {
 			exports[fname] = Flore[fname];
 		}
 	}
