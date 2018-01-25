@@ -1,7 +1,7 @@
 const	path = require('path'),
 	Promise = require("bluebird"),
 	server = require('./server.js'),
-	commandParsingRegex = /^\s*(@\w[\w\-]{2,19}#?\d*\s+)?!!(\w+)\s*([^\n]*)/,
+	commandParsingRegex = /^ {0,3}(@\w[\w\-]{2,19}#?\d*\s+)?!!(\w+)\s*([^\n]*)/,
 	commands = {}
 
 var	all = [];
