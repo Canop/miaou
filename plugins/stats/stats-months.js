@@ -3,7 +3,7 @@ const	Promise = require("bluebird"),
 	bench = require("../../libs/bench.js");
 
 var	cacheMonths = [],
-	promisesWaitingForCacheMonths = null;
+	promisesWaitingForCacheMonths = [];
 
 
 class Month{
@@ -39,50 +39,50 @@ class Month{
 }
 
 function buildMonths(con){
-	if (promisesWaitingForCacheMonths) {
-		return new Promise(function(resolve){
-			promisesWaitingForCacheMonths.push(resolve);
-		});
-	} else {
-		promisesWaitingForCacheMonths = [];
-	}
-	var bo = bench.start("build_months");
-	return con.queryRow("select id, created from message order by id limit 1", null, "first_message_in_db")
-	.then(function(first){
-		var	months = [],
-			month = Month.fromTime(first.created);
-		do {
-			months.push(month);
-			month = month.next();
-		} while (!month.isNow());
-		return Promise.all(months.map(function(m){
-			return con.queryOptionalRow(
-				"select min(id) minid, max(id) maxid, count(id) n, count(distinct author) authors"
-				+ " from message where created>=$1 and created<$2",
-				[m.startTime(), m.next().startTime()],
-				"message_min_id_in_month"
-			).then(function(row){
-				if (!row) return;
-				m.n = row.n;
-				m.authors = row.authors;
-				m.minId = row.minid;
-				m.maxId = row.maxid;
+	return new Promise(function(resolve){
+		promisesWaitingForCacheMonths.push(resolve);
+		if (promisesWaitingForCacheMonths.length>1) return;
+		var bo = bench.start("build_months");
+		return con.queryRow("select id, created from message order by id limit 1", null, "first_message_in_db")
+		.then(function(first){
+			var	months = [],
+				month = Month.fromTime(first.created);
+			do {
+				months.push(month);
+				month = month.next();
+			} while (!month.isNow());
+			return Promise.all(months.map(function(m){
+				console.log("querying for month", m.label());
+				return con.queryOptionalRow(
+					"select min(id) minid, max(id) maxid, count(id) n, count(distinct author) authors"
+					+ " from message where created>=$1 and created<$2",
+					[m.startTime(), m.next().startTime()],
+					"message_min_id_in_month"
+				).then(function(row){
+					if (!row) return;
+					m.n = row.n;
+					m.authors = row.authors;
+					m.minId = row.minid;
+					m.maxId = row.maxid;
+				});
+			}))
+			.then(function(){
+				bo.end();
+				console.log("setting value of cacheMonths");
+				cacheMonths = months;
+				var p;
+				while ((p=promisesWaitingForCacheMonths.shift())) {
+					p(months);
+				}
+				return months;
 			});
-		}))
-		.then(function(){
-			bo.end();
-			cacheMonths = months;
-			var p;
-			while ((p=promisesWaitingForCacheMonths.shift())) {
-				p(months);
-			}
-			return months;
 		});
 	});
 }
 
 // returns a promise with an updated (if necessary) months array
 function getMonths(con){
+	console.log("getMonths called on", new Date());
 	if (!cacheMonths.length) {
 		console.log("Initial build of cacheMonths for stats");
 		return buildMonths(con);
@@ -96,9 +96,10 @@ function getMonths(con){
 }
 
 exports.doServerStats = function(con, ct){
-	// FIXME there's a risk several months computations are run in parallel (add a queue ?)
+	console.log("doServerStats months");
 	return getMonths(con)
 	.then(function(months){
+		console.log("got", months.length, "months");
 		var c = "Server Statistics #graph(sum0)\n";
 		c += fmt.tbl({
 			cols: ["Month", "Messages", "Authors"],
