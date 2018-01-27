@@ -7,7 +7,7 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		maxAgeForMessageEdition: 30,
 		maxAgeForMessageTotalDeletion: 3*60,
 	};
-	chat.DELAY_BEFORE_PROFILE_POPUP= 300; // ms
+	chat.DELAY_BEFORE_PROFILE_POPUP= 400; // ms
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
 	chat.commands = {}; // all known commands issued with !! (value=description)
 	chat.voteLevels = [

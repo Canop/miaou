@@ -158,7 +158,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			.on('mouseenter', '.message', wz.onmouseenter)
 			.on('mouseleave', '.message', wz.onmouseleave)
 			.on('mouseenter', '.continueButton,.replyButton,.deleteButton,.editButton', prof.hide)
-			.on('mouseleave', '.continueButton,.replyButton,.deleteButton,.editButton', prof.shownow);
+			.on('mouseleave', '.continueButton,.replyButton,.deleteButton,.editButton', prof.show);
 			$('#messages, #notifications')
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
 			.on('mouseleave', md.hideMessageHoverInfos)
