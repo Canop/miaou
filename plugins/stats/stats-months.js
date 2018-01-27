@@ -35,6 +35,20 @@ class Month{
 	startTime(){
 		return new Date(this.year, this.month).getTime()/1000 | 0;
 	}
+	async build(con){
+		let row = await con.queryOptionalRow(
+			"select min(id) minid, max(id) maxid, count(id) n, count(distinct author) authors"+
+			" from message where created>=$1 and created<$2",
+			[this.startTime(), this.next().startTime()],
+			"stats_in_month"
+		);
+		if (row) {
+			this.n = row.n;
+			this.authors = row.authors;
+			this.minId = row.minid;
+			this.maxId = row.maxid;
+		}
+	}
 }
 
 function buildMonths(con){
@@ -49,22 +63,12 @@ function buildMonths(con){
 		);
 		let	months = [],
 			month = Month.fromTime(first.created);
-		do {
+		for (;;) {
 			months.push(month);
-			let row = await con.queryOptionalRow(
-				"select min(id) minid, max(id) maxid, count(id) n, count(distinct author) authors"+
-				" from message where created>=$1 and created<$2",
-				[month.startTime(), month.next().startTime()],
-				"stats_in_month"
-			);
-			if (row) {
-				month.n = row.n;
-				month.authors = row.authors;
-				month.minId = row.minid;
-				month.maxId = row.maxid;
-			}
+			await month.build(con);
+			if (month.isNow()) break;
 			month = month.next();
-		} while (!month.isNow());
+		}
 		bo.end();
 		console.log("setting value of cacheMonths");
 		cacheMonths = months;
@@ -75,18 +79,21 @@ function buildMonths(con){
 	});
 }
 
-// returns a promise with an updated (if necessary) months array
+// returns a promise with an updated months array
 async function getMonths(con){
-	console.log("getMonths called on", new Date());
-	if (!cacheMonths.length) {
+	console.log("Stats / getMonths called on", new Date());
+	let currentMonth = cacheMonths[cacheMonths.length-1];
+	if (!currentMonth) {
 		console.log("Initial build of cacheMonths for stats");
-		return await buildMonths(con);
+		await buildMonths(con);
+	} else if (!currentMonth.isNow()) {
+		console.log("Update of cacheMonth in stats (new month)");
+		await buildMonths(con);
+	} else {
+		console.log("cacheMonths already up to date");
+		console.log("Update of current month for stats");
+		await currentMonth.build(con);
 	}
-	if (!cacheMonths[cacheMonths.length-1].next().isNow()) {
-		console.log("Update of cacheMonths for stats");
-		return await buildMonths(con);
-	}
-	console.log("cacheMonths already up to date");
 	return cacheMonths;
 }
 
