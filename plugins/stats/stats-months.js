@@ -2,9 +2,8 @@ const	Promise = require("bluebird"),
 	fmt = require("../../libs/fmt.js"),
 	bench = require("../../libs/bench.js");
 
-var	cacheMonths = [],
+let	cacheMonths = [],
 	promisesWaitingForCacheMonths = [];
-
 
 class Month{
 	constructor(year, month){
@@ -13,11 +12,11 @@ class Month{
 		this.n = 0;
 	}
 	static fromTime(time){
-		var date = new Date(time*1000);
+		let date = new Date(time*1000);
 		return new Month(date.getUTCFullYear(), date.getUTCMonth());
 	}
 	next(){
-		var	year = this.year,
+		let	year = this.year,
 			month = this.month + 1;
 		if (month == 12) {
 			month = 0;
@@ -26,7 +25,7 @@ class Month{
 		return new Month(year, month);
 	}
 	isNow(){
-		var date = new Date();
+		let date = new Date();
 		return date.getUTCFullYear()===this.year && date.getUTCMonth()===this.month;
 	}
 	// builds a canonical label like "2013/11" (UTC)
@@ -39,155 +38,138 @@ class Month{
 }
 
 function buildMonths(con){
-	return new Promise(function(resolve){
+	return new Promise(async function(resolve){
 		promisesWaitingForCacheMonths.push(resolve);
 		if (promisesWaitingForCacheMonths.length>1) return;
-		var bo = bench.start("build_months");
-		return con.queryRow("select id, created from message order by id limit 1", null, "first_message_in_db")
-		.then(function(first){
-			var	months = [],
-				month = Month.fromTime(first.created);
-			do {
-				months.push(month);
-				month = month.next();
-			} while (!month.isNow());
-			return Promise.all(months.map(function(m){
-				console.log("querying for month", m.label());
-				return con.queryOptionalRow(
-					"select min(id) minid, max(id) maxid, count(id) n, count(distinct author) authors"
-					+ " from message where created>=$1 and created<$2",
-					[m.startTime(), m.next().startTime()],
-					"message_min_id_in_month"
-				).then(function(row){
-					if (!row) return;
-					m.n = row.n;
-					m.authors = row.authors;
-					m.minId = row.minid;
-					m.maxId = row.maxid;
-				});
-			}))
-			.then(function(){
-				bo.end();
-				console.log("setting value of cacheMonths");
-				cacheMonths = months;
-				var p;
-				while ((p=promisesWaitingForCacheMonths.shift())) {
-					p(months);
-				}
-				return months;
-			});
-		});
+		let bo = bench.start("build_months");
+		let first = await con.queryRow(
+			"select id, created from message order by id limit 1",
+			null,
+			"first_message_in_db"
+		);
+		let	months = [],
+			month = Month.fromTime(first.created);
+		do {
+			months.push(month);
+			let row = await con.queryOptionalRow(
+				"select min(id) minid, max(id) maxid, count(id) n, count(distinct author) authors"+
+				" from message where created>=$1 and created<$2",
+				[month.startTime(), month.next().startTime()],
+				"stats_in_month"
+			);
+			if (row) {
+				month.n = row.n;
+				month.authors = row.authors;
+				month.minId = row.minid;
+				month.maxId = row.maxid;
+			}
+			month = month.next();
+		} while (!month.isNow());
+		bo.end();
+		console.log("setting value of cacheMonths");
+		cacheMonths = months;
+		let p;
+		while ((p=promisesWaitingForCacheMonths.shift())) {
+			p(months);
+		}
 	});
 }
 
 // returns a promise with an updated (if necessary) months array
-function getMonths(con){
+async function getMonths(con){
 	console.log("getMonths called on", new Date());
 	if (!cacheMonths.length) {
 		console.log("Initial build of cacheMonths for stats");
-		return buildMonths(con);
+		return await buildMonths(con);
 	}
 	if (!cacheMonths[cacheMonths.length-1].next().isNow()) {
 		console.log("Update of cacheMonths for stats");
-		return buildMonths(con);
+		return await buildMonths(con);
 	}
 	console.log("cacheMonths already up to date");
-	return Promise.resolve(cacheMonths);
+	return cacheMonths;
 }
 
-exports.doServerStats = function(con, ct){
+exports.doServerStats = async function(con, ct){
 	console.log("doServerStats months");
-	return getMonths(con)
-	.then(function(months){
-		console.log("got", months.length, "months");
-		var c = "Server Statistics #graph(sum0)\n";
-		c += fmt.tbl({
-			cols: ["Month", "Messages", "Authors"],
-			rows: months.map(m=>[m.label(), fmt.int(m.n), fmt.int(m.authors)])
-		});
-		ct.reply(c, ct.nostore = c.length>800);
+	let months = await getMonths(con);
+	console.log("got", months.length, "months");
+	let c = "Server Statistics #graph(sum0)\n";
+	c += fmt.tbl({
+		cols: ["Month", "Messages", "Authors"],
+		rows: months.map(m=>[m.label(), fmt.int(m.n), fmt.int(m.authors)])
 	});
+	ct.reply(c, ct.nostore = c.length>800);
 }
 
-exports.doRoomsStats = function(con, ct, roomIds){
-	return getMonths(con)
-	.map(function(month){
-		return Promise.map(roomIds, function(roomId){
-			return con.queryOptionalRow(
+exports.doRoomsStats = async function(con, ct, roomIds){
+	let months = await getMonths(con)
+	for (let j=0; j<months.length; j++) {
+		let month = months[j];
+		month.roomstats = new Array(roomIds.length);
+		for (var i=0; i<roomIds.length; i++) {
+			let row = await con.queryOptionalRow(
 				"select count(id) n from message"
 				+ " where room=$1"
 				+ " and created>=$2 and created<$3",
-				[roomId, month.startTime(), month.next().startTime()],
+				[roomIds[i], month.startTime(), month.next().startTime()],
 				"room_messages_in_month"
-			).then(function(row){
-				return row.n;
-			});
-		}).then(function(roomstats){
-			month.roomstats = roomstats;
-			return month;
-		});
+			);
+			if (row) month.roomstats[i] = row.n;
+		}
+	}
+	let rooms = new Array(roomIds.length);
+	for (var i=0; i<roomIds.length; i++) {
+		rooms[i] = await con.fetchRoom(roomIds[i]);
+	}
+	let c = "Rooms Statistics #graph(compare,sum)\n";
+	let rows = months
+	.filter(m =>{
+		for (var i=m.roomstats.length; i--;) {
+			if (m.roomstats[i]) return true;
+		}
 	})
-	.then(function(months){
-		return Promise.map(roomIds, con.fetchRoom.bind(con)).then(function(rooms){
-			var c = "Rooms Statistics #graph(compare,sum)\n";
-			var rows = months
-			.filter(m =>{
-				for (var i=m.roomstats.length; i--;) {
-					if (m.roomstats[i]) return true;
-				}
-			})
-			.map(m=>[m.label(), ...m.roomstats.map(v=>fmt.int(v))]);
-			c += fmt.tbl({
-				cols: ["Month", ...rooms.map(fmt.roomLink)],
-				rows
-			});
-			ct.reply(c, ct.nostore = c.length>800);
-
-		});
+	.map(m=>[m.label(), ...m.roomstats.map(v=>fmt.int(v))]);
+	c += fmt.tbl({
+		cols: ["Month", ...rooms.map(fmt.roomLink)],
+		rows
 	});
+	ct.reply(c, ct.nostore = c.length>800);
 }
 
-exports.doUsersStats = function(con, ct, usernames){
-	return getMonths(con)
-	.map(function(month){
-		return Promise.map(usernames, function(username){
-			return con.queryOptionalRow(
+exports.doUsersStats = async function(con, ct, usernames){
+	let months = await getMonths(con);
+	for (let j=0; j<months.length; j++) {
+		let month = months[j];
+		month.userstats = new Array(usernames.length);
+		for (let i=0; i<usernames.length; i++) {
+			let row = await con.queryOptionalRow(
 				"select count(id) n from message"
 				+ " where author=(select id from player where name=$1)"
 				+ " and created>=$2 and created<$3",
-				[username, month.startTime(), month.next().startTime()],
+				[usernames[i], month.startTime(), month.next().startTime()],
 				"user_messages_in_month"
-			).then(function(row){
-				return row.n;
-			});
-		}).then(function(userstats){
-			month.userstats = userstats;
-			return month;
-		});
+			);
+			if (row) month.userstats[i] = row.n;
+		}
+	}
+	let c = "Users Statistics #graph(compare,sum)\n";
+	let rows = months
+	.filter(m =>{
+		for (var i=m.userstats.length; i--;) {
+			if (m.userstats[i]) return true;
+		}
 	})
-	.then(function(months){
-		var c = "Users Statistics #graph(compare,sum)\n";
-		var rows = months
-		.filter(m =>{
-			for (var i=m.userstats.length; i--;) {
-				if (m.userstats[i]) return true;
-			}
-		})
-		.map(m=>[m.label(), ...m.userstats.map(v=>fmt.int(v))])
-		c += fmt.tbl({
-			cols: ["Month", ...usernames],
-			rows
-		});
-		ct.reply(c, ct.nostore = c.length>800);
+	.map(m=>[m.label(), ...m.userstats.map(v=>fmt.int(v))])
+	c += fmt.tbl({
+		cols: ["Month", ...usernames],
+		rows
 	});
+	ct.reply(c, ct.nostore = c.length>800);
 }
 
 exports.preloadCache = function(db){
 	setTimeout(function(){
-		db.on()
-		.then(function(){
-			return getMonths(this);
-		})
-		.finally(db.off);
+		db.do(getMonths);
 	}, 3*60*1000);
 }
