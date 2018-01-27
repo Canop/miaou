@@ -336,7 +336,7 @@ miaou(function(games, gui, locals, ws){
 		},
 		fillHelp: function($div){
 			$div.css({
-				background:'#2a4646', color: '#0c0', opacity:0.95
+				background:'#2a4646', color: '#aadaaa', opacity:0.95
 			}).append(
 				$('<div>Flore</div>').css({
 					textAlign:'center', fontSize:'120%', fontWeight:'bold', margin:'4px'
