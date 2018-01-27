@@ -209,7 +209,19 @@ exports.appGetJsonRoom = function(req, res){
 exports.appGetJsonRooms = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 	db.do(async function(con){
-		let rooms = await con.listFrontPageRooms(req.user.id, req.query.pattern);
+		let nonDialogRooms = await con.listFrontPageRooms(req.user.id, {
+			pattern: req.query.pattern,
+			dialog: false,
+			limit: 100
+		});
+		console.log('nonDialogRooms:', nonDialogRooms.length);
+		let dialogRooms = await con.listFrontPageRooms(req.user.id, {
+			pattern: req.query.pattern,
+			dialog: true,
+			limit: 500
+		});
+		console.log('dialogRooms:', dialogRooms.length);
+		let rooms = nonDialogRooms.concat(dialogRooms);
 		rooms.forEach(r => {
 			r.path = server.roomPath(r);
 		});

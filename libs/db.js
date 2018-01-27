@@ -316,8 +316,15 @@ proto.fetchRoomAndUserAuth = function(roomId, userId){
 
 // lists the rooms that should make it to the front page
 // use index message_room_author
-proto.listFrontPageRooms = function(userId, pattern){
-	var	psname = "list_front_page_rooms",
+// options:
+// * pattern is optional and filter results
+// * dialog can be
+// 	- true : fetches only dialog rooms
+// 	- false : doesn't fetch dialog rooms
+// 	- undefined: doesn't care
+// * limits
+proto.listFrontPageRooms = function(userId, options){
+	let	psname = "list_front_page_rooms",
 		sql = "select r.id, r.name, r.img, r.description, private, listed, dialog, r.lang, a.auth,"+
 		" (select array(select tag from room_tag where room_tag.room=r.id)) as tags,"+
 		" (select max(created) from message m where m.room = r.id) as lastcreated,"+
@@ -328,7 +335,7 @@ proto.listFrontPageRooms = function(userId, pattern){
 		" left join player otheruser on otheruser.id = oua.player"+
 		" where (listed is true or a.auth is not null)",
 		args = [userId];
-	if (pattern) {
+	if (options.pattern) {
 		psname += "_search";
 		sql += " and (";
 		sql += " r.name ilike $2 or r.description ilike $2";
@@ -336,9 +343,17 @@ proto.listFrontPageRooms = function(userId, pattern){
 		sql += ")";
 		args.push("%"+pattern+"%");
 	}
-	sql += " order by lastcreated desc nulls last limit 200";
+	if (options.dialog===true) {
+		psname += "_dialog";
+		sql += " and dialog is true";
+	} else if (options.dialog===false) {
+		psname += "_not_dialog";
+		sql += " and dialog is false";
+	}
+	sql += " order by lastcreated desc nulls last limit " + (options.limit || 100);
 	return this.queryRows(sql, args, psname);
 }
+
 
 ///////////////////////////////////////////// #tags
 
