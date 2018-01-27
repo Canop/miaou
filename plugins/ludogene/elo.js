@@ -1,5 +1,4 @@
 // Computes the Elo ladder for the Tribo game.
-// (doesn't work on non Tribo games)
 
 const	ludodb = require('./db.js'),
 	bench = require('../../libs/bench.js'),
@@ -27,7 +26,7 @@ function Rating(playerId){ // rating of a player
 // key in ["n","c","f","cly"], "c" being the default
 Rating.prototype.nbOpponents = function(key){
 	if (!key) key = "c";
-	var sum = 0;
+	let sum = 0;
 	this.op.forEach(function(opo){
 		if (opo[key]) sum++;
 	});
@@ -36,7 +35,7 @@ Rating.prototype.nbOpponents = function(key){
 
 // compute this.malus and this.malusDetails
 Rating.prototype.computeMalus = function(){
-	var	m = this.malus = [];
+	let	m = this.malus = [];
 	if (this.d) m.push([this.d+" dropped game"+(this.d>1?'s':''), this.d*50]);
 	if (this.c < 5) m.push(["Less than 5 counted games", 130]);
 	if (this.c < 10) m.push(["Less than 10 counted games", 160]);
@@ -47,7 +46,7 @@ Rating.prototype.computeMalus = function(){
 	if (this.cly < 20) m.push(["Less than 20 counted games since a year", 30]);
 	if (this.cly < 50) m.push(["Less than 50 counted games since a year", 20]);
 	if (this.cly < 100) m.push(["Less than 100 counted games since a year", 10]);
-	var	nbOpponents = this.nbOpponents(),
+	let	nbOpponents = this.nbOpponents(),
 		nbOpponentsLastYear = this.nbOpponents('cly');
 	if (nbOpponents < 5) m.push(["Less than 5 opponents", 170]);
 	if (nbOpponents < 10) m.push(["Less than 10 opponents", 80]);
@@ -61,10 +60,10 @@ Rating.prototype.computeMalus = function(){
 }
 
 function GameImpact(m, r){ // impact of a game (note: the constructor has side effects on r)
-	var g = m.g;
+	let g = m.g;
 	this.p0 = r[0].id;
 	this.p1 = r[1].id;
-	var opo = r[0].op.get(this.p1); // informations common to those two players
+	let opo = r[0].op.get(this.p1); // informations common to those two players
 	if (!opo) {
 		opo = {c:0, n:0, f:0, cly:0};
 		r[0].op.set(this.p1, opo);
@@ -81,11 +80,11 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		r[0].f++;
 		r[1].f++;
 		opo.f++;
-		var winnerIndex = +(g.scores[1]>=50);
+		let winnerIndex = +(g.scores[1]>=50);
 		r[winnerIndex].w++;
 		r[+!winnerIndex].l++;
 		this.s = g.scores[0];
-		var minc = Math.min(r[0].c, r[1].c) + 1;
+		let minc = Math.min(r[0].c, r[1].c) + 1;
 		if (
 			(opo.c>150 && opo.c-150>.1*(minc-150)) ||
 			(opo.c>50 && opo.c-50>.2*(minc-50)) ||
@@ -110,7 +109,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 			this.coef = 1;
 		}
 		// var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
-		var v = .6 + (g.scores[winnerIndex]-50)*.0084; // in ].6,1[
+		let v = .6 + (g.scores[winnerIndex]-50)*.0084; // in ].6,1[
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1;
 		if (this.D>100) this.D = 100 + (this.D-100)*.7;
@@ -118,8 +117,12 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		this.d0 = this.coef * K * (this.v - this.p);
 		this.d1 = -this.d0;
 	} else if ( m.changed < Date.now()/1000 - 24*60*60 ) {
-		r[g.current].d++;
-		this.t = r[g.current].name + " forfeited";
+		if (r[g.current]) {
+			r[g.current].d++;
+			this.t = r[g.current].name + " forfeited";
+		} else {
+			console.log("ERROR", r, g); // happens on Flore
+		}
 	} else {
 		this.t = "in progress";
 	}
@@ -127,7 +130,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	r[1].e1 += this.d1;
 }
 GameImpact.prototype.gameLink = function(data){
-	var	n0 = data.ratingsMap.get(this.p0).name,
+	let	n0 = data.ratingsMap.get(this.p0).name,
 		n1 = data.ratingsMap.get(this.p1).name,
 		uri = this.r+"#"+this.m;
 	if (this.s) return `[${n0} (${this.s}) - ${n1} (${100-this.s})](${uri})`;
@@ -138,11 +141,11 @@ function userLink(data, userId){
 	return "["+data.ratingsMap.get(userId).name+"](u/"+userId+")";
 }
 function compute(messages){
-	var	ratingsMap = new Map(),
+	let	ratingsMap = new Map(),
 		ratings = [],
 		log = [];
 	messages.forEach(function(m){
-		var	r = [],
+		let	r = [],
 			g = m.g;
 		for (var i=0; i<2; i++) {
 			r[i] = ratingsMap.get(g.players[i].id);
@@ -168,7 +171,7 @@ function compute(messages){
 }
 
 function table(cols, rows){
-	var t = '';
+	let t = '';
 	if (cols) t += cols.join('|')+'\n';
 	t += (cols||rows[0]||[]).map(()=> ':-:').join('|')+'\n';
 	t += rows.map(r => r.join('|')+'|').join('\n')+'\n';
@@ -242,7 +245,7 @@ function userGamesTable(data, r){
 }
 
 function opponentsTable(data, r){
-	var	s = "## Opponents:\n",
+	let	s = "## Opponents:\n",
 		rows = [];
 	r.op.forEach(function(opo, uid){
 		rows.push([userLink(data, uid), opo.n, opo.c, opo.cly]);
@@ -253,7 +256,7 @@ function opponentsTable(data, r){
 
 // computes the Tribo Ladder
 exports.getLadder = async function(con){
-	var messages = await ludodb.getGameMessages(con);
+	let messages = await ludodb.getGameMessages(con);
 	messages = messages.filter(function(m){
 		return	m.g.type==="Tribo"
 			&& m.g.scores
@@ -265,28 +268,32 @@ exports.getLadder = async function(con){
 // handles the !!triboladder command
 exports.onCommand = function(ct){
 	console.log("==========================\nELO COMPUTING "+ct.args);
-	var	benchOperation = bench.start("Tribo / ladder"),
+	let	gt = null;
+	if (ct.cmd.name==="triboladder") gt = "Tribo";
+	else if (ct.cmd.name==="floreladder") gt = "Flore";
+	else throw new Error("Unknown Game Type");
+	let	benchOperation = bench.start(`${gt} / ladder`),
 		st = Date.now();
 	return ludodb.getGameMessages(this)
 	.filter(function(m){
-		return	m.g.type==="Tribo"
+		return	m.g.type===gt
 			&& m.g.scores
 			&& (m.g.status==="running"||m.g.status==="finished")
 	})
 	.then(function(messages){
-		var	userMatch = ct.args.match(/@[\w\-]+/);
+		let	userMatch = ct.args.match(/@[\w\-]+/);
 		return [compute(messages), userMatch ? this.getUserByName(userMatch[0].slice(1)) : null];
 	})
 	.spread(function(data, user){
-		var	c = "Elo based Tribo ladder" + ':\n',
+		let	c = `Elo based ${gt} ladder:\n`,
 			showOpponents = /\bopponents?\b/.test(ct.args),
 			showLog = /\bgames\b/.test(ct.args);
 		if (user) {
-			var r = data.ratingsMap.get(user.id);
+			let r = data.ratingsMap.get(user.id);
 			if (!r) {
 				c += 'No game found for @'+user.name+' in public rooms';
 			} else if (r.nbOpponents("c")<NB_OPPONENTS_MIN) {
-				c += "You must have finished a game against at least " + NB_OPPONENTS_MIN +
+				c += "You must have finished a public game against at least " + NB_OPPONENTS_MIN +
 					" different players to be ranked.\n";
 				c += '@'+user.name+" played against " + r.nbOpponents("c") + " other players:\n";
 				c += opponentsTable(data, r);

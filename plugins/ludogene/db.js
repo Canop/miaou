@@ -6,14 +6,16 @@ exports.getGameMessages = function(con, roomId){
 	var query;
 	if (roomId) {
 		query = con.queryRows(
-			"select message.id, room, content, created, changed from message join room on message.room=room.id"+
+			"select message.id, room, content, created, changed"+
+			" from message join room on message.room=room.id"+
 			" where room=$1 and content like '!!game %' order by message.id",
 			[roomId],
 			"ludogene / room_game_messages"
 		);
 	} else {
 		query = con.queryRows(
-			"select message.id, room, content, created, changed from message join room on message.room=room.id"+
+			"select message.id, room, content, created, changed"+
+			" from message join room on message.room=room.id"+
 			" where room.private is false and content like '!!game %' order by message.id",
 			[],
 			"ludogene / game_messages"

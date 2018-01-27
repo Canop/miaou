@@ -236,6 +236,13 @@ exports.registerCommands = function(cb){
 			"\n* `!!triboladder @someuser games`: all games and details of the Elo computation"+
 			"\n* `!!triboladder @someuser opponents`: opponents and numbers of games"
 	});
+	cb({
+		name:'floreladder', fun:elo.onCommand,
+		help:"compute an ELO based global Flore ladder",
+		detailedHelp:"Examples:"+
+			"\n* `!!floreladder`: global ladder"+
+			"\n* `!!floreladder @someuser`: ladder for a specific user"
+	});
 }
 
 exports.registerGameObserver = function(type, cb){
