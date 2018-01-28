@@ -102,9 +102,10 @@ Shoes.botReply = function(bot, mid, text){
 
 // returns the socket of the passed user if he's in the same room
 Shoes.userSocket = function(userIdOrName, includeWatchers){
+	console.log("userSocket(", userIdOrName, includeWatchers, ")");
 	var ioroom = io.sockets.adapter.rooms[this.room.id];
 	if (!ioroom) {
-		console.log('lost room in shoe.userSocket');
+		console.log(' lost room in shoe.userSocket');
 		return;
 	}
 	for (let socketId in ioroom.sockets) {
@@ -114,13 +115,14 @@ Shoes.userSocket = function(userIdOrName, includeWatchers){
 			&& socket.publicUser
 			&& (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
 		) {
+			console.log(" found socket");
 			return socket;
 		}
 	}
 	if (!includeWatchers) return;
 	ioroom = io.sockets.adapter.rooms['w'+this.room.id];
 	if (!ioroom) {
-		console.log('lost watch room in shoe.userSocket');
+		console.log(' lost watch room in shoe.userSocket');
 		return;
 	}
 	for (let socketId in ioroom.sockets) {
@@ -129,9 +131,11 @@ Shoes.userSocket = function(userIdOrName, includeWatchers){
 			socket && socket.publicUser &&
 			(socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
 		) {
+			console.log(" found watch socket");
 			return socket;
 		}
 	}
+	console.log(" found no socket");
 }
 
 // to be used by bots, creates a message, store it in db and emit it to the room

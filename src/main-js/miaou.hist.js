@@ -5,24 +5,24 @@ miaou(function(hist, gui, locals, md, time, ws){
 
 	var	visible = false,
 		currentSearch,
-		currentResult;
+		currentResult,
+		fields = new Set(["pattern", "starred", "starrer", "author", "exact", "regex", "img", "link", "authorname"]);
 
 	function isCurrentSearch(s){
-		return (
-			currentSearch
-			&& currentSearch.pattern == s.pattern
-			&& currentSearch.starred == s.starred
-			&& currentSearch.starrer == s.starrer
-			&& currentSearch.author == s.author
-			&& currentSearch.img == s.img
-			&& currentSearch.link == s.link
-			&& currentSearch.authorName == s.authorName
-		);
+		if (!currentSearch) return false;
+		for (var field of fields) {
+			if (currentSearch[field] !== s[field]) return false;
+		}
+		return true;
 	}
 
 	function isSearchEmpty(s){
 		s = s || currentSearch;
-		return !s || !(s.pattern || s.img || s.link || s.starred || s.starrer || s.author || s.authorName);
+		if (!s) return true;
+		for (var field of fields) {
+			if (s[field]) return false;
+		}
+		return true;
 	}
 
 	// arg : +1 or -1
@@ -220,6 +220,8 @@ miaou(function(hist, gui, locals, md, time, ws){
 		}
 		options.img = $("#search-img").prop("checked");
 		options.link = $("#search-link").prop("checked");
+		options.exact = $("#search-exact").prop("checked");
+		options.regex = $("#search-regex").prop("checked");
 		return options;
 	}
 
@@ -233,8 +235,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 				startSearch();
 			}
 		}).on("change blur", startSearch);
-		$("#search-img").on("change", startSearch);
-		$("#search-link").on("change", startSearch);
+		$("#search-img, #search-link").on("change", startSearch);
 		$('#search-input').on('keyup', function(e){
 			if (e.which===27 && typeof window.righttab === "function") { // esc
 				window.righttab("notablemessagespage"); // defined in page-js/pad.js
@@ -263,20 +264,35 @@ miaou(function(hist, gui, locals, md, time, ws){
 	if (!gui.mobile) {
 		var lines = [];
 		lines.push(
-			"Variations of words are found too, not just the exact occurence.",
-			"If you type several words, all messages with one of those words will be found.\n"
+			'Variations of words are found too, not just the exact occurence.',
+			'If you type several words, all messages with one of those words will be found.',
+			'For example if you type "car", messages with "cars" will be found, but '+
+			'messages with "cargo" will be ignored.\n'
 		);
 		if (locals.features.search.exactExpressions) {
 			lines.push(
-				"To search for an exact expression, or for part of a word, put it between double quotes.",
-				`Example: \`"A B"\` (which wouldn't match "B A")\n`
+				`To search for an exact expression, or for part of a word, check the "exact" box.`,
+				`"A B" wouldn't match "B A"`,
+				`"car" would match messages with "cars" and "cargos".\n`
 			);
+		} else {
+			$("#search-exact").hide();
 		}
 		if (locals.features.search.regularExpressions) {
 			lines.push(
-				"To search for regular expressions, put them between slashes: `/\\mcar+ot+/i`\n"
+				`To search for regular expressions, check the "regex" checkbox.\n`
 			);
+		} else {
+			$("#search-regex").hide();
 		}
+		$("#search-regex").change(function(){
+			if (this.checked) $("#search-exact").prop("checked", false);
+			startSearch();
+		});
+		$("#search-exact").change(function(){
+			if (this.checked) $("#search-regex").prop("checked", false);
+			startSearch();
+		});
 		$("#search-input").bubbleOn({
 			side: "left",
 			md: lines.join("\n")

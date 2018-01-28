@@ -1,4 +1,4 @@
-const	apiversion = 91,
+const	apiversion = 92,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -294,18 +294,16 @@ function fixSearchOptions(search, userId, room){
 	search.lang = langs.pgLang(room.lang);
 	search.pageSize = 20;
 	search.page = search.page>0 ? search.page : 0;
-	if (allowSearchExactExpressions && search.pattern) {
-		let match = search.pattern.match(/^"(.*)"$/);
-		if (match) { // string between quotes: exact expression required
-			search.regex = match[1].replace(/[!$()*+.:<=>?[\\\]^{|}-]/g, "\\$&");
-			search.caseInsensitive = true;
-		}
-	}
-	if (allowSearchRegularExpressions && search.pattern) {
+	if (allowSearchExactExpressions && search.pattern && search.exact) {
+		search._regex = search.pattern.replace(/[!$()*+.:<=>?[\\\]^{|}-]/g, "\\$&");
+		search.caseInsensitive = true;
+	} else if (allowSearchRegularExpressions && search.pattern) {
 		let match = search.pattern.match(/^\/(.*)\/(i)?$/);
 		if (match) { // string between slashes: regular expression
-			search.regex = match[1];
+			search._regex = match[1];
 			search.caseInsensitive = !!match[2];
+		} else if (search.regex) {
+			search._regex = search.pattern;
 		}
 	}
 	if (search.starrer && search.starrer!==userId) {
@@ -385,6 +383,7 @@ function handleUserInRoom(socket, completeUser){
 				.spread(db.updateWatch)
 				.finally(db.off);
 			}
+			console.log("calling userSocket in disconnect");
 			if (!shoe.userSocket(shoe.completeUser.id, true)) {
 				socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
 				for (var wid of watchset) {
@@ -775,6 +774,7 @@ function handleUserInRoom(socket, completeUser){
 			let	pings = [];
 			for (let ping of pingSet) {
 				if (usernameRegex.test(ping)) continue; // self ping
+				console.log("calling userSocket in ping distribution");
 				if (shoe.userSocket(ping)) continue; // no need to ping
 				if (await botMgr.onPing(ping, shoe, m)) continue; // it's a bot
 				if (shoe.room.private && !commandTask.alwaysPing) {

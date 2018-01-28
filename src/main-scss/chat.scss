@@ -1161,8 +1161,8 @@ body.mobile {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		label:first-of-type {
-			width: 48px;
+		label {
+			min-width: 45px;
 		}
 		input:first-of-type:checked ~ .search-options-details {
 			opacity: 1;

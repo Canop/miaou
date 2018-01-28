@@ -716,9 +716,9 @@ proto.getNotableMessages = function(roomId, createdAfter){
 // return the completed ps name
 proto._searchConditions = function(s, args, cons){
 	var psname = "";
-	if (s.regex) {
+	if (s._regex) {
 		psname += "_regex";
-		args.push(s.regex);
+		args.push(s._regex);
 		if (s.caseInsensitive) {
 			cons.push("content ~* $1");
 		} else {
