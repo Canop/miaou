@@ -276,14 +276,14 @@ miaou(function(hist, gui, locals, md, time, ws){
 				`"car" would match messages with "cars" and "cargos".\n`
 			);
 		} else {
-			$("#search-exact").hide();
+			$('#search-exact,label[for="search-exact"]').hide();
 		}
 		if (locals.features.search.regularExpressions) {
 			lines.push(
 				`To search for regular expressions, check the "regex" checkbox.\n`
 			);
 		} else {
-			$("#search-regex").hide();
+			$('#search-regex,label[for="search-regex"]').hide();
 		}
 		$("#search-regex").change(function(){
 			if (this.checked) $("#search-exact").prop("checked", false);
