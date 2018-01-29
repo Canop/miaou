@@ -9,6 +9,7 @@ var	http = require('http'),
 	zlib = require("zlib"),
 	cache = require('bounded-cache')(300),
 	bench = require("../../libs/bench.js"),
+	rex = require("../../libs/rex.js"),
 	Deque = require("double-ended-queue"),
 	apiurl = "http://api.stackexchange.com/2.2/",
 	apikey, // necessary to get a bigger quota (10 000 instead of 300)
@@ -182,12 +183,11 @@ exports.init = function(miaou){
 	}
 }
 
-const	urlRegex = require("../../libs/rex.js").concat(
-	/(?:^|\n)\s*https?:\/\//,
-	/(meta\.)?(stackoverflow|askubuntu|([^.]+\.)?stackexchange|superuser|serverfault).com\//,
-	/(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)/,
-	"gm"
-);
+const	urlRegex = rex`
+	(?:^|\n)\s*https?:\/\/
+	(meta\.)?(stackoverflow|askubuntu|([^.]+\.)?stackexchange|superuser|serverfault).com\/
+	(a|q|questions)\/(\d+)(\/[^\s#]*)?(#\S+)?\s*(?:$|\n)
+	/gm`;
 
 // read the text to find and analyze SE URL
 exports.rawTasks = function(text){
