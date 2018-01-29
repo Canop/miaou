@@ -1,6 +1,7 @@
-// regular expression utility
+// regular expression utility using template literals
 //
 // Simple Exemple:
+//
 //	const regex = rex`
 //		^	  // start of string
 //		[a-z]+	  // some letters
@@ -13,7 +14,7 @@
 
 module.exports = function(tmpl){
 	let [, source, flags] = tmpl.raw.toString()
-	.split(/\s*\n\s*/)
+	.split(/\n\s*/)
 	.map(l => l.match(/^(.+?)( \/\/.*)?$/))
 	.filter(Boolean)
 	.map(m => m[1])
