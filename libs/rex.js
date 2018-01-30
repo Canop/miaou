@@ -14,10 +14,8 @@
 
 module.exports = function(tmpl){
 	let [, source, flags] = tmpl.raw.toString()
-	.split(/\n\s*/)
-	.map(l => l.match(/^(.*?)( \/\/.*)?$/)[1])
-	.join("")
-	.match(/^\/?(.*?)(?:\/(\w+))?$/);
+	.replace(/\s*(\/\/.*)?(\n|$)\s*/gm, "") // remove comments and spaces at both ends of lines
+	.match(/^\/?(.*?)(?:\/(\w+))?$/); // extracts source and flags
 	return new RegExp(source, flags);
 }
 
