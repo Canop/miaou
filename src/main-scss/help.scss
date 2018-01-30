@@ -23,7 +23,11 @@ h1 {
 	h1, h2, h3 {
 		color: $home-top-color;
 		cursor: pointer;
+		&:hover {
+			color: #fb0;
+		}
 	}
+	box-shadow: 2px 0 2px rgba(0, 0, 0, .15), 5px 0 5px rgba(0, 0, 0, .1);
 }
 #help-miaou-logo-wrapper {
 	display: block;
