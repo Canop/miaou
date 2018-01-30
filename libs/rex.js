@@ -15,8 +15,7 @@
 module.exports = function(tmpl){
 	let [, source, flags] = tmpl.raw.toString()
 	.split(/\n\s*/)
-	.map(l => l.match(/^(.*?)( \/\/.*)?$/))
-	.map(m => m[1])
+	.map(l => l.match(/^(.*?)( \/\/.*)?$/)[1])
 	.join("")
 	.match(/^\/?(.*?)(?:\/(\w+))?$/);
 	return new RegExp(source, flags);
