@@ -80,7 +80,7 @@ function authToRole(auth, rprivate){
 
 // handles GET on '/publicProfile'
 // used to fill the popup seen when hovering a user name
-exports.appGetPublicProfile = async function(req, res){
+exports.appGetPublicProfile = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
 	let	userId = +req.query.user,
 		roomId = +req.query.room;
@@ -121,10 +121,10 @@ exports.appGetPublicProfile = async function(req, res){
 			pluginAdditions,
 			externalProfileInfos
 		});
+		bo.end();
 	}, function(err){
 		server.renderErr(res, err);
 	});
-	bo.end();
 }
 
 // answer to queries for the user page
