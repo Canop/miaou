@@ -5,8 +5,9 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 	var showTimer;
 
 	prof.checkOverProfile = function(e){
-		var elems = $('.profile,.profiled').get();
+		var elems = $('.profile,.profiled,.profiler').get();
 		for (var i=0; i<elems.length; i++) {
+			console.log(i);
 			var $o = $(elems[i]), off = $o.offset();
 			if (
 				e.pageX>=off.left && e.pageX<=off.left+$o.outerWidth()
@@ -34,13 +35,14 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 		});
 	}
 
-	prof.shownow = function(){
+	prof.showNow = function(){
 		if ($('.dialog').length) return;
 		var $user = $(this).closest('.user');
 		if (!$user.length) $user = $(this).closest('.user-messages').find('.user');
 		var	user = $user.dat('user') || $user.closest('.notification,.user-messages,.user-line').dat('user'),
 			$p = $('<div>').addClass('profile'),
-			url = 'publicProfile?user='+user.id+'&room='+locals.room.id;
+			url = 'publicProfile?user='+user.id+
+				'&room='+locals.room.id;
 		if (gui.mobile) {
 			var	$page = $("<div>").addClass("profile-page").appendTo("body"),
 				$buttons = $("<div class=profile-buttons>").appendTo($page);
@@ -90,20 +92,22 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 				joinDivs($user, $p, "profile-join");
 			});
 			joinDivs($user, $p, "profile-join");
-			$(window).on('mousemove', prof.checkOverProfile);
 		}
 	}
 
 	// used in chat.jade, chat.mob.jade and auths.jade
 	prof.show = function(){
 		prof.hide();
-		showTimer = setTimeout(prof.shownow.bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
+		showTimer = setTimeout(prof.showNow.bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
+		$(this).closest(".user-messages").children(".user").addClass("profiler");
+		$(window).on('mousemove', prof.checkOverProfile);
 	}
 
 	prof.hide = function(){
 		clearTimeout(showTimer);
 		$('.profile, .profile-page, .profile-join').remove();
 		$('.profiled').removeClass('profiled');
+		$('.profiler').removeClass('profiler');
 		$(window).off('mousemove', prof.checkOverProfile);
 	}
 
