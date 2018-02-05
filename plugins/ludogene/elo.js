@@ -83,7 +83,8 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		let winnerIndex = +(g.scores[1]>=50);
 		r[winnerIndex].w++;
 		r[+!winnerIndex].l++;
-		this.s = g.scores[0];
+		this.s0 = g.scores[0];
+		this.s1 = g.scores[1];
 		let minc = Math.min(r[0].c, r[1].c) + 1;
 		if (
 			(opo.c>150 && opo.c-150>.1*(minc-150)) ||
@@ -133,7 +134,8 @@ GameImpact.prototype.gameLink = function(data){
 	let	n0 = data.ratingsMap.get(this.p0).name,
 		n1 = data.ratingsMap.get(this.p1).name,
 		uri = this.r+"#"+this.m;
-	if (this.s) return `[${n0} (${this.s}) - ${n1} (${100-this.s})](${uri})`;
+	console.log('this:', this);
+	if (this.s0) return `[${n0} (${this.s0}) - ${n1} (${this.s1})](${uri})`;
 	else return `[${n0} - ${n1}](${uri})`;
 }
 
