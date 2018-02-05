@@ -98,8 +98,9 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 	chat.sendMessage = function(m, context){
 		if (typeof m === "string") m = {content:m};
 		var r = chat.trigger("sending_message", m, context);
-		if (r!==false) ws.emit('message', m);
 		notif.userAct();
+		if (r===false) return false;
+		ws.emit('message', m);
 	}
 
 });

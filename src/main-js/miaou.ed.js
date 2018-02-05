@@ -29,7 +29,6 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	}
 
 	function _send(txt){
-		$input.val('');
 		var m = {content: txt};
 		if (editedMessage) {
 			m.id = editedMessage.id;
@@ -38,10 +37,11 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			if (stash) $input.val(stash);
 			ed.cancelEdit();
 		}
+		chat.sendMessage(m);
+		$input.val('');
 		if ($autocompleter) $autocompleter.remove();
 		ed.cancelReply();
 		stash = null;
-		chat.sendMessage(m);
 		$('#preview').html('');
 		$('#send').addClass("sent");
 		if (!gui.mobile) $input.focus();

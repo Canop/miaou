@@ -144,6 +144,12 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		gui.scrollToBottom();
 	}
 
+	md.shownErrors = function(){
+		return $("#messages .error .content").map(function(){
+			return $(this).text();
+		}).get();
+	}
+
 	// builds a notification message with a close button. The fill callback
 	//  is passed the container and a close function
 	md.notificationMessage = function(fill){
