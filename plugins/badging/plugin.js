@@ -116,22 +116,18 @@ exports.registerRoutes = map=>{
 		res.setHeader("Cache-Control", "public, max-age=600"); // 10 minutes
 		let	badgeTag = req.query.tag,
 			badgeName = req.query.name;
-		db.on()
-		.then(function(){
-			return this.queryOptionalRow(
+		db.do(async function(con){
+			let badge = await con.queryOptionalRow(
 				"select *, (select count(*) from player_badge where badge=badge.id) awards"+
 				" from badge where tag=$1 and name=$2",
 				[badgeTag, badgeName],
 				"badge_details_select_by_tag_name"
 			);
-		})
-		.then(function(badge){
-			res.json({badge});
-		})
-		.catch(function(err){
+			if (badge) res.json({badge});
+			else res.json({error: "badge not found"});
+		}, function(err){
 			res.json({error: err.toString()});
-		})
-		.finally(db.off);
+		});
 	});
 }
 

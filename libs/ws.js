@@ -1,4 +1,4 @@
-const	apiversion = 92,
+const	apiversion = 93,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -802,6 +802,7 @@ function handleUserInRoom(socket, completeUser){
 			});
 			await con.storePings(shoe.room.id, pings, m.id);
 		}, function(err){
+			console.log('err in async message handling:', err);
 			shoe.error(err, m.content);
 		}).then(done);
 	});
