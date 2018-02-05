@@ -1,6 +1,6 @@
 // regular expression utility using template literals
 //
-// Simple Exemple:
+// Simple Example:
 //
 //	const regex = rex`
 //		^	  // start of string
@@ -14,7 +14,7 @@
 
 module.exports = function(tmpl){
 	let [, source, flags] = tmpl.raw.toString()
-	.replace(/\s*(\/\/.*)?(\n|$)\s*/gm, "") // remove comments and spaces at both ends of lines
+	.replace(/\s*(\/\/.*)?$\s*/gm, "") // remove comments and spaces at both ends of lines
 	.match(/^\/?(.*?)(?:\/(\w+))?$/); // extracts source and flags
 	return new RegExp(source, flags);
 }
