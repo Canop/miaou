@@ -39,6 +39,8 @@ div.externalProfile {
 }
 
 .profile {
+	opacity: 1;
+	transition: opacity .7s .2s;
 	padding: 5px;
 	box-shadow: $profile-box-shadow;
 	color: $profile-text-color;
@@ -72,6 +74,12 @@ div.externalProfile {
 	width: 216px;
 	min-height: 100px;
 }
+
+.desktop.buttons-hovered .profile {
+	opacity: 0;
+	transition: opacity .7s .3s;
+}
+
 .mobile .profile {
 	overflow-y: scroll;
 }

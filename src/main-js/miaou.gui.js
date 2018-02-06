@@ -157,8 +157,12 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$('#messages')
 			.on('mouseenter', '.message', wz.onmouseenter)
 			.on('mouseleave', '.message', wz.onmouseleave)
-			.on('mouseenter', '.continueButton,.replyButton,.deleteButton,.editButton', prof.hide)
-			.on('mouseleave', '.continueButton,.replyButton,.deleteButton,.editButton', prof.show);
+			.on('mouseenter', '.continueButton,.replyButton,.deleteButton,.editButton', function(){
+				$(document.body).addClass("buttons-hovered");
+			})
+			.on('mouseleave', '.continueButton,.replyButton,.deleteButton,.editButton', function(){
+				$(".buttons-hovered").removeClass("buttons-hovered");
+			});
 			$('#messages, #notifications')
 			.on('mouseenter', '.message', md.showMessageHoverInfos)
 			.on('mouseleave', md.hideMessageHoverInfos)

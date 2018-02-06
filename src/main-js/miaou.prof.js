@@ -7,7 +7,6 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 	prof.checkOverProfile = function(e){
 		var elems = $('.profile,.profiled,.profiler').get();
 		for (var i=0; i<elems.length; i++) {
-			console.log(i);
 			var $o = $(elems[i]), off = $o.offset();
 			if (
 				e.pageX>=off.left && e.pageX<=off.left+$o.outerWidth()
@@ -39,10 +38,13 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 		if ($('.dialog').length) return;
 		var $user = $(this).closest('.user');
 		if (!$user.length) $user = $(this).closest('.user-messages').find('.user');
+		if (!$user.length) {
+			console.log("no $user", this);
+			return; // happens when we leave a removed message decoration
+		}
 		var	user = $user.dat('user') || $user.closest('.notification,.user-messages,.user-line').dat('user'),
 			$p = $('<div>').addClass('profile'),
-			url = 'publicProfile?user='+user.id+
-				'&room='+locals.room.id;
+			url = 'publicProfile?user='+user.id+'&room='+locals.room.id;
 		if (gui.mobile) {
 			var	$page = $("<div>").addClass("profile-page").appendTo("body"),
 				$buttons = $("<div class=profile-buttons>").appendTo($page);
@@ -97,9 +99,12 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 
 	// used in chat.jade, chat.mob.jade and auths.jade
 	prof.show = function(){
+		var $user = $(this).closest('.user');
+		if (!$user.length) $user = $(this).closest(".user-messages").children(".user");
+		if ($user.hasClass("profiler")) return;
 		prof.hide();
 		showTimer = setTimeout(prof.showNow.bind(this), miaou.chat.DELAY_BEFORE_PROFILE_POPUP);
-		$(this).closest(".user-messages").children(".user").addClass("profiler");
+		$user.addClass("profiler");
 		$(window).on('mousemove', prof.checkOverProfile);
 	}
 
