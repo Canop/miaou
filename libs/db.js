@@ -341,7 +341,7 @@ proto.listFrontPageRooms = function(userId, options){
 		sql += " r.name ilike $2 or r.description ilike $2";
 		sql += " or exists(select * from room_tag where room=r.id and tag ilike $2)";
 		sql += ")";
-		args.push("%"+pattern+"%");
+		args.push("%"+options.pattern+"%");
 	}
 	if (options.dialog===true) {
 		psname += "_dialog";
