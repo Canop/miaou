@@ -163,7 +163,7 @@ exports.wsOnBan = function(shoe, o){
 	if (!shoe.room) return console.log('No room in wsOnBan');
 	o.banner = shoe.publicUser.id;
 	o.bannername = shoe.publicUser.name;
-	db.on([shoe.room.id, o.banned])
+	return db.on([shoe.room.id, o.banned])
 	.spread(db.getAuthLevel)
 	.then(function(obj){
 		var bannedAuth = obj ? obj.auth : null;

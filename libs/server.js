@@ -150,6 +150,7 @@ async function defineAppRoutes(){
 // starts the whole server, both regular http and websocket
 async function startServer(){
 	naming.configure(miaou);
+	require("./throttler.js").configure(miaou);
 
 	var	cookieParser = require('cookie-parser')(miaou.config.secret),
 		RedisStore = require('connect-redis')(session),

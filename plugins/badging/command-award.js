@@ -45,6 +45,8 @@ exports.doAward = async function(con, ct, args){
 					"insert_player_badge"
 				);
 			}
+		}, function(err){
+			console.log("err:", err);
 		});
 	};
 }

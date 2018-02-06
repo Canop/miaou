@@ -18,4 +18,5 @@ miaou(function(plugins, locals){
 		if (!plugins[name]) plugins[name] = Object.create(null);
 		for (var key in obj) plugins[name][key] = obj[key];
 	}
+
 });

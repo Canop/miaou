@@ -39,10 +39,14 @@ function Shoe(socket, completeUser){
 var Shoes = Shoe.prototype;
 exports.Shoe = Shoe;
 
-Shoes.error = function(err, messageContent){
-	console.log('Error for user', this.completeUser.name, 'in room', (this.room||{}).name);
-	console.log(err.stack || err);
-	this.socket.emit('miaou.error', {txt:err.toString(), mc:messageContent});
+Shoes.error = function(err, eventType, arg){
+	let roomName = "?";
+	if (this.room) roomName = this.room.name;
+	console.log(`Error in ${eventType} for user ${this.publicUser.name} in room ${roomName}`);
+	console.log(err.log || err.stack || err);
+	let errObject = {txt:err.log||err.toString()};
+	if (eventType==="message" && arg) errObject.mc = arg.content;
+	this.socket.emit('miaou.error', errObject);
 }
 Shoes.emitToRoom = function(key, m){
 	io.sockets.in(this.room.id).emit(key, m);
@@ -102,12 +106,8 @@ Shoes.botReply = function(bot, mid, text){
 
 // returns the socket of the passed user if he's in the same room
 Shoes.userSocket = function(userIdOrName, includeWatchers){
-	console.log("userSocket(", userIdOrName, includeWatchers, ")");
 	var ioroom = io.sockets.adapter.rooms[this.room.id];
-	if (!ioroom) {
-		console.log(' lost room in shoe.userSocket');
-		return;
-	}
+	if (!ioroom) return;
 	for (let socketId in ioroom.sockets) {
 		let socket = io.sockets.connected[socketId];
 		if (
@@ -115,14 +115,12 @@ Shoes.userSocket = function(userIdOrName, includeWatchers){
 			&& socket.publicUser
 			&& (socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
 		) {
-			console.log(" found socket");
 			return socket;
 		}
 	}
 	if (!includeWatchers) return;
 	ioroom = io.sockets.adapter.rooms['w'+this.room.id];
 	if (!ioroom) {
-		console.log(' lost watch room in shoe.userSocket');
 		return;
 	}
 	for (let socketId in ioroom.sockets) {
@@ -131,11 +129,9 @@ Shoes.userSocket = function(userIdOrName, includeWatchers){
 			socket && socket.publicUser &&
 			(socket.publicUser.id===userIdOrName||socket.publicUser.name===userIdOrName)
 		) {
-			console.log(" found watch socket");
 			return socket;
 		}
 	}
-	console.log(" found no socket");
 }
 
 // to be used by bots, creates a message, store it in db and emit it to the room

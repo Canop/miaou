@@ -149,5 +149,12 @@ module.exports = {
 		// Regular expressions are very powerful but they involve a full scan and they put
 		// you at the risk of catastrophic backtracking
 		regularExpressions: false,
+	},
+
+	// rate limits per day, hour or minute. They're applied to expensive actions (mostly
+	//  inserts in database)
+	"throttler": {
+		hour: 1000,
+		minute: 50
 	}
 }

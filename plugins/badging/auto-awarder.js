@@ -33,6 +33,8 @@ function callChecks(){
 	db.do(async function(con){
 		await exports.checkAll(con);
 		setTimeout(callChecks, DELAY_BETWEEN_GLOBAL_CHECKS);
+	}, function(err){
+		console.log("Error in badging checks", err);
 	});
 }
 

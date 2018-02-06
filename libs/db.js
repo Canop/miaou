@@ -1311,7 +1311,7 @@ proto.do = function(fun, onerror){
 		if (onerror) {
 			onerror(err);
 		} else {
-			console.error(err);
+			throw err;
 		}
 	})
 	.finally(this.off);

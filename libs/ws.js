@@ -15,6 +15,7 @@ const	apiversion = 93,
 	rooms = require('./rooms.js'),
 	pageBoxer = require('./page-boxers.js'),
 	langs = require('./langs.js'),
+	throttleUser = require('./throttler.js').throttle,
 	shoes = require('./shoes.js');
 
 var	miaou,
@@ -335,14 +336,16 @@ function handleUserInRoom(socket, completeUser){
 		io.sockets.in(shoe.room.id).emit(v, clean(m));
 	}
 
+	function throttle(){
+		if (!shoe.publicUser) return console.log("missing user in shoe");
+		throttleUser(shoe.publicUser.id);
+	}
+
 	// maps an event-type to a callback, for all events
 	// which need a room.
 	// Can't be used for event types using a callback
-	// The eventHandler must be a function taking
-	//  - an argument sent by the client
-	//  - a function which should be called on end
 	function on(eventType, eventHandler){
-		var wrapperHander = function(arg){
+		var wrapperHander = async function(arg){
 			if (!shoe.room) {
 				if (!pendingEvent) {
 					// in order not to flood the server, we accept only one pending event
@@ -353,7 +356,13 @@ function handleUserInRoom(socket, completeUser){
 				return;
 			}
 			var bo = bench.start("ws / " + eventType);
-			eventHandler(arg, bo.end.bind(bo));
+			try {
+				await eventHandler(arg);
+			} catch (err) {
+				console.log("error in ws ", eventType);
+				shoe.error(err, eventType, arg);
+			}
+			bo.end();
 		}
 		routes.set(eventType, wrapperHander);
 		socket.on(eventType, wrapperHander);
@@ -383,7 +392,6 @@ function handleUserInRoom(socket, completeUser){
 				.spread(db.updateWatch)
 				.finally(db.off);
 			}
-			console.log("calling userSocket in disconnect");
 			if (!shoe.userSocket(shoe.completeUser.id, true)) {
 				socket.broadcast.to(shoe.room.id).emit('leave', shoe.publicUser);
 				for (var wid of watchset) {
@@ -402,7 +410,6 @@ function handleUserInRoom(socket, completeUser){
 		if (typeof entry !== "object") {
 			entry = { roomId: +entry };
 		}
-		// console.log(entry.nbEntries ? "RE-ENTRY" : "Entry", shoe.publicUser.name, entry);
 		if (!entry.roomId) {
 			console.log("WARN : user enters no room");
 			return;
@@ -509,6 +516,7 @@ function handleUserInRoom(socket, completeUser){
 		console.log(publicUser.name + ' requests access to room ' + roomId);
 		db.on()
 		.then(function(){
+			throttle();
 			return this.deleteAccessRequests(roomId, publicUser.id)
 		})
 		.then(function(){
@@ -533,74 +541,65 @@ function handleUserInRoom(socket, completeUser){
 	//-----------------
 	// standard event handlers
 
-	on('ban', function(ban, done){
+	on('ban', async function(ban){
 		console.log('ban event', ban);
-		auths.wsOnBan(shoe, ban);
-		done();
+		await auths.wsOnBan(shoe, ban);
 	});
 
-	on('get_after_time', function(data, done){
-		var	mid,
-			search = data.search || {};
+	on('get_after_time', async function(data){
+		throttle();
+		let search = data.search || {};
 		search.minCreated = data.minCreated;
-		db.on([search, shoe.publicUser.id, shoe.room])
-		.spread(fixSearchOptions)
-		.then(db.searchFirstId)
-		.then(function(row){
-			mid = row.mid;
-			return emitMessages.call(this, shoe, false, nbMessagesBeforeTarget, '<=', mid)
-		}).then(function(){
-			return emitMessages.call(this, shoe, true, nbMessagesAfterTarget, '>', mid)
-		})
-		.then(function(){
+		await db.do(async function(con){
+			fixSearchOptions(search, shoe.publicUser.id, shoe.room);
+			let row = await con.searchFistId(search);
+			let mid = row.mid; // can be undefined?
+			await emitMessages.call(con, shoe, false, nbMessagesBeforeTarget, '<=', mid)
+			await emitMessages.call(con, shoe, true, nbMessagesAfterTarget, '>', mid)
 			socket.emit('go_to', mid);
-			done();
-		})
-		.finally(db.off);
+		});
 	});
 
-	on('get_around', function(data, done){
-		db.on()
+	on('get_around', function(data){
+		throttle();
+		return db.on()
 		.then(function(){
 			return emitMessages.call(this, shoe, false, nbMessagesBeforeTarget+1, '<=', data.target)
 		}).then(function(){
 			return emitMessages.call(this, shoe, true, nbMessagesAfterTarget, '>', data.target)
 		}).then(function(){
 			socket.emit('go_to', data.target);
-			done();
 		}).finally(db.off);
 	});
 
-	on('get_message', function(mid, done){
-		db.on(+mid)
+	on('get_message', function(mid){
+		return db.on(+mid)
 		.then(db.getMessage)
 		.then(function(m){
 			m.vote = '?';
 			shoe.pluginTransformAndSend(m, function(v, m){
 				shoe.emit(v, clean(m));
 			});
-			done();
 		}).finally(db.off);
 	});
 
-	on('get_newer', function(cmd, done){
-		db.on([shoe, true, nbMessagesPerPage, '>=', cmd.from, '<', cmd.until])
+	on('get_newer', function(cmd){
+		return db.on([shoe, true, nbMessagesPerPage, '>=', cmd.from, '<', cmd.until])
 		.spread(emitMessages)
-		.then(done)
 		.finally(db.off);
 	});
 
-	on('get_older', function(cmd, done){
+	on('get_older', function(cmd){
 		if (!shoe.room) return;
-		db.on([shoe, false, nbMessagesPerPage, '<=', cmd.from, '>', cmd.until])
+		return db.on([shoe, false, nbMessagesPerPage, '<=', cmd.from, '>', cmd.until])
 		.spread(emitMessages)
-		.then(done)
 		.finally(db.off);
 	});
 
-	on('grant_access', function(grant, done){ // grant: {user:{id,name}, pingId, pingContent}
+	on('grant_access', function(grant){ // grant: {user:{id,name}, pingId, pingContent}
+		throttle();
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		db.on(grant.user.id)
+		return db.on(grant.user.id)
 		.then(db.getUserById)
 		.then(function(user){
 			if (!user) throw 'User "'+grant.userId+'" not found';
@@ -621,14 +620,14 @@ function handleUserInRoom(socket, completeUser){
 					grant.user.name, grant.pingId, shoe.publicUser.name, grant.pingContent
 				);
 			}
-			done();
 		}).catch(function(e){
 			shoe.error(e);
 		}).finally(db.off);
 	});
 
-	on('hist', function(search, done){ // request for histogram data
-		db.on()
+	on('hist', function(search){ // request for histogram data
+		throttle();
+		return db.on()
 		.then(function(s){
 			var r = [this.rawHistogram(shoe.room.id)];
 			if (search) {
@@ -645,11 +644,11 @@ function handleUserInRoom(socket, completeUser){
 				}
 			}
 			socket.emit('hist', {search:search, hist:hist});
-			done();
 		}).finally(db.off);
 	});
 
-	on('message', function(message, done){
+	on('message', async function(message){
+		throttle();
 		message.content = message.content||"";
 		if (typeof message.content !== "string" || !(message.id||message.content)) {
 			console.log("invalid incoming message");
@@ -691,7 +690,7 @@ function handleUserInRoom(socket, completeUser){
 			}
 		}
 
-		db.do(async function(con){
+		await db.do(async function(con){
 			if (otherDialogRoomUser) {
 				let inserted = await con.tryInsertWatch(shoe.room.id, otherDialogRoomUser.id);
 				if (inserted) {
@@ -774,7 +773,6 @@ function handleUserInRoom(socket, completeUser){
 			let	pings = [];
 			for (let ping of pingSet) {
 				if (usernameRegex.test(ping)) continue; // self ping
-				console.log("calling userSocket in ping distribution");
 				if (shoe.userSocket(ping)) continue; // no need to ping
 				if (await botMgr.onPing(ping, shoe, m)) continue; // it's a bot
 				if (shoe.room.private && !commandTask.alwaysPing) {
@@ -801,16 +799,14 @@ function handleUserInRoom(socket, completeUser){
 				}
 			});
 			await con.storePings(shoe.room.id, pings, m.id);
-		}, function(err){
-			console.log('err in async message handling:', err);
-			shoe.error(err, m.content);
-		}).then(done);
+		});
 	});
 
-	on('mod_delete', function(ids, done){
+	on('mod_delete', function(ids){
+		throttle();
 		if (!shoe.room) return;
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		db.on(ids)
+		return db.on(ids)
 		.map(db.getMessage)
 		.map(function(m){
 			var now = (Date.now()/1000|0);
@@ -824,7 +820,6 @@ function handleUserInRoom(socket, completeUser){
 		.map(function(m){
 			io.sockets.in(shoe.room.id).emit('message', clean(m));
 		})
-		.then(done)
 		.catch(function(err){
 			shoe.error('error in mod_delete');
 			console.log('error in mod_delete', err);
@@ -832,27 +827,26 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	});
 
-	on('pm', function(otherUserId, done){
-		db.on(otherUserId)
-		.then(function(){
-			return pm.openPmRoom.call(this, shoe, otherUserId);
-		})
-		.then(done)
-		.finally(db.off);
+	on('pm', async function(otherUserId){
+		throttle();
+		await db.do(async function(con){
+			await pm.openPmRoom.call(con, shoe, otherUserId);
+		});
 	});
 
-	on('rm_ping', function(mid, done){
+	on('rm_ping', function(mid){
+		throttle();
 		// remove the ping(s) related to that message and propagate to other sockets of same user
-		db.on([mid, shoe.publicUser.id])
+		return db.on([mid, shoe.publicUser.id])
 		.spread(db.deletePing)
 		.then(function(){
 			shoe.emitToAllSocketsOfUser('rm_ping', mid, true);
-			done();
 		}).finally(db.off);
 	});
 
-	on('search', async function(search, done){
-		db.do(async function(con){
+	on('search', async function(search){
+		throttle();
+		await db.do(async function(con){
 			fixSearchOptions(search, shoe.publicUser.id, shoe.room);
 			let result = await con.search(search);
 			if (result.messages) {
@@ -861,12 +855,11 @@ function handleUserInRoom(socket, completeUser){
 				.map(clean);
 			}
 			socket.emit('found', {result, search});
-			done();
 		});
 	});
 
-	on('start_watch', function(_, done){
-		db.on(completeUser.id)
+	on('start_watch', function(){
+		return db.on(completeUser.id)
 		.then(db.listUserWatches)
 		.then(function(watches){
 			socket.emit('wat', watches);
@@ -879,16 +872,16 @@ function handleUserInRoom(socket, completeUser){
 				watchset.add(w.id);
 			}
 			socket.emit('watch_started');
-			done();
 		})
 		.catch(function(err){
 			shoe.error(err);
 		}).finally(db.off)
 	})
 
-	on('unpin', function(mid, done){
+	on('unpin', function(mid){
+		throttle();
 		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-		db.on([shoe.room.id, shoe.publicUser.id, mid])
+		return db.on([shoe.room.id, shoe.publicUser.id, mid])
 		.spread(db.unpin)
 		.then(function(updatedMessage){
 			var lm = clean(updatedMessage);
@@ -896,13 +889,13 @@ function handleUserInRoom(socket, completeUser){
 			socket.broadcast.to(shoe.room.id).emit('message', messageWithoutUserVote(lm));
 			return memroom.updateNotables(this);
 		})
-		.then(done)
 		.catch(err => console.log('ERR in vote handling:', err))
 		.finally(db.off);
 	});
 
-	on('unwat', function(roomId, done){
-		db.on([roomId, shoe.publicUser.id])
+	on('unwat', function(roomId){
+		throttle();
+		return db.on([roomId, shoe.publicUser.id])
 		.spread(db.deleteWatch)
 		.then(function(){
 			if (roomId!==shoe.room.id) socket.leave('w'+roomId);
@@ -912,14 +905,14 @@ function handleUserInRoom(socket, completeUser){
 			}
 			socket.broadcast.to(roomId).emit('leave', shoe.publicUser);
 			watchset.delete(roomId);
-			done();
 		})
 		.finally(db.off);
 	});
 
-	on('vote', function(vote, done){
+	on('vote', async function(vote){
+		throttle();
 		if (vote.add==='pin'||vote.remove==='pin') shoe.checkAuth('admin');
-		db.do(async function(con){
+		await db.do(async function(con){
 			let	roomId = shoe.room.id,
 				userId = shoe.publicUser.id,
 				updatedMessage,
@@ -951,15 +944,12 @@ function handleUserInRoom(socket, completeUser){
 				}
 				shoe.emitToRoom('notableIds', notablesUpdate);
 			}
-			done();
-		}, function(err){
-			console.log('ERR in handling vote:', vote);
-			console.log('err:', err);
 		});
 	});
 
-	on('wat', function(roomId, done){
-		db.on([roomId, shoe.publicUser.id])
+	on('wat', function(roomId){
+		throttle();
+		return db.on([roomId, shoe.publicUser.id])
 		.spread(db.insertWatch) // we don't check the authorization because it's checked at selection
 		.then(function(){
 			return this.fetchRoomAndUserAuth(roomId, shoe.publicUser.id);
@@ -973,7 +963,6 @@ function handleUserInRoom(socket, completeUser){
 				s.emit('wat', [{id:r.id, name:r.name, private:r.private, dialog:r.dialog}]);
 			}
 			socket.broadcast.to(roomId).emit('enter', shoe.publicUser);
-			done();
 		})
 		.catch(function(err){
 			shoe.error(err);
@@ -981,19 +970,19 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	});
 
-	on('watch_raz', function(roomId, done){
+	on('watch_raz', function(roomId){
+		throttle();
 		if (!roomId) {
 			roomId = shoe.room.id;
 		}
 		shoe.emitToAllSocketsOfUser('watch_raz', roomId);
-		db.on()
+		return db.on()
 		.then(function(){
 			return rooms.mem.call(this, roomId)
 		})
 		.then(function(mr){
 			return this.updateWatch(roomId, shoe.publicUser.id, mr.lastMessageId);
 		})
-		.then(done)
 		.finally(db.off);
 	});
 
