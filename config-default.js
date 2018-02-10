@@ -151,8 +151,8 @@ module.exports = {
 		regularExpressions: false,
 	},
 
-	// rate limits per day, hour or minute. They're applied to expensive actions (mostly
-	//  inserts in database)
+	// rate limits per day, hour or minute (per user). They're applied to expensive actions
+	//  (mostly inserts in database)
 	"throttler": {
 		hour: 1000,
 		minute: 50

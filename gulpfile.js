@@ -79,7 +79,7 @@ gulp.task("server-js", ()=>
 	gulp.src(globs["server-js"])
 	.pipe(eslint({
 		"parserOptions": {
-			"ecmaVersion": 2017,
+			"ecmaVersion": 2018,
 		},
 		"env": [ "node", "es7"],
 		"extends": "eslint:recommended",
@@ -135,7 +135,7 @@ gulp.task("lint-client-js", ()=>
 	gulp.src(["src/*-js/*.js", "plugins/*/client-scripts/*.js", "!**/*.min.js"])
 	.pipe(eslint({
 		"parserOptions": {
-			"ecmaVersion": 6,
+			"ecmaVersion": 2018,
 		},
 		"env": [
 			"browser", "es6", "jquery"

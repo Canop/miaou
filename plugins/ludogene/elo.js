@@ -256,11 +256,11 @@ function opponentsTable(data, r){
 	return s;
 }
 
-// computes the Tribo Ladder
-exports.getLadder = async function(con){
+// computes the Ladder
+exports.getLadder = async function(con, gameType){
 	let messages = await ludodb.getGameMessages(con);
 	messages = messages.filter(function(m){
-		return	m.g.type==="Tribo"
+		return	m.g.type===gameType
 			&& m.g.scores
 			&& (m.g.status==="running"||m.g.status==="finished");
 	});
