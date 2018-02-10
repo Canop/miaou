@@ -66,9 +66,18 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		plugins.start();
 	}
 
-	// Registers for an event ("incoming_message", "sending_message", "ready")
-	// Callback is called with message as argument, and can change this message
-	// Returning false prevents the operation
+	// Registers for an event
+	// Supported event types:
+	// * ready
+	// * incoming_message
+	// 	called with message as argument
+	// * sending_message
+	// 	called with message as argument
+	// 	returning false prevents the sending
+	// * incoming_user
+	// 	called with user as argument
+	// * leaving_user
+	// 	called with user as argument
 	chat.on = function(type, fun){
 		if (!listeners[type]) listeners[type] = [];
 		listeners[type].push(fun);

@@ -1,6 +1,6 @@
 // functions related to users
 
-miaou(function(usr, ed, locals, mod, time, ws){
+miaou(function(usr, chat, ed, locals, mod, time, ws){
 
 	var	levels = ['read', 'write', 'admin', 'own'],
 		recentUsers = []; // sorted list of {id,name,mc} (this list isn't displayed but used for ping autocompletion)
@@ -114,9 +114,11 @@ miaou(function(usr, ed, locals, mod, time, ws){
 
 	usr.showEntry = function(user){
 		usr.insertInUserList(user).addClass('connected');
+		chat.trigger("incoming_user", user);
 	}
 	usr.showLeave = function(user){
 		$user(user).removeClass('connected');
+		chat.trigger("leaving_user", user);
 	}
 
 	// returns true if the user's authorization level in room is at least the passed one
