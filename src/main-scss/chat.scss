@@ -366,6 +366,11 @@ body.pad #me {
 		border-bottom: $message-normal-border-bottom;
 		display: inline-block;
 	}
+	strike {
+		&::before, &::after {
+			content: "\00a0";
+		}
+	}
 }
 
 .message.has-opener .content {
