@@ -1,4 +1,4 @@
-const	apiversion = 93,
+const	apiversion = 94,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -552,7 +552,7 @@ function handleUserInRoom(socket, completeUser){
 		search.minCreated = data.minCreated;
 		await db.do(async function(con){
 			fixSearchOptions(search, shoe.publicUser.id, shoe.room);
-			let row = await con.searchFistId(search);
+			let row = await con.searchFirstId(search);
 			let mid = row.mid; // can be undefined?
 			await emitMessages.call(con, shoe, false, nbMessagesBeforeTarget, '<=', mid)
 			await emitMessages.call(con, shoe, true, nbMessagesAfterTarget, '>', mid)
@@ -626,7 +626,6 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('hist', function(search){ // request for histogram data
-		throttle();
 		return db.on()
 		.then(function(s){
 			var r = [this.rawHistogram(shoe.room.id)];
@@ -845,7 +844,6 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('search', async function(search){
-		throttle();
 		await db.do(async function(con){
 			fixSearchOptions(search, shoe.publicUser.id, shoe.room);
 			let result = await con.search(search);

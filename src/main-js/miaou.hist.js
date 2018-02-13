@@ -6,7 +6,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 	var	visible = false,
 		currentSearch,
 		currentResult,
-		fields = new Set(["pattern", "starred", "starrer", "author", "exact", "regex", "img", "link", "authorname"]);
+		fields = new Set(["pattern", "starred", "starrer", "author", "exact", "regex", "img", "link", "authorName"]);
 
 	function isCurrentSearch(s){
 		if (!currentSearch) return false;
@@ -40,7 +40,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 			var	mtop = $selected.offset().top,
 				$scroller = $('#right'), stop = $scroller.offset().top, sst = $scroller.scrollTop();
 			if (mtop<stop+sst) {
-				$scroller.scrollTop(mtop-stop+-25);
+				$scroller.scrollTop(mtop-stop-25);
 			} else if (mtop+$selected.height()+sst>stop+$scroller.height()) {
 				$scroller.scrollTop(mtop+$selected.height()+sst-$scroller.height()+15);
 			}
@@ -190,14 +190,14 @@ miaou(function(hist, gui, locals, md, time, ws){
 	function startSearch(){
 		var options = buildSearchOptions();
 		if (isCurrentSearch(options)) return;
-		if (!isSearchEmpty(options)) {
-			hist.search(options);
-			hist.fetchHistogram(options);
-		} else {
+		if (isSearchEmpty(options)) {
 			currentSearch = options;
 			$('#search-results').empty();
 			$("#search-results-navigator").removeClass("enabled");
 			$('#hist .bar').removeClass('hit').removeAttr('sn');
+		} else {
+			hist.search(options);
+			hist.fetchHistogram(options);
 		}
 	}
 
