@@ -142,4 +142,27 @@ miaou(function(chat, locals, roomFinder, time, watch, ws){
 		$(this).closest(".search-input-line").children("input").prop("checked", true);
 	});
 
+	let	inputSizes = ["small", "medium", "big"],
+		currentSizeIndex = 1;
+	$("#input-grower").click(function(){
+		$("#input-panel").removeClass(inputSizes[currentSizeIndex]);
+		currentSizeIndex++;
+		if (currentSizeIndex>=inputSizes.length-1) {
+			currentSizeIndex = inputSizes.length-1;
+			$(this).removeClass("enabled");
+		}
+		$("#input-panel").addClass(inputSizes[currentSizeIndex]);
+		$("#input-shrinker").addClass("enabled");
+	});
+	$("#input-shrinker").click(function(){
+		$("#input-panel").removeClass(inputSizes[currentSizeIndex]);
+		currentSizeIndex--;
+		if (currentSizeIndex<=0) {
+			currentSizeIndex = 0;
+			$(this).removeClass("enabled");
+		}
+		$("#input-panel").addClass(inputSizes[currentSizeIndex]);
+		$("#input-grower").addClass("enabled");
+	});
+
 });

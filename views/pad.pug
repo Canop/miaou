@@ -18,13 +18,21 @@ html
 					#message-scroller
 						div#messages
 					#notifications
-					#input-panel
-						textarea#input(lang=vars.room.lang)
-						button#send Send
-						button.small#shortcuts Shortcuts
-						button.small#showPreview Preview
-						button.small#cancelEdit(style="display:none") Cancel
-						button.small#uploadOpen Upload
+					#input-panel.medium
+						#input-sizer-hoverable
+							#input-sizer
+								#input-grower.enabled ▲
+								#input-shrinker.enabled ▼
+						.left
+							textarea#input(lang=vars.room.lang)
+							#preview.rendered(style="display:none")
+						.right
+							button#send Send
+							button.small#shortcuts Shortcuts
+							button.small#showPreview Preview
+							button.small#hidePreview(style="display:none") Hide
+							button.small#cancelEdit(style="display:none") Cancel
+							button.small#uploadOpen Upload
 					#upload-panel
 						#upload-controls
 							| Select an image to send to imgur
@@ -36,9 +44,6 @@ html
 						#upload-wait(style="display:none")
 							p Uploading image to imgur...
 							img(src="static/ajax-loader-bar.gif")
-					#preview-panel
-						#preview.rendered
-						button.small#hidePreview Hide
 				#hist
 			#right
 				#room-area

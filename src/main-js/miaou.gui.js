@@ -199,14 +199,16 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		$('#showPreview').click(function(){
 			$(this).hide();
 			$('#input').focus();
-			$('#preview-panel').show();
+			$('#preview').show();
+			$('#hidePreview').show();
 			gui.scrollToBottom();
 			return false;
 		});
 		$('#hidePreview').click(function(){
 			$('#input').focus();
 			$('#showPreview').show();
-			$('#preview-panel').hide();
+			$('#hidePreview').hide();
+			$('#preview').hide();
 			return false;
 		});
 		$('#input').on('change keyup', function(){
