@@ -214,13 +214,11 @@ exports.appGetJsonRooms = function(req, res){
 			dialog: false,
 			limit: 100
 		});
-		console.log('nonDialogRooms:', nonDialogRooms.length);
 		let dialogRooms = await con.listFrontPageRooms(req.user.id, {
 			pattern: req.query.pattern,
 			dialog: true,
 			limit: 500
 		});
-		console.log('dialogRooms:', dialogRooms.length);
 		let rooms = nonDialogRooms.concat(dialogRooms);
 		rooms.forEach(r => {
 			r.path = server.roomPath(r);

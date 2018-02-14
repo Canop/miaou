@@ -7,7 +7,7 @@ html
 		script(src="socket.io/socket.io.js")
 		script(src="static/jquery-3.2.1.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
-		script(src="static/miaou.min.js?v=30")
+		script(src="static/miaou.min.js?v=32")
 		script(src="static/pad.min.js?v=8")
 	body.pad.desktop
 		#non-top
@@ -21,6 +21,7 @@ html
 					#input-panel
 						textarea#input(lang=vars.room.lang)
 						button#send Send
+						button.small#shortcuts Shortcuts
 						button.small#showPreview Preview
 						button.small#cancelEdit(style="display:none") Cancel
 						button.small#uploadOpen Upload
@@ -37,7 +38,6 @@ html
 							img(src="static/ajax-loader-bar.gif")
 					#preview-panel
 						#preview.rendered
-						button.small#shortcuts Shortcuts
 						button.small#hidePreview Hide
 				#hist
 			#right

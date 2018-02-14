@@ -83,7 +83,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// builds the message div and append it to the container, managing resizing.
 	// May be used for notable messages and search results
 	md.addSideMessageDiv = function(m, $div, $repl){
-		var	$content = $('<div>').addClass('content');
+		var $content = $('<div>').addClass('content');
 		var $md = $('<div>').addClass('message').dat('message', m).append($content).append(
 			$('<div>').addClass('nminfo')
 			.html(md.votesAbstract(m) + ' ' + time.formatTime(m.created) + ' by ' + m.authorname)
