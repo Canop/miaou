@@ -80,14 +80,14 @@ async function getLastToGetMd(con, tag){
 }
 
 // only applicable to the tag+name case
-async function getRecipientsMd(con, badge){
+async function getRecipientsMd(con, badge, max){
 	let count = await con.queryValue(
 		"select count(*) from player_badge where badge=$1",
 		[badge.id],
 		"count_badge_awards"
 	);
 	let c = `The ${badging.md(badge)} badge has been awarded to ${count} user${count>1?"s":""}`;
-	if (count && count<50) {
+	if (count && count<max) {
 		c += ":\n";
 		let playernames = await con.queryRows(
 			"select name from player_badge join player on player.id=player where badge=$1 order by message",
@@ -102,8 +102,10 @@ async function getRecipientsMd(con, badge){
 // !!badge ladder
 // !!badge ladder Tribo
 // !!badge ladder Tribo / Champion
+// !!badge ladder Tribo / Champion 100
 exports.doLadder = async function(con, ct, args){
-	let [, tagname, name] = args.match(/^\s*([^\/]+\S)?\s*(?:\/\s*(.*?)\s*)?$/);
+	let [, tagname, name, max] = args.match(/^\s*([^\/]+?\S)?\s*(?:\/\s*(.*?)\s*)?(?:\s*(\d+)\s*)?$/);
+	if (!(max>=1 && max<=5000)) max = 50;
 	if (tagname) {
 		let tag = await con.getTag(tagname);
 		if (!tag) {
@@ -115,7 +117,7 @@ exports.doLadder = async function(con, ct, args){
 	if (name) {
 		var badge = await badging.getBadgeByTagName(con, tagname, name);
 		if (!badge) throw new Error(`No ${tagname} / ${name} badge found̀`);
-		c += await getRecipientsMd(con, badge);
+		c += await getRecipientsMd(con, badge, max);
 	} else {
 		c += await getLadderMd(con, tagname);
 		c += await getLastToGetMd(con, tagname);
