@@ -74,10 +74,10 @@ miaou(function(fmt){
 			.replace(/\*[^<>\*]*?(<(\w{1,6})\b[^<>]*>[^<>]*<\/\2>[^<>]*)*\*(?=[^\*]|$)/g, function(s){
 				return s.length>2 ? '<i>'+s.slice(1, -1)+'</i>' : s;
 			})
-			.replace(/\^([^ ^~]+)\^/g, function(_, s){
+			.replace(/\^([^ ^~><]+)\^/g, function(_, s){
 				return '<sup>'+s+'</sup>';
 			})
-			.replace(/~([^ ^~]+)~/g, function(_, s){
+			.replace(/~([^ ^~><]+)~/g, function(_, s){
 				return '<sub>'+s+'</sub>';
 			})
 		}).join('')

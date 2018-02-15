@@ -1,9 +1,9 @@
 var	fmt = require("./miaou.format.node.js"),
 	buster = require("buster");
-	
+
 function t(s,r){
 	return function(){
-		buster.assert.equals(fmt.mdTextToHtml(s), r);		
+		buster.assert.equals(fmt.mdTextToHtml(s), r);
 	}
 }
 
@@ -80,4 +80,8 @@ buster.testCase("Formatting - Links", {
 		"# [link](http://some.com/link) here !",
 		'<span class=h1><a target=_blank href="http://some.com/link">link</a> here !</span>'
 	),
+	"raw URL with tilde": t(
+		"bla https://www.slant.co/versus/42/62/~vim_vs_neovim",
+		'bla <a target=_blank href="https://www.slant.co/versus/42/62/~vim_vs_neovim">https://www.slant.co/versus/42/62/~vim_vs_neovim</a>'
+	)
 });

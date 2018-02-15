@@ -205,9 +205,9 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			return false;
 		});
 		$('#hidePreview').click(function(){
+			$(this).hide();
 			$('#input').focus();
 			$('#showPreview').show();
-			$('#hidePreview').hide();
 			$('#preview').hide();
 			return false;
 		});
