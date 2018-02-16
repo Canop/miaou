@@ -18,6 +18,12 @@ $ping-me-bg: rgb(68, 51, 0);
 
 $content-border-top-after-disrupt: thin dashed #483b0e;
 
+// input sizer
+$input-sizer-background: #fb0;
+$input-sizer-handle-background: linear-gradient(to bottom, #6f7180, #222);
+$input-sizer-handle-color: #ccc;
+$input-sizer-shadow: none;
+
 // room controls
 $room-control-bg: none;
 $room-control-color: rgba(255,255,255,.7);

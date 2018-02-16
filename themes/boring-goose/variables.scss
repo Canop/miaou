@@ -9,6 +9,12 @@ $room-control-color: rgba(0,0,0,.7);
 $room-hover-control-bg: white;
 $room-hover-control-color: rgba(0,0,0,.9);
 
+// input sizer
+$input-sizer-background: linear-gradient(to bottom, #fbfaf4, #e2d7b1);
+$input-sizer-handle-background: linear-gradient(to bottom, #fbfaf4, #e2d7b1);
+$input-sizer-handle-color: #222;
+$input-sizer-shadow: 0 1px 3px rgba(0, 0, 0, .7);
+
 // autocomplete
 $autocomplete-border: thin solid #777;
 $autocomplete-bg: #F0EAD6;
@@ -21,7 +27,6 @@ $bubble-color: #222;
 .room-bubble.bubble .no-access {
 	color: black;
 }
-
 
 // tags
 $tag-color: #695d50;

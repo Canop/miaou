@@ -3,12 +3,12 @@ html
 	head
 		title Miaou - Pad
 		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=22')
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=23')
 		script(src="socket.io/socket.io.js")
 		script(src="static/jquery-3.2.1.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
 		script(src="static/miaou.min.js?v=33")
-		script(src="static/pad.min.js?v=9")
+		script(src="static/pad.min.js?v=10")
 	body.pad.desktop
 		#non-top
 			#left
@@ -21,8 +21,7 @@ html
 					#input-panel.medium
 						#input-sizer-hoverable
 							#input-sizer
-								#input-grower.enabled ▲
-								#input-shrinker.enabled ▼
+								.handle ::::::::::
 						.left
 							textarea#input(lang=vars.room.lang)
 							#preview.rendered(style="display:none")

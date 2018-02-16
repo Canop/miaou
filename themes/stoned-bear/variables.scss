@@ -10,6 +10,12 @@ $autocomplete-border: thin solid #555;
 $autocomplete-bg: #333;
 $autocomplete-selected-bg: $mes-brown;
 
+// input sizer
+$input-sizer-background: linear-gradient(to bottom, #777, #222);
+$input-sizer-handle-background: linear-gradient(to bottom, #365a5a, #1c3030);
+$input-sizer-handle-color: #ccc;
+$input-sizer-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+
 // chat colors
 $bg-color: #2F4F4F;
 $general-text-color: transparentize( $bear-text , 0.14 );

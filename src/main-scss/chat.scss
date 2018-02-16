@@ -694,41 +694,47 @@ code {
 	flex-direction: row;
 	align-items: stretch;
 	flex: 0 0 100px;
+	border-top: $input-panel-top-border;
 	#input-sizer-hoverable {
 		position: absolute;
-		left: 100px;
-		top: -5px;
-		right: 72px;
+		left: 0;
+		top: -8px;
+		right: 0;
 		height: 15px;
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: center;
 		#input-sizer {
-			display: none;
-			background: $input-panel-bg-color;
-			width: 36px;
-			height: 20px;
+			display: flex;
+			opacity: 0;
+			width: 10%;
 			margin: auto;
-			margin-top: -19px;
-			border-radius: 10px;
+			position: relative;
 			flex-direction: column;
 			justify-content: space-around;
 			align-items: center;
-			#input-grower, #input-shrinker {
-				font-size: 18px;
-				opacity: .2;
-				&.enabled {
-					opacity: .8;
-					cursor: pointer;
-					&:hover {
-						opacity: 1;
-					}
-				}
+			cursor: pointer;
+			background: $input-sizer-background;
+			height: 6px;
+			user-select: none;
+			box-shadow: $input-sizer-shadow;
+			transition: opacity .4s .6s, width .2s .6s;
+			.handle {
+				color: $input-sizer-handle-color;
+				background: $input-sizer-handle-background;
+				margin: auto;
+				padding: 1px 20px;
+				font-size: 8px;
+				border-radius: 3px;
+				box-shadow: $input-sizer-shadow;
 			}
-			box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
 		}
 		&:hover {
 			#input-sizer {
-				display: flex;
-				height: 50px;
-				transition: height .5s;
+				opacity: 1;
+				width: 100%;
+				transition: opacity .2s 0s, width .4s 0s;
 			}
 		}
 	}
@@ -743,22 +749,29 @@ code {
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
+		padding: 4px 0;
 		button {
 			padding: 0;
+			margin: 1px;
 		}
 	}
-	&.big {
-		flex-basis: 200px;
-		transition: flex-basis .4s;
+	// h<n>b classes are relative to the number of possible buttons
+	//  according to their height
+	&.h1b {
+		#shortcuts, #showPreview, #uploadOpen {
+			display: none;
+		}
+		.right {
+			justify-content: center;
+		}
 	}
-	&.medium {
-		flex-basis: 100px;
-		transition: flex-basis .4s;
+	&.h2b {
+		#shortcuts, #showPreview {
+			display: none;
+		}
 	}
-	&.small {
-		flex-basis: 50px;
-		transition: flex-basis .4s;
-		#shortcuts, #uploadOpen {
+	&.h3b {
+		#shortcuts {
 			display: none;
 		}
 	}

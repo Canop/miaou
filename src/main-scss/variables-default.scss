@@ -12,6 +12,12 @@ $left-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%
 $right-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) ) !default;
 $box-background: white !default;
 
+// input sizer
+$input-sizer-background: linear-gradient(to bottom, #777, #222) !default;
+$input-sizer-handle-background: linear-gradient(to bottom, #6f7180, #222) !default;
+$input-sizer-handle-color: #ccc !default;
+$input-sizer-shadow: 0 1px 2px rgba(0, 0, 0, .5) !default;
+
 $general-text-color: #222 !default;
 $title-text-color: #655 !default;
 $emphasis-text-color: #44d !default;
@@ -46,6 +52,7 @@ $user-color-shadow-in-messages: 1px 0 0 !default;
 $hovered-user-color-shadow-in-messages: 3px 0 0 !default;
 
 $input-panel-bg-color: $bg-color !default;
+$input-panel-top-border: none !default;
 $input-bg: white !default;
 $input-text-color: black !default;
 
