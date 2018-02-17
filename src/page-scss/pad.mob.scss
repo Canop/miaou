@@ -8,15 +8,20 @@ $mpad-write-bg: #191e1f;
 $tabs-height: 44px;
 $input-height: 50px;
 #mpad {
-	padding: $tabs-height 0;
+	position: fixed;
+	top: $tabs-height;
+	bottom: $tabs-height;
+	left: 0;
+	right: 0;
 	overflow-x: hidden; // prevents Chrome from having an horizontal scrollbar here
-	margin: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
 	#message-scroller {
-		position: fixed;
-		top: $tabs-height;
-		bottom: $tabs-height;
-		left: 0;
-		right: 0;
+		flex: 1 1 100px;
+	}
+	#notifications {
+		flex: 0 0 auto;
 	}
 }
 #mpad-page-write.open ~ #message-scroller {

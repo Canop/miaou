@@ -1088,6 +1088,10 @@ div#notifs {
 	}
 	.openroom, .nextping {
 		z-index:2;
+		max-width: 250px;
+		text-overflow: ellipsis;
+		overflow-x: hidden;
+		white-space: nowrap;
 	}
 	&:hover .openroom,
 	&:hover .nextping {
