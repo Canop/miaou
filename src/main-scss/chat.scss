@@ -714,10 +714,11 @@ code {
 			flex-direction: column;
 			justify-content: space-around;
 			align-items: center;
-			cursor: pointer;
+			cursor: row-resize;
 			background: $input-sizer-background;
 			height: 6px;
 			user-select: none;
+			-moz-user-select: none;
 			box-shadow: $input-sizer-shadow;
 			transition: opacity .4s .6s, width .2s .6s;
 			.handle {
