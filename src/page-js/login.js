@@ -1,10 +1,3 @@
-window.addEventListener("load", function(){
-	// we assume this will always work, even if compatibility issues
-	// prevent the jquery or miaou scripts execution
-	if (document.getElementById("no-crash").style.display == "block") return;
-	document.getElementById("crash").style.display = "block";
-});
-
 miaou(function(locals){
 
 	var	m = location.toString().match(/room=(\d+)/),
@@ -48,8 +41,5 @@ miaou(function(locals){
 			})(key, strategies[key]);
 		}
 	}
-
-	$("#no-crash").show();
-	$("#crash").remove();
 
 });
