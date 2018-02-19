@@ -708,7 +708,7 @@ code {
 		#input-sizer {
 			display: flex;
 			opacity: 0;
-			width: 10%;
+			width: 5%;
 			margin: auto;
 			position: relative;
 			flex-direction: column;
@@ -735,7 +735,7 @@ code {
 			#input-sizer {
 				opacity: 1;
 				width: 100%;
-				transition: opacity .2s 0s, width .4s 0s;
+				transition: opacity .2s 0.08s, width .4s 0.25s;
 			}
 		}
 	}

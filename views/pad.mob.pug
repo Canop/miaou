@@ -4,50 +4,51 @@ html
 		title Miaou
 		meta(name="viewport",content="initial-scale=1,maximum-scale=1")
 		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=6')
-		link(rel='stylesheet', href='static/pad.mob.css?v=4')
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=7')
+		link(rel='stylesheet', href='static/pad.mob.css?v=5')
 		script(src="static/jquery-3.2.1.min.js")
 		script(src="socket.io/socket.io.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
-		script(src="static/miaou.min.js?v=5")
-		script(src="static/pad.mob.min.js?v=4")
+		script(src="static/miaou.min.js?v=6")
+		script(src="static/pad.mob.min.js?v=5")
 	body#mpad.chat.mobile
-		#mpad-top-tabs.mpad-tabs
-			#mpad-tab-room.mpad-tab
-				#roomname.mpad-tab-label ...
-			#mpad-tab-notables.mpad-tab
-				.mpad-tab-label.mpad-icon &#9733;
-			#mpad-tab-search.mpad-tab
-				.mpad-tab-label.fontello.mpad-icon.icon-search
-			#mpad-tab-watches.mpad-tab
-				.mpad-tab-label.fontello#global-watch.mpad-icon.icon-eye
-		#mpad-page-write.mpad-page
-			#input-panel.mpad-row
-				textarea#input
-			#upload-panel.mpad-row
-				#upload-controls
-					input(type="file",id="file")
-					br
-					button#uploadSend Send Image
-					button#cancelUpload Cancel Upload
-				#upload-wait(style="display:none")
-					p Uploading image to imgur...
-					img(src="static/ajax-loader-bar.gif")
-			.mpad-row
-				.mpad-button#cancel-write Cancel
-				.mpad-button#uploadOpen Upload
-				.mpad-button#send Send
-		#mpad-bottom-tabs.mpad-tabs
-			#mpad-tab-users.mpad-tab
-				.mpad-tab-label users
-			#mpad-tab-menu.mpad-tab
-				#Miaou-logo-wrapper.mpad-tab-label
-					object.Miaou-logo#Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
-			#mpad-tab-write.mpad-tab
-				.mpad-tab-label write a message
-		#message-scroller
-			#messages
-		#notifications
+		#mvert
+			#mpad-top-tabs.mpad-tabs
+				#mpad-tab-room.mpad-tab
+					#roomname.mpad-tab-label ...
+				#mpad-tab-notables.mpad-tab
+					.mpad-tab-label.mpad-icon &#9733;
+				#mpad-tab-search.mpad-tab
+					.mpad-tab-label.fontello.mpad-icon.icon-search
+				#mpad-tab-watches.mpad-tab
+					.mpad-tab-label.fontello#global-watch.mpad-icon.icon-eye
+			#message-scroller
+				#messages
+			#notifications
+			#mpad-page-write.mpad-page
+				#input-panel.mpad-row
+					textarea#input
+				#upload-panel.mpad-row
+					#upload-controls
+						input(type="file",id="file")
+						br
+						button#uploadSend Send Image
+						button#cancelUpload Cancel Upload
+					#upload-wait(style="display:none")
+						p Uploading image to imgur...
+						img(src="static/ajax-loader-bar.gif")
+				.mpad-row
+					.mpad-button#cancel-write Cancel
+					.mpad-button#uploadOpen Upload
+					.mpad-button#send Send
+			#mpad-bottom-tabs.mpad-tabs
+				#mpad-tab-users.mpad-tab
+					.mpad-tab-label users
+				#mpad-tab-menu.mpad-tab
+					#Miaou-logo-wrapper.mpad-tab-label
+						object.Miaou-logo#Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
+				#mpad-tab-write.mpad-tab
+					.mpad-tab-label write a message
 		#mpad-untabber
 		#mpad-page-room.mpad-page
 			#room-description.rendered
