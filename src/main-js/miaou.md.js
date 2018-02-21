@@ -456,6 +456,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 						// now we'll remove all older messages
 						remove = true;
 						// but we must restore the "prev" property of the message
+						if (!um.previousSibling) return; // we're at the end anyway
 						var previousMessageElement = um.previousSibling.lastChild;
 						var previousMessage = $(previousMessageElement).dat("message");
 						if (previousMessage) { // null if there was a loader there (no restoring needed)
