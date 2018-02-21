@@ -843,6 +843,15 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);
 	});
 
+	on('rm_pings', async function(mids){
+		throttle();
+		// remove the ping(s) related to that message and propagate to other sockets of same user
+		await db.do(async function(con){
+			await con.deletePings(mids, shoe.publicUser.id);
+			shoe.emitToAllSocketsOfUser('rm_pings', mids, true);
+		});
+	});
+
 	on('search', async function(search){
 		await db.do(async function(con){
 			fixSearchOptions(search, shoe.publicUser.id, shoe.room);

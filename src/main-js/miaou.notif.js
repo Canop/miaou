@@ -55,12 +55,14 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	}
 
 	notif.clearPings = function(roomId){
+		let mids = [];
 		for (var i=notifications.length; i--;) {
 			if (!roomId || notifications[i].r==roomId) {
-				ws.emit('rm_ping', notifications[i].mid);
+				mids.push(notifications[i].mid);
 				notifications.splice(i, 1);
 			}
 		}
+		ws.emit('rm_pings', mids);
 		notif.updatePingsList();
 	}
 
@@ -160,6 +162,10 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				return;
 			}
 		}
+	}
+
+	notif.removePings = function(mids){
+		mids.forEach(mid => notif.removePing(mid));
 	}
 
 	notif.setHasWatchUnseen = function(b){

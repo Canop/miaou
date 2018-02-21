@@ -190,6 +190,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('hist', hist.showHist)
 		.on('pings', notif.pings)
 		.on('rm_ping', notif.removePing)
+		.on('rm_pings', notif.removePings)
 		.on('must_reenter', function(){
 			console.log("<- must_reenter");
 			enter();

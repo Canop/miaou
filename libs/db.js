@@ -950,7 +950,7 @@ proto.getLastMessageId = function(roomId){
 
 proto.storePing = function(roomId, userId, messageId){
 	return this.execute(
-		"insert into ping(room, player, message) values ($1,$2,$3)",
+		"insert into ping(room, player, message) values ($1,$2,$3) on conflict do nothing",
 		[roomId, userId, messageId],
 		"store_ping"
 	);
@@ -961,7 +961,8 @@ proto.storePings = function(roomId, users, messageId){
 	return this.execute(
 		"insert into ping (room, player, message) select " +
 		roomId + ", id, " + messageId +
-		" from player where lower(name) in (" + users.map(n => "'"+n.toLowerCase()+"'").join(',') + ")",
+		" from player where lower(name) in (" + users.map(n => "'"+n.toLowerCase()+"'").join(',') + ")" +
+		" on conflict do nothing",
 		null,
 		"store_pings"
 	);
@@ -973,6 +974,14 @@ proto.deletePing = function(mid, userId){
 		"delete from ping where message=$1 and player=$2",
 		[mid, userId],
 		"delete_message_user_ping"
+	);
+}
+
+proto.deletePings = function(mids, userId){
+	return this.execute(
+		`delete from ping where message in (${mids.map(s=>+s).join(",")}) and player=$1`,
+		[userId],
+		"delete_messages_user_pings"
 	);
 }
 
@@ -1182,7 +1191,8 @@ exports.upgrade = function(component, patchSubDirectory){
 			.then(fs.readFileAsync.bind(fs))
 			.then(buffer =>
 				buffer.toString()
-				.replace(/(#[^\n]*)?\n/g, ' ').split(';')
+				.replace(/^\s*(#|--).*$/gm, '')
+				.split(';')
 				.map(s => s.trim()).filter(Boolean)
 			).map(function(statement){
 				console.log(' Next statement :', statement);
@@ -1330,7 +1340,7 @@ proto._query = function(sql, args, name){
 			logQuery(sql, args);
 		}
 	}
-	var	bo = bench.start("db / " + name);
+	let bo = bench.start("db / " + name);
 	return new Promise((resolve, reject)=>{
 		this.client.query(sql, args, function(err, res){
 			var duration = bo.end() * .001;
