@@ -27,10 +27,6 @@ $input-height: 50px;
 		flex: 0 0 auto;
 	}
 }
-#mpad-page-write.open ~ #message-scroller {
-	top: 0;
-	padding-bottom: $input-height + 8px;
-}
 .mpad-tabs {
 	flex: 0 0 $tabs-height;
 	display: flex;
@@ -96,14 +92,11 @@ $input-height: 50px;
 .mpad-page {
 	display: none;
 	color: white;
+}
+#mpad-page-room {
 	z-index: 21;
 	margin: 0 -2px;
 	position: fixed;
-	&.open {
-
-	}
-}
-#mpad-page-room {
 	background: $mpad-room-bg;
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
 	top: $tabs-height - 1px;
@@ -119,6 +112,9 @@ $input-height: 50px;
 	}
 }
 #mpad-page-watches {
+	z-index: 21;
+	margin: 0 -2px;
+	position: fixed;
 	background: $mpad-watches-bg;
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
 	top: $tabs-height - 1px;
@@ -128,6 +124,9 @@ $input-height: 50px;
 	overflow-y: auto;
 }
 #mpad-page-search {
+	z-index: 21;
+	margin: 0 -2px;
+	position: fixed;
 	background: $mpad-search-bg;
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
 	top: $tabs-height - 1px;
@@ -138,6 +137,9 @@ $input-height: 50px;
 	overflow-y: auto;
 }
 #mpad-page-notables {
+	z-index: 21;
+	margin: 0 -2px;
+	position: fixed;
 	background: $mpad-notables-bg;
 	box-shadow: 0 2px 2px rgba(0,0,0,.8);
 	top: $tabs-height - 1px;
@@ -153,6 +155,9 @@ $input-height: 50px;
 	}
 }
 #mpad-page-users {
+	z-index: 21;
+	margin: 0 -2px;
+	position: fixed;
 	background: $mpad-users-bg;
 	box-shadow: 0 -2px 2px rgba(0,0,0,.8);
 	bottom: $tabs-height - 1px;
@@ -163,6 +168,9 @@ $input-height: 50px;
 	overflow-y: auto;
 }
 #mpad-page-menu {
+	z-index: 21;
+	margin: 0 -2px;
+	position: fixed;
 	background: $mpad-menu-bg;
 	box-shadow: 0 -2px 2px rgba(0,0,0,.8);
 	bottom: $tabs-height - 1px;
@@ -193,9 +201,6 @@ $input-height: 50px;
 
 #mpad-page-write {
 	background: $mpad-write-bg;
-	bottom: 0;
-	left: 0;
-	right: 0;
 	#input {
 		height: $input-height;
 		flex: 1;

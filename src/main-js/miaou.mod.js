@@ -6,7 +6,7 @@ miaou(function(mod, chat, md, ws){
 	durs['d'] = 24 * (durs['h'] = 60 * (durs['m'] = 60));
 
 	mod.dialog = function(user){
-		var $c = $('<div>').addClass('ban-dialog');
+		var $c = $('<p>').addClass('ban-dialog');
 		$('<span>').text("Duration :").appendTo($c);
 		function radio(idval, text, $r){
 			$c.append('<br>').append(

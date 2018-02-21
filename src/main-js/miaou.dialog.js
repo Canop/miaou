@@ -11,7 +11,7 @@ miaou(function(){
 	//  cssClass (optional)
 	miaou.dialog = function(options){
 		miaou.prof.hide();
-		var $d = $('<div class=dialog/>').hide().addClass(options.cssClass||'small');
+		var $d = $('<div class=dialog/>').addClass(options.cssClass||'small');
 		$d.append($('<div class=dialog-title/>').text(options.title||''));
 		$d.append($('<div class=dialog-content/>').append(options.content));
 		var	buttons = options.buttons||{OK:null},
@@ -42,7 +42,14 @@ miaou(function(){
 		});
 		$d.appendTo(document.body);
 		var $mask = $('<div class=mask>').appendTo(document.body);
-		$d = $d.add($mask).hide().fadeIn('fast');
+		$mask.click(miaou.dialog.closeAll);
+		$d.click(function(e){
+			e.stopPropagation();
+		});
+		$d = $mask.append($d);
+		setTimeout(function(){
+			$d.addClass("open");
+		});
 		var d = {
 			close: close,
 			hide: function(callback){

@@ -869,7 +869,8 @@ body.mobile #upload-panel {
 	width:100%;
 	flex-grow: 0;
 	display: none;
-	padding: 4px;
+	padding: 10px;
+	line-height: 38px;
 	text-align: center;
 }
 #upload-wait {
@@ -1284,6 +1285,7 @@ body.mobile {
 		align-items: center;
 		input {
 			margin-left: 5px;
+			width: 350px;
 			flex: 1 1 auto;
 		}
 	}
