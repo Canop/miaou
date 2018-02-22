@@ -9,16 +9,24 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	padding: 5px;
+	&.open {
+		background-color: transparentize($bg-color, .4);
+		transition: background-color 2s;
+	}
+	&.logo {
+		background: $logo-bg-color url(../../Miaou.svg) center no-repeat;
+		background-size: contain;
+		.dialog {
+			background: transparentize( $dialog-bg, .1 );
+		}
+	}
 }
-.mask.open {
-	background-color: transparentize($bg-color, .4);
-	transition: background-color 2s;
+.mobile .mask.logo {
+	background-size: cover;
 }
 
 .dialog {
-	&.intro { // intro dialog, displayed below the big Miaou logo
-		//FIXME
-	}
 	&.small {
 		min-width: 300px;
 	}
@@ -72,10 +80,6 @@
 	font-weight: bold;
 }
 
-body.mobile .dialog.intro {
-	right: 3%;
-	left: 3%;
-}
 table.form {
 	width: 100%;
 	input, textarea {
