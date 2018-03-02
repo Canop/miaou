@@ -844,6 +844,10 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('rm_pings', async function(mids){
+		if (!mids.length) {
+			console.log("empty array in rm_pings from", shoe.publicUser.name);
+			return;
+		}
 		throttle();
 		// remove the ping(s) related to that message and propagate to other sockets of same user
 		await db.do(async function(con){

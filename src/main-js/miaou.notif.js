@@ -62,6 +62,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				notifications.splice(i, 1);
 			}
 		}
+		if (!mids.length) return;
 		ws.emit('rm_pings', mids);
 		notif.updatePingsList();
 	}
