@@ -145,6 +145,12 @@ miaou(function(chat, gui, locals, roomFinder, time, watch, ws){
 	(function(){
 		let heightClasses = ["h1b", "h2b", "h3b"];
 		let $panel = $("#input-panel");
+		let dx = $("#input-sizer-hoverable").offset().left;
+		let centerer = document.getElementById("input-sizer-centerer");
+		let resizing = false;
+		let H;
+		let iab;
+
 		function setInputPanelHeight(h){
 			let H = $(window).height();
 			if (!(h>=30 && H-h>150)) return;
@@ -155,16 +161,20 @@ miaou(function(chat, gui, locals, roomFinder, time, watch, ws){
 
 		setInputPanelHeight(parseInt(localStorage.getItem("input-panel-height")));
 
-		$("#input-sizer").on("mousedown", function(){
-			let	H = $(window).height(),
-				iab = gui.isAtBottom();
-			function follow(e){
-				setInputPanelHeight(H - e.pageY);
-				if (iab) gui.scrollToBottom();
-			}
-			$(window).on("mousemove", follow);
+		$(window).on("mousemove", function(e){
+			let x = e.pageX - dx;
+			centerer.style.setProperty('--mousex', x+'px');
+			if (!resizing) return;
+			setInputPanelHeight(H - e.pageY);
+			if (iab) gui.scrollToBottom();
+		});
+
+		$("#input-sizer-hoverable").on("mousedown", function(){
+			H = $(window).height();
+			iab = gui.isAtBottom();
+			resizing = true;
 			$(window).one("mouseup", function(){
-				$(window).off("mousemove", follow);
+				resizing = false;
 				localStorage.setItem("input-panel-height", $panel.css("flex-basis"));
 			});
 		});

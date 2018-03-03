@@ -698,44 +698,56 @@ code {
 	#input-sizer-hoverable {
 		position: absolute;
 		left: 0;
-		top: -8px;
+		top: -5px;
 		right: 0;
-		height: 15px;
-		display: flex;
-		flex-direction: column;
-		align-items: stretch;
-		justify-content: center;
-		#input-sizer {
-			display: flex;
-			opacity: 0;
-			width: 5%;
-			margin: auto;
+		height: 12px;
+		overflow: hidden;
+		cursor: row-resize;
+		-moz-user-select: none;
+		user-select: none;
+		#input-sizer-centerer {
 			position: relative;
+			width: 1px;
+			height: 12px;
+			margin-left: var(--mousex);
+			display: flex;
 			flex-direction: column;
-			justify-content: space-around;
 			align-items: center;
-			cursor: row-resize;
-			background: $input-sizer-background;
-			height: 6px;
-			user-select: none;
-			-moz-user-select: none;
-			box-shadow: $input-sizer-shadow;
-			transition: opacity .4s .6s, width .2s .6s;
+			justify-content: center;
+			overflow: visible;
+			#input-sizer {
+				display: flex;
+				opacity: 0;
+				width: 2px;
+				background: $input-sizer-background;
+				height: 5px;
+				box-shadow: $input-sizer-shadow;
+				transition: opacity .4s .6s, width .5s .4s;
+			}
 			.handle {
+				display: flex;
+				opacity: 0;
+				z-index: 12;
 				color: $input-sizer-handle-color;
 				background: $input-sizer-handle-background;
-				margin: auto;
-				padding: 1px 20px;
+				margin-top: -6px;
+				padding: 0px 20px;
 				font-size: 8px;
 				border-radius: 3px;
 				box-shadow: $input-sizer-shadow;
 			}
 		}
 		&:hover {
-			#input-sizer {
-				opacity: 1;
-				width: 100%;
-				transition: opacity .2s 0.08s, width .4s 0.25s;
+			#input-sizer-centerer {
+				#input-sizer {
+					opacity: 1;
+					width: 5000px;
+					transition: opacity .3s 0.08s, width 1.5s 0.05s;
+				}
+				.handle {
+					opacity: 1;
+					transition: opacity .2s 0.08s;
+				}
 			}
 		}
 	}
