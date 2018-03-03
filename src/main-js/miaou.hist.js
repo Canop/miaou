@@ -49,13 +49,13 @@ miaou(function(hist, gui, locals, md, time, ws){
 
 	hist.open = function(){
 		visible = true;
-		$('#hist').show();
+		$('#hist').addClass("open");
 		hist.fetchHistogram(isSearchEmpty() ? null : currentSearch);
 	}
 
 	hist.close = function(){
 		visible = false;
-		$('#hist').hide();
+		$('#hist').removeClass("open");
 	}
 
 	// request the histogram (not the search result list)
