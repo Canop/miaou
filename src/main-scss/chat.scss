@@ -104,17 +104,22 @@ section {
 		flex: 1 0 18px;
 		max-height: 30px;
 		cursor: pointer;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		padding: 1px 5px;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-		font-style: italic;
-		font-size: 95%;
 		span {
+			position: absolute;
+			z-index: 5;
+			top: 0;
+			left: 0;
+			bottom: 0;
 			color: $user-text-color-in-user-list;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			padding: 1px 5px;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+			font-style: italic;
+			font-size: 95%;
 		}
 		&.connected {
 			span {
@@ -126,19 +131,36 @@ section {
 }
 .pad #users {
 	.user, .user.profiled {
-		&:hover {
+		// the ::before pseudo element is used as marker of connection
+		&::before {
+			position: absolute;
+			z-index: 4;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			width: 0%;
+			content: "";
+			background: $connected-user-bg-color-in-user-list;
+			transition: width 2s;
+		}
+		&.connected::before {
+			width: 100%;
+			transition: width 2s;
+		}
+		// the ::after pseudo element is used as marker of hovering (profile opening)
+		&::after {
+			position: absolute;
+			z-index: 6;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			width: 100%;
+			content: "";
+			background: transparent;
+		}
+		&:hover::after {
 			background: $profile-bg;
 		}
-		&.connected {
-			box-shadow: $connected-user-bg-color-in-user-list 200px 0 0 0 inset;
-			transition: box-shadow 3s;
-		}
-		&.connected:hover {
-			box-shadow: $profile-bg 200px 0 0 0 inset;
-			transition: box-shadow 0;
-		}
-		box-shadow: $connected-user-bg-color-in-user-list 0 0 0 0 inset;
-		transition: box-shadow 4s;
 	}
 }
 
