@@ -28,6 +28,7 @@
     "passport-oauth": ">=1.0.0",
     "passport-reddit": ">=0.2.4",
     "pg": ">=4.5.5",
+    "phantom": "^4.0.12",
     "pug": ">=2.0.0-beta11",
     "redis": ">=0.9.1",
     "request": ">=2.34.0",
