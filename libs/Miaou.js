@@ -54,10 +54,12 @@ class Miaou{
 		for (var i=0; i<files.length; i++) {
 			try {
 				var	file = files[i],
+					start = Date.now(),
 					pluginfilepath = path.resolve(__dirname, '..', file),
 					plugin = require(pluginfilepath);
 				if (plugin.init) await plugin.init(this);
 				this.plugins.push(plugin);
+				console.log(`Init of plugin ${file} took ${Date.now()-start} ms`);
 			} catch (err) {
 				console.log("Error in plugin initialization");
 				console.error(err);
