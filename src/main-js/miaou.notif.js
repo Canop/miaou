@@ -72,6 +72,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		if (!notifications.length) {
 			if (notifMessage) notifMessage.$md.slideUp($.fn.remove);
 			notifMessage = null;
+			watch.setPings([]);
 			return;
 		}
 		if (notifMessage) notifMessage.remove();
@@ -86,7 +87,10 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 		notifMessage = md.notificationMessage(function($c){
 			if (localPings.length) {
 				$('<div>').addClass('pingroom').append(
-					$('<span>').text(localPings.length + (localPings.length>1 ? ' pings' : ' ping') + ' in this room.')
+					$('<span>').text(
+						localPings.length +
+						(localPings.length>1 ? ' pings' : ' ping') + ' in this room.'
+					)
 				).append(
 					$('<button>').addClass('nextping').text("Next ping").click(function(){
 						notif.nextPing();

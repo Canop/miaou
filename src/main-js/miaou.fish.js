@@ -117,6 +117,10 @@
 		return this;
 	}
 
+	fish.closeBubbles = function(){
+		$('.bubble').remove();
+	}
+
 	setTimeout(function(){
 		if (gui.mobile) {
 			$("#message-scroller").on("scroll", function(){
@@ -126,3 +130,4 @@
 	}, 0);
 
 });
+

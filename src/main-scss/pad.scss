@@ -215,6 +215,7 @@ body.desktop #rooms-page {
 #non-top {
 	#left, #right, #center {
 		top: 40px;
+		overflow-x: hidden;
 	}
 	#left {
 		padding-top: 5px;

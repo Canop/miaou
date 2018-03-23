@@ -40,7 +40,7 @@ div.externalProfile {
 
 .profile {
 	opacity: 1;
-	transition: opacity .7s .2s;
+	//transition: opacity .3s .3s;
 	padding: 5px;
 	box-shadow: $profile-box-shadow;
 	color: $profile-text-color;
@@ -77,7 +77,7 @@ div.externalProfile {
 
 .desktop.buttons-hovered .profile {
 	opacity: 0;
-	transition: opacity .7s .3s;
+	transition: opacity .3s .3s;
 }
 
 .mobile .profile {
@@ -131,19 +131,18 @@ div.externalProfile {
 	}
 }
 
-.user.profiled {
+body:not(.buttons-hovered) .user.profiled {
 	box-shadow: $profile-box-shadow;
 	background: $profile-bg;
+	//transition: background .3s .3s;
 	z-index: 6;
 	span {
 		color: $profile-text-color;
+		transition: color .3s .3s;
 	}
-}
-
-.user.profiled {
 	span, .avatar {
 		opacity: 0;
-		transition: opacity .3s;
+		transition: opacity .3s .3s;
 	}
 }
 
