@@ -9,6 +9,44 @@ exports.configure = function(miaou){
 	return this;
 }
 
+exports.sendImageToImgur = function(bytes){
+	return new Promise(function(resolve, reject){
+		var	bo = bench.start("Image Upload / to imgur");
+		console.log('Trying to send image of '+ bytes.length +' bytes to imgur');
+		var options = {
+			url: 'https://api.imgur.com/3/upload',
+			headers: { Authorization: 'Client-ID ' + clientID }
+		};
+		var r = request.post(options, function(err, req, body){
+			if (err) {
+				return reject(err);
+			}
+			if (!body || !body.length) {
+				return reject(new Error("Empty answer from imgur"));
+			}
+			var data;
+			try {
+				data = JSON.parse(body).data;
+			} catch (e) {
+				console.log("Error while parsing imgur answer:", e);
+				console.log(body);
+				return reject(new Error("Invalid JSON in imgur's answer"));
+			}
+			if (data && data.error) {
+				return reject(new Error("imgur answered : "+data.error));
+			}
+			if (!data || !data.id) {
+				return reject(new Error("imgur's answer makes no sense"));
+			}
+			bo.end(); // we don't count failed uploads
+			resolve(data);
+		})
+		var form = r.form();
+		form.append('type', 'file');
+		form.append('image', bytes);
+	});
+}
+
 exports.appPostUpload = function(req, res){
 	if (!clientID) {
 		console.log(
@@ -41,37 +79,10 @@ exports.appPostUpload = function(req, res){
 		if (!files.length) {
 			return res.send({error:'found nothing in form'});
 		}
-		var	bo = bench.start("Image Upload / to imgur");
 		// for now, we handle only the first file, we'll see later if we want to upload galleries
-		console.log('Trying to send image of '+ files[0].bytes.length +' bytes to imgur');
-		var options = {
-			url: 'https://api.imgur.com/3/upload',
-			headers: { Authorization: 'Client-ID ' + clientID }
-		};
-		var r = request.post(options, function(err, req, body){
-			if (err) {
-				console.log('Error while uploading to imgur', err);
-				return res.send({error:'Error while uploading to imgur'});
-			}
-			if (!body || !body.length) {
-				return res.send({error: "Empty answer from imgur"});
-			}
-			var data = {error:'imgur answer parsing'};
-			try {
-				data = JSON.parse(body).data;
-			} catch (e) {
-				console.log("Error while parsing imgur answer:", e);
-				console.log(body);
-				return res.send({error: "Invalid JSON in imgur's answer"});
-			}
-			if (data && data.error) return res.send({error:"imgur answered : "+data.error});
-			if (!data || !data.id) return res.send({error:"Miaou didn't understand imgur's answer"});
-			bo.end(); // we don't count failed uploads
+		exports.sendImageToImgur(files[0].bytes).then(data=>{
 			res.send({image:data});
-		})
-		var form = r.form();
-		form.append('type', 'file');
-		form.append('image', files[0].bytes);
+		});
 	});
 	req.pipe(busboy);
 }
