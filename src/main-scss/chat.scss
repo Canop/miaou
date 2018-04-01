@@ -752,7 +752,7 @@ code {
 				z-index: 12;
 				color: $input-sizer-handle-color;
 				background: $input-sizer-handle-background;
-				margin-top: -6px;
+				margin-top: -7px;
 				padding: 0px 20px;
 				font-size: 8px;
 				border-radius: 3px;
@@ -1168,6 +1168,8 @@ body.mobile {
 	font-size: 95%;
 	opacity: 0.7;
 	padding: 12px 0;
+	user-select: none;
+	-moz-user-select: none;
 }
 .newerLoader + .olderLoader {
 	border-top:solid 7px #ccc;

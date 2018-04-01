@@ -2,7 +2,7 @@
 .bronze-badge, .silver-badge, .gold-badge {
 	border-radius: 3px;
 	padding: 2px 5px;
-	background-color: rgba(206, 224, 237, 0.41);
+	background-color: rgba(235, 243, 247, .93);
 	box-shadow: 0 0 1px rgba(0, 0, 0, .4);
 	color: #222244;
 	line-height: 1.9;
@@ -19,19 +19,23 @@
 .bronze-badge::before, .bronze-badge-count::before,
 .silver-badge::before, .silver-badge-count::before,
 .gold-badge::before, .gold-badge-count::before {
-	content: "⚫";
-	text-shadow: 0 0 1px rgba(255,255,255,.5);
+	content: "";
+	display: inline-block;
+	border-radius: 5px;
+	height: 10px;
+	width: 10px;
+	box-shadow: 0 0 1px rgba(255,255,255,.5);
 	margin: 0 4px 0 0;
-	font-size: 16px;
+	background-color: #555;
 }
 .bronze-badge::before, .bronze-badge-count::before {
-	color: #d1a684;
+	background-color: #d1a684;
 }
 .silver-badge::before, .silver-badge-count::before {
-	color: #b4b8bc;
+	background-color: #b4b8bc;
 }
 .gold-badge::before, .gold-badge-count::before {
-	color: #fdcc02;
+	background-color: #fdcc02;
 }
 
 .bronze-badge-count, .silver-badge-count, .gold-badge-count {
