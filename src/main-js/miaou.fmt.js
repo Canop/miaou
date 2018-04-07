@@ -30,7 +30,7 @@ miaou(function(fmt){
 				return '<span class='+clas+'>'+con+'</span>';
 			})
 			.replace( // example : [dystroy](http://dystroy.org)
-				/\[([^\]]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
+				/\[([^\]<>]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
 			)
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s, t, r, _, m){
@@ -44,9 +44,9 @@ miaou(function(fmt){
 				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
 			.replace(
-				// example : http://dystroy.org
-				/(^|[^"])((https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;])/ig,
-				'$1<a target=_blank href="$2">$2</a>'
+				// example : https://dystroy.org
+				/(^|[^"<>])((?:https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;<>])($|[ \(\),\.\:])/ig,
+				'$1<a target=_blank href="$2">$2</a>$3'
 			)
 			.replace(/\[[ .]\]/g, "☐")
 			.replace(/\[x]/ig, "☑")

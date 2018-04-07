@@ -83,5 +83,9 @@ buster.testCase("Formatting - Links", {
 	"raw URL with tilde": t(
 		"bla https://www.slant.co/versus/42/62/~vim_vs_neovim",
 		'bla <a target=_blank href="https://www.slant.co/versus/42/62/~vim_vs_neovim">https://www.slant.co/versus/42/62/~vim_vs_neovim</a>'
+	),
+	"markdown link with URL as label": t( // bug : https://dystroy.org/miaou/3?Code_Croissants#8166083
+		"[https://youtu.be/E_WF8BEwxxw?t=29](https://youtu.be/E_WF8BEwxxw?t=29)",
+		'<a target=_blank href="https://youtu.be/E_WF8BEwxxw?t=29">https://youtu.be/E_WF8BEwxxw?t=29</a>'
 	)
 });
