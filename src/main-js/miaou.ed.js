@@ -58,7 +58,10 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			});
 			return;
 		}
-		if (!txt.replace(replyRegex, '').length) return;
+		if (!txt.replace(/\s*@(\w[\w\-\.]{2,})(#\d+)?/g, '').length) {
+			console.log("empty message");
+			return;
+		}
 		if (/(^|\W)@room\b/.test(txt) && usr.nbRecentUsers()>9) {
 			miaou.dialog({
 				title: "@room ping",
