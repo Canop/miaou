@@ -20,6 +20,7 @@
     "double-ended-queue": "2.1.0-0",
     "express": ">=3.4.0",
     "express-session": ">=1.7.2",
+    "file-archive": "^0.1.0",
     "graceful-fs": "^4.1.11",
     "iconv-lite": ">=0.2.11",
     "passport": ">=0.2.2",
