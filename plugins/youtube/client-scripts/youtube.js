@@ -1,9 +1,11 @@
 miaou(function(plugins, md){
 
-	var regex = /^\s*(<span[^>]+>[^<]+<\/span>)?\s*<a[^>]* href="https?:\/\/(?:www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=|youtu\.be\/)([a-zA-Z0-9-_]+)[\?&#\w\d=]*">[^<>]+<\/a>\s*$/;
+	var regex = /^\s*(<span[^>]+>[^<]+<\/span>)?\s*<a[^>]* href="https?:\/\/(?:www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=|youtu\.be\/)([a-zA-Z0-9-_]+)(?:[?&]t=(\d+))?[\?&#\w\d=]*">[^<>]+<\/a>\s*$/;
 
-	function getEmbedLink(id){
-		return 'https://www.youtube.com/embed/' + id + '?html5=1';
+	function getEmbedLink(id, t){
+		var url = 'https://www.youtube.com/embed/' + id + '?html5=1';
+		if (t) url += "&start="+t;
+		return url;
 	}
 
 	// We want to make sure the video size isn't too big
@@ -41,7 +43,7 @@ miaou(function(plugins, md){
 			var r = '<iframe width=' + size.width +
 				' height=' + size.height +
 				' sandbox="allow-forms allow-scripts allow-same-origin"' +
-				' src="' + getEmbedLink(match[2]) + '"' +
+				' src="' + getEmbedLink(match[2], match[3]) + '"' +
 				' frameborder=0 allowfullscreen></iframe>';
 			if (match[1]) r = match[1] + "<br>" + r;
 			return r;
