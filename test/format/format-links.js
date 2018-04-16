@@ -36,9 +36,9 @@ buster.testCase("Formatting - Links", {
 		"[dystroy](http://dystroy.org/bla,bla,bla)",
 		'<a target=_blank href="http://dystroy.org/bla,bla,bla">dystroy</a>'
 	),
-	"// markdown link with an URL as name": t(
+	"markdown link with an URL as name": t(
 		'[http://dystroy.org](http://dystroy.org/cv)',
-		'<a target="_blank" href="http://dystroy.org/cv">http://dystroy.org</a>'
+		'<a target=_blank href="http://dystroy.org/cv">http://dystroy.org</a>'
 	),
 	"tricky URL with underscores - 1": t(
 		"http://this.link/shouldnt_be_styled/index.xml",
