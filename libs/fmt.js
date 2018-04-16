@@ -76,6 +76,7 @@ exports.oxford = function(arr, ifempty){
 	if (!l) return ifempty;
 	if (l<2) return arr[0];
 	arr = arr.slice();
+	if (l<3) return arr.join(" and ");
 	arr[l-1] = "and " + arr[l-1];
 	return arr.join(", ");
 }
