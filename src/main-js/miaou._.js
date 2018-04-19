@@ -150,7 +150,7 @@ function miaou(f){
 			console.log("not sending error");
 			return;
 		}
-		$.post("/error", {
+		$.post((miaou.root||"/")+"error", {
 			user:miaou.locals.me ? miaou.locals.me.name : "?",
 			page:location.href,
 			message:message,
