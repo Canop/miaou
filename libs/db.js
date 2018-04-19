@@ -772,7 +772,6 @@ proto._searchConditions = function(s, args, cons){
 }
 
 proto.search = async function(s){
-	console.log('s:', s);
 	let	args = [],
 		conditions = [];
 	let psname = "search" + this._searchConditions(s, args, conditions);

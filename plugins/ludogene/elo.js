@@ -122,7 +122,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 			r[g.current].d++;
 			this.t = r[g.current].name + " forfeited";
 		} else {
-			console.log("ERROR", r, g); // happens on Flore
+			console.log("ERROR in game", g.m); // happens on Flore
 		}
 	} else {
 		this.t = "in progress";
@@ -130,11 +130,11 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 	r[0].e0 += this.d0;
 	r[1].e1 += this.d1;
 }
+
 GameImpact.prototype.gameLink = function(data){
 	let	n0 = data.ratingsMap.get(this.p0).name,
 		n1 = data.ratingsMap.get(this.p1).name,
 		uri = this.r+"#"+this.m;
-	console.log('this:', this);
 	if (this.s0) return `[${n0} (${this.s0}) - ${n1} (${this.s1})](${uri})`;
 	else return `[${n0} - ${n1}](${uri})`;
 }
