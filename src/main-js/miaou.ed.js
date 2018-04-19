@@ -121,7 +121,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 		if (!matches.length) return;
 		savedValue = input.value;
-		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
+		$autocompleter = $('<div id=autocompleter>').prependTo('#input-panel');
 		acStartIndex = input.selectionEnd - s.length;
 		matches.forEach(function(name){
 			$('<span>').text(name)
@@ -493,7 +493,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 		if (!names.length) return;
 		if ($autocompleter) $autocompleter.remove();
-		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
+		$autocompleter = $('<div id=autocompleter>').prependTo('#input-panel');
 		acStartIndex = input.selectionEnd - acname.length;
 		names.forEach(function(name){
 			var $span = $('<span>').text(name).appendTo($autocompleter).click(function(){
