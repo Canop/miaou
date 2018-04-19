@@ -33,6 +33,9 @@ async function onCommand(ct){
 	await page.property('viewportSize', {width, height});
 	const status = await page.open(url);
 	console.log('status:', status);
+	if (status=="fail") {
+		throw new Error("URL fetching failed");
+	}
 	let b64 = await page.renderBase64("png");
 	await instance.exit();
 	let data = await sendToImgur(b64);
