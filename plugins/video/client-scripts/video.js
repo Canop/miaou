@@ -65,7 +65,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		}
 		if (iab) {
 			gui.scrollToBottom();
-			$('video').load(gui.scrollToBottom);
+			$('video').on("loadeddata", gui.scrollToBottom);
 		}
 	}
 	VD.prototype.send = function(verb, o){
