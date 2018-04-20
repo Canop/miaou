@@ -26,6 +26,14 @@ plugins/snow
 plugins/miaou.static-user-list
 plugins/local-dev
 plugins/ufo
+plugins/localbot/ 
+plugins/mastodon/ 
+plugins/mountypedia/ 
+plugins/sample-view/ 
+plugins/sciz/ 
+
+# imported plugins stuff
+roulette-*
 
 # edition byproducts
 *.swp
