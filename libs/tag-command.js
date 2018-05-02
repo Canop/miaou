@@ -57,6 +57,7 @@ function doCommand(ct){
 				throw new Error ("A new tag need a description");
 			}
 		}
+		ct.end();
 	});
 }
 

@@ -23,6 +23,7 @@ function onCommand(ct){
 		# HTML:
 		    <a href=${roomUrl} alt="${alt}" title="${alt}"><img src=${shieldUrl}></a>`
 	);
+	ct.end();
 }
 
 exports.registerCommands = function(cb){

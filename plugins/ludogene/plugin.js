@@ -132,6 +132,7 @@ function onCommand(ct){
 			{name:otherUserName}, // id will be resolved later
 			{id:m.author, name:m.authorname}
 		]));
+		ct.end();
 	});
 }
 

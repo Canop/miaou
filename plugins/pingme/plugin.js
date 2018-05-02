@@ -226,6 +226,9 @@ function doCommandNewAlarm(ct){
 				"insert pingme_alarm"
 			);
 		})
+		.then(function(){
+			ct.end("create");
+		})
 		.finally(db.off);
 	}
 }
@@ -259,31 +262,32 @@ function doCommandListAlarms(ct){
 	.then(function(alarms){
 		ct.nostore = true;
 		ct.reply(alarmsListMarkdown(alarms), true);
+		ct.end("list");
 	});
 }
 
-function doCommandCancelAlarm(ct, num){
-	return getUserActiveAlarms(ct, this)
-	.then(function(alarms){
-		var removed = alarms.splice(num-1, 1);
-		if (!removed.length) {
-			return ct.reply(
-				"Alarm not found.\nUse `!!pingme list` to see alarms and their id", true
-			);
-		}
-		removed = removed[0];
-		var existingAlarm = alarmMap.get(removed.message); // not defined if previous alarm already done
-		if (existingAlarm.timeout) {
-			existingAlarm.timeout.clear();
-		}
-		ct.reply("Alarm removed.\n" + alarmsListMarkdown(alarms), true);
-		return this.execute(
-			"delete from pingme_alarm where message=$1",
-			[removed.message],
-			"delete_pingme",
-			false
+async function doCommandCancelAlarm(ct, num){
+	var alarms = await getUserActiveAlarms(ct, this)
+	var removed = alarms.splice(num-1, 1);
+	if (!removed.length) {
+		await ct.reply(
+			"Alarm not found.\nUse `!!pingme list` to see alarms and their id", true
 		);
-	});
+		return;
+	}
+	removed = removed[0];
+	var existingAlarm = alarmMap.get(removed.message); // not defined if previous alarm already done
+	if (existingAlarm.timeout) {
+		existingAlarm.timeout.clear();
+	}
+	ct.reply("Alarm removed.\n" + alarmsListMarkdown(alarms), true);
+	await this.execute(
+		"delete from pingme_alarm where message=$1",
+		[removed.message],
+		"delete_pingme",
+		false
+	);
+	ct.end("cancel");
 }
 
 function onCommand(ct){

@@ -15,6 +15,7 @@ function la(ct){
 			...auths.map(a => a.name + "|" + a.auth).sort()
 		];
 		ct.reply(lines.join("\n"), true);
+		ct.end();
 	});
 }
 
@@ -25,6 +26,7 @@ function lu(ct){
 			"Room users:"+names.map(u => "\n* "+u.name).sort().join(''),
 			true
 		);
+		ct.end();
 	});
 }
 

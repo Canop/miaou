@@ -1,6 +1,5 @@
 
 const	auths = require('../../libs/auths.js'),
-	bench = require("../../libs/bench.js"),
 	Broadcast = require("./client-scripts/broadcast.Broadcast.js"),
 	ws = require('../../libs/ws.js');
 
@@ -56,7 +55,6 @@ async function onCommand(ct){
 	}
 	if (b.status==="sending") {
 		if (!b.content) throw new Error("Can't broadcast an empty message");
-		let bo = bench.start("broadcast dispatch");
 		let bm = {
 			content: b.content,
 			created: Date.now()/1000|0,
@@ -80,8 +78,10 @@ async function onCommand(ct){
 			}
 		}
 		console.log('nbEmits:', nbEmits);
-		bo.end();
 		b.status = `sent to ${userIds.size} users`;
+		ct.end("send");
+	} else {
+		ct.end();
 	}
 	ct.message.content = b.md();
 }

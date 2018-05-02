@@ -123,6 +123,7 @@ exports.doLadder = async function(con, ct, args){
 		c += await getLastToGetMd(con, tagname);
 	}
 	ct.reply(c, ct.nostore = true);
+	ct.end("ladder");
 }
 
 

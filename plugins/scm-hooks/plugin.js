@@ -122,20 +122,20 @@ function listRepos(ct, provider){
 	}).finally(db.off);
 }
 
-function onCommand(ct, provider){
+async function onCommand(ct, provider){
 	var m;
 	if ((m=ct.args.match(/^watch (?:https?:\/\/github\.com\/)?([\w-]+\/[\w-.]+)/))) {
 		ct.shoe.checkAuth("admin");
-		return watchRepo.call(this, ct, provider, m[1]);
-	}
-	if ((m=ct.args.match(/^unwatch (?:https?:\/\/github\.com\/)?([\w-]+\/[\w-.]+)/))) {
+		await watchRepo.call(this, ct, provider, m[1]);
+	} else if ((m=ct.args.match(/^unwatch (?:https?:\/\/github\.com\/)?([\w-]+\/[\w-.]+)/))) {
 		ct.shoe.checkAuth("admin");
-		return unwatchRepo.call(this, ct, provider, m[1]);
+		await unwatchRepo.call(this, ct, provider, m[1]);
+	} else if (ct.args==="list") {
+		await listRepos.call(this, ct, provider);
+	} else {
+		ct.reply("Command not understood. Try `!!help !!"+provider.command+"` for more information.", true);
 	}
-	if (ct.args==="list") {
-		return listRepos.call(this, ct, provider);
-	}
-	ct.reply("Command not understood. Try `!!help !!"+provider.command+"` for more information.", true);
+	ct.end();
 }
 
 function scmCalling(provider, req, res){
@@ -145,7 +145,6 @@ function scmCalling(provider, req, res){
 	var	queryRooms = req.query.rooms || req.query.room || "",
 		rooms = queryRooms.split(/\D+/).filter(Boolean).map(Number),
 		anal;
-	console.log("ROOMS:", rooms);
 	try {
 		anal = provider.analyzeIncomingData(req.headers, req.body);
 	} catch (e) {

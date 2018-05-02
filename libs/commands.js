@@ -1,4 +1,5 @@
 const	path = require('path'),
+	bench = require("./bench.js"),
 	Promise = require("bluebird"),
 	server = require('./server.js'),
 	commandParsingRegex = /^ {0,3}(@\w[\w\-]{2,19}#?\d*\s+)?!!(\w+)\s*([^\n]*)/,
@@ -19,6 +20,7 @@ function CommandTask(cmd, args, shoe, message){
 	this.alwaysPing = false; // do cross room pings even if the user has no authorization
 	this.withSavedMessage = null; // commands can set a callback which will be called with (shoe, message)
 	this.ignoreMaxAgeForEdition = false;
+	this.bo = bench.start(`!!${cmd.name}`);
 }
 CommandTask.prototype.exec = function(con){
 	var ct = this;
@@ -31,6 +33,11 @@ CommandTask.prototype.exec = function(con){
 CommandTask.prototype.reply = function(content, asFlake){
 	this.replyContent = content;
 	this.replyAsFlake = asFlake;
+}
+// called at the very end of the action (can be asynchronous), enables benchmarking
+CommandTask.prototype.end = function(subcommand){
+	if (subcommand) this.bo.rename(`!!${this.cmd.name} / ${subcommand}`);
+	this.bo.end();
 }
 CommandTask.prototype.user = function(){
 	return this.shoe.publicUser;

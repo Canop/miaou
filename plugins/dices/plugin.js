@@ -32,6 +32,7 @@ function rollDices(ct){
 		'|'+cols.map(()=> ':-:').join('|')+'|\n'+
 		'|'+row.join('|')+'|\n'
 	);
+	ct.end();
 }
 
 exports.registerCommands = function(registerCommand){

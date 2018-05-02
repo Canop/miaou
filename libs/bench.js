@@ -7,6 +7,14 @@
 // 	... do the thing here, might be asynchronous and even recursive
 // 	benchOperation.end();
 //
+// It's possible to reattach an unfinished  operation to another category
+//  while it's processed:
+//
+// 	let bo = bench.start("mycommand")
+// 	...
+// 	bo.rename("mycommand/special_case")
+// 	bo.end()
+//
 // all timings here are in microseconds
 
 const	process = require("process"),
@@ -64,6 +72,11 @@ class BenchOperation{
 		this.bench.add(micros);
 		return micros;
 	}
+	rename(name){
+		var bench = benchs.get(name);
+		if (!bench) benchs.set(name, bench = new Accumulator(name));
+		this.bench = bench;
+	}
 }
 
 exports.dump = function(){
@@ -109,6 +122,7 @@ function doCommand(ct){
 		rows
 	});
 	ct.reply(c);
+	ct.end();
 }
 
 exports.registerCommands = function(registerCommand){

@@ -248,7 +248,6 @@ exports.doStats = function(ct, miaou){
 	if (from) sql += ' '+from;
 	console.log("STATS", psname);
 
-
 	return this.queryRows(sql, args, psname).then(function(rows){
 		if (!rows.length) {
 			return ct.reply("nothing", false);
@@ -265,6 +264,7 @@ exports.doStats = function(ct, miaou){
 			))
 		});
 		ct.reply(c, ct.nostore = c.length>800);
+		ct.end();
 	})
 }
 

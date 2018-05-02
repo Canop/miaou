@@ -44,12 +44,13 @@ var openPmRoom = exports.openPmRoom = function(shoe, otherUserId, otherUserName)
 exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name: "pm",
-		fun: function(ct){
+		fun: async function(ct){
 			var m = ct.args.match(/@([\w-]{3,})/);
 			if (!m) throw "missing username in !!pm command";
 			ct.silent = true;
 			ct.nostore = true;
-			return openPmRoom.call(this, ct.shoe, 0, m[1]);
+			await openPmRoom.call(this, ct.shoe, 0, m[1]);
+			ct.end();
 		},
 		help: "open a dialog room to discuss with a specific user. Usage : `!!pm @someuser`",
 		filter: room => !room.dialog

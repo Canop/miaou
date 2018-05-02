@@ -6,10 +6,19 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		var	pingRegex = new RegExp('(^|\\s)@(room|here|'+locals.me.name+')\\b', 'i'),
 			info = { state:'connecting', start:Date.now() },
 			nbEntries = 0, // grows on disconnect+reconnect
+			//lastReceptionTime, // ms since epoch
 			socket = window.io.connect(location.origin);
 
 		ws.emit = socket.emit.bind(socket);
-		ws.on = socket.on.bind(socket);
+		ws.on = function(eventType, fun){
+			socket.on(eventType, function(arg){
+				if (/connect/i.test(eventType)) {
+					console.log("/connect/:", eventType, arg);
+				}
+				//lastReceptionTime = Date.now();
+				fun(arg);
+			});
+		}
 
 		function messagesIn(messages){
 			var	visible = vis(),
