@@ -93,7 +93,7 @@ $mobile-tab-color: #ccc;
 // #users
 $user-text-color-in-user-list: #999;
 $connected-user-text-color-in-user-list: #eee;
-$connected-user-bg-color-in-user-list: #444;
+$connected-user-bg-color-in-user-list: #222;
 
 // user in message
 $user-text-color-in-message: #aaa;
@@ -249,10 +249,14 @@ $menu-item-color: #aaa;
 $menu-background: #444;
 $menu-item-hover-bg: #333;
 
+// bubbles
+$bubble-bg: #000; //#080808;
+$bubble-color: #bbb;
+
 // tags
 $tag-color: #999;
 $tag-background: linear-gradient(to bottom, #333, #222);
-$tag-bubble-background-color: #222;
+$tag-bubble-background-color: #444;
 $tag-bubble-color: #fb0;
 .tag-bubble pre.prettyprint {
 	color: #aaa;
