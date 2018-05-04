@@ -34,25 +34,25 @@
 		switch (side) {
 		case "bottom-left": // at the bottom right of the target, going towards left
 			css = {
-				right: ww-targetRect.right+10,
+				right: ww-targetRect.right + Math.min(targetRect.width-25|0, 10),
 				top: targetRect.bottom,
 			};
 			break;
 		case "bottom-right": // at the bottom left of the target, going towards right
 			css = {
-				left: targetRect.left - 2,
+				left: targetRect.left + Math.min(targetRect.width-26|0, -2),
 				top: targetRect.bottom+1,
 			};
 			break;
 		case "top-left": // at the bottom right, bubble extending towards left
 			css = {
-				right: ww-targetRect.right+10,
+				right: ww-targetRect.right + Math.min(targetRect.width-25|0, 10),
 				bottom: wh-targetRect.top,
 			};
 			break;
 		case "top-right": // at the bottom left, bubble extending towards right
 			css = {
-				left: targetRect.left - 2,
+				left: targetRect.left + Math.min(targetRect.width-26|0, -2),
 				bottom: wh-targetRect.top,
 			};
 			break;
@@ -84,7 +84,8 @@
 		}
 		$b.css(css).addClass(side+'-bubble');
 		if (options.text) $c[0].innerText = options.text;
-		if (options.md) $c[0].innerHTML = fmt.mdTextToHtml(options.md);
+		else if (options.md) $c[0].innerHTML = fmt.mdTextToHtml(options.md);
+		else if (options.html) $c[0].innerHTML = options.html;
 		if (options.blower) {
 			var r = options.blower.call(this, $c);
 			if (r === false) $b.remove();
@@ -129,5 +130,8 @@
 		}
 	}, 0);
 
+	$("#messages").bubbleOn("[bubble]", function($c){
+		$c.text(this.attr("bubble"));
+	});
 });
 
