@@ -12,7 +12,8 @@ $box-background: #eee;
 $general-text-color: #aaa;
 $title-text-color: #fb0;
 $emphasis-text-color: #fb0;
-$message-list-bg: linear-gradient(#444, #111);
+//$message-list-bg: linear-gradient(#444, #111);
+$message-list-bg: #151515; //#1a1a1a;
 $ping-bg: rgb(27, 27, 27);
 $ping-me-bg: rgb(68, 51, 0);
 
@@ -106,7 +107,7 @@ $message-me-bg: transparent;
 $hovered-message-content-bg: transparent;
 $message-link-color: rgb(178, 139, 121);
 $code-text-color: #888;
-$goingto-bg: #000;
+$goingto-bg: #080808;
 $slashme-color: #777;
 $unseen-message-bg: rgba(255,255,0,0.2);
 $opener-closer-color: rgba(255,200,0,0.5);
