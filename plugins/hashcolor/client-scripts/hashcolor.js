@@ -2,21 +2,25 @@
 
 miaou(function(md, plugins){
 
+	var replacer = new Groumf();
+	replacer.skipTags('pre');
+
 	function render($c){
-		Groumf.replaceTextWithHTMLInHTMLUsingRegex(
+		replacer.replaceTextWithHTMLInHTMLUsingRegex(
 			$c[0],
-			/(?:^|\s|\()#([0-9a-f]{3}|[0-9a-f]{6})\b/ig,
-			function(s, color){
-				return s+'<div class=hashcolor style="background:#'+color+'"/>';
+			/(^|\s|\()(#(?:[0-9a-f]{3}){1,2})\b/ig,
+			function(s, start, color){
+				return `${start}<div class=hashcolor style="background:${color}" bubble="${color}"></div>`;
 			}
 		);
 	}
-	
+
 	plugins.hashcolor = {
 		start: function(){
 			md.registerRenderer(render, true);
 		}
 	}
+
 
 });
 
