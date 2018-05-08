@@ -14,7 +14,7 @@ function boxedStrip($, line){
 exports.init = function(miaou){
 	miaou.lib("page-boxers").register({
 		name: "commitStrip",
-		pattern: /^\s*(?:https?:\/\/)?www\.commitstrip\.com\/(?:en|fr)\/[0-9]{4}\/(?:[0-9]{2}\/){2}\S+\/?\s*$/,
+		pattern: /^\s*https?:\/\/www\.commitstrip\.com\/(?:en|fr)\/[0-9]{4}\/(?:[0-9]{2}\/){2}\S+\/?\s*$/,
 		box: boxedStrip
 	});
 }
