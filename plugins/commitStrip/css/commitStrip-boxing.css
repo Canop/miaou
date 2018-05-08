@@ -1,0 +1,9 @@
+.commitStrip {
+	text-align: center;
+}
+
+
+.box .commitStrip div.entry-content img {
+	max-height: none;
+	max-width: 100%;
+}

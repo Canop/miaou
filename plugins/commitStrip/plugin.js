@@ -1,19 +1,20 @@
 
 // box commitStrip links
-
 function boxedStrip($, line){
-	var	$box = $('<div/>').addClass('commitStrip'),
-		$comic = $('article');
-	$box.append($comic);
-
+	let $box = $('<div/>').addClass('commitStrip');
+	let $art = $('article').first();
+	$box.append($('header h1.entry-title', $art));
+	$box.append($('header a', $art));
+	$('a', $box).append($('div.entry-content', $art));
+	$box = $('<div/>').append($box);
+	console.log($box.html());
 	return $box.html();
 }
 
 exports.init = function(miaou){
 	miaou.lib("page-boxers").register({
 		name: "commitStrip",
-		pattern: /^\s*(https?:\/\/)?www\.?xkcd\.com\/[0-9]*\/?\s*$/,
-		box: abstract
+		pattern: /^\s*(?:https?:\/\/)?www\.commitstrip\.com\/(?:en|fr)\/[0-9]{4}\/(?:[0-9]{2}\/){2}\S+\/?\s*$/,
+		box: boxedStrip
 	});
 }
-// ihavechosenthispassword4miaou@psql
