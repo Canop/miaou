@@ -7,7 +7,6 @@ function boxedStrip($, line){
 	$box.append($('header a', $art));
 	$('a', $box).append($('div.entry-content', $art));
 	$box = $('<div/>').append($box);
-	console.log($box.html());
 	return $box.html();
 }
 
