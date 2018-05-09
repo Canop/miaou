@@ -12,6 +12,7 @@ let	gulp = require("gulp"),
 	del = require("del"),
 	glob = require("glob"),
 	gulpif = require("gulp-if"),
+	//debug = require("gulp-debug"),
 	babili = require("gulp-babili");
 
 let mode = {
@@ -227,21 +228,22 @@ gulp.task("themes:standard-files", ()=>
 		.pipe(gulp.dest("static/themes/"+theme))
 	))
 );
-gulp.task("themes:specific-files", ["themes:standard-files"], ()=>
+gulp.task("themes:specific-files", ()=>
 	merge(themes().map(theme =>
 		gulp.src(path.join("themes", theme, "*.scss"))
 		.pipe(gulp.dest("static/themes/"+theme))
 	))
 );
-gulp.task("themes:compile-scss", ["themes:specific-files"], ()=>
+gulp.task("themes:compile-scss", ()=>
 	merge(themes().map(theme =>
 		gulp.src(["static/themes/"+theme+"/main.scss", "plugins/*/scss/*.scss"])
 		.pipe(concat("main.scss"))
+		.pipe(gulp.dest(`static/themes/${theme}`)) // concat doesn't properly find the directory with gulp4
 		.pipe(sass())
 		.pipe(gulp.dest("static/themes/"+theme))
 	))
 );
-gulp.task("themes", ["themes:compile-scss"], ()=>
+gulp.task("themes:package", ()=>
 	merge(themes().map(theme =>
 		gulp.src(["static/themes/"+theme+"/main.css", "plugins/*/css/*.css"])
 		.pipe(concat("miaou.css"))
@@ -254,19 +256,28 @@ gulp.task("page-scss", ()=>
 	.pipe(sass())
 	.pipe(gulp.dest("static"))
 );
+
 gulp.task("clean", () => del("static/*"));
-gulp.task("build", ["server-js", "lint-client-js", "main-js", "page-js", "page-scss", "resources:main", "resources:plugins", "themes"]);
-gulp.task("lint", ["server-js", "lint-client-js"]);
-gulp.task("set-watch-mode", ()=>{
+
+gulp.task("themes", gulp.series(
+	"themes:standard-files", "themes:specific-files", "themes:compile-scss", "themes:package"
+));
+
+gulp.task("build", gulp.series(
+	"server-js", "lint-client-js", "main-js", "page-js", "page-scss", "resources:main", "resources:plugins", "themes"
+));
+
+gulp.task("set-watch-mode", (done)=>{
 	mode.watch = true;
+	done();
 });
 
-gulp.task("watch", ["set-watch-mode", "build"], ()=>{
+gulp.task("watch", gulp.series("set-watch-mode", "build", function watch(){
 	for (let task in globs) {
-		gulp.watch(globs[task], [task]);
+		gulp.watch(globs[task], gulp.series(task));
 	}
-	gulp.watch(["themes/**/*.scss", "plugins/**/*.scss", "plugins/**/*.css", "src/**/*.scss"], ["themes"])
-	gulp.watch(["src/*-js/*.js", "plugins/*/client-scripts/*.js"], ["lint-client-js"]);
-});
+	gulp.watch(["themes/**/*.scss", "plugins/**/*.scss", "plugins/**/*.css", "src/**/*.scss"], gulp.series("themes"))
+	gulp.watch(["src/*-js/*.js", "plugins/*/client-scripts/*.js"], gulp.series("lint-client-js"));
+}));
 
-gulp.task("default", ["build"]);
+gulp.task("default", gulp.series("watch"));
