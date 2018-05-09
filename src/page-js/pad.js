@@ -127,7 +127,7 @@ miaou(function(chat, gui, locals, roomFinder, time, watch, ws){
 		if (e.which === 35 && !$('#rooms-panel').hasClass('open')) { // end
 			miaou.gui.scrollToBottom();
 		}
-		if ((e.ctrlKey && e.shiftKey && !e.altKey) && e.which===32) { // ctrl - space
+		if ((e.ctrlKey && !e.shiftKey && !e.altKey) && e.which===32) { // ctrl - space
 			toggleRoomsPanel();
 			return false;
 		}
