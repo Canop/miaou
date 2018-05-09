@@ -15,8 +15,7 @@ const	apiversion = 94,
 	rooms = require('./rooms.js'),
 	pageBoxer = require('./page-boxers.js'),
 	langs = require('./langs.js'),
-	throttleUser = require('./throttler.js').throttle,
-	shoes = require('./shoes.js');
+	throttleUser = require('./throttler.js').throttle;
 
 var	miaou,
 	maxContentLength,
@@ -28,7 +27,8 @@ var	miaou,
 	onNewShoePlugins,
 	allowSearchExactExpressions,
 	allowSearchRegularExpressions,
-	onReceiveMessagePlugins;
+	onReceiveMessagePlugins,
+	shoes;
 
 exports.configure = function(_miaou){
 	miaou = _miaou;
@@ -49,7 +49,7 @@ exports.configure = function(_miaou){
 	].reduce(function(c, k){
 		c[k] = config[k]; return c;
 	}, {});
-	commands.configure(miaou);
+	miaou.lib("commands");
 	return this;
 }
 
@@ -1002,7 +1002,7 @@ function handleUserInRoom(socket, completeUser){
 
 exports.listen = function(server, sessionStore, cookieParser){
 	io = miaou.io = socketio(server);
-	shoes.configure(miaou);
+	shoes = miaou.lib("shoes");
 	shoes.setOnSendMessagePlugins(onSendMessagePlugins);
 	io.use(function(socket, next){
 		cookieParser(socket.handshake, {}, function(err){

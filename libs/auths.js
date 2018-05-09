@@ -6,12 +6,19 @@ const	levels = ['read', 'write', 'admin', 'own'],
 	ws = require('./ws.js');
 
 var	serverAdminIds,
+	miaou,
 	db;
 
-exports.configure = async function(miaou){
+exports.configure = function(_miaou){
+	miaou = _miaou;
 	db = miaou.db;
+	startPeriodicAccessRequestCleaning(miaou);
+	return this;
+}
+
+exports.init = async function(){ // make miaou.lib async to avoid this ?
 	serverAdminIds = new Set;
-	db.do(async function(con){
+	await db.do(async function(con){
 		for (let idOrName of miaou.conf("serverAdmins")||[]) {
 			let user;
 			if (typeof idOrName==="number") user = await con.getUserById(idOrName);
@@ -19,7 +26,6 @@ exports.configure = async function(miaou){
 			if (user) serverAdminIds.add(user.id);
 		}
 	});
-	startPeriodicAccessRequestCleaning(miaou);
 	return this;
 }
 

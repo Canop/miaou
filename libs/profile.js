@@ -55,7 +55,7 @@ exports.appAllUsername = function(req, res){
 		console.log('Err...', err);
 		error = err;
 	}).then(function(){
-		return prefs.get.call(this, req.user.id)
+		return prefs.get(this, req.user.id)
 	}).then(function(userPrefs){
 		var hasValidName = naming.isValidUsername(req.user.name),
 			theme = prefs.theme(userPrefs, req.query.theme);

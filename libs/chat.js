@@ -37,7 +37,7 @@ exports.appGet = function(req, res){
 		if (!room) throw new Error("No room with id " + roomId);
 		room.path = server.roomPath(room);
 		req.session.room = room;
-		let	userPrefs = await prefs.get.call(con, userId),
+		let	userPrefs = await prefs.get(con, userId),
 			isMobile = server.mobile(req),
 			theme = prefs.theme(userPrefs, req.query.theme, isMobile);
 		let ban = await con.getRoomUserActiveBan(roomId, userId);

@@ -79,7 +79,7 @@ exports.configure = function(miaou){
 	});
 	['afk', 'ban', 'bans', 'bench', 'flake', 'list-users', 'pm', 'prefs', 'summon', 'tag-command']
 	.forEach(function(module){
-		require('./'+module+'.js').configure(miaou).registerCommands(registerCommand);
+		miaou.lib(module).registerCommands(registerCommand);
 	});
 	all.sort((a, b) => a.name>b.name ? 1 : -1);
 }
