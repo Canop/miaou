@@ -202,6 +202,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('rm_pings', notif.removePings)
 		.on('must_reenter', function(){
 			console.log("<- must_reenter");
+			info.state = 'must_reenter';
 			enter();
 		})
 		.on('disconnect', function(){
