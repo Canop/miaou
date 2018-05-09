@@ -146,12 +146,14 @@ miaou(function(md, plugins){
 			rotateXLabels = maxXLabelLength > 5,
 			mt = 2, // margin top
 			mr = 5, // margin right
-			mb = Math.max(58, 27+16*nbycols), // margin bottom
+			mb = Math.max(58, 55), // margin bottom
 			ml = rotateXLabels ? 35 : 5, // margin left
 			bm = 1, // space between two bars and between a bar and the border of its xval
 			n = xvals.length,
 			nbbars = n * nbycols,
-			barWidth = Math.min(Math.max(6, availableWidth/nbbars-bm|0), 20),
+			minXWidth = 16, // if the width is less than 15, the oblique text is too thight
+			minBarWidth = Math.max((minXWidth - bm)/nbycols - bm|0, 6), //
+			barWidth = Math.min(Math.max(minBarWidth, (availableWidth-ml-mr)/nbbars-bm|0), 20),
 			xWidth = ((barWidth+bm)*nbycols+bm), // width of a xval
 			gW = xWidth*n,
 			W = gW+mr+ml,
@@ -227,7 +229,7 @@ miaou(function(md, plugins){
 				if (height) {
 					ù('<rect', g).attr({
 						x:xbar, y:y, width:barWidth, height:height,
-						class: "bar", fill:ycol.color
+						class: "bar", fill:ycol.color, opacity:.9
 					});
 				}
 				if (options.sum||options["sum"+j]) {
