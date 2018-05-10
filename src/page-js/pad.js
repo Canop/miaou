@@ -103,7 +103,7 @@ miaou(function(chat, gui, locals, roomFinder, time, watch, ws){
 	});
 
 	$(window).on('keydown', function(e){
-		if (e.which===70 && e.ctrlKey && !$('#rooms-panel').hasClass('open')) {
+		if (e.which===70 && e.ctrlKey && !e.altKey && !$('#rooms-panel').hasClass('open')) {
 			righttab("search");
 			return false;
 		}

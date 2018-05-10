@@ -277,7 +277,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		$input.on('keydown', function(e){
 			notif.userAct();
 			if (miaou.dialog.has()) return false;
-			if (e.ctrlKey && !e.shiftKey) {
+			if (e.ctrlKey && !e.shiftKey && !e.altKey) {
 				switch (e.which) {
 				case 75: // ctrl - K : toggle code
 					ed.code.onCtrlK.call(this);
@@ -348,7 +348,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		})
 		.on('keyup', function(e){
 			if (e.which===17) return; // ctrl-
-			if (e.which===86 && e.ctrlKey) return; // end of ctrl-V
+			if (e.which===86 && e.ctrlKey && !e.altKey) return; // end of ctrl-V
 			ed.stateBeforePaste = null;
 			ed.code.onMove();
 			if (e.which===9) return false; // tab
