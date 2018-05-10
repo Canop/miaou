@@ -13,7 +13,7 @@ var	langs,
 	welcomeRoomIds;
 
 exports.configure = function(miaou){
-	langs = require('./langs.js').configure(miaou);
+	langs = miaou.lib("langs");
 	db = miaou.db;
 	welcomeRoomIds = miaou.config.welcomeRooms || [];
 	return this;
@@ -82,7 +82,7 @@ exports.updateMessage = function(message){
 // room admin page GET
 exports.appGetRoom = function(req, res){
 	db.do(async function(con){
-		let userPrefs = await prefs.get.call(con, req.user.id);
+		let userPrefs = await prefs.get(con, req.user.id);
 		let theme = await prefs.theme(userPrefs, req.query.theme);
 		let room;
 		try {
@@ -169,7 +169,7 @@ exports.appGetRooms = function(req, res){
 			}
 		}
 		let pings = await con.fetchUserPingRooms(userId);
-		let userPrefs = await prefs.get.call(con, userId);
+		let userPrefs = await prefs.get(con, userId);
 		let watches = await con.listUserWatches(userId);
 		var mobile = server.mobile(req);
 		let data = {

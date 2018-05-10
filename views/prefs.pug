@@ -116,83 +116,20 @@ html
 							#avatar-preview
 					.home-page
 						table.form
-							tr
-								th Desktop Notification
+							tr(data-pref="notif")
+							tr(data-pref="connot")
+							tr(data-pref="volume")
 								td
-									input#notif_never(type="radio", name="notif", value="never")
-									label(for="notif_never") Never
-									br
-									input#notif_on_ping(type="radio", name="notif", value="on_ping")
-									label(for="notif_on_ping") When you're pinged or replied to (<i>highly recommended</i>)
-									br
-									input#notif_on_message(type="radio", name="notif", value="on_message")
-									label(for="notif_on_message") Whenever a message is posted in an open room
-							tr
-								th Show Message Content in Desktop Notification
-								td
-									select#connot(name="connot")
-										option(value="yes") yes
-										option(value="no") no
-							tr
-								th Notification Sound
-								td
-									select#volume(name="volume")
-										option(value="0") none
-										option(value=".1") very quiet
-										option(value=".4") quiet
-										option(value=".7") standard
-										option(value="1") strong
 									button(type="button")#try-sound Try
-							tr
-								th When Tab Is Visible 
-								td
-									select#nifvis(name="nifvis")
-										option(value="no") no notification
-										option(value="yes") notify too
+							tr(data-pref="nifvis")
 					.home-page
 						table.form
-							tr
-								th Message Chat Theme
-								td
-									select#theme(name="theme")
-										option(value="default") default
-										each theme in themes
-											option(value=theme)= theme
-							tr
-								th Message Date Display
-								td
-									input#date_display_hover(type="radio", name="datdpl", value="hover")
-									label(for="date_display_hover") On hover
-									br
-									input#date_display_on_break(type="radio", name="datdpl", value="on_breaks")
-									label(for="date_display_on_break") On breaks
-									br
-									input#date_display_always(type="radio", name="datdpl", value="always")
-									label(for="date_display_always") Always
-							tr
-								th Auto-Clean Messages
-								td
-									select#mclean(name="mclean")
-										option(value="-1") disabled
-										option(value=100)= 100
-										option(value=200)= 200
-										option(value=500)= 500
-										option(value=1000)= 1000
-							//- tr
-							//- 	th Message Mobile Interface
-							//- 	td
-							//- 		select#beta(name="beta")
-							//- 			option(value="default") default
-							//- 			option(value="yes") Experimental Interface
+							tr(data-pref="theme")
+							tr(data-pref="datdpl")
+							tr(data-pref="mclean")
 					.home-page
 						table.form
-							tr
-								th Auto-watch rooms
-								td
-									select#otowat(name="otowat")
-										option(value="on_visit") When visiting the room
-										option(value="on_post") When posting in the room
-										option(value="never") Never
+							tr(data-pref="otowat")
 					.dialog-buttons
 						button#submit Save
 						button#close Home

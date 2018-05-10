@@ -13,6 +13,25 @@ miaou(function(locals, usr){
 
 	miaou.horn.init();
 
+	function getPrefDefinition(key){
+		for (var def of locals.prefDefinitions) {
+			if (def.key===key) return def;
+		}
+	}
+
+	$("tr[data-pref]").each(function(){
+		var key = $(this).data("pref");
+		var def = getPrefDefinition(key);
+		console.log('def:', def);
+		$("<th>").text(def.name).prependTo(this);
+		// we allow the preexistence of some content in the tr/td
+		var $td = $("td", this);
+		if (!$td.length) $td = $("<td>").appendTo(this);
+		$("<select>").attr({id:key, name:key}).append(def.values.map(
+			v => $("<option>").val(v.value).text(v.label)
+		)).prependTo($td);
+	});
+
 	function selectTab(i){
 		if (typeof i === "string" && i!=+i) {
 			var tabs = $(".home-tab").map(function(){ return $(this).text().toLowerCase(); }).get();

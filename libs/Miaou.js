@@ -17,7 +17,12 @@ class Miaou{
 	//  of the calling code (so that plugins don't have to know
 	//  their path relative to miaou)
 	lib(name){
-		return module.require("./"+name+".js");
+		let lib = module.require("./"+name+".js");
+		if (lib.configure && !lib.configured) {
+			lib.configure(this);
+			lib.configured = true;
+		}
+		return lib;
 	}
 
 	// return an already configured plugin, if available

@@ -1,25 +1,13 @@
 // Manages user preferences, including external profile infos and the choice of theme.
 //
 
-const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
-	Promise = require("bluebird"),
+const	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
 	path = require('path'),
 	naming = require('./naming.js'),
 	server = require('./server.js'),
 	crypto = require('crypto'),
 	cache = require('bounded-cache')(500),
-	defaultPrefs = { // also defines the valid keys (max length: 6 chars)
-		notif:	'on_ping',	// when to raise a desktop notification : on_ping|on_message|none
-		sound:	'standard',	// sound on notification : standard|quiet|none (hidden today because only one sound)
-		volume: '.7',		// notification volume : 0 to 1
-		datdpl:	'hover',	// date display : hover|on_breaks|always
-		nifvis:	'no',		// notifies even if the tab is visible : yes|no
-		connot:	'yes',		// message content displayed in desktop notif : yes|no
-		theme:	'default',	// theme
-		otowat:	'on_post',	// autowatch : on_visit|on_post|never
-		beta:	'default',	// beta : user is a beta-tester
-		mclean: '-1',		// messages auto clean threshold (-1 = no auto clean)
-	};
+	definitions = [];
 
 var	db,
 	langs,
@@ -27,13 +15,91 @@ var	db,
 	mobileTheme,
 	plugins;
 
+const definePref = exports.definePref = function(key, defaultValue, name, values){
+	if (!values) values = ["yes", "no"];
+	values = values.map(v=>{
+		if (typeof v !== "object") {
+			v = {value:v};
+		}
+		if (!v.label) v.label = v.value;
+		return v;
+	});
+	definitions.push({key, defaultValue, name, values});
+}
+
+exports.getPrefDefinitions = function(){
+	return definitions;
+}
+
 exports.configure = function(miaou){
+	console.log("configure prefs#################"); // called twice???
 	db = miaou.db;
-	langs = require('./langs.js').configure(miaou);
+	langs = miaou.lib("langs");
 	themes = miaou.config.themes;
 	mobileTheme = miaou.conf("mobileTheme") || themes[0];
 	plugins = (miaou.config.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
+	definePref(
+		"notif", 'on_ping', "Desktop Notification", [
+			{ value:"never", label:"Never"},
+			{ value:"on_ping", label:"When you're pinged or replied to (highly recommended)" },
+			{ value:"on_message", label:"Whenever a message is posted in an open room" }
+		]
+	);
+	definePref(
+		"connot", 'yes', "Show Message Content in Desktop Notification"
+	);
+	definePref(
+		"volume", .7, "Notification Sound", [
+			{value: 0, label: "none"},
+			{value: 0.1, label: "very quiet"},
+			{value: 0.4, label: "quiet"},
+			{value: 0.7, label: "standard"},
+			{value: 1, label: "strong"}
+		]
+	);
+	definePref(
+		"datdpl", 'hover', "Message Date Display", [
+			{value:"hover", label:"On hover"},
+			{value:"on_breaks", label:"On breaks"},
+			{value:"always", label:"Always"}
+		]
+	);
+	definePref(
+		"nifvis", 'no',	"When Tab Is Visible", [
+			{ value:"no", label:"No notification"},
+			{ value:"yes", label:"Notify too"}
+		]
+	);
+	definePref(
+		"theme", 'default', "theme",
+		["default", ...themes]
+	);
+	definePref(
+		"otowat", 'on_post', "Auto-watch rooms", [
+			{value:"on_visit", label:"When visiting the room"},
+			{value:"on_post", label:"When posting in the room"},
+			{value:"never", label:"Never"}
+		]
+	);
+	definePref(
+		"beta", 'no', "participage in beta tests"
+	);
+	definePref(
+		"mclean", -1,	"Auto-clean Messages",
+		[{value:-1, label:"disabled"}, 50, 100, 200, 300, 500, 1000]
+	);
 	return this;
+}
+
+function getNormalizedValue(definition, val){
+	if (!val) return;
+	if (val.length>VALUE_MAX_LENGTH) {
+		throw new Error("Preference value too long: " + val);
+	}
+	for (let v of definition.values) {
+		if (val==v.value) return v.value;
+	}
+	throw new Error("Not an authorized value for " + definition.key + " : " + val);
 }
 
 exports.theme = function(prefs, requestedTheme, isMobile){
@@ -43,141 +109,126 @@ exports.theme = function(prefs, requestedTheme, isMobile){
 	return themes[0];
 }
 
-// returns either the prefs as a map object or a promise fullfilled with the prefs.
-// This function must be called with context being a db connection
-var getUserPrefs = exports.get = function(userId){
-	return cache.get(userId) || this.getPrefs(userId).reduce(function(prefs, row){
+// asynchronously return the user's prefs as {key:value}
+const getUserPrefs = exports.get = async function(con, userId){
+	let prefs = cache.get(userId);
+	if (prefs) return prefs;
+	let rows = await con.getPrefs(userId);
+	prefs = rows.reduce(function(prefs, row){
 		prefs[row.name] = row.value;
 		return prefs;
-	}, {}).then(function(prefs){
-		for (var key in defaultPrefs) {
-			if (!prefs[key]) prefs[key] = defaultPrefs[key];
-		}
-		cache.set(userId, prefs);
-		return prefs;
-	});
+	}, {});
+	for (var def of definitions) {
+		if (prefs[def.key]==undefined) prefs[def.key] = def.defaultValue;
+	}
+	cache.set(userId, prefs);
+	return prefs;
 }
 
 // user prefs page GET & POST
-exports.appAllPrefs = function(req, res){
+exports.appAllPrefs = async function(req, res){
 	let externalProfileInfos = plugins
-	.filter(
-		p => p.externalProfile
-	)
+	.filter(p => p.externalProfile)
 	.map(
 		p => ({ name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields })
 	);
-	var	error = '',
-		userPrefs;
-	db.on().then(function(){
-		return getUserPrefs.call(this, req.user.id);
-	}).then(function(obj){
-		userPrefs = obj;
-		return externalProfileInfos;
-	}).map(function(epi){
-		return this.getPlayerPluginInfo(epi.name, req.user.id);
-	}).then(function(ppis){ // todo use map(ppi,i) to avoid iteration
-		ppis.forEach(function(ppi, i){
-			if (ppi) externalProfileInfos[i].ppi = ppi.info;
-		});
-		return externalProfileInfos;
-	}).map(function(epi){
-		if (epi.ppi) epi.html = epi.ep.render(epi.ppi);
-		if (req.method==='POST') {
-			if (epi.html) {
-				if (req.body['remove_'+epi.name]) {
-					epi.ppi = null;
-					return this.deletePlayerPluginInfo(epi.name, req.user.id);
+	db.do(async function(con){
+		let userPrefs = await getUserPrefs(con, req.user.id);
+		let userinfo;
+		let pluginAvatars;
+		let error;
+		try {
+			for (let epi of externalProfileInfos) {
+				let ppi = await con.getPlayerPluginInfo(epi.name, req.user.id);
+				if (ppi) {
+					epi.ppi = ppi.info;
+					epi.html = epi.ep.render(epi.ppi);
 				}
-			} else {
-				var vals = {}, allFilled = true;
+				if (req.method!=='POST') continue;
+				// the rest of the loop is related to external profile addition or removal
+				if (epi.html) {
+					// there's already an external profile
+					if (req.body['remove_'+epi.name]) {
+						// user wants to delete the profile (which deletes the whole PPI)
+						epi.ppi = null;
+						epi.html = null;
+						let res = await con.deletePlayerPluginInfo(epi.name, req.user.id);
+						console.log('deletePPI res:', res);
+					}
+					continue;
+				}
+				var	vals = {},
+					allFilled = true;
 				epi.fields.forEach(function(f){
 					if (!(vals[f.name] = req.body[f.name])) allFilled = false;
 				});
-				if (allFilled) return epi.ep.creation.create(req.user, epi.ppi||{}, vals);
+				if (!allFilled) continue;
+				epi.ppi = await epi.ep.creation.create(req.user, epi.ppi||{}, vals);
+				await con.storePlayerPluginInfo(epi.name, req.user.id, epi.ppi);
+				epi.html = epi.ep.render(ppi);
 			}
-		}
-	}).map(function(ppi, i){
-		var epi = externalProfileInfos[i];
-		if (typeof ppi === 'object') { // in case of creation success
-			epi.ppi = ppi;
-			this.storePlayerPluginInfo(epi.name, req.user.id, ppi);
-			epi.html = epi.ep.render(ppi);
-		} else if (ppi===1) { // deletion
-			epi.html = null;
-		}
-	}).then(function(){
-		if (req.method==='POST') {
-			var	name = req.body.name.trim(),
-				nameChanges = req.user.name != name,
-				avatarsrc = req.body['avatar-src'],
-				avatarkey = req.body['avatar-key'];
-			if (!naming.isValidUsername(name)) return;
-			if (nameChanges && naming.isUsernameForbidden(name)) {
-				error = "Sorry, that username is reserved.";
-				return;
-			}
-			if (avatarsrc==="none") {
-				avatarsrc = avatarkey = null;
-			}
-			if (name===req.user.name && avatarsrc==req.user.avatarsrc && avatarkey==req.user.avatarkey) return;
-			req.user.name = name;
-			req.user.avatarsrc = avatarsrc;
-			req.user.avatarkey = avatarkey;
-			return this.updateUser(req.user).then(function(){
-				if (nameChanges) return this.insertNameChange(req.user);
-			});
-		}
-	}).then(function(){
-		if (req.method==='POST') {
-			return this.updateUserInfo(req.user.id, {
-				description: req.body.description||null,
-				location: req.body.location||null,
-				url: req.body.url||null,
-				lang: req.body.lang||null
-			});
-		}
-	}).then(function(){
-		if (req.method==='POST') {
-			var dbops = [];
-			for (var key in defaultPrefs) {
-				var val = req.body[key];
-				if (!val || val===userPrefs[key]) continue;
-				if (val.length>VALUE_MAX_LENGTH) {
-					console.log("pref value too long :", val);
-					continue;
+			if (req.method==='POST') {
+				var	name = req.body.name.trim(),
+					nameChanges = req.user.name != name,
+					avatarsrc = req.body['avatar-src'],
+					avatarkey = req.body['avatar-key'];
+				if (!naming.isValidUsername(name)) return;
+				if (nameChanges && naming.isUsernameForbidden(name)) {
+					error = "Sorry, that username is reserved.";
+					return;
 				}
-				dbops.push(this.upsertPref(req.user.id, key, val));
-				userPrefs[key] = val; // update the cache
+				if (avatarsrc==="none") {
+					avatarsrc = avatarkey = null;
+				}
+				if (name!==req.user.name || avatarsrc!==req.user.avatarsrc || avatarkey!==req.user.avatarkey) {
+					req.user.name = name;
+					req.user.avatarsrc = avatarsrc;
+					req.user.avatarkey = avatarkey;
+					try {
+						await con.updateUser(req.user);
+					} catch (err) {
+						if (err.code=='23505') { // PostgreSQL / unique_violation
+							throw new Error("Sorry, this username isn't available.");
+						}
+					}
+					await con.insertNameChange(req.user);
+				}
+				await con.updateUserInfo(req.user.id, {
+					description: req.body.description||null,
+					location: req.body.location||null,
+					url: req.body.url||null,
+					lang: req.body.lang||null
+				});
+				for (let def of definitions) {
+					var val = getNormalizedValue(def, req.body[def.key]);
+					if (val===undefined || val===userPrefs[def.key]) continue;
+					await con.upsertPref(req.user.id, def.key, val);
+					userPrefs[def.key] = val; // update the cache
+				}
 			}
-			return Promise.all(dbops);
+			userinfo = await con.getUserInfo(req.user.id);
+			pluginAvatars = {};
+			externalProfileInfos.forEach(function(epi){
+				if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
+				if (epi.ppi && epi.ep.avatarUrl) {
+					var url = epi.ep.avatarUrl(epi.ppi);
+					if (url) pluginAvatars[epi.name] = url;
+				}
+			});
+			var hasValidName = naming.isValidUsername(req.user.name);
+		} catch (e) {
+			console.error(e);
+			error = e.toString();
 		}
-	}).catch(function(err){
-		console.log('Err...', err);
-		if (err.code=='23505') { // PostgreSQL / unique_violation
-			error = "Sorry, this username isn't available."
-		} else {
-			error = err;
-		}
-	}).then(function(){
-		return this.getUserInfo(req.user.id);
-	}).then(function(userinfo){
-		var pluginAvatars = {};
-		externalProfileInfos.forEach(function(epi){
-			if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
-			if (epi.ppi && epi.ep.avatarUrl) {
-				var url = epi.ep.avatarUrl(epi.ppi);
-				if (url) pluginAvatars[epi.name] = url;
-			}
-		});
-		var hasValidName = naming.isValidUsername(req.user.name);
 		var data = {
 			user: req.user,
-			error: error,
-			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			themes: themes, externalProfileInfos: externalProfileInfos,
-			vars:{
+			error,
+			suggestedName: hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
+			themes,
+			externalProfileInfos,
+			vars: {
 				userPrefs,
+				prefDefinitions: definitions,
 				valid : hasValidName,
 				langs: langs.legal,
 				userinfo,
@@ -191,11 +242,8 @@ exports.appAllPrefs = function(req, res){
 			data.theme = exports.theme(userPrefs, req.query.theme);
 		}
 		res.render('prefs.pug', data);
-	}).catch(function(err){
-		server.renderErr(res, err);
-	}).finally(db.off)
+	});
 }
-
 
 // used to allow conversion of email to MD5 for gravatar
 exports.appGetJsonStringToMD5 = function(req, res){

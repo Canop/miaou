@@ -75,17 +75,18 @@ function configureOauth2Strategies(){
 
 // define the routes to be taken by GET and POST requests
 async function defineAppRoutes(){
-	var	auths = await require('./auths.js').configure(miaou),
-		rooms = require('./rooms.js').configure(miaou),
-		tags = require('./tags.js').configure(miaou),
-		messages = require('./messages.js').configure(miaou),
-		upload = require('./upload.js').configure(miaou),
-		clienterrors = require('./clienterrors.js').configure(miaou),
-		profile = require('./profile.js').configure(miaou),
-		chat = require('./chat.js').configure(miaou),
-		help = require('./help.js'),
-		intro = require('./intro.js'),
-		prefs = require('./prefs.js').configure(miaou);
+	var	auths = miaou.lib("auths"),
+		rooms = miaou.lib('rooms'),
+		tags = miaou.lib('tags'),
+		messages = miaou.lib('messages'),
+		upload = miaou.lib('upload'),
+		clienterrors = miaou.lib('clienterrors'),
+		profile = miaou.lib('profile'),
+		chat = miaou.lib('chat'),
+		help = miaou.lib('help'),
+		intro = miaou.lib('intro'),
+		prefs = miaou.lib('prefs');
+	await auths.init();
 	function ensureAuthenticated(req, res, next){
 		if (req.isAuthenticated()) return next();
 		var roomId = req.params[0];
@@ -149,8 +150,8 @@ async function defineAppRoutes(){
 
 // starts the whole server, both regular http and websocket
 async function startServer(){
-	naming.configure(miaou);
-	require("./throttler.js").configure(miaou);
+	miaou.lib("naming");
+	miaou.lib("throttler");
 
 	var	cookieParser = require('cookie-parser')(miaou.config.secret),
 		RedisStore = require('connect-redis')(session),
@@ -201,7 +202,7 @@ async function startServer(){
 	var port = miaou.config.port;
 	console.log('Miaou server starting on port', port);
 	server.listen(port);
-	require('./ws.js').configure(miaou).listen(server, sessionStore, cookieParser);
+	miaou.lib("ws").listen(server, sessionStore, cookieParser);
 }
 
 var url = exports.url = function(pathname){
