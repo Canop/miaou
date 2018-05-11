@@ -7,7 +7,8 @@ $bg-color: #1a1a1a;
 $left-background: #111;
 $pad-background: #444;
 $right-background: #111;
-$box-background: #eee;
+$box-background: transparent;
+$box-border: none;
 
 $general-text-color: #aaa;
 $title-text-color: #fb0;
@@ -134,7 +135,7 @@ $input-text-color: #bbb;
 $input-border-color: #333;
 
 // table
-$message-content-table-border-color: #444;
+$message-content-table-border-color: #333;
 
 // profile
 $user-profile-title-color: rgba(255,255,255,.9);

@@ -84,6 +84,7 @@ async function defineAppRoutes(){
 		profile = miaou.lib('profile'),
 		chat = miaou.lib('chat'),
 		help = miaou.lib('help'),
+		legal = miaou.lib('legal'),
 		intro = miaou.lib('intro'),
 		prefs = miaou.lib('prefs');
 	await auths.init();
@@ -133,6 +134,7 @@ async function defineAppRoutes(){
 	map('get', /^\/user\/([\w-]+)$/, profile.appGetUser, true, true);
 	map('get', '/help', help.appGetHelp, true, true);
 	map('get', '/helpus', help.appGetHelpUs, true, true);
+	map('get', '/legal', legal.appGetLegal, true, true);
 	map('get', '/intro', intro.appGetIntro, true, true);
 	map('post', '/upload', upload.appPostUpload, true);
 	map('post', '/error', clienterrors.appPostError, true, true);

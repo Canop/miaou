@@ -1,0 +1,68 @@
+doctype html
+html
+	head
+		title Miaou Legal Stuff
+		link(rel="icon",type="image/png",href="static/M-32.png")
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
+		script(src="static/jquery-3.3.1.min.js")
+		script(src="static/help.min.js")
+		script(src="static/miaou.min.js")
+	body#help-body
+		#help-nav
+			a#help-miaou-logo-wrapper(href="rooms")
+				object.Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
+			h1 Legal Stuff
+			#help-summary
+		#help-content
+			h1 Miaou Legal Stuff
+			h2 About this server
+			div
+				p= introText
+			h2 Miaou software
+			div
+				p The service provided by this server is based on the free and open-source chat software Miaou, whose code source can be consulted (and contributed to) here: <a href="https://github.com/Canop/miaou">https://github.com/Canop/miaou</a>.
+				p Some additional plugins can be also present in order to provide other features, at the discretion of the server owner.
+
+			h2 User Behavior
+			div
+				p Users of the Miaou chat are required to behave in a respectful manner and failures to behave might be sanctioned by a permanent ban.
+				p Please don't forget that other users might be at work place, or with children. So don't put any content which might be seen as unsuitable in rooms where it shouldn't be expected. This means your user name and the avatar must be safely viewable by a child.
+
+			h2 Personal Data
+			div
+				p To use the Miaou server you need to have an account whose authentication is delegated to OAuth providers (which means Miaou doesn't hold or know your password).
+				p Miaou keeps those personal data related to your account:
+				ul
+					li username
+					li email (not always known, and never displayed in the application)
+					li a few optional, user provided, informative fields (description, location, url)
+					li a timezone offset (guessed by the server)
+				p The username can be modified by the account owner.
+				p User provided fields can be modified or erased at any time by the account owner.
+				p Those personal data aren't sold or given to any third party but they can be read by any other user.
+			
+			h2 External Identities
+			div
+				p A core feature of Miaou is the validation a user is who he pretends to be. For example it's possible in a game chat room to check a user is from the same team.
+				p The links a Miaou user has with external identities shall be considered private data.
+				p A user can remove those links at any time using the same interface he used to set them. In case of difficulty he can contact the server owner for help.
+
+			h2 Email	
+			div
+				p The email isn't currently modifiable by the account owner because
+				ul
+					li Miaou doesn't include any email validation feature right now
+					li No feature needing the email is currently ready
+				p The server administrator will remove the email if the account owner requests this deletion. As long as no feature uses it, there wouldn't be any consequence.
+
+			h2 Account Closing
+			div
+				p Any user can remove all personal data from his account without notice or help, by simply emptying the fields in the <i>Settings</i> interface.
+				p If the need arises, a user can also request to have the account closed, meaning he won't be able to access Miaou using this account (and thus won't be able to post new messages or even read his previous messages if they were in private rooms).
+
+			h2 Data Portability
+			div
+				p You can request to have all the messages you authored be provided to you.
+				p The default format would be a SQL extract of the <i>message</i> table of the database (see <a href="https://github.com/Canop/miaou/blob/master/sql/postgres.creation.sql">database schema</a>), filtered to contain only the messages of the requering user.
+
+

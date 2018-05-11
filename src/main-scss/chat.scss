@@ -335,9 +335,9 @@ body.pad #me {
 	min-width: 0;
 	.box {
 		background: $box-background;
+		border: $box-border;
 		color: black;
 		margin: 2px;
-		border: thin solid #ddd;
 		max-width: 100%;
 		overflow-x: auto;
 		h1 {

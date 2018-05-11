@@ -11,6 +11,7 @@ $bg-color: #F0EAD6 !default;
 $left-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) ) !default;
 $right-background: linear-gradient( lighten($bg-color, 5%), darken($bg-color, 10%) ) !default;
 $box-background: white !default;
+$box-border: thin solid #ddd !default;
 
 // input sizer
 $input-sizer-background: linear-gradient(to bottom, #777, #222) !default;

@@ -156,5 +156,8 @@ module.exports = {
 	"throttler": {
 		hour: 1000,
 		minute: 50
+	},
+	legal: {
+		introduction: "This is the 'about this server' part of the legal page."
 	}
 }

@@ -90,7 +90,13 @@ var getHelpText = exports.getHelpText = function(room, cmdname){
 		if (!cmd) return "Command `"+cmdname+"` not found";
 		if (cmd.filter!==undefined && !cmd.filter(room)) return "Command `"+cmdname+"` not available in this room";
 		var h = '`!!' + cmd.name + '` : ' + (cmd.help||"*secret command*");
-		if (cmd.detailedHelp) h += '\n'+cmd.detailedHelp;
+		if (cmd.detailedHelp) {
+			if (typeof cmd.detailedHelp==="function") {
+				h += '\n'+cmd.detailedHelp(room);
+			} else {
+				h += '\n'+cmd.detailedHelp;
+			}
+		}
 		return h;
 	} else {
 		return 'For a detailed help on Miaou, see the [help page]('+server.url('/help')+').\nCommands :'+

@@ -207,7 +207,9 @@ exports.registerCommands = function(cb){
 			name: p.command,
 			fun: ct => onCommand.call(this, ct, p),
 			help: p.help,
-			detailedHelp: p.detailedHelp(config)
+			detailedHelp: function(room){
+				return p.detailedHelp(config);
+			}
 		});
 	});
 }

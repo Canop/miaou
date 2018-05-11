@@ -32,7 +32,6 @@ exports.getPrefDefinitions = function(){
 }
 
 exports.configure = function(miaou){
-	console.log("configure prefs#################"); // called twice???
 	db = miaou.db;
 	langs = miaou.lib("langs");
 	themes = miaou.config.themes;
