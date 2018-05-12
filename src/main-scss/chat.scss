@@ -336,14 +336,14 @@ body.pad #me {
 	.box {
 		background: $box-background;
 		border: $box-border;
-		color: black;
+		color: $general-text-color;
 		margin: 2px;
 		max-width: 100%;
 		overflow-x: auto;
 		h1 {
 			margin: 10px;
 			font-size: 120%;
-			color: black;
+			color: $title-text-color;
 		}
 		img {
 			max-width: 40%;
