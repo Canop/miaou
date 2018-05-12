@@ -15,6 +15,11 @@ $accent-minus: rgb(189, 51, 164);
 
 //------------
 
+// boxing
+$box-background: #111;
+$box-border: #222;
+
+
 // input sizer
 $input-sizer-background: #111;
 $input-sizer-handle-background: black;
@@ -24,7 +29,6 @@ $input-sizer-shadow: 0px 0px 6px $accent-plus;
 $bg-color: black;
 $left-background: black;
 $right-background: black;
-$box-background: rgba(255, 255, 255, 0.8);
 $general-text-color: #aaa;
 $slashme-color: #888;
 $title-text-color: #aaa;
