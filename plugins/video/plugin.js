@@ -2,8 +2,7 @@
 //  - both usernames
 //  - both shoes
 
-var	Promise = require("bluebird"),
-	webRtcConfig,
+var	webRtcConfig,
 	cache = require('bounded-cache')(200);
 
 exports.init = function(miaou){
@@ -26,22 +25,18 @@ function makeVD(shoe, message){
 //  - the video descriptor
 //  - the index of the current user in vd.players (-1, 0 or 1)
 // Sets a missing shoe whenever possible
-function getVD(shoe, mid){
-	var vd = cache.get(mid);
-	var p;
-	if (vd) {
-		p = Promise.cast(vd);
-	} else {
-		p = shoe.db.on(mid).then(shoe.db.getMessage).then(function(m){
-			return makeVD(shoe, m);
-		}).finally(shoe.db.off);
+async function getVD(shoe, mid){
+	let vd = cache.get(mid);
+	if (!vd) {
+		await shoe.db.do(async function(con){
+			let m = await con.getMessage(mid);
+			vd = makeVD(shoe, m);
+		});
 	}
-	return p.then(function(vd){
-		var index = -1;
-		if (vd.usernames[0]===shoe.publicUser.name) vd.shoes[index=0] = shoe;
-		else if (vd.usernames[1]===shoe.publicUser.name) vd.shoes[index=1] = shoe;
-		return [vd, index];
-	});
+	var index = -1;
+	if (vd.usernames[0]===shoe.publicUser.name) vd.shoes[index=0] = shoe;
+	else if (vd.usernames[1]===shoe.publicUser.name) vd.shoes[index=1] = shoe;
+	return [vd, index];
 }
 
 function onCommand(ct){
@@ -52,11 +47,10 @@ exports.onNewShoe = function(shoe){
 	shoe.socket.on('video.getConfig', function(arg){ // pass the message to the other video chatter
 		shoe.socket.emit("video.setConfig", webRtcConfig);
 	});
-	shoe.socket.on('video.msg', function(arg){ // pass the message to the other video chatter
-		getVD(shoe, arg.mid).spread(function(vd, index){
-			var otherShoe = vd.shoes[+!index];
-			if (otherShoe) otherShoe.emit('video.msg', arg);
-		});
+	shoe.socket.on('video.msg', async function(arg){ // pass the message to the other video chatter
+		let [vd, index] = await getVD(shoe, arg.mid);
+		let otherShoe = vd.shoes[+!index];
+		if (otherShoe) otherShoe.emit('video.msg', arg);
 	});
 }
 
