@@ -1,6 +1,16 @@
 miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 
+	console.log("V 10");
+
+	// the config is fetched by the client on first video message rendering, then stored here
 	var webrtcConfig = null;
+	const rtcEvents = [
+		"negotiationneeded", // generated on add stream or lost connection
+		"signalingstatechange",
+		"icecandidate", "iceconnectionstatechange", "icegatheringstatechange",
+		"removestream",
+		"track"
+	];
 
 	// The video descriptor, one per displayed miaou !!video message
 	// medias : something like {video:true, audio:true}
@@ -8,15 +18,21 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		this.medias = medias;
 		this.mid = mid;
 		this.usernames = usernames;
-		this.index = -1;
 		this.started = false;
 		this.ready = [false, false]; // ready : message rendered (but maybe no accept)
 		this.accept = [false, false]; // accept : user clicked the Start button and didn't click Stop
+		this.index = -1; // 0 for message author (who initiates the "start" and the rpc call)
 		if (usernames[0]===locals.me.name) this.index = 0;
 		else if (usernames[1]===locals.me.name) this.index = 1;
 		if (~this.index) this.ready[this.index] = true;
+		this.pc = null; // the rtc peer connection
+		this.localStream = null;
+		this.remoteStream = null;
+		this.localVideo = null; // DOM video
+		this.removeVideo = null; // DOM video
 	}
 	VD.prototype.render = function($c){ // renders the VD in a message, called only once
+		console.log("render", this.mid);
 		if (this.index===-1) {
 			$c.text(this.usernames[0] + " proposed a video/audio chat to " + this.usernames[1]);
 			return;
@@ -37,18 +53,25 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		this.off();
 	}
 	VD.prototype.update = function(){
+		var vd = this;
+		console.log("update", this.mid);
 		var iab = gui.isAtBottom();
 		this.$controls.find('button').remove();
 		this.$cams.hide();
 		this.$status.show();
 		if (!this.ready[+!this.index]) {
 			this.$status.text(this.usernames[+!this.index]+" isn't ready right now");
+			console.log("other not ready");
 			return;
 		}
 		if (this.accept[this.index]) {
-			$('<button/>').text('Stop').click(this.off.bind(this)).appendTo(this.$controls);
+			$('<button>').text('Stop').click(function(){
+				vd.off();
+			}).appendTo(vd.$controls);
 		} else {
-			$('<button/>').text('Start').click(this.on.bind(this)).appendTo(this.$controls);
+			$('<button>').text('Start').click(function(){
+				vd.on();
+			}).appendTo(vd.$controls);
 		}
 		if (this.accept[0] && this.accept[1]) {
 			if (this.medias.video) {
@@ -68,33 +91,8 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 			$('video').on("loadeddata", gui.scrollToBottom);
 		}
 	}
-	VD.prototype.send = function(verb, o){
-		o = o || {};
-		o.mid = this.mid;
-		console.log('OUT video.'+verb+' ->', o);
-		ws.emit('video.'+verb, o);
-	}
-	VD.prototype.sendMsg = function(msg){
-		this.send('msg', {msg:msg});
-		return this;
-	}
-	VD.prototype.on = function(){
-		var vd = this;
-		navigator.mediaDevices.getUserMedia(this.medias)
-		.then(function(stream){
-			vd.localStream = stream;
-			vd.localVideo.src = window.URL.createObjectURL(stream);
-			vd.localVideo.play();
-			vd.accept[vd.index] = true;
-			vd.sendMsg('on');
-			if (vd.index===0) vd.tryStart();
-			vd.update();
-		})
-		.catch(function(error){
-			console.log("getUserMedia error: ", error);
-		});
-	}
 	VD.prototype.cut = function(){
+		console.log("cut");
 		this.started = false;
 		if (this.localStream) {
 			this.localStream.getTracks().forEach(function(track){
@@ -109,99 +107,202 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		}
 	}
 	VD.prototype.off = function(){
+		console.log("off");
 		this.accept[this.index] = false;
 		this.cut();
 		this.update();
-		this.sendMsg('off');
+		this.send('off');
 	}
-	VD.prototype.tryStart = function(){
-		if (this.started || !this.localStream) return;
-		var vd = this;
-		try {
-			this.pc = new RTCPeerConnection(webrtcConfig);
-			this.pc.onicecandidate = function(event){
-				console.log('handleIceCandidate event: ', event);
-				if (event.candidate) {
-					vd.sendMsg({
-						type: 'candidate',
-						label: event.candidate.sdpMLineIndex,
-						id: event.candidate.sdpMid,
-						candidate: event.candidate.candidate
-					});
-				} else {
-					console.log('End of candidates.');
-				}
-			};
-			this.pc.onaddstream = function(event){
-				console.log('Remote stream added.');
-				vd.remoteVideo.src = window.URL.createObjectURL(event.stream);
-				vd.remoteStream = event.stream;
-			};
-			this.pc.onremovestream = function(event){
-				console.log('Remote stream removed. Event: ', event);
-			};
-			console.log('Created RTCPeerConnnection');
-		} catch (e) {
-			console.log('Failed to create PeerConnection, exception: ' + e.message);
-			return;
+	VD.prototype.send = function(verb, arg){
+		var message = {
+			mid: this.mid,
+			verb: verb,
+			arg: arg
+		};
+		console.log("send ---> ", message.verb, arg);
+		ws.emit("video.msg", message);
+	}
+	VD.prototype.receive = function(message){
+		var arg = message.arg;
+		console.log('<--- receive message:', message.verb, arg);
+		if (!this.ready[+!this.index]) {
+			this.ready[+!this.index] = true;
+			this.send("ready"); // this is useful if the other refreshed since we told them we're ready
 		}
-		this.pc.addStream(this.localStream);
-		if (this.accept[0] && this.accept[1]) {
-			this.started = true;
-			if (this.index===0) {
-				console.log('Sending offer to peer');
-				this.pc.createOffer(this.setLocalAndSendMessage.bind(this), function(e){
-					console.log('createOffer() error: ', e)
-				});
-			}
-		}
-	}
-	VD.prototype.doAnswer = function(){
-		console.log('Sending answer to peer.');
-		this.pc.createAnswer(
-			this.setLocalAndSendMessage.bind(this),
-			function(err){
-				console.log("error in peerConnection.createAnswer:", err);
-			},
-			{}
-		);
-	}
-	VD.prototype.setLocalAndSendMessage = function(sessionDescription){
-		console.log('setLocalAndSendMessage sending message', sessionDescription);
-		//sessionDescription.sdp = webrtc.preferOpus(sessionDescription.sdp);
-		this.pc.setLocalDescription(sessionDescription);
-		this.sendMsg(sessionDescription);
-	}
-	VD.prototype.receiveMsg = function(message){
-		this.ready[+!this.index] = true;
-		if (message === 'got user media') {
-			this.tryStart();
-		} else if (message === 'on') {
+		switch (message.verb) {
+		case "on":
 			this.accept[+!this.index] = true;
-			this.tryStart();
-		} else if (message === 'off') {
-			this.accept[+!this.index] = false;
-			this.cut();
-			this.sendMsg('ok'); // so that the other browser knows we're connected if it didn't
-		} else if (message.type === 'offer') {
-			if (this.index===1 && !this.started) {
-				this.tryStart();
-			}
-			this.pc.setRemoteDescription(new RTCSessionDescription(message));
-			this.doAnswer();
-		} else if (message.type === 'answer' && this.started) {
-			console.log('Setting remote description');
-			this.pc.setRemoteDescription(new RTCSessionDescription(message));
-		} else if (message.type === 'candidate' && this.started) {
-			var candidate = new RTCIceCandidate({
-				sdpMLineIndex: message.label,
-				candidate: message.candidate
-			});
-			console.log('Setting ice candidate');
-			this.pc.addIceCandidate(candidate);
+			break;
+		//case "off":
+		//	this.accept[+!this.index] = false;
+		//	this.cut();
+		//	break;
+		case "offer":
+			this.receiveOffer(arg);
+			break;
+		case "answer":
+			this.receiveAnswer(arg);
+			break;
+		case "ice-candidate":
+			this.receiveIceCandidate(arg);
+			break;
+		default:
+			console.log("unknown message verb:", message.verb);
 		}
+		this.maybeStart();
 		this.update();
 	}
+	VD.prototype.on = function(){
+		console.log("start clicked");
+		this.accept[this.index] = true;
+		if (this.index===0) this.maybeStart();
+		if (!this.started) this.send('on');
+		this.update();
+	}
+	VD.prototype.createPeerConnection = function(){
+		try {
+			this.pc = new RTCPeerConnection(webrtcConfig);
+		} catch (err) {
+			console.log("err in createPeerConnection:", err);
+		}
+		var vd = this;
+		rtcEvents.forEach(function(eventType){
+			vd.pc["on"+eventType] = function(event){
+				console.log("rtc event", eventType, ":", event);
+				try {
+					vd["on"+eventType](event);
+				} catch (err) {
+					console.log("err in handling event", eventType, event, ":", err);
+				}
+				vd.update();
+			};
+		});
+	}
+	VD.prototype.maybeStart = function(){
+		console.log("maybe start");
+		if (this.started) return;
+		if (this.index!==0) return; // the rpc exchange is always started by the message author
+		if (!this.ready[0] || !this.ready[1]) return; // one of the users isn't connected
+		if (!this.accept[0] || !this.accept[1]) return; // one of the users hasn't acepted the message
+		this.start();
+	}
+	VD.prototype.start = function(){ // only called if user is mesage author and everything's ready
+		console.log("do start");
+		var vd = this;
+		this.started = true;
+		this.createPeerConnection();
+		navigator.mediaDevices.getUserMedia(this.medias)
+		.then(function(stream){
+			this.localStream = stream;
+			console.log("got local stream");
+			vd.localVideo.srcObject = stream;
+			stream.getTracks().forEach(function(track){
+				vd.pc.addTrack(track, stream);
+				// this is supposed to trigger the onnegotiationneeded event
+				//  whose handling will send an offer
+			});
+			vd.localVideo.play();
+		})
+		.catch(function(err){
+			console.log("err in getUserMedia:", err);
+		});
+	}
+	VD.prototype.onnegotiationneeded = function(event){
+		var vd = this;
+		vd.pc.createOffer()
+		.then(function(offer){
+			return vd.pc.setLocalDescription(offer);
+		})
+		.then(function(){
+			vd.send("offer", {
+				sdp: vd.pc.localDescription
+			});
+		})
+		.catch(function(err){
+			console.log("err in hangling negotiationneeded:", err);
+		});
+	}
+	VD.prototype.receiveOffer = function(message){ // only called if user is NOT mesage author and everybody accepted
+		var vd = this;
+		if (!vd.accept[vd.index]) throw new Error("We don't want that offer");
+		vd.createPeerConnection();
+		vd.pc.setRemoteDescription(new RTCSessionDescription(message.sdp))
+		.then(function(){
+			return navigator.mediaDevices.getUserMedia(vd.medias)
+		})
+		.then(function(stream){
+			vd.localStream = stream;
+			vd.localVideo.srcObject = stream;
+			stream.getTracks().forEach(function(track){
+				vd.pc.addTrack(track, stream);
+			});
+			return vd.pc.createAnswer();
+		})
+		.then(function(answer){
+			return vd.pc.setLocalDescription(answer);
+		})
+		.then(function(){
+			vd.send("answer", {
+				sdp: vd.pc.localDescription
+			});
+		})
+		.catch(function(err){
+			console.log("err in receiveOffer:", err);
+		});
+	}
+	VD.prototype.receiveAnswer = function(message){
+		this.pc.setRemoteDescription(new RTCSessionDescription(message.sdp))
+		.catch(function(err){
+			console.log("err in receiveOffer:", err);
+		});
+	}
+	VD.prototype.onicecandidate = function(event){
+		if (!event.candidate) {
+			console.log("no more ICE candidates");
+			return;
+		}
+		this.send("ice-candidate", {
+			candidate: event.candidate
+		});
+	}
+	VD.prototype.receiveIceCandidate = function(message){
+		console.log("receive ice candidate!", message);
+		var candidate = new RTCIceCandidate(message.candidate);
+		this.pc.addIceCandidate(candidate)
+		.catch(function(err){
+			console.log("err in receiveIceCandidate:", err);
+		});
+	}
+	VD.prototype.ontrack = function(event){ // called when a new track is added on the peer connection
+		console.log("GOT TRACK");
+		this.remoteStream = event.streams[0];
+		this.remoteVideo.srcObject = event.streams[0];
+		this.remoteVideo.play();
+	}
+	VD.prototype.onremovestream = function(event){ // some problems, probably
+		console.log("lost stream");
+		this.cut();
+	}
+	VD.prototype.oniceconnectionstatechange = function(event){
+		console.log("new ice connection state:", this.pc.iceConnectionState);
+		switch (this.pc.iceConnectionState) {
+		case "closed":
+		case "failed":
+		case "disconnected":
+			this.cut();
+		}
+	}
+	VD.prototype.onsignalingstatechange = function(event){
+		console.log("new signaling state:", this.pc.signalingState);
+		switch (this.pc.signalingState) {
+		case "closed":
+			this.cut();
+		}
+	}
+	VD.prototype.onicegatheringstatechange = function(event){
+		console.log("new ice gathering state:", this.pc.iceGatheringState);
+	}
+
 
 	plugins.video = {
 		start: function(){
@@ -260,11 +361,11 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 				console.log('IN video.setConfig <-', arg);
 				webrtcConfig = arg;
 			});
-			ws.on('video.msg', function(arg){
-				console.log('IN video.msg <-', arg);
-				$('.message[mid='+arg.mid+'] .content').each(function(){
+			ws.on('video.msg', function(message){
+				console.log('IN video.msg <-', message);
+				$('.message[mid='+message.mid+'] .content').each(function(){
 					var vd = $(this).dat('video');
-					if (vd) vd.receiveMsg(arg.msg);
+					if (vd) vd.receive(message);
 				});
 			});
 		}
