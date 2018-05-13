@@ -1,7 +1,5 @@
 miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 
-	console.log("V 10");
-
 	// the config is fetched by the client on first video message rendering, then stored here
 	var webrtcConfig = null;
 	const rtcEvents = [
@@ -26,13 +24,14 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		else if (usernames[1]===locals.me.name) this.index = 1;
 		if (~this.index) this.ready[this.index] = true;
 		this.pc = null; // the rtc peer connection
-		this.localStream = null;
-		this.remoteStream = null;
 		this.localVideo = null; // DOM video
 		this.removeVideo = null; // DOM video
 	}
+	VD.prototype.log = function(){
+		console.log.apply(console, ["video("+this.mid+")"].concat(Array.from(arguments)) );
+	}
 	VD.prototype.render = function($c){ // renders the VD in a message, called only once
-		console.log("render", this.mid);
+		this.log("render");
 		if (this.index===-1) {
 			$c.text(this.usernames[0] + " proposed a video/audio chat to " + this.usernames[1]);
 			return;
@@ -50,28 +49,26 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		this.$cams = $('<div>').css({
 			display:'flex', alignItems:'center', justifyContent:'space-around'
 		}).addClass('video-cams').append(this.localVideo).append(this.remoteVideo).appendTo($c);
-		this.off();
+		this.send("ready");
+		this.update();
 	}
 	VD.prototype.update = function(){
-		var vd = this;
-		console.log("update", this.mid);
 		var iab = gui.isAtBottom();
 		this.$controls.find('button').remove();
 		this.$cams.hide();
 		this.$status.show();
 		if (!this.ready[+!this.index]) {
 			this.$status.text(this.usernames[+!this.index]+" isn't ready right now");
-			console.log("other not ready");
 			return;
 		}
 		if (this.accept[this.index]) {
-			$('<button>').text('Stop').click(function(){
-				vd.off();
-			}).appendTo(vd.$controls);
+			$('<button>').text('Stop').click(()=>{
+				this.off();
+			}).appendTo(this.$controls);
 		} else {
-			$('<button>').text('Start').click(function(){
-				vd.on();
-			}).appendTo(vd.$controls);
+			$('<button>').text('Start').click(()=>{
+				this.on();
+			}).appendTo(this.$controls);
 		}
 		if (this.accept[0] && this.accept[1]) {
 			if (this.medias.video) {
@@ -83,7 +80,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		} else {
 			this.$status.text(
 				this.usernames[+!this.index]+
-				(this.accept[+!this.index] ? " is waiting for you to accept" : " hasn't yet accepted")
+				(this.accept[+!this.index] ? " is waiting for you to accept" : " hasn't accepted")
 			);
 		}
 		if (iab) {
@@ -91,69 +88,50 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 			$('video').on("loadeddata", gui.scrollToBottom);
 		}
 	}
-	VD.prototype.cut = function(){
-		console.log("cut");
-		this.started = false;
-		if (this.localStream) {
-			this.localStream.getTracks().forEach(function(track){
-				console.log("stopping track", track.label);
-				track.stop();
-			});
-		}
-		if (this.pc) {
-			this.pc.close();
-			this.pc = null;
-			console.log('pc removed');
-		}
-	}
-	VD.prototype.off = function(){
-		console.log("off");
-		this.accept[this.index] = false;
-		this.cut();
-		this.update();
-		this.send('off');
-	}
 	VD.prototype.send = function(verb, arg){
 		var message = {
 			mid: this.mid,
 			verb: verb,
 			arg: arg
 		};
-		console.log("send ---> ", message.verb, arg);
+		this.log("send ---> ", message.verb, arg);
 		ws.emit("video.msg", message);
 	}
 	VD.prototype.receive = function(message){
 		var arg = message.arg;
-		console.log('<--- receive message:', message.verb, arg);
+		this.log('<--- receive:', message.verb, arg);
 		if (!this.ready[+!this.index]) {
 			this.ready[+!this.index] = true;
 			this.send("ready"); // this is useful if the other refreshed since we told them we're ready
 		}
 		switch (message.verb) {
+		case "ready":
+			break;
 		case "on":
 			this.accept[+!this.index] = true;
 			break;
-		//case "off":
-		//	this.accept[+!this.index] = false;
-		//	this.cut();
-		//	break;
+		case "off":
+			this.accept[+!this.index] = false;
+			this.cut();
+			break;
 		case "offer":
+			this.accept[+!this.index] = true;
 			this.receiveOffer(arg);
 			break;
 		case "answer":
+			this.accept[+!this.index] = true;
 			this.receiveAnswer(arg);
 			break;
 		case "ice-candidate":
 			this.receiveIceCandidate(arg);
 			break;
 		default:
-			console.log("unknown message verb:", message.verb);
+			this.log("unknown message verb:", message.verb);
 		}
 		this.maybeStart();
 		this.update();
 	}
 	VD.prototype.on = function(){
-		console.log("start clicked");
 		this.accept[this.index] = true;
 		if (this.index===0) this.maybeStart();
 		if (!this.started) this.send('on');
@@ -163,23 +141,21 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		try {
 			this.pc = new RTCPeerConnection(webrtcConfig);
 		} catch (err) {
-			console.log("err in createPeerConnection:", err);
+			this.log("err in createPeerConnection:", err);
 		}
-		var vd = this;
-		rtcEvents.forEach(function(eventType){
-			vd.pc["on"+eventType] = function(event){
-				console.log("rtc event", eventType, ":", event);
+		rtcEvents.forEach(eventType => {
+			this.pc["on"+eventType] = (event) => {
+				this.log("rtc event", eventType, ":", event);
 				try {
-					vd["on"+eventType](event);
+					this["on"+eventType](event);
 				} catch (err) {
-					console.log("err in handling event", eventType, event, ":", err);
+					this.log("err in handling event", eventType, event, ":", err);
 				}
-				vd.update();
+				this.update();
 			};
 		});
 	}
 	VD.prototype.maybeStart = function(){
-		console.log("maybe start");
 		if (this.started) return;
 		if (this.index!==0) return; // the rpc exchange is always started by the message author
 		if (!this.ready[0] || !this.ready[1]) return; // one of the users isn't connected
@@ -187,78 +163,63 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		this.start();
 	}
 	VD.prototype.start = function(){ // only called if user is mesage author and everything's ready
-		console.log("do start");
-		var vd = this;
 		this.started = true;
 		this.createPeerConnection();
 		navigator.mediaDevices.getUserMedia(this.medias)
-		.then(function(stream){
-			this.localStream = stream;
-			console.log("got local stream");
-			vd.localVideo.srcObject = stream;
-			stream.getTracks().forEach(function(track){
-				vd.pc.addTrack(track, stream);
+		.then(stream => {
+			this.localVideo.srcObject = stream;
+			stream.getTracks().forEach(track => {
+				this.pc.addTrack(track, stream);
 				// this is supposed to trigger the onnegotiationneeded event
 				//  whose handling will send an offer
 			});
-			vd.localVideo.play();
+			this.localVideo.play();
 		})
-		.catch(function(err){
-			console.log("err in getUserMedia:", err);
-		});
+		.catch(err => this.log("err in getUserMedia:", err));
 	}
 	VD.prototype.onnegotiationneeded = function(event){
-		var vd = this;
-		vd.pc.createOffer()
-		.then(function(offer){
-			return vd.pc.setLocalDescription(offer);
+		this.pc.createOffer()
+		.then(offer => {
+			return this.pc.setLocalDescription(offer);
 		})
-		.then(function(){
-			vd.send("offer", {
-				sdp: vd.pc.localDescription
+		.then(() => {
+			this.send("offer", {
+				sdp: this.pc.localDescription
 			});
 		})
-		.catch(function(err){
-			console.log("err in hangling negotiationneeded:", err);
-		});
+		.catch(err => this.log("err in hangling negotiationneeded:", err));
 	}
 	VD.prototype.receiveOffer = function(message){ // only called if user is NOT mesage author and everybody accepted
-		var vd = this;
-		if (!vd.accept[vd.index]) throw new Error("We don't want that offer");
-		vd.createPeerConnection();
-		vd.pc.setRemoteDescription(new RTCSessionDescription(message.sdp))
-		.then(function(){
-			return navigator.mediaDevices.getUserMedia(vd.medias)
+		if (!this.accept[this.index]) throw new Error("We don't want that offer");
+		this.createPeerConnection();
+		this.pc.setRemoteDescription(new RTCSessionDescription(message.sdp))
+		.then(() => {
+			return navigator.mediaDevices.getUserMedia(this.medias)
 		})
-		.then(function(stream){
-			vd.localStream = stream;
-			vd.localVideo.srcObject = stream;
-			stream.getTracks().forEach(function(track){
-				vd.pc.addTrack(track, stream);
+		.then(stream => {
+			this.localVideo.srcObject = stream;
+			stream.getTracks().forEach(track => {
+				this.pc.addTrack(track, stream);
 			});
-			return vd.pc.createAnswer();
+			return this.pc.createAnswer();
 		})
-		.then(function(answer){
-			return vd.pc.setLocalDescription(answer);
+		.then(answer => {
+			return this.pc.setLocalDescription(answer);
 		})
-		.then(function(){
-			vd.send("answer", {
-				sdp: vd.pc.localDescription
+		.then(() => {
+			this.send("answer", {
+				sdp: this.pc.localDescription
 			});
 		})
-		.catch(function(err){
-			console.log("err in receiveOffer:", err);
-		});
+		.catch(err => this.log("err in receiveOffer:", err));
 	}
 	VD.prototype.receiveAnswer = function(message){
 		this.pc.setRemoteDescription(new RTCSessionDescription(message.sdp))
-		.catch(function(err){
-			console.log("err in receiveOffer:", err);
-		});
+		.catch(err => this.log("err in receiveOffer:", err));
 	}
 	VD.prototype.onicecandidate = function(event){
 		if (!event.candidate) {
-			console.log("no more ICE candidates");
+			this.log("no more ICE candidates");
 			return;
 		}
 		this.send("ice-candidate", {
@@ -266,25 +227,21 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		});
 	}
 	VD.prototype.receiveIceCandidate = function(message){
-		console.log("receive ice candidate!", message);
 		var candidate = new RTCIceCandidate(message.candidate);
 		this.pc.addIceCandidate(candidate)
-		.catch(function(err){
-			console.log("err in receiveIceCandidate:", err);
-		});
+		.catch(err => this.log("err in receiveIceCandidate:", err));
 	}
 	VD.prototype.ontrack = function(event){ // called when a new track is added on the peer connection
-		console.log("GOT TRACK");
 		this.remoteStream = event.streams[0];
 		this.remoteVideo.srcObject = event.streams[0];
 		this.remoteVideo.play();
 	}
 	VD.prototype.onremovestream = function(event){ // some problems, probably
-		console.log("lost stream");
+		this.log("lost stream");
 		this.cut();
 	}
 	VD.prototype.oniceconnectionstatechange = function(event){
-		console.log("new ice connection state:", this.pc.iceConnectionState);
+		this.log("new ice connection state:", this.pc.iceConnectionState);
 		switch (this.pc.iceConnectionState) {
 		case "closed":
 		case "failed":
@@ -293,16 +250,47 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		}
 	}
 	VD.prototype.onsignalingstatechange = function(event){
-		console.log("new signaling state:", this.pc.signalingState);
+		this.log("new signaling state:", this.pc.signalingState);
 		switch (this.pc.signalingState) {
 		case "closed":
 			this.cut();
 		}
 	}
 	VD.prototype.onicegatheringstatechange = function(event){
-		console.log("new ice gathering state:", this.pc.iceGatheringState);
+		this.log("new ice gathering state:", this.pc.iceGatheringState);
 	}
-
+	VD.prototype.cut = function(){
+		this.log("cut");
+		this.started = false;
+		if (this.pc) {
+			rtcEvents.forEach(eventType => {
+				this.pc["on"+eventType] = null;
+			});
+		}
+		if (this.remoteVideo.srcObject) {
+			this.remoteVideo.srcObject.getTracks().forEach(track => {
+				this.log("stopping track", track.label);
+				track.stop();
+			});
+		}
+		if (this.localVideo.srcObject) {
+			this.localVideo.srcObject.getTracks().forEach(track => {
+				this.log("stopping track", track.label);
+				track.stop();
+			});
+		}
+		if (this.pc) {
+			this.pc.close();
+			this.pc = null;
+		}
+	}
+	VD.prototype.off = function(){
+		this.log("off");
+		this.accept[this.index] = false;
+		this.cut();
+		this.update();
+		this.send('off');
+	}
 
 	plugins.video = {
 		start: function(){
@@ -358,11 +346,9 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 				if (vd) vd.off();
 			});
 			ws.on('video.setConfig', function(arg){
-				console.log('IN video.setConfig <-', arg);
 				webrtcConfig = arg;
 			});
 			ws.on('video.msg', function(message){
-				console.log('IN video.msg <-', message);
 				$('.message[mid='+message.mid+'] .content').each(function(){
 					var vd = $(this).dat('video');
 					if (vd) vd.receive(message);
