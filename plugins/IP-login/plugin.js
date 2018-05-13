@@ -2,8 +2,9 @@
 const	passport = require('passport'),
 	util = require('util');
 
-var	db,
+let	db,
 	server,
+	redirect,
 	config;
 
 function IPLoginStrategy(){
@@ -33,9 +34,12 @@ IPLoginStrategy.prototype.authenticate = function(req){
 exports.init = function(miaou){
 	config = miaou.config;
 	db = miaou.db;
+	redirect = miaou.conf("pluginConfig", "IP-login", "redirect");
 	server = miaou.lib("server");
 	passport.use(new IPLoginStrategy);
 }
 exports.registerRoutes = function(map){
-	map('get', '/ip-login', passport.authenticate('ip', { successRedirect:server.url() }), true, true);
+	map('get', '/ip-login', passport.authenticate('ip', {
+		successRedirect: redirect || server.url()
+	}), true, true);
 }

@@ -8,7 +8,7 @@ To enable IP based login, declare the plugin and the relevant configuration in t
 		"server": "http://127.0.0.1:8204",
 		...
 		"plugins": [
-			"plugins/IP-login/plugin.js", 
+			"plugins/IP-login/plugin.js",
 		],
 		"pluginConfig":{
 			"IP-login":{
@@ -24,4 +24,4 @@ To enable IP based login, declare the plugin and the relevant configuration in t
 
 To log in, simply go to the "ip-login" page. For example
 
-	http://localhost:1024/ip-login
+	http://localhost:8024/ip-login
