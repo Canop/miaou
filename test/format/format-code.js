@@ -1,9 +1,9 @@
 var	fmt = require("./miaou.format.node.js"),
 	buster = require("buster");
-	
+
 function t(s,r){
 	return function(){
-		buster.assert.equals(fmt.mdTextToHtml(s), r);		
+		buster.assert.equals(fmt.mdTextToHtml(s), r);
 	}
 }
 
@@ -32,7 +32,7 @@ buster.testCase("Formatting - Code", {
 		"    	version integer NOT NULL\n"+
 		"    );\n"+
 		"    insert into db_version (component, version) values('core', 14);\n",
-		'Here\'s some SQL code:<br><pre class=\"prettyprint lang-sql\">CREATE TABLE db_version (\n\tcomponent varchar(30) primary key,\n\tversion integer NOT NULL\n);\ninsert into db_version (component, version) values(\'core\', 14);</pre>'
+		'Here\'s some SQL code:<br><i class="pragma pragma-lang">#lang-sql</i><br><pre class=\"prettyprint lang-sql\">CREATE TABLE db_version (\n\tcomponent varchar(30) primary key,\n\tversion integer NOT NULL\n);\ninsert into db_version (component, version) values(\'core\', 14);</pre>'
 	),
 	"A table in code":t(
 		"	a|b↵	-|-↵	a|b",

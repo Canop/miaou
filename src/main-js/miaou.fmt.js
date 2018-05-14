@@ -102,9 +102,16 @@ miaou(function(fmt){
 		for (var l=0; l<lin.length; l++) {
 			var m, s = lin[l].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-			var langPragmaMatch = s.match(/^\s*#lang-(\w+)\s*$/);
-			if (langPragmaMatch) {
-				lang = langPragmaMatch[1];
+			var pragmaMatch = s.match(/^#(\w+)(-\w+)*(\([^\)]*\))?\s*$/);
+			if (pragmaMatch) {
+				// examples of pragmas:
+				// #lang-sql
+				// #graph(compare,sum)
+				var name = pragmaMatch[1];
+				lout.push('<i class="pragma pragma-'+name+'">'+s+'</i>');
+				if (name==="lang" && pragmaMatch[2]) {
+					lang = pragmaMatch[2].slice(1);
+				}
 				continue;
 			}
 
