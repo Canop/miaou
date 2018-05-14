@@ -98,9 +98,10 @@ miaou(function(md, plugins){
 	];
 
 	function render($c, m){
-		if (!m.content) return;
-		var match = m.content.match(/(?:^|\s)#graph(\([^\)]+\))?(?:$|\s)/);
-		if (!match) return;
+		var $pragma = $c.find(".pragma-graph");
+		if (!$pragma.length) return;
+		var match = $pragma.html().match(/(?:^|\s)#graph(\([^\)]+\))?(?:$|\s)/);
+		if (!match) return; // should not really happen
 		var options= {};
 		if (match[1]) {
 			match[1].split(/\W+/).forEach(function(k){
@@ -108,7 +109,7 @@ miaou(function(md, plugins){
 			});
 		}
 
-		var $table = $c.find('table').eq(0);
+		var $table = $pragma.nextAll(".tablewrap").find("table").eq(0);
 		if (!$table.length) return;
 		var	xcol = new TGCol($table, 0),
 			ycols = [];
@@ -141,19 +142,19 @@ miaou(function(md, plugins){
 		}
 
 		var	xvals = xcol.vals,
-			availableWidth = Math.max($c.width()-120, 300),
-			maxXLabelLength = Math.max.apply(0, xvals.map(function(xv){ return xv.label.length })),
-			rotateXLabels = maxXLabelLength > 5,
-			mt = 2, // margin top
-			mr = 5, // margin right
-			mb = Math.max(58, 55), // margin bottom
-			ml = rotateXLabels ? 35 : 5, // margin left
-			bm = 1, // space between two bars and between a bar and the border of its xval
 			n = xvals.length,
 			nbbars = n * nbycols,
-			minXWidth = 16, // if the width is less than 15, the oblique text is too thight
+			availableWidth = Math.max($c.width()-120, 300),
+			maxXLabelLength = Math.max.apply(0, xvals.map(function(xv){ return xv.label.length })),
+			rotateXLabels = maxXLabelLength > (n<8 ? 3 : 1),
+			mt = 2, // margin top
+			mr = 5, // margin right
+			mb = rotateXLabels ? 58 : 20, // margin bottom
+			ml = rotateXLabels ? 35 : 5, // margin left
+			bm = 1, // space between two bars and between a bar and the border of its xval
+			minXWidth = 14, // if the width is smaller, the oblique text is too thight
 			minBarWidth = Math.max((minXWidth - bm)/nbycols - bm|0, 6), //
-			barWidth = Math.min(Math.max(minBarWidth, (availableWidth-ml-mr)/nbbars-bm|0), 20),
+			barWidth = Math.min(Math.max(minBarWidth, (availableWidth-ml-mr)/nbbars-bm|0), 24),
 			xWidth = ((barWidth+bm)*nbycols+bm), // width of a xval
 			gW = xWidth*n,
 			W = gW+mr+ml,
