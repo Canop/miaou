@@ -100,12 +100,13 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 	VD.prototype.receive = function(message){
 		var arg = message.arg;
 		this.log('<--- receive:', message.verb, arg);
-		if (!this.ready[+!this.index]) {
-			this.ready[+!this.index] = true;
-			this.send("ready"); // this is useful if the other refreshed since we told them we're ready
-		}
+		this.ready[+!this.index] = true;
 		switch (message.verb) {
+		case "ready-too":
+			break;
 		case "ready":
+			if (this.accept[this.index]) this.send("on");
+			else this.send("ready-too");
 			break;
 		case "on":
 			this.accept[+!this.index] = true;
@@ -232,7 +233,6 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		.catch(err => this.log("err in receiveIceCandidate:", err));
 	}
 	VD.prototype.ontrack = function(event){ // called when a new track is added on the peer connection
-		this.remoteStream = event.streams[0];
 		this.remoteVideo.srcObject = event.streams[0];
 		this.remoteVideo.play();
 	}
