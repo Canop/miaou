@@ -393,6 +393,13 @@ body.pad #me {
 			content: "\00a0";
 		}
 	}
+	.pragma-lang {
+		opacity: 0;
+		&:hover {
+			opacity: 1;
+			transition: opacity .2s;
+		}
+	}
 }
 
 .message.has-opener .content {
