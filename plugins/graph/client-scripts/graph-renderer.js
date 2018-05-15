@@ -145,6 +145,7 @@ miaou(function(md, plugins){
 			n = xvals.length,
 			nbbars = n * nbycols,
 			availableWidth = Math.max($c.width()-120, 300),
+			// compute the exact size of labels in pixels ?
 			maxXLabelLength = Math.max.apply(0, xvals.map(function(xv){ return xv.label.length })),
 			rotateXLabels = maxXLabelLength > (n<8 ? 3 : 1),
 			mt = 2, // margin top
@@ -265,8 +266,8 @@ miaou(function(md, plugins){
 		});
 
 		var $tablewrap = $table.closest('.tablewrap');
-
 		var $wrapper = $("<div class=graph-wrapper>").append(g.n).insertBefore($tablewrap);
+		if (options.hideTable) $tablewrap.hide();
 		setTimeout(function(){
 			$wrapper.scrollLeft(W)
 		}, 10);

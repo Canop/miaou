@@ -19,7 +19,7 @@ function rollDice(ct){
 	if (nbDice>200) throw "Dice Overflow Error: Rolling Pad is flooded";
 
 	let	roll = true; // do we want to roll the dice ?
-	let	probas = nbDice>1 && nbDice*nbSides<500; // do we want to compute the distribution ?
+	let	probas = nbDice>1 && nbDice*nbSides<900; // do we want to compute the distribution ?
 
 	let	sum = constant,
 		exp = constant,
@@ -48,12 +48,12 @@ function rollDice(ct){
 
 	if (probas) {
 		md += "\n## Distribution:";
-		md += "\n#graph";
+		md += "\n#graph(hideTable)";
 		let distribution = exports.distribution(nbDice, nbSides);
 		md += "\n" + fmt.tbl({
 			cols: ["value", "probability"],
 			aligns: "rl",
-			rows: distribution.map((p, i) => p ? [i+constant, p]: null).filter(Boolean)
+			rows: distribution.map((p, i) => p ? [i+constant, `${p*100} %`]: null).filter(Boolean)
 		});
 	}
 
@@ -63,9 +63,9 @@ function rollDice(ct){
 
 // compute an array where arr[k] is the number of possible rolls
 //  of N S-sided dice whose summed result is k
-// N and S must be integers and > 2
+// N and S must be integers and greater than 1.
 // TODO use symetry to compute (and return) only half the array
-// TODO don't start arrays at 0 (i.e. make it so that arr[k] is the proba of K+N) ?
+// TODO don't start arrays at 0 (i.e. make it so that arr[k] is the proba of k+N) ?
 function _computeNumberOfWays(N, S){
 	if (N===1) {
 		let arr = Array(S+1).fill(1);
@@ -73,9 +73,8 @@ function _computeNumberOfWays(N, S){
 		return arr;
 	}
 	const p = _computeNumberOfWays(N-1, S);
-	const d = Array(p.length+S);
+	const d = Array(p.length+S).fill(0);
 	for (let k=d.length; k--;) {
-		d[k] = 0;
 		let m = Math.max(1, k-p.length+1);
 		let M = Math.min(k, S);
 		for (let j=m; j<=M; j++) {
@@ -87,13 +86,12 @@ function _computeNumberOfWays(N, S){
 
 // compute an array where arr[k] is the probability that k is the sum
 //  of the visible sides when rolling N S-sided dice.
-// N and S must be integers and > 2
-// TODO exercice for Math lovers: find a direct formula
+// N and S must be integers and greater than 1.
 exports.distribution = function(N, S){
 	if (N<2||N>200) throw new Error("Invalid N");
 	if (S<2||S>200) throw new Error("Invalid S");
-	let bo = bench.start("dice distribution");
-	let d = _computeNumberOfWays(N, S);
+	const bo = bench.start("dice distribution");
+	const d = _computeNumberOfWays(N, S);
 	let sum = 0;
 	for (let i=d.length; i--;) sum += d[i];
 	for (let i=d.length; i--;) d[i] /= sum;
