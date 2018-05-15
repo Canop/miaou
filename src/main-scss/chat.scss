@@ -393,7 +393,8 @@ body.pad #me {
 			content: "\00a0";
 		}
 	}
-	.pragma-lang {
+	.pragma {
+		display: block;
 		opacity: 0;
 		&:hover {
 			opacity: 1;
