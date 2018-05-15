@@ -1,12 +1,13 @@
 /* Tomorrow Night Eighties Theme */
 /* Original theme - https://github.com/chriskempson/tomorrow-theme */
 .prettyprint {
-	background-image: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #404040), color-stop(100%, #1a1a1a));
-	background-image: -webkit-linear-gradient(left, #404040,#1a1a1a);
-	background-image: -moz-linear-gradient(left, #404040,#1a1a1a);
-	background-image: -o-linear-gradient(left, #404040,#1a1a1a);
-	background-image: -ms-linear-gradient(left, #404040,#1a1a1a);
-	background-image: linear-gradient(left, #404040,#1a1a1a);
+	//background-image: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #404040), color-stop(100%, #1a1a1a));
+	//background-image: -webkit-linear-gradient(left, #404040,#1a1a1a);
+	//background-image: -moz-linear-gradient(left, #404040,#1a1a1a);
+	//background-image: -o-linear-gradient(left, #404040,#1a1a1a);
+	//background-image: -ms-linear-gradient(left, #404040,#1a1a1a);
+	//background-image: linear-gradient(left, #404040,#1a1a1a);
+	background: #333;
 	font-family: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
 	font-size: 12px;
 	line-height: 1.5;
