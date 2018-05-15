@@ -35,9 +35,10 @@ CommandTask.prototype.reply = function(content, asFlake){
 	this.replyAsFlake = asFlake;
 }
 // called at the very end of the action (can be asynchronous), enables benchmarking
+// return the duration (which might be used for logging)
 CommandTask.prototype.end = function(subcommand){
 	if (subcommand) this.bo.rename(`!!${this.cmd.name} / ${subcommand}`);
-	this.bo.end();
+	return this.bo.end();
 }
 CommandTask.prototype.user = function(){
 	return this.shoe.publicUser;
