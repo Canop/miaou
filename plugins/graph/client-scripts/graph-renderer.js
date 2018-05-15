@@ -150,7 +150,7 @@ miaou(function(md, plugins){
 			rotateXLabels = maxXLabelLength > (n<8 ? 3 : 1),
 			mt = 2, // margin top
 			mr = 5, // margin right
-			mb = rotateXLabels ? 58 : 20, // margin bottom
+			mb = rotateXLabels ? Math.min(maxXLabelLength*10+14, 70) : 15, // margin bottom
 			ml = rotateXLabels ? 35 : 5, // margin left
 			bm = 1, // space between two bars and between a bar and the border of its xval
 			minXWidth = 14, // if the width is smaller, the oblique text is too thight
