@@ -1,110 +1,106 @@
 exports.name = "Dices";
 
-let	fmt,
-	bench;
+const DiceRollDefinition = require("./DiceRollDefinition.js");
+const operators = {
+	"=": (a, b)=>a==b,
+	"==": (a, b)=>a==b,
+	"<": (a, b)=>a<b,
+	">": (a, b)=>a>b,
+	"<=": (a, b)=>a<=b,
+	">=": (a, b)=>a>=b,
+};
+
+let fmt;
 
 exports.init = async function(miaou){
 	fmt = miaou.lib("fmt");
-	bench = miaou.lib("bench");
 }
 
-function rollDice(ct){
-	let m = ct.args.match(/^\s*(\d+)?\s*d\s*(\d+)\s*([+-]\s*\d+)?/i);
-	if (!m) throw "invalid syntax";
-	let	nbDice = +m[1]||1,
-		nbSides = +m[2],
-		constant = m[3] ? +m[3].replace(/\s+/g, '') : 0;
-	if (nbDice<1) throw "you can't roll less than one die";
-	if (nbSides<2 || nbSides>5000) throw "there's no such die";
-	if (nbDice>200) throw "Dice Overflow Error: Rolling Pad is flooded";
-
-	let	roll = true; // do we want to roll the dice ?
-	let	probas = nbDice>1 && nbDice*nbSides<900; // do we want to compute the distribution ?
-
-	let	sum = constant,
-		exp = constant,
-		dice = [];
-	for (let i=0; i<nbDice; i++) {
-		let v = Math.ceil(Math.random()*nbSides);
-		dice.push(v);
-		sum += v;
-		exp += (nbSides+1)/2;
-	}
-
-	let	md = 'Rolling '+nbDice+' '+nbSides+'-sided dice'+(nbDice>1?'s':'')+
-		(constant ? ' and adding '+constant : '')+
-		' (**expect: '+exp.toFixed(1)+'**)';
-
-	if (roll) {
-		md += "\n## Roll:";
-		md += " **"+sum+"**";
-		if (nbDice>1 && nbDice<=12) {
-			md += "\n" + fmt.tbl({
-				cols: dice.map((_, i) => i+1).concat('Sum'),
-				rows: [dice.concat("**"+sum+"**")]
-			});
-		}
-	}
-
-	if (probas) {
-		md += "\n## Distribution:";
-		md += "\n#graph(hideTable)";
-		let distribution = exports.distribution(nbDice, nbSides);
+function showDef(def, wantRoll=false, wantAllDice=false, wantDistribution=false){
+	if (def.N>1000) wantRoll = false;
+	if (def.N>20) wantAllDice = false;
+	if (def.N<2 || def.N*def.S>1000) wantDistribution = false;
+	let md = def.description();
+	md += `, expecting **${def.expect()}**`;
+	if (wantAllDice) {
+		let roll = def.roll();
+		md += `\nRoll: **${roll.result}**`;
 		md += "\n" + fmt.tbl({
-			cols: ["value", "probability"],
-			aligns: "rl",
-			rows: distribution.map((p, i) => p ? [i+constant, `${p*100} %`]: null).filter(Boolean)
+			cols: roll.dice.map((_, i) => i+1),
+			rows: [roll.dice]
+		});
+	} else if (wantRoll) {
+		md += `\nRoll: **${def.sum()}**`
+	}
+	if (wantDistribution) {
+		md += "\n## Distribution:\n" + def.distribution().md();
+	}
+	return md;
+}
+
+function showDefScalar(def, operator, scalar){
+	let md = def.description();
+	let p = def.distribution().compareToScalar(operator, scalar);
+	md += `\nProbability to have ${def.str()} ${operator.name} ${scalar} : **${p*100}%**`;
+	if (def.N>1 && def.N*def.S<=1000) {
+		md += "\n## Distribution:\n" + def.distribution().md();
+	}
+	return md;
+}
+
+function showDefDef(defA, operator, defB){
+	let md = "";
+	let distA = defA.distribution();
+	let distB = defB.distribution();
+	let p = distA.compareToDistribution(operator, distB);
+	md += `\nProbability to have ${defA.str()} ${operator.name} ${defB.str()} : **${p*100}%**`;
+	let min = Math.min(distA.minPossibleValue(), distB.minPossibleValue());
+	let max = Math.max(distA.maxPossibleValue(), distB.maxPossibleValue());
+	if (max-min<=500) {
+		md += "\n## Distribution:\n";
+		let rows = [];
+		for (let v=min; v<=max; v++) {
+			rows.push([v, `${distA.probability(v)*100} %`, `${distB.probability(v)*100} %`]);
+		}
+		md += "#graph(hideTable,compare)\n" + fmt.tbl({
+			cols: ["value", `proba(${defA.str()})`, `proba(${defB.str()})`],
+			aligns: "rcc",
+			rows
 		});
 	}
-
-	ct.reply(md, md.length>800);
-	ct.end();
+	md += "\n*this computation isn't really guaranteed right now...*";
+	return md;
 }
 
-// compute an array where arr[k] is the number of possible rolls
-//  of N S-sided dice whose summed result is k
-// N and S must be integers and greater than 1.
-// TODO use symetry to compute (and return) only half the array
-// TODO don't start arrays at 0 (i.e. make it so that arr[k] is the proba of k+N) ?
-function _computeNumberOfWays(N, S){
-	if (N===1) {
-		let arr = Array(S+1).fill(1);
-		arr[0] = 0;
-		return arr;
-	}
-	const p = _computeNumberOfWays(N-1, S);
-	const d = Array(p.length+S).fill(0);
-	for (let k=d.length; k--;) {
-		let m = Math.max(1, k-p.length+1);
-		let M = Math.min(k, S);
-		for (let j=m; j<=M; j++) {
-			d[k] += p[k-j];
+function onCommand(ct){
+	let match = ct.args.match(/^\s*(\d*\s*d\s*[\d+-]+)(?:\s*([<>=]+)\s*([\w+-]+))?\s*$/i);
+	if (!match) throw new Error("Invalid command");
+	let [, left, op, right] = match;
+	let leftDef = new DiceRollDefinition(left);
+	let md;
+	if (op) {
+		let operator = operators[op];
+		if (!operator) throw new Error("Unknown Operator: "+op);
+		if (right==+right) {
+			md = showDefScalar(leftDef, operator, +right);
+		} else {
+			let rightDef = new DiceRollDefinition(right);
+			md = showDefDef(leftDef, operator, rightDef);
 		}
+	} else {
+		md = showDef(leftDef, true, true, true);
 	}
-	return d;
-}
-
-// compute an array where arr[k] is the probability that k is the sum
-//  of the visible sides when rolling N S-sided dice.
-// N and S must be integers and greater than 1.
-exports.distribution = function(N, S){
-	if (N<2||N>200) throw new Error("Invalid N");
-	if (S<2||S>200) throw new Error("Invalid S");
-	const bo = bench.start("dice distribution");
-	const d = _computeNumberOfWays(N, S);
-	let sum = 0;
-	for (let i=d.length; i--;) sum += d[i];
-	for (let i=d.length; i--;) d[i] /= sum;
-	bo.end();
-	return d;
+	let duration = ct.end();
+	md += `\n*duration: ${duration}µs*`;
+	ct.reply(md, md.length>800);
 }
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name:'dice',
-		fun:rollDice,
-		help:"roll some dice. Exemple: `!!dice 3D24`",
-		detailedHelp:"Examples:"
+		name: 'dice',
+		fun: onCommand,
+		help: "roll some dice. Exemple: `!!dice 3D24`",
+		detailedHelp: "Examples:"
 			+ "\n* `!!dice D6`"
 			+ "\n* `!!dice 2D6+5`"
 			+ "\n* `!!dice 7d24`"
