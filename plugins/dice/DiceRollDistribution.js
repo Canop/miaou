@@ -35,7 +35,7 @@ class DiceRollDistribution{
 		this.totalCombinations = this._combinations.reduce((s, c)=>s+c, 0);
 		this.safe = this.totalCombinations < Number.MAX_SAFE_INTEGER;
 		if (!this.safe) {
-			// in the future we'll switch to a normal law instead of doing the exact combination
+			// in the future we might switch to a normal law instead of doing the exact combination
 			//  when N is big enough
 			console.log("Dice Roll Distribution: integer overflow!");
 			console.log('totalCombinations:', this.totalCombinations);
@@ -63,8 +63,6 @@ class DiceRollDistribution{
 		let sum = 0;
 		for (let v=this.N*this.S; v>=this.N; v--) {
 			if (operator(v+this.C, scalar)) sum += this._combinations[v];
-			// we could probably stop iterating as soon as the operator
-			//  result isn't the same than the previous value
 		}
 		return sum / this.totalCombinations;
 	}
@@ -89,16 +87,15 @@ class DiceRollDistribution{
 	md(){
 		let rows = [];
 		for (let v=this.minPossibleValue(), max=this.maxPossibleValue(); v<=max; v++) {
-			rows.push([v, `${this.probability(v)*100} %`]);
+			let p = this.probability(v);
+			if (p<10**-20) continue;
+			rows.push([v, `${fmt.float(p*100)}%`]);
 		}
 		let md = "#graph(hideTable)\n" + fmt.tbl({
 			cols: ["value", "probability"],
 			aligns: "rl",
 			rows
 		});
-		if (!this.safe) {
-			md += "\n*Some approximations occured due to integer overflowing*";
-		}
 		return md;
 	}
 

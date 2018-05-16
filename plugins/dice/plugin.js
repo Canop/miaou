@@ -17,9 +17,9 @@ exports.init = async function(miaou){
 }
 
 function showDef(def, wantRoll=false, wantAllDice=false, wantDistribution=false){
-	if (def.N>1000) wantRoll = false;
+	if (def.N>5000) wantRoll = false;
 	if (def.N>20) wantAllDice = false;
-	if (def.N<2 || def.N*def.S>1000) wantDistribution = false;
+	if (def.N<2 || def.N*def.S>5000) wantDistribution = false;
 	let md = def.description();
 	md += `, expecting **${def.expect()}**`;
 	if (wantAllDice) {
@@ -41,8 +41,8 @@ function showDef(def, wantRoll=false, wantAllDice=false, wantDistribution=false)
 function showDefScalar(def, operator, scalar){
 	let md = def.description();
 	let p = def.distribution().compareToScalar(operator, scalar);
-	md += `\nProbability to have ${def.str()} ${operator.name} ${scalar} : **${p*100}%**`;
-	if (def.N>1 && def.N*def.S<=1000) {
+	md += `\nProbability to have ${def.str()} ${operator.name} ${scalar} : **${fmt.float(p*100)}%**`;
+	if (def.N>1 && def.N*def.S<=5000) {
 		md += "\n## Distribution:\n" + def.distribution().md();
 	}
 	return md;
@@ -53,14 +53,17 @@ function showDefDef(defA, operator, defB){
 	let distA = defA.distribution();
 	let distB = defB.distribution();
 	let p = distA.compareToDistribution(operator, distB);
-	md += `\nProbability to have ${defA.str()} ${operator.name} ${defB.str()} : **${p*100}%**`;
+	md += `\nProbability to have ${defA.str()} ${operator.name} ${defB.str()} : **${fmt.float(p*100)}%**`;
 	let min = Math.min(distA.minPossibleValue(), distB.minPossibleValue());
 	let max = Math.max(distA.maxPossibleValue(), distB.maxPossibleValue());
 	if (max-min<=500) {
 		md += "\n## Distribution:\n";
 		let rows = [];
 		for (let v=min; v<=max; v++) {
-			rows.push([v, `${distA.probability(v)*100} %`, `${distB.probability(v)*100} %`]);
+			let pa = distA.probability(v);
+			let pb = distB.probability(v);
+			if (pa+pb<10**-10) continue;
+			rows.push([v, `${fmt.float(pa*100)}%`, `${fmt.float(pb*100)}%`]);
 		}
 		md += "#graph(hideTable,compare)\n" + fmt.tbl({
 			cols: ["value", `proba(${defA.str()})`, `proba(${defB.str()})`],
@@ -68,7 +71,6 @@ function showDefDef(defA, operator, defB){
 			rows
 		});
 	}
-	md += "\n*this computation isn't really guaranteed right now...*";
 	return md;
 }
 
