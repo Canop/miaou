@@ -3,6 +3,7 @@ var config = module.exports;
 config["all"] = {
 	environment: "node",
 	tests: [
+		"fmt/fmt.float.js",
 		"format/format-basic.js",
 		"format/format-titles.js",
 		"format/format-links.js",
@@ -15,8 +16,8 @@ config["all"] = {
 		"ludogene/tribo.js",
 		"stackoverflow/url.js",
 		"naming/name-cleaning.js",
-	"db/sql.js",
-	"bench/Accumulator.js",
-	"pingme/parse.js",
+		"db/sql.js",
+		"bench/Accumulator.js",
+		"pingme/parse.js",
 	]
 };

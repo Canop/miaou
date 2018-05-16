@@ -31,24 +31,13 @@ exports.int = function(num){
 	return (+num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u2009");
 }
 
-// Formate un nombre. La précision après la virgule est optionnelle (valeur par défaut : 2)
-// exemples :
-//   formatFloat(100.0)	 => "100"
-//   formatFloat(100.0, 12) => "100"
-//   formatFloat(100.1)	=> "100.1"
-//   formatFloat(100.1, 0) => "100"
-//   formatFloat(100.7, 0) => "101"
-//   formatFloat(.0434) => "0.043"
-//   formatFloat(1.999999) => "2"
-//   formatFloat(.0000047) => "0"
-//   formatFloat(.0000047, 6)  => "0.000005"
-//   formatFloat(.0000047, 12) => "0.0000047"
-//   formatFloat(undefined) => ""
-//   formatFloat(NaN) => ""
+// format floats in a readable and concise way
+// see https://gist.github.com/Canop/90b2b85bbc454650bc6636f869783c3e
 exports.float = function(v, p=2){
-	if (!isFinite(v)) return '';
-	if (p<=0) return ''+Math.round(v);
-	return v.toFixed(p||2).replace(/(\.0+$)|(0+$)/, '');
+	if (v===0) return "0";
+	let absv = Math.abs(v);
+	if (absv>10**(p+3) || absv<10**-p) return v.toExponential(p).replace(/0+e/, 'e');
+	return v.toFixed(p).replace(/\.0+$|0+$/, '');
 }
 
 // format a number as a storage size
