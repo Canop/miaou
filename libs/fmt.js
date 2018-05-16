@@ -66,19 +66,19 @@ exports.tbl = function(o){
 	var	c = "",
 		aligns = o.aligns,
 		rank = o.rank && o.rows.length>1;
-	if (rank) c += "#|";
-	c += o.cols.join("|") + "\n";
-	if (rank) c += "-:|";
+	if (rank) c += "|#";
+	c += o.cols.map(c=>"|"+c).join("") + "|\n";
+	if (rank) c += "|-:";
 	if (aligns) {
 		if (typeof aligns === "string") aligns = Array.from(aligns);
-		c += o.cols.map((_, i) => alignMd[aligns[i]] || ":-:").join("|");
+		c += "|" + o.cols.map((_, i) => alignMd[aligns[i]] || ":-:").join("|");
 	} else {
-		c += ":-:|".repeat(o.cols.length);
+		c += "|:-:".repeat(o.cols.length);
 	}
-	c += "\n" + o.rows.map(function(row, l){
-		var line="";
+	c += "|\n" + o.rows.map(function(row, l){
+		var line="|";
 		if (rank) line += l+1+"|";
-		line += row.join("|");
+		line += row.join("|")+"|";
 		return line;
 	}).join("\n");
 	return c;
