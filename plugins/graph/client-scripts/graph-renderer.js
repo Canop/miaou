@@ -144,7 +144,7 @@ miaou(function(md, plugins){
 		var	xvals = xcol.vals,
 			n = xvals.length,
 			nbbars = n * nbycols,
-			availableWidth = Math.max($c.width()-120, 300),
+			availableWidth = Math.max($c.width()-140, 300),
 			// compute the exact size of labels in pixels ?
 			maxXLabelLength = Math.max.apply(0, xvals.map(function(xv){ return xv.label.length })),
 			rotateXLabels = maxXLabelLength > (n<8 ? 3 : 1),
@@ -152,11 +152,12 @@ miaou(function(md, plugins){
 			mr = 5, // margin right
 			mb = rotateXLabels ? Math.min(maxXLabelLength*10+14, 70) : 15, // margin bottom
 			ml = rotateXLabels ? 35 : 5, // margin left
-			bm = 1, // space between two bars and between a bar and the border of its xval
+			bm = 0, // space between two bars
+			bx = 2, // space between a bar and the border of its xval
 			minXWidth = 14, // if the width is smaller, the oblique text is too thight
-			minBarWidth = Math.max((minXWidth - bm)/nbycols - bm|0, 6), //
-			barWidth = Math.min(Math.max(minBarWidth, (availableWidth-ml-mr)/nbbars-bm|0), 24),
-			xWidth = ((barWidth+bm)*nbycols+bm), // width of a xval
+			minBarWidth = Math.max(minXWidth/nbycols - bm|0, 6), //
+			barWidth = Math.min(Math.max(minBarWidth, (availableWidth-ml-mr)/nbbars-2*bx|0), 24),
+			xWidth = (barWidth*nbycols+(nbycols-1)*bm+2*bx), // width of a xval
 			gW = xWidth*n,
 			W = gW+mr+ml,
 			g = ù('<svg', $c[0]).css({ height:H, width:W }),
@@ -203,6 +204,13 @@ miaou(function(md, plugins){
 			ycol.sum = 0; // will be incremented during drawing
 		});
 
+		function tick(x){
+			ù('<line', g).attr({
+				x1:x-.5, x2:x-.5, y1:mt+h-2, y2:mt+h+1,
+				stroke:"#666", strokeWidth:1
+			});
+		}
+
 		xvals.forEach(function(xval, i){
 			var	x1 = ml + i*xWidth,
 				x2 = x1 + xWidth,
@@ -227,7 +235,7 @@ miaou(function(md, plugins){
 					y = mt + h - Math.floor((val-ycol.min)*ycol.r);
 				}
 				var	height = Math.ceil(h-y+mt),
-					xbar = x1+(barWidth+bm)*j;
+					xbar = x1+bx+(barWidth+bm)*j;
 				if (height) {
 					ù('<rect', g).attr({
 						x:xbar, y:y, width:barWidth, height:height,
@@ -251,17 +259,15 @@ miaou(function(md, plugins){
 			if (rotateXLabels) {
 				text.attr({textAnchor:"end", transform:"rotate(-45 "+x+" "+y+")"});
 			}
-			ù('<line', g).attr({
-				x1:x1-.5, x2:x1-.5, y1:mt+h-2, y2:mt+h+1,
-				stroke:"#666", strokeWidth:1
-			});
+			tick(x1);
 		});
+		tick(ml+xWidth*n);
 
 		ycols.forEach(function(ycol){
 			if (!ycol.sumPath) return;
 			ù('<path', g).attr({
 				d: ycol.sumPath, fill: "transparent",
-				stroke: ycol.color, opacity: .8, strokeWidth: 3, lineJoin: "round"
+				stroke: ycol.color, opacity: .8, strokeWidth: 3, strokeLineJoin: "round"
 			});
 		});
 
