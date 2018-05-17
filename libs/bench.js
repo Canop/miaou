@@ -121,8 +121,7 @@ function doCommand(ct){
 		aligns: "l",
 		rows
 	});
-	ct.reply(c);
-	ct.end();
+	ct.reply(c).end();
 }
 
 exports.registerCommands = function(registerCommand){

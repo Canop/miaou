@@ -33,6 +33,7 @@ CommandTask.prototype.exec = function(con){
 CommandTask.prototype.reply = function(content, asFlake){
 	this.replyContent = content;
 	this.replyAsFlake = asFlake;
+	return this;
 }
 // called at the very end of the action (can be asynchronous), enables benchmarking
 // return the duration (which might be used for logging)

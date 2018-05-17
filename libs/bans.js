@@ -21,7 +21,7 @@ function doCommand(ct){
 			}).join('\n');
 		}
 		ct.noStore = true;
-		ct.reply(c, true);
+		ct.reply(c, true).end();
 	});
 }
 
