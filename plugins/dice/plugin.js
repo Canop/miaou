@@ -44,7 +44,7 @@ function showDef(def, options){
 			md += `\nRoll: **${def.sum()}**`
 		}
 	}
-	if (options.distrib && def.N>1 && def.N*def.S<10000) {
+	if (options.distrib && def.N>1 && def.N*def.S<123456) {
 		md += "\n## Distribution:\n" + def.distribution().md();
 	}
 	return md;
@@ -123,19 +123,18 @@ function onCommand(ct){
 	} else {
 		md = showDef(leftDef, options);
 	}
-	let duration = ct.end();
-	md += `\n*duration: ${duration}µs*`;
-	ct.reply(md, md.length>800);
+	ct.reply(md, md.length>800).end();
 }
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name: 'dice',
 		fun: onCommand,
-		help: "roll some dice. Exemple: `!!dice 3D24`",
+		help: "roll some dice or check their probability. Exemple: `!!dice 3D24+12`",
 		detailedHelp: "Examples:"
-			+ "\n* `!!dice D6`"
-			+ "\n* `!!dice 2D6+5`"
-			+ "\n* `!!dice 7d24`"
+			+ "\n* `!!dice roll 3D6`"
+			+ "\n* `!!dice dist 2D6+5`"
+			+ "\n* `!!dice 7d24 > 8d12+15`"
+			+ "\n* `!!dice 7d4 < 18`"
 	});
 }

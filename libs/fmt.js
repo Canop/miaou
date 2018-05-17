@@ -33,7 +33,7 @@ exports.int = function(num){
 
 // format floats in a readable and concise way
 // see https://gist.github.com/Canop/90b2b85bbc454650bc6636f869783c3e
-exports.float = function(v, p=2){
+exports.float = function(v, p=3){
 	if (v===0) return "0";
 	let absv = Math.abs(v);
 	if (absv>10**(p+3) || absv<10**-p) return v.toExponential(p).replace(/0+e/, 'e');

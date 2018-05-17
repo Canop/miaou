@@ -1,5 +1,6 @@
 
 const fmt = require("../../libs/fmt.js");
+const bench = require("../../libs/bench.js");
 
 // compute an array where arr[k] is the number of possible rolls
 //  of N S-sided dice whose summed result is k
@@ -28,18 +29,20 @@ class DiceRollDistribution{
 	constructor(N, S, C=0){
 		if (N<2||N>500) throw new Error("Invalid N");
 		if (S<2||S>200) throw new Error("Invalid S");
+		let bo = bench.start("Dice Distribution");
 		this.N = N;
 		this.S = S;
 		this.C = C;
 		this._combinations = computeCombinations(N, S);
 		this.totalCombinations = this._combinations.reduce((s, c)=>s+c, 0);
 		this.safe = this.totalCombinations < Number.MAX_SAFE_INTEGER;
-		if (!this.safe) {
-			// in the future we might switch to a normal law instead of doing the exact combination
-			//  when N is big enough
-			console.log("Dice Roll Distribution: integer overflow!");
-			console.log('totalCombinations:', this.totalCombinations);
-		}
+		bo.end();
+		//if (!this.safe) {
+		//	// in the future we might switch to a normal law instead of doing the exact combination
+		//	//  when N is big enough
+		//	console.log("Dice Roll Distribution: integer overflow!");
+		//	console.log('totalCombinations:', this.totalCombinations);
+		//}
 	}
 	minPossibleValue(){
 		return this.N + this.C;

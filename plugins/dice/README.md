@@ -1,11 +1,32 @@
 The `dices` plugin simulates throwing dices with an arbitrary number of sides, such as the ones of Role Playing Games.
 
-## Usage
+It lets you
 
-    !!dice <number of dices>d<number of sides>
+* roll the dice (for example toss heads or tails in the chat)
+* study the various probabilities related to some dice rollings
 
-Both a specific set of dice throws and and the expected mean are computed.
+*Dice Roll Definitions* are written as
 
-## Example
+    <number of dices> D <number of sides> + <added constant>
 
-![dice throwing](doc/dices.png)
+### Just roll some dice
+
+Simply use the `roll` option:
+
+![dice](doc/dice_roll_def.png)
+
+### See distribution
+
+Use `!!dice dist` or just `!!dice`:
+
+![dice](doc/dice_dist_def.png)
+
+### Estimate the probability to reach a threshold or fall on a given value
+
+![dice](doc/dice_dist_def_scalar.png)
+
+### Compare two distributions
+
+![dice](doc/dice_dist_def_def.png)
+
+
