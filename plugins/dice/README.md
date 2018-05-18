@@ -7,7 +7,7 @@ It lets you
 
 *Dice Roll Definitions* are written as
 
-    <number of dices> D <number of sides> + <added constant>
+    <number of dice> D <number of sides> + <added constant>
 
 ### Just roll some dice
 
