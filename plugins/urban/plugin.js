@@ -8,7 +8,7 @@ function abstract($, line){
 	if ($def.length) {
 		$abstract.append($("<h1>").append(
 			$("<a>").attr("href", line).attr("target", "_blank").text(
-				"Urban Dictionary: " + $def.find(".def-header").text()
+				"Urban Dictionary: " + $def.find(".def-header .word").text()
 			)
 		));
 		console.log($def.find(".meaning").html());
