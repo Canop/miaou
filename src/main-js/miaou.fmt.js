@@ -14,10 +14,15 @@ miaou(function(fmt){
 	// This is how we recognize a table in Markdown
 	var	coldefregex = /^\s*[:\-]*([\|\+][:\-]+)+(\||\+)?\s*$/,
 		coderegex = /^( {4}|\t)/,
-		braceSpanClassWhitelist = (new Set).add("tag"); // tokens allowed as class in [class:something]
+		braceSpanClassWhitelist = (new Set).add("tag"), // tokens allowed as class in [class:something]
+		pragmasWhitelist = (new Set).add("lang");
 
 	fmt.whiteListBraceSpanClass = function(clas){
 		braceSpanClassWhitelist.add(clas);
+	}
+
+	fmt.whiteListPragma = function(pragma){
+		pragmasWhitelist.add(pragma);
 	}
 
 	fmt.mdStringToHtml = function(s, username){
@@ -107,12 +112,15 @@ miaou(function(fmt){
 				// examples of pragmas:
 				// #lang-sql
 				// #graph(compare,sum)
+				// the name is the part before the dash (if any)
 				var name = pragmaMatch[1];
-				lout.push('<i class="pragma pragma-'+name+'">'+s+'</i>');
-				if (name==="lang" && pragmaMatch[2]) {
-					lang = pragmaMatch[2].slice(1);
+				if (pragmasWhitelist.has(name)) {
+					lout.push('<i class="pragma pragma-'+name+'">'+s+'</i>');
+					if (name==="lang" && pragmaMatch[2]) {
+						lang = pragmaMatch[2].slice(1);
+					}
+					continue;
 				}
-				continue;
 			}
 
 			var codeline = ((/^\s*$/.test(s) && code) || coderegex.test(s)) && !(table && /\|/.test(s));

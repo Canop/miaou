@@ -2,7 +2,7 @@
 // Right now, this isn't terribly generic. I'll make it more capable
 // if the need arises
 
-miaou(function(md, plugins){
+miaou(function(fmt, md, plugins){
 
 	ù.fn.textpos = function(str, x, y, align, fs){
 		this.text(str).attr({x:x, y:y, textAnchor:align||"middle", alignmentBaseline:"middle"});
@@ -282,6 +282,7 @@ miaou(function(md, plugins){
 
 	plugins.graph = {
 		start: function(){
+			fmt.whiteListPragma("graph");
 			md.registerRenderer(render, true);
 		}
 	}
