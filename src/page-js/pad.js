@@ -102,13 +102,6 @@ miaou(function(chat, gui, locals, roomFinder, time, watch, ws){
 		$(this).removeClass('open');
 	});
 
-	$(window).on('keydown', function(e){
-		if (e.which===70 && e.ctrlKey && !e.altKey && !$('#rooms-panel').hasClass('open')) {
-			righttab("search");
-			return false;
-		}
-	});
-
 	watch.enabled = true;
 	chat.start();
 
