@@ -3,7 +3,7 @@
 miaou(function(md, plugins){
 
 	var replacer = new Groumf();
-	replacer.skipTags('pre');
+	replacer.skipTags('pre', 'code');
 
 	function render($c){
 		replacer.replaceTextWithHTMLInHTMLUsingRegex(
