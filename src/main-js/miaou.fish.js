@@ -1,7 +1,22 @@
 // makes bubbles
 ;miaou(function(fish, fmt, gui){
 
+	var current = null; // {targetRect, $bubble} if a bubble is open
+
+	function overClientRect(e, rect){
+		return e.pageX>=rect.left && e.pageX<=rect.left+rect.width
+			&& e.pageY>=rect.top && e.pageY<=rect.top+rect.height;
+	}
+
+	fish.checkOver = function(e){
+		if (!current) return fish.closeBubbles();
+		if (overClientRect(e, current.targetRect)) return;
+		if (overClientRect(e, current.bubble.getBoundingClientRect())) return;
+		fish.closeBubbles();
+	}
+
 	$.fn.bubble = function(options){
+		fish.closeBubbles();
 		var	side,
 			match,
 			css,
@@ -31,6 +46,7 @@
 			+ "-"
 			+ (targetRect.left<ww/2 ? "right" : "left");
 		}
+		console.log('side:', side);
 		switch (side) {
 		case "bottom-left": // at the bottom right of the target, going towards left
 			css = {
@@ -41,7 +57,7 @@
 		case "bottom-right": // at the bottom left of the target, going towards right
 			css = {
 				left: targetRect.left + Math.min(targetRect.width-26|0, -2),
-				top: targetRect.bottom+1,
+				top: targetRect.bottom,
 			};
 			break;
 		case "top-left": // at the bottom right, bubble extending towards left
@@ -58,26 +74,26 @@
 			break;
 		case "left-bottom": // at the left of the target, going towards the bottom
 			css = {
-				right: ww-targetRect.left+5,
+				right: ww-targetRect.left,
 				top: targetRect.top-5
 			};
 			break;
 		case "left-top":
 			css = {
 				bottom: wh-targetRect.bottom-12,
-				right: ww-targetRect.left+5
+				right: ww-targetRect.left
 			};
 			break;
 		case "right-bottom":
 			css = {
-				left: targetRect.right+7,
+				left: targetRect.right,
 				top: targetRect.top-5,
 				width: targetRect.w+400
 			};
 			break;
 		case "right-top":
 			css = {
-				left: targetRect.right+7,
+				left: targetRect.right,
 				bottom: wh-targetRect.bottom-12,
 			};
 			break;
@@ -88,8 +104,16 @@
 		else if (options.html) $c[0].innerHTML = options.html;
 		if (options.blower) {
 			var r = options.blower.call(this, $c);
-			if (r === false) $b.remove();
+			if (r === false) {
+				$b.remove();
+				return;
+			}
 		}
+		current = {
+			targetRect,
+			bubble: $b[0]
+		};
+		$(window).on('mousemove', fish.checkOver);
 		return this;
 	}
 
@@ -108,9 +132,10 @@
 		if (typeof options === "string") options = {text: options};
 		else if (typeof options === "function") options = {blower: options};
 		var args = [options, function(e){
-			$(this).bubble(options).one('mouseleave wheel', function(){
-				$('.bubble').remove();
-			});
+			$(this).bubble(options)
+			//.one('mouseleave wheel', function(){
+			//	fish.closeBubbles();
+			//});
 		}];
 		if (selector) args.unshift(selector);
 		args.unshift("mouseenter");
@@ -119,13 +144,16 @@
 	}
 
 	fish.closeBubbles = function(){
+		if (!current) return;
 		$('.bubble').remove();
+		$(window).off('mousemove', fish.checkOver);
+		current = null;
 	}
 
 	setTimeout(function(){
 		if (gui.mobile) {
 			$("#message-scroller").on("scroll", function(){
-				$(".bubble").remove();
+				fish.closeBubbles();
 			});
 		}
 	}, 0);
