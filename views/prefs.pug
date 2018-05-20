@@ -26,7 +26,8 @@ html
 	body.prefs
 		section#prefs-top
 			.MP
-				object.Miaou-logo#Prefs-logo(type="image/svg+xml",data="static/Miaou.svg")
+				a.logo-link(href="rooms")
+					object.Miaou-logo#Prefs-logo(type="image/svg+xml",data="static/Miaou.svg")
 				p.links
 					| You're connected as
 					span.username= user.name
