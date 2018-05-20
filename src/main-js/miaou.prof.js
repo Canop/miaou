@@ -43,6 +43,7 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 			return; // happens when we leave a removed message decoration
 		}
 		var	user = $user.dat('user') || $user.closest('.notification,.user-messages,.user-line').dat('user'),
+			isInMessages = !!$user.closest("#messages").length,
 			$p = $('<div>').addClass('profile'),
 			url = 'publicProfile?user='+user.id+'&room='+locals.room.id;
 		if (gui.mobile) {
@@ -84,7 +85,7 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 				css.top = Math.max(uo.top, mintop);
 
 			}
-			css.left = uo.left + uw;
+			css.left = uo.left + uw + (isInMessages ? 6 : 0);
 			$user.addClass('profiled');
 			$p.css(css).appendTo('body').text('loading profile...').load(url, function(){
 				$p.find('.avatar').css('color', skin.stringToColour(user.name));
