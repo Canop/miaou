@@ -404,7 +404,10 @@ body.pad #me {
 }
 
 .message.has-opener .content {
-	padding-bottom: 12px;
+	padding-bottom: 24px;
+	&.closed {
+		padding-bottom: 12px;
+	}
 }
 
 #messages, .messages {
