@@ -34,9 +34,11 @@ html
 				img(src="static/Miaou-300-f.png")
 				p.links
 					| You're connected as
-					a.username(href="prefs")= user.name
+					span.username= user.name
 					br
-					a(id="logout",href="#") Log Out
+					a#logout(href="#") Log Out
+					| -
+					a(href="prefs") Settings
 					| -
 					a(href="room") Create a room
 					| -
