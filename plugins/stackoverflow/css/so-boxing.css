@@ -1,8 +1,8 @@
 .stackexchangebox {
 	display: table-row;
-	padding: 15px;
 	color: black;
 	font-size: 95%;
+	background: white;
 }
 
 .so-side {
