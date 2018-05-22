@@ -31,6 +31,7 @@ miaou(function(fmt){
 	// add to the table if it looks like part of it, and return true
 	// doesn't add if it's not compatible, and return false
 	Table.prototype.read = function(s){
+		if (/^\s*$/.test(s)) return false;
 		if (regularcoldefregex.test(s)) {
 			if (this.regular) {
 				this.multiline = true;
