@@ -97,9 +97,7 @@ miaou(function(fmt, md, plugins){
 		'#ffc107', '#4e5050', '#317334', '#7126b1', '#ce0d08', '#959e75'
 	];
 
-	function render($c, m){
-		var $pragma = $c.find(".pragma-graph");
-		if (!$pragma.length) return;
+	function renderGraph($pragma, $c){
 		var match = $pragma.html().match(/(?:^|\s)#graph(\([^\)]+\))?(?:$|\s)/);
 		if (!match) return; // should not really happen
 		var options= {};
@@ -109,7 +107,7 @@ miaou(function(fmt, md, plugins){
 			});
 		}
 
-		var $table = $pragma.nextAll(".tablewrap").find("table").eq(0);
+		var $table = $pragma.nextAll(".tablewrap").find("table").first();
 		if (!$table.length) return;
 		var	xcol = new TGCol($table, 0),
 			ycols = [];
@@ -146,7 +144,7 @@ miaou(function(fmt, md, plugins){
 			nbbars = n * nbycols,
 			availableWidth = Math.max($c.width()-140, 300),
 			// compute the exact size of labels in pixels ?
-			maxXLabelLength = Math.max.apply(0, xvals.map(function(xv){ return xv.label.length })),
+			maxXLabelLength = Math.max(...xvals.map(function(xv){ return xv.label.length })),
 			rotateXLabels = maxXLabelLength > (n<8 ? 3 : 1),
 			mt = 2, // margin top
 			mr = 5, // margin right
@@ -277,7 +275,12 @@ miaou(function(fmt, md, plugins){
 		setTimeout(function(){
 			$wrapper.scrollLeft(W)
 		}, 10);
+	}
 
+	function render($c, m){
+		$c.find(".pragma-graph").each(function(){
+			renderGraph($(this), $c);
+		});
 	}
 
 	plugins.graph = {
