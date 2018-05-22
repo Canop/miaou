@@ -159,22 +159,24 @@ function writeScore(ct, gameType){
 		});
 		players = players.sort((a, b) => b.twcScore-a.twcScore);
 		var lines = [titles.score];
-		lines.push('Rank|Player|Finished|Wins|Drops|Mean Gain|Running Score|TWC Score');
-		lines.push(lines[lines.length-1].replace(/[^|]+/g, ':-:'));
-		[].push.apply(lines, players.map(function(p, i){
-			var	meanGain = (p.sumEndScores+p.nbWins*3)/p.nbFinishedGames,
-				runningScore = 3*p.nbWins + p.sumEndScores;
-			return [
-				"**"+(i+1)+"**",
-				"["+p.name+"](u/"+p.id+")",
-				p.nbFinishedGames,
-				p.nbWins,
-				p.nbDrops,
-				meanGain ? meanGain.toFixed(1) : ' ',
-				runningScore,
-				p.twcScore
-			].join('|');
-		}));
+		lines.push(
+			'Rank|Player|Finished|Wins|Drops|Mean Gain|Running Score|TWC Score',
+			...lines[lines.length-1].replace(/[^|]+/g, ':-:'),
+			...players.map(function(p, i){
+				var	meanGain = (p.sumEndScores+p.nbWins*3)/p.nbFinishedGames,
+					runningScore = 3*p.nbWins + p.sumEndScores;
+				return [
+					"**"+(i+1)+"**",
+					"["+p.name+"](u/"+p.id+")",
+					p.nbFinishedGames,
+					p.nbWins,
+					p.nbDrops,
+					meanGain ? meanGain.toFixed(1) : ' ',
+					runningScore,
+					p.twcScore
+				].join('|');
+			})
+		);
 		write(roomId, lines.join('\n'));
 	})
 	.catch(db.NoRowError, function(){

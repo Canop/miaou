@@ -33,7 +33,7 @@ function dequeue(){
 		benchOperation = bench.start("Boxer / " + task.boxer.name),
 		args = line.match(task.boxer.pattern);
 	Promise.resolve(
-		task.boxer.urler ? task.boxer.urler.apply(null, args) : url
+		task.boxer.urler ? task.boxer.urler(...args) : url
 	)
 	.then(url => {
 		request(url, function(error, res, body){

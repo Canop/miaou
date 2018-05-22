@@ -51,7 +51,7 @@ function link(o, label, url){
 
 function pushComment(arr, comment){
 	arr.push(link(comment, "Comment")+":");
-	arr.push.apply(arr, comment.body.replace(/\s*$/, '').split(/\r?\n/).map(function(line){
+	arr.push(...comment.body.replace(/\s*$/, '').split(/\r?\n/).map(function(line){
 		return "> "+line;
 	}));
 }

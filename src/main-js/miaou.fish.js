@@ -1,10 +1,10 @@
 // makes bubbles
 ;miaou(function(fish, fmt, gui){
 
-	var current = null; // {targetRect, $bubble} if a bubble is open
+	var current = null; // {targetRect, bubble} if a bubble is open
 
 	function overClientRect(e, rect){
-		return e.pageX>=rect.left && e.pageX<=rect.left+rect.width
+		return	e.pageX>=rect.left && e.pageX<=rect.left+rect.width
 			&& e.pageY>=rect.top && e.pageY<=rect.top+rect.height;
 	}
 
@@ -137,8 +137,7 @@
 			//});
 		}];
 		if (selector) args.unshift(selector);
-		args.unshift("mouseenter");
-		$.fn.on.apply(this, args);
+		this.on("mouseenter", ...args);
 		return this;
 	}
 

@@ -28,7 +28,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 		this.removeVideo = null; // DOM video
 	}
 	VD.prototype.log = function(){
-		console.log.apply(console, ["video("+this.mid+")"].concat(Array.from(arguments)) );
+		console.log("video("+this.mid+")", ...arguments);
 	}
 	VD.prototype.render = function($c){ // renders the VD in a message, called only once
 		this.log("render");

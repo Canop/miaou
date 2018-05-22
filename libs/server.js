@@ -102,7 +102,7 @@ async function defineAppRoutes(){
 		if (!noNeedForLogin) args.push(ensureAuthenticated);
 		if (!noNeedForCompleteProfile) args.push(ensureCompleteProfile);
 		args.push(fun);
-		app[verb].apply(app, args);
+		app[verb](...args);
 	}
 	for (var key in oauth2Strategies) {
 		var s = oauth2Strategies[key];
