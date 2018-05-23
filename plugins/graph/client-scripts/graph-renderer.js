@@ -101,9 +101,15 @@ miaou(function(fmt, md, plugins){
 		var match = $pragma.html().match(/(?:^|\s)#graph(\([^\)]+\))?(?:$|\s)/);
 		if (!match) return; // should not really happen
 		var options= {};
+		var highlightedX = {};
 		if (match[1]) {
-			match[1].split(/\W+/).forEach(function(k){
-				if (k) options[k] = true;
+			match[1].slice(1, -1).split(/,\s*/).forEach(function(k){
+				var mk = k.match(/^highlight-x:(.*)$/);
+				if (mk) {
+					highlightedX[mk[1]] = true;
+				} else {
+					options[k] = true;
+				}
 			});
 		}
 
@@ -212,7 +218,8 @@ miaou(function(fmt, md, plugins){
 		xvals.forEach(function(xval, i){
 			var	x1 = ml + i*xWidth,
 				x2 = x1 + xWidth,
-				xm = (x1+x2)/2;
+				xm = (x1+x2)/2,
+				xhighlight = highlightedX[xval.label];
 			var rect = ù('<rect', g).attr({
 				class: "xval",
 				x:x1, width:xWidth-1, y:0, height:h+mt, fill:"transparent", cursor:'crosshair'
@@ -223,6 +230,12 @@ miaou(function(fmt, md, plugins){
 					...ycols.map(c => `${legend(c.color)} ${c.name} : ${c.rawvals[i]}`)
 				].join("<br>")
 			});
+			if (xhighlight) {
+				let y = h+mt+1;
+				ù("<line", g).attr({
+					class:"highlight", x1, y1:y, x2, y2:y, strokeWidth:2
+				});
+			}
 			ycols.forEach(function(ycol, j){
 				var	val = ycol.vals[i],
 					y;
@@ -254,6 +267,9 @@ miaou(function(fmt, md, plugins){
 			var text = ù('<text', g).text(xval.label).attr({
 				class: "label", x:x, y:y, alignmentBaseline:"middle", fontSize:"85%", opacity:.9
 			});
+			if (xhighlight) {
+				text.attr("class", "label highlight");
+			}
 			if (rotateXLabels) {
 				text.attr({textAnchor:"end", transform:"rotate(-45 "+x+" "+y+")"});
 			}

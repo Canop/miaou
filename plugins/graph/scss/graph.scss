@@ -15,6 +15,12 @@
 		.label {
 			fill: $general-text-color;
 		}
+		line.highlight {
+			stroke: $emphasis-text-color;
+		}
+		.label.highlight {
+			fill: $emphasis-text-color;
+		}
 		line, path {
 			pointer-events: none;
 		}
