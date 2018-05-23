@@ -132,9 +132,6 @@
 		else if (typeof options === "function") options = {blower: options};
 		var args = [options, function(e){
 			$(this).bubble(options)
-			//.one('mouseleave wheel', function(){
-			//	fish.closeBubbles();
-			//});
 		}];
 		if (selector) args.unshift(selector);
 		this.on("mouseenter", ...args);

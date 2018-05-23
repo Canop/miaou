@@ -29,6 +29,7 @@ exports.init = function(miaou){
 
 function onCommand(ct){
 	ct.reply('\nhttp://www.urbandictionary.com/define.php?term='+encodeURIComponent(ct.args))
+	ct.end();
 }
 
 exports.registerCommands = function(cb){

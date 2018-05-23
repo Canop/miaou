@@ -60,6 +60,7 @@ exports.init = function(miaou){
 
 function onCommand(ct){
 	ct.reply('\nhttps://'+ct.shoe.room.lang+'.wikipedia.org/wiki/'+encodeURIComponent(ct.args));
+	ct.end();
 }
 
 exports.registerCommands = function(cb){

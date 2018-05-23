@@ -16,6 +16,7 @@ function makeCommand(status){
 			ct.shoe.userRooms().forEach(function(roomId){
 				ct.shoe.emitBotFlakeToRoom(bot, text, roomId);
 			});
+			ct.end();
 		}, 100);
 		ct.silent = true;
 		ct.nostore = true;
