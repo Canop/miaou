@@ -3,6 +3,7 @@ miaou(function(plugins, ed){
 
 	const argSequences = [
 		["graph", ["me", "server", "room"]],
+		["hours", ["me", "server", "room"]],
 		["prefs", ["notif", "sound", "volume", "datdpl", "nifvis", "connot", "theme", "otowat", "beta"]],
 		["me"],
 		["user"],

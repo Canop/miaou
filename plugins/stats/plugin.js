@@ -26,9 +26,11 @@ exports.registerCommands = function(registerCommand){
 			"\n* `!!stats prefs` : stats of user preferences"+
 			"\n* `!!stats prefs theme` : stats of user preferences regarding themes"+
 			"\n* `!!stats` : basic stats"+
-			"\n* `!!stats server-graph` : monthly histogram"+
+			"\n* `!!stats graph server` : monthly histogram"+
+			"\n* `!!stats graph @someuser @anotherone` : monthly histogram, comparing two users"+
 			"\n* `!!stats tzoffsets` : timezone offsets"+
-			"\n* `!!stats sockets` : stats about current connections"
+			"\n* `!!stats sockets` : stats about current connections"+
+			"\n* `!!stats hours room` : histogram of messages per hour in the current room"
 
 	});
 }

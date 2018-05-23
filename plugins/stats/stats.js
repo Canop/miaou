@@ -3,6 +3,7 @@
 const	fmt = require('../../libs/fmt.js'),
 	naming = require('../../libs/naming.js'),
 	monthstats = require('./stats-months.js'),
+	hoursstats = require('./stats-hours.js'),
 	siostats = require('./stats-sockets.js');
 
 
@@ -81,6 +82,9 @@ exports.doStats = function(ct, miaou){
 	}
 	if (/^server-graph$/i.test(topic)) {
 		return monthstats.doServerStats(this, ct);
+	}
+	if (/^hours$/i.test(topic)) {
+		return hoursstats.doStats(this, ct, usernames, roomIds);
 	}
 	if (/^user-graph$/i.test(topic)) {
 		if (!usernames.length) throw "User stats need a ping as parameter";
