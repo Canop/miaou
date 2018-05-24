@@ -22,7 +22,7 @@ miaou(function(fmt, md, plugins){
 	TGCol.prototype.parse = function(parser){
 		var vals = new Array(this.rawvals.length);
 		for (var i=0; i<this.rawvals.length; i++) {
-			vals[i]=parser(this.rawvals[i]);
+			vals[i]=parser(this.rawvals[i], i);
 			if (vals[i]===undefined) return;
 		}
 		this.vals = vals;
@@ -91,6 +91,13 @@ miaou(function(fmt, md, plugins){
 				label: s
 			};
 		},
+		function(s, d){ // just labels
+			return {
+				start: d-.5,
+				end: d+.5,
+				label: s
+			};
+		}
 	];
 	var colors = [
 		'#e9967a', '#9cd3d3', '#e91e63', '#795548', '#8bc34a', '#00bcd4',
@@ -149,7 +156,6 @@ miaou(function(fmt, md, plugins){
 			n = xvals.length,
 			nbbars = n * nbycols,
 			availableWidth = Math.max($c.width()-140, 300),
-			// compute the exact size of labels in pixels ?
 			maxXLabelLength = Math.max(...xvals.map(function(xv){ return xv.label.length })),
 			rotateXLabels = maxXLabelLength > (n<8 ? 3 : 1),
 			mt = 2, // margin top
