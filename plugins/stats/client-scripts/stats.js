@@ -4,6 +4,8 @@ miaou(function(plugins, ed){
 	const argSequences = [
 		["graph", ["me", "server", "room"]],
 		["hours", ["me", "server", "room"]],
+		["days", ["me", "server", "room"]],
+		["months", ["me", "server", "room"]],
 		["prefs", ["notif", "sound", "volume", "datdpl", "nifvis", "connot", "theme", "otowat", "beta"]],
 		["me"],
 		["user"],
@@ -18,7 +20,7 @@ miaou(function(plugins, ed){
 		["votes"],
 		["sockets"],
 	];
-	const NB_DEEP_ARGS = 2;
+	const NB_DEEP_ARGS = 5;
 	const firstArgs = argSequences.map(function(v){
 		return v[0];
 	});

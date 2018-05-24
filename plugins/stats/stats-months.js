@@ -101,7 +101,7 @@ exports.doServerStats = async function(con, ct){
 	console.log("doServerStats months");
 	let months = await getMonths(con);
 	console.log("got", months.length, "months");
-	let c = "Server Statistics\n#graph(sum0)\n";
+	let c = "Server Statistics\n#graph(hideTable,sum0)\n";
 	c += fmt.tbl({
 		cols: ["Month", "Messages", "Authors"],
 		rows: months.map(m=>[m.label(), fmt.int(m.n), fmt.int(m.authors)])
@@ -129,7 +129,7 @@ exports.doRoomsStats = async function(con, ct, roomIds){
 	for (var i=0; i<roomIds.length; i++) {
 		rooms[i] = await con.fetchRoom(roomIds[i]);
 	}
-	let c = "Rooms Statistics\n#graph(compare,sum)\n";
+	let c = "Rooms Statistics\n#graph(hideTable,compare,sum)\n";
 	let rows = months
 	.filter(m =>{
 		for (var i=m.roomstats.length; i--;) {
@@ -160,7 +160,7 @@ exports.doUsersStats = async function(con, ct, usernames){
 			if (row) month.userstats[i] = row.n;
 		}
 	}
-	let c = "Users Statistics\n#graph(compare,sum)\n";
+	let c = "Users Statistics\n#graph(hideTable,compare,sum)\n";
 	let rows = months
 	.filter(m =>{
 		for (var i=m.userstats.length; i--;) {
