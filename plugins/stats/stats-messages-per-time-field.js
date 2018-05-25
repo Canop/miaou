@@ -75,7 +75,7 @@ class PerTimeUnitStator{
 		}
 		let rows = await this.rows(con, options);
 		let current = await this.current(con);
-		let md = `## ${title}\n${this.tableMarkdown(current, rows)}`;
+		let md = `${title}:\n${this.tableMarkdown(current, rows)}`;
 		ct.reply(md);
 	}
 }
