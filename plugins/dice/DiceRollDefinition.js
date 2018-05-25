@@ -9,10 +9,12 @@ class DiceRoll{
 
 class DiceRollDefinition{
 	constructor(str){
-		let m = str.match(/^(\d+)?\s*d\s*(\d+)\s*([+-]\s*\d+)?$/i);
+		let m = str.match(/^(-?\d+)\s*d\s*(\d+)\s*([+-]\s*\d+)?$/i);
 		if (!m) throw new Error("invalid syntax");
-		this.N = +m[1]||1;	// N : number of dice rolled
-		this.S = +m[2]; 	// S : number of sides on each die
+		this.N = +m[1];	// N : number of dice rolled (possibly negative)
+		this.aN = Math.abs(this.N);
+		if (this.aN<1) throw new Error("Can't roll zero dice");
+		this.S = +m[2];	// S : number of sides on each die
 		this.C = m[3] ? +(m[3].replace(/\s+/, '')) : 0;  // C : constant added after all rolls
 	}
 	str(){
@@ -22,28 +24,33 @@ class DiceRollDefinition{
 		return s;
 	}
 	description(){
-		let md = `Rolling ${this.N} ${this.S}-sided dice`;
-		if (this.C>0) md += ` and adding ${this.C}`;
-		else if (this.C<0) md += ` and substracting ${-this.C}`;
+		let md = `Roll ${this.aN} ${this.S}-sided dice`;
+		if (this.N<0) md += " reverse the sum"
+		if (this.C>0) md += ` and add ${this.C}`;
+		else if (this.C<0) md += ` and substract ${-this.C}`;
 		return md;
 	}
 	// rolls all dice and compute the result (including the constant C)
 	// Individual dice rolls are returned so this function shouldn't be
 	//	used when N is big.
 	roll(){
-		let dice = Array(this.N);
-		let result = this.C;
-		for (let i=this.N; i--;) {
+		let dice = Array(this.aN);
+		let result = 0;
+		for (let i=this.aN; i--;) {
 			result += dice[i] = Math.ceil(Math.random()*this.S);
 		}
+		if (this.N<0) result = -result;
+		result += this.C;
 		return new DiceRoll(dice, result);
 	}
 	// compute the result but only returns the numerical sum
 	sum(){
-		let result = this.C;
-		for (let i=this.N; i--;) {
+		let result = 0;
+		for (let i=this.aN; i--;) {
 			result += Math.ceil(Math.random()*this.S);
 		}
+		if (this.N<0) result = -result;
+		result += this.C;
 		return result;
 	}
 	// return the expected value (mean of the distribution)

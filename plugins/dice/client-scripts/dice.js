@@ -7,10 +7,10 @@ miaou(function(fish, md, plugins){
 	function render($c){
 		replacer.replaceTextWithHTMLInHTMLUsingRegex(
 			$c[0],
-			/\b(\d+)d(\d+)([+-]\d+)?\b/ig,
-			function(s, N, S, C){
+			/(^|\s|\()(-?\d+)d(\d+)([+-]\d+)?\b/ig,
+			function(s, b, N, S, C){
 				let mean = +N * (+S+1)/2 + (+C||0);
-				return `<span class=dice-roll-def data-def="${s}" bubble="Mean: ${mean}">${s}</span>`;
+				return `${b}<span class=dice-roll-def data-def="${s}" bubble="Mean: ${mean}">${s}</span>`;
 			}
 		);
 	}

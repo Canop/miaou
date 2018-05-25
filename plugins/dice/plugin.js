@@ -17,7 +17,7 @@ exports.init = async function(miaou){
 	fmt = miaou.lib("fmt");
 	cmdArgRegex = miaou.lib("rex")`
 		([a-z ]*)			// options (optional)
-		(\d*\s*d\s*[\d+-]+)		// left rolldef (mandatory)
+		(-?\d*\s*d\s*[\d+-]+)		// left rolldef (mandatory)
 		(?:				// inequation (optional)
 			\s*
 			([<>=]+)		// operator
@@ -32,8 +32,8 @@ function showDef(def, options){
 	let md = def.description();
 	md += `, expecting **${def.expect()}**`;
 	if (options.roll) {
-		if (def.N>50000) throw new Error("Too Many Dice : Board is flooded");
-		if (def.N<=30) {
+		if (def.aN>50000) throw new Error("Too Many Dice : Board is flooded");
+		if (def.aN<=30) {
 			let roll = def.roll();
 			md += `\nRoll: **${roll.result}**`;
 			md += "\n" + fmt.tbl({
@@ -44,7 +44,7 @@ function showDef(def, options){
 			md += `\nRoll: **${def.sum()}**`
 		}
 	}
-	if (options.distrib && def.N>1 && def.N*def.S<123456) {
+	if (options.distrib && def.aN>1 && def.aN*def.S<123456) {
 		md += "\n## Distribution:\n" + def.distribution().md();
 	}
 	return md;
@@ -58,7 +58,7 @@ function showDefScalar(def, operator, scalar, options){
 		let sum = def.sum();
 		md += `\nRoll: ${sum} => **${operator(sum, scalar) ? "yes" : "no"}**`
 	}
-	if (options.distrib && def.N>1 && def.N*def.S<=5000) {
+	if (options.distrib && def.aN>1 && def.aN*def.S<=5000) {
 		md += "\n## Distribution:\n" + def.distribution().md();
 	}
 	return md;
@@ -79,9 +79,9 @@ function showDefDef(defA, operator, defB, options){
 			rows: [[ sa, `**${operator(sa, sb) ? "yes" : "no"}**`, sb ]]
 		});
 	}
-	if (options.distrib && defA.N>1 && defB.N>1) {
-		let min = Math.min(distA.minPossibleValue(), distB.minPossibleValue());
-		let max = Math.max(distA.maxPossibleValue(), distB.maxPossibleValue());
+	if (options.distrib && defA.aN>1 && defB.aN>1) {
+		let min = Math.min(distA.min, distB.min);
+		let max = Math.max(distA.max, distB.max);
 		if (max-min<=500) {
 			md += "\n## Distribution:\n";
 			let rows = [];

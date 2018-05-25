@@ -27,36 +27,27 @@ function computeCombinations(N, S){
 
 class DiceRollDistribution{
 	constructor(N, S, C=0){
-		if (N<2||N>500) throw new Error("Invalid N");
+		this.aN = Math.abs(N);
+		if (this.aN<2||this.aN>500) throw new Error("Invalid N");
 		if (S<2||S>200) throw new Error("Invalid S");
 		let bo = bench.start("Dice Distribution");
 		this.N = N;
 		this.S = S;
 		this.C = C;
-		this._combinations = computeCombinations(N, S);
+		this._combinations = computeCombinations(this.aN, S);
 		this.totalCombinations = this._combinations.reduce((s, c)=>s+c, 0);
 		this.safe = this.totalCombinations < Number.MAX_SAFE_INTEGER;
 		bo.end();
-		//if (!this.safe) {
-		//	// in the future we might switch to a normal law instead of doing the exact combination
-		//	//  when N is big enough
-		//	console.log("Dice Roll Distribution: integer overflow!");
-		//	console.log('totalCombinations:', this.totalCombinations);
-		//}
-	}
-	minPossibleValue(){
-		return this.N + this.C;
-	}
-	maxPossibleValue(){
-		return this.N*this.S + this.C;
+		this.min = this.N + this.C; // min possible value
+		this.max = this.N*this.S + this.C; // max possible value
+		if (this.N<0) [this.min, this.max] = [this.max, this.min];
 	}
 	// returns the number of ways you can get a possible value (must be an integer).
 	//  distrib.combinations(3)/distrib.totalCombinations is the probability
 	//  you get 3 by rolling the dice
-	combinations(value){
-		let v = value - this.C;
-		if (v < this.N || v > this.N*this.S) return 0;
-		return this._combinations[v];
+	combinations(v){
+		if (v < this.min || v > this.max) return 0;
+		return this._combinations[Math.abs(v-this.C)];
 	}
 	probability(value){
 		return this.combinations(value) / this.totalCombinations;
@@ -64,8 +55,8 @@ class DiceRollDistribution{
 	// compute the probability that the (in)equation is verified
 	compareToScalar(operator, scalar){
 		let sum = 0;
-		for (let v=this.N*this.S; v>=this.N; v--) {
-			if (operator(v+this.C, scalar)) sum += this._combinations[v];
+		for (let v=this.min; v<=this.max; v++) {
+			if (operator(v+this.C, scalar)) sum += this._combinations[Math.abs(v)];
 		}
 		return sum / this.totalCombinations;
 	}
@@ -76,12 +67,14 @@ class DiceRollDistribution{
 		// TODO switch to bigint as soon as possible!
 		let a = this;
 		let sum = 0;
-		for (let i=a.N*a.S; i>=a.N; i--) {
+		for (let i=a.min; i<=a.max; i++) {
 			let va = i+a.C;
-			for (let j=b.N*b.S; j>=b.N; j--) {
+			let absi = Math.abs(i);
+			for (let j=b.min; j<=b.max; j++) {
 				let vb = j+b.C;
+				let absj = Math.abs(j);
 				if (operator(va, vb)) {
-					sum += a._combinations[i]*b._combinations[j];
+					sum += a._combinations[absi]*b._combinations[absj];
 				}
 			}
 		}
@@ -89,7 +82,7 @@ class DiceRollDistribution{
 	}
 	md(){
 		let rows = [];
-		for (let v=this.minPossibleValue(), max=this.maxPossibleValue(); v<=max; v++) {
+		for (let v=this.min; v<=this.max; v++) {
 			let p = this.probability(v);
 			if (p<10**-20) continue;
 			rows.push([v, `${fmt.float(p*100)}%`]);
