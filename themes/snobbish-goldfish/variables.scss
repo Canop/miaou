@@ -12,8 +12,9 @@ $box-border: none;
 
 $general-text-color: #aaa;
 $title-text-color: #fb0;
-$emphasis-text-color: #fb0;
-//$message-list-bg: linear-gradient(#444, #111);
+$emphasis-text-color: rgba(255, 187, 0, 1); // #fb0
+$highlight-text-color: rgba(230, 211, 153, 0.96); // between #fb0 and white
+$bubble-highlight-color: $highlight-text-color;
 $message-list-bg: #151515; //#1a1a1a;
 $ping-bg: rgb(27, 27, 27);
 $ping-me-bg: rgb(68, 51, 0);
