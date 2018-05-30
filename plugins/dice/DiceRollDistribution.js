@@ -6,7 +6,6 @@ const bench = require("../../libs/bench.js");
 //  of N S-sided dice whose summed result is k
 // N and S must be integers and greater than 1.
 // TODO use symetry to compute (and return) only half the array
-// TODO don't start arrays at 0 (i.e. make it so that arr[k] is the proba of k+N) ?
 function computeCombinations(N, S){
 	if (N===1) {
 		let arr = Array(S+1).fill(1);
@@ -56,26 +55,21 @@ class DiceRollDistribution{
 	compareToScalar(operator, scalar){
 		let sum = 0;
 		for (let v=this.min; v<=this.max; v++) {
-			if (operator(v+this.C, scalar)) sum += this._combinations[Math.abs(v)];
+			if (operator(v, scalar)) sum += this.combinations(v);
 		}
 		return sum / this.totalCombinations;
 	}
 	// compute the probability that the (in)equation is verified
 	compareToDistribution(operator, b){
-		// this could be greatly optimized, and we should better estimate
-		//  the impacts of the inevitable overflows
 		// TODO switch to bigint as soon as possible!
 		let a = this;
 		let sum = 0;
-		for (let i=a.min; i<=a.max; i++) {
-			let va = i+a.C;
-			let absi = Math.abs(i);
-			for (let j=b.min; j<=b.max; j++) {
-				let vb = j+b.C;
-				let absj = Math.abs(j);
-				if (operator(va, vb)) {
-					sum += a._combinations[absi]*b._combinations[absj];
-				}
+		for (let va=a.min; va<=a.max; va++) {
+			let ia = Math.abs(va-a.C);
+			for (let vb=b.min; vb<=b.max; vb++) {
+				if (!operator(va, vb)) continue;
+				let ib = Math.abs(vb-b.C);
+				sum += a._combinations[ia]*b._combinations[ib];
 			}
 		}
 		return sum / (a.totalCombinations*b.totalCombinations);
