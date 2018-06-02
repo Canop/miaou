@@ -87,7 +87,6 @@
 			css = {
 				left: targetRect.right,
 				top: targetRect.top-5,
-				width: targetRect.w+400
 			};
 			break;
 		case "right-top":
@@ -146,11 +145,9 @@
 	}
 
 	setTimeout(function(){
-		if (gui.mobile) {
-			$("#message-scroller").on("scroll", function(){
-				fish.closeBubbles();
-			});
-		}
+		$("#message-scroller").on("scroll", function(){
+			fish.closeBubbles();
+		});
 	}, 0);
 
 	$("#messages").bubbleOn("[bubble]", function($c){
