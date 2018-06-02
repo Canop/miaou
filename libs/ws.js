@@ -195,20 +195,12 @@ function emitMessages(shoe, asc, N, c1, s1, c2, s2){
 }
 
 // to be used by bots, creates a message, store it in db and emit it to the room
-// There's a delay because most often this is used to answer a command and
-// we don't want the answer to come first
 // Note that this doesn't send pings
 exports.botMessage = function(bot, roomId, content, cb){
-	setTimeout(function(){
-		db.on()
-		.then(function(){
-			return exports.botSendMessage(this, bot, roomId, content);
-		})
-		.then(function(m){
-			if (cb) cb.call(this, m);
-		})
-		.finally(db.off);
-	}, 300);
+	return db.do(async function(con){
+		let m = await exports.botSendMessage(con, bot, roomId, content);
+		if (cb) await cb.call(con, m);
+	});
 }
 
 // to be used by bot, store a message in DB, sends it. Doesn't ping users.

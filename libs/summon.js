@@ -2,7 +2,7 @@
 
 const	ws = require('./ws.js');
 
-var	bot,
+let	bot,
 	db;
 
 exports.configure = function(miaou){
@@ -12,34 +12,31 @@ exports.configure = function(miaou){
 }
 
 function summon(ct){
-	var	room = ct.shoe.room,
+	let	room = ct.shoe.room,
 		summoner = ct.user();
 	ct.shoe.checkAuth('admin');
-	var matches = ct.args.match(/@(\w[\w_\-\d]{2,})/g);
-	if (!matches) throw 'Bad syntax. Use `!!summon @some_other_user`';
+	let matches = ct.args.match(/@(\w[\w_\-\d]{2,})/g);
+	if (!matches) throw new Error('Bad syntax. Use `!!summon @some_other_user`');
 	if (!room.private) return; // nothing to do in a public room
 	ct.withSavedMessage = function(shoe, message){
 		console.log("in withSavedMessage");
-		return db.on(matches)
-		.map(function(ping){
-			return this.getUserByName(ping.slice(1));
-		})
-		.filter(user => user && user.id!==summoner.id)
-		.map(function(user){
-			return this.getAuthLevel(room.id, user.id)
-			.then(authLevel => {
+		db.do(async function(con){
+			for (let ping of matches) {
+				let user = await con.getUserByName(ping.slice(1));
+				if (!user || user.id==summoner.id) continue;
+				let authLevel = await con.getAuthLevel(room.id, user.id);
 				if (authLevel) {
-					return ws.botMessage(bot, room.id, user.name+" has been invited to this room.");
+					ws.botMessage(bot, room.id, user.name+" has been invited to this room.");
+				} else {
+					shoe.emit('auth_dialog', {
+						user: {id:user.id, name:user.name},
+						pingId: message.id,
+						pingContent: "You have been summoned by @"+summoner.name
+					});
 				}
-				shoe.emit('auth_dialog', {
-					user: {id:user.id, name:user.name},
-					pingId: message.id,
-					pingContent: "You have been summoned by @"+summoner.name
-				});
-			})
-		})
-		.finally(db.off);
-	}
+			}
+		});
+	};
 }
 
 exports.registerCommands = function(registerCommand){

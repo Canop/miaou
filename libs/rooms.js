@@ -142,7 +142,7 @@ exports.appPostRoom = function(req, res){
 				room.private = true;
 				room.listed = false;
 			}
-			ws.botMessage(null, roomId, `@${req.user.name} edited the room`);
+			await ws.botMessage(null, roomId, `@${req.user.name} edited the room`);
 			await con.updateRoom(room, req.user, oldroom.auth);
 		}
 		await con.setRoomTags(room.id, room.tags);
