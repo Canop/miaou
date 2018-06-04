@@ -1,5 +1,5 @@
 
-miaou(function(tagger, fish, fmt, locals){
+miaou(function(tagger, fmt, locals){
 
 	// makes a tag set editable, with an autocompletion menu
 	// TODO tab completion
@@ -17,7 +17,6 @@ miaou(function(tagger, fish, fmt, locals){
 			$menu = $("<div>").addClass("autocomplete-tags").hide().appendTo("body");
 		$tagSet.on("click", ".tag", function(){
 			this.remove();
-			$(".bubble").remove(); // the bubble system currently doesn't detect target removal
 			$field.val(alreadyPresentTags().join(" "));
 		});
 		function alreadyPresentTags(){
@@ -140,7 +139,7 @@ miaou(function(tagger, fish, fmt, locals){
 				$c.text("Unknown Tag");
 				return;
 			}
-			$c.html(fmt.mdTextToHtml(data.tag.description));
+			$c.addClass("text").html(fmt.mdTextToHtml(data.tag.description));
 		});
 	}
 

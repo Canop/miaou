@@ -4,8 +4,6 @@
 	display: flex;
 	flex-direction: row;
 	z-index: 115;
-	min-width: 100px;
-	max-width: 400px;
 	.bubble-content {
 		background: $bubble-bg;
 		color: $bubble-color;
@@ -17,6 +15,9 @@
 		}
 		code {
 			color: $bubble-color;
+		}
+		&.text {
+			max-width: 400px;
 		}
 	}
 	.bubble-arrow {

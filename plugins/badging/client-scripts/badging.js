@@ -29,7 +29,7 @@ miaou(function(plugins, ed, fmt, md){
 				$c.text("Unknown Badge");
 				return;
 			}
-			$c.html([
+			$c.addClass("text").html([
 				"<span class="+badge.level+"-badge>"+badge.name+"</span><br>",
 				fmt.mdTextToHtml(badge.condition) + "<br>",
 				nv("tag", badge.tag),
