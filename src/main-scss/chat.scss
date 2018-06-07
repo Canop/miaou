@@ -394,7 +394,7 @@ body.pad #me {
 		}
 	}
 	.pragma {
-		display: block;
+		width: 100%; // to ease hovering
 		opacity: 0;
 		&:hover {
 			opacity: 1;
