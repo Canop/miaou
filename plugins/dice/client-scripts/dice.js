@@ -1,5 +1,5 @@
 
-miaou(function(fish, md, plugins){
+miaou(function(fish, ed, md, plugins){
 
 	var replacer = new Groumf();
 	replacer.skipTags('pre', 'code');
@@ -22,6 +22,7 @@ miaou(function(fish, md, plugins){
 				$("#input").val("!!dice "+$(this).data("def")).focus();
 				fish.closeBubbles();
 			});
+			ed.registerCommandArgAutocompleter("dice", ["roll", "dist", "all"]);
 		}
 	}
 
