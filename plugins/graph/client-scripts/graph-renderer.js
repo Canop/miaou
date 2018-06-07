@@ -155,19 +155,22 @@ miaou(function(fmt, md, plugins){
 		var	xvals = xcol.vals,
 			n = xvals.length,
 			nbbars = n * nbycols,
+			nox = !!options.nox,
 			availableWidth = Math.max($c.width()-140, 300),
 			maxXLabelLength = Math.max(...xvals.map(function(xv){ return xv.label.length })),
-			rotateXLabels = maxXLabelLength > (n<8 ? 3 : 1),
+			rotateXLabels = !nox && maxXLabelLength > (n<8 ? 3 : 1),
 			mt = 2, // margin top
 			mr = 5, // margin right
-			mb = rotateXLabels ? Math.min(maxXLabelLength*10+14, 70) : 15, // margin bottom
+			mb = nox ? 0 : rotateXLabels ? Math.min(maxXLabelLength*10+14, 70) : 15, // margin bottom
 			ml = rotateXLabels ? 35 : 5, // margin left
 			bm = 0, // space between two bars
-			bx = 2, // space between a bar and the border of its xval
-			minXWidth = 14, // if the width is smaller, the oblique text is too thight
-			minBarWidth = Math.max(minXWidth/nbycols - bm|0, 6), //
+			//bx = nbbars<25 ? 2 : (nbbars>120 ? 0 : 1), // space between a bar and the border of its xval
+			bx = nbbars<25 ? 2 : 1, // space between a bar and the border of its xval
+			minXWidth = nox ? 3 : 13, // if the width is smaller, the oblique text is too thight
+			minBarWidth = nox ? 2 : Math.max(minXWidth/nbycols - bm|0, 4),
 			barWidth = Math.min(Math.max(minBarWidth, (availableWidth-ml-mr)/nbbars-2*bx|0), 24),
 			xWidth = (barWidth*nbycols+(nbycols-1)*bm+2*bx), // width of a xval
+			ticks = !!options.ticks,
 			gW = xWidth*n,
 			W = gW+mr+ml,
 			g = ù('<svg', $c[0]).css({ height:H, width:W }),
@@ -215,6 +218,7 @@ miaou(function(fmt, md, plugins){
 		});
 
 		function tick(x){
+			if (!ticks) return;
 			ù('<line', g).attr({
 				x1:x-.5, x2:x-.5, y1:mt+h-2, y2:mt+h+1,
 				stroke:"#666", strokeWidth:1
@@ -268,16 +272,19 @@ miaou(function(fmt, md, plugins){
 					ycol.sumPath += "L"+x2+" "+y;
 				}
 			});
-			var	x = xm,
-				y = h+mt+10;
-			var text = ù('<text', g).text(xval.label).attr({
-				class: "label", x:x, y:y, alignmentBaseline:"middle", fontSize:"85%", opacity:.9
-			});
-			if (xhighlight) {
-				text.attr("class", "label highlight");
-			}
-			if (rotateXLabels) {
-				text.attr({textAnchor:"end", transform:"rotate(-45 "+x+" "+y+")"});
+			if (!nox) {
+				var	x = xm,
+					y = h+mt+10;
+				var text = ù('<text', g).text(xval.label).attr({
+					textAnchor:"middle", class: "label", x:x, y:y,
+					alignmentBaseline:"middle", fontSize:"85%", opacity:.9
+				});
+				if (xhighlight) {
+					text.attr("class", "label highlight");
+				}
+				if (rotateXLabels) {
+					text.attr({textAnchor:"end", transform:"rotate(-45 "+x+" "+y+")"});
+				}
 			}
 			tick(x1);
 		});

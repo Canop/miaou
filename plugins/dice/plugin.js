@@ -12,9 +12,12 @@ const operators = {
 
 let fmt;
 let cmdArgRegex;
+let graph;
 
 exports.init = async function(miaou){
 	fmt = miaou.lib("fmt");
+	graph = miaou.plugin("graph");
+	require("./DiceRollDistribution.js").init(miaou);
 	cmdArgRegex = miaou.lib("rex")`
 		([a-z ]*)			// options (optional)
 		(-?\d*\s*d\s*[\d+-]+)		// left rolldef (mandatory)
@@ -91,7 +94,11 @@ function showDefDef(defA, operator, defB, options){
 				if (pa+pb<10**-10) continue;
 				rows.push([v, `${fmt.float(pa*100)}%`, `${fmt.float(pb*100)}%`]);
 			}
-			md += "#graph(hideTable,compare)\n" + fmt.tbl({
+			md += graph.pragma({
+				hideTable: true,
+				compare: true,
+				nox: rows.length>80
+			}) + fmt.tbl({
 				cols: ["value", `proba(${defA.str()})`, `proba(${defB.str()})`],
 				aligns: "rcc",
 				rows

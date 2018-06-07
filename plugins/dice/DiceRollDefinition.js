@@ -1,4 +1,4 @@
-const DiceRollDistribution = require("./DiceRollDistribution.js");
+const {DiceRollDistribution} = require("./DiceRollDistribution.js");
 
 class DiceRoll{
 	constructor(dice, result){

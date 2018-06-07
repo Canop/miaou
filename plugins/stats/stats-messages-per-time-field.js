@@ -1,6 +1,13 @@
 // generators of data for histograms of messages per hour, day, or month
-const {dedent} = require("../../libs/template-tags.js");
-const fmt = require("../../libs/fmt.js");
+let	dedent,
+	fmt,
+	graph;
+
+exports.init = function(miaou){
+	dedent = miaou.lib("template-tags").dedent;
+	fmt = miaou.lib("fmt");
+	graph = miaou.plugin("graph");
+}
 
 class PerTimeUnitStator{
 	constructor(name, field, xvalues, formatX){
@@ -47,11 +54,10 @@ class PerTimeUnitStator{
 		);
 	}
 	tableMarkdown(current, rows){
-		let graphOptions = [
-			"hideTable",
-			`highlight-x:${this.formatX(current)}`
-		];
-		return `#graph(${graphOptions.join(",")})\n` + fmt.tbl({
+		return graph.pragma({
+			hideTable: true,
+			"highlight-x": this.formatX(current)
+		}) + fmt.tbl({
 			cols: [this.name, "messages"],
 			rows: rows.map(({x, n})=>[this.formatX(x), n])
 		});

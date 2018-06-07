@@ -1,6 +1,13 @@
 
-const fmt = require("../../libs/fmt.js");
-const bench = require("../../libs/bench.js");
+let fmt;
+let bench;
+let graph;
+
+exports.init = async function(miaou){
+	fmt = miaou.lib("fmt");
+	bench = miaou.lib("bench");
+	graph = miaou.plugin("graph");
+}
 
 // compute an array where arr[k] is the number of possible rolls
 //  of N S-sided dice whose summed result is k
@@ -81,7 +88,10 @@ class DiceRollDistribution{
 			if (p<10**-20) continue;
 			rows.push([v, `${fmt.float(p*100)}%`]);
 		}
-		let md = "#graph(hideTable)\n" + fmt.tbl({
+		let md = graph.pragma({
+			hideTable: true,
+			nox: rows.length>80
+		}) + fmt.tbl({
 			cols: ["value", "probability"],
 			aligns: "rl",
 			rows
@@ -91,4 +101,4 @@ class DiceRollDistribution{
 
 }
 
-module.exports = DiceRollDistribution;
+exports.DiceRollDistribution = DiceRollDistribution;

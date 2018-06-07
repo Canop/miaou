@@ -7,6 +7,7 @@ var	miaou;
 exports.init = function(_miaou){
 	miaou = _miaou;
 	monthstats.preloadCache(miaou.db);
+	require("./stats-messages-per-time-field.js").init(miaou);
 }
 
 exports.registerCommands = function(registerCommand){
