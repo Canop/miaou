@@ -16,6 +16,8 @@
 		code {
 			color: $bubble-color;
 		}
+		min-width: 22px;
+		min-height: 22px;
 		&.text {
 			max-width: 400px;
 		}
