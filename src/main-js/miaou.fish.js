@@ -15,16 +15,29 @@
 		fish.closeBubbles();
 	}
 
+	function fixRect(r, ww, wh){
+		var fr = {
+			left: Math.max(r.left, 0),
+			top: Math.max(r.top, 0),
+			right: Math.min(r.right, ww),
+			bottom: Math.min(r.bottom, wh)
+		};
+		fr.width = fr.right - fr.left;
+		fr.height = fr.bottom - fr.top;
+		return fr;
+	}
+
 	$.fn.bubble = function(options){
 		fish.closeBubbles();
 		var	side,
 			match,
 			css,
-			targetRect = this[0].getBoundingClientRect(),
 			ww = $(window).width(),
 			wh = $(window).height(),
+			targetRect = fixRect(this[0].getBoundingClientRect(), ww, wh),
 			$b = $('<div>').addClass('bubble').appendTo(document.body),
 			$c = $('<div>').addClass('bubble-content').appendTo($b);
+		if (targetRect.width<=1 || targetRect.height<=1) return;
 		if (options.classes) $b.addClass(options.classes);
 		$('<div>').addClass('bubble-arrow').appendTo($b);
 		if (options.side) {
