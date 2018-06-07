@@ -1,6 +1,6 @@
 // functions related to user watching other rooms
 
-miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
+miaou(function(watch, chat, fish, gui, locals, md, notif, usr, ws){
 
 	// the icon sum of all watches, if it exists (i.e. on mpad)
 	var $globalIcon = $('#global-watch');
@@ -164,6 +164,7 @@ miaou(function(watch, chat, gui, locals, md, notif, usr, ws){
 	if (gui.mobile) return;
 
 	$('#watches').on('mouseenter', '.watch', function(){
+		fish.closeBubbles();
 		$('.watch').removeClass('open').find('.watch-panel').remove();
 		var	$w = $(this), w = $w.dat('watch'), entertime = Date.now(),
 			off = $w.offset(), ww = $(window).width(),

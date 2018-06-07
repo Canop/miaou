@@ -1,9 +1,10 @@
 
-miaou(function(chat, gui, locals, roomFinder, time, watch, ws){
+miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 
 	var openpaneltimer, showroomstimer;
 	function openRoomsPanel(){
 		if ($('#rooms-panel').hasClass('open')) return;
+		fish.closeBubbles();
 		$('#rooms').hide();
 		roomFinder.open();
 		$('#rooms-panel').addClass('open').removeClass('closed');
@@ -11,7 +12,6 @@ miaou(function(chat, gui, locals, roomFinder, time, watch, ws){
 		$('#non-top').addClass('behind');
 		showroomstimer = setTimeout(function(){
 			$('#rooms').fadeIn("fast");
-			$("#room-search-input").focus();
 		}, 500); // ensure the div is high enough
 	}
 	function hideRoomsPanel(){

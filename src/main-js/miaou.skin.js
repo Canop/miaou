@@ -48,7 +48,7 @@ miaou(function(skin){
 		var	i,
 			hash = 0;
 		for (i=0; i<str.length; i++) {
-			hash = str.charCodeAt(i) + ((hash << 5) - hash);
+			hash = str.charCodeAt(i) + (hash << 5) - hash;
 		}
 		var colour = '#';
 		for (i=0; i<3; i++) {
