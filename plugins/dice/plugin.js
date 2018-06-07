@@ -97,7 +97,7 @@ function showDefDef(defA, operator, defB, options){
 			md += graph.pragma({
 				hideTable: true,
 				compare: true,
-				nox: rows.length>80
+				nox: rows.length>90
 			}) + fmt.tbl({
 				cols: ["value", `proba(${defA.str()})`, `proba(${defB.str()})`],
 				aligns: "rcc",

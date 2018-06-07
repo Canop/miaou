@@ -90,7 +90,7 @@ class DiceRollDistribution{
 		}
 		let md = graph.pragma({
 			hideTable: true,
-			nox: rows.length>80
+			nox: rows.length>100
 		}) + fmt.tbl({
 			cols: ["value", "probability"],
 			aligns: "rl",

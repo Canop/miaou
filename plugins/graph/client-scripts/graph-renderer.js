@@ -163,13 +163,12 @@ miaou(function(fmt, md, plugins){
 			mr = 5, // margin right
 			mb = nox ? 0 : rotateXLabels ? Math.min(maxXLabelLength*10+14, 70) : 15, // margin bottom
 			ml = rotateXLabels ? 35 : 5, // margin left
-			bm = 0, // space between two bars
-			//bx = nbbars<25 ? 2 : (nbbars>120 ? 0 : 1), // space between a bar and the border of its xval
-			bx = nbbars<25 ? 2 : 1, // space between a bar and the border of its xval
+			bm = 0, // space between two bars in the same xval
+			bx = nbbars>90 ? 1 : ( nbbars > 15 ? 2 : 3 ), // space between two xvals
 			minXWidth = nox ? 3 : 13, // if the width is smaller, the oblique text is too thight
 			minBarWidth = nox ? 2 : Math.max(minXWidth/nbycols - bm|0, 4),
-			barWidth = Math.min(Math.max(minBarWidth, (availableWidth-ml-mr)/nbbars-2*bx|0), 24),
-			xWidth = (barWidth*nbycols+(nbycols-1)*bm+2*bx), // width of a xval
+			barWidth = Math.min(Math.max(minBarWidth, (availableWidth-ml-mr)/nbbars-bx|0), 24),
+			xWidth = (barWidth*nbycols+(nbycols-1)*bm+bx), // width of a xval
 			ticks = !!options.ticks,
 			gW = xWidth*n,
 			W = gW+mr+ml,
@@ -256,7 +255,7 @@ miaou(function(fmt, md, plugins){
 					y = mt + h - Math.floor((val-ycol.min)*ycol.r);
 				}
 				var	height = Math.ceil(h-y+mt),
-					xbar = x1+bx+(barWidth+bm)*j;
+					xbar = x1+(barWidth+bm)*j;
 				if (height) {
 					ù('<rect', g).attr({
 						x:xbar, y:y, width:barWidth, height:height,
