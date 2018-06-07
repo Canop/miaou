@@ -63,6 +63,7 @@ class Miaou{
 					pluginfilepath = path.resolve(__dirname, '..', file),
 					plugin = require(pluginfilepath);
 				if (plugin.init) await plugin.init(this);
+				if (!plugin.name) plugin.name = file.match(/([^\/]+)\/[^\/]*$/)[1];
 				this.plugins.push(plugin);
 				console.log(`Init of plugin ${file} took ${Date.now()-start} ms`);
 			} catch (err) {
