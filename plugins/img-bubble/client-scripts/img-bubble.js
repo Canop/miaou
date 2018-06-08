@@ -11,7 +11,7 @@ miaou(function(gui, fish, plugins){
 				var originalSrc = this.attr("src");
 				var src = originalSrc.replace(
 					/^(https:\/\/i\.imgur\.com\/\w+)[sbtm]\.(gif|png|jpe?g)$/,
-					"$1l.$2" // imgur small thumbnail to large one
+					"$1.$2" // imgur small thumbnail to large one
 				);
 				$("<img>")
 				.attr({src})
