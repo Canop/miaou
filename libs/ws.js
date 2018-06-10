@@ -617,17 +617,13 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);
 	});
 
-	on('hist', function(search){ // request for histogram data
-		return db.on()
-		.then(function(s){
-			var r = [this.rawHistogram(shoe.room.id)];
+	on('hist', async function(search){ // request for histogram data
+		throttle();
+		await db.do(async function(con){
+			let hist = await con.rawHistogram(shoe.room.id);
 			if (search) {
 				search = fixSearchOptions(search, shoe.publicUser.id, shoe.room);
-				r.push(this.searchHistogram(search));
-			}
-			return r;
-		}).spread(function(hist, shist){
-			if (shist) {
+				let shist = await con.searchHistogram(search);
 				for (var ih=0, ish=0; ish<shist.length; ish++) {
 					var sh = shist[ish];
 					while (hist[ih].d<sh.d) ih++;
@@ -635,7 +631,7 @@ function handleUserInRoom(socket, completeUser){
 				}
 			}
 			socket.emit('hist', {search:search, hist:hist});
-		}).finally(db.off);
+		});
 	});
 
 	on('message', async function(message){
