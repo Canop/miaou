@@ -128,6 +128,7 @@ exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name:'perfs',
 		fun:doCommand,
+		canBePrivate: true,
 		help:"Usage : `!!perfs` lists performance information on some miaou internals",
 	});
 }

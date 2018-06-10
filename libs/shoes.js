@@ -78,7 +78,7 @@ Shoes.allSocketsOfUser = function(){
 Shoes.emitPersonalBotFlake = function(bot, content){
 	this.socket.emit('message', {
 		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
-		created:Date.now()/1000|0, bot:true, room:this.room.id, content:content
+		created:Date.now()/1000|0, private:true, bot:true, room:this.room.id, content:content
 	});
 }
 Shoes.emitBotFlakeToRoom = function(bot, content, roomId){

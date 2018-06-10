@@ -137,6 +137,7 @@ exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name: 'dice',
 		fun: onCommand,
+		canBePrivate: true,
 		help: "roll some dice or check their probability. Exemple: `!!dice 3D24+12`",
 		detailedHelp: "Examples:"
 			+ "\n* `!!dice roll 3D6`"

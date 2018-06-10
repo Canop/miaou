@@ -6,6 +6,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 	var	visible = false,
 		currentSearch,
 		currentResult,
+		delayTimer,
 		fields = new Set(["pattern", "starred", "starrer", "author", "exact", "regex", "img", "link", "authorName"]);
 
 	function isCurrentSearch(s){
@@ -188,6 +189,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 	});
 
 	function startSearch(){
+		clearTimeout(delayTimer);
 		var options = buildSearchOptions();
 		if (isCurrentSearch(options)) return;
 		if (isSearchEmpty(options)) {
@@ -196,8 +198,10 @@ miaou(function(hist, gui, locals, md, time, ws){
 			$("#search-results-navigator").removeClass("enabled");
 			$('#hist .bar').removeClass('hit').removeAttr('sn');
 		} else {
-			hist.search(options);
-			hist.fetchHistogram(options);
+			delayTimer = setTimeout(function(){
+				hist.search(options);
+				hist.fetchHistogram(options);
+			}, 1500);
 		}
 	}
 

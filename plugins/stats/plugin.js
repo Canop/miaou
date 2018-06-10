@@ -16,6 +16,7 @@ exports.registerCommands = function(registerCommand){
 		fun: function(ct){
 			return stats.doStats.call(this, ct, miaou);
 		},
+		canBePrivate: true,
 		help: "Usage : `!!stats [server|me|@user|users|room|roomusers|rooms|votes|...] [n]`",
 		detailedHelp: "Examples:"+
 			"\n* `!!stats me` : some stats about you"+

@@ -30,6 +30,7 @@ exports.registerCommands = function(cb){
 	cb({
 		name: "shield",
 		fun: onCommand,
+		canBePrivate: true,
 		help: "generate a shield-type link to this room for your site or repository",
 	});
 }

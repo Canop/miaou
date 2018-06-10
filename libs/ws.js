@@ -725,7 +725,14 @@ function handleUserInRoom(socket, completeUser){
 				let txt = commandTask.replyContent;
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
 				let replyer = commandTask.replyer || bot;
-				shoe[commandTask.replyAsFlake ? "emitBotFlakeToRoom" : "botMessage"](replyer, txt);
+				if (commandTask.private) {
+					console.log("private command reply to", "@"+shoe.publicUser.name);
+					shoe.emitPersonalBotFlake(replyer, txt);
+				} else if (commandTask.replyAsFlake) {
+					shoe.emitBotFlakeToRoom(replyer, txt);
+				} else {
+					shoe.botMessage(replyer, txt);
+				}
 			}
 			if (commandTask.withSavedMessage && m.id) {
 				commandTask.withSavedMessage(shoe, m);

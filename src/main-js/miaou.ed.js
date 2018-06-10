@@ -89,7 +89,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	// returns the currently autocompletable typed command, if any
 	function getaccmd(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\s)!!(\w+)$/);
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\s)!!!?(\w+)$/);
 		if (m) return m[1].toLowerCase();
 	}
 
@@ -100,7 +100,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	//    arg: start of the currently typed command argument
 	// }
 	function getacarg(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!!(\w+)\s+(.*)$/);
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!{2,3}(\w+)\s+(.*)$/);
 		if (!m) return;
 		var matcher = commandArgAutocompleters.get(m[1]);
 		if (!matcher) return;
@@ -482,7 +482,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		if (!acname || (names[0] && names[0].toLowerCase().indexOf(acname)!==0)) {
 			return console.log('bad list'); // too late, probably
 		}
-		if (!/^!!\w/.test(savedValue)) {
+		if (!/^!!!?\w/.test(savedValue)) {
 			var indexMe = names.indexOf(locals.me.name);
 			if (~indexMe) names.splice(indexMe, 1);
 		}

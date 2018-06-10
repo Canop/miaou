@@ -377,11 +377,21 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 			if (message.previous) $pen.addClass('clickable').attr('title', 'Click for message history');
 		}
 		if (!message.id) {
-			var desc = "only sent to people currently in the room, and will disappear if you refresh the page";
-			$('<div>&#xe82d;</div>') // fontello icon-snow
-			.appendTo($decorations)
-			.addClass('decoration snap')
-			.attr('title', "Flake : "+desc);
+			if (message.private) {
+				console.log("private message:", message);
+				var desc = "this private message was sent to no one else and will disappear when you refresh the page";
+				$('<div>&#xf21b;</div>') // fontello icon-snow
+				.appendTo($decorations)
+				.addClass('decoration snap')
+				.attr('title', "Private : "+desc);
+
+			} else {
+				var desc = "only sent to people currently in the room, and will disappear if you refresh the page";
+				$('<div>&#xe82d;</div>') // fontello icon-snow
+				.appendTo($decorations)
+				.addClass('decoration snap')
+				.attr('title', "Flake : "+desc);
+			}
 		}
 		if (votesHtml.length) $md.append($('<div/>').addClass('message-votes').html(votesHtml));
 		if (!$mc) $mc = $('<div>').addClass('content');

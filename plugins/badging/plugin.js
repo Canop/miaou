@@ -93,6 +93,7 @@ async function onCommand(ct){
 		args = match[2];
 	var fun = commands[verb||"list"];
 	if (!fun) throw new Error("Command not understood");
+	if (verb==="award" && ct.private) throw new Error("Awarding a badge can't be private.");
 	await fun(con, ct, args||"");
 	ct.end()
 }
@@ -101,6 +102,7 @@ exports.registerCommands = function(cb){
 	cb({
 		name: "badge",
 		fun: onCommand,
+		canBePrivate: true,
 		help: "do things related to badges",
 		detailedHelp:
 			"Exemples: "+
