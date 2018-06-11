@@ -43,7 +43,8 @@
 		color: $watch-count-color;
 		background: $watch-count-new-bg;
 		padding: 0 5px;
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
 		&.ping {
 			background: $watch-count-ping-bg;
 		}
