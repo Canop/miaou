@@ -86,6 +86,7 @@ exports.configure = function(miaou){
 			let match = ct.message.content.match(/!!help\s+(!!)?(\w+)/);
 			ct.nostore = true;
 			ct.reply(getHelpText(ct.shoe.room, match ? match[2] : null), true);
+			ct.end();
 		},
 		canBePrivate: true,
 		help: 'get help about commands. Usage : `!!help !!commandname`',
