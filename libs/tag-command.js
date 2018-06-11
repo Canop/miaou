@@ -63,7 +63,8 @@ function doCommand(ct){
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name: 'tag', fun: doCommand,
+		name: 'tag',
+		fun: doCommand,
 		help: "create or delete a tag",
 	});
 }

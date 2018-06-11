@@ -33,13 +33,17 @@ function lu(ct){
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name: 'la', fun: la,
+		name: 'la',
+		fun: la,
 		help: "list admins of the room",
+		canBePrivate: true,
 		detailedHelp: "list users having admin rights in this room."
 	});
 	registerCommand({
-		name: 'lu', fun: lu,
+		name: 'lu',
+		fun: lu,
 		help: "list the users of the room",
+		canBePrivate: true,
 		detailedHelp: "list users having posted in the room or watching it.\n"+
 			"Those are the users receiving a `@room` message."
 	});

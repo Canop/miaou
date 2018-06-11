@@ -29,6 +29,7 @@ exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name: 'bans', fun:doCommand,
 		help: "list the bans of the room",
+		canBePrivate: true,
 		detailedHelp: "list all banned users in this room.\n"+
 			"Only list active bans."
 	});
