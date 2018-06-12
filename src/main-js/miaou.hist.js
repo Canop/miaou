@@ -201,7 +201,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 			delayTimer = setTimeout(function(){
 				hist.search(options);
 				hist.fetchHistogram(options);
-			}, 1500);
+			}, 900);
 		}
 	}
 
