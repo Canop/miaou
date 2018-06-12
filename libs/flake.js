@@ -12,6 +12,7 @@ exports.registerCommands = function(registerCommand){
 			ct.nostore = true;
 			ct.text(ct.text().replace(/!!flake\s*/, ''));
 			if (!ct.text().trim().length) throw "You can't send an empty flake";
+			ct.end();
 		},
 		help:"send a flake, a message that won't be saved, only visible by users currently in room"
 	});
