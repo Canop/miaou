@@ -130,7 +130,7 @@ section {
 	}
 }
 .pad #users {
-	.user, .user.profiled {
+	.user {
 		// the ::before pseudo element is used as marker of connection
 		&::before {
 			position: absolute;
@@ -143,10 +143,15 @@ section {
 			background: $connected-user-bg-color-in-user-list;
 			transition: width 2s;
 		}
+		&.profiled.connected::before {
+			opacity: 0;
+		}
 		&.connected::before {
 			width: 100%;
 			transition: width 2s;
 		}
+	}
+	.user, .user.profiled {
 		// the ::after pseudo element is used as marker of hovering (profile opening)
 		&::after {
 			position: absolute;
