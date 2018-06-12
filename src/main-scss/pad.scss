@@ -322,14 +322,30 @@ body.desktop #rooms-page {
 	content: '\e812'; // fontello icon-eye-off
 }
 
-#room-search-input {
 
-}
 #room-search-reset {
 	visibility: hidden;
 	&.visible {
 		visibility: visible;
 	}
+}
+
+#create-room {
+	white-space: nowrap;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+}
+
+#room-search-div {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+#room-search-input {
+	flex: 1 0 50px;
 }
 
 #notablemessagespage {
