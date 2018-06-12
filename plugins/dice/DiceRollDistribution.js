@@ -34,7 +34,7 @@ function computeCombinations(N, S){
 class DiceRollDistribution{
 	constructor(N, S, C=0){
 		this.aN = Math.abs(N);
-		if (this.aN<2||this.aN>500) throw new Error("Invalid N");
+		if (this.aN<1||this.aN>500) throw new Error("Invalid N");
 		if (S<2||S>200) throw new Error("Invalid S");
 		let bo = bench.start("Dice Distribution");
 		this.N = N;

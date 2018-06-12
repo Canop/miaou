@@ -141,7 +141,7 @@ miaou(function(fmt, md, plugins){
 			ycol.parse(function(s){
 				return parseFloat(s.replace(/\s+/g, ""));
 			});
-			if (ycol.valid && ycol.hasDifferentValues()) ycols.push(ycol);
+			if (ycol.valid /*&& ycol.hasDifferentValues()*/) ycols.push(ycol);
 		}
 
 		var	H = 230,

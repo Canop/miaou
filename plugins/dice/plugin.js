@@ -82,7 +82,7 @@ function showDefDef(defA, operator, defB, options){
 			rows: [[ sa, `**${operator(sa, sb) ? "yes" : "no"}**`, sb ]]
 		});
 	}
-	if (options.distrib && defA.aN>1 && defB.aN>1) {
+	if (options.distrib) {
 		let min = Math.min(distA.min, distB.min);
 		let max = Math.max(distA.max, distB.max);
 		if (max-min<=500) {
