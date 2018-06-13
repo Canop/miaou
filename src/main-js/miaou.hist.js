@@ -84,17 +84,19 @@ miaou(function(hist, gui, locals, md, time, ws){
 		currentResult = res.result;
 		$("#search-load-bar").removeClass("active");
 		$("#search-results-navigator").addClass("enabled");
+		$('#search-results').empty();
 		if (!res.result.count) {
 			$('#search-results-count').text("no result");
-			$('#search-results').empty();
+			$("#search-results-page").text("");
+			$("#search-results-previous-page").removeClass("enabled");
+			$("#search-results-next-page").removeClass("enabled");
 			return;
 		}
 		let	page = res.search.page||0,
 			nbPages = Math.ceil(res.result.count / res.search.pageSize);
-		$("#search-results").empty();
 		md.showMessages(res.result.messages, $('#search-results'), page);
 		$('#search-results-count').text(res.result.count + " messages found");
-		$("#search-results-page").text((page+1)+" / "+nbPages);
+		$("#search-results-page").text(`page ${page+1} / ${nbPages}`);
 		$("#search-results-previous-page").toggleClass("enabled", page>0);
 		$("#search-results-next-page").toggleClass("enabled", page<nbPages-1);
 	}
