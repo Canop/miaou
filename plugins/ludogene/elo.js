@@ -1,7 +1,6 @@
 // Computes the Elo ladder for the Tribo game.
 
 const	ludodb = require('./db.js'),
-	bench = require('../../libs/bench.js'),
 	K = 40,
 	R = 750, // 300 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
 	NB_OPPONENTS_MIN = 3;
@@ -268,50 +267,42 @@ exports.getLadder = async function(con, gameType){
 }
 
 // handles the !!triboladder command
-exports.onCommand = function(ct){
-	console.log("==========================\nELO COMPUTING "+ct.args);
-	let	gt = null;
+exports.onCommand = async function(ct){
+	let gt = null;
 	if (ct.cmd.name==="triboladder") gt = "Tribo";
 	else if (ct.cmd.name==="floreladder") gt = "Flore";
 	else throw new Error("Unknown Game Type");
-	let	benchOperation = bench.start(`${gt} / ladder`),
-		st = Date.now();
-	return ludodb.getGameMessages(this)
-	.filter(function(m){
-		return	m.g.type===gt
-			&& m.g.scores
-			&& (m.g.status==="running"||m.g.status==="finished")
-	})
-	.then(function(messages){
-		let	userMatch = ct.args.match(/@[\w\-]+/);
-		return [compute(messages), userMatch ? this.getUserByName(userMatch[0].slice(1)) : null];
-	})
-	.spread(function(data, user){
-		let	c = `Elo based ${gt} ladder:\n`,
-			showOpponents = /\bopponents?\b/.test(ct.args),
-			showLog = /\bgames\b/.test(ct.args);
-		if (user) {
-			let r = data.ratingsMap.get(user.id);
-			if (!r) {
-				c += 'No game found for @'+user.name+' in public rooms';
-			} else if (r.nbOpponents("c")<NB_OPPONENTS_MIN) {
-				c += "You must have finished a public game against at least " + NB_OPPONENTS_MIN +
-					" different players to be ranked.\n";
-				c += '@'+user.name+" played against " + r.nbOpponents("c") + " other players:\n";
-				c += opponentsTable(data, r);
-			} else {
-				c += ratingsTable(data, r.id);
-				c += "Counted games: "+r.c+"\n";
-				if (r.ms) c += "## Malus:\n" + table(null, r.malus);
-				if (showOpponents) c += opponentsTable(data, r);
-				if (showLog) c += userGamesTable(data, r);
-			}
+	let messages = await ludodb.getGameMessages(this);
+	messages = messages.filter(m =>
+		m.g.type===gt
+		&& m.g.scores
+		&& (m.g.status==="running"||m.g.status==="finished")
+	);
+	let	data = await compute(messages),
+		c = `Elo based ${gt} ladder:\n`,
+		showOpponents = /\bopponents?\b/.test(ct.args),
+		showLog = /\bgames\b/.test(ct.args);
+	let userMatch = ct.args.match(/@[\w\-]+/);
+	if (userMatch) {
+		let user = this.getUserByName(userMatch[0].slice(1));
+		let r = data.ratingsMap.get(user.id);
+		if (!r) {
+			c += 'No game found for @'+user.name+' in public rooms';
+		} else if (r.nbOpponents("c")<NB_OPPONENTS_MIN) {
+			c += "You must have finished a public game against at least " + NB_OPPONENTS_MIN +
+				" different players to be ranked.\n";
+			c += '@'+user.name+" played against " + r.nbOpponents("c") + " other players:\n";
+			c += opponentsTable(data, r);
 		} else {
-			c += ratingsTable(data);
-			if (showLog) c += gamesTable(data);
+			c += ratingsTable(data, r.id);
+			c += "Counted games: "+r.c+"\n";
+			if (r.ms) c += "## Malus:\n" + table(null, r.malus);
+			if (showOpponents) c += opponentsTable(data, r);
+			if (showLog) c += userGamesTable(data, r);
 		}
-		benchOperation.end();
-		console.log("ELO COMPUTING done in " + (Date.now()-st) + "ms");
-		ct.reply(c, ct.nostore = c.length>3000);
-	});
+	} else {
+		c += ratingsTable(data);
+		if (showLog) c += gamesTable(data);
+	}
+	ct.reply(c, ct.nostore = c.length>3000).end();
 }

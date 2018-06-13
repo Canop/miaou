@@ -272,26 +272,3 @@ exports.onSendMessage = function(shoe, m, send){
 	}
 }
 
-// This function is just on for a temporary time.
-// Its goal is to cure messages containing games with the old saving format
-// This part will be removed as soon as I've cured enough messages
-/*
-exports.onSendMessage = function(shoe, m, send){
-	if (/^!!game /.test(m.content)) {
-		var match = m.content.match(/!!game @\S{3,} (.*)$/);
-		if (match) {
-			g = JSON.parse(match[1]);
-			var mustBeCured = g.status!=="ask" && !g.scores; // old format, we must resave it to ensure consistency
-			console.log("game", m.id, "must be cured : ", mustBeCured);
-			if (mustBeCured) {
-				m.room = shoe.room.id;
-				gametypes[g.type].restore(g);
-				storeInMess(m, g, shoe);
-				shoe.db.on().then(function(){
-					return this.storeMessage(m, true);
-				}).finally(shoe.db.off);
-			}
-		}
-	}
-}
-*/
