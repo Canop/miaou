@@ -15,12 +15,40 @@
 		fish.closeBubbles();
 	}
 
-	function fixRect(r, ww, wh){
+	function visibleRect(element){
+		var rect = element.getBoundingClientRect();
+		rect = {
+			top: rect.top,
+			right: rect.right,
+			bottom: rect.bottom,
+			left: rect.left
+		};
+		var container = element;
+		for (;;) {
+			container = container.parentElement;
+			if (!container) break;
+			if (container.scrollHeight>container.clientHeight) {
+				var crect = container.getBoundingClientRect();
+				if (crect.top > rect.top) rect.top = crect.top;
+				if (crect.right < rect.right) rect.right = crect.right;
+				if (crect.left > rect.left) rect.left = crect.left;
+				if (crect.bottom < rect.bottom) rect.bottom = crect.bottom;
+			}
+			var position = window.getComputedStyle(container).position;
+			if (position=="fixed"||position=="absolute") break;
+		}
+		rect.width = rect.right - rect.left;
+		rect.height = rect.bottom - rect.top;
+		return rect;
+	}
+
+	function fixRect(r, ww, wh, margin){
+		if (r.width<=margin || r.height<=margin) return r;
 		var fr = {
-			left: Math.max(r.left, 0),
-			top: Math.max(r.top, 0),
-			right: Math.min(r.right, ww),
-			bottom: Math.min(r.bottom, wh)
+			left: Math.max(r.left, margin),
+			top: Math.max(r.top, margin),
+			right: Math.min(r.right, ww - margin),
+			bottom: Math.min(r.bottom, wh - margin)
 		};
 		fr.width = fr.right - fr.left;
 		fr.height = fr.bottom - fr.top;
@@ -34,7 +62,7 @@
 			css,
 			ww = $(window).width(),
 			wh = $(window).height(),
-			targetRect = fixRect(this[0].getBoundingClientRect(), ww, wh),
+			targetRect = fixRect(visibleRect(this[0]), ww, wh, 7),
 			$b = $('<div>').addClass('bubble').appendTo(document.body),
 			$c = $('<div>').addClass('bubble-content').appendTo($b);
 		if (targetRect.width<=1 || targetRect.height<=1) return;
