@@ -64,15 +64,15 @@ miaou(function(tableControls){
 		this.isAlphaSortable = this.nbAlphaCells >= n*.6 && this.nbNumCells < .9*n;
 	}
 
-	ColumnController.prototype.show = function(){
-		var	cc = this,
-			$c = $("<div>").addClass("column-controller").appendTo(this.$th);
+	ColumnController.prototype.appendTo = function($c){
+		var	cc = this;
+		var 	$cc = $("<div class=column-controller>").text("sort:").appendTo($c);
 		function addIcon(key){
-			var $i = $("<span>").addClass("icon-sort-"+key)
+			var $i = $("<span>").addClass("icon-sort icon-sort-"+key)
 			.click(function(){
 				cc.tblCon.sort(key, cc.index);
 			})
-			.appendTo($c);
+			.appendTo($cc);
 			if (cc.tblCon.lastApplied == key + cc.index) {
 				$i.addClass("active");
 			}
@@ -117,8 +117,8 @@ miaou(function(tableControls){
 		});
 	}
 
-	TableController.prototype.showOnColumn = function($th){
-		this.cols[$th.index()].show();
+	TableController.prototype.colController = function($th){
+		return this.cols[$th.index()];
 	}
 
 	function isTableControllable($table){
@@ -128,23 +128,25 @@ miaou(function(tableControls){
 			&& $rows.eq(0).find("th").length>1;
 	}
 
-	$("#messages").on("mouseenter", ".content th", function(){
-		var	$th = $(this),
-			$table = $th.closest("table"),
-			con = $table.dat(DAT_KEY);
-		if ($th.closest("table").index()) {
-			return;
-		}
-		if (!con) {
-			if (!isTableControllable($table)) {
-				return;
+	$("#messages").bubbleOn(".content th", {
+		side: "top",
+		blower: function($c){
+			var	$th = $(this),
+				$table = $th.closest("table"),
+				tblCon = $table.dat(DAT_KEY);
+			if ($th.closest("table").index()) {
+				return false;
 			}
-			$table.dat(DAT_KEY, con = new TableController($table))
-			.addClass("controlled");
+			if (!tblCon) {
+				if (!isTableControllable($table)) {
+					return false;
+				}
+				$table.dat(DAT_KEY, tblCon = new TableController($table))
+				.addClass("controlled");
+			}
+			var 	colCon = tblCon.colController($th);
+			colCon.appendTo($c);
 		}
-		con.showOnColumn($th);
-	}).on("mouseleave", "th", function(){
-		$(".column-controller").remove();
 	});
 
 });

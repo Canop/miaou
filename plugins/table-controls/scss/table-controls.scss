@@ -1,18 +1,9 @@
-.controlled {
-	th {
-		position: relative;
-		.column-controller {
-			position: absolute;
-			top: 0;
-			right: 0;
-			padding: 2px;
-			background: transparentize( $bg-color, .2 );
-			span {
-				cursor: pointer;
-				&.active {
-					color: $emphasis-text-color;
-				}	
-			}
+.column-controller {
+	padding: 2px;
+	.icon-sort {
+		cursor: pointer;
+		&.active {
+			color: $emphasis-text-color;
 		}
 	}
 }
