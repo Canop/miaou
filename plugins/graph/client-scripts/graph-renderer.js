@@ -2,48 +2,12 @@
 // Right now, this isn't terribly generic. I'll make it more capable
 // if the need arises
 
-miaou(function(fmt, md, plugins){
+miaou(function(fmt, fish, md, plugins){
 
-	ù.fn.textpos = function(str, x, y, align, fs){
-		this.text(str).attr({x:x, y:y, textAnchor:align||"middle", alignmentBaseline:"middle"});
-		if (fs) this.attr('font-size', fs+'em');
-		return this;
-	}
-
-	function TGCol($table, i){
-		this.rawvals = $table.find('tr td:nth-child('+(i+1)+')').map(function(){
-			return $(this).text();
-		}).get();
-		this.name = $table.find('th:nth-child('+(i+1)+')').text();
-		this.vals;
-		this.valid = false;
-		this.i = i;
-	}
-	TGCol.prototype.parse = function(parser){
-		var vals = new Array(this.rawvals.length);
-		for (var i=0; i<this.rawvals.length; i++) {
-			vals[i]=parser(this.rawvals[i], i);
-			if (vals[i]===undefined) return;
-		}
-		this.vals = vals;
-		this.valid = true;
-	}
-	TGCol.prototype.isAscending = function(){
-		for (var i=0, n=this.vals.length; i<n; i++) {
-			if ( !(this.vals[i].end > this.vals[i].start) || (i && (this.vals[i-1].end > this.vals[i].start)) ) {
-				console.log("not ascending");
-				return false;
-			}
-		}
-		return true;
-	}
-	TGCol.prototype.hasDifferentValues = function(){
-		var v = this.vals[0];
-		for (var i=1, n=this.vals.length; i<n; i++) {
-			if ( this.vals[i]!=v ) return true;
-		}
-		return false;
-	}
+	var colors = [
+		'#e9967a', '#9cd3d3', '#e91e63', '#795548', '#8bc34a', '#00bcd4',
+		'#ffc107', '#4e5050', '#317334', '#7126b1', '#ce0d08', '#959e75'
+	];
 
 	function min(a, b){
 		if (a!=a || a==undefined) return b;
@@ -53,6 +17,22 @@ miaou(function(fmt, md, plugins){
 	function max(a, b){
 		if (a!=a || a==undefined) return b;
 		return b>a ? b : a;
+	}
+
+	function allDifferent(vals){
+		var set = Object.create(null);
+		for (var i=vals.length; i--;) {
+			if (set[vals[i]]) return false;
+			set[vals[i]] = true;
+		}
+		return true;
+	}
+	function allIdentical(vals){
+		var v = vals[0];
+		for (var i=1; i<vals.length; i++) {
+			if (v!==vals[i]) return false;
+		}
+		return true;
 	}
 
 	function legend(color){
@@ -99,63 +79,142 @@ miaou(function(fmt, md, plugins){
 			};
 		}
 	];
-	var colors = [
-		'#e9967a', '#9cd3d3', '#e91e63', '#795548', '#8bc34a', '#00bcd4',
-		'#ffc107', '#4e5050', '#317334', '#7126b1', '#ce0d08', '#959e75'
-	];
 
-	function renderGraph($pragma, $c){
-		var match = $pragma.html().match(/(?:^|\s)#graph(\([^\)]+\))?(?:$|\s)/);
-		if (!match) return; // should not really happen
-		var options= {};
-		var highlightedX = {};
-		if (match[1]) {
-			match[1].slice(1, -1).split(/,\s*/).forEach(function(k){
-				var mk = k.match(/^highlight-x:(.*)$/);
-				if (mk) {
-					highlightedX[mk[1]] = true;
-				} else {
-					options[k] = true;
-				}
-			});
+	ù.fn.textpos = function(str, x, y, align, fs){
+		this.text(str).attr({x:x, y:y, textAnchor:align||"middle", alignmentBaseline:"middle"});
+		if (fs) this.attr('font-size', fs+'em');
+		return this;
+	}
+
+	function TGCol($table, i){
+		this.rawvals = $table.find('tr td:nth-child('+(i+1)+')').map(function(){
+			return $(this).text();
+		}).get();
+		this.name = $table.find('th:nth-child('+(i+1)+')').text();
+		this.xvals = null;
+		this.yvals = null;
+		this.i = i;
+	}
+	TGCol.prototype._parse = function(parser){
+		var vals = new Array(this.rawvals.length);
+		for (var i=0; i<this.rawvals.length; i++) {
+			vals[i]=parser(this.rawvals[i], i);
+			if (vals[i]===undefined) return;
 		}
-
-		var $table = $pragma.nextAll(".tablewrap").find("table").first();
-		if (!$table.length) return;
-		var	xcol = new TGCol($table, 0),
-			ycols = [];
+		return vals;
+	}
+	TGCol.prototype.parseAsX = function(){
+		if (!allDifferent(this.rawvals)) return;
 		for (var ip=0; ip<xparsers.length; ip++) {
-			xcol.parse(xparsers[ip]);
-			if (xcol.valid) {
-				if (xcol.isAscending()) break;
-				else xcol.valid = false; // not valid as a x column
+			var vals = this._parse(xparsers[ip]);
+			if (vals) {
+				this.xvals = vals;
+				return;
 			}
 		}
-		if (!xcol.valid) {
-			console.log("table : no valid x column", xcol);
-			return;
+	}
+	TGCol.prototype.parseAsY = function(){
+		var vals = this._parse(function(s){
+			return parseFloat(s.replace(/\s+/g, ""));
+		});
+		if (!vals) return;
+		this.yvals = vals;
+	}
+
+	function TGraph($table, options){
+		this.$table = $table;
+		this.options = options || {};
+		if (!this.options.highlightedX) this.options.highlightedX = {};
+		this.$wrapper = null; // wrapper around the svg objet
+		this.cols = [];
+		for (var i=0, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
+			this.cols[i] = new TGCol($table, i);
+			this.cols[i].parseAsX();
+			this.cols[i].parseAsY();
 		}
-
-		for (var i=1, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
-			var ycol = new TGCol($table, i);
-			ycol.parse(function(s){
-				return parseFloat(s.replace(/\s+/g, ""));
-			});
-			if (ycol.valid /*&& ycol.hasDifferentValues()*/) ycols.push(ycol);
+		this.choice = this._chooseCols(); // the current choice of x and y columns
+		this.renderable = this.choice.xcol && this.choice.ycols.length;
+	}
+	TGraph.prototype._chooseCols = function(){
+		var xcol;
+		var ycols = [];
+		var varycols = []; // non constant ones
+		for (var i=0; i<this.cols.length; i++) {
+			var col = this.cols[i];
+			if (!xcol && col.xvals) {
+				xcol = col;
+			} else if (col.yvals) {
+				ycols.push(col);
+				if (!allIdentical(col.yvals)) varycols.push(col);
+			}
 		}
-
-		var	H = 230,
-			nbycols = ycols.length;
-
-		if (!nbycols) {
-			console.log("no value column for #graph");
-			return;
+		if (varycols.length>3) ycols = varycols; // no need to show many constant cols
+		return {xcol, ycols};
+	}
+	TGraph.prototype.setAsX = function(col){
+		if (!col.xvals) throw new Error("Unsuitable column");
+		if (this.choice.xcol==col) return;
+		this._removeYCol(col);
+		this.choice.ycols.push(this.choice.xcol);
+		this.choice.xcol = col;
+		this.choice.ycols.sort((a, b)=>a.i-b.i);
+		this.render();
+	}
+	TGraph.prototype.ignore = function(col){
+		if (col===this.choice.xcol) {
+			this._removeXCol(col);
+		} else {
+			this._removeYCol(col);
 		}
-
-		var	xvals = xcol.vals,
+		this.render();
+	}
+	TGraph.prototype._removeXCol = function(col){
+		for (var i=0; i<this.cols.length; i++) {
+			if (this.cols[i].xvals && this.cols[i]!==col) {
+				this._removeYCol(this.cols[i]);
+				this.choice.xcol = this.cols[i];
+				break;
+			}
+		}
+	}
+	TGraph.prototype._removeYCol = function(col){
+		this.choice.ycols.splice(this.choice.ycols.indexOf(col), 1);
+	}
+	TGraph.prototype.setAsY = function(col){
+		if (!col.yvals) throw new Error("Unsuitable column");
+		if (this.choice.ycols.includes(col)) return;
+		this._removeXCol(col);
+		this.choice.ycols.push(col);
+		this.choice.ycols.sort((a, b)=>a.i-b.i);
+		this.render();
+	}
+	TGraph.prototype.rendered = function(){
+		return !!this.$wrapper;
+	}
+	TGraph.prototype.remove = function(){
+		fish.closeBubbles();
+		if (!this.$wrapper) return;
+		this.$table.find(".graph-legend").remove();
+		this.$wrapper.remove();
+		this.$wrapper = null;
+		return this;
+	}
+	TGraph.prototype.attach = function(){
+		this.$table.dat("graph", this);
+		return this;
+	}
+	TGraph.prototype.render = function(){
+		this.remove();
+		var	$table = this.$table,
+			options = this.options,
+			{xcol, ycols} = this.choice,
+			H = 230,
+			nbycols = ycols.length,
+			xvals = xcol.xvals,
 			n = xvals.length,
 			nbbars = n * nbycols,
 			nox = !!options.nox,
+			$c = $table.closest(".content, .rendered"),
 			availableWidth = Math.max($c.width()-140, 300),
 			maxXLabelLength = Math.max(...xvals.map(function(xv){ return xv.label.length })),
 			rotateXLabels = !nox && maxXLabelLength > (n<8 ? 3 : 1),
@@ -185,8 +244,8 @@ miaou(function(fmt, md, plugins){
 			ycol.minsum = 0;
 			ycol.maxsum = 0;
 			var sum = 0;
-			for (var i=0; i<ycol.vals.length; i++) {
-				var v = ycol.vals[i];
+			for (var i=0; i<ycol.yvals.length; i++) {
+				var v = ycol.yvals[i];
 				if (v!=v) continue;
 				sum += v;
 				ycol.minsum = min(sum, ycol.minsum);
@@ -228,7 +287,7 @@ miaou(function(fmt, md, plugins){
 			var	x1 = ml + i*xWidth,
 				x2 = x1 + xWidth,
 				xm = (x1+x2)/2,
-				xhighlight = highlightedX[xval.label];
+				xhighlight = options.highlightedX[xval.label];
 			var rect = ù('<rect', g).attr({
 				class: "xval",
 				x:x1, width:xWidth-1, y:0, height:h+mt, fill:"transparent", cursor:'crosshair'
@@ -246,7 +305,7 @@ miaou(function(fmt, md, plugins){
 				});
 			}
 			ycols.forEach(function(ycol, j){
-				var	val = ycol.vals[i],
+				var	val = ycol.yvals[i],
 					y;
 				if (val) ycol.sum += val;
 				if (options.compare) {
@@ -298,23 +357,65 @@ miaou(function(fmt, md, plugins){
 		});
 
 		var $tablewrap = $table.closest('.tablewrap');
-		var $wrapper = $("<div class=graph-wrapper>").append(g.n).insertBefore($tablewrap);
+		var $wrapper = this.$wrapper = $("<div class=graph-wrapper>").append(g.n).insertBefore($tablewrap);
 		if (options.hideTable) $tablewrap.hide();
 		setTimeout(function(){
 			$wrapper.scrollLeft(W)
 		}, 10);
 	}
 
-	function render($c, m){
+	// read the options in the pragma
+	function pragmaOptions($pragma){
+		var match = $pragma.html().match(/(?:^|\s)#graph(\([^\)]+\))?(?:$|\s)/);
+		if (!match) return; // should not really happen
+		var options= {
+			highlightedX:{}
+		};
+		if (match[1]) {
+			match[1].slice(1, -1).split(/,\s*/).forEach(function(k){
+				var mk = k.match(/^highlight-x:(.*)$/);
+				if (mk) {
+					highlightedX[mk[1]] = true;
+				} else {
+					options[k] = true;
+				}
+			});
+		}
+		return options;
+	}
+
+	function renderMessage($c, m){
 		$c.find(".pragma-graph").each(function(){
-			renderGraph($(this), $c);
+			var $pragma = $(this);
+			var $table = $pragma.nextAll(".tablewrap").find("table").first();
+			if (!$table.length) {
+				$pragma.bubbleOn("no table found");
+				return;
+			}
+			var options = pragmaOptions($pragma);
+			if (!options) {
+				$pragma.bubbleOn("invalid pragma");
+				return;
+			}
+			var tg = new TGraph($table, options);
+			tg.attach().render();
 		});
 	}
 
 	plugins.graph = {
 		start: function(){
 			fmt.whiteListPragma("graph");
-			md.registerRenderer(render, true);
+			md.registerRenderer(renderMessage, true);
+		},
+		// returns the graph of the table, creating it if necessary.
+		// The graph is not rendered at this point.
+		tableGraph: function($table){
+			var tg = $table.dat("graph");
+			if (!tg) {
+				tg = new TGraph($table);
+				tg.attach();
+			}
+			return tg;
 		}
 	}
 
