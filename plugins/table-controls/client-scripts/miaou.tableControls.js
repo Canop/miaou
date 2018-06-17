@@ -1,4 +1,4 @@
-miaou(function(tableControls){
+miaou(function(tableControls, plugins){
 
 	const DAT_KEY = "table-controller";
 
@@ -45,10 +45,10 @@ miaou(function(tableControls){
 	}
 
 	function ColumnController(tblCon, index){
+		this.tblCon = tblCon;
 		this.index = index;
 		this.$th = tblCon.$head.find("th").eq(index);
 		this.name = this.$th.text();
-		this.tblCon = tblCon;
 		this.nbAlphaCells = 0;
 		this.nbNumCells = 0;
 		var n = tblCon.$rows.length;
@@ -63,7 +63,6 @@ miaou(function(tableControls){
 			|| (this.nbNumCells >= .9*this.nbAlphaCells && this.nbNumCells>2);
 		this.isAlphaSortable = this.nbAlphaCells >= n*.6 && this.nbNumCells < .9*n;
 	}
-
 	ColumnController.prototype.appendTo = function($c){
 		var	cc = this;
 		var 	$cc = $("<div class=column-controller>").text("sort:").appendTo($c);
@@ -85,7 +84,64 @@ miaou(function(tableControls){
 			addIcon("name-up");
 			addIcon("name-down");
 		}
-	};
+	}
+
+	function GraphController(tg){
+		this.tg = tg; // the tableGraph given by the graph plugin
+	}
+	GraphController.prototype.appendTo = function($c, index){
+		var tg = this.tg;
+		if (!tg.rendered()) {
+			$("<button>").addClass("tbl-graph-toggle").text("graph this table")
+			.click(function(){
+				tg.render();
+			})
+			.appendTo($c);
+			return;
+		}
+		$("<button>").addClass("tbl-graph-toggle").text("hide the graph")
+		.click(function(){
+			tg.remove();
+		})
+		.appendTo($c);
+		var col = tg.cols[index];
+		if (!col.xvals && !col.yvals) return;
+		var $d = $("<div>").addClass("tbl-graph-col-choice").appendTo($c);
+		$("<span>").text("graph this column: ").appendTo($d);
+		if (col.xvals) {
+			let $label = $("<label>").text("x").appendTo($d);
+			let $input = $("<input type=radio>").prependTo($label);
+			if (col==tg.choice.xcol) {
+				$input.prop("checked", true);
+			} else {
+				$input.prop("checked", false).click(e=>{
+					tg.setAsX(col);
+				});
+			}
+		}
+		if (col.yvals) {
+			let $label = $("<label>").text("y").appendTo($d);
+			let $input = $("<input type=radio>").prependTo($label);
+			if (tg.choice.ycols.includes(col)) {
+				$input.prop("checked", true);
+			} else {
+				$input.prop("checked", false).click(e=>{
+					tg.setAsY(col);
+				});
+			}
+		}
+		if (col.yvals.length>1) {
+			let $label = $("<label>").text("no").appendTo($d);
+			let $input = $("<input type=radio>").prependTo($label);
+			if (tg.choice.xcol===col || tg.choice.ycols.includes(col)) {
+				$input.prop("checked", false).click(e=>{
+					tg.ignore(col);
+				});
+			} else {
+				$input.prop("checked", true);
+			}
+		}
+	}
 
 	function TableController($table){
 		this.$table = $table;
@@ -97,6 +153,14 @@ miaou(function(tableControls){
 		for (var i = this.$head.find("th").length; i--; ) {
 			this.cols[i] = new ColumnController(this, i);
 		}
+		this.graphController = null;
+		if (plugins.graph) {
+			var tg = plugins.graph.tableGraph($table);
+			if (tg) {
+				this.graphController = new GraphController(tg);
+			}
+		}
+		this.sortable = this.$rows.length > 2;
 	}
 
 	TableController.prototype.sort = function(key, index){
@@ -121,31 +185,32 @@ miaou(function(tableControls){
 		return this.cols[$th.index()];
 	}
 
-	function isTableControllable($table){
-		var $rows = $table.find("tr");
-		return	$table.length
-			&& $rows.length > 4
-			&& $rows.eq(0).find("th").length>1;
+	function getTableController($table){
+		var tblCon = $table.dat(DAT_KEY);
+		if (!tblCon) {
+			$table.dat(DAT_KEY, tblCon = new TableController($table))
+			.addClass("controlled");
+		}
+		return tblCon;
+	}
+
+	function blow($c, $th){
+		var	$table = $th.closest("table"),
+			tblCon = getTableController($table),
+			graphCon = tblCon.graphController;
+		if (graphCon) {
+			graphCon.appendTo($c, $th.index());
+		}
+		if (tblCon.sortable) {
+			var colCon = tblCon.colController($th);
+			colCon.appendTo($c);
+		}
 	}
 
 	$("#messages").bubbleOn(".content th", {
 		side: "top",
 		blower: function($c){
-			var	$th = $(this),
-				$table = $th.closest("table"),
-				tblCon = $table.dat(DAT_KEY);
-			if ($th.closest("table").index()) {
-				return false;
-			}
-			if (!tblCon) {
-				if (!isTableControllable($table)) {
-					return false;
-				}
-				$table.dat(DAT_KEY, tblCon = new TableController($table))
-				.addClass("controlled");
-			}
-			var 	colCon = tblCon.colController($th);
-			colCon.appendTo($c);
+			blow($c, $(this));
 		}
 	});
 
