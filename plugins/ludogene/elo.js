@@ -79,7 +79,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		r[0].f++;
 		r[1].f++;
 		opo.f++;
-		let winnerIndex = +(g.scores[1]>=50);
+		let winnerIndex = +(g.scores[1]>=g.scores[0]);
 		r[winnerIndex].w++;
 		r[+!winnerIndex].l++;
 		this.s0 = g.scores[0];
@@ -108,7 +108,6 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		} else {
 			this.coef = 1;
 		}
-		// var v = .5 + g.scores[winnerIndex]/200; // in ].75,1[
 		let v = .6 + (g.scores[winnerIndex]-50)*.0084; // in ].6,1[
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1;
@@ -266,7 +265,7 @@ exports.getLadder = async function(con, gameType){
 	return compute(messages);
 }
 
-// handles the !!triboladder command
+// handles the !!triboladder and !!floreladder commands
 exports.onCommand = async function(ct){
 	let gt = null;
 	if (ct.cmd.name==="triboladder") gt = "Tribo";
@@ -282,9 +281,10 @@ exports.onCommand = async function(ct){
 		c = `Elo based ${gt} ladder:\n`,
 		showOpponents = /\bopponents?\b/.test(ct.args),
 		showLog = /\bgames\b/.test(ct.args);
-	let userMatch = ct.args.match(/@[\w\-]+/);
+	let userMatch = ct.args.match(/@[\w-]+/);
+	console.log('userMatch:', userMatch);
 	if (userMatch) {
-		let user = this.getUserByName(userMatch[0].slice(1));
+		let user = await this.getUserByName(userMatch[0].slice(1));
 		let r = data.ratingsMap.get(user.id);
 		if (!r) {
 			c += 'No game found for @'+user.name+' in public rooms';
