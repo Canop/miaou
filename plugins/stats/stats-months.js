@@ -111,9 +111,11 @@ exports.doServerStats = async function(con, ct){
 
 exports.doRoomsStats = async function(con, ct, roomIds){
 	let months = await getMonths(con)
+	let rows = [];
+	let keepRow = false;
 	for (let j=0; j<months.length; j++) {
 		let month = months[j];
-		month.roomstats = new Array(roomIds.length);
+		let stats = new Array(roomIds.length);
 		for (var i=0; i<roomIds.length; i++) {
 			let row = await con.queryOptionalRow(
 				"select count(id) n from message"
@@ -122,21 +124,20 @@ exports.doRoomsStats = async function(con, ct, roomIds){
 				[roomIds[i], month.startTime(), month.next().startTime()],
 				"room_messages_in_month"
 			);
-			if (row) month.roomstats[i] = row.n;
+			console.log('row:', row);
+			stats[i] = row.n;
+			if (!row.n) continue;
+			keepRow = true; // we keep this row and the following ones
 		}
+		if (!keepRow) continue;
+		rows.push([month.label(), ...stats.map(v=>fmt.int(v))]);
+
 	}
 	let rooms = new Array(roomIds.length);
 	for (var i=0; i<roomIds.length; i++) {
 		rooms[i] = await con.fetchRoom(roomIds[i]);
 	}
 	let c = "Rooms Statistics\n#graph(hideTable,compare,sum)\n";
-	let rows = months
-	.filter(m =>{
-		for (var i=m.roomstats.length; i--;) {
-			if (m.roomstats[i]) return true;
-		}
-	})
-	.map(m=>[m.label(), ...m.roomstats.map(v=>fmt.int(v))]);
 	c += fmt.tbl({
 		cols: ["Month", ...rooms.map(fmt.roomLink)],
 		rows
@@ -146,9 +147,11 @@ exports.doRoomsStats = async function(con, ct, roomIds){
 
 exports.doUsersStats = async function(con, ct, usernames){
 	let months = await getMonths(con);
+	let rows = [];
+	let keepRow = false;
 	for (let j=0; j<months.length; j++) {
 		let month = months[j];
-		month.userstats = new Array(usernames.length);
+		let stats = new Array(usernames.length);
 		for (let i=0; i<usernames.length; i++) {
 			let row = await con.queryOptionalRow(
 				"select count(id) n from message"
@@ -157,17 +160,14 @@ exports.doUsersStats = async function(con, ct, usernames){
 				[usernames[i], month.startTime(), month.next().startTime()],
 				"user_messages_in_month"
 			);
-			if (row) month.userstats[i] = row.n;
+			stats[i] = row.n;
+			if (!row.n) continue;
+			keepRow = true; // we keep this row and the following ones
 		}
+		if (!keepRow) continue;
+		rows.push([month.label(), ...stats.map(v=>fmt.int(v))]);
 	}
 	let c = "Users Statistics\n#graph(hideTable,compare,sum)\n";
-	let rows = months
-	.filter(m =>{
-		for (var i=m.userstats.length; i--;) {
-			if (m.userstats[i]) return true;
-		}
-	})
-	.map(m=>[m.label(), ...m.userstats.map(v=>fmt.int(v))])
 	c += fmt.tbl({
 		cols: ["Month", ...usernames],
 		rows
