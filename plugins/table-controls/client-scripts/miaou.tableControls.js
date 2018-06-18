@@ -156,7 +156,7 @@ miaou(function(tableControls, plugins){
 		this.graphController = null;
 		if (plugins.graph) {
 			var tg = plugins.graph.tableGraph($table);
-			if (tg) {
+			if (tg && tg.renderable) {
 				this.graphController = new GraphController(tg);
 			}
 		}
@@ -179,6 +179,13 @@ miaou(function(tableControls, plugins){
 		$(".column-controller span").each(function(){
 			this.classList.toggle("active", this.classList.contains("icon-sort-"+key));
 		});
+		if (this.graphController) {
+			var tg = this.graphController.tg;
+			if (tg.rendered()) {
+				tg.readCols();
+				tg.render();
+			}
+		}
 	}
 
 	TableController.prototype.colController = function($th){
@@ -197,20 +204,24 @@ miaou(function(tableControls, plugins){
 	function blow($c, $th){
 		var	$table = $th.closest("table"),
 			tblCon = getTableController($table),
-			graphCon = tblCon.graphController;
+			graphCon = tblCon.graphController,
+			hasContent = false;
 		if (graphCon) {
 			graphCon.appendTo($c, $th.index());
+			hasContent = true;
 		}
 		if (tblCon.sortable) {
 			var colCon = tblCon.colController($th);
 			colCon.appendTo($c);
+			hasContent = true;
 		}
+		return hasContent;
 	}
 
 	$("#messages").bubbleOn(".content th", {
 		side: "top",
 		blower: function($c){
-			blow($c, $(this));
+			return blow($c, $(this));
 		}
 	});
 

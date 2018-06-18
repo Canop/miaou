@@ -87,13 +87,16 @@ miaou(function(fmt, fish, md, plugins){
 	}
 
 	function TGCol($table, i){
-		this.rawvals = $table.find('tr td:nth-child('+(i+1)+')').map(function(){
+		this.i = i;
+		this.read($table);
+	}
+	TGCol.prototype.read = function($table){
+		this.rawvals = $table.find('tr td:nth-child('+(this.i+1)+')').map(function(){
 			return $(this).text();
 		}).get();
-		this.name = $table.find('th:nth-child('+(i+1)+')').text();
+		this.name = $table.find('th:nth-child('+(this.i+1)+')').text();
 		this.xvals = null;
 		this.yvals = null;
-		this.i = i;
 	}
 	TGCol.prototype._parse = function(parser){
 		var vals = new Array(this.rawvals.length);
@@ -129,11 +132,18 @@ miaou(function(fmt, fish, md, plugins){
 		this.cols = [];
 		for (var i=0, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
 			this.cols[i] = new TGCol($table, i);
-			this.cols[i].parseAsX();
-			this.cols[i].parseAsY();
 		}
+		this.readCols();
 		this.choice = this._chooseCols(); // the current choice of x and y columns
-		this.renderable = this.choice.xcol && this.choice.ycols.length;
+		var {xcol, ycols} = this.choice;
+		this.renderable = xcol && xcol.xvals.length>1 && ycols.length;
+	}
+	TGraph.prototype.readCols = function(){
+		this.cols.forEach(col=>{
+			col.read(this.$table);
+			col.parseAsX();
+			col.parseAsY();
+		});
 	}
 	TGraph.prototype._chooseCols = function(){
 		var xcol;
@@ -295,7 +305,7 @@ miaou(function(fmt, fish, md, plugins){
 			$(rect.n).bubbleOn({
 				html: [
 					`<div class=bubble-title>${xval.label}</div>`,
-					...ycols.map(c => `${legend(c.color)} ${c.name} : ${c.rawvals[i]}`)
+					...ycols.map(c => `${legend(c.color)} ${c.name} : ${c.rawvals[i]||"0"}`)
 				].join("<br>")
 			});
 			if (xhighlight) {
@@ -375,7 +385,7 @@ miaou(function(fmt, fish, md, plugins){
 			match[1].slice(1, -1).split(/,\s*/).forEach(function(k){
 				var mk = k.match(/^highlight-x:(.*)$/);
 				if (mk) {
-					highlightedX[mk[1]] = true;
+					options.highlightedX[mk[1]] = true;
 				} else {
 					options[k] = true;
 				}
