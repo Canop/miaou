@@ -120,6 +120,16 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			notif.userAct(message.id);
 			return false;
 		})
+		.on('click', '.copysrc', function(){
+			var $e = $(this), message = $e.closest('.message').dat('message');
+			var ta = document.createElement("textarea");
+			ta.value = message.content || "";
+			document.body.appendChild(ta);
+			ta.select();
+			document.execCommand("copy");
+			document.body.removeChild(ta);
+			return false;
+		})
 		.on('click', '.olderLoader', function(){
 			var $this = $(this), mid = +$this.attr('mid'), olderPresent = 0;
 			$this.remove();

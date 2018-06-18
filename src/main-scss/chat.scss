@@ -587,7 +587,6 @@ table.list .rendered img, .rooms-list .rendered img {
 	right: 1px;
 	background: $message-menu-bg;
 	color: $message-menu-color;
-	opacity: 0.85;
 	font-size: 90%;
 	.txt {
 		color: $message-menu-txt-color;
@@ -608,7 +607,7 @@ table.list .rendered img, .rooms-list .rendered img {
 		cursor: pointer;
 		margin: 0 4px;
 	}
-	.link, .makemwin {
+	.link, .makemwin, .copysrc {
 		cursor: pointer;
 		font-family: "fontello";
 		color: $message-menu-link-color;

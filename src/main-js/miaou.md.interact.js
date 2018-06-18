@@ -58,14 +58,17 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		if (message.id) {
 			h += '<a class=link target=_blank href="'
 			+ links.permalink(message)
-			+ '" title="permalink : right-click to copy">'
+			+ '" title="permalink : right-click to copy a direct link to the message">'
 			+ '&#xe80e;' // fontello icon-link
 			+ '</a> ';
 			if (!gui.mobile) {
-				h += '<a class=makemwin title="float">'
+				h += '<a class=makemwin title="float: open the message in a floating window">'
 				+ '&#xe82a;' // fontello icon-window
 				+ '</a> ';
 			}
+			h += `<a class=copysrc title="copy source: put the message's markdown in the clipboard">`
+			+ '&#xf121;' // fontello icon-code
+			+ '</a> ';
 			var possibleVotes = [];
 			if (usr.checkAuth('admin')) possibleVotes.push(chat.voteLevels[0]); // pin
 			if (message.author!==locals.me.id || usr.checkAuth('admin')) {
