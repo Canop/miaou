@@ -21,9 +21,7 @@ exports.register = function(bot, options){
 exports.onPing = async function(lname, shoe, message){
 	let	bo = bots.get(lname);
 	if (!bo) return false;
-	console.log("bot found");
 	if (bo.onPing) {
-		console.log("bot pinged");
 		await bo.onPing(shoe, message);
 	}
 	return true;
