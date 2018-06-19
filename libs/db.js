@@ -19,6 +19,15 @@
 //	    alert(err);
 //      this.rollback();
 //   }).finally(db.off);
+//
+//  The prefered way to use this is now with async/await:
+//
+//  await db.do(async function(con){
+//       await con.doSomeThing();
+//       await con.doSomeOtherOne();
+//  }, onError(err){
+//       handleErr();
+//  });
 
 const	Promise = require("bluebird"),
 	fs = Promise.promisifyAll(require("fs")),
