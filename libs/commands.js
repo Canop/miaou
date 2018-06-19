@@ -131,7 +131,7 @@ exports.onMessage = function(shoe, m){
 	let cmd = commands[cmdMatch[2]];
 	if (!cmd || !cmd.fun) throw 'Command "' + cmdMatch[2] + '" not found';
 	if (cmd.filter && !cmd.filter(shoe.room)) throw 'Command "'+cmd.name+'" not available in this room';
-	return (new CommandTask(cmd, cmdMatch[1], cmdMatch[3], shoe, m)).exec(this);
+	return (new CommandTask(cmd, !!cmdMatch[1], cmdMatch[3], shoe, m)).exec(this);
 }
 
 // may return a promise
@@ -141,6 +141,6 @@ exports.onBotMessage = function(bot, m){
 	if (!cmdMatch) return {};
 	let cmd = commands[cmdMatch[2]];
 	if (!cmd || !cmd.botfun) return;
-	return cmd.botfun.call(this, cmd, cmdMatch[1], cmdMatch[3], bot, m);
+	return cmd.botfun.call(this, cmd, cmdMatch[3], bot, m);
 }
 
