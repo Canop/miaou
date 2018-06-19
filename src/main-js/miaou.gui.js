@@ -189,7 +189,8 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			$(window).on('resize', md.resizeAll);
 		}
 
-		$('#notable-messages, #search-results').on('click', '.message', function(e){
+		$('#notable-messages, #search-results')
+		.on('click', '.message', function(e){
 			var $this = $(this);
 			$this.closest('#notable-messages, #search-results').find('.message.selected').removeClass('selected');
 			md.focusMessage(+$this.addClass('selected').attr('mid'));
@@ -200,7 +201,9 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 			} else {
 				$('#search-input').focus();
 			}
-		}).on('click', '.opener', md.opener).on('click', '.closer', md.closer);
+		})
+		.on('click', '.opener', md.opener)
+		.on('click', '.closer', md.closer);
 
 		if (usr.checkAuth('admin')) $('#room-edit').click(function(){ location = 'room?id='+locals.room.id });
 		else $('#room-edit').hide();

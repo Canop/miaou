@@ -27,14 +27,20 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		});
 	}
 
-	md.opener = function(e){
-		var	wab = gui.isAtBottom(),
-			$md = $(this).removeClass('opener').addClass('closer').closest('.message');
-		$md.find('.content').removeClass('closed');
-		notif.userAct($md.dat('message').id);
+	md.opendIfClosed = function($message){
+		console.log('message:', $message);
+		var $opener = $message.find(".opener");
+		console.log($opener.length);
+		if (!$opener.length) return;
+		$opener.removeClass('opener').addClass('closer');
+		var wab = gui.isAtBottom();
+		$message.find('.content').removeClass('closed');
+		notif.userAct($message.dat('message').id);
 		if (wab) gui.scrollToBottom();
-		e.stopPropagation();
 		if (!gui.mobile) wz.updateAll();
+	}
+	md.opener = function(e){
+		md.opendIfClosed($(this).closest(".message"));
 		return false;
 	}
 	md.closer = function(e){

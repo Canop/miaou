@@ -1,4 +1,4 @@
-miaou(function(tableControls, plugins){
+miaou(function(tableControls, md, plugins){
 
 	const DAT_KEY = "table-controller";
 
@@ -94,6 +94,7 @@ miaou(function(tableControls, plugins){
 		if (!tg.rendered()) {
 			$("<button>").addClass("tbl-graph-toggle").text("graph this table")
 			.click(function(){
+				md.opendIfClosed(tg.$table.closest(".message"));
 				tg.render();
 			})
 			.appendTo($c);
