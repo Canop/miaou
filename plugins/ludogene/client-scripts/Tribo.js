@@ -27,6 +27,14 @@
 				(x > 0 && y < 9 && c[x-1][y+1] == p) ||
 				(x < 9 && y < 9 && c[x+1][y+1] == p));
 		},
+		log: function(g){
+			console.log([
+				`current: ${g.current}`,
+				["+", ...Array(30).fill("-"), "+"].join(""),
+				...g.cells.map(r=>["|", ...r.map(c=>["   ", " ● ", " ○ "][c+1]), "|"].join("")),
+				["+", ...Array(30).fill("-"), "+"].join(""),
+			].join("\n"));
+		},
 		isValid: function(g, move){
 			return move.p === g.current && Tribo.canPlay(g, move.x, move.y, move.p);
 		},

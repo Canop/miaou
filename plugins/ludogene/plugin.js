@@ -174,7 +174,6 @@ function pingOpponents(move, game, message){
 	});
 }
 
-// todo: for a greater security we should pass a checked playerId
 exports.move = function(mid, encodedMove){
 	dbGetGame(mid).spread(function(m, game){
 		var	gametype = gametypes[game.type],
