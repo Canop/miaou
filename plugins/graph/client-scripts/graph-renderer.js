@@ -179,6 +179,7 @@ miaou(function(fmt, fish, md, plugins){
 		this.render();
 	}
 	TGraph.prototype._removeXCol = function(col){
+		if (col!==this.choice.xcol) return;
 		for (var i=0; i<this.cols.length; i++) {
 			if (this.cols[i].xvals && this.cols[i]!==col) {
 				this._removeYCol(this.cols[i]);
