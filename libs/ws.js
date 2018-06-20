@@ -700,6 +700,18 @@ function handleUserInRoom(socket, completeUser){
 				m = await con.storeMessage(m, commandTask.ignoreMaxAgeForEdition);
 			}
 			if (commandTask.silent) return;
+			if (commandTask.private) {
+				m.private = true;
+				socket.emit("message", m);
+				if (commandTask.replyContent) {
+					console.log("private command reply to", "@"+shoe.publicUser.name);
+					shoe.emitPersonalBotFlake(
+						commandTask.replyer || bot,
+						`@${m.authorname} ${commandTask.replyContent}`
+					);
+				}
+				return;
+			}
 			if (m.changed) {
 				if (m.score) {
 					// we must update the notable cache
@@ -720,11 +732,9 @@ function handleUserInRoom(socket, completeUser){
 			if (commandTask.replyContent) {
 				let txt = commandTask.replyContent;
 				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
+				else txt = '@'+m.authorname+' '+txt;
 				let replyer = commandTask.replyer || bot;
-				if (commandTask.private) {
-					console.log("private command reply to", "@"+shoe.publicUser.name);
-					shoe.emitPersonalBotFlake(replyer, txt);
-				} else if (commandTask.replyAsFlake) {
+				if (commandTask.replyAsFlake) {
 					shoe.emitBotFlakeToRoom(replyer, txt);
 				} else {
 					shoe.botMessage(replyer, txt);
