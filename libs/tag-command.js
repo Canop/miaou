@@ -12,7 +12,7 @@ function asCode(description){
 }
 
 function doCommand(ct){
-	var m = ct.args.match(/^\s*(delete )?([\w-]{3,50})$/);
+	var m = ct.args.match(/^\s*(delete )?([A-Za-zÀ-ÿ0-9-]{3,50})$/);
 	if (!m) throw new Error("invalid command call or invalid tag");
 	var isDelete = !!m[1];
 	if (isDelete) throw new Error("Only a master can delete a tag");

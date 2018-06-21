@@ -29,8 +29,8 @@ miaou(function(fmt){
 		return s.split('`').map(function(t, i){
 			if (i%2) return '<code>'+t+'</code>';
 			return t
-			.replace(/\[([\w-]{3,50}):([\w-\s\/]{2,50})\]/g, function(s, clas, con){
-				 // example: [tag:Mounty-Hall]
+			.replace(/\[([\w-]{3,50}):([A-Za-zÀ-ÿ0-9\s\/-]{2,50})\]/g, function(s, clas, con){
+				 // examples: [tag:Mounty-Hall]  [bronze-badge:Miaou/Less Faceless]
 				if (!braceSpanClassWhitelist.has(clas)) return s;
 				return '<span class='+clas+'>'+con+'</span>';
 			})
