@@ -1,4 +1,16 @@
 
+#server-warning {
+	flex: 0 0 40px;
+	line-height: 40px;
+	text-align: center;
+	background: rgba(200, 0, 0, .8);
+	color: rgba(250, 250, 250, 1);
+	a {
+		color: inherit;
+		margin: 5px;
+	}
+}
+
 #stripe {
 	position: fixed;
 	left: 0;
