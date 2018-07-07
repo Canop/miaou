@@ -1,13 +1,6 @@
-var	fmt = require("./miaou.format.node.js"),
-	buster = require("buster");
-	
-function t(s,r){
-	return function(){
-		buster.assert.equals(fmt.mdTextToHtml(s), r);		
-	}
-}
+require("./format.js");
 
-buster.testCase("Formatting - Titles", {
+doTests("Formatting - Titles", {
 	"h1": t(
 		"Ligne suivante:\n# H1",
 		'Ligne suivante:<br><span class=h1>H1</span>'

@@ -1,13 +1,6 @@
-var	fmt = require("./miaou.format.node.js"),
-	buster = require("buster");
+require("./format.js");
 
-function t(s,r){
-	return function(){
-		buster.assert.equals(fmt.mdTextToHtml(s), r);
-	}
-}
-
-buster.testCase("Formatting - Lists", {
+doTests("Formatting - Lists", {
 	"OL": t(
 		"# Rules :\n"+
 		"1. you can test it\n"+

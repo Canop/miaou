@@ -1,20 +1,6 @@
-var	fmt = require("./miaou.format.node.js"),
-	buster = require("buster");
+require("./format.js");
 
-function t(s,r){
-	return function(){
-		try {
-			buster.assert.equals(fmt.reset().mdTextToHtml(s), r);
-		} catch (e) {
-			console.log("Erroring markdown :");
-			console.log(s);
-			throw e;
-		}
-	}
-}
-
-
-buster.testCase("Formatting - Bold, Italic, Strike", {
+doTests("Formatting - Bold, Italic, Strike", {
 	"no change": t(
 		"simple one-line text",
 		"simple one-line text"
@@ -35,7 +21,8 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"---first--- and ---third--- words as strike",
 		"<strike>first</strike> and <strike>third</strike> words as strike"
 	),
-	"two italicized words separated by just one space": t( // bug observed here : http://dystroy.org/miaou/73?Tribo_Room#538224
+	"two italicized words separated by just one space": t(
+		// bug observed here : http://dystroy.org/miaou/73?Tribo_Room#538224
 		"*sob* *sob*",
 		"<i>sob</i> <i>sob</i>"
 	),
@@ -51,7 +38,9 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"**Now the reverse : all in bold and the last word in *italic* **",
 		'<b>Now the reverse : all in bold and the last word in <i>italic</i> </b>'
 	),
-	"// bold and italic nested without spacing": t( // it makes a bad code, I don't really have a solution right now apart using a dom tree - current solution : alternate stars and low dashes
+	"// bold and italic nested without spacing": t(
+		// it makes a bad code, I don't really have a solution right now apart
+		//  using a dom tree - current solution : alternate stars and low dashes
 		"**Now the reverse : all in bold and the last word in *italic***",
 		'<b>Now the reverse : all in bold and the last word in <i>italic</i></b>'
 	),
@@ -63,15 +52,15 @@ buster.testCase("Formatting - Bold, Italic, Strike", {
 		"** bold sentence with ---striken *italicized words*---**",
 		"<b> bold sentence with <strike>striken <i>italicized words</i></strike></b>"
 	),
-	"links with dash in an italicized sentence":t(
+	"links with dash in an italicized sentence": t(
 		"*[ralt](https://github.com/ralt) pushed in [ralt/deb-packager](https://github.com/ralt/deb-packager)*",
 		"<i><a target=_blank href=\"https://github.com/ralt\">ralt</a> pushed in <a target=_blank href=\"https://github.com/ralt/deb-packager\">ralt/deb-packager</a></i>"
 	),
-	"links with dash in a bold sentence":t(
+	"links with dash in a bold sentence": t(
 		"**[ralt](https://github.com/ralt) pushed in [ralt/deb-packager](https://github.com/ralt/deb-packager)**",
 		"<b><a target=_blank href=\"https://github.com/ralt\">ralt</a> pushed in <a target=_blank href=\"https://github.com/ralt/deb-packager\">ralt/deb-packager</a></b>"
 	),
-	"orphan stars":t(
+	"orphan stars": t(
 		"**start is bold** but here are some stars : ** (*not boldening*)",
 		"<b>start is bold</b> but here are some stars : ** (<i>not boldening</i>)"
 	),

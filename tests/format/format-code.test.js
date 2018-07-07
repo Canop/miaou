@@ -1,13 +1,6 @@
-var	fmt = require("./miaou.format.node.js"),
-	buster = require("buster");
+require("./format.js");
 
-function t(s,r){
-	return function(){
-		buster.assert.equals(fmt.mdTextToHtml(s), r);
-	}
-}
-
-buster.testCase("Formatting - Code", {
+doTests("Formatting - Code", {
 	"inlined code": t(
 		"A line with `**inlined** _code_` and an equation : `y = 2*x`",
 		'A line with <code>**inlined** _code_</code> and an equation : <code>y = 2*x</code>'
@@ -39,6 +32,4 @@ buster.testCase("Formatting - Code", {
 		'<pre class="prettyprint">a|b↵	-|-↵	a|b</pre>'
 	)
 });
-
-
 

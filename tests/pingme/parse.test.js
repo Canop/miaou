@@ -1,20 +1,31 @@
-var	buster = require("buster"),
-	now = new Date("2017-05-07 22:30 +0000"),
+const	now = new Date("2017-05-07 22:30 +0000"),
 	parse = require('../../plugins/pingme/plugin.js').parse;
 
 function check(str, tzoffset, utcDate, text){
 	var c = parse(str, tzoffset, now);
-	buster.assert.equals(new Date(c.date*1000), new Date(utcDate.replace(/T/, ' ')+" +0000"));
-	buster.assert.equals(c.text, text||"");
+	expect(new Date(c.date*1000)).toEqual(new Date(utcDate.replace(/T/, ' ')+" +0000"));
+	expect(c.text).toBe(text||"");
 }
 
-buster.testCase("pingme/parse", {
+const doTests = function(name, tests){
+	describe(name, ()=>{
+		for (let k in tests) {
+			if (/^\/\//.test(k)) {
+				test.skip(k, tests[k]);
+			} else {
+				test(k, tests[k]);
+			}
+		}
+	});
+}
+
+doTests("pingme/parse", {
 
 	"invalid": function(){
 		["", "bla bla bla", "52h32 test"].forEach(str=>{
-			buster.assert.exception(function(){
+			expect(function(){
 				parse(str, 0);
-			});
+			}).toThrow();
 		});
 	},
 

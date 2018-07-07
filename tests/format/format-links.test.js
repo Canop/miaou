@@ -1,13 +1,6 @@
-var	fmt = require("./miaou.format.node.js"),
-	buster = require("buster");
+require("./format.js");
 
-function t(s,r){
-	return function(){
-		buster.assert.equals(fmt.mdTextToHtml(s), r);
-	}
-}
-
-buster.testCase("Formatting - Links", {
+doTests("Formatting - Links", {
 	"raw URL": t(
 		"raw URL : http://dystroy.org/index.html?a=b",
 		'raw URL : <a target=_blank href="http://dystroy.org/index.html?a=b">http://dystroy.org/index.html?a=b</a>'

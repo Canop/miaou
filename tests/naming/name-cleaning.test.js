@@ -1,19 +1,17 @@
-var	buster = require("buster"),
-	lib = require('../../libs/naming.js');
+const lib = require('../../libs/naming.js');
 
 function trd(input, output){
-	buster.assert.equals(lib.removeDiacritics(input), output);	
+	expect(lib.removeDiacritics(input)).toBe(output);
 }
 function tsu(input, regex){
-	//~ console.log(input, '=>', lib.suggestUsername(input));
-	buster.assert.match(lib.suggestUsername(input), regex);	
+	expect(lib.suggestUsername(input)).toMatch(regex);
 }
 function tmmc(input, output){
-	buster.assert.equals(lib.makeMarkdownCompatible(input), output);	
+	expect(lib.makeMarkdownCompatible(input)).toBe(output);
 }
 
-buster.testCase("naming", {
-	"remove diacritics": function(){
+describe("naming", ()=>{
+	test("remove diacritics", function(){
 		trd("chaîne", "chaine");
 		trd("quelques mots accentués ou à cédille en Français", "quelques mots accentues ou a cedille en Francais");
 		trd("Münshen", "Munshen");
@@ -30,8 +28,8 @@ buster.testCase("naming", {
 		trd("L'Haÿ-les-Roses", "L'Hay-les-Roses");
 		trd("天空中我失去了我的化油器！", "天空中我失去了我的化油器！");
 		trd("Я потерял карбюратора", "Я потерял карбюратора"); // we should do better
-	},
-	"suggest username": function(){
+	});
+	test("suggest username", function(){
 		tsu("", /^[a-zA-Z][\w\-]{2,19}$/);
 		tsu("!!!", /^[a-zA-Z][\w\-]{2,19}$/);
 		tsu("A0", /^[a-zA-Z][\w\-]{2,19}$/);
@@ -41,10 +39,10 @@ buster.testCase("naming", {
 		tsu("J'ai égaré mon carburateur!", /^J_ai_egare_mon_carbu$/);
 		tsu("L'Haÿ-les-Roses", /^L_Hay-les-Roses$/);
 		tsu("天空中我失去了我的化油器！", /^[a-zA-Z][\w\-]{12}$/);
-	},
-	"make markdown compatible": function(){
+	});
+	test("make markdown compatible", function(){
 		tmmc(" [test](http://bla.bla/r)", " ❲test❳⟮http://bla.bla/r⟯");
 		tmmc("**gras** et _italique_", "⁕⁕gras⁕⁕ et ⎽italique⎽");
-	}
+	});
 });
 

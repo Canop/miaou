@@ -1,19 +1,6 @@
-var	fmt = require("./miaou.format.node.js"),
-	buster = require("buster");
-	
-function t(s,r){
-	return function(){
-		try {
-			buster.assert.equals(fmt.reset().mdTextToHtml(s), r);		
-		} catch (e) {
-			console.log("Erroring markdown :");
-			console.log(s);
-			throw e;
-		}
-	}
-}
+require("./format.js");
 
-buster.testCase("Formatting - Tables", {
+doTests("Formatting - Tables", {
 	"simple markdown table": t(
 		"col 1|col 2|col 3\n"+
 		"-|-|-\n"+
@@ -82,7 +69,7 @@ buster.testCase("Formatting - Tables", {
 	),
 	"table where rows are separated with --": t(
 		"th 1 | th 2 | th 3\n-----|:----:|-----:\nbla  |      | multi\nbla  |      | line cell\n--\nother| row | mono line\n--\nlast | of  | and last cell\nrow  |table| is on two lines",
-		"<div class=tablewrap><table id=tbl1><style scoped>#tbl1 td:nth-child(1){text-align:left}#tbl1 td:nth-child(2){text-align:center}#tbl1 td:nth-child(3){text-align:right}</style><tr><th>th 1</th><th>th 2</th><th>th 3</th></tr><tr><td>bla<br>bla</td><td><br></td><td>multi<br>line cell</td></tr><tr><td>other</td><td>row</td><td>mono line</td></tr><tr><td>last<br>row</td><td>of<br>table</td><td>and last cell<br>is on two lines</td></tr></table></div>" 
+		"<div class=tablewrap><table id=tbl1><style scoped>#tbl1 td:nth-child(1){text-align:left}#tbl1 td:nth-child(2){text-align:center}#tbl1 td:nth-child(3){text-align:right}</style><tr><th>th 1</th><th>th 2</th><th>th 3</th></tr><tr><td>bla<br>bla</td><td><br></td><td>multi<br>line cell</td></tr><tr><td>other</td><td>row</td><td>mono line</td></tr><tr><td>last<br>row</td><td>of<br>table</td><td>and last cell<br>is on two lines</td></tr></table></div>"
 	),
 	"table with title row looking like code": t(
 		"     c0       |  c1   | c2  | c3 | c4  \n---------------+-------+-----+----+-----\n dystroy       | 30478 | 268 | 60 | 117\n Zul           | 29881 | 308 |  7 |  42",

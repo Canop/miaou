@@ -1,6 +1,6 @@
 {
   "name": "miaou",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "description": "A node based chat server",
   "repository": {
@@ -12,7 +12,6 @@
     "body-parser": ">=1.5.2",
     "bounded-cache": ">=0.0.0",
     "busboy": ">=0.2.1",
-    "buster": ">=0.7.10",
     "cheerio": ">=0.13.1",
     "compression": ">=1.0.9",
     "connect-redis": ">=1.4.6",
@@ -37,11 +36,11 @@
     "socket.io-client": ">=2.0.1"
   },
   "engines": {
-    "node": ">=7.0.0"
+    "node": ">=10.0.0"
   },
   "scripts": {
     "start": "sh start.sh",
-    "test": "sh test.sh",
+    "test": "jest",
     "lint": "gulp lint",
     "build": "gulp build"
   },
@@ -59,6 +58,7 @@
     "gulp-sass": ">=2.2.0",
     "gulp-uglify": ">=1.5.2",
     "gulp-util": ">=3.0.7",
+    "jest": "^23.3.0",
     "merge-stream": ">=1.0.0"
   }
 }

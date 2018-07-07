@@ -2,9 +2,8 @@
 
 # Introduction
 
-This documentation describes the long installation process. There is an alternative: you may use [vagrant](vagrant/vagrant.md) or [docker](docker/README.md) instead.
 
-It also assumes you're on a recent Ubuntu *(help needed for the doc on other distributions)*.
+This document assumes you're on a recent Debian or Ubuntu *(help needed for the doc on other distributions)*.
 
 It's a work in progress and you're invited to come chat with other developers on Miaou before and while installing.
 
@@ -21,7 +20,7 @@ You probably already have them if you coded on that computer. Basically you'll n
 
 # node & npm
 
-There are various valid ways to install them. Be sure to install a recent version of node. Versions lower than 6 aren't compatible with Miaou.
+There are various valid ways to install them. Be sure to install a recent version of node. Versions lower than 9 aren't compatible with Miaou.
 
 # gulp cli
 
@@ -88,9 +87,9 @@ Most of the configuration is simple and documented in the file itself. We'll see
 
 A different aventure every time. Basically it should be something like
 
-	sudo apt-get install postgresql-9.4
+	sudo apt-get install postgresql
 
-but it might be a little harder...
+but it might be a little harder.
 
 ## Creating the Miaou database and user
 

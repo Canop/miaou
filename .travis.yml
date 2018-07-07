@@ -5,4 +5,4 @@ before_script:
   - npm install -g gulp
 script:
   - gulp build
-  - ./test.sh
+  - npm test

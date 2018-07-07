@@ -1,24 +1,34 @@
-var	buster = require("buster"),
-	boxer = require('../../plugins/stackoverflow/se-boxer.js');
-
+const boxer = require('../../plugins/stackoverflow/se-boxer.js');
 
 function c(text, site, meta, type, num){
 	return function(){
 		var tasks = boxer.rawTasks(text);
 		if (!site) {
-			buster.assert.equals(tasks.length, 0);
+			expect(tasks.length).toBe(0);
 			return;
 		}
-		buster.assert.equals(tasks.length, 1);
-		buster.assert.equals(tasks[0].site, site);
-		buster.assert.equals(tasks[0].meta, meta);
-		buster.assert.equals(tasks[0].type, type);
-		buster.assert.equals(tasks[0].num, num);
+		expect(tasks.length).toBe(1);
+		expect(tasks[0].site).toBe(site);
+		expect(tasks[0].meta).toBe(meta);
+		expect(tasks[0].type).toBe(type);
+		expect(tasks[0].num).toBe(num);
 	}
 }
 
-buster.testCase("StackExchange URL Analyzing", {
-   "nothing": c(
+const doTests = function(name, tests){
+	describe(name, ()=>{
+		for (let k in tests) {
+			if (/^\/\//.test(k)) {
+				test.skip(k, tests[k]);
+			} else {
+				test(k, tests[k]);
+			}
+		}
+	});
+}
+
+doTests("StackExchange URL Analyzing", {
+	"nothing": c(
 		"http://stackoverflow.com/questions/"
 	),
 	"SO question": c(

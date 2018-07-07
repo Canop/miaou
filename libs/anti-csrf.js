@@ -35,6 +35,7 @@ exports.filter = function(req, res, next){
 			console.log('Anti-csrf rejects this form');
 			console.log('req.hostname:', req.hostname);
 			console.log('referer:', req.headers.referer);
+			console.log('refererHost:', refererHost);
 			console.log('req.body.secret:', req.body.secret);
 			console.log('Session:', session);
 			return fail(res);

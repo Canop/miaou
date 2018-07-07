@@ -1,5 +1,4 @@
-var	buster = require("buster"),
-	float = require('../../libs/fmt.js').float;
+const float = require('../../libs/fmt.js').float;
 
 const tests = [
 	[1, "1", "1", "-1", "1", "1"],
@@ -39,11 +38,12 @@ const tests = [
 	[0, "0", "0", "0", "Infinity", "0"]
 ];
 
-buster.testCase("Formatting - float", tests.reduce((m, t) => {
-	m[t] = function(){
-		let v = t[0];
-		let res = [v, float(v, 2), float(v, 3), float(-v, 3), float(1/v, 3), float(v, 4)];
-		buster.assert.equals(t, res);
-	};
-	return m;
-}, {}));
+describe("Formatting - float", ()=>{
+	for (let t of tests) {
+		test(""+t[0], ()=>{
+			let v = t[0];
+			let res = [v, float(v, 2), float(v, 3), float(-v, 3), float(1/v, 3), float(v, 4)];
+			expect(res).toEqual(t);
+		});
+	}
+});

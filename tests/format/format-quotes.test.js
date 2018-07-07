@@ -1,13 +1,6 @@
-var	fmt = require("./miaou.format.node.js"),
-	buster = require("buster");
+require("./format.js");
 
-function t(s,r){
-	return function(){
-		buster.assert.equals(fmt.mdTextToHtml(s), r);
-	}
-}
-
-buster.testCase("Formatting - Quotes", {
+doTests("Formatting - Quotes", {
 	"quotation bloc with style": t(
 		"> A citation over 4 lines with some **bold** and some *italic*, a blank line,\n"+
 		">\n"+
