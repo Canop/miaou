@@ -1,6 +1,8 @@
 #
 # Dockerfile for Miaou application
 #
+# The docker solution isn't really maintained. Ping us on miaou.dystroy.org
+#  if you need it and we'll resurect it
 
 # Based on docker official node image
 FROM node:8

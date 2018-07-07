@@ -18,11 +18,7 @@ Please come discuss it in one of the dedicated chat rooms [![Chat on Miaou](http
 
 # Installing a server
 
-A [vagrant](http://www.vagrantup.com/) configuration is available to help you set up a development environment quickly. See more information at its [documentation](vagrant/vagrant.md).
-
-If you prefer to use [docker](https://www.docker.com/) as development environment, it's also available. See more information at its [documentation](docker/README.md).
-
-If you want to install Miaou on your own, the installation documentation is available [here](installation.md).
+If you want to install Miaou, the installation documentation is available [here](installation.md).
 
 And if you run your own server, please tell us.
 
