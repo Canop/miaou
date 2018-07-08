@@ -16,6 +16,9 @@ miaou(function(gui, fish, plugins){
 				$("<img>")
 				.attr({src})
 				.css({maxWidth:"65vw", maxHeight:"55vh"})
+				.on("error", function(){
+					this.src = originalSrc;
+				})
 				.on("load", function(){
 					if (this.width==161 && this.height==81) {
 						this.src = originalSrc;
