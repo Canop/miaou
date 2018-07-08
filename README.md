@@ -5,16 +5,16 @@ A chat server with authentication, persistent and searchable history, rich markd
 ![screenshot](https://i.imgur.com/gqHo9Mu.png)
 
 [![Build Status](https://travis-ci.org/Canop/miaou.svg?branch=master)](https://travis-ci.org/Canop/miaou)
-[![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-en.svg?v=1)](https://dystroy.org/miaou/1?Miaou)
-[![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-fr.svg?v=1)](https://dystroy.org/miaou/3?Code_Croissants)
+[![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-en.svg?v=1)](https://miaou.dystroy.org/1?Miaou)
+[![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-fr.svg?v=1)](https://miaou.dystroy.org/3?Code_Croissants)
 
-**[Introduction/Gallery](http://dystroy.org/miaou/static/intro.html)**
+**[Introduction/Gallery](http://miaou.dystroy.org/static/intro.html)**
 
 You can see it in action or use it on https://dystroy.org/miaou (anybody can create a room for public or private use on this server).
 
 # Discussing features, bugs, problems, issues
 
-Please come discuss it in one of the dedicated chat rooms [![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-en.svg?v=1)](https://dystroy.org/miaou/1?Miaou) and [![Chat on Miaou](https://dystroy.org/miaou/static/shields/room-fr.svg?v=1)](https://dystroy.org/miaou/3?Code_Croissants) before you create an issue in the GitHub tracker (please note that they're currently more active between 8 and 19 GMT).
+Please come discuss it in one of the dedicated chat rooms [![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-en.svg?v=1)](https://miaou.dystroy.org/1?Miaou) and [![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-fr.svg?v=1)](https://miaou.dystroy.org/3?Code_Croissants) before you create an issue in the GitHub tracker (please note that they're currently more active between 8 and 19 GMT).
 
 # Installing a server
 
@@ -39,4 +39,4 @@ Help is welcome but remember:
 
 Most of Miaou follows the [MIT License](http://opensource.org/licenses/MIT). Exceptions are specified [here](license.md).
 
-Copyright (c) 2014 Denys Séguret <[https://dystroy.org/](https://dystroy.org/)>
+Copyright (c) 2014 Denys Séguret <[https://www.dystroy.org/](https://www.dystroy.org/)>
