@@ -99,7 +99,7 @@ exports.appGetPublicProfile = function(req, res){
 			let plugin = plugins[i];
 			let ppi = await con.getPlayerPluginInfo(plugin.name, userId);
 			if (ppi && plugin.externalProfile) {
-				let html = plugin.externalProfile.render(ppi.info);
+				let html = plugin.externalProfile.render(ppi.info, room);
 				if (html) {
 					externalProfileInfos.push({
 						name: plugin.name,
