@@ -76,30 +76,27 @@ html
 									input#url(type="url", name="url", value="", maxlength="250")
 					.home-page.externalProfiles
 						p If you have an account on one of those sites, you may display it in your Miaou profile by proving ownership below.
-						table.form
-							each ep in externalProfileInfos
-								tr
-									th= ep.name
-								tr
-									td
-										if ep.html
-											div.externalProfile !{ep.html}
-											div.inputs
-												- var cbid = "remove_"+ep.name
-												input(type="checkbox",name=cbid,id=cbid)
-												label(for=cbid) Remove this profile
-										else
-											table
-												each field in ep.fields
-													tr
-														td
-															label= field.label+'\u2009: '
-														td
-															input(type=(field.type||'text'),name=field.name)
-														if field.notice
-															td= field.notice
-											if ep.creationDescription
-												p !{ep.creationDescription}
+						each ep in externalProfileInfos
+							.external-profile-info
+								h3= ep.name
+								if ep.html
+									div.externalProfile !{ep.html}
+									div.inputs
+										- var cbid = "remove_"+ep.name
+										input(type="checkbox",name=cbid,id=cbid)
+										label(for=cbid) Remove this profile
+								else
+									table
+										each field in ep.fields
+											tr
+												td
+													label= field.label+'\u2009: '
+												td
+													input(type=(field.type||'text'),name=field.name)
+												if field.notice
+													td= field.notice
+									if ep.creationDescription
+										p !{ep.creationDescription}
 					.home-page.avatar
 						#avatar-edit.MP
 							#avatar-fields

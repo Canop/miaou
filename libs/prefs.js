@@ -164,7 +164,7 @@ exports.appAllPrefs = async function(req, res){
 				if (!allFilled) continue;
 				epi.ppi = await epi.ep.creation.create(req.user, epi.ppi||{}, vals);
 				await con.storePlayerPluginInfo(epi.name, req.user.id, epi.ppi);
-				epi.html = epi.ep.render(ppi);
+				epi.html = epi.ep.render(epi.ppi);
 			}
 			if (req.method==='POST') {
 				var	name = req.body.name.trim(),

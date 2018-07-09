@@ -163,6 +163,9 @@ $home-tab-unselected-color: transparentize( $general-text-color, .25) !default;
 // user page
 $user-page-bg: $bg-color !default;
 
+// prefs
+$prefs-box-border: thin solid #aaa !default;
+
 // username page
 $username-page-bg: $bg-color !default;
 $usename-page-color: black !default;

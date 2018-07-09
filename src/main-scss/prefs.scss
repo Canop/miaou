@@ -79,6 +79,9 @@ body.prefs {
 					display: block;
 				}
 			}
+			select {
+				max-width: 50vw;
+			}
 		}
 		h3 {
 			margin-left: 8px;
@@ -119,6 +122,22 @@ body.prefs {
 		}
 		p.links a+a {
 			margin-left: 15px;
+		}
+	}
+
+	.external-profile-info {
+		border: $prefs-box-border;
+		margin: 30px 0 0 0;
+		padding: 20px 5px 10px 5px;
+		position: relative;
+		h3 {
+			position: absolute;
+			display: inline-block;
+			background: $home-tab-bg;
+			top: -22px;
+			left: 10px;
+			font-weight: bold;
+			padding: 0 8px;
 		}
 	}
 }
