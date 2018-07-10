@@ -74,13 +74,15 @@ function describeProfileCreation(user){
 
 exports.externalProfile = {
 	creation: {
-		describe: describeProfileCreation,
 		fields: [
 			{ name:'gist_url', label:'Gist URL', type:'url' }
 		],
+		describe: describeProfileCreation,
 		create: createProfile
 	},
-	render: renderProfile,
+	rendering: {
+		render: renderProfile
+	},
 	avatarUrl: function(ppi){
 		return ppi.avatar;
 	}

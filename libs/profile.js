@@ -98,19 +98,19 @@ exports.appGetPublicProfile = function(req, res){
 		for (let i=0; i<plugins.length; i++) {
 			let plugin = plugins[i];
 			let ppi = await con.getPlayerPluginInfo(plugin.name, userId);
-			if (ppi && plugin.externalProfile) {
-				let html = plugin.externalProfile.render(ppi.info, room);
-				if (html) {
-					externalProfileInfos.push({
-						name: plugin.name,
-						html
-					});
-				}
-			}
 			if (plugin.getPublicProfileAdditions) {
 				let additions = await plugin.getPublicProfileAdditions(con, user, room, ppi);
 				[].push.apply(pluginAdditions, additions);
 			}
+			let ep = plugin.externalProfile;
+			if (!ppi || !ep) continue;
+			if (ep.rendering.filter && !ep.rendering.filter(ppi.info, room)) continue;
+			let html = ep.rendering.render(ppi.info, room);
+			if (!html) continue;
+			externalProfileInfos.push({
+				name: plugin.name,
+				html
+			});
 		}
 		res.render('publicProfile.pug', {
 			user,
@@ -144,19 +144,19 @@ exports.appGetUser = function(req, res){
 		for (let i=0; i<plugins.length; i++) {
 			let plugin = plugins[i];
 			let ppi = await con.getPlayerPluginInfo(plugin.name, user.id);
-			if (ppi && plugin.externalProfile) {
-				let html = plugin.externalProfile.render(ppi.info);
-				if (html) {
-					externalProfileInfos.push({
-						name: plugin.name,
-						html
-					});
-				}
-			}
 			if (plugin.getUserPageAdditions) {
 				let additions = await plugin.getUserPageAdditions(con, user, ppi);
 				[].push.apply(pluginAdditions, additions);
 			}
+			let ep = plugin.externalProfile;
+			if (!ppi || !ep) continue;
+			if (ep.filter && !ep.filter(ppi, null)) continue;
+			let html = plugin.externalProfile.rendering.render(ppi.info);
+			if (!html) continue;
+			externalProfileInfos.push({
+				name: plugin.name,
+				html
+			});
 		}
 		res.render('user.pug', {
 			vars: {

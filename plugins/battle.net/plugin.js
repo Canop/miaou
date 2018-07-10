@@ -13,5 +13,7 @@ exports.externalProfile = {
 		},
 		create: createBattleProfile
 	},
-	render: renderBattleProfile,
+	rendering: {
+		render: renderBattleProfile,
+	}
 }

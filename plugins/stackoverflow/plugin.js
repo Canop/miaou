@@ -62,7 +62,10 @@ exports.externalProfile = {
 			{ name:'so_num', label:'StackOverflow User ID', type:'Number' }
 		],
 		create: createSOProfile
-	}, render: renderSOProfile
+	},
+	rendering: {
+		render: renderSOProfile
+	}
 }
 
 // intercepts links and sends boxed abstracts.

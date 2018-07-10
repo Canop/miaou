@@ -128,9 +128,10 @@ const getUserPrefs = exports.get = async function(con, userId){
 exports.appAllPrefs = async function(req, res){
 	let externalProfileInfos = plugins
 	.filter(p => p.externalProfile)
-	.map(
-		p => ({ name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields })
-	);
+	.map(p => ({
+		name: p.name,
+		ep: p.externalProfile
+	}));
 	db.do(async function(con){
 		let userPrefs = await getUserPrefs(con, req.user.id);
 		let userinfo;
@@ -141,7 +142,7 @@ exports.appAllPrefs = async function(req, res){
 				let ppi = await con.getPlayerPluginInfo(epi.name, req.user.id);
 				if (ppi) {
 					epi.ppi = ppi.info;
-					epi.html = epi.ep.render(epi.ppi);
+					epi.html = epi.ep.rendering.render(epi.ppi);
 				}
 				if (req.method!=='POST') continue;
 				// the rest of the loop is related to external profile addition or removal
@@ -158,13 +159,13 @@ exports.appAllPrefs = async function(req, res){
 				}
 				var	vals = {},
 					allFilled = true;
-				epi.fields.forEach(function(f){
+				epi.ep.creation.fields.forEach(function(f){
 					if (!(vals[f.name] = req.body[f.name])) allFilled = false;
 				});
 				if (!allFilled) continue;
 				epi.ppi = await epi.ep.creation.create(req.user, epi.ppi||{}, vals);
 				await con.storePlayerPluginInfo(epi.name, req.user.id, epi.ppi);
-				epi.html = epi.ep.render(epi.ppi);
+				epi.html = epi.ep.rendering.render(epi.ppi);
 			}
 			if (req.method==='POST') {
 				var	name = req.body.name.trim(),
