@@ -12,8 +12,7 @@ let	gulp = require("gulp"),
 	del = require("del"),
 	glob = require("glob"),
 	gulpif = require("gulp-if"),
-	//debug = require("gulp-debug"),
-	babili = require("gulp-babili");
+	minify = require("gulp-babel-minify");
 
 let mode = {
 	watch: false,
@@ -30,12 +29,12 @@ function miaouModules(){
 	return modules;
 }
 
-function miaouBabili(){
+function miaouMinify(){
 	var blacklist = {};
 	miaouModules().forEach(m=>{
 		blacklist[m] = true;
 	});
-	return babili({
+	return minify({
 		warnings: true,
 		mangle: { blacklist }
 	});
@@ -199,7 +198,7 @@ gulp.task("main-js", ()=>
 	gulp.src(globs["main-js"])
 	.pipe(concat("miaou.concat.js"))
 	.pipe(gulp.dest("static"))
-	.pipe(mode.watch ? gutil.noop() : miaouBabili())
+	.pipe(mode.watch ? gutil.noop() : miaouMinify())
 	.on("error", jsErrHandler)
 	.pipe(rename("miaou.min.js"))
 	.pipe(gulp.dest("static"))
@@ -207,7 +206,7 @@ gulp.task("main-js", ()=>
 
 gulp.task("page-js", ()=>
 	gulp.src(globs["page-js"])
-	.pipe(mode.watch ? gutil.noop() : miaouBabili())
+	.pipe(mode.watch ? gutil.noop() : miaouMinify())
 	.on("error", jsErrHandler)
 	.pipe(rename({ suffix:'.min' }))
 	.pipe(gulp.dest("static"))
