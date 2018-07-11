@@ -7,7 +7,7 @@
 //                     elements
 // 3. mdMcToHtml     : conversion of a message content. #messages related elements
 //                     like the reply mark may be added at this level
-miaou(function(fmt){
+miaou(function(fmt, time){
 
 	// format of the line, between the header and the body of a table,
 	//  defining the column alignements.
@@ -84,6 +84,9 @@ miaou(function(fmt){
 			})
 			.replace(/~([^ ^~><]+)~/g, function(_, s){
 				return '<sub>'+s+'</sub>';
+			})
+			.replace(/#date\((\d{10})(?:,([^)]+))?\)/g, function(_, t, format){
+				return time.formatDate(+t*1000, format);
 			})
 		}).join('')
 		.replace(/^\/me(.*)$/ig, '<span class=slashme>'+(username||'/me')+'$1</span>')

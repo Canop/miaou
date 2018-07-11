@@ -7,6 +7,10 @@ miaou(function(time){
 
 	time.MMM = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+	function pad(n){
+		return n<10 ? "0"+n : n;
+	}
+
 	time.setRoomEnterTime = function(serverTime){
 		roomEnterTime = serverTime;
 		offsetWithServer = time.now() - serverTime;
@@ -21,14 +25,29 @@ miaou(function(time){
 		return (d<10 ? '0' : '') + d + ' ' + time.MMM[date.getMonth()];
 	}
 
-	time.formatDate = function(t){ // time in ms
-		var	date = new Date(t), now = new Date,
+	// choose whether to add a relative date or an absolute one depending on the age
+	time.formatDateAuto = function(date){
+		var	now = new Date,
 			m = date.getMinutes(), h = date.getHours(), Y = date.getFullYear(),
 			s = s = (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
 		if (now.getFullYear()===Y && now.getMonth()===date.getMonth() && now.getDate()===date.getDate()) {
 			return s;
 		}
 		return time.formatDateDDMMM(date) + (Y!==now.getFullYear() ? (' '+Y) : '')  + ' ' + s;
+	}
+
+	time.formatDate = function(t, f){ // t:time in ms
+		var	date = new Date(t);
+		if (!f) return time.formatDateAuto(date);
+		return f
+		.replace(/YYYY/g, date.getFullYear())
+		.replace(/YY/g, date.getFullYear().toString().slice(-2))
+		.replace(/DD/g, date.getDate())
+		.replace(/MMM/g, time.MMM[date.getMonth()])
+		.replace(/MM/g, pad(date.getMonth()))
+		.replace(/hh/g, pad(date.getHours()))
+		.replace(/mm/g, pad(date.getMinutes()))
+		.replace(/ss/g, pad(date.getSeconds()));
 	}
 
 	time.formatRelativeDate = function(t){ // time in ms
@@ -50,6 +69,7 @@ miaou(function(time){
 	time.formatRelativeTime = function(t){
 		return time.formatRelativeDate((t+offsetWithServer)*1000);
 	}
+
 
 	// returns the passed server time in local time (both in seconds)
 	time.local = function(t){

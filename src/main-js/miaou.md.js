@@ -52,7 +52,6 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		});
 	}
 
-
 	md.votesAbstract = function(message){
 		return chat.voteLevels.map(function(l){
 			return message[l.key] ? '<span class="vote '+l.key+'">'+message[l.key]+' '+l.icon+'</span>' : '';
