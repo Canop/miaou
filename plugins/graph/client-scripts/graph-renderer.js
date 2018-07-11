@@ -312,7 +312,7 @@ miaou(function(fmt, fish, md, plugins){
 			if (xhighlight) {
 				let y = h+mt+1;
 				ù("<line", g).attr({
-					class:"highlight", x1, y1:y, x2, y2:y, strokeWidth:2
+					class:"highlight", x1, y1:y+1, x2:x2-bx, y2:y+1, strokeWidth:2
 				});
 			}
 			ycols.forEach(function(ycol, j){
