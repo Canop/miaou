@@ -396,7 +396,7 @@ function handleUserInRoom(socket, completeUser){
 		popon(socketWaitingApproval, o => o.socket===socket );
 	})
 	.on('enter', function(entry){
-		var	op = bench.start("Room Entry"),
+		let	op = bench.start("Room Entry"),
 			now = Date.now()/1000|0;
 		socket.emit('set_enter_time', now); // time synchronization
 		if (typeof entry !== "object") {
@@ -411,52 +411,39 @@ function handleUserInRoom(socket, completeUser){
 			return;
 		}
 		socket.emit('apiversion', apiversion);
-		db.on()
-		.then(function(){
+		db.do(async function(con){
 			if (entry.tzoffset>=-720 && entry.tzoffset<=840) {
 				if (entry.tzoffset != shoe.publicUser.tzoffset) {
 					shoe.publicUser.tzoffset = shoe.completeUser.tzoffset = entry.tzoffset;
 					console.log("new tzoffset", shoe.publicUser);
-					return this.updateUserTzoffset(shoe.publicUser);
+					await con.updateUserTzoffset(shoe.publicUser);
 				}
 			} else {
 				console.log("invalid time zone offset:", shoe.publicUser.name, entry);
 			}
-		})
-		.then(function(){
-			return rooms.mem.call(this, entry.roomId);
-		})
-		.then(function(mr){
-			memroom = mr;
-			return [
-				this.fetchRoomAndUserAuth(entry.roomId, shoe.publicUser.id),
-				this.getRoomUserActiveBan(entry.roomId, shoe.publicUser.id)
-			]
-		})
-		.spread(function(r, ban){
+			memroom = await rooms.mem.call(con, entry.roomId);
+			let r = await con.fetchRoomAndUserAuth(entry.roomId, shoe.publicUser.id);
 			if (r.private && !r.auth) {
 				throw new Error('Unauthorized user');
 			}
-			if (ban) throw new Error('Banned user');
+			let ban = await con.getRoomUserActiveBan(entry.roomId, shoe.publicUser.id);
+			if (ban) {
+				throw new Error('Banned user');
+			}
 			r.path = server.roomPath(r);
 			shoe.room = r;
 			socket.emit('room', shoe.room).join(shoe.room.id);
 			socket.emit('config', clientConfig);
-			return emitMessages.call(this, shoe, false, nbMessagesAtLoad);
-		}).then(function(){
+			await emitMessages.call(con, shoe, false, nbMessagesAtLoad); // do we really need to wait ?
 			for (let plugin of onNewShoePlugins) {
 				plugin.onNewShoe(shoe);
 			}
-		}).then(function(){
-			return [
-				this.fetchUserPings(completeUser.id, entry.lastMessageSeen),
-				this.listRecentUsers(shoe.room.id, 50),
-			]
-		}).spread(function(pings, recentUsers){
+			let pings = await con.fetchUserPings(completeUser.id, entry.lastMessageSeen);
 			if (pings.length) socket.emit('pings', pings);
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
+			let recentUsers = memroom.recentAuthors();
 			if (shoe.room.dialog) {
-				for (var i=0; i<recentUsers.length; i++) {
+				for (let i=0; i<recentUsers.length; i++) {
 					if (recentUsers[i].id!==shoe.publicUser.id) {
 						otherDialogRoomUser = recentUsers[i];
 						break;
@@ -468,32 +455,34 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('recent_users', recentUsers);
 			socket.emit('welcome');
 			welcomed = true;
-			for (var s of roomSockets(shoe.room.id)) {
+			for (let s of roomSockets(shoe.room.id)) {
 				socket.emit('enter', s.publicUser);
 			}
-			if (pings.length) return this.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
-		}).then(function(){
-			if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
-			return this.listOpenAccessRequests(shoe.room.id)
-			.then(function(accessRequests){
+			if (pings.length) await con.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
+
+			if (shoe.room.auth==='admin'||shoe.room.auth==='own') {
+				let accessRequests = await con.listOpenAccessRequests(shoe.room.id);
 				accessRequests = accessRequests.slice(-5); // limit the number of notifications
-				for (var j=accessRequests.length; j--;) {
+				for (let j=accessRequests.length; j--;) {
 					socket.emit('request', accessRequests[j]);
 				}
-			});
-		}).then(function(){
+			}
 			if (pendingEvent) {
-				var pe = pendingEvent;
+
+				let pe = pendingEvent;
 				console.log('pendingEvent:', pendingEvent);
 				pendingEvent = null;
 				routes.get(pe.eventType)(pe.arg);
 			}
+
 			op.end();
-		}).catch(db.NoRowError, function(){
-			shoe.error('Room not found');
-		}).catch(function(err){
-			shoe.error(err);
-		}).finally(db.off)
+		}, (err)=>{
+			if (err instanceof db.NoRowError) {
+				shoe.error('Room not found');
+			} else {
+				shoe.error(err);
+			}
+		});
 	})
 	.on('pre_request', function(request){ // not called from chat but from request.pug
 		var roomId = request.room, publicUser = shoe.publicUser;
@@ -636,6 +625,7 @@ function handleUserInRoom(socket, completeUser){
 
 	on('message', async function(message){
 		throttle();
+		memroom.addAuthor(shoe.publicUser);
 		message.content = message.content||"";
 		if (typeof message.content !== "string" || !(message.id||message.content)) {
 			console.log("invalid incoming message");

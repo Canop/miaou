@@ -2,8 +2,10 @@
 const	Promise = require("bluebird"),
 	auths = require('./auths.js'),
 	server = require('./server.js'),
+	BoundedCache = require('bounded-cache'),
 	prefs = require('./prefs.js'),
 	maxAgeForNotableMessages = 1*24*60*60, // in seconds
+	NB_RECENT_AUTHORS = 50,
 	memobjects = new Map,
 	ws = require('./ws.js'),
 	clean = require('./ws.js').clean;
@@ -23,11 +25,14 @@ class MemRoom{
 	constructor(roomId){
 		this.id = roomId;
 		this.resolvers = []; // set to null when loaded
+		this.notables = []; // filled on load
+		this.recentAuthorsCache = BoundedCache(NB_RECENT_AUTHORS); // filled on load
 	}
 	async load(con){
 		await this.updateNotables(con);
 		let m = await con.getLastMessageId(this.id);
 		if (m) this.lastMessageId = m.id;
+		await this.loadRecentAuthors(con);
 		memobjects.set(this.id, this);
 		for (var i=0; i<this.resolvers.length; i++) {
 			this.resolvers[i].resolve(this);
@@ -40,6 +45,24 @@ class MemRoom{
 		let notables = await con.getNotableMessages(this.id, now-maxAgeForNotableMessages);
 		for (var i=0; i<notables.lenght; i++) clean(notables[i]);
 		this.notables = notables;
+	}
+	async loadRecentAuthors(con){
+		let recentUsers = await con.listRecentUsers(this.id, NB_RECENT_AUTHORS);
+		for (let i=recentUsers.length; i--;) {
+			let p = recentUsers[i];
+			this.recentAuthorsCache.set(p.id, p);
+		}
+	}
+	addAuthor(p){
+		this.recentAuthorsCache.set(p.id, p);
+	}
+	recentAuthors(){
+		let entries = this.recentAuthorsCache.content();
+		let authors = []; // cache this array?
+		for (let i=entries.length; i--;) {
+			authors.push(entries[i].value);
+		}
+		return authors;
 	}
 }
 
