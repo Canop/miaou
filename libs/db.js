@@ -1135,6 +1135,14 @@ proto.storePlayerPluginInfo = function(plugin, userId, info){
 	);
 }
 
+proto.getPlayerPluginInfos = function(userId){
+	return this.queryRows(
+		"select * from plugin_player_info where player=$1",
+		[userId],
+		"player_plugin_infos"
+	);
+}
+
 proto.getPlayerPluginInfo = function(plugin, userId){
 	return this.queryOptionalRow(
 		"select * from plugin_player_info where plugin=$1 and player=$2",

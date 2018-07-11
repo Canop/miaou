@@ -6,12 +6,14 @@ const	auths = require('./auths.js'),
 	server = require('./server.js');
 
 var	db,
-	plugins;
+	plugins,
+	pluginsByName;
 
 exports.configure = function(miaou){
 	db = miaou.db;
 	let conf = miaou.config;
 	plugins = (conf.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
+	pluginsByName = plugins.reduce((m, p) => m.set(p.name, p), new Map);
 	return this;
 }
 
@@ -95,9 +97,10 @@ exports.appGetPublicProfile = function(req, res){
 		let auth = authToRole(room.auth, room.private);
 		let externalProfileInfos = [];
 		let pluginAdditions = [];
-		for (let i=0; i<plugins.length; i++) {
-			let plugin = plugins[i];
-			let ppi = await con.getPlayerPluginInfo(plugin.name, userId);
+		let ppis = await con.getPlayerPluginInfos(userId);
+		for (let i=0; i<ppis.length; i++) {
+			let ppi = ppis[i];
+			let plugin = pluginsByName.get(ppi.plugin);
 			if (plugin.getPublicProfileAdditions) {
 				let additions = await plugin.getPublicProfileAdditions(con, user, room, ppi);
 				[].push.apply(pluginAdditions, additions);
@@ -141,17 +144,18 @@ exports.appGetUser = function(req, res){
 		let userinfo = await con.getUserInfo(user.id);
 		let externalProfileInfos = [];
 		let pluginAdditions = [];
-		for (let i=0; i<plugins.length; i++) {
-			let plugin = plugins[i];
-			let ppi = await con.getPlayerPluginInfo(plugin.name, user.id);
-			if (plugin.getUserPageAdditions) {
-				let additions = await plugin.getUserPageAdditions(con, user, ppi);
+		let ppis = await con.getPlayerPluginInfos(user.id);
+		for (let i=0; i<ppis.length; i++) {
+			let ppi = ppis[i];
+			let plugin = pluginsByName.get(ppi.plugin);
+			if (plugin.getPublicProfileAdditions) {
+				let additions = await plugin.getPublicProfileAdditions(con, user, null, ppi);
 				[].push.apply(pluginAdditions, additions);
 			}
 			let ep = plugin.externalProfile;
 			if (!ppi || !ep) continue;
-			if (ep.filter && !ep.filter(ppi, null)) continue;
-			let html = plugin.externalProfile.rendering.render(ppi.info);
+			if (ep.rendering.filter && !ep.rendering.filter(ppi.info, null)) continue;
+			let html = ep.rendering.render(ppi.info, null);
 			if (!html) continue;
 			externalProfileInfos.push({
 				name: plugin.name,
