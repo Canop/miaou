@@ -44,7 +44,7 @@ miaou(function(time){
 		.replace(/YY/g, date.getFullYear().toString().slice(-2))
 		.replace(/DD/g, date.getDate())
 		.replace(/MMM/g, time.MMM[date.getMonth()])
-		.replace(/MM/g, pad(date.getMonth()))
+		.replace(/MM/g, pad(date.getMonth()+1))
 		.replace(/hh/g, pad(date.getHours()))
 		.replace(/mm/g, pad(date.getMinutes()))
 		.replace(/ss/g, pad(date.getSeconds()));
