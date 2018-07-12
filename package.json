@@ -45,12 +45,9 @@
     "build": "gulp build"
   },
   "devDependencies": {
-    "babel-minify": "^0.4.3",
-    "babel-preset-minify": "^0.4.3",
     "del": ">=2.2.0",
     "glob": "^7.1.2",
     "gulp": "github:gulpjs/gulp#4.0",
-    "gulp-babel": "^7.0.1",
     "gulp-cli": "gulpjs/gulp-cli",
     "gulp-concat": ">=2.6.0",
     "gulp-debug": "^4.0.0",
@@ -58,7 +55,7 @@
     "gulp-if": ">=2.0.0",
     "gulp-rename": ">=1.2.2",
     "gulp-sass": ">=2.2.0",
-    "gulp-uglify": ">=1.5.2",
+    "gulp-uglify-es": "^1.0.4",
     "gulp-util": ">=3.0.7",
     "jest": "^23.3.0",
     "merge-stream": ">=1.0.0"

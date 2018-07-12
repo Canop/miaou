@@ -12,7 +12,8 @@ let	gulp = require("gulp"),
 	del = require("del"),
 	glob = require("glob"),
 	gulpif = require("gulp-if"),
-	babel = require('gulp-babel');
+	//babel = require('gulp-babel');
+	uglify = require('gulp-uglify-es').default;
 
 let mode = {
 	watch: false,
@@ -30,11 +31,16 @@ function miaouModules(){
 }
 
 function miaouMinify(){
-	return babel({
-		presets: [["minify", {
-			keepFnName: true,
-			mangle: { exclude: [...miaouModules(), ...clientGlobals()] }
-		}]]
+	//return babel({
+	//	presets: [["minify", {
+	//		keepFnName: true,
+	//		mangle: { exclude: [...miaouModules(), ...clientGlobals()] }
+	//	}]]
+	//});
+	return uglify({
+		mangle: {
+			reserved: miaouModules()
+		}
 	});
 }
 
