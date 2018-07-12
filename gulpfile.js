@@ -35,7 +35,6 @@ function miaouMinify(){
 		blacklist[m] = true;
 	});
 	return minify({
-		warnings: true,
 		mangle: { blacklist }
 	});
 }
