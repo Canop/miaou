@@ -12,7 +12,7 @@ let	gulp = require("gulp"),
 	del = require("del"),
 	glob = require("glob"),
 	gulpif = require("gulp-if"),
-	minify = require("gulp-babel-minify");
+	babel = require('gulp-babel');
 
 let mode = {
 	watch: false,
@@ -30,12 +30,11 @@ function miaouModules(){
 }
 
 function miaouMinify(){
-	var blacklist = {};
-	miaouModules().forEach(m=>{
-		blacklist[m] = true;
-	});
-	return minify({
-		mangle: { blacklist }
+	return babel({
+		presets: [["minify", {
+			keepFnName: true,
+			mangle: { exclude: [...miaouModules(), ...clientGlobals()] }
+		}]]
 	});
 }
 
