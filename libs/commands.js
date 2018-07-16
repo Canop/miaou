@@ -15,6 +15,7 @@ const	commandParsingRegex = require("./rex.js")`
 	([^\n]*)                        // command arguments
 	`;
 
+
 class CommandTask{
 	constructor(cmd, rp, args, shoe, message){
 		this.cmd = cmd;

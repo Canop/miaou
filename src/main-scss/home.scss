@@ -62,6 +62,12 @@ body.home {
 		color: black;
 	}
 
+	&.desktop #home-main {
+		position:absolute;
+		left: 0;
+		right: 0;
+	}
+
 	#home-main {
 		display: flex;
 		flex-direction: row;
