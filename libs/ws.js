@@ -432,7 +432,8 @@ function handleUserInRoom(socket, completeUser){
 			}
 			r.path = server.roomPath(r);
 			shoe.room = r;
-			socket.emit('room', shoe.room).join(shoe.room.id);
+			socket.join(shoe.room.id);
+			socket.emit('room', shoe.room);
 			socket.emit('config', clientConfig);
 			await emitMessages.call(con, shoe, false, nbMessagesAtLoad); // do we really need to wait ?
 			for (let plugin of onNewShoePlugins) {
@@ -996,7 +997,7 @@ function handleUserInRoom(socket, completeUser){
 }
 
 exports.listen = function(server, sessionStore, cookieParser){
-	io = miaou.io = socketio(server);
+	io = miaou.io = socketio(server, {wsEngine: "ws"});
 	shoes = miaou.lib("shoes");
 	shoes.setOnSendMessagePlugins(onSendMessagePlugins);
 	io.use(function(socket, next){

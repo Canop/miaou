@@ -174,6 +174,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			usr.showEntry(locals.me);
 			if (watch.enabled) socket.emit('start_watch');
 			notif.userAct();
+			$("#chat-loading").remove();
 			chat.trigger("ready");
 		})
 		.on('invitation', function(invit){

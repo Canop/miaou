@@ -4,12 +4,12 @@ html
 		title Miaou
 		meta(name="viewport",content="initial-scale=1,maximum-scale=1")
 		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=9')
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=10')
 		link(rel='stylesheet', href='static/pad.mob.css?v=7')
 		script(src="static/jquery-3.3.1.min.js")
 		script(src="socket.io/socket.io.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
-		script(src="static/miaou.min.js?v=10")
+		script(src="static/miaou.min.js?v=11")
 		script(src="static/pad.mob.min.js?v=6")
 	body#mpad.chat.mobile
 		#mvert
@@ -25,6 +25,9 @@ html
 			#message-scroller
 				#messages
 			#notifications
+			#chat-loading
+				- var cats = ["8vhvJCA", "2mrj4de", "Q9GUbiQ", "QGDvc3f", "Xhi4Uuv", "DWtjjHT", "Rz2QXVe", "gV5R8lI", "GFtlF7L", "DSkj4Zz", "XrKSEJj", "zp5l312"];
+				img(src="https://i.imgur.com/"+cats[cats.length*Math.random()|0]+".png")
 			#mpad-page-write.mpad-page
 				#input-panel.mpad-row
 					textarea#input

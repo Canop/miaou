@@ -70,6 +70,15 @@
 	overflow-x: hidden; // prevents Chrome from having an horizontal scrollbar here
 	flex: 1 0 0;
 }
+
+#chat-loading {
+	flex-grow: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 30px;
+}
+
 #notifications {
 	flex-grow: 0;
 }
