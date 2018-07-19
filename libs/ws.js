@@ -1,4 +1,4 @@
-const	apiversion = 96,
+const	apiversion = 97,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -432,9 +432,10 @@ function handleUserInRoom(socket, completeUser){
 			}
 			r.path = server.roomPath(r);
 			shoe.room = r;
-			socket.emit('room', shoe.room).join(shoe.room.id);
+			// socket.emit('room', shoe.room); // useless now that it's in the page's locals
+			socket.join(shoe.room.id);
 			socket.emit('config', clientConfig);
-			await emitMessages.call(con, shoe, false, nbMessagesAtLoad); // do we really need to wait ?
+			await emitMessages.call(con, shoe, false, nbMessagesAtLoad); // do we really need to await ?
 			for (let plugin of onNewShoePlugins) {
 				plugin.onNewShoe(shoe);
 			}
@@ -459,7 +460,6 @@ function handleUserInRoom(socket, completeUser){
 				socket.emit('enter', s.publicUser);
 			}
 			if (pings.length) await con.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
-
 			if (shoe.room.auth==='admin'||shoe.room.auth==='own') {
 				let accessRequests = await con.listOpenAccessRequests(shoe.room.id);
 				accessRequests = accessRequests.slice(-5); // limit the number of notifications
@@ -468,7 +468,6 @@ function handleUserInRoom(socket, completeUser){
 				}
 			}
 			if (pendingEvent) {
-
 				let pe = pendingEvent;
 				console.log('pendingEvent:', pendingEvent);
 				pendingEvent = null;

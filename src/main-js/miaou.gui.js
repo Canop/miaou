@@ -26,6 +26,26 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		}
 	}
 
+	gui.setRoom = function(r){
+		locals.room = r;
+		localStorage['successfulLoginLastTime'] = "yes";
+		localStorage['room'] = locals.room.id;
+		notif.updateTab(0, 0);
+		$('#roomname').text(locals.room.name);
+		var htmldesc = miaou.fmt.mdTextToHtml(
+			locals.room.description.trim()||"*no description*",
+			null,
+			true
+		);
+		$('#room-description').html(htmldesc);
+		$("#room-tags").empty().append(locals.room.tags.map(function(t){
+			return $("<span class=tag>").text(t);
+		}));
+		$('#room-panel-bg, #room-area')
+		.toggleClass("has-background-image", !!locals.room.img)
+		.css('background-image', locals.room.img ? 'url("'+locals.room.img+'")' : 'none');
+	}
+
 	gui.init = function(){
 		var	timer;
 

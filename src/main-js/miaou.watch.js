@@ -2,10 +2,6 @@
 
 miaou(function(watch, chat, fish, gui, locals, md, notif, usr, ws){
 
-	// the icon sum of all watches, if it exists (i.e. on mpad)
-	var $globalIcon = $('#global-watch');
-
-	// this is false for mobile users
 	watch.enabled = false;
 
 	// tell if the room is watched
@@ -107,6 +103,8 @@ miaou(function(watch, chat, fish, gui, locals, md, notif, usr, ws){
 	}
 
 	function updateGlobalIcon(){
+		// the icon sum of all watches, if it exists (i.e. on mpad)
+		var $globalIcon = $('#global-watch');
 		if (!$globalIcon.length) return;
 		$globalIcon
 		.toggleClass('ping', !!$('.watch.ping,.watch.has-requests').length)

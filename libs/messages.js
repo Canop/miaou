@@ -1,4 +1,5 @@
-const	auths = require('./auths.js');
+const	auths = require('./auths.js'),
+	ws = require("./ws.js");
 
 var db;
 
@@ -23,6 +24,7 @@ exports.appGetJsonLastMessages = function(req, res){
 		}
 		return this.getMessages(roomId, req.user.id, n, false);
 	})
+	.map(m => ws.clean(m)) // remove !!deleted content, for example
 	.then(function(messages){
 		res.json({ messages });
 		if (!messages.length) return;

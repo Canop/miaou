@@ -3,10 +3,7 @@
 miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch){
 
 	ws.init = function(){
-		var	pingRegex = new RegExp('(^|\\s)@(room|here|'+locals.me.name+')\\b', 'i'),
-			info = { state:'connecting', start:Date.now() },
-			nbEntries = 0, // grows on disconnect+reconnect
-			//lastReceptionTime, // ms since epoch
+		var	nbEntries = 0, // grows on disconnect+reconnect
 			socket = window.io.connect(location.origin);
 
 		ws.emit = socket.emit.bind(socket);
@@ -20,56 +17,6 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			});
 		}
 
-		function messagesIn(messages){
-			var	visible = vis(),
-				isAtBottom = gui.isAtBottom(),
-				shouldStickToBottom = isAtBottom || info.state!=='connected',
-				addedMD = [],
-				lastMessageId,
-				$lastMd;
-			if (Array.isArray(messages)) {
-				messages = messages.sort(function(m1, m2){ return m1.id-m2.id });
-			} else {
-				messages = [messages];
-			}
-
-			messages.forEach(function(message){
-				if (chat.trigger('incoming_message', message) === false) return;
-				if (shouldStickToBottom && !visible) {
-					var $lastSeen = $('#messages .rvis').last();
-					if ($lastSeen.length) {
-						if ($lastSeen.offset().top<10) shouldStickToBottom = false;
-					}
-				}
-				var $md = md.addMessage(message, shouldStickToBottom);
-				$md.addClass(visible||info.state!=='connected' ? 'rvis' : 'rnvis');
-				var ping = pingRegex.test(message.content) && message.author!=locals.me.id;
-				if (message.id) {
-					if (message.id>chat.lastMessageId) {
-						chat.lastMessageId = lastMessageId = message.id;
-						$lastMd = $md;
-					}
-					md.updateNotableMessage(message);
-				}
-				if (
-					(message.id||ping) && time.isNew(message) && message.content
-				) {
-					notif.touch(message.id, ping, message.authorname, message.content, locals.room, $md);
-				}
-				addedMD.push($md);
-			});
-			addedMD.forEach(function($md){
-				md.resize($md, shouldStickToBottom);
-				md.resizeUser($md.siblings('.user'));
-			});
-			if (shouldStickToBottom && lastMessageId === chat.lastMessageId) {
-				gui.scrollToBottom($lastMd);
-			}
-			md.updateLoaders();
-			md.showMessageFlowDisruptions();
-			if (typeof prettyPrint !== 'undefined') prettyPrint();
-			hist.showPage();
-		}
 
 		function enter(){
 			var entry = {
@@ -83,18 +30,18 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 					return +this.getAttribute("mid");
 				}).get().filter(Number).pop();
 			}
-			if (info.state === "entering" || info.state === "connected") {
-				console.log("already " + info.state);
+			if (chat.state === "entering" || chat.state === "connected") {
+				console.log("already " + chat.state);
 				return;
 			}
-			info.state = 'entering';
-			// console.log("-> enter", entry);
+			chat.state = 'entering';
+			console.log("-> enter", entry);
 			socket.emit("enter", entry);
 		}
 
 		socket
 		.on('ready', function(){
-			// console.log("<- ready");
+			console.log("<- ready");
 			enter();
 		})
 		.on('apiversion', function(vers){
@@ -117,31 +64,15 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			enter();
 			if (unhandledMessage) socket.emit("message", unhandledMessage);
 		})
-		.on('message', messagesIn)
-		.on('messages', messagesIn)
+		.on('message', chat.messagesIn)
+		.on('messages', chat.messagesIn)
 		.on('mod_dialog', mod.dialog)
 		.on('room', function(r){
 			if (locals.room.id!==r.id) {
 				console.log('SHOULD NOT HAPPEN!');
 				return;
 			}
-			locals.room = r;
-			localStorage['successfulLoginLastTime'] = "yes";
-			localStorage['room'] = locals.room.id;
-			notif.updateTab(0, 0);
-			$('#roomname').text(locals.room.name);
-			var htmldesc = miaou.fmt.mdTextToHtml(
-				locals.room.description.trim()||"*no description*",
-				null,
-				true
-			);
-			$('#room-description').html(htmldesc);
-			$("#room-tags").empty().append(locals.room.tags.map(function(t){
-				return $("<span class=tag>").text(t);
-			}));
-			$('#room-panel-bg, #room-area')
-			.toggleClass("has-background-image", !!locals.room.img)
-			.css('background-image', locals.room.img ? 'url("'+locals.room.img+'")' : 'none');
+			gui.setRoom(r);
 		})
 		.on('box', md.box)
 		.on('notables', function(notableMessages){
@@ -160,7 +91,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		})
 		.on('welcome', function(){
 			// console.log("<- welcome");
-			info.state = 'connected';
+			chat.state = 'connected';
 			gui.entered = true;
 			gui.scrollToBottom();
 			var m = location.hash.match(/^#?(\d+)$/);
@@ -202,12 +133,12 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('rm_pings', notif.removePings)
 		.on('must_reenter', function(){
 			console.log("<- must_reenter");
-			info.state = 'must_reenter';
+			chat.state = 'must_reenter';
 			enter();
 		})
 		.on('disconnect', function(){
 			console.log("<- disconnect");
-			info.state = 'disconnected';
+			chat.state = 'disconnected';
 			ws.notif.onOff();
 		})
 		.on('enter', usr.showEntry)

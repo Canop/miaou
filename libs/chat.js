@@ -1,6 +1,8 @@
 const	fs = require('fs'),
+	nbMessagesAtLoad = 30,
 	path = require('path'),
 	auths = require('./auths.js'),
+	ws = require('./ws.js'),
 	prefs = require('./prefs.js'),
 	server = require('./server.js');
 
@@ -57,11 +59,16 @@ exports.appGet = function(req, res){
 			res.render("request.pug", args);
 			return;
 		}
+		let messages = await con.getMessages(roomId, userId, nbMessagesAtLoad, false);
+		messages = messages.map(m => ws.clean(m));
+		// messages don't go through onSendMessages plugins. This isn't important
+		// Boxing will be done by a message resending after socket connection
 		let locals = {
 			me: req.user,
 			room,
 			userPrefs,
 			features,
+			messages,
 			pluginsToStart: clientSidePluginNames
 		};
 		res.render(isMobile ? 'pad.mob.pug' : 'pad.pug', {vars:locals, theme});
