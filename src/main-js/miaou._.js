@@ -20,7 +20,7 @@ $(function(){
 	if (!miaou.appl) miaou.appl = {};
 	var appl = miaou.appl;
 	appl.isWorldOK = function(a,b){
-		var array = miaou.arr.repeat(a,b),
+		var	array = miaou.arr.repeat(a,b),
 			result1 = miaou.maths.sums(array),
 			result2 = miaou.maths.mult(a,b);
 		console.log("result1:",result1, "result2:", result2);
@@ -49,9 +49,9 @@ $(function(){
 $(function(){
 	if (!miaou.maths) miaou.maths = {};
 	var maths = miaou.maths;
-    maths.int = function(m){
+	maths.int = function(m){
 		return Math.random()*m|0;
-    }
+	}
 	maths.sums = function(array){
 		return miaou.arr.reduce(array,function(a,b){ return a+b });
 	}
@@ -113,7 +113,7 @@ miaou(function(appl){
 */
 
 
-// Note : this isn't compatible with mangling of function argument names
+// Note : miaou module names must be protected from mangling
 function miaou(f){
 	$(function(){
 		f.apply(null, (f.toString().match(/\([^\)]*\)/)[0].match(/\w+/g)||[]).map(function(name){

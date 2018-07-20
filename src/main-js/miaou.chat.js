@@ -20,6 +20,41 @@ miaou(function(chat, hist, horn, links, locals, md, notif, gui, plugins, skin, t
 	chat.state = 'connecting';
 
 	var listeners = {};
+
+	// Registers for an event
+	// Supported event types:
+	// * ready
+	// * incoming_message
+	// 	called with message as argument
+	// * sending_message
+	// 	called with message as argument
+	// 	returning false prevents the sending
+	// * incoming_user
+	// 	called with user as argument
+	// * leaving_user
+	// 	called with user as argument
+	//
+	chat.on = function(type, fun){
+		if (!listeners[type]) listeners[type] = [];
+		listeners[type].push(fun);
+		return chat;
+	}
+	// removes a function from listeners
+	chat.off = function(type, fun){
+		if (!listeners[type]) return;
+		listeners[type] = listeners[type].filter(function(f){ return f!==fun });
+		return chat;
+	}
+	chat.trigger = function(type, message, context){
+		if (!listeners[type]) return;
+		for (var i=0; i<listeners[type].length; i++) {
+			var r = listeners[type][i](message, context);
+			if (r===false) return false;
+		}
+		return chat;
+	}
+
+	if (!locals.me) return;
 	var pingRegex = new RegExp('(^|\\s)@(room|here|'+locals.me.name+')\\b', 'i');
 
 	function renderMessage($c, message, oldMessage){
@@ -121,39 +156,6 @@ miaou(function(chat, hist, horn, links, locals, md, notif, gui, plugins, skin, t
 		gui.setRoom(locals.room);
 		console.log('messages initiaux:', locals.messages);
 		if (locals.messages) chat.messagesIn(locals.messages);
-	}
-
-	// Registers for an event
-	// Supported event types:
-	// * ready
-	// * incoming_message
-	// 	called with message as argument
-	// * sending_message
-	// 	called with message as argument
-	// 	returning false prevents the sending
-	// * incoming_user
-	// 	called with user as argument
-	// * leaving_user
-	// 	called with user as argument
-	//
-	chat.on = function(type, fun){
-		if (!listeners[type]) listeners[type] = [];
-		listeners[type].push(fun);
-		return chat;
-	}
-	// removes a function from listeners
-	chat.off = function(type, fun){
-		if (!listeners[type]) return;
-		listeners[type] = listeners[type].filter(function(f){ return f!==fun });
-		return chat;
-	}
-	chat.trigger = function(type, message, context){
-		if (!listeners[type]) return;
-		for (var i=0; i<listeners[type].length; i++) {
-			var r = listeners[type][i](message, context);
-			if (r===false) return false;
-		}
-		return chat;
 	}
 
 	// Sends a message. Examples :
