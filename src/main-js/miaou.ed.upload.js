@@ -53,14 +53,11 @@ miaou(function(ed){
 						"Reduce then send": function(){
 							var	dim = propositions[$select.prop("selectedIndex")],
 								canvas = document.createElement("canvas");
-							console.log("reducing to", dim);
 							canvas.width = dim.w;
 							canvas.height = dim.h;
 							var context = canvas.getContext("2d");
 							context.drawImage(img, 0, 0, dim.w, dim.h);
 							imgData = canvas.toDataURL("image/jpeg");
-							console.log("reduced image size:", imgData.length);
-							console.log("start of data:", imgData.slice(0, 100));
 							ed.uploadFile(imgData);
 						}
 					}

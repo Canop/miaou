@@ -67,12 +67,10 @@ miaou(function(watch, chat, fish, gui, locals, md, notif, usr, ws){
 		}
 		if (locals.room.watched) return;
 		if (locals.userPrefs.otowat==="on_visit") {
-			console.log("autowatching visited room");
 			watch.addLocalRoom();
 		} else if (locals.userPrefs.otowat==="on_post") {
 			chat.on('sending_message', function(){
 				if (!locals.room.watched) {
-					console.log("autowatching room on post");
 					watch.addLocalRoom();
 				}
 			});

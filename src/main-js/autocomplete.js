@@ -25,7 +25,6 @@
 		}
 		function select(s){
 			lastPat = s;
-			console.log("select", lastPat);
 			$field.val(lastPat);
 		}
 		function moveSelect(d){ // d: 1 or -1
@@ -47,7 +46,6 @@
 		$field
 		.on('keydown', function(e){
 			if ($menu.is(":visible")) {
-				console.log("ke:", e.which);
 				if (e.which==38) { // up arrow
 					moveSelect(-1);
 				} else if (e.which==40) { //down arrow

@@ -3,7 +3,6 @@
 miaou(function(md, gui, locals, notif, usr, watch, ws){
 
 	md.showRequestAccess = function(ar){
-		console.log("received ar", ar);
 		if (ar.room && ar.room!==locals.room.id) {
 			watch.incrRequests(ar.room, 1);
 			return;

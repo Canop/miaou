@@ -93,7 +93,6 @@ miaou(function(chat, hist, horn, links, locals, md, notif, gui, plugins, skin, t
 	};
 
 	chat.messagesIn = function(messages){
-		console.log('messages:', messages);
 		var	visible = vis(),
 			isAtBottom = gui.isAtBottom(),
 			shouldStickToBottom = isAtBottom || chat.state!=='connected',
@@ -154,7 +153,6 @@ miaou(function(chat, hist, horn, links, locals, md, notif, gui, plugins, skin, t
 		md.startAutoCleaner();
 		plugins.start();
 		gui.setRoom(locals.room);
-		console.log('messages initiaux:', locals.messages);
 		if (locals.messages) chat.messagesIn(locals.messages);
 	}
 

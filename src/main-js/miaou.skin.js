@@ -67,12 +67,10 @@ miaou(function(skin){
 	}
 	$(".Miaou-logo").each(function(){
 		if (this.getSVGDocument()) {
-			console.log("logo already loaded");
 			colorize(this);
 			return;
 		}
 		this.addEventListener("load", function(){
-			console.log("logo loaded after ready");
 			colorize(this);
 		});
 	});

@@ -28,9 +28,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	}
 
 	md.opendIfClosed = function($message){
-		console.log('message:', $message);
 		var $opener = $message.find(".opener");
-		console.log($opener.length);
 		if (!$opener.length) return;
 		$opener.removeClass('opener').addClass('closer');
 		var wab = gui.isAtBottom();

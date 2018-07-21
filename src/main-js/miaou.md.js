@@ -377,7 +377,6 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		}
 		if (!message.id) {
 			if (message.private) {
-				console.log("private message:", message);
 				var desc = "this private message was sent to no one else and will disappear when you refresh the page";
 				$('<div>&#xf21b;</div>') // fontello icon-snow
 				.appendTo($decorations)
