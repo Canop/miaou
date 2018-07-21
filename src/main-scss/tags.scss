@@ -6,10 +6,10 @@
 	color: $tag-color;
 	background: $tag-background;
 	margin: 2px;
-	padding: 3px 5px;
+	padding: 4px 5px 1px 5px;
 }
 .message .content .tag {
-	padding: 1px 4px;
+	padding: 3px 4px 1px 4px;
 	a {
 		color: $tag-color;
 	}
@@ -59,7 +59,7 @@
 	}
 	.tag {
 		pointer-events: none;
-		padding: 3px 20px 3px 5px;
+		padding: 5px 20px 2px 5px;
 		position: relative;
 		&::after {
 			position: absolute;
@@ -71,7 +71,7 @@
 			font-size: 80%;
 			cursor: pointer;
 			pointer-events: all;
-			padding: 0 4px 2px 4px;
+			padding: 1px 4px 2px 4px;
 			right: 4px;
 			top: 4px;
 		}
