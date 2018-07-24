@@ -25,7 +25,6 @@ miaou(function(tagger, fmt, locals){
 			}).get();
 		}
 		function receiveMatches(matches){
-			console.log('matches:', matches);
 			// matches are {name,description}
 			if (
 				matches.length &&
@@ -55,11 +54,9 @@ miaou(function(tagger, fmt, locals){
 			}));
 		}
 		function select(s){
-			console.log("select", s);
 			if (s) {
 				$("<span class=tag>").text(s).insertBefore($input);
 				$field.val(alreadyPresentTags().join(" "));
-				console.log("new val:", $field.val());
 			}
 			lastPat = "";
 			$input.val(lastPat).focus();
@@ -83,7 +80,6 @@ miaou(function(tagger, fmt, locals){
 		$input
 		.on('keydown', function(e){
 			if ($menu.is(":visible")) {
-				console.log("ke:", e.which);
 				var pat = $input.val();
 				if (e.which==38||e.which==37) { // up/left arrow
 					moveSelect(-1);

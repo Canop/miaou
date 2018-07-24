@@ -28,9 +28,9 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		unrenderers.unshift(fun);
 	}
 	md.render = function($content, message, oldMessage){
-		if (oldMessage && message.content===oldMessage.content && $content.text().length) {
-			return; // mainly to avoid removing boxed content
-		}
+		//if (oldMessage && message.content===oldMessage.content && $content.text().length) {
+		//	return; // mainly to avoid removing boxed content
+		//}
 		for (var i=0; i<renderers.length; i++) {
 			if (renderers[i]($content, message, oldMessage)) break;
 		}
@@ -377,13 +377,11 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		}
 		if (!message.id) {
 			if (message.private) {
-				console.log("private message:", message);
 				var desc = "this private message was sent to no one else and will disappear when you refresh the page";
 				$('<div>&#xf21b;</div>') // fontello icon-snow
 				.appendTo($decorations)
 				.addClass('decoration snap')
 				.attr('title', "Private : "+desc);
-
 			} else {
 				var desc = "only sent to people currently in the room, and will disappear if you refresh the page";
 				$('<div>&#xe82d;</div>') // fontello icon-snow

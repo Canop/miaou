@@ -258,9 +258,9 @@ $bubble-highlight-color: #000;
 
 // tags
 $tag-color: #999;
-$tag-background: linear-gradient(to bottom, #333, #222);
-$tag-bubble-background-color: #444;
-$tag-bubble-color: #fb0;
+$tag-background: linear-gradient(to bottom, #555, #333);
+$tag-bubble-background-color: $bubble-bg;
+$tag-bubble-color: $bubble-color;
 .tag-bubble pre.prettyprint {
 	color: #aaa;
 }

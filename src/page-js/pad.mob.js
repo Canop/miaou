@@ -129,6 +129,15 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		$('#input-panel').show();
 	});
 
+	var ready = false;
+	chat.on("ready", function(){
+		if (ready) return;
+		$("<div id=global-watch>")
+		.addClass("mpad-tab-label fontello mpad-icon icon-eye")
+		.appendTo("#mpad-tab-watches");
+		ready = true;
+	});
+
 	watch.enabled = true;
 	chat.start();
 

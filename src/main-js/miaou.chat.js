@@ -1,5 +1,5 @@
 
-miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, ws){
+miaou(function(chat, hist, horn, links, locals, md, notif, gui, plugins, skin, time, ws){
 
 	chat.config = { // may be changed by server later
 		maxMessageContentSize: 8000,
@@ -17,8 +17,45 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		{key:'down', icon:'&#xe816;'}	// fontello icon-thumbs-down-alt
 	];
 	chat.lastMessageId = 0;
+	chat.state = 'connecting';
 
 	var listeners = {};
+
+	// Registers for an event
+	// Supported event types:
+	// * ready
+	// * incoming_message
+	// 	called with message as argument
+	// * sending_message
+	// 	called with message as argument
+	// 	returning false prevents the sending
+	// * incoming_user
+	// 	called with user as argument
+	// * leaving_user
+	// 	called with user as argument
+	//
+	chat.on = function(type, fun){
+		if (!listeners[type]) listeners[type] = [];
+		listeners[type].push(fun);
+		return chat;
+	}
+	// removes a function from listeners
+	chat.off = function(type, fun){
+		if (!listeners[type]) return;
+		listeners[type] = listeners[type].filter(function(f){ return f!==fun });
+		return chat;
+	}
+	chat.trigger = function(type, message, context){
+		if (!listeners[type]) return;
+		for (var i=0; i<listeners[type].length; i++) {
+			var r = listeners[type][i](message, context);
+			if (r===false) return false;
+		}
+		return chat;
+	}
+
+	if (!locals.me) return;
+	var pingRegex = new RegExp('(^|\\s)@(room|here|'+locals.me.name+')\\b', 'i');
 
 	function renderMessage($c, message, oldMessage){
 		if (!message.content) {
@@ -53,6 +90,57 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		} else {
 			$c.empty();
 		}
+	};
+
+	chat.messagesIn = function(messages){
+		var	visible = vis(),
+			isAtBottom = gui.isAtBottom(),
+			shouldStickToBottom = isAtBottom || chat.state!=='connected',
+			addedMD = [],
+			lastMessageId,
+			$lastMd;
+		if (Array.isArray(messages)) {
+			messages = messages.sort(function(m1, m2){ return m1.id-m2.id });
+		} else {
+			messages = [messages];
+		}
+
+		messages.forEach(function(message){
+			if (chat.trigger('incoming_message', message) === false) return;
+			if (shouldStickToBottom && !visible) {
+				var $lastSeen = $('#messages .rvis').last();
+				if ($lastSeen.length) {
+					if ($lastSeen.offset().top<10) shouldStickToBottom = false;
+				}
+			}
+			var $md = md.addMessage(message, shouldStickToBottom);
+			$md.addClass(visible||chat.state!=='connected' ? 'rvis' : 'rnvis');
+			var ping = pingRegex.test(message.content) && message.author!=locals.me.id;
+			if (message.id) {
+				if (message.id>chat.lastMessageId) {
+					chat.lastMessageId = lastMessageId = message.id;
+					$lastMd = $md;
+				}
+				md.updateNotableMessage(message);
+			}
+			if (
+				(message.id||ping) && time.isNew(message) && message.content
+			) {
+				notif.touch(message.id, ping, message.authorname, message.content, locals.room, $md);
+			}
+			addedMD.push($md);
+		});
+		addedMD.forEach(function($md){
+			md.resize($md, shouldStickToBottom);
+			md.resizeUser($md.siblings('.user'));
+		});
+		if (shouldStickToBottom && lastMessageId === chat.lastMessageId) {
+			gui.scrollToBottom($lastMd);
+		}
+		md.updateLoaders();
+		md.showMessageFlowDisruptions();
+		if (typeof prettyPrint !== 'undefined') prettyPrint();
+		hist.showPage();
 	}
 
 	chat.start = function(){
@@ -64,38 +152,8 @@ miaou(function(chat, horn, links, locals, md, notif, gui, plugins, skin, time, w
 		md.registerRenderer(renderMessage);
 		md.startAutoCleaner();
 		plugins.start();
-	}
-
-	// Registers for an event
-	// Supported event types:
-	// * ready
-	// * incoming_message
-	// 	called with message as argument
-	// * sending_message
-	// 	called with message as argument
-	// 	returning false prevents the sending
-	// * incoming_user
-	// 	called with user as argument
-	// * leaving_user
-	// 	called with user as argument
-	chat.on = function(type, fun){
-		if (!listeners[type]) listeners[type] = [];
-		listeners[type].push(fun);
-		return chat;
-	}
-	// removes a function from listeners
-	chat.off = function(type, fun){
-		if (!listeners[type]) return;
-		listeners[type] = listeners[type].filter(function(f){ return f!==fun });
-		return chat;
-	}
-	chat.trigger = function(type, message, context){
-		if (!listeners[type]) return;
-		for (var i=0; i<listeners[type].length; i++) {
-			var r = listeners[type][i](message, context);
-			if (r===false) return false;
-		}
-		return chat;
+		gui.setRoom(locals.room);
+		if (locals.messages) chat.messagesIn(locals.messages);
 	}
 
 	// Sends a message. Examples :

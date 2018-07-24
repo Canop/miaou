@@ -458,3 +458,5 @@ This hook is called for all messages sent from the server to a browser, be them 
 - the shoe
 - the message
 - a callback that can be used later to resend the message (for example if it has been asynchronously modified) or another one
+
+Note that all messages emissions aren't guaranteed to go through this so no security solution should be dependant on this hook.

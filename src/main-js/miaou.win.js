@@ -10,6 +10,7 @@ miaou(function(win, chat, gui, md, ws){
 	sides.forEach(function(side){
 		$('<div/>').addClass('mwincontainer').addClass(side).appendTo(document.body);
 	});
+
 	chat.on('incoming_message', function(message){
 		$('.mwintab').filter(function(){ return $(this).attr('mid')==message.id }).addClass('new');
 		var $mwin = $('#mwin');
