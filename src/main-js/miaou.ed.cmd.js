@@ -1,0 +1,65 @@
+// functions related to command name and command arguments autocompletion in the input
+miaou(function(ed, chat){
+
+	var	commandArgAutocompleters = new Map; // map commandName -> (argStart, previousTokens)=>possibleValues
+
+	ed.registerCommandArgAutocompleter = function(commandName, matcher){
+		if (Array.isArray(matcher)) {
+			var arr = matcher;
+			matcher = function(ac){
+				return ac.previous ? null : arr;
+			}
+		}
+		commandArgAutocompleters.set(commandName, matcher);
+	}
+
+	// returns the currently autocompletable typed command, if any
+	function getaccmd(input){
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\s)!!!?(\w+)$/);
+		if (m) return m[1].toLowerCase();
+	}
+
+	// returns the parts needed for command arg autocompletion:
+	// {
+	//    cmd: the commandName
+	//    previous: what's between the command name and the currently typed argument (no newline)
+	//    arg: start of the currently typed command argument
+	// }
+	ed.getacarg = function(input){
+		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!{2,3}(\w+)\s+(.*)$/);
+		if (!m) return;
+		var matcher = commandArgAutocompleters.get(m[1]);
+		if (!matcher) return;
+		var	tokens = m[2].split(/\s+/),
+			ac = { cmd:m[1], matcher:matcher, args: m[2] };
+		ac.arg = tokens.pop();
+		ac.previous = tokens.pop();
+		return ac;
+	}
+
+	ed.tryAutocompleteCmdName = function(input, setMatches){
+		var accmd = getaccmd(input);
+		if (!accmd) return;
+		var matches = Object.keys(chat.commands).sort();
+		setMatches(accmd, matches, true);
+		return true;
+	}
+
+	ed.tryAutocompleteCmdArg = function(input, setMatches){
+		var acarg = ed.getacarg(input);
+		if (!acarg) return;
+		var ret = acarg.matcher(acarg);
+		if (!ret) return;
+		if (Array.isArray(ret)) {
+			ret = {
+				matches: ret,
+				replaced: acarg.arg,
+				mustCheck: true
+			};
+		}
+		setMatches(ret.replaced, ret.matches, ret.mustCheck);
+		return true;
+	}
+
+
+});

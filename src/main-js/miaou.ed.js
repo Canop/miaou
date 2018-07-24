@@ -5,21 +5,23 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	var	$input, input,
 		replyRegex = /@(\w[\w\-\.]{2,})#(\d+)\s*/, // the dot because of miaou.help
 		stash, // saves the unsent messages editions, if any
-		commandArgAutocompleters = new Map, // map commandName -> (argStart, previousTokens)=>possibleValues
 		editedMessage, 	// currently edited message
 		savedValue, $autocompleter, editwzin, replywzin,
 		acStartIndex;
 
 	ed.stateBeforePaste = null; // {selectionStart,selectionEnd,value}
 
-	ed.registerCommandArgAutocompleter = function(commandName, matcher){
-		if (Array.isArray(matcher)) {
-			var arr = matcher;
-			matcher = function(ac){
-				return ac.previous ? null : arr;
-			}
-		}
-		commandArgAutocompleters.set(commandName, matcher);
+	ed.init = function(){
+		$input = $('#input');
+		input = $input[0];
+		$input.on('keydown', onkeydown)
+		.on('keyup', onkeyup)
+		.on('input', oninput)
+		.on('click', ed.code.onMove)
+		.focus();
+
+		$('#send').on('click', sendInput);
+		$('#cancelEdit').on('click', ed.cancelEdit);
 	}
 
 	ed.toggleLines = function(s, r, insert){
@@ -87,30 +89,6 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		return m ? m[1].toLowerCase() : null;
 	}
 
-	// returns the currently autocompletable typed command, if any
-	function getaccmd(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\s)!!!?(\w+)$/);
-		if (m) return m[1].toLowerCase();
-	}
-
-	// returns the parts needed for command arg autocompletion:
-	// {
-	//    cmd: the commandName
-	//    previous: what's between the command name and the currently typed argument (no newline)
-	//    arg: start of the currently typed command argument
-	// }
-	function getacarg(){
-		var m = input.value.slice(0, input.selectionEnd).match(/(?:^|\W)!{2,3}(\w+)\s+(.*)$/);
-		if (!m) return;
-		var matcher = commandArgAutocompleters.get(m[1]);
-		if (!matcher) return;
-		var	tokens = m[2].split(/\s+/),
-			ac = { cmd:m[1], matcher:matcher, args: m[2] };
-		ac.arg = tokens.pop();
-		ac.previous = tokens.pop();
-		return ac;
-	}
-
 	function addAutocompleteMatches(s, matches, mustCheck){
 		if (!matches) return;
 		s = s.toLowerCase();
@@ -135,37 +113,37 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		});
 	}
 
+	ed.tryAutocompletePing = function(){
+		var acname = getacname();
+		if (!acname) return;
+		ed.proposepings(usr.recentNamesStartingWith(acname));
+		ws.emit('completeusername', {start:acname}, ed.proposepings);
+		return true;
+	}
+
 	function tryAutocomplete(){
 		if ($autocompleter) {
 			$autocompleter.remove();
 			$autocompleter = null;
 		}
+
 		// should we display the name autocompleting menu ?
-		var acname = getacname();
-		if (acname) {
-			ed.proposepings(usr.recentNamesStartingWith(acname));
-			return ws.emit('completeusername', {start:acname}, ed.proposepings);
+		if (ed.tryAutocompletePing()) return;
+
+		var value = input.value;
+		var setMatches = function(s, matches, mustCheck){
+			if (input.value!==value) {
+				console.log("dismissing obsolete AC matches", s, matches);
+				return;
+			}
+			addAutocompleteMatches(s, matches, mustCheck);
 		}
+
 		// should we display the command name autocompleting menu ?
-		var accmd = getaccmd();
-		if (accmd) {
-			var matches = Object.keys(chat.commands).sort();
-			addAutocompleteMatches(accmd, matches, true);
-			return;
-		}
+		if (ed.tryAutocompleteCmdName(input, setMatches)) return;
+
 		// should we display command argument autocompleting menu ?
-		var acarg = getacarg();
-		if (!acarg) return;
-		var ret = acarg.matcher(acarg);
-		if (!ret) return;
-		if (Array.isArray(ret)) {
-			ret = {
-				matches: ret,
-				replaced: acarg.arg,
-				mustCheck: true
-			};
-		}
-		addAutocompleteMatches(ret.replaced, ret.matches, ret.mustCheck);
+		ed.tryAutocompleteCmdArg(input, setMatches);
 	}
 
 	function tabAutocomplete(){
@@ -271,98 +249,90 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 	}
 
-	ed.init = function(){
-		$input = $('#input');
-		input = $input[0];
-		$input.on('keydown', function(e){
-			notif.userAct();
-			if (miaou.dialog.has()) return false;
-			if (e.ctrlKey && !e.shiftKey && !e.altKey) {
-				switch (e.which) {
-				case 75: // ctrl - K : toggle code
-					ed.code.onCtrlK.call(this);
-					return false;
-				case 81: // ctrl - Q : toggle citation
-					ed.onCtrlQ.call(this);
-					return false;
-				case 76: // ctrl - L : make link
-					ed.onCtrlL.call(this);
-					return false;
-				case 66: // ctrl - B : toggle bold
-					$input.replaceSelection(function(s){
-						return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2, -2) : '**'+s+'**'
-					});
-					return false;
-				case 73: // ctrl - I : toggle italic
-					$input.replaceSelection(function(s){
-						return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*'
-					});
-					return false;
-				case 13: // ctrl - enter : insert new line
-					$input.replaceSelection(function(s){ return s+'\n' });
-					return false;
-				case 38: // ctrl - up arrow
-					replyPreviousOrNext(-1);
-					return false;
-				case 40: // ctrl - down arrow
-					replyPreviousOrNext(+1);
-					return false;
-				}
-			} else if (e.altKey || e.shiftKey) {
-				if (e.which===13) { // alt|shift - return
-					$input.replaceSelection(function(s){ return s+'\n' });
-					return false;
-				}
-			} else if (e.which===38) { // up arrow
-				var isInFirstLine = $input.taliner().caretOnFirstLine;
-				if (isInFirstLine || (editedMessage && input.selectionStart===input.value.length)) {
-					editPreviousOrNext(-1);
-					return false;
-				}
-			} else if (e.which===40) { // down arrow
-				var isInLastLine = $input.taliner().caretOnLastLine;
-				if (isInLastLine && editedMessage) {
-					editPreviousOrNext(+1);
-					return false;
-				}
-			} else if (e.which===27) { // esc
-				if ($autocompleter && $autocompleter.length && input.value!=savedValue) {
-					input.value = savedValue;
-					tryAutocomplete();
-				} else if (replywzin) {
-					gui.scrollToBottom();
-					ed.cancelReply();
-				} else {
-					ed.cancelEdit();
-				}
-			} else if (e.which===13) { // enter
-				if (gui.mobile) return;
-				sendInput();
+	function onkeydown(e){
+		notif.userAct();
+		if (miaou.dialog.has()) return false;
+		if (e.ctrlKey && !e.shiftKey && !e.altKey) {
+			switch (e.which) {
+			case 75: // ctrl - K : toggle code
+				ed.code.onCtrlK.call(this);
 				return false;
-			} else if (e.which===9) { // tab
-				if ($autocompleter && $autocompleter.length) {
-					tabAutocomplete();
-					return false;
-				}
+			case 81: // ctrl - Q : toggle citation
+				ed.onCtrlQ.call(this);
+				return false;
+			case 76: // ctrl - L : make link
+				ed.onCtrlL.call(this);
+				return false;
+			case 66: // ctrl - B : toggle bold
+				$input.replaceSelection(function(s){
+					return /^\*\*[\s\S]*\*\*$/.test(s) ? s.slice(2, -2) : '**'+s+'**'
+				});
+				return false;
+			case 73: // ctrl - I : toggle italic
+				$input.replaceSelection(function(s){
+					return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*'
+				});
+				return false;
+			case 13: // ctrl - enter : insert new line
+				$input.replaceSelection(function(s){ return s+'\n' });
+				return false;
+			case 38: // ctrl - up arrow
+				replyPreviousOrNext(-1);
+				return false;
+			case 40: // ctrl - down arrow
+				replyPreviousOrNext(+1);
+				return false;
 			}
-		})
-		.on('keyup', function(e){
-			if (e.which===17) return; // ctrl-
-			if (e.which===86 && e.ctrlKey && !e.altKey) return; // end of ctrl-V
-			ed.stateBeforePaste = null;
-			ed.code.onMove();
-			if (e.which===9) return false; // tab
-		})
-		.on('input', function(){
-			tryAutocomplete();
-			if (!gui.mobile) updateReplyWzin();
-		})
-		.on('click', ed.code.onMove)
-		.focus();
+		} else if (e.altKey || e.shiftKey) {
+			if (e.which===13) { // alt|shift - return
+				$input.replaceSelection(function(s){ return s+'\n' });
+				return false;
+			}
+		} else if (e.which===38) { // up arrow
+			var isInFirstLine = $input.taliner().caretOnFirstLine;
+			if (isInFirstLine || (editedMessage && input.selectionStart===input.value.length)) {
+				editPreviousOrNext(-1);
+				return false;
+			}
+		} else if (e.which===40) { // down arrow
+			var isInLastLine = $input.taliner().caretOnLastLine;
+			if (isInLastLine && editedMessage) {
+				editPreviousOrNext(+1);
+				return false;
+			}
+		} else if (e.which===27) { // esc
+			if ($autocompleter && $autocompleter.length && input.value!=savedValue) {
+				input.value = savedValue;
+				tryAutocomplete();
+			} else if (replywzin) {
+				gui.scrollToBottom();
+				ed.cancelReply();
+			} else {
+				ed.cancelEdit();
+			}
+		} else if (e.which===13) { // enter
+			if (gui.mobile) return;
+			sendInput();
+			return false;
+		} else if (e.which===9) { // tab
+			if ($autocompleter && $autocompleter.length) {
+				tabAutocomplete();
+				return false;
+			}
+		}
+	}
 
-		$('#send').on('click', sendInput);
+	function onkeyup(e){
+		if (e.which===17) return; // ctrl-
+		if (e.which===86 && e.ctrlKey && !e.altKey) return; // end of ctrl-V
+		ed.stateBeforePaste = null;
+		ed.code.onMove();
+		if (e.which===9) return false; // tab
+	}
 
-		$('#cancelEdit').on('click', ed.cancelEdit);
+	function oninput(){
+		tryAutocomplete();
+		if (!gui.mobile) updateReplyWzin();
 	}
 
 	// adds or remove a ping to that username
