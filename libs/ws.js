@@ -720,8 +720,12 @@ function handleUserInRoom(socket, completeUser){
 			send('message', m);
 			if (commandTask.replyContent) {
 				let txt = commandTask.replyContent;
-				if (m.id) txt = '@'+m.authorname+'#'+m.id+' '+txt;
-				else txt = '@'+m.authorname+' '+txt;
+				if (m.id) {
+				}
+				let repl = "@" + m.authorname;
+				if (m.id) repl += "#" + m.id;
+				let sep = /^[#\s*-]/.test(txt) ? "\n" : " "; // let's not break title, code, etc.
+				txt = repl + sep + txt;
 				let replyer = commandTask.replyer || bot;
 				if (commandTask.replyAsFlake) {
 					shoe.emitBotFlakeToRoom(replyer, txt);
