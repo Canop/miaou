@@ -3,12 +3,27 @@ miaou(function(ed, chat){
 
 	var	commandArgAutocompleters = new Map; // map commandName -> (argStart, previousTokens)=>possibleValues
 
-	ed.registerCommandArgAutocompleter = function(commandName, matcher){
-		if (Array.isArray(matcher)) {
-			var arr = matcher;
-			matcher = function(ac){
-				return ac.previous ? null : arr;
+	function unnest(o){
+		return Array.isArray(o) ? unnest(o[0]) : o;
+	}
+
+	function arrayToMatcher(arr){
+		var unnested0 = arr.map(unnest);
+		return function(ac){
+			if (!ac.previous) return unnested0;
+			for (var i=arr.length; i--;) {
+				if (unnested0[i]!==ac.previous) continue;
+				if (!Array.isArray(arr[i]) || arr[i].length<2) return;
+				return arr[i][1];
 			}
+		};
+	}
+
+	// register either a function or an array describing how arguments of
+	//  this command can be autocompleted
+	ed.registerCommandArgAutocompleter = function(commandName, matcher){
+		if (Array.isArray(matcher)) { // if not we assume it's a function
+			matcher = arrayToMatcher(matcher);
 		}
 		commandArgAutocompleters.set(commandName, matcher);
 	}
@@ -31,7 +46,7 @@ miaou(function(ed, chat){
 		var matcher = commandArgAutocompleters.get(m[1]);
 		if (!matcher) return;
 		var	tokens = m[2].split(/\s+/),
-			ac = { cmd:m[1], matcher:matcher, args: m[2] };
+			ac = { cmd:m[1], matcher, args: m[2] };
 		ac.arg = tokens.pop();
 		ac.previous = tokens.pop();
 		return ac;

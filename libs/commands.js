@@ -15,7 +15,6 @@ const	commandParsingRegex = require("./rex.js")`
 	([^\n]*)                        // command arguments
 	`;
 
-
 class CommandTask{
 	constructor(cmd, rp, args, shoe, message){
 		this.cmd = cmd;
@@ -43,7 +42,7 @@ class CommandTask{
 	}
 	reply(content, asFlake){
 		this.replyContent = content;
-		this.replyAsFlake = asFlake;
+		this.replyAsFlake = !!asFlake;
 		return this;
 	}
 	// called at the very end of the action (can be asynchronous), enables benchmarking

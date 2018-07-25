@@ -1,10 +1,5 @@
 miaou(function(plugins, ed, fmt, md){
 
-	setTimeout(function(){
-		ed.registerCommandArgAutocompleter("badge", ["award", "ladder", "list"]);
-	}, 500);
-
-
 	function nv(n, v){
 		return "<span class=faded-8>" + n + ":</span> " + v;
 	}
@@ -58,6 +53,7 @@ miaou(function(plugins, ed, fmt, md){
 
 	plugins["badging"] = {
 		start: function(){
+			ed.registerCommandArgAutocompleter("badge", ["award", "ladder", "list"]);
 			fmt.whiteListBraceSpanClass("bronze-badge");
 			fmt.whiteListBraceSpanClass("silver-badge");
 			fmt.whiteListBraceSpanClass("gold-badge");
