@@ -1,24 +1,18 @@
 // manages desktop notifications and sounds
 
-miaou(function(horn, gui, locals, md){
+miaou(function(horn, gui, locals, md, prefs){
 
 	var sounds = {
 		standard: 'ping-standard.wav'
 	};
-	var	sound = locals.userPrefs ? sounds[locals.userPrefs.sound] || sounds.standard : null,
-		audio;
+	var audio;
 
 	horn.init = function(){
-		if (!locals.userPrefs || /*!window.Notification*/ gui.mobile) {
-			// covers two cases :
-			// - a page with miaou.min.js but no prefs
-			// - a browser without Notification (Chrome/Android)
+		if (gui.mobile) {
 			horn.show = function(){};
 			return;
 		}
-
-		if (sound) audio = new Audio('static/'+sound);
-		if (locals.userPrefs.notif !== "never" && Notification.permission !== "granted") {
+		if (prefs.get("notif") !== "never" && Notification.permission !== "granted") {
 			md.notificationMessage(function($c, close){
 				$('<p>').appendTo($c).text(
 					"Please grant Miaou the permission to issue desktop notifications"+
@@ -42,8 +36,12 @@ miaou(function(horn, gui, locals, md){
 
 	horn.honk = function(volume){
 		volume = +volume;
-		if (!(volume>=0 && volume<=1)) volume = +locals.userPrefs.volume;
-		if (audio && volume) {
+		if (!(volume>=0 && volume<=1)) volume = +prefs.get("volume");
+		if (!audio) {
+			var sound = prefs.get("sound") || sounds.standard;
+			audio = new Audio('static/'+sound);
+		}
+		if (volume) {
 			audio.volume = +volume;
 			audio.play();
 		}
@@ -61,7 +59,7 @@ miaou(function(horn, gui, locals, md){
 		if (authorname) title = authorname + ' in ' + title;
 		var dsk = {};
 		dsk.icon = 'static/M-64.png';
-		if (content && locals.userPrefs.connot==="yes") dsk.body = content.replace(/^@\w[\w\-]{2,}#\d+/, '');
+		if (content && prefs.get("connot")==="yes") dsk.body = content.replace(/^@\w[\w\-]{2,}#\d+/, '');
 		var n = new Notification(title, dsk);
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function(){ window.focus(); n.close(); };

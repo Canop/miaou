@@ -55,10 +55,9 @@ exports.appAllUsername = function(req, res){
 		console.log('Err...', err);
 		error = err;
 	}).then(function(){
-		return prefs.get(this, req.user.id)
-	}).then(function(userPrefs){
-		var hasValidName = naming.isValidUsername(req.user.name),
-			theme = prefs.theme(userPrefs, req.query.theme);
+		return prefs.theme(this, req.user.id, req.query.theme);
+	}).then(function(theme){
+		var	hasValidName = naming.isValidUsername(req.user.name);
 		res.render('username.pug', {
 			vars: {valid : hasValidName},
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),

@@ -244,7 +244,7 @@ exports.doStats = function(ct, miaou){
 			psname += " / specific";
 		}
 		from += " group by name, value order by name, c2 desc";
-		title = "Preferences Statistics";
+		title = "Preferences Statistics (local values not counted)";
 	} else {
 		throw "Wrong statistics request. Use `!!help stats` to learn about the possible uses";
 	}

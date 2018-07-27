@@ -394,9 +394,9 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		if (!$mc) $mc = $('<div>').addClass('content');
 		$mc.appendTo($md);
 		md.render($mc, message, oldMessage);
-		if (!gui.mobile && locals.userPrefs.datdpl!=="hover") {
+		if (!gui.mobile && prefs.get("datdpl")!=="hover") {
 			var $mdate = $('<div>').addClass('mdate').text(time.formatTime(message.created)).appendTo($md);
-			if (locals.userPrefs.datdpl!=="always") $mdate.hide();
+			if (prefs.get("datdpl")!=="always") $mdate.hide();
 		}
 		return $md;
 	}
@@ -412,7 +412,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 			if (lastMessage && message.created-lastMessage.created > miaou.chat.DISRUPTION_THRESHOLD) {
 				$lastMessage.addClass('before-disrupt');
 				$message.addClass('after-disrupt');
-				if (locals.userPrefs.datdpl==="on_breaks" && !gui.mobile) {
+				if (prefs.get("datdpl")==="on_breaks" && !gui.mobile) {
 					$messages.eq(i-1).add($message).find('.mdate').show();
 				}
 			}

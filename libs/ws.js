@@ -8,6 +8,7 @@ const	apiversion = 97,
 	socketWaitingApproval = [],
 	auths = require('./auths.js'),
 	bench = require('./bench.js'),
+	prefs = require('./prefs.js'),
 	commands = require('./commands.js'),
 	pm  = require('./pm.js'),
 	botMgr = require('./bots.js'),
@@ -239,6 +240,7 @@ exports.botReply = function(bot, message, txt, cb){
 }
 
 exports.botFlake= function(bot, roomId, content){
+	if (!bot) bot = miaou.bot;
 	io.sockets.in(roomId).emit('message', {
 		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
 		created:Date.now()/1000|0, bot:true, room:roomId, content:content
@@ -432,7 +434,6 @@ function handleUserInRoom(socket, completeUser){
 			}
 			r.path = server.roomPath(r);
 			shoe.room = r;
-			// socket.emit('room', shoe.room); // useless now that it's in the page's locals
 			socket.join(shoe.room.id);
 			socket.emit('config', clientConfig);
 			await emitMessages.call(con, shoe, false, nbMessagesAtLoad); // do we really need to await ?
@@ -454,6 +455,7 @@ function handleUserInRoom(socket, completeUser){
 			socket.emit('notables', memroom.notables);
 			socket.emit('server_commands', commands.commands);
 			socket.emit('recent_users', recentUsers);
+			//socket.emit('pref_defs', prefs.getDefinitions());
 			socket.emit('welcome');
 			welcomed = true;
 			for (let s of roomSockets(shoe.room.id)) {
@@ -619,6 +621,25 @@ function handleUserInRoom(socket, completeUser){
 				}
 			}
 			socket.emit('hist', {search:search, hist:hist});
+		});
+	});
+
+	on('prefs', async function(arg){
+		// transmission by the browser of local preferences
+		// This is usually part of the !!pref command handling
+		throttle();
+		if (!arg.local) {
+			console.error("missing local");
+			return;
+		}
+		await db.do(async function(con){
+			// the browser sends its local prefs. We rebuild the shoe's merged prefs
+			let userGlobalPrefs = await prefs.getUserGlobalPrefs(con, shoe.publicUser.id);
+			shoe.userPrefs = prefs.merge(userGlobalPrefs, arg.local);
+			if (arg.cmd) {
+				// if there's a command, we handle it
+				await prefs.handlePrefSioCommand(con, shoe, arg);
+			}
 		});
 	});
 

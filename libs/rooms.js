@@ -105,8 +105,7 @@ exports.updateMessage = function(message){
 // room admin page GET
 exports.appGetRoom = function(req, res){
 	db.do(async function(con){
-		let userPrefs = await prefs.get(con, req.user.id);
-		let theme = await prefs.theme(userPrefs, req.query.theme);
+		let theme = await prefs.theme(con, req.user.id, req.query.theme);
 		let room;
 		try {
 			room = await con.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
@@ -192,7 +191,6 @@ exports.appGetRooms = function(req, res){
 			}
 		}
 		let pings = await con.fetchUserPingRooms(userId);
-		let userPrefs = await prefs.get(con, userId);
 		let watches = await con.listUserWatches(userId);
 		var mobile = server.mobile(req);
 		let data = {
@@ -210,7 +208,7 @@ exports.appGetRooms = function(req, res){
 		if (mobile) {
 			res.render('rooms.mob.pug', data);
 		} else {
-			data.theme = prefs.theme(userPrefs, req.query.theme);
+			data.theme = await prefs.theme(con, userId, req.query.theme);
 			res.render('rooms.pug', data);
 		}
 	}, function(err){

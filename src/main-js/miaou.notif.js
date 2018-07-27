@@ -1,6 +1,6 @@
 // manages the list and dispatching of notifications
 
-miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
+miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 
 	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
@@ -138,8 +138,8 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 			notifications.push(ping);
 			changed = true;
 			if (
-				locals.userPrefs.notif!=="never"
-				&& (!visible || locals.userPrefs.nifvis==="yes")
+				prefs.get("notif")!=="never"
+				&& (!visible || prefs.get("nifvis")==="yes")
 			) {
 				horn.show(ping.mid, ping.rname, ping.authorname, ping.content);
 			}
@@ -194,9 +194,9 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				else if ($md) md.goToMessageDiv($md);
 			}
 		}
-		if (!visible || locals.userPrefs.nifvis==="yes") {
+		if (!visible || prefs.get("nifvis")==="yes") {
 			if (
-				( locals.userPrefs.notif==="on_message" || (ping && locals.userPrefs.notif==="on_ping") )
+				( prefs.get("notif")==="on_message" || (ping && prefs.get("notif")==="on_ping") )
 				&& lastUserActionAge>500
 			) {
 				horn.show(mid, r||locals.room, from, text);

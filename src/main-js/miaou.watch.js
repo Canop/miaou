@@ -1,6 +1,6 @@
 // functions related to user watching other rooms
 
-miaou(function(watch, chat, fish, gui, locals, md, notif, usr, ws){
+miaou(function(watch, chat, fish, gui, locals, md, notif, prefs, usr, ws){
 
 	watch.enabled = false;
 
@@ -66,9 +66,9 @@ miaou(function(watch, chat, fish, gui, locals, md, notif, usr, ws){
 			history.replaceState('', document.title, location.pathname+location.search);
 		}
 		if (locals.room.watched) return;
-		if (locals.userPrefs.otowat==="on_visit") {
+		if (prefs.get("otowat")==="on_visit") {
 			watch.addLocalRoom();
-		} else if (locals.userPrefs.otowat==="on_post") {
+		} else if (prefs.get("otowat")==="on_post") {
 			chat.on('sending_message', function(){
 				if (!locals.room.watched) {
 					watch.addLocalRoom();

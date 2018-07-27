@@ -1,6 +1,6 @@
 // ws : handles the connection to the server over socket.io (websocket whenever possible)
 
-miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch){
+miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr, watch){
 
 	ws.init = function(){
 		var	nbEntries = 0, // grows on disconnect+reconnect
@@ -132,6 +132,8 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('pings', notif.pings)
 		.on('rm_ping', notif.removePing)
 		.on('rm_pings', notif.removePings)
+		.on('cmd_pref', prefs.handleCmdPref)
+		.on('prefs', prefs.setMergedPrefs)
 		.on('must_reenter', function(){
 			console.log("<- must_reenter");
 			chat.state = 'must_reenter';

@@ -7,6 +7,7 @@ miaou(function(ed, chat){
 		return Array.isArray(o) ? unnest(o[0]) : o;
 	}
 
+	// handle 2 levels depth simplified argument tree definitions
 	function arrayToMatcher(arr){
 		var unnested0 = arr.map(unnest);
 		return function(ac){

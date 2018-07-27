@@ -6,6 +6,7 @@ var	miaou,
 	db,
 	auths = require('./auths.js'),
 	ws = require('./ws.js'),
+	prefs = require("./prefs.js"),
 	onSendMessagePlugins;
 
 exports.configure = function(_miaou){
@@ -35,6 +36,7 @@ function Shoe(socket, completeUser){
 	this.db = db;
 	socket.publicUser = this.publicUser;
 	this.emit = socket.emit.bind(socket);
+	this.userPrefs = prefs.merge(); // initially we only have the server prefs
 }
 var Shoes = Shoe.prototype;
 exports.Shoe = Shoe;
@@ -76,6 +78,7 @@ Shoes.allSocketsOfUser = function(){
 	return sockets;
 }
 Shoes.emitPersonalBotFlake = function(bot, content){
+	if (!bot) bot = miaou.bot;
 	this.socket.emit('message', {
 		author:bot.id, authorname:bot.name, avs:bot.avatarsrc, avk:bot.avatarkey,
 		created:Date.now()/1000|0, private:true, bot:true, room:this.room.id, content:content

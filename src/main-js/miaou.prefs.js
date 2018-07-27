@@ -1,63 +1,112 @@
 
-miaou(function(prefs, chat, ed, locals, md){
+miaou(function(prefs, chat, ed, locals, md, ws){
 
-	const localSettingsDefinitions = {
-		fun: [ "none", "low", "normal", "high", "max" ],
-	};
+	var	definitions, // not always defined, normally available in chat
+		valmap,
+		merged;
 
-	function autocompleteArg(ac){
-		if (!ac.previous) return ["local"];
-		if (ac.previous==="local") return Object.keys(localSettingsDefinitions);
-		return localSettingsDefinitions[ac.previous];
+	function local(key, value){
+		var lsk = "miaou.prefs." + key;
+		if (value===undefined) return localStorage.getItem(lsk);
+		if (value===null) return localStorage.removeItem(lsk);
+		localStorage.setItem(lsk, value);
 	}
 
-	function localPref(name, value){
-		var key = "pref."+name;
-		if (value) {
-			localStorage.setItem(key, value);
-		} else {
-			return localStorage.getItem(key);
+	prefs.allKeys = function(){
+		if (definitions) {
+			return definitions.map(d => d.key);
+		}
+		return Object.keys(localStorage).map(
+			k => k.match(/^miaou\.prefs\.(\w+)$/)
+		).filter(Boolean).map(m => m[1]);
+	}
+
+	function allLocalPrefs(){
+		return prefs.allKeys().reduce((m, k)=>{
+			var v = local(k)
+			if (v) m[k] = v;
+			return m;
+		}, {});
+	}
+
+	// initialization, using prefDefinitions and userGlobalPrefs provided
+	// in page's locals
+	definitions = locals.prefDefinitions; // not always defined, depends on the page
+	if (definitions) {
+		valmap = definitions.reduce((m, d) => m.set(d.key, d.values.map(v=>""+v.value)), new Map);
+		ed.registerCommandArgAutocompleter("pref", matcher);
+	}
+	if (locals.userGlobalPrefs) { // depends on the page, too
+		merged = Object.assign({}, locals.userGlobalPrefs, allLocalPrefs());
+	} else {
+		console.log("no userGlobalPrefs in locals");
+	}
+
+	prefs.get = function(key){
+		if (!merged) {
+			console.log("trying to read prefs and they're not available. key=", key);
+			// we send the local ones
+			return local(key);
+		}
+		return merged[key];
+	}
+
+	function matcher(ac){
+		var path = ac.args.split(" ");
+		path.pop();
+		var depth = path.length;
+		if (depth==0) return ["describe", "get", "list", "set", "unset"];
+		switch (path[0]) {
+		case "describe":
+		case "get":
+			return depth==1 ? prefs.allKeys() : undefined;
+		case "list":
+			return;
+		case "set":
+			if (depth==1) return ["local", "global"];
+			if (depth==2) return prefs.allKeys();
+			if (depth==3) return valmap.get(path[2]);
+			return;
+		case "unset":
+			if (depth==1) return ["local", "global"];
+			if (depth==2) return prefs.allKeys();
+			return;
+		default:
+			return;
 		}
 	}
 
-	prefs.get = function(name){
-		return localPref(name) || (locals.userPrefs||{})[name];
+	prefs.setMergedPrefs = function(arg){
+		merged = arg;
+	}
+
+	// called on 'cmd_pref' sio event, which is part of the !!pref command handling workflow
+	prefs.handleCmdPref = function(arg){
+		if (arg.cmd) {
+			var localMatch = arg.cmd.match(/^!!!?pref\s*(set|unset)\s*local\s*(\w+)\s*(.+)?$/);
+			if (localMatch) {
+				var verb = localMatch[1];
+				var key = localMatch[2];
+				var value = localMatch[3];
+				local(key, verb=="set" ? value : null);
+			}
+		}
+		ws.emit("prefs", {
+			local:allLocalPrefs(),
+			cmd: arg.cmd
+		});
 	}
 
 	prefs.funLowerThan = function(min){
-		var	value = prefs.get("fun"),
-			values = localSettingsDefinitions.fun;
-		return value && values.indexOf(min)>values.indexOf(value);
+		// in case of doubt we say yes
+		if (!definitions || !merged) return true;
+		for (var i=definitions.length; i--;) {
+			if (definitions[i].key!="fun") continue;
+			var values = definitions[i].values.map(v=>v.value);
+			var value = merged["fun"];
+			return value && values.indexOf(min)>values.indexOf(value);
+		}
+		return true;
 	}
-
-	chat.on("ready", function(){
-		ed.registerCommandArgAutocompleter("set", autocompleteArg);
-	})
-	.on("sending_message", function(m){
-		var match = m.content && m.content.match(/^!!set local\s+(\S+)(?:\s+(\S+))?\s*$/);
-		if (!match) return;
-		var	name = match[1],
-			value = match[2],
-			values = localSettingsDefinitions[name];
-		if (!values) {
-			md.showError(name + " isn't a known local setting");
-			return false;
-		}
-		if (value) {
-			if (values.indexOf(value)===-1) {
-				md.showError("Possible values for " + name + " are "+values);
-				return false;
-			}
-			localPref(name, value);
-		} else {
-			value = localPref(name);
-		}
-		md.notificationMessage(function($c){
-			$c.append(
-				$("<b>").text("Local Browser Settings: "),
-				$("<span>").text(name + " = " + localPref(name))
-			);
-		});
-	});
 
 });

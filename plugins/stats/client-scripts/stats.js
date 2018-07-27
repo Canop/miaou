@@ -1,5 +1,5 @@
 // provide argument autocompletion for the !!stats command
-miaou(function(plugins, ed){
+miaou(function(plugins, ed, prefs){
 
 	plugins["stats"] = {
 		start: function(){
@@ -8,7 +8,7 @@ miaou(function(plugins, ed){
 				["hours", ["me", "server", "room"]],
 				["days", ["me", "server", "room"]],
 				["months", ["me", "server", "room"]],
-				["prefs", ["notif", "sound", "volume", "datdpl", "nifvis", "connot", "theme", "otowat", "beta"]],
+				["prefs", prefs.allKeys()],
 				"me",
 				"user",
 				"room",

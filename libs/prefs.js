@@ -1,13 +1,16 @@
 // Manages user preferences, including external profile infos and the choice of theme.
-//
+// Handles the !!pref command
 
 const	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
 	path = require('path'),
 	naming = require('./naming.js'),
+	ws = require('./ws.js'),
+	fmt = require('./fmt.js'),
 	server = require('./server.js'),
 	crypto = require('crypto'),
 	cache = require('bounded-cache')(500),
-	definitions = [];
+	serverPrefs = Object.create(null), // defaults, as {key:value}
+	definitions = []; // exportable definitions (sent to the browser)
 
 var	db,
 	langs,
@@ -25,9 +28,17 @@ const definePref = exports.definePref = function(key, defaultValue, name, values
 		return v;
 	});
 	definitions.push({key, defaultValue, name, values});
+	definitions.sort((a, b) => a.key.localeCompare(b.key));
+	serverPrefs[key] = defaultValue;
 }
 
-exports.getPrefDefinitions = function(){
+function getDefinition(key){
+	for (let i=definitions.length; i--;) {
+		if (definitions[i].key==key) return definitions[i];
+	}
+}
+
+exports.getDefinitions = function(){
 	return definitions;
 }
 
@@ -69,7 +80,7 @@ exports.configure = function(miaou){
 			{ value:"yes", label:"Notify too"}
 		]
 	);
-	definePref(
+	definePref( // can't be local
 		"theme", 'default', "theme",
 		["default", ...themes]
 	);
@@ -81,11 +92,15 @@ exports.configure = function(miaou){
 		]
 	);
 	definePref(
-		"beta", 'no', "participage in beta tests"
+		"beta", 'no', "participation in beta tests"
 	);
 	definePref(
 		"mclean", -1,	"Auto-clean Messages",
 		[{value:-1, label:"disabled"}, 50, 100, 200, 300, 500, 1000]
+	);
+	definePref(
+		"fun", "normal", "Distraction Level",
+		["none", "low", "normal", "high", "max"]
 	);
 	return this;
 }
@@ -101,27 +116,34 @@ function getNormalizedValue(definition, val){
 	throw new Error("Not an authorized value for " + definition.key + " : " + val);
 }
 
-exports.theme = function(prefs, requestedTheme, isMobile){
+exports.theme = async function(con, userId, requestedTheme, isMobile){
 	if (isMobile) return mobileTheme;
 	if (requestedTheme && ~themes.indexOf(requestedTheme)) return requestedTheme;
+	let prefs = await exports.getUserGlobalPrefs(con, userId);
 	if (prefs && prefs.theme && prefs.theme!=='default') return prefs.theme;
 	return themes[0];
 }
 
-// asynchronously return the user's prefs as {key:value}
-const getUserPrefs = exports.get = async function(con, userId){
-	let prefs = cache.get(userId);
-	if (prefs) return prefs;
+// asynchronously return the user's global prefs as {key:value}
+// this doesn't include
+// 	- local prefs
+// 	- sever prefs (aka defaults)
+exports.getUserGlobalPrefs =  async function(con, userId){
+	let guprefs = cache.get(userId);
+	if (guprefs) return guprefs;
 	let rows = await con.getPrefs(userId);
-	prefs = rows.reduce(function(prefs, row){
-		prefs[row.name] = row.value;
-		return prefs;
+	guprefs = rows.reduce(function(guprefs, row){
+		guprefs[row.name] = row.value;
+		return guprefs;
 	}, {});
-	for (var def of definitions) {
-		if (prefs[def.key]==undefined) prefs[def.key] = def.defaultValue;
-	}
-	cache.set(userId, prefs);
-	return prefs;
+	cache.set(userId, guprefs);
+	return guprefs;
+}
+
+// return the merged prefs of the user as {key: value}
+// Both arguments are optionnal (if none is provided it returns the defaults)
+exports.merge = function(userGlobalPrefs, userLocalPrefs){
+	return Object.assign({}, serverPrefs, userGlobalPrefs, userLocalPrefs);
 }
 
 // user prefs page GET & POST
@@ -133,7 +155,7 @@ exports.appAllPrefs = async function(req, res){
 		ep: p.externalProfile
 	}));
 	db.do(async function(con){
-		let userPrefs = await getUserPrefs(con, req.user.id);
+		let userPrefs = await exports.getUserGlobalPrefs(con, req.user.id);
 		let userinfo;
 		let pluginAvatars;
 		let error;
@@ -239,7 +261,7 @@ exports.appAllPrefs = async function(req, res){
 			}
 		};
 		if (!server.mobile(req)) {
-			data.theme = exports.theme(userPrefs, req.query.theme);
+			data.theme = await exports.theme(con, req.user.id, req.query.theme);
 		}
 		res.render('prefs.pug', data);
 	});
@@ -253,24 +275,115 @@ exports.appGetJsonStringToMD5 = function(req, res){
 	});
 }
 
-function handleSetCommand(ct){
-	var match = ct.args.match(/^local\s+(\S+)(?:\s+(\S+))?\s*$/);
-	if (!match) {
-		// non local, not yet handled
-		throw "Non local settings aren't handled yet";
+function describe(ct, key){
+	let def = getDefinition(key);
+	if (!def) throw new Error("Unknown preference: " + key);
+	let txt = `## ${key} preference:\n`;
+	txt += fmt.tbl({
+		cols: ["key", "name", "default value"],
+		aligns: "cll",
+		rows: [[def.key, def.name, def.defaultValue]]
+	});
+	txt += "\nPossible values:\n";
+	txt += fmt.tbl({
+		aligns: "cl",
+		rows: def.values.map(v => [v.value, v.label])
+	});
+	if (key=="theme") {
+		txt += "\nThis preference can't be set locally, only globally.";
 	}
-	ct.nostore = true;
-	if (!match[2]) ct.silent = true;
+	ct.reply(txt);
+}
+
+async function handlePrefCommand(ct){
+	console.log('handlePrefCommand:', ct.message.content);
+	let match = ct.args.match(/^describe\s*(\w+)$/);
+	if (match) {
+		return describe(ct, match[1]);
+	}
+	// If the command is for pref modification we wheck the key and value
+	// are ok and if it's a global pref we do the change (if it's local
+	// the browser will do it on sio event)
+	match = ct.args.match(
+		/^(set|unset)\s*(local|global)?\s*(\w+)?\s*(.*)$/
+	);
+	if (match) {
+		let [, verb, scope, key, value] = match;
+		let def = getDefinition(key);
+		if (!def) throw new Error("Unknown preference: " + key);
+		if (verb==="set") {
+			if (!value) throw new Error("Value not provided");
+			if (!def.values.find(v=>v.value==value)) {
+				throw new Error("Unknow value: " + value);
+			}
+		}
+		if (scope=="local") {
+			if (key=="theme") throw new Error("Theme is a global-only preference");
+		} else {
+			let userId = ct.message.author;
+			console.log("upsertPref", userId, key, value);
+			await this.upsertPref(userId, key, value);
+			// updating the cache
+			let gp = await exports.getUserGlobalPrefs(this, userId);
+			gp[key] = value;
+		}
+	}
+	// Whatever the command, we'll need the up-to-date local prefs, so
+	// we need to ask them to the browser
+	ct.shoe.emit("cmd_pref", { cmd: ct.message.content });
+	// The handling of the command will resume once we receive
+	// the sio event with the local prefs
+}
+
+// second server part of handling a !!pref command
+// arg is expected to contain
+// 	- local: local prefs
+// 	- cmd: the command message content
+exports.handlePrefSioCommand = async function(con, shoe, arg){
+	let match = arg.cmd.match(
+		/^!!(!)?pref\s*(get|list|set|unset)\s*(?:local|global)?\s*(\w+)?\s*(.*)$/
+	);
+	if (!match) return console.log("invalid !!pref command:", arg.cmd);
+	let [, priv, verb, key] = match;
+	let defs = definitions.filter(d=>!key||d.key==key);
+	let txt = `@${shoe.publicUser.name} ${arg.cmd.replace(/^!!!?pref\s*/, "")}\n`;
+	let local = arg.local;
+	let global = await exports.getUserGlobalPrefs(con, shoe.publicUser.id);
+	txt += fmt.tbl({
+		cols: ["key", "name", "local browser value", "global user value", "default"],
+		aligns: "llccc",
+		rows: defs.map(d => [d.key, d.name, local[d.key]||" ", global[d.key]||" ", d.defaultValue])
+	});
+	if (priv) {
+		shoe.emitPersonalBotFlake(null, txt);
+	} else {
+		ws.botMessage(null, shoe.room.id, txt);
+	}
+	if (verb=="set"||verb=="unset") {
+		// finally we send the merged prefs (which may have been changed by the cmd)
+		shoe.emit('prefs', shoe.userPrefs);
+	}
 }
 
 // registers the !!set command, which is used for local browser preferences
 // (will probably allow server managed preferences in the future)
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name: 'set',
-		fun: handleSetCommand,
-		help: "sets a preference: `!!set local fun max`",
-		detailedHelp: "Only local browser prefs are managed this way today",
+		name: 'pref',
+		canBePrivate: true,
+		fun: handlePrefCommand,
+		help: "list, read or write preferences",
+		detailedHelp:
+			"You have two types of preferences:"
+			+ "\n* global preferences"
+			+ "\n* local preferences, set for your current browser only"
+			+ "\nWhen both are defined, local preferences have priority."
+			+ "\nExamples:"
+			+ "\n* `!!pref describe fun` : describes all possible values of the `fun` option"
+			+ "\n* `!!pref list` : list all your preferences, local and global"
+			+ "\n* `!!pref set global volume 1` : set to `1` your global `volume` preference"
+			+ "\n* `!!pref set local volume 0` : set to `0` the volume on your current browser"
+			+ "\nIf you want to use this command privately, use `!!pref` instead of `!!pref`."
 	});
 }
 
