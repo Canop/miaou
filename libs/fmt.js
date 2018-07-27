@@ -49,27 +49,33 @@ exports.bytes = function(v, p){
 const alignMd = { l: ":-", c: ":-:", r: "-:" };
 // returns a markdown table
 // o:
-//  cols: col names
+//  cols: col names (if not provided, there will be no header)
 //  rows: string arrays
 //  rank: if true, a ranking column is added
 //  aligns: optional array of alignments (default is centering)
 exports.tbl = function(o){
 	let	c = "",
 		aligns = o.aligns,
+		cols = o.cols,
 		rank = o.rank && o.rows.length>1;
-	if (rank) c += "|#";
-	c += o.cols.map(c=>"|"+c).join("") + "|\n";
-	if (rank) c += "|-:";
+	if (cols) {
+		if (rank) c += "|#";
+		c += cols.map(c=>"|"+c).join("") + "|\n";
+		if (rank) c += "|-:";
+	} else {
+		// for the rest, we'll just use the longest row as if it was the cols
+		cols = o.rows.reduce((longest, row) => row.length > longest.length ? row : longest, []);
+	}
 	if (aligns) {
 		if (typeof aligns === "string") aligns = Array.from(aligns);
-		c += "|" + o.cols.map((_, i) => alignMd[aligns[i]] || ":-:").join("|");
+		c += "|" + cols.map((_, i) => alignMd[aligns[i]] || ":-:").join("|");
 	} else {
-		c += "|:-:".repeat(o.cols.length);
+		c += "|:-:".repeat(cols.length);
 	}
 	c += "|\n" + o.rows.map(function(row, l){
 		let line="|";
 		if (rank) line += l+1+"|";
-		line += row.join("|")+"|";
+		line += row.map(c=>c===""?" ":c).join("|")+"|";
 		return line;
 	}).join("\n");
 	return c;
