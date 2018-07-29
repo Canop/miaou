@@ -1,12 +1,8 @@
-miaou(function(plugins, md){
+miaou(function(plugins, md, prefs){
 
 	var regex = /^\s*(<span[^>]+>[^<]+<\/span>)?\s*<a[^>]* href="https?:\/\/(?:www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=|youtu\.be\/)([a-zA-Z0-9-_]+)(?:[?&]t=(\d+))?[\?&#\w\d=]*">[^<>]+<\/a>\s*$/;
 
-	function getEmbedLink(id, t){
-		var url = 'https://www.youtube.com/embed/' + id + '?html5=1';
-		if (t) url += "&start="+t;
-		return url;
-	}
+	var expand;
 
 	// We want to make sure the video size isn't too big
 	function calculateVideoSize($c){
@@ -31,30 +27,55 @@ miaou(function(plugins, md){
 		};
 	}
 
-	function replaceLink($c, m){
+	function getEmbedLink(id, t){
+		// We want to calculate for each new video, the screen size may have changed.
+		var url = 'https://www.youtube.com/embed/' + id + '?html5=1';
+		if (t) url += "&start="+t;
+		return url;
+	}
+
+	function makeVideoHTML($c, id, t){
+		var size = calculateVideoSize($c);
+		return	'<iframe width=' + size.width +
+			' height=' + size.height +
+			' sandbox="allow-forms allow-scripts allow-same-origin"' +
+			' src="' + getEmbedLink(id, t) + '"' +
+			' frameborder=0 allowfullscreen></iframe>';
+	}
+
+	function handleMessage($c, m){
 		if (!m.content || !/(?:www\.youtube\.com\/watch|youtu\.be\/)/.test(m.content)) return;
 		var hasYoutubeLink = false;
 		var lines = $c.html().split('<br>').map(function(line){
 			var match = line.match(regex);
 			if (!match) return line;
 			hasYoutubeLink = true;
-			// We want to calculate for each new video, the screen size may have changed.
-			var size = calculateVideoSize($c);
-			var r = '<iframe width=' + size.width +
-				' height=' + size.height +
-				' sandbox="allow-forms allow-scripts allow-same-origin"' +
-				' src="' + getEmbedLink(match[2], match[3]) + '"' +
-				' frameborder=0 allowfullscreen></iframe>';
+			var r;
+			if (expand) {
+				r = makeVideoHTML($c, match[2], match[3]);
+			} else {
+				r = `<i class=youtube-expander  data-yt="${match[2]},${match[3]}">▶</i>${match[0]}`;
+			}
 			if (match[1]) r = match[1] + "<br>" + r;
 			return r;
 		});
 		if (hasYoutubeLink) $c.html(lines.join('<br>'));
 	}
 
+	function bindExpanders(){
+		$("#messages").on("click", ".youtube-expander", function(){
+			$(this).before(makeVideoHTML(
+				$(this).closest(".content"), ...$(this).data("yt").split(",")
+			)).add($(this).next()).remove();
+		});
+	}
+
 	plugins.youtube = {
 		start: function(){
-			// post renderer
-			md.registerRenderer(replaceLink, true, true);
+			expand = prefs.get("youtube.expand")!=="no";
+			console.log('expand:', expand);
+			if (!expand) bindExpanders();
+			md.registerRenderer(handleMessage, true, true);
 		}
 	};
 });
