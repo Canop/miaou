@@ -83,7 +83,7 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 	// called on 'cmd_pref' sio event, which is part of the !!pref command handling workflow
 	prefs.handleCmdPref = function(arg){
 		if (arg.cmd) {
-			var localMatch = arg.cmd.match(/^!!!?pref\s*(set|unset)\s*local\s*(\w+)\s*(.+)?$/);
+			var localMatch = arg.cmd.match(/^!!!?pref\s*(set|unset)\s*local\s*(\S+)\s*(.+)?$/);
 			if (localMatch) {
 				var verb = localMatch[1];
 				var key = localMatch[2];

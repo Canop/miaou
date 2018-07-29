@@ -18,6 +18,8 @@ var	db,
 	mobileTheme,
 	plugins;
 
+// define a new preference, which users will see and be able to set.
+// Plugins are required to prefix it as "pluginname."
 const definePref = exports.definePref = function(key, defaultValue, name, values){
 	if (!values) values = ["yes", "no"];
 	values = values.map(v=>{
@@ -297,7 +299,7 @@ function describe(ct, key){
 
 async function handlePrefCommand(ct){
 	console.log('handlePrefCommand:', ct.message.content);
-	let match = ct.args.match(/^describe\s*(\w+)$/);
+	let match = ct.args.match(/^describe\s*(\S+)$/);
 	if (match) {
 		return describe(ct, match[1]);
 	}
@@ -305,7 +307,7 @@ async function handlePrefCommand(ct){
 	// are ok and if it's a global pref we do the change (if it's local
 	// the browser will do it on sio event)
 	match = ct.args.match(
-		/^(set|unset)\s*(local|global)?\s*(\w+)?\s*(.*)$/
+		/^(set|unset)\s*(local|global)?\s*(\S+)?\s*(.*)$/
 	);
 	if (match) {
 		let [, verb, scope, key, value] = match;
@@ -341,7 +343,7 @@ async function handlePrefCommand(ct){
 // 	- cmd: the command message content
 exports.handlePrefSioCommand = async function(con, shoe, arg){
 	let match = arg.cmd.match(
-		/^!!(!)?pref\s*(get|list|set|unset)\s*(?:local|global)?\s*(\w+)?\s*(.*)$/
+		/^!!(!)?pref\s*(get|list|set|unset)\s*(?:local|global)?\s*(\S+)?\s*(.*)$/
 	);
 	if (!match) return console.log("invalid !!pref command:", arg.cmd);
 	let [, priv, verb, key] = match;
