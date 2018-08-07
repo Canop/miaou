@@ -118,6 +118,15 @@ function getNormalizedValue(definition, val){
 	throw new Error("Not an authorized value for " + definition.key + " : " + val);
 }
 
+function isValid(key, val){
+	let def = getDefinition(key);
+	if (!def) return false;
+	for (let i=def.values.length; i--;) {
+		if (def.values[i].value==val) return true;
+	}
+	return false;
+}
+
 exports.theme = async function(con, userId, requestedTheme, isMobile){
 	if (isMobile) return mobileTheme;
 	if (requestedTheme && ~themes.indexOf(requestedTheme)) return requestedTheme;
@@ -135,7 +144,9 @@ exports.getUserGlobalPrefs =  async function(con, userId){
 	if (guprefs) return guprefs;
 	let rows = await con.getPrefs(userId);
 	guprefs = rows.reduce(function(guprefs, row){
-		guprefs[row.name] = row.value;
+		if (isValid(row.name, row.value)) {
+			guprefs[row.name] = row.value;
+		}
 		return guprefs;
 	}, {});
 	cache.set(userId, guprefs);
@@ -298,7 +309,6 @@ function describe(ct, key){
 }
 
 async function handlePrefCommand(ct){
-	console.log('handlePrefCommand:', ct.message.content);
 	let match = ct.args.match(/^describe\s*(\S+)$/);
 	if (match) {
 		return describe(ct, match[1]);
@@ -323,7 +333,6 @@ async function handlePrefCommand(ct){
 			if (key=="theme") throw new Error("Theme is a global-only preference");
 		} else {
 			let userId = ct.message.author;
-			console.log("upsertPref", userId, key, value);
 			await this.upsertPref(userId, key, value);
 			// updating the cache
 			let gp = await exports.getUserGlobalPrefs(this, userId);
@@ -362,8 +371,10 @@ exports.handlePrefSioCommand = async function(con, shoe, arg){
 		ws.botMessage(null, shoe.room.id, txt);
 	}
 	if (verb=="set"||verb=="unset") {
+		// many preferences aren't dynamically handled client-side so we just reload
+		shoe.emit("must_reload", "preferences changed");
 		// finally we send the merged prefs (which may have been changed by the cmd)
-		shoe.emit('prefs', shoe.userPrefs);
+		//shoe.emit('prefs', shoe.userPrefs);
 	}
 }
 
@@ -385,7 +396,7 @@ exports.registerCommands = function(registerCommand){
 			+ "\n* `!!pref list` : list all your preferences, local and global"
 			+ "\n* `!!pref set global volume 1` : set to `1` your global `volume` preference"
 			+ "\n* `!!pref set local volume 0` : set to `0` the volume on your current browser"
-			+ "\nIf you want to use this command privately, use `!!pref` instead of `!!pref`."
+			+ "\nIf you want to use this command privately, use `!!!pref` instead of `!!pref`."
 	});
 }
 

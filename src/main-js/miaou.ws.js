@@ -133,11 +133,14 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 		.on('rm_ping', notif.removePing)
 		.on('rm_pings', notif.removePings)
 		.on('cmd_pref', prefs.handleCmdPref)
-		.on('prefs', prefs.setMergedPrefs)
+		//.on('prefs', prefs.setMergedPrefs) // not used today
 		.on('must_reenter', function(){
 			console.log("<- must_reenter");
 			chat.state = 'must_reenter';
 			enter();
+		})
+		.on('must_reload', function(){
+			location.reload();
 		})
 		.on('disconnect', function(){
 			console.log("<- disconnect");

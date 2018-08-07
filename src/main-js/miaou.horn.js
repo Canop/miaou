@@ -59,7 +59,9 @@ miaou(function(horn, gui, locals, md, prefs){
 		if (authorname) title = authorname + ' in ' + title;
 		var dsk = {};
 		dsk.icon = 'static/M-64.png';
-		if (content && prefs.get("connot")==="yes") dsk.body = content.replace(/^@\w[\w\-]{2,}#\d+/, '');
+		if (content && prefs.get("connot")==="yes") {
+			dsk.body = content.replace(/^@\w[\w\-]{2,}#\d+/, '');
+		}
 		var n = new Notification(title, dsk);
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function(){ window.focus(); n.close(); };

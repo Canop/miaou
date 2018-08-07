@@ -2,6 +2,7 @@
 miaou(function(prefs, chat, ed, locals, md, ws){
 
 	var	definitions, // not always defined, normally available in chat
+		defaults = {},
 		valmap,
 		merged;
 
@@ -34,10 +35,18 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 	definitions = locals.prefDefinitions; // not always defined, depends on the page
 	if (definitions) {
 		valmap = definitions.reduce((m, d) => m.set(d.key, d.values.map(v=>""+v.value)), new Map);
+		defaults = definitions.reduce((m, d) => {
+			m[d.key]=d.defaultValue; return m;
+		}, {});
 		ed.registerCommandArgAutocompleter("pref", matcher);
 	}
 	if (locals.userGlobalPrefs) { // depends on the page, too
-		merged = Object.assign({}, locals.userGlobalPrefs, allLocalPrefs());
+		merged = Object.assign(
+			defaults,
+			locals.userGlobalPrefs,
+			allLocalPrefs()
+		);
+		console.log('merged preferences:', merged);
 	} else {
 		console.log("no userGlobalPrefs in locals");
 	}
@@ -76,9 +85,9 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 		}
 	}
 
-	prefs.setMergedPrefs = function(arg){
-		merged = arg;
-	}
+	//prefs.setMergedPrefs = function(arg){
+	//	merged = arg;
+	//}
 
 	// called on 'cmd_pref' sio event, which is part of the !!pref command handling workflow
 	prefs.handleCmdPref = function(arg){

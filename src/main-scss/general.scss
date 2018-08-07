@@ -40,7 +40,7 @@ button, input[type=button], input[type=submit], input[type=reset] {
 	cursor: pointer;
 	transition: all 100ms ease;
 	&.small {
-		font-size: 75%;
+		font-size: 12px;
 		padding: 2px 4px;
 		border-radius: 2px;
 		box-shadow: $small-button-box-shadow;
