@@ -68,12 +68,12 @@ miaou(function(plugins, md, prefs){
 				$(this).closest(".content"), ...$(this).data("yt").split(",")
 			)).add($(this).next()).remove();
 		});
+		$("#messages").bubbleOn(".youtube-expander", "click this icon to show the video");
 	}
 
 	plugins.youtube = {
 		start: function(){
 			expand = prefs.get("youtube.expand")!=="no";
-			console.log('expand:', expand);
 			if (!expand) bindExpanders();
 			md.registerRenderer(handleMessage, true, true);
 		}
