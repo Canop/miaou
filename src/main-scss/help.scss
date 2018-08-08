@@ -1,6 +1,4 @@
 #help-body {
-	background: $bg-color;
-	padding: 10px 10px 10px 210px;
 	overflow-y: auto;
 	a, a:visited {
 		color: $help-link-color;
@@ -12,13 +10,7 @@ h1 {
 }
 #help-nav {
 	background: $help-nav-bg;
-	position: fixed;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	width: 200px;
 	display: flex;
-	flex-direction: column;
 	color: $home-top-color;
 	h1, h2, h3 {
 		color: $home-top-color;
@@ -29,6 +21,44 @@ h1 {
 	}
 	box-shadow: 2px 0 2px rgba(0, 0, 0, .15), 5px 0 5px rgba(0, 0, 0, .1);
 }
+
+@media(min-device-width:600px) {
+	#help-content {
+		max-width: 900px;
+	}
+	#help-nav {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: 200px;
+		flex-direction: column;
+	}
+	#help-body {
+		padding: 10px 10px 10px 210px;
+	}
+}
+@media(max-device-width:600px) {
+	#help-content h1, #help-summary {
+		display: none;
+	}
+	#help-nav {
+		position: relative;
+		flex-direction: row;
+		align-items: flex-end;
+		#help-miaou-logo-wrapper, h1 {
+			flex: 1 1 auto;
+		}
+		h1 {
+			font-size: 50px;
+			padding: 15px;
+		}
+	}
+	#help-body {
+		padding: 10px 10px 10px 10px;
+	}
+}
+
 #help-miaou-logo-wrapper {
 	display: block;
 	flex: 0 0 110px;
@@ -59,7 +89,6 @@ h1 {
 }
 
 #help-content {
-	max-width: 900px;
 	h2, h3 {
 		cursor: pointer;
 	}
