@@ -129,7 +129,8 @@ function miaou(f){
 	try {
 		miaou.locals = JSON.parse($('#locals').html());
 	} catch (e) {
-		console.log("Error while loading locals");
+		// not all pages have locals
+		miaou.locals = {};
 	}
 
 	// Discovery of the root URL
@@ -153,9 +154,11 @@ function miaou(f){
 		$.post((miaou.root||"/")+"error", {
 			user:miaou.locals.me ? miaou.locals.me.name : "?",
 			page:location.href,
-			message:message,
-			url:url, line:line, col:col,
-			err:err
+			message,
+			url,
+			line,
+			col,
+			err
 		});
 	}
 

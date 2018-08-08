@@ -4,7 +4,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 	var $scroller = gui.$messageScroller = $('#message-scroller');
 	var scroller = $scroller[0];
 	gui.$messageScroller = $scroller;
-	gui.mobile = $(document.body).hasClass('mobile');
+	gui.mobile = document.body.classList.contains('mobile');
 	var scrollerPaddingTop = parseInt($scroller.css('padding-top'));
 	gui.isAtBottom = function(){
 		var messages = document.getElementById("messages");

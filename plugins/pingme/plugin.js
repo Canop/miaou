@@ -277,7 +277,7 @@ async function doCommandCancelAlarm(ct, num){
 	}
 	removed = removed[0];
 	var existingAlarm = alarmMap.get(removed.message); // not defined if previous alarm already done
-	if (existingAlarm.timeout) {
+	if (existingAlarm && existingAlarm.timeout) {
 		existingAlarm.timeout.clear();
 	}
 	ct.reply("Alarm removed.\n" + alarmsListMarkdown(alarms), true);

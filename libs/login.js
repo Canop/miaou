@@ -1,4 +1,4 @@
-var server = require('./server.js'),
+let	server = require('./server.js'),
 	oauth2Strategies;
 
 exports.setOauth2Strategies = function(strategies){

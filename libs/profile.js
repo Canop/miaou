@@ -59,10 +59,12 @@ exports.appAllUsername = function(req, res){
 	}).then(function(theme){
 		var	hasValidName = naming.isValidUsername(req.user.name);
 		res.render('username.pug', {
-			vars: {valid : hasValidName},
+			vars: {
+				valid : hasValidName,
+				theme
+			},
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			error,
-			theme
+			error
 		});
 	}).catch(function(err){
 		console.log('err in appAllUsername');
@@ -163,8 +165,10 @@ exports.appGetUser = function(req, res){
 		}
 		res.render('user.pug', {
 			vars: {
+				prefDefinitions: prefs.getDefinitions(),
 				user,
 				userinfo,
+				theme: prefs.defaultTheme(),
 				avatar: avatarsrc(user.avatarsrc, user.avatarkey)
 			},
 			pluginAdditions,

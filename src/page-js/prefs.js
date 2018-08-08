@@ -84,7 +84,8 @@ miaou(function(locals, usr){
 			$input.val(userPrefs[key]);
 		} else {
 			// must be radio button based
-			$('input[name='+key+'][value='+userPrefs[key]+']').prop('checked', true);
+			// may be missing (not all preferences are accessible in the prefs page)
+			$('input[name="'+key+'"][value='+userPrefs[key]+']').prop('checked', true);
 		}
 	});
 

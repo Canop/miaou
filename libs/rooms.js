@@ -106,23 +106,24 @@ exports.updateMessage = function(message){
 exports.appGetRoom = function(req, res){
 	db.do(async function(con){
 		let theme = await prefs.theme(con, req.user.id, req.query.theme);
+		let vars = {
+			prefDefinitions: prefs.getDefinitions(),
+			error: null,
+			langs: langs.legal,
+			theme
+		};
 		let room;
 		try {
 			room = await con.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
 			if (!auths.checkAtLeast(room.auth, 'admin')) {
 				return server.renderErr(res, "Admin level is required to manage the room");
 			}
-			res.render('room.pug', {
-				vars:{ room, error:null, langs:langs.legal }, theme
-			});
+			vars.room = room;
 		} catch (e) {
-			console.log('ERROR:', e);
 			if (!(e instanceof db.NoRowError)) throw e;
-			// that's where we go in case of room creation
-			res.render('room.pug', { // TODO ???
-				vars:{ error:null, langs:langs.legal }, theme
-			});
+			// in case of room creation we just render room.pug without vars.room
 		}
+		res.render('room.pug', { vars });
 	}, function(err){
 		server.renderErr(res, err);
 	});
@@ -131,7 +132,7 @@ exports.appGetRoom = function(req, res){
 // room admin page POST
 exports.appPostRoom = function(req, res){
 	var roomId = +req.query.id;
-	if (req.body.name && !/^[^\[\]]{2,50}$/.test(req.body.name)) {
+	if (!/^[^\[\]]{2,50}$/.test(req.body.name)) {
 		return server.renderErr(res, "invalid room name");
 	}
 	if (req.body.img && !/^https:\/\/\S{4,220}$/.test(req.body.img)) {
@@ -169,9 +170,8 @@ exports.appPostRoom = function(req, res){
 		}
 		await con.setRoomTags(room.id, room.tags);
 		res.redirect(server.roomUrl(room));	// executes the room get
-	}, function(err){
-		console.error(err);
-		res.render('room.pug', {vars:{ room, error:err.toString() }});
+	}, async function(err){
+		return server.renderErr(res, err);
 	});
 }
 
@@ -193,24 +193,23 @@ exports.appGetRooms = function(req, res){
 		let pings = await con.fetchUserPingRooms(userId);
 		let watches = await con.listUserWatches(userId);
 		var mobile = server.mobile(req);
+		let userGlobalPrefs = await prefs.getUserGlobalPrefs(con, userId);
 		let data = {
 			vars: {
 				langs: langs.legal,
 				mobile,
+				prefDefinitions: prefs.getDefinitions(),
 				me: req.user,
 				welcomeRooms,
+				userGlobalPrefs,
 				watches,
 				pings
 			},
 			user: req.user,
 			pings
 		};
-		if (mobile) {
-			res.render('rooms.mob.pug', data);
-		} else {
-			data.theme = await prefs.theme(con, userId, req.query.theme);
-			res.render('rooms.pug', data);
-		}
+		data.vars.theme = await prefs.theme(con, userId, req.query.theme);
+		res.render(mobile ? 'rooms.mob.pug' : 'rooms.pug', data);
 	}, function(err){
 		server.renderErr(res, err);
 	});

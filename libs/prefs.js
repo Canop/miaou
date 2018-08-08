@@ -6,7 +6,6 @@ const	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 	naming = require('./naming.js'),
 	ws = require('./ws.js'),
 	fmt = require('./fmt.js'),
-	server = require('./server.js'),
 	crypto = require('crypto'),
 	cache = require('bounded-cache')(500),
 	serverPrefs = Object.create(null), // defaults, as {key:value}
@@ -82,7 +81,7 @@ exports.configure = function(miaou){
 			{ value:"yes", label:"Notify too"}
 		]
 	);
-	definePref( // can't be local
+	definePref(
 		"theme", 'default', "theme",
 		["default", ...themes]
 	);
@@ -125,6 +124,10 @@ function isValid(key, val){
 		if (def.values[i].value==val) return true;
 	}
 	return false;
+}
+
+exports.defaultTheme = function(isMobile){
+	return isMobile ? mobileTheme : themes[0];
 }
 
 exports.theme = async function(con, userId, requestedTheme, isMobile){
@@ -273,9 +276,7 @@ exports.appAllPrefs = async function(req, res){
 				pluginAvatars
 			}
 		};
-		if (!server.mobile(req)) {
-			data.theme = await exports.theme(con, req.user.id, req.query.theme);
-		}
+		data.vars.theme = await exports.theme(con, req.user.id, req.query.theme);
 		res.render('prefs.pug', data);
 	});
 }
@@ -302,9 +303,6 @@ function describe(ct, key){
 		aligns: "cl",
 		rows: def.values.map(v => [v.value, v.label])
 	});
-	if (key=="theme") {
-		txt += "\nThis preference can't be set locally, only globally.";
-	}
 	ct.reply(txt);
 }
 
@@ -329,9 +327,7 @@ async function handlePrefCommand(ct){
 				throw new Error("Unknow value: " + value);
 			}
 		}
-		if (scope=="local") {
-			if (key=="theme") throw new Error("Theme is a global-only preference");
-		} else {
+		if (scope!=="local") {
 			let userId = ct.message.author;
 			await this.upsertPref(userId, key, value);
 			// updating the cache
@@ -371,10 +367,10 @@ exports.handlePrefSioCommand = async function(con, shoe, arg){
 		ws.botMessage(null, shoe.room.id, txt);
 	}
 	if (verb=="set"||verb=="unset") {
-		// many preferences aren't dynamically handled client-side so we just reload
-		shoe.emit("must_reload", "preferences changed");
 		// finally we send the merged prefs (which may have been changed by the cmd)
 		//shoe.emit('prefs', shoe.userPrefs);
+		// many preferences aren't dynamically handled client-side so we just reload
+		shoe.emit("must_reload", "preferences changed");
 	}
 }
 

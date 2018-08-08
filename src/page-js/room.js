@@ -37,15 +37,23 @@ miaou(function(locals, roomFinder){
 		$('#name,#private,#listed').prop('disabled', true);
 	}
 	$('form')[0].action = location;
-	$('#name').focus().keyup(function(){
-		if (!this.validity.valid) {
-			$('#err').text('Please type a ' + (this.value.length>50 ? 'shorter' : 'prettier') + ' name');
-			$('#submit').prop('disabled', true);
+	function checkName(input){
+		$('#submit').prop('disabled', true);
+		if (!input.value) {
+			$('#err').text("Room name can't be empty");
+		} else if (!input.validity.valid) {
+			$('#err').text('Please type a ' + (input.value.length>50 ? 'shorter' : 'prettier') + ' name');
 		} else {
 			$('#err').text('');
 			$('#submit').prop('disabled', false);
 		}
+	}
+	$('#name').focus().keyup(function(){
+		checkName(this);
 	});
+	checkName($("#name")[0]);
+
+
 	function updatePreview(){
 		$("#room-preview").empty().append(roomFinder.$square({
 			name: $('#name').val(),

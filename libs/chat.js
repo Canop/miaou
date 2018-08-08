@@ -46,10 +46,13 @@ exports.appGet = function(req, res){
 		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
 			let lastAccessRequest = await con.getLastAccessRequest(roomId, userId);
 			let args = {
-				vars: { room },
+				vars: {
+					room,
+					prefDefinitions: prefs.getDefinitions(),
+					theme
+				},
 				room,
 				lastAccessRequest,
-				theme,
 				canQueryAccess: true,
 				specificMessage: null
 			};
@@ -70,9 +73,10 @@ exports.appGet = function(req, res){
 			messages,
 			prefDefinitions: prefs.getDefinitions(),
 			userGlobalPrefs,
-			pluginsToStart: clientSidePluginNames
+			pluginsToStart: clientSidePluginNames,
+			theme
 		};
-		res.render(isMobile ? 'pad.mob.pug' : 'pad.pug', {vars:locals, theme});
+		res.render(isMobile ? 'pad.mob.pug' : 'pad.pug', {vars:locals});
 	}, function(err){
 		server.renderErr(res, err);
 	});

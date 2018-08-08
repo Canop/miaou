@@ -3,6 +3,7 @@
 const	levels = ['read', 'write', 'admin', 'own'],
 	naming = require('./naming.js'),
 	server = require('./server.js'),
+	prefs = require('./prefs.js'),
 	ws = require('./ws.js');
 
 let	serverAdminIds,
@@ -74,6 +75,7 @@ exports.appGetAuths = function(req, res){
 		let requests = await con.listOpenAccessRequests(room.id);
 		let recentUsers = await con.listRecentUsers(room.id, 50);
 		let bans = await con.listActiveBans(room.id);
+		let theme = await prefs.theme(con, req.user.id, req.query.theme, server.mobile(req));
 		let dontlistasrecent = {};
 		let unauthorizedUsers = [];
 		auths.concat(requests).forEach(function(a){
@@ -83,7 +85,11 @@ exports.appGetAuths = function(req, res){
 			if (!dontlistasrecent[u.id]) unauthorizedUsers.push(u);
 		});
 		res.render('auths.pug', {
-			vars: {room},
+			vars: {
+				prefDefinitions: prefs.getDefinitions(),
+				theme,
+				room
+			},
 			room, auths, requests, unauthorizedUsers, bans
 		});
 	}, function(err){

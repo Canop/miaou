@@ -4,7 +4,7 @@ html
 		title Miaou - Rooms
 		meta(name="viewport",content="initial-scale=1, maximum-scale=1")
 		link(rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
+		link(id='theme-link',rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
 		link(rel='stylesheet', href='static/rooms.mob.css')
 		script(src="static/jquery-3.3.1.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
@@ -25,6 +25,8 @@ html
 					a(href="room") Create a room
 					| -
 					a(href="help#About",target=help) Help
+					| -
+					a(href="legal") Legal
 			#home-notifs
 				if pings.length==1
 					p

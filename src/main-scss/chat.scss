@@ -206,7 +206,7 @@ body.pad #me {
 			border-top: $content-border-top-after-disrupt;
 		}
 		&:hover .content {
-			background: $hovered-message-content-bg; // theme
+			background: $hovered-message-content-bg;
 		}
 	}
 	.rvis + .rnvis {
