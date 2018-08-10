@@ -1,4 +1,4 @@
-const	apiversion = 100,
+const	apiversion = 101,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -453,7 +453,7 @@ function handleUserInRoom(socket, completeUser){
 				}
 			}
 			socket.emit('notables', memroom.notables);
-			socket.emit('server_commands', commands.commands);
+			socket.emit('server_commands', commands.availableCommandNames(shoe.room));
 			socket.emit('recent_users', recentUsers);
 			//socket.emit('pref_defs', prefs.getDefinitions());
 			socket.emit('welcome');

@@ -195,11 +195,6 @@ async function startServer(){
 
 	let defaultTheme = miaou.config.themes[0];
 	app.locals.theme = defaultTheme;
-	console.log('locals:', app.locals);
-	//app.locals.vars = { // default miaou.locals and vars in pug files
-	//	theme: miaou.config.themes[0] // default theme
-	//};
-
 	app.locals.inlineJSON = function(obj){
 		var json = JSON.stringify(obj);
 		return json.replace(/<([/!])/g, '\\u003c$1');

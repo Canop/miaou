@@ -19,7 +19,7 @@ var	db,
 
 // define a new preference, which users will see and be able to set.
 // Plugins are required to prefix it as "pluginname."
-const definePref = exports.definePref = function(key, defaultValue, name, values){
+const definePref = exports.definePref = function(key, defaultValue, name, values, options={canBeLocal:true}){
 	if (!values) values = ["yes", "no"];
 	values = values.map(v=>{
 		if (typeof v !== "object") {
@@ -28,7 +28,13 @@ const definePref = exports.definePref = function(key, defaultValue, name, values
 		if (!v.label) v.label = v.value;
 		return v;
 	});
-	definitions.push({key, defaultValue, name, values});
+	definitions.push({
+		key,
+		defaultValue,
+		name,
+		values,
+		canBeLocal: options.canBeLocal
+	});
 	definitions.sort((a, b) => a.key.localeCompare(b.key));
 	serverPrefs[key] = defaultValue;
 }
@@ -300,7 +306,8 @@ function describe(ct, key){
 	});
 	txt += "\nPossible values:\n";
 	txt += fmt.tbl({
-		aligns: "cl",
+		cols: ["value", "description"],
+		aligns: "ll",
 		rows: def.values.map(v => [v.value, v.label])
 	});
 	ct.reply(txt);
@@ -327,7 +334,9 @@ async function handlePrefCommand(ct){
 				throw new Error("Unknow value: " + value);
 			}
 		}
-		if (scope!=="local") {
+		if (scope==="local") {
+			if (!def.canBeLocal) throw new Error("This preference can only be global");
+		} else {
 			let userId = ct.message.author;
 			await this.upsertPref(userId, key, value);
 			// updating the cache

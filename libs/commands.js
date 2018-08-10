@@ -1,7 +1,7 @@
 const	path = require('path'),
 	bench = require("./bench.js"),
 	server = require('./server.js'),
-	commands = {}
+	commands = {};
 
 let	all = [];
 
@@ -119,6 +119,10 @@ let getHelpText = exports.getHelpText = function(room, cmdname){
 		.map(cmd => '\n* `!!' + cmd.name + '` : ' + cmd.help)
 		.join('');
 	}
+}
+
+exports.availableCommandNames = function(room){
+	return all.filter(cmd => cmd.help && (cmd.filter===undefined || cmd.filter(room))).map(c=>c.name);
 }
 
 exports.commands = commands;

@@ -56,7 +56,7 @@ miaou(function(ed, chat){
 	ed.tryAutocompleteCmdName = function(input, setMatches){
 		var accmd = getaccmd(input);
 		if (!accmd) return;
-		var matches = Object.keys(chat.commands).sort();
+		var matches = chat.commands;
 		setMatches(accmd, matches, true);
 		return true;
 	}

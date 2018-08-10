@@ -9,7 +9,7 @@ miaou(function(chat, hist, horn, links, locals, md, notif, gui, plugins, skin, t
 	};
 	chat.DELAY_BEFORE_PROFILE_POPUP= 400; // ms
 	chat.DISRUPTION_THRESHOLD = 60*60; // seconds
-	chat.commands = {}; // all known commands issued with !! (value=description)
+	chat.commands = []; // names of commands available in the current room
 	chat.voteLevels = [
 		{key:'pin', icon:'&#xe810;'},	// fontello icon-pin
 		{key:'star', icon:'&#xe805;'},	// fontello icon-star

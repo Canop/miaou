@@ -107,7 +107,10 @@ exports.appGetPublicProfile = function(req, res){
 			}
 			let ep = plugin.externalProfile;
 			if (!ppi || !ep) continue;
-			if (ep.rendering.filter && !ep.rendering.filter(ppi.info, room)) continue;
+			if (ep.rendering.filter) {
+				let ok = await ep.rendering.filter(con, ppi, room);
+				if (!ok) continue;
+			}
 			let html = ep.rendering.render(ppi.info, room);
 			if (!html) continue;
 			externalProfileInfos.push({

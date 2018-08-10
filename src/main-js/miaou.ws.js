@@ -17,7 +17,6 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 			});
 		}
 
-
 		function enter(){
 			var entry = {
 				roomId: locals.room.id,
@@ -54,9 +53,9 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 			for (var key in serverConfig) chat.config[key] = serverConfig[key];
 		})
 		.on('set_enter_time', time.setRoomEnterTime)
-		.on('server_commands', function(commands){
-			for (var key in commands) chat.commands[key] = commands[key];
-			ed.registerCommandArgAutocompleter("help", Object.keys(commands));
+		.on('server_commands', function(commandNames){
+			chat.commands = commandNames;
+			ed.registerCommandArgAutocompleter("help", commandNames);
 		})
 		.on('get_room', function(unhandledMessage){
 			// this should be mostly useless now
