@@ -1,12 +1,14 @@
 #help-body {
 	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
 	a, a:visited {
 		color: $help-link-color;
 	}
 }
 h1 {
 	text-align: center;
-	flex: 0 0 20px;
+	flex: 0 0 auto;
 }
 #help-nav {
 	background: $help-nav-bg;
@@ -22,23 +24,44 @@ h1 {
 	box-shadow: 2px 0 2px rgba(0, 0, 0, .15), 5px 0 5px rgba(0, 0, 0, .1);
 }
 
-@media(min-device-width:600px) {
+@media (max-device-width:450px) {
 	#help-content {
-		max-width: 900px;
+		div, p, pre {
+			margin-left: 3px;
+		}
 	}
-	#help-nav {
-		position: fixed;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		width: 200px;
-		flex-direction: column;
-	}
-	#help-body {
-		padding: 10px 10px 10px 210px;
+	#help-nav h1 {
+		font-size: 20px;
+		padding: 10px 0;
 	}
 }
-@media(max-device-width:600px) {
+@media (min-device-width:450px) and (max-device-width:800px) {
+	#help-content {
+		div, p, pre {
+			margin-left: 8px;
+		}
+	}
+	#help-nav h1 {
+		font-size: 30px;
+		padding: 12px 0;
+	}
+}
+@media (min-device-width:800px) {
+	#help-content {
+		div, p, pre {
+			margin-left: 20px;
+		}
+	}
+	#help-nav h1 {
+		font-size: 20px;
+		padding: 5px 0;
+	}
+}
+
+@media (max-device-width:800px) {
+	pre, code {
+		overflow-x: auto;
+	}
 	#help-content h1, #help-summary {
 		display: none;
 	}
@@ -49,13 +72,31 @@ h1 {
 		#help-miaou-logo-wrapper, h1 {
 			flex: 1 1 auto;
 		}
-		h1 {
-			font-size: 50px;
-			padding: 15px;
-		}
 	}
 	#help-body {
 		padding: 10px 10px 10px 10px;
+		#help-content {
+			overflow-x: hidden;
+			.message-content {
+				max-width: 90vw;
+			}
+		}
+	}
+}
+@media (min-device-width:800px) {
+	#help-nav {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: 200px;
+		flex-direction: column;
+	}
+	#help-body {
+		padding: 10px 10px 10px 210px;
+		#help-content {
+			max-width: 900px;
+		}
 	}
 }
 
@@ -102,9 +143,6 @@ h1 {
 		margin-top: 8px;
 		padding-top: 8px;
 	}
-	div, p, pre {
-		margin-left: 20px;
-	}
 	kbd {
 		margin: 0px 0.1em;
 		padding: 0.1em 0.6em;
@@ -119,7 +157,7 @@ h1 {
 		text-shadow: 0 1px 0 #fff;
 	}
 	pre {
-		display: inline-block;
+		//display: inline-block;
 		padding: 8px;
 	}
 	code {
@@ -133,9 +171,10 @@ h1 {
 	.message-content {
 		display:inline-block;
 		word-wrap: break-word;
-		display: inline-block;
 		padding: 8px;
 		border: thin dashed rgba(100,100,100,.4);
+		max-width: 100%;
+		overflow-x: auto;
 	}
 	.message-content img {
 		border: none;
