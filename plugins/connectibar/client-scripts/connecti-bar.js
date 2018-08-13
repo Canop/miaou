@@ -8,7 +8,7 @@ miaou(function(plugins){
 		);
 	}
 
-	plugins["connecti-bar"] = {
+	plugins["connectibar"] = {
 		start: showConnect
 	};
 
