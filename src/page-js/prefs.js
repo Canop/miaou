@@ -1,5 +1,5 @@
 
-miaou(function(locals, usr){
+miaou(function(locals, prefs, usr){
 
 	var	valid = locals.valid,
 		langs = locals.langs,
@@ -19,6 +19,9 @@ miaou(function(locals, usr){
 		}
 	}
 
+	var localPrefs = prefs.allLocalPrefs();
+	console.log('localPrefs:', localPrefs);
+
 	$("tr[data-pref]").each(function(){
 		var key = $(this).data("pref");
 		var def = getPrefDefinition(key);
@@ -27,6 +30,12 @@ miaou(function(locals, usr){
 		// we allow the preexistence of some content in the tr/td
 		var $td = $("td", this);
 		if (!$td.length) $td = $("<td>").appendTo(this);
+		if (localPrefs[def.key]) {
+			$("<span class=pref-help-note>")
+			.text(" ")
+			.bubbleOn("This preference is overloaded in this browser by a local one. Use !!pref in the chat.")
+			.prependTo($td);
+		}
 		$("<select>").attr({id:key, name:key}).append(def.values.map(
 			v => $("<option>").val(v.value).text(v.label)
 		)).prependTo($td);

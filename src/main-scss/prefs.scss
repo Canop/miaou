@@ -62,6 +62,15 @@ body.prefs {
 		}
 	}
 
+	.pref-help-note::before {
+		margin: 0 5px;
+		font-family: "fontello";
+		content: "\e80b "; // fontello icon-help-circled
+		margin-right: 5px;
+		cursor: pointer;
+		padding: 5px;
+	}
+
 	#prefs-main {
 		position: relative;
 		display: flex;

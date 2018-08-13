@@ -1,7 +1,7 @@
 
 (function fetchTheme(){
 	if ($("#theme-link").length) return; // css already imported (for example in pad.mob.pug)
-	// defined by the server, locals.theme takes into account whether the browser is mobile,
+	// Defined by the server, locals.theme takes into account whether the browser is mobile,
 	//  the default server themes (mobile and desktop), and the global user pref.
 	//  It doesn't take into account the localStorage pref, hence the computation here.
 	let def = miaou.locals.prefDefinitions.find(def=>def.key=="theme");
@@ -10,6 +10,9 @@
 	let themes = def.values.map(v=>v.value);
 	if (themes.includes(localThemePref)) {
 		theme = localThemePref;
+	}
+	if (theme=="default") {
+		theme = themes[1]; // themes[0] is "default"
 	}
 	// document.write avoids a delay in css application (with the downside that js execution waits for the
 	//  theme to be downloaded)

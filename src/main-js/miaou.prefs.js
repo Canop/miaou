@@ -22,7 +22,7 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 		).filter(Boolean).map(m => m[1]);
 	}
 
-	function allLocalPrefs(){
+	prefs.allLocalPrefs = function(){
 		return prefs.allKeys().reduce((m, k)=>{
 			var v = local(k)
 			if (v) m[k] = v;
@@ -44,7 +44,7 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 		merged = Object.assign(
 			defaults,
 			locals.userGlobalPrefs,
-			allLocalPrefs()
+			prefs.allLocalPrefs()
 		);
 		console.log('merged preferences:', merged);
 	} else {
@@ -101,7 +101,7 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 			}
 		}
 		ws.emit("prefs", {
-			local:allLocalPrefs(),
+			local: prefs.allLocalPrefs(),
 			cmd: arg.cmd
 		});
 	}
