@@ -77,6 +77,9 @@
 	align-items: center;
 	justify-content: center;
 	line-height: 30px;
+	&.hiding {
+		display: none;
+	}
 }
 
 #notifications {

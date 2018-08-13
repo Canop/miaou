@@ -1,0 +1,15 @@
+
+#chat-connecting.connecticat {
+	flex: 1 0 100%;
+	background: transparent no-repeat center center fixed;
+	background-size: cover;
+	&.hiding {
+		display: flex;
+		pointer-events: none;
+		opacity: 0;
+		flex-basis: 0;
+		flex-shrink: 1;
+		flex-grow: 0;
+		transition: all 1.5s 1.3s;
+	}
+}

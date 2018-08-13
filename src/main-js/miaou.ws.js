@@ -12,7 +12,6 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 				if (/connect/i.test(eventType)) {
 					console.log("/connect/:", eventType, arg);
 				}
-				//lastReceptionTime = Date.now();
 				fun(arg);
 			});
 		}
@@ -40,8 +39,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 
 		socket
 		.on('ready', function(){
-			console.log("<- ready");
-			enter();
+			setTimeout(function(){
+				console.log("<- ready");
+				enter();
+			}, 0);
 		})
 		.on('apiversion', function(vers){
 			if (!miaou.apiversion) miaou.apiversion=vers;
@@ -104,7 +105,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 			usr.showEntry(locals.me);
 			if (watch.enabled) socket.emit('start_watch');
 			notif.userAct();
-			$("#chat-connecting").remove();
+			$("#chat-connecting").addClass("hiding");
+			setTimeout(function(){
+				$("#chat-connecting").remove();
+			}, 5000);
 			chat.trigger("ready");
 		})
 		.on('invitation', function(invit){
