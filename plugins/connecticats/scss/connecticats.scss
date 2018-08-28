@@ -6,7 +6,7 @@
 	&.hiding {
 		display: flex;
 		pointer-events: none;
-		opacity: 0;
+		//opacity: 0;
 		flex-basis: 0;
 		flex-shrink: 1;
 		flex-grow: 0;
