@@ -16,6 +16,7 @@ const	apiversion = 102,
 	rooms = require('./rooms.js'),
 	pageBoxer = require('./page-boxers.js'),
 	langs = require('./langs.js'),
+	webPush = require('./web-push.js'),
 	throttleUser = require('./throttler.js').throttle;
 
 var	miaou,
@@ -816,7 +817,10 @@ function handleUserInRoom(socket, completeUser){
 					}
 				}
 			});
+			// pings of non connected users are stored in database
 			await con.storePings(shoe.room.id, pings, m.id);
+			// and sent to the web-push module
+			webPush.notifyPings(shoe.room, m, pings);
 		});
 	});
 
@@ -1014,6 +1018,11 @@ function handleUserInRoom(socket, completeUser){
 			return this.updateWatch(roomId, shoe.publicUser.id, mr.lastMessageId);
 		})
 		.finally(db.off);
+	});
+
+	on('web-push_register', function(subscription){
+		throttle();
+		webPush.registerSubscription(shoe.publicUser, subscription);
 	});
 
 	socket.emit('ready'); // tells the client it can starts entering the room, everything's bound

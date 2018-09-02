@@ -109,6 +109,10 @@ exports.configure = function(miaou){
 		"fun", "normal", "Distraction Level",
 		["none", "low", "normal", "high", "max"]
 	);
+	definePref(
+		"web-push", "disabled", "Web-Push notifications (beta!)",
+		["disabled", "on_alert", "on_ping"]
+	);
 	return this;
 }
 

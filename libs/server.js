@@ -79,6 +79,7 @@ async function defineAppRoutes(){
 		rooms = miaou.lib('rooms'),
 		tags = miaou.lib('tags'),
 		messages = miaou.lib('messages'),
+		pings = miaou.lib('pings'),
 		upload = miaou.lib('upload'),
 		clienterrors = miaou.lib('clienterrors'),
 		profile = miaou.lib('profile'),
@@ -86,6 +87,7 @@ async function defineAppRoutes(){
 		help = miaou.lib('help'),
 		legal = miaou.lib('legal'),
 		intro = miaou.lib('intro'),
+		webPush = miaou.lib("web-push"),
 		prefs = miaou.lib('prefs');
 	await auths.init();
 	function ensureAuthenticated(req, res, next){
@@ -143,7 +145,11 @@ async function defineAppRoutes(){
 	map('get', '/json/rooms', rooms.appGetJsonRooms);
 	map('get', '/json/room', rooms.appGetJsonRoom);
 	map('get', '/json/messages/last', messages.appGetJsonLastMessages);
+	map('get', '/json/pings', pings.appGetJsonPings);
 
+	//web push tests
+	map('get', '/vapidPublicKey', webPush.appGetVapidPublicKey); // FIXME send in page locals
+	//map('post', '/webPushRegister', webPush.appPostWebPushRegister);
 
 	miaou.plugins.forEach(function(p){
 		if (p.registerRoutes) p.registerRoutes(map);

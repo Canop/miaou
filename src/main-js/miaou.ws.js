@@ -109,6 +109,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 			setTimeout(function(){
 				$("#chat-connecting").remove();
 			}, 5000);
+			console.log("trigger ready");
 			chat.trigger("ready");
 		})
 		.on('invitation', function(invit){

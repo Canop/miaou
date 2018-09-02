@@ -55,6 +55,9 @@ let globs = {
 		"src/main-js/prettify/lang-*.js",
 		"plugins/*/client-scripts/*.js" // TODO filter to keep only active plugins
 	],
+	"sw-js": [ // main code for the service worker (might be renamed if I decide to authorize pluggable sw)
+		"src/sw-js/*.js",
+	],
 	"page-js": "src/page-js/*.js",
 	"page-scss": "src/page-scss/*.scss",
 	"resources:main": "src/rsc/**/*",
@@ -206,6 +209,16 @@ gulp.task("main-js", ()=>
 	.pipe(gulp.dest("static"))
 );
 
+gulp.task("sw-js", ()=>
+	gulp.src(globs["sw-js"])
+	.pipe(concat("miaou.sw.concat.js"))
+	.pipe(gulp.dest("static"))
+	.pipe(mode.watch ? gutil.noop() : miaouMinify())
+	.on("error", jsErrHandler)
+	.pipe(rename("miaou.sw.min.js"))
+	.pipe(gulp.dest("static"))
+);
+
 gulp.task("page-js", ()=>
 	gulp.src(globs["page-js"])
 	.pipe(mode.watch ? gutil.noop() : miaouMinify())
@@ -265,7 +278,8 @@ gulp.task("themes", gulp.series(
 ));
 
 gulp.task("build", gulp.series(
-	"server-js", "lint-client-js", "main-js", "page-js", "page-scss", "resources:main", "resources:plugins", "themes"
+	"server-js", "lint-client-js", "main-js", "sw-js", "page-js", "page-scss",
+	"resources:main", "resources:plugins", "themes"
 ));
 
 gulp.task("set-watch-mode", (done)=>{
