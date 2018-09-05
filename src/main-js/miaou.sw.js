@@ -5,7 +5,7 @@ miaou(function(sw, chat, ws){
 	let subscription;
 	let registered = false;
 
-	navigator.serviceWorker.register("static/miaou.sw.min.js?v=20")
+	navigator.serviceWorker.register("static/miaou.sw.min.js?v=25")
 	.then(onSWRegistered)
 	.catch(function(err){
 		console.log("SW registration failed:", err);

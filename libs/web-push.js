@@ -40,7 +40,7 @@ exports.sioWebPushRegister = function(subscription){
 	console.log('register subscription:', subscription);
 }
 
-function notify(username, options){
+function notify(username, options={}){
 	let subscription = subscriptions.get(username);
 	if (!subscription) return console.log("no subscription found for", username);
 	console.log("trying pushing something", username, options);
@@ -64,28 +64,24 @@ exports.registerSubscription = function(user, subscription){
 	subscriptions.set(user.name, subscription);
 }
 
-function onNotifyCommand(ct){
+function onAlertCommand(ct){
 	let match = ct.args.match(/^@(\w[\w_\-\d]{2,})(.*)/);
-	if (!match) throw 'Bad syntax. Use `!!notify @some_other_user someText`';
+	if (!match) throw 'Bad syntax. Use `!!alert @some_other_user someText`';
 	let username = match[1];
-	let data = match[2].trim();
-	notify(username, {data});
+	notify(username);
 }
 
 // temporary command to send a notification, for tests
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name: "notify",
-		fun: onNotifyCommand,
+		name: "alert",
+		fun: onAlertCommand,
 		help: "TEST command" // FIXME remove this to make it "secret"
 	});
 }
 
 exports.notifyPings = function(room, message, pings){
 	for (let ping of pings) {
-		notify(ping, {data:{
-			r: {id:room.id, name:room.name},
-			m: {id:message.id, an: message.authorname}
-		}});
+		notify(ping);
 	}
 }

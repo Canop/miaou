@@ -10,7 +10,6 @@ exports.date = function(seconds, pat){
 	return md;
 }
 
-
 // formats a duration in milliseconds (ex: " 08h 37m 27s")
 exports.duration = function(t){
 	let d = t/86400000|0;
