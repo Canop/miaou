@@ -1,15 +1,14 @@
 // service worker things
-miaou(function(sw, chat, ws){
+miaou(function(sw, chat, prefs, ws){
 	console.log("from miaou.sw");
+
+	let wppref = prefs.get("web-push");
+	console.log('wppref:', wppref);
+	if (wppref != "on_ping") return;
 
 	let subscription;
 	let registered = false;
 
-	navigator.serviceWorker.register("static/miaou.sw.min.js?v=25")
-	.then(onSWRegistered)
-	.catch(function(err){
-		console.log("SW registration failed:", err);
-	});
 
 	function urlBase64ToUint8Array(base64String){
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -42,7 +41,6 @@ miaou(function(sw, chat, ws){
 		tryRegister();
 	}
 
-	chat.on("ready", tryRegister);
 
 	function tryRegister(){
 		console.log('tryRegister');
@@ -53,4 +51,13 @@ miaou(function(sw, chat, ws){
 		ws.emit('web-push_register', subscription);
 		registered = true;
 	}
+
+
+	navigator.serviceWorker.register("static/miaou.sw.min.js?v=25")
+	.then(onSWRegistered)
+	.catch(function(err){
+		console.log("SW registration failed:", err);
+	});
+
+	chat.on("ready", tryRegister);
 });

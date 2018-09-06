@@ -64,6 +64,11 @@ exports.registerSubscription = function(user, subscription){
 	subscriptions.set(user.name, subscription);
 }
 
+exports.unregisterSubscription = function(user){
+	console.log("removing subscription for", user.name);
+	subscriptions.delete(user.name);
+}
+
 function onAlertCommand(ct){
 	let match = ct.args.match(/^@(\w[\w_\-\d]{2,})(.*)/);
 	if (!match) throw 'Bad syntax. Use `!!alert @some_other_user someText`';

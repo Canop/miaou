@@ -7,6 +7,7 @@ const	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 	ws = require('./ws.js'),
 	fmt = require('./fmt.js'),
 	crypto = require('crypto'),
+	webPush = require('./web-push.js'),
 	cache = require('bounded-cache')(500),
 	serverPrefs = Object.create(null), // defaults, as {key:value}
 	definitions = []; // exportable definitions (sent to the browser)
@@ -19,7 +20,10 @@ var	db,
 
 // define a new preference, which users will see and be able to set.
 // Plugins are required to prefix it as "pluginname."
-const definePref = exports.definePref = function(key, defaultValue, name, values, options={canBeLocal:true}){
+const definePref = exports.definePref = function(
+	key, defaultValue, name, values,
+	{canBeLocal=true, onchange=null} = {}
+){
 	if (!values) values = ["yes", "no"];
 	values = values.map(v=>{
 		if (typeof v !== "object") {
@@ -33,7 +37,8 @@ const definePref = exports.definePref = function(key, defaultValue, name, values
 		defaultValue,
 		name,
 		values,
-		canBeLocal: options.canBeLocal
+		canBeLocal,
+		onchange
 	});
 	definitions.sort((a, b) => a.key.localeCompare(b.key));
 	serverPrefs[key] = defaultValue;
@@ -111,7 +116,12 @@ exports.configure = function(miaou){
 	);
 	definePref(
 		"web-push", "disabled", "Web-Push notifications (beta!)",
-		["disabled", "on_alert", "on_ping"]
+		["disabled", "on_alert", "on_ping"],
+		{
+			onchange: function(user, key, value){
+				webPush.unregisterSubscription(user);
+			}
+		}
 	);
 	return this;
 }
@@ -347,6 +357,7 @@ async function handlePrefCommand(ct){
 			let gp = await exports.getUserGlobalPrefs(this, userId);
 			gp[key] = value;
 		}
+		if (def.onchange) def.onchange(ct.shoe.publicUser);
 	}
 	// Whatever the command, we'll need the up-to-date local prefs, so
 	// we need to ask them to the browser
