@@ -1,7 +1,7 @@
 
 const webPush = require("web-push");
 
-const subscriptions = new Map; // username -> subscription
+const subscriptions = new Map; // lowercased username -> subscription
 
 let	miaou,
 	vapid;
@@ -41,7 +41,7 @@ exports.sioWebPushRegister = function(subscription){
 }
 
 function notify(username, options={}){
-	let subscription = subscriptions.get(username);
+	let subscription = subscriptions.get(username.toLowerCase());
 	if (!subscription) return console.log("no subscription found for", username);
 	console.log("trying pushing something", username, options);
 	webPush.sendNotification(
@@ -61,12 +61,12 @@ function notify(username, options={}){
 
 exports.registerSubscription = function(user, subscription){
 	console.log("register subscription for", user.name, ":", subscription);
-	subscriptions.set(user.name, subscription);
+	subscriptions.set(user.name.toLowerCase(), subscription);
 }
 
 exports.unregisterSubscription = function(user){
 	console.log("removing subscription for", user.name);
-	subscriptions.delete(user.name);
+	subscriptions.delete(user.name.toLowerCase());
 }
 
 function onAlertCommand(ct){
