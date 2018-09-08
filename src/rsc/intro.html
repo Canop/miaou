@@ -11,7 +11,7 @@
 </head>
 <body>
 <header>
-  <a href="http://dystroy.org/miaou/rooms">
+  <a href="http://miaou.dystroy.org/rooms">
     <img src="Miaou-300-f.png" class="headerPic"/>
     <img src="M-32.png" class="navPic"/>
   </a>
@@ -21,7 +21,7 @@
   <p>An open-source chat with the features you expect and many other ones.</p>
   <img class="mockup" src="pub/mockup.png" />
   <img class="mobile" src="pub/mobile.png" />
-  <p><a class="try-it" href="http://dystroy.org/miaou/rooms">Start Miaouing!</a></p>
+  <p><a class="try-it" href="http://miaou.dystroy.org/rooms">Start Miaouing!</a></p>
 </section>
 <section id="services">
   <div>
@@ -100,7 +100,7 @@
 <section id="ready">
   <div class="vert-center">
     <h1>Ready to chat?</h1>
-    <p><a class="try-it" href="https://dystroy.org/miaou/rooms">Start Miaouing!</a></p>
+    <p><a class="try-it" href="https://miaou.dystroy.org/rooms">Start Miaouing!</a></p>
     <p class="disclaimer">You can sign in via:</p>
     <ul>
       <li><img src="https://i.imgur.com/4lmmZEB.png"/></li>
@@ -119,7 +119,7 @@ var html = document.documentElement,
 	listitems = services.getElementsByTagName("li"),
 	arrow = document.getElementsByClassName("arrow")[0],
 	header = document.getElementsByTagName("header")[0];
-	
+
 function scrollTop(v){
 	if (v !== undefined) document.body.scrollTop = html.scrollTop = v;
 	return Math.max(document.body.scrollTop, html.scrollTop, window.scrollY);
@@ -136,7 +136,7 @@ arrow.onclick = function(){
 // image zooming
 ;[].forEach.call(document.querySelectorAll('li .image, .zoomable'), function(item){
 	item.onclick = function(){
-		var zoom = document.createElement('div');	
+		var zoom = document.createElement('div');
 		zoom.id = 'zoom';
 		zoom.innerHTML = item.outerHTML;
 		document.body.appendChild(zoom);
