@@ -103,9 +103,9 @@ exports.configure = function(miaou){
 			{value:"never", label:"Never"}
 		]
 	);
-	definePref(
-		"beta", 'no', "participation in beta tests"
-	);
+	//definePref(
+	//	"beta", 'no', "participation in beta tests"
+	//);
 	definePref(
 		"mclean", -1,	"Auto-clean Messages",
 		[{value:-1, label:"disabled"}, 50, 100, 200, 300, 500, 1000]
