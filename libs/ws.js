@@ -804,18 +804,23 @@ function handleUserInRoom(socket, completeUser){
 				pings.push(ping);
 			}
 			if (!pings.length) return;
-			pings.forEach(username => {
+			pings = pings.filter(username => {
 				// we notify the user with a cross-room ping in the other rooms
+				let emitted = false;
 				for (let clientId in io.sockets.connected) {
 					let socket = io.sockets.connected[clientId];
 					if (socket && socket.publicUser && socket.publicUser.name===username) {
 						socket.emit('pings', [{
-							// TODO rename r to room in pings
-							r:shoe.room.id, rname:shoe.room.name, mid:m.id,
-							authorname:m.authorname, content:m.content
+							r: shoe.room.id,
+							rname: shoe.room.name,
+							mid: m.id,
+							authorname: m.authorname,
+							content: m.content
 						}]);
+						emitted = true;
 					}
 				}
+				return !emitted;
 			});
 			// pings of non connected users are stored in database
 			await con.storePings(shoe.room.id, pings, m.id);
