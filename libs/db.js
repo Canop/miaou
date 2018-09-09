@@ -223,6 +223,33 @@ proto.getPrefs = function(userId){
 	);
 }
 
+///////////////////////////////////////////// #web-push
+
+proto.deleteWebPushSubscription = function(userId){
+	return this.execute(
+		"delete from web_push_subscription where player=$1",
+		[userId],
+		"delete_web_push_subscription"
+	);
+}
+
+proto.insertWebPushSubscription = function(userId, subscription){
+	return this.execute(
+		"insert into web_push_subscription (player, subscription, created) values ($1, $2, $3)",
+		[userId, JSON.stringify(subscription), now()],
+		"insert_web_push_subscription"
+	);
+}
+
+proto.getWebPushSubscription = async function(userId, maxAge){
+	let row = await this.queryOptionalRow(
+		"select subscription from web_push_subscription where player=$1 and created>$2",
+		[userId, now()-maxAge],
+		"get_web_push_subscription"
+	);
+	if (row) return JSON.parse(row.subscription);
+}
+
 ///////////////////////////////////////////// #rooms
 
 proto.createRoom = function(r, owners){

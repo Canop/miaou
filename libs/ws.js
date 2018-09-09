@@ -825,7 +825,7 @@ function handleUserInRoom(socket, completeUser){
 			// pings of non connected users are stored in database
 			await con.storePings(shoe.room.id, pings, m.id);
 			// and sent to the web-push module
-			webPush.notifyPings(shoe.room, m, pings);
+			await webPush.notifyPings(con, shoe.room, m, pings);
 		});
 	});
 
@@ -1027,7 +1027,9 @@ function handleUserInRoom(socket, completeUser){
 
 	on('web-push_register', function(subscription){
 		throttle();
-		webPush.registerSubscription(shoe.publicUser, subscription);
+		return db.do(async function(con){
+			webPush.registerSubscription(con, shoe.publicUser, subscription);
+		});
 	});
 
 	socket.emit('ready'); // tells the client it can starts entering the room, everything's bound

@@ -149,7 +149,6 @@ async function defineAppRoutes(){
 
 	//web push tests
 	map('get', '/vapidPublicKey', webPush.appGetVapidPublicKey); // FIXME send in page locals
-	//map('post', '/webPushRegister', webPush.appPostWebPushRegister);
 
 	miaou.plugins.forEach(function(p){
 		if (p.registerRoutes) p.registerRoutes(map);
