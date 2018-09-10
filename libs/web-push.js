@@ -1,7 +1,7 @@
 
 const webPush = require("web-push");
 
-const subscriptions = new Map; // cache (lowercased username -> subscription|null)
+const subscriptionInfos = new Map; // cache (lowercased username -> {subscription,pings}|null)
 
 let	miaou,
 	vapid,
@@ -29,32 +29,36 @@ exports.configure = function(_miaou){
 }
 
 // return null when there's no subscription or if it's too old
-async function getSubscription(con, username){
+async function getSubscriptionInfo(con, username){
 	username = username.toLowerCase();
-	if (subscriptions.has(username)) { // might be null
-		return subscriptions.get(username);
+	if (subscriptionInfos.has(username)) { // might be null
+		return subscriptionInfos.get(username);
 	}
 	let user = await con.getUserByName(username);
 	if (!user) {
 		console.log("getSubscription: user not found", username);
 		return;
 	}
-	let subscription = await con.getWebPushSubscription(user.id, maxSubscriptionAge);
-	console.log('subscription from db:', subscription);
-	subscriptions.set(username, subscription||null);
-	return subscription;
+	let info = await con.getWebPushSubscription(user.id, maxSubscriptionAge);
+	subscriptionInfos.set(username, info||null);
+	return info;
 }
 
 exports.appGetVapidPublicKey = function(req, res){
 	res.send(vapid.publicKey);
 }
 
-async function notify(con, username, options={}){
-	let subscription = await getSubscription(con, username);
-	if (!subscription) return console.log("no subscription found for", username);
-	console.log("trying pushing something", username, options);
+// alert: boolean
+async function notify(con, username, alert){
+	let info = await getSubscriptionInfo(con, username);
+	if (!info) return console.log("no subscription found for", username);
+	if (!alert && !info.pings) {
+		console.log(`${username} wants only alerts -> not notifying`);
+		return;
+	}
+	console.log("trying pushing something", username);
 	webPush.sendNotification(
-		subscription,
+		info.subscription,
 		null, // payload in web push events isn't currently supported by browsers
 		{
 			//TTL: 60 // seconds
@@ -68,29 +72,34 @@ async function notify(con, username, options={}){
 	});
 }
 
-exports.registerSubscription = async function(con, user, subscription){
+exports.registerSubscription = async function(con, user, info){
 	let username = user.name.toLowerCase();
-	if (subscriptions.get(username)==subscription) {
+	let cachedInfo = subscriptionInfos.get(username);
+	if (
+		cachedInfo &&
+		cachedInfo.subscription==info.subscription &&
+		cachedInfo.pings==info.pings
+	) {
 		console.log("subscription didn't change for", username);
 		return;
 	}
-	console.log("register subscription for", username, ":", subscription);
-	subscriptions.set(user.name.toLowerCase(), subscription);
+	console.log("register subscription for", username);
+	subscriptionInfos.set(user.name.toLowerCase(), info);
 	await con.deleteWebPushSubscription(user.id);
-	await con.insertWebPushSubscription(user.id, subscription);
+	await con.insertWebPushSubscription(user.id, info.subscription, info.pings);
 }
 
 exports.unregisterSubscription = async function(con, user){
 	console.log("removing subscription for", user.name);
-	subscriptions.set(user.name.toLowerCase(), null);
+	subscriptionInfos.set(user.name.toLowerCase(), null);
 	await con.deleteWebPushSubscription(user.id);
 }
 
 async function onAlertCommand(ct){
 	let match = ct.args.match(/^@(\w[\w_\-\d]{2,})(.*)/);
-	if (!match) throw 'Bad syntax. Use `!!alert @some_other_user someText`';
+	if (!match) throw 'Bad syntax. Use `!!alert @some_other_user`';
 	let username = match[1];
-	await notify(this, username);
+	await notify(this, username, true);
 }
 
 // temporary command to send a notification, for tests
@@ -98,12 +107,12 @@ exports.registerCommands = function(registerCommand){
 	registerCommand({
 		name: "alert",
 		fun: onAlertCommand,
-		help: "TEST command" // FIXME remove this to make it "secret"
+		help: "send a webpush notification to a user who asked to be notified when offline but only on alerts"
 	});
 }
 
 exports.notifyPings = async function(con, room, message, pings){
 	for (let ping of pings) {
-		await notify(con, ping);
+		await notify(con, ping, false);
 	}
 }

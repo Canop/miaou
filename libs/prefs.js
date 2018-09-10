@@ -118,8 +118,8 @@ exports.configure = function(miaou){
 		"web-push", "disabled", "Web-Push notifications (beta!)",
 		["disabled", "on_alert", "on_ping"],
 		{
-			onchange: function(user, key, value){
-				webPush.unregisterSubscription(user);
+			onchange: function(con, user, key, value){
+				webPush.unregisterSubscription(con, user);
 			}
 		}
 	);
@@ -357,7 +357,7 @@ async function handlePrefCommand(ct){
 			let gp = await exports.getUserGlobalPrefs(this, userId);
 			gp[key] = value;
 		}
-		if (def.onchange) def.onchange(ct.shoe.publicUser);
+		if (def.onchange) await def.onchange(this, ct.shoe.publicUser, key, value);
 	}
 	// Whatever the command, we'll need the up-to-date local prefs, so
 	// we need to ask them to the browser

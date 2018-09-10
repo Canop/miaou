@@ -1,14 +1,13 @@
-// service worker things
+// service worker & web-push things
 miaou(function(sw, chat, prefs, ws){
 	console.log("from miaou.sw");
 
 	let wppref = prefs.get("web-push");
 	console.log('wppref:', wppref);
-	if (wppref != "on_ping") return;
+	if (wppref != "on_ping" && wppref != "on_alert") return;
 
 	let subscription;
 	let registered = false;
-
 
 	function urlBase64ToUint8Array(base64String){
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -48,10 +47,12 @@ miaou(function(sw, chat, prefs, ws){
 		if (chat.state!=='connected') return console.log("chat not ready");
 		if (!subscription) return console.log("no subscription");
 		console.log("chat ready, have subscription. Trying to register web-push");
-		ws.emit('web-push_register', subscription);
+		ws.emit('web-push_register', {
+			subscription,
+			pings: wppref==="on_ping" // means we register for pings too, not just alerts
+		});
 		registered = true;
 	}
-
 
 	navigator.serviceWorker.register("static/miaou.sw.min.js?v=25")
 	.then(onSWRegistered)

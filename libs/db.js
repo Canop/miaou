@@ -233,10 +233,12 @@ proto.deleteWebPushSubscription = function(userId){
 	);
 }
 
-proto.insertWebPushSubscription = function(userId, subscription){
+proto.insertWebPushSubscription = function(userId, subscription, pings){
+	let json = JSON.stringify(subscription);
+	if (json.length>4096) throw new Error("Subscription too big");
 	return this.execute(
-		"insert into web_push_subscription (player, subscription, created) values ($1, $2, $3)",
-		[userId, JSON.stringify(subscription), now()],
+		"insert into web_push_subscription (player, subscription, pings, created) values ($1, $2, $3, $4)",
+		[userId, json, !!pings, now()],
 		"insert_web_push_subscription"
 	);
 }
@@ -247,7 +249,8 @@ proto.getWebPushSubscription = async function(userId, maxAge){
 		[userId, now()-maxAge],
 		"get_web_push_subscription"
 	);
-	if (row) return JSON.parse(row.subscription);
+	if (row) row.subscription = JSON.parse(row.subscription);
+	return row;
 }
 
 ///////////////////////////////////////////// #rooms

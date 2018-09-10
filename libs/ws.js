@@ -1,4 +1,4 @@
-const	apiversion = 103,
+const	apiversion = 104,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -1025,10 +1025,10 @@ function handleUserInRoom(socket, completeUser){
 		.finally(db.off);
 	});
 
-	on('web-push_register', function(subscription){
+	on('web-push_register', function(obj){
 		throttle();
 		return db.do(async function(con){
-			webPush.registerSubscription(con, shoe.publicUser, subscription);
+			webPush.registerSubscription(con, shoe.publicUser, obj);
 		});
 	});
 
