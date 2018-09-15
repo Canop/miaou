@@ -1,12 +1,51 @@
-let v = 25;
+let v = 31;
 function log(){
 	console.log(`SW${v}>`, ...arguments);
 }
-log("log from miaou-sw service worker");
 
 let base = self.location.toString().replace(/\/static\/[^\/]+$/, "");
+let nextTag = Date.now();
 
-log('base:', base);
+class PingsAbstract{
+	constructor(pings){
+		this.pings = pings;
+		this.authornames = new Set;
+		this.roomIds = new Set;
+		for (let ping of pings) {
+			this.authornames.add(ping.authorname);
+			this.roomIds.add(ping.r);
+		}
+	}
+	nbRooms(){
+		return this.roomIds.size;
+	}
+	nbAuthors(){
+		return this.authornames.size;
+	}
+	title(){
+		let title = "Miaou";
+		if (this.nbRooms()==1) title += ` - ${this.pings[0].rname}`;
+		return title;
+	}
+	body(){
+		let body = `You've been pinged`;
+		let nbpings = this.pings.length;
+		if (nbpings > this.nbAuthors() && nbpings > this.nbRooms()) body += ` ${nbpings} times`;
+		switch (this.nbAuthors()) {
+		case 0:
+			break;
+		case 1:
+			body += ` by ${this.pings[0].authorname}`;
+			break;
+		default:
+			body += ` by ${this.nbAuthors()} users`;
+		}
+		if (this.nbRooms()>1) {
+			body += ` in ${this.nbRooms()} rooms`;
+		}
+		return body;
+	}
+}
 
 async function onPushEvent(){
 	// Today web push events don't contain any payload, so we
@@ -16,36 +55,37 @@ async function onPushEvent(){
 	let data = await resp.json();
 	// we look for already displayed notifications, to replace them
 	let currentNotifications = await registration.getNotifications();
+	let tag;
+	let lastAbstract;
 	for (notification of currentNotifications) { // there should be one current at most
-		console.log("merging old notification", notification);
+		log("merging old notification", notification);
+		tag = notification.tag;
+		log('tag of current notification:', tag);
+		if (notification.data && notification.data.pings) {
+			lastAbstract = new PingsAbstract(notification.data.pings);
+		}
 		notification.close();
 	}
 	let pings = data.pings;
-	log('data:', data);
-	let room = {id: pings[0].r, name: pings[0].rname};
-	let authorname = pings[0].authorname;
-	for (let i=1; i<pings.length; i++) {
-		if (pings[i].r!==room.id) {
-			console.log("different rooms");
-			room = null;
-		}
-		if (pings[i].authorname!==authorname) {
-			console.log("different authors");
-			authorname = null;
-		}
-	}
-	let title = "Miaou";
-	if (room) title += ` - ${room.name}`;
-	let body = `You've been pinged`;
-	if (pings.length>1) body += ` ${pings.length} times`;
-	if (authorname) body += ` by ${authorname}`;
+	// note that we *must* show a notification on every wp event, even when there's no ping,
+	// or chrome makes a generic one for us
+	if (!tag) tag = nextTag++;
+	let abstract = new PingsAbstract(pings);
+	// if renotify is true there's no sound or vibration
+	let renotify = !!lastAbstract
+		&& lastAbstract.nbRooms()==abstract.nbRooms()
+		&& lastAbstract.nbAuthors()==abstract.nbAuthors();
+	if (!pings.length) renotify = true; // it may happen. Don't ring in that case.
+	log('renotify:', renotify);
 	let icon = `${base}/static/M-192.png`;
 	let badge = `${base}/static/M-192.png`;
-	self.registration.showNotification(title, {
-		body,
+	await self.registration.showNotification(abstract.title(), {
+		body: abstract.body(),
 		data,
 		icon,
-		badge
+		badge,
+		tag,
+		renotify
 	});
 }
 

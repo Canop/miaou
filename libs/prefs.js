@@ -2,6 +2,7 @@
 // Handles the !!pref command
 
 const	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
+	dedent = require("./template-tags.js").dedent,
 	path = require('path'),
 	naming = require('./naming.js'),
 	ws = require('./ws.js'),
@@ -22,7 +23,7 @@ var	db,
 // Plugins are required to prefix it as "pluginname."
 const definePref = exports.definePref = function(
 	key, defaultValue, name, values,
-	{canBeLocal=true, onchange=null} = {}
+	{canBeLocal=true, description=null, onchange=null} = {}
 ){
 	if (!values) values = ["yes", "no"];
 	values = values.map(v=>{
@@ -38,6 +39,7 @@ const definePref = exports.definePref = function(
 		name,
 		values,
 		canBeLocal,
+		description,
 		onchange
 	});
 	definitions.sort((a, b) => a.key.localeCompare(b.key));
@@ -103,9 +105,6 @@ exports.configure = function(miaou){
 			{value:"never", label:"Never"}
 		]
 	);
-	//definePref(
-	//	"beta", 'no', "participation in beta tests"
-	//);
 	definePref(
 		"mclean", -1,	"Auto-clean Messages",
 		[{value:-1, label:"disabled"}, 50, 100, 200, 300, 500, 1000]
@@ -115,9 +114,14 @@ exports.configure = function(miaou){
 		["none", "low", "normal", "high", "max"]
 	);
 	definePref(
-		"web-push", "disabled", "Web-Push notifications (beta!)",
+		"web-push", "disabled", "Web-Push notifications",
 		["disabled", "on_alert", "on_ping"],
 		{
+			description: dedent`
+				If enabled, web push notifications can be sent to you even when you're offline.
+				Works best for mobile device. Only one device can be registered at a given time.
+				If you choose "on_alert", then you'll only be notified when offline when somebody
+				uses the !!alert command`,
 			onchange: function(con, user, key, value){
 				webPush.unregisterSubscription(con, user);
 			}
@@ -318,6 +322,9 @@ function describe(ct, key){
 		aligns: "cll",
 		rows: [[def.key, def.name, def.defaultValue]]
 	});
+	if (def.description) {
+		txt += "\n" + def.description;
+	}
 	txt += "\nPossible values:\n";
 	txt += fmt.tbl({
 		cols: ["value", "description"],

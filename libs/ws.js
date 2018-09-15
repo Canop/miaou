@@ -1,4 +1,4 @@
-const	apiversion = 104,
+const	apiversion = 105,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -822,6 +822,7 @@ function handleUserInRoom(socket, completeUser){
 				}
 				return !emitted;
 			});
+			if (!pings.length) return;
 			// pings of non connected users are stored in database
 			await con.storePings(shoe.room.id, pings, m.id);
 			// and sent to the web-push module

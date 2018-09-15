@@ -54,7 +54,7 @@ miaou(function(sw, chat, prefs, ws){
 		registered = true;
 	}
 
-	navigator.serviceWorker.register("static/miaou.sw.min.js?v=25")
+	navigator.serviceWorker.register("static/miaou.sw.min.js?v=31")
 	.then(onSWRegistered)
 	.catch(function(err){
 		console.log("SW registration failed:", err);
