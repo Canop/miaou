@@ -51,7 +51,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	function sendInput(){
 		notif.userAct();
-		var txt = $input.val().replace(/\s+$/, '');
+		var txt = $input.val().replace(/(>?\s*\n)*/, '').replace(/\s+(\n(>\s*|\t\s*))*$/, '');
 		if (txt.length > chat.config.maxMessageContentSize) {
 			miaou.dialog({
 				title: "Message too big",
