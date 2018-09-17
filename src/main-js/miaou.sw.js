@@ -1,6 +1,10 @@
 // service worker & web-push things
 miaou(function(sw, chat, prefs, ws){
-	console.log("from miaou.sw");
+
+	if (!navigator.serviceWorker) {
+		console.log("service workers not available on this browser");
+		return;
+	}
 
 	let wppref = prefs.get("web-push");
 	console.log('wppref:', wppref);
@@ -53,6 +57,7 @@ miaou(function(sw, chat, prefs, ws){
 		});
 		registered = true;
 	}
+
 
 	navigator.serviceWorker.register("static/miaou.sw.min.js?v=31")
 	.then(onSWRegistered)

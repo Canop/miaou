@@ -42,7 +42,8 @@ class PerTimeUnitStator{
 		return con.queryRows(
 			sql,
 			conditions.map(c=>c[1]),
-			["stats", this.field, ...conditions.map(c=>c[0])].join("_")
+			["stats", this.field, ...conditions.map(c=>c[0])].join("_"),
+			"stats-messages-per-time-field"
 		);
 	}
 	// return the current hour|day|month

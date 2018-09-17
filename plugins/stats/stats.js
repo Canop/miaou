@@ -4,6 +4,7 @@ const	fmt = require('../../libs/fmt.js'),
 	naming = require('../../libs/naming.js'),
 	monthstats = require('./stats-months.js'),
 	mptf = require('./stats-messages-per-time-field.js'),
+	webpush = require('./stats-web-push.js'),
 	siostats = require('./stats-sockets.js');
 
 
@@ -78,7 +79,10 @@ exports.doStats = function(ct, miaou){
 	}
 
 	if (/^socket/i.test(topic)) {
-		return siostats.doStats(ct, miaou.io);
+		return siostats.doStats(ct, miaou);
+	}
+	if (/^web-push/i.test(topic)) {
+		return webpush.doStats(this, ct, miaou);
 	}
 	if (/^server-graph$/i.test(topic)) {
 		return monthstats.doServerStats(this, ct);

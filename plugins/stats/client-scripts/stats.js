@@ -21,6 +21,7 @@ miaou(function(plugins, ed, prefs){
 				"tzoffsets",
 				"votes",
 				"sockets",
+				"web-push",
 			]);
 		}
 	}

@@ -5,7 +5,15 @@ const subscriptionInfos = new Map; // cache (lowercased username -> {subscriptio
 
 let	miaou,
 	vapid,
+	stats = {},
 	maxSubscriptionAge = 15*24*60*60;
+
+;["pings", "alerts"].forEach(k => {
+	stats[k] = {};
+	["queries", "withoutSubscription", "unauthorized", "failures", "successes"].forEach(n => {
+		stats[k][n] = 0;
+	});
+});
 
 exports.configure = function(_miaou){
 	miaou = _miaou;
@@ -27,6 +35,8 @@ exports.configure = function(_miaou){
 	);
 	return this;
 }
+
+exports.getStats = () => stats;
 
 // return null when there's no subscription or if it's too old
 async function getSubscriptionInfo(con, username){
@@ -50,10 +60,17 @@ exports.appGetVapidPublicKey = function(req, res){
 
 // alert: boolean
 async function notify(con, username, alert){
+	let stat = stats[alert ? 'alerts' : 'pings'];
+	stat.queries++;
 	let info = await getSubscriptionInfo(con, username);
-	if (!info) return console.log("no subscription found for", username);
+	if (!info) {
+		console.log("no subscription found for", username);
+		stat.withoutSubscription++;
+		return;
+	}
 	if (!alert && !info.pings) {
 		console.log(`${username} wants only alerts -> not notifying`);
+		stat.unauthorized++;
 		return;
 	}
 	console.log("trying pushing something", username);
@@ -65,15 +82,18 @@ async function notify(con, username, alert){
 		}
 	)
 	.then(()=>{
+		stat.successes++;
 		console.log(" -> ok");
 	})
 	.catch((err)=>{
+		stat.failures++;
 		console.log(" -> failed:", err);
 	});
 }
 
 exports.registerSubscription = async function(con, user, info){
 	let username = user.name.toLowerCase();
+	console.log("register subscription for @"+username);
 	let cachedInfo = subscriptionInfos.get(username);
 	if (
 		cachedInfo &&
@@ -99,6 +119,7 @@ async function onAlertCommand(ct){
 	let match = ct.args.match(/^@(\w[\w_\-\d]{2,})(.*)/);
 	if (!match) throw 'Bad syntax. Use `!!alert @some_other_user`';
 	let username = match[1];
+	console.log("alert sent by " + ct.shoe.publicUser.name, " => ", ct.args);
 	await notify(this, username, true);
 }
 
