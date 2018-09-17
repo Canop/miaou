@@ -11,6 +11,7 @@ class Miaou{
 		this.bot = null;
 		this.db = db;
 		this.config = config;
+		this.startTime = Date.now()/1000|0;
 	}
 
 	// return a component of miaou (in /libs) whatever the path
