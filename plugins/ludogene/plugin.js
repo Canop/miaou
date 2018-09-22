@@ -27,6 +27,7 @@ exports.init = async function(miaou){
 	rooms = miaou.lib("rooms");
 	ws = miaou.lib("ws");
 	tournament.init(miaou);
+	elo.init(miaou);
 	setTimeout(function(){
 		require('./db.js').cleanOldInvitations(db, 5*24*60*60);
 	}, 15*60*1000);

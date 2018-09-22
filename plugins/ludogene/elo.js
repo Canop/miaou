@@ -4,6 +4,11 @@ const	ludodb = require('./db.js'),
 	K = 40,
 	R = 750, // 300 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
 	NB_OPPONENTS_MIN = 3;
+let	noLadderRooms; // public rooms from which we don't want games for the ladder
+
+exports.init = function(miaou){
+	noLadderRooms = miaou.conf("pluginConfig", "ludogene", "noLadderRooms") || [];
+}
 
 function Rating(playerId){ // rating of a player
 	this.id = playerId;
@@ -273,7 +278,8 @@ exports.onCommand = async function(ct){
 	else throw new Error("Unknown Game Type");
 	let messages = await ludodb.getGameMessages(this);
 	messages = messages.filter(m =>
-		m.g.type===gt
+		!noLadderRooms.includes(m.room)
+		&& m.g.type===gt
 		&& m.g.scores
 		&& (m.g.status==="running"||m.g.status==="finished")
 	);
