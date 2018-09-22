@@ -16,7 +16,7 @@ module.exports = {
 
 	// bot avatar
 	botAvatar: {
-		src: "url", key: "http://dystroy.org/miaou/static/M-150.png"
+		src: "url", key: "http://miaou.dystroy.org/static/M-150.png"
 
 		// you may use another type of avatar. Examples :
 		// "src":"facebook", "key":"123456789"

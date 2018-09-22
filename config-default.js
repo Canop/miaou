@@ -11,8 +11,8 @@ module.exports = {
 	trustProxy: false, // set to true when you add a front-end proxy
 
 	// If your server is behind a proxy, the config may be different.
-	// Here's the example of the Miaou server on http://dystroy.org/miaou
-	// 		server: "http://dystroy.org/miaou",
+	// Here's the example of the Miaou server on http://miaou.dystroy.org/
+	// 		server: "http://miaou.dystroy.org/",
 	// 		base: "/miaou/",
 	// 		port: 8204,
 
@@ -31,7 +31,7 @@ module.exports = {
 
 	// bot avatar
 	botAvatar: {
-		src:"url", key:"http://dystroy.org/miaou/static/M-150.png"
+		src:"url", key:"http://miaou.dystroy.org/static/M-150.png"
 
 		// you may use another type of avatar. Examples :
 		// "src":"facebook", "key":"123456789"

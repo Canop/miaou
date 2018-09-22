@@ -22,7 +22,7 @@ doTests("Formatting - Bold, Italic, Strike", {
 		"<strike>first</strike> and <strike>third</strike> words as strike"
 	),
 	"two italicized words separated by just one space": t(
-		// bug observed here : http://dystroy.org/miaou/73?Tribo_Room#538224
+		// bug observed here : http://miaou.dystroy.org/73?Tribo_Room#538224
 		"*sob* *sob*",
 		"<i>sob</i> <i>sob</i>"
 	),

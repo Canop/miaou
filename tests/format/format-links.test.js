@@ -38,16 +38,16 @@ doTests("Formatting - Links", {
 		'<a target=_blank href="http://this.link/shouldnt_be_styled/index.xml">http://this.link/shouldnt_be_styled/index.xml</a>'
 	),
 	"tricky URL with underscores - 2": t(
-		"[This link has a tricky href](http://dystroy.org/miaou/help#Ping_and_reply)",
-		'<a target=_blank href="http://dystroy.org/miaou/help#Ping_and_reply">This link has a tricky href</a>'
+		"[This link has a tricky href](http://miaou.dystroy.org/help#Ping_and_reply)",
+		'<a target=_blank href="http://miaou.dystroy.org/help#Ping_and_reply">This link has a tricky href</a>'
 	),
 	"// tricky URL with @": t(
 		"https://medium.com/@sebmck/2015-in-review-51ac7035e272#.52hda93q5",
 		'<a target=_blank href="https://medium.com/@sebmck/2015-in-review-51ac7035e272#.52hda93q5">https://medium.com/@sebmck/2015-in-review-51ac7035e272#.52hda93q5</a>'
 	),
 	"style in markdown link": t(
-		"[This md styled link has some **bold** and *italic*](http://dystroy.org/miaou/help#Ping_and_reply)",
-		'<a target=_blank href="http://dystroy.org/miaou/help#Ping_and_reply">This md styled link has some <b>bold</b> and <i>italic</i></a>'
+		"[This md styled link has some **bold** and *italic*](http://miaou.dystroy.org/help#Ping_and_reply)",
+		'<a target=_blank href="http://miaou.dystroy.org/help#Ping_and_reply">This md styled link has some <b>bold</b> and <i>italic</i></a>'
 	),
 	"boldened raw URL": t(
 		"** http://dystroy.org **",
@@ -57,7 +57,7 @@ doTests("Formatting - Links", {
 		"---[http://why/this/no/strikeout?](http://why/this/no/strikeout?)---",
 		'<strike><a target=_blank href="http://why/this/no/strikeout?">http://why/this/no/strikeout?</a></strike>'
 	),
-	"markdown link in a striken sentence": t( // bug : http://dystroy.org/miaou/3?Code_Croissants#525888
+	"markdown link in a striken sentence": t( // bug : http://miaou.dystroy.org/3?Code_Croissants#525888
 		"@Florian ---c'est quel langage ton fichier de provisionning vagrant https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1 ?--- ok > Puppet",
 		"<span class=\"ping\">@Florian</span> <strike>c'est quel langage ton fichier de provisionning vagrant <a target=_blank href=\"https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1\">https://github.com/Canop/miaou/blob/master/vagrant/manifests/default.pp#L1</a> ?</strike> ok &gt; Puppet"
 	),
@@ -77,7 +77,7 @@ doTests("Formatting - Links", {
 		"bla https://www.slant.co/versus/42/62/~vim_vs_neovim",
 		'bla <a target=_blank href="https://www.slant.co/versus/42/62/~vim_vs_neovim">https://www.slant.co/versus/42/62/~vim_vs_neovim</a>'
 	),
-	"markdown link with URL as label": t( // bug : https://dystroy.org/miaou/3?Code_Croissants#8166083
+	"markdown link with URL as label": t( // bug : https://miaou.dystroy.org/3?Code_Croissants#8166083
 		"[https://youtu.be/E_WF8BEwxxw?t=29](https://youtu.be/E_WF8BEwxxw?t=29)",
 		'<a target=_blank href="https://youtu.be/E_WF8BEwxxw?t=29">https://youtu.be/E_WF8BEwxxw?t=29</a>'
 	)

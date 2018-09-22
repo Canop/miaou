@@ -198,7 +198,7 @@ With Google at least the same account can be used both for your local tests and 
 For example with Google OAuth2, the registered callbacks used for the dystroy Miaou server are
 
 	http://127.0.0.1:8204/auth/google/callback
-	https://dystroy.org/miaou/auth/google/callback
+	https://miaou.dystroy.org/auth/google/callback
 
 The first one is for the local tests, the second one for the public server.
 
