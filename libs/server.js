@@ -146,9 +146,8 @@ async function defineAppRoutes(){
 	map('get', '/json/room', rooms.appGetJsonRoom);
 	map('get', '/json/messages/last', messages.appGetJsonLastMessages);
 	map('get', '/json/pings', pings.appGetJsonPings);
-
-	//web push tests
 	map('get', '/vapidPublicKey', webPush.appGetVapidPublicKey); // FIXME send in page locals
+	map('get', '/sw.js', webPush.appGetSW);
 
 	miaou.plugins.forEach(function(p){
 		if (p.registerRoutes) p.registerRoutes(map);
@@ -225,9 +224,16 @@ exports.roomUrl = function(room){
 exports.mobile = function(req){
 	return mobileRegex.test(req.headers['user-agent']);
 }
-exports.renderErr = function(res, err, base){
+
+exports.renderErr = function(req, res, err, base){
 	console.log(err);
-	res.render('error.pug', { base:base||'', error:err.toString() });
+	res.render('error.pug', { // FIXME tester
+		vars: {
+			me: req.user
+		},
+		base:base||'',
+		error:err.toString()
+	});
 }
 
 exports.start = async function(config){

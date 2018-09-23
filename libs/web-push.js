@@ -1,5 +1,6 @@
 
 const webPush = require("web-push");
+const path = require("path");
 
 const subscriptionInfos = new Map; // cache (lowercased username -> {subscription,pings}|null)
 
@@ -56,6 +57,12 @@ async function getSubscriptionInfo(con, username){
 
 exports.appGetVapidPublicKey = function(req, res){
 	res.send(vapid.publicKey);
+}
+
+exports.appGetSW = function(req, res){
+	let f = path.join(__dirname, '..', "static", "miaou.sw.min.js");
+	res.type("application/javascript");
+	res.sendFile(f);
 }
 
 // alert: boolean

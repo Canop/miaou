@@ -47,6 +47,7 @@ exports.appGet = function(req, res){
 			let lastAccessRequest = await con.getLastAccessRequest(roomId, userId);
 			let args = {
 				vars: {
+					met: req.user,
 					room,
 					prefDefinitions: prefs.getDefinitions(),
 					theme
@@ -78,6 +79,6 @@ exports.appGet = function(req, res){
 		};
 		res.render(isMobile ? 'pad.mob.pug' : 'pad.pug', {vars:locals});
 	}, function(err){
-		server.renderErr(res, err);
+		server.renderErr(req, res, err);
 	});
 }

@@ -24,6 +24,10 @@ miaou(function(sw, chat, prefs, ws){
 		return outputArray;
 	}
 
+	//function sendToSW(msg){
+	//	navigator.serviceWorker.controller.postMessage(msg);
+	//}
+
 	async function onSWRegistered(reg){
 		console.log("SW registration worked:", reg);
 		subscription = await reg.pushManager.getSubscription();
@@ -59,8 +63,15 @@ miaou(function(sw, chat, prefs, ws){
 	}
 
 
-	navigator.serviceWorker.register("static/miaou.sw.min.js?v=31")
+	navigator.serviceWorker.register("sw.js?v=33")
 	.then(onSWRegistered)
+	.then(function(){
+		console.log("waiting for SW ready...");
+		navigator.serviceWorker.ready.then(function(){
+			console.log("SW ready");
+			navigator.serviceWorker.controller.postMessage("new-chat");
+		});
+	})
 	.catch(function(err){
 		console.log("SW registration failed:", err);
 	});

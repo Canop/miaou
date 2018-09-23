@@ -1,4 +1,4 @@
-const	apiversion = 107,
+const	apiversion = 108,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -442,7 +442,10 @@ function handleUserInRoom(socket, completeUser){
 				plugin.onNewShoe(shoe);
 			}
 			let pings = await con.fetchUserPings(completeUser.id, entry.lastMessageSeen);
-			if (pings.length) socket.emit('pings', pings);
+			if (pings.length) {
+				console.log('pings sent on enter of ',  completeUser.name, 'in room', shoe.room.id,  ':', pings);
+				socket.emit('pings', pings);
+			}
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);
 			let recentUsers = memroom.recentAuthors();
 			if (shoe.room.dialog) {
@@ -863,6 +866,7 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('rm_ping', function(mid){
+		console.log('rm_ping', mid, shoe.publicUser.id);
 		throttle();
 		// remove the ping(s) related to that message and propagate to other sockets of same user
 		return db.on([mid, shoe.publicUser.id])
@@ -873,6 +877,7 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('rm_pings', async function(mids){
+		console.log('rm_pings', mids, shoe.publicUser.id);
 		if (!mids.length) {
 			console.log("empty array in rm_pings from", shoe.publicUser.name);
 			return;

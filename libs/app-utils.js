@@ -23,7 +23,3 @@ exports.mobile = function(req){
 	return mobileRegex.test(req.headers['user-agent']);
 }
 
-exports.renderErr = function(res, err, base){
-	console.log(err);
-	res.render('error.pug', { base:base||'', error: err.toString() });
-}

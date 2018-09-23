@@ -60,6 +60,7 @@ exports.appAllUsername = function(req, res){
 		var	hasValidName = naming.isValidUsername(req.user.name);
 		res.render('username.pug', {
 			vars: {
+				me: req.user,
 				valid : hasValidName,
 				theme
 			},
@@ -68,7 +69,7 @@ exports.appAllUsername = function(req, res){
 		});
 	}).catch(function(err){
 		console.log('err in appAllUsername');
-		server.renderErr(res, err);
+		server.renderErr(req, res, err);
 	}).finally(db.off)
 }
 
@@ -86,7 +87,7 @@ exports.appGetPublicProfile = function(req, res){
 	let	userId = +req.query.user,
 		roomId = +req.query.room;
 	if (!userId || !roomId) {
-		return server.renderErr(res, 'room and user must be provided');
+		return server.renderErr(req, res, 'room and user must be provided');
 	}
 	let bo = bench.start("publicProfile");
 	db.do(async function(con){
@@ -129,7 +130,7 @@ exports.appGetPublicProfile = function(req, res){
 		});
 		bo.end();
 	}, function(err){
-		server.renderErr(res, err);
+		server.renderErr(req, res, err);
 	});
 }
 
@@ -168,6 +169,7 @@ exports.appGetUser = function(req, res){
 		}
 		res.render('user.pug', {
 			vars: {
+				me: req.user,
 				prefDefinitions: prefs.getDefinitions(),
 				user,
 				userinfo,
@@ -178,6 +180,6 @@ exports.appGetUser = function(req, res){
 			externalProfileInfos
 		});
 	}, function(err){
-		server.renderErr(res, err, '../');
+		server.renderErr(req, res, err, '../');
 	});
 }

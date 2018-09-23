@@ -1,9 +1,9 @@
-let v = 31;
+let v = 33;
 function log(){
 	console.log(`SW${v}>`, ...arguments);
 }
 
-let base = self.location.toString().replace(/\/static\/[^\/]+$/, "");
+let base = self.location.toString().replace(/\/[^\/]+$/, "");
 let nextTag = Date.now();
 
 class PingsAbstract{
@@ -47,10 +47,17 @@ class PingsAbstract{
 	}
 }
 
+async function closeAllNotifications(){
+	let currentNotifications = await registration.getNotifications();
+	for (notification of currentNotifications) { // there should be one current at most
+		log("closing notification", notification);
+		notification.close();
+	}
+}
+
 async function onPushEvent(){
 	// Today web push events don't contain any payload, so we
 	// must query the server to know why even we've been notified
-	log("I will call:", base + "/json/pings");
 	let resp = await fetch(base + "/json/pings");
 	let data = await resp.json();
 	// we look for already displayed notifications, to replace them
@@ -95,7 +102,6 @@ async function goToPage(url){
 		includeUncontrolled: true
 	});
 	for (let window of windows) {
-		console.log("window client url:", window.url);
 		if (window.url==url) {
 			await window.focus();
 			return;
@@ -107,20 +113,17 @@ async function goToPage(url){
 }
 
 self.addEventListener("push", function(event){
-	log("got push event:", event);
 	event.waitUntil(onPushEvent());
 });
 
 self.addEventListener('notificationclose', function(event){
-	console.log("dismissed notification:", event.notification);
+	log("dismissed notification:", event.notification);
 });
 
 self.addEventListener('notificationclick', function(event){
-	console.log("clicked notification:", event.notification);
 	let data = event.notification.data;
-	console.log('data:', data);
 	if (!data || !data.pings) {
-		console.log("abnormal notification", event.notification);
+		log("abnormal notification", event.notification);
 		return;
 	}
 	let url = base;
@@ -129,4 +132,10 @@ self.addEventListener('notificationclick', function(event){
 		url = `${base}/${ping.r}#${ping.mid}`;
 	}
 	event.waitUntil(goToPage(url));
+});
+
+self.addEventListener("message", function(event){
+	if (event.data=="new-chat") {
+		closeAllNotifications();
+	}
 });

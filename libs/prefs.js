@@ -289,6 +289,7 @@ exports.appAllPrefs = async function(req, res){
 			themes,
 			externalProfileInfos,
 			vars: {
+				me: req.user,
 				userPrefs,
 				prefDefinitions: definitions,
 				valid : hasValidName,

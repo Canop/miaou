@@ -68,7 +68,7 @@ exports.appGetAuths = function(req, res){
 		try {
 			room = await con.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
 		} catch (err) {
-			return server.renderErr(res, "room not found");
+			return server.renderErr(req, res, "room not found");
 		}
 		room.path = server.roomPath(room);
 		let auths = await con.listRoomAuths(room.id);
@@ -93,7 +93,7 @@ exports.appGetAuths = function(req, res){
 			room, auths, requests, unauthorizedUsers, bans
 		});
 	}, function(err){
-		server.renderErr(res, err);
+		server.renderErr(req, res, err);
 	});
 }
 
@@ -104,17 +104,17 @@ exports.appPostAuths = function(req, res){
 		try {
 			room = await con.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
 		} catch (err) {
-			return server.renderErr(res, "room not found");
+			return server.renderErr(req, res, "room not found");
 		}
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);
 		let	author = req.user.name,
 			messageLines = [];
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);
 		if (!exports.checkAtLeast(room.auth, 'admin')) {
-			return server.renderErr(res, "Admin auth is required");
+			return server.renderErr(req, res, "Admin auth is required");
 		}
 		if (room.dialog) {
-			return server.renderErr(res, "You can't change authorizations of a dialog room");
+			return server.renderErr(req, res, "You can't change authorizations of a dialog room");
 		}
 		let	m,
 			modifiedUser,
@@ -166,7 +166,7 @@ exports.appPostAuths = function(req, res){
 		await con.changeRights(actions, req.user.id, room);
 		res.redirect(server.roomUrl(room));
 	}, function(err){
-		server.renderErr(res, err);
+		server.renderErr(req, res, err);
 	});
 }
 

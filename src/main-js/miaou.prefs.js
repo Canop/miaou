@@ -3,11 +3,24 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 
 	var	definitions, // not always defined, normally available in chat
 		defaults = {},
+		localPrefsPrefix = locals.me ? `miaou.${locals.me.id}.prefs.` : "miaou.prefs.",
 		valmap,
 		merged;
 
+	(function migratePrefs(){
+		if (!locals.me) return;
+		// Prefs are now user specific. We migrate old prefs to avoid losing some.
+		// This function will disappear after a few weeks
+		Object.keys(localStorage).forEach(k => {
+			let m = k.match(/^miaou\.prefs\.(\w+)$/);
+			if (!m) return;
+			localStorage.setItem(localPrefsPrefix+m[1], localStorage.getItem(k));
+			localStorage.removeItem(k);
+		});
+	})();
+
 	function local(key, value){
-		var lsk = "miaou.prefs." + key;
+		var lsk = localPrefsPrefix + key;
 		if (value===undefined) return localStorage.getItem(lsk);
 		if (value===null) return localStorage.removeItem(lsk);
 		localStorage.setItem(lsk, value);
@@ -17,9 +30,9 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 		if (definitions) {
 			return definitions.map(d => d.key);
 		}
-		return Object.keys(localStorage).map(
-			k => k.match(/^miaou\.prefs\.(\w+)$/)
-		).filter(Boolean).map(m => m[1]);
+		return Object.keys(localStorage)
+		.filter(k => k.startsWith(localPrefsPrefix))
+		.map(k => k.slice(localPrefsPrefix.length));
 	}
 
 	prefs.allLocalPrefs = function(){
@@ -84,10 +97,6 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 			return;
 		}
 	}
-
-	//prefs.setMergedPrefs = function(arg){
-	//	merged = arg;
-	//}
 
 	// called on 'cmd_pref' sio event, which is part of the !!pref command handling workflow
 	prefs.handleCmdPref = function(arg){

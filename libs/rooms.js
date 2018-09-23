@@ -107,6 +107,7 @@ exports.appGetRoom = function(req, res){
 	db.do(async function(con){
 		let theme = await prefs.theme(con, req.user.id, req.query.theme);
 		let vars = {
+			me: req.user,
 			prefDefinitions: prefs.getDefinitions(),
 			error: null,
 			langs: langs.legal,
@@ -116,7 +117,7 @@ exports.appGetRoom = function(req, res){
 		try {
 			room = await con.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
 			if (!auths.checkAtLeast(room.auth, 'admin')) {
-				return server.renderErr(res, "Admin level is required to manage the room");
+				return server.renderErr(req, res, "Admin level is required to manage the room");
 			}
 			vars.room = room;
 		} catch (e) {
@@ -125,7 +126,7 @@ exports.appGetRoom = function(req, res){
 		}
 		res.render('room.pug', { vars });
 	}, function(err){
-		server.renderErr(res, err);
+		server.renderErr(req, res, err);
 	});
 }
 
@@ -133,10 +134,10 @@ exports.appGetRoom = function(req, res){
 exports.appPostRoom = function(req, res){
 	var roomId = +req.query.id;
 	if (!/^[^\[\]]{2,50}$/.test(req.body.name)) {
-		return server.renderErr(res, "invalid room name");
+		return server.renderErr(req, res, "invalid room name");
 	}
 	if (req.body.img && !/^https:\/\/\S{4,220}$/.test(req.body.img)) {
-		return server.renderErr(res, "invalid room illustration:" + req.body.img);
+		return server.renderErr(req, res, "invalid room illustration:" + req.body.img);
 	}
 	var room = {
 		name: req.body.name,
@@ -171,7 +172,7 @@ exports.appPostRoom = function(req, res){
 		await con.setRoomTags(room.id, room.tags);
 		res.redirect(server.roomUrl(room));	// executes the room get
 	}, async function(err){
-		return server.renderErr(res, err);
+		return server.renderErr(req, res, err);
 	});
 }
 
@@ -196,6 +197,7 @@ exports.appGetRooms = function(req, res){
 		let userGlobalPrefs = await prefs.getUserGlobalPrefs(con, userId);
 		let data = {
 			vars: {
+				me: req.user,
 				langs: langs.legal,
 				mobile,
 				prefDefinitions: prefs.getDefinitions(),
@@ -211,7 +213,7 @@ exports.appGetRooms = function(req, res){
 		data.vars.theme = await prefs.theme(con, userId, req.query.theme);
 		res.render(mobile ? 'rooms.mob.pug' : 'rooms.pug', data);
 	}, function(err){
-		server.renderErr(res, err);
+		server.renderErr(req, res, err);
 	});
 }
 
@@ -255,7 +257,7 @@ exports.appPostRooms = function(req, res){
 		if (req.body.clear_pings) await con.deleteAllUserPings(req.user.id)
 		res.redirect("rooms"); // executes the rooms list get
 	}, function(err){
-		server.renderErr(res, err);
+		server.renderErr(req, res, err);
 	});
 }
 

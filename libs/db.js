@@ -935,6 +935,7 @@ proto._updateMessage = function(m, dontCheckAge){
 	.then(function(m){
 		m.authorname = savedAuthorname;
 		if (m.content.length || m.created<now()-config.maxAgeForMessageTotalDeletion) return m;
+		console.log("db delete ping on update", m.id)
 		return this.execute(
 			"delete from ping where message=$1", [m.id], "delete_message_ping"
 		).then(function(){
@@ -987,6 +988,7 @@ proto.getLastMessageId = function(roomId){
 //////////////////////////////////////////////// #pings
 
 proto.storePing = function(roomId, userId, messageId){
+	console.log("db storePing", userId, messageId);
 	return this.execute(
 		"insert into ping(room, player, message) values ($1,$2,$3) on conflict do nothing",
 		[roomId, userId, messageId],
@@ -996,6 +998,7 @@ proto.storePing = function(roomId, userId, messageId){
 
 // users must be a sanitized array of usernames
 proto.storePings = function(roomId, users, messageId){
+	console.log("db storePings", users, messageId);
 	return this.execute(
 		"insert into ping (room, player, message) select " +
 		roomId + ", id, " + messageId +
@@ -1008,6 +1011,7 @@ proto.storePings = function(roomId, users, messageId){
 
 // delete any ping
 proto.deletePing = function(mid, userId){
+	console.log("db deletePing", mid, userId);
 	return this.execute(
 		"delete from ping where message=$1 and player=$2",
 		[mid, userId],
