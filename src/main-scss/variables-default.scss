@@ -48,6 +48,8 @@ $connected-user-text-color-in-user-list: black !default;
 $user-text-color-in-user-list: #444 !default;
 $user-text-color-in-message: #555 !default;
 $code-text-color: #444 !default;
+$code-bg: rgba(200, 200, 200, .04) !default;
+$code-padding: 3px !default;
 
 // bar at the right of the user and holding his color
 $user-color-shadow-in-messages: 1px 0 0 !default;
