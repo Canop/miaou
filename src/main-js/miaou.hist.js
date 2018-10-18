@@ -101,16 +101,22 @@ miaou(function(hist, gui, locals, md, time, ws){
 		$("#search-results-next-page").toggleClass("enabled", page<nbPages-1);
 	}
 
+	function transform(v){
+		//return Math.log(v+1);
+		return Math.sqrt(v * (3 + Math.log(v+1)));
+	}
+
 	// display search results histogram sent by the server
 	hist.showHist = function(res){
 		$('#hist').empty();
 		var records = res.hist;
 		if (!records || !records.length) return;
+
 		var	d = records[0].d,
 			n = records[records.length-1].d - d,
 			$hist = $('#hist'),
 			maxn = 0,
-			logmaxn,
+			maxtn,
 			$month,
 			lastMonth;
 		$('#search-results .message.selected').removeClass('selected');
@@ -118,7 +124,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 			maxn = Math.max(maxn, r.n);
 		});
 		if (n<0 || n>5000 || maxn==0) return console.log('invalid data', res);
-		logmaxn = Math.log(maxn);
+		maxtn = transform(maxn);
 		$('#hist')[n>30?'removeClass':'addClass']('zoomed');
 		var sum = 0;
 		function day(d, n, sn){
@@ -130,7 +136,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 				).appendTo($hist);
 				lastMonth = month;
 			}
-			var $bar = $('<div/>').addClass('bar').css('width', Math.log(n+1)*80/logmaxn+'%');
+			var $bar = $('<div/>').addClass('bar').css('width', transform(n)*80/maxtn + '%');
 			var $day = $('<div/>').addClass('day').append($bar)
 			.attr('d', d).attr('n', n).attr("sum", Math.floor(sum))
 			.appendTo($month);
