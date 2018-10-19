@@ -134,8 +134,10 @@ exports.onMessage = function(shoe, m){
 	if (!cmdMatch) return {};
 	let cmd = commands[cmdMatch[2]];
 	if (!cmd || !cmd.fun) throw 'Command "' + cmdMatch[2] + '" not found';
+	let rp = !!cmdMatch[1];
+	if (rp && m.id) throw "You can't edit a public message into a private command";
 	if (cmd.filter && !cmd.filter(shoe.room)) throw 'Command "'+cmd.name+'" not available in this room';
-	return (new CommandTask(cmd, !!cmdMatch[1], cmdMatch[3], shoe, m)).exec(this);
+	return (new CommandTask(cmd, rp, cmdMatch[3], shoe, m)).exec(this);
 }
 
 // may return a promise
