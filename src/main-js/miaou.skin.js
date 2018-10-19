@@ -6,7 +6,8 @@
 	//  It doesn't take into account the localStorage pref, hence the computation here.
 	let def = miaou.locals.prefDefinitions.find(def=>def.key=="theme");
 	let theme = miaou.locals.theme;
-	let localThemePref = localStorage.getItem("miaou.prefs.theme");
+	let me = miaou.locals.me;
+	let localThemePref = localStorage.getItem("miaou." + me.id + ".prefs.theme");
 	let themes = def.values.map(v=>v.value);
 	if (themes.includes(localThemePref)) {
 		theme = localThemePref;
