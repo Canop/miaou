@@ -74,13 +74,14 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 			resolver.resolve(result.rows[0]);
 		} else {
 			console.dir(profile);
-			var sql = 'insert into player (oauthid, oauthprovider, email, oauthdisplayname)' +
-				' values ($1, $2, $3, $4) returning '+returnedCols;
+			var sql = 'insert into player (oauthid, oauthprovider, email, oauthdisplayname, created)' +
+				' values ($1, $2, $3, $4, $5) returning ' + returnedCols;
 			resolver.resolve(
 				this.queryRow(
 					sql,
-					[oauthid, provider, email, displayName],
-					"insert_player", false
+					[oauthid, provider, email, displayName, now()],
+					"insert_player",
+					false
 				)
 			);
 		}
@@ -92,7 +93,7 @@ proto.getCompleteUserFromOAuthProfile = function(profile){
 // Private fields are included in the returned object
 proto.getUserById = function(id){
 	return this.queryRow(
-		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey'+
+		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey, created'+
 		' from player where id=$1',
 		[id],
 		"user_by_id"
@@ -103,7 +104,7 @@ proto.getUserById = function(id){
 // Private fields are included in the returned object
 proto.getUserByName = function(username){
 	return this.queryOptionalRow(
-		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey'+
+		'select id, name, oauthprovider, oauthdisplayname, email, tzoffset, bot, avatarsrc, avatarkey, created'+
 		' from player where lower(name)=$1',
 		[username.toLowerCase()],
 		"user_by_name"
@@ -159,7 +160,7 @@ proto.getUserInfo = function(id){
 // uses index message_room_author_created (but still not lighning fast)
 proto.listRecentUsers = function(roomId, N){
 	return this.queryRows(
-		"select a.id, a.mc, player.name, avatarsrc as avs, avatarkey as avk from"+
+		"select a.id, a.mc, player.name, avatarsrc as avs, avatarkey as avk, player.created from"+
 		" (select message.author as id, max(message.created) as mc from message where room=$1"+
 		" group by message.author order by mc desc limit $2) a"+
 		" join player on player.id=a.id and player.bot is false",
@@ -743,9 +744,9 @@ proto.getNextMessageId = function(roomId, mid, asc){
 proto.getNotableMessages = function(roomId, createdAfter){
 	return this.queryRows(
 		'select message.id, author, player.name as authorname, player.bot, room, content,'+
-		' created, pin, star, up, down, score from message'+
-		' join player on author=player.id where room=$1 and (created>$2 or pin>0) and score>4'+
-		' order by pin desc, created desc, score desc limit 20',
+		' message.created, pin, star, up, down, score from message'+
+		' join player on author=player.id where room=$1 and (message.created>$2 or pin>0) and score>4'+
+		' order by pin desc, message.created desc, score desc limit 20',
 		[roomId, createdAfter],
 		"notable_messages"
 	);
@@ -790,7 +791,7 @@ proto._searchConditions = function(s, args, cons){
 	if (s.minCreated) {
 		psname += "_minCreated";
 		args.push(s.minCreated);
-		cons.push("created>=$1");
+		cons.push("message.created>=$1");
 	}
 	if (s.authorName) {
 		psname += "_authorName";
@@ -820,7 +821,7 @@ proto.search = async function(s){
 		psname+"_count"
 	);
 	if (!count) return {count, messages:[]};
-	let	sql = "select message.id, author, player.name as authorname, room, content, created,"+
+	let	sql = "select message.id, author, player.name as authorname, room, content, message.created,"+
 		" pin, star, up, down, score from message"+
 		" inner join player on author=player.id";
 	args.push(s.pageSize, s.page*s.pageSize||0);
@@ -849,7 +850,7 @@ proto.searchFirstId = function(s){
 proto.search_tsquery = function(roomId, tsquery, lang, N){
 	return this.queryRows(
 		"select message.id, author, player.name as authorname, room, content,"+
-		" created, pin, star, up, down, score from message"+
+		" message.created, pin, star, up, down, score from message"+
 		" inner join player on author=player.id"+
 		" where to_tsvector($1, content) @@ to_tsquery($1,$2) and room=$3 order by message.id desc limit $4",
 		[lang, tsquery, roomId, N],
@@ -862,7 +863,7 @@ proto.searchHistogram = function(s){
 	var	psname = "search_histogram",
 		args = [],
 		conditions = [],
-		sql = "select count(*) n, floor(created/86400) d from message"+
+		sql = "select count(*) n, floor(message.created/86400) d from message"+
 		" inner join player on author=player.id";
 	psname += this._searchConditions(s, args, conditions);
 	return this.queryRows(

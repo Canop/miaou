@@ -155,6 +155,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 		.on('leave', usr.showLeave)
 		.on('miaou.error', md.showError)
 		.on('recent_users', function(users){
+			console.log('recent_users:', users);
 			users.forEach(function(user){ usr.insertAmongRecentUsers(user, user.md) });
 		})
 		.on('vote', md.applyVote)

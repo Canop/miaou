@@ -25,9 +25,15 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 	}
 
 	function $user(user){
-		return $('#users .user').filter(function(){
+		let $usr = $('#users .user').filter(function(){
 			return $(this).dat('user').id===user.id
 		});
+		if (user.created > Date.now()/1000 - 2*24*60*60) {
+			console.log("NEW USER:", user);
+			$("<div class=new-user-mark>New</div>").appendTo($usr);
+			//$usr.addClass("new-user");
+		}
+		return $usr;
 	}
 
 	usr.showUserHoverButtons = function(){

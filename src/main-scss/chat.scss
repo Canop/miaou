@@ -162,6 +162,16 @@ section {
 			width: 100%;
 			transition: width 2s;
 		}
+		.new-user-mark {
+			z-index: 7;
+			color: red;
+			position: absolute;
+			text-shadow: 0 0 1px black;
+			transform: rotate(-20deg) translate(81px, 34px);
+			&::after {
+				content: "!";
+			}
+		}
 	}
 	.user, .user.profiled {
 		// the ::after pseudo element is used as marker of hovering (profile opening)

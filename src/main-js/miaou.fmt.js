@@ -153,7 +153,7 @@ miaou(function(fmt, time){
 				continue;
 			}
 
-			if ((m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gifv?|png|jpg)\s*$/))) {
+			if ((m=s.match(/^\s*(https?:\/\/)?(\w\.imgur\.com\/)(\w{3,10})\.(gifv?|png|jpg)\s*$/i))) {
 				var bu = (m[1]||"https://")+m[2]+m[3];
 				if (!noThumb && bu[bu.length-1]!=='m') {
 					// use thumbnail for imgur images whenever possible
@@ -167,13 +167,13 @@ miaou(function(fmt, time){
 				}
 				continue;
 			}
-			var regex = /^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/;
+			var regex = /^\s*(https?:\/\/[^\s<>"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)\s*$/i;
 			if ((m=s.match(regex))) {
 				// example : http://mustachify.me/?src=http://blabla/queenelizabethii.jpg
 				lout.push('<img src="'+m[1]+'.'+m[2]+'">');
 				continue;
 			}
-			regex = /^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/;
+			regex = /^\s*(https?:\/\/[^\s<>?"]+\/[^\s<>"]+)\.(bmp|png|webp|gif|jpg|jpeg|svg)(\?[^\s<>?"]*)?\s*$/i;
 			if ((m=s.match(regex))) {
 				// example : http://md1.libe.com/photo/566431-unnamed.jpg?height=600&ratio_x=03&ratio_y=02&width=900
 				lout.push('<img src="'+m[1]+'.'+m[2]+(m[3]||'')+'">');
