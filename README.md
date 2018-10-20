@@ -12,13 +12,11 @@ A chat server with authentication, persistent and searchable history, rich markd
 
 You can see it in action or use it on https://miaou.dystroy.org (anybody can create a room for public or private use on this server).
 
-# Discussing features, issues
-
-Please come discuss it in one of the dedicated chat rooms [![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-en.svg?v=1)](https://miaou.dystroy.org/1?Miaou) and [![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-fr.svg?v=1)](https://miaou.dystroy.org/3?Code_Croissants) before you create an issue in the GitHub tracker (please note that they're currently more active between 8 and 19 GMT).
-
 # Installing a server
 
 If you want to install Miaou, the installation documentation is available [here](installation.md).
+
+Don't hesitate to come ask us some advices in one of the dedicated chat rooms [![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-en.svg?v=1)](https://miaou.dystroy.org/1?Miaou) and [![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-fr.svg?v=1)](https://miaou.dystroy.org/3?Code_Croissants) (please note that they're currently more active between 8 and 19 GMT).
 
 And if you run your own server, please tell us, we're always happy to learn about installations.
 
@@ -33,7 +31,7 @@ If you have the ability and will to contribute, come and discuss with us. The be
 Help is welcome but remember:
 
 1. Come and discuss with us before to code
-2. And, **always test before doing a pull request**.
+2. And, **always test yourself and run the test suite before doing a pull request**.
 
 ## License
 
