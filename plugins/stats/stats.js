@@ -159,7 +159,7 @@ exports.doStats = function(ct, miaou){
 			{name:"Messages", value:"(select count(*) from message where author=player.id)"},
 			{
 				name:"Since",
-				value:"(select min(created) from message where author=player.id)",
+				value:"player.created",
 				fmt: (r, c) => fmt.date(c, "DD MMM YYYY")
 			},
 			{

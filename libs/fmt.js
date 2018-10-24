@@ -4,6 +4,7 @@ const naming = require('./naming.js');
 //  to its locale and timezone
 // Will bug if there's a ")" in the pattern
 exports.date = function(seconds, pat){
+	if (!seconds) return "?";
 	let md = "#date("+seconds;
 	if (pat) md += "," + pat;
 	md += ")";
