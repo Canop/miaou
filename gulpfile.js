@@ -31,7 +31,7 @@ function miaouModules(){
 
 function miaouMinify(){
 	return uglify({
-		ecma: 7,
+		ecma: 8,
 		compress: {
 			keep_infinity: true,
 		},
