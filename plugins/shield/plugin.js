@@ -21,7 +21,7 @@ function onCommand(ct){
 		Add the following markdown to your repository's \`README.md\`:
 		    [![${alt}](${shieldUrl})](${roomUrl})
 		# HTML:
-		    <a href=${roomUrl} alt="${alt}" title="${alt}"><img src=${shieldUrl}></a>`
+		    <a href=${roomUrl} title="${alt}"><img alt="${alt}" src=${shieldUrl}></a>`
 	);
 	ct.end();
 }
