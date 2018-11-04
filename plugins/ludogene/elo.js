@@ -262,11 +262,12 @@ function opponentsTable(data, r){
 // computes the Ladder
 exports.getLadder = async function(con, gameType){
 	let messages = await ludodb.getGameMessages(con);
-	messages = messages.filter(function(m){
-		return	m.g.type===gameType
-			&& m.g.scores
-			&& (m.g.status==="running"||m.g.status==="finished");
-	});
+	messages = messages.filter(m =>
+		!noLadderRooms.includes(m.room)
+		&& m.g.type===gameType
+		&& m.g.scores
+		&& (m.g.status==="running"||m.g.status==="finished")
+	);
 	return compute(messages);
 }
 
@@ -276,14 +277,7 @@ exports.onCommand = async function(ct){
 	if (ct.cmd.name==="triboladder") gt = "Tribo";
 	else if (ct.cmd.name==="floreladder") gt = "Flore";
 	else throw new Error("Unknown Game Type");
-	let messages = await ludodb.getGameMessages(this);
-	messages = messages.filter(m =>
-		!noLadderRooms.includes(m.room)
-		&& m.g.type===gt
-		&& m.g.scores
-		&& (m.g.status==="running"||m.g.status==="finished")
-	);
-	let	data = await compute(messages),
+	let	data = await exports.getLadder(this, gt),
 		c = `Elo based ${gt} ladder:\n`,
 		showOpponents = /\bopponents?\b/.test(ct.args),
 		showLog = /\bgames\b/.test(ct.args);
