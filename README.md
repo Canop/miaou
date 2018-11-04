@@ -22,7 +22,9 @@ And if you run your own server, please tell us, we're always happy to learn abou
 
 # Contributing
 
-As described in [the help](https://miaou.dystroy.org/help#Technical_Stack), Miaou is mostly coded in JavaScript. Stuff includes node, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Jade, Passport.js, hu.js, jQuery, sass/scss, Uglify-js, gulp, travis-ci, and nginx.
+As described in [the help](https://miaou.dystroy.org/help#Technical_Stack), Miaou is mostly coded in JavaScript.
+
+Stuff includes node, PostgreSQL, OAuth2, socket.io, WebRTC, express, Bluebird, Redis, Pug, Passport.js, hu.js, jQuery, sass/scss, Uglify-js, gulp, jest, travis-ci, and nginx.
 
 Many features are implemented as plugins, and that's where you should look first: [Plugin developpement](plugins/README.md).
 
