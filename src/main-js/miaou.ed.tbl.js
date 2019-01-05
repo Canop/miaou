@@ -21,7 +21,12 @@ miaou(function(ed){
 				if (/\S/.test(l)) nbrows = i+1;
 				return r;
 			});
-		if (nbcols>1 && nbNotEmptyFirstCell>1) return {rows:rows.slice(0, nbrows), nbcols:nbcols};
+		if (nbcols>1 && nbNotEmptyFirstCell>1) {
+			return {
+				rows: rows.slice(0, nbrows),
+				nbcols: nbcols
+			};
+		}
 	}
 
 	// try to guess whether the first line is the column titles

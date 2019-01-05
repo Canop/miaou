@@ -9,6 +9,7 @@ const	titles = {
 };
 
 const	ws = require('../../libs/ws.js'),
+	fmt = require('../../libs/fmt.js'),
 	ludo = require('./plugin.js');
 
 const	removedPlayers = new Set(['p4km4n']);
@@ -158,26 +159,23 @@ function writeScore(ct, gameType){
 			players.push(p);
 		});
 		players = players.sort((a, b) => b.twcScore-a.twcScore);
-		var lines = [titles.score];
-		lines.push(
-			'Rank|Player|Finished|Wins|Drops|Mean Gain|Running Score|TWC Score',
-			...lines[lines.length-1].replace(/[^|]+/g, ':-:'),
-			...players.map(function(p, i){
+		write(roomId, titles.score + "\n" + fmt.tbl({
+			rank: true,
+			cols: ['Player', 'Finished', 'Wins', 'Drops', 'Mean Gain', 'Running Score', 'TWC Score'],
+			rows: players.map(function(p, i){
 				var	meanGain = (p.sumEndScores+p.nbWins*3)/p.nbFinishedGames,
 					runningScore = 3*p.nbWins + p.sumEndScores;
 				return [
-					"**"+(i+1)+"**",
 					"["+p.name+"](u/"+p.id+")",
 					p.nbFinishedGames,
-					p.nbWins,
-					p.nbDrops,
+					p.nbWins || " ",
+					p.nbDrops || " ",
 					meanGain ? meanGain.toFixed(1) : ' ',
 					runningScore,
 					p.twcScore
-				].join('|');
+				];
 			})
-		);
-		write(roomId, lines.join('\n'));
+		}));
 	})
 	.catch(db.NoRowError, function(){
 		ct.reply("Tournament not started");

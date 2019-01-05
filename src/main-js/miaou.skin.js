@@ -19,7 +19,7 @@
 	}
 	// document.write avoids a delay in css application (with the downside that js execution waits for the
 	//  theme to be downloaded)
-	document.write(`<link rel=stylesheet href="${miaou.root}static/themes/${theme}/miaou.css">`);
+	document.write(`<link rel=stylesheet href="${miaou.root}static/themes/${theme}/miaou.css?v=9">`);
 })();
 
 miaou(function(skin){
