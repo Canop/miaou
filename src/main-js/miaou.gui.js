@@ -6,6 +6,16 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 	gui.$messageScroller = $scroller;
 	gui.mobile = document.body.classList.contains('mobile');
 	var scrollerPaddingTop = parseInt($scroller.css('padding-top'));
+
+	gui.currentDownKey = undefined;
+	$(document)
+	.keydown(e=>{
+		gui.currentDownKey = e.which;
+	})
+	.keyup(e=>{
+		gui.currentDownKey = undefined;
+	});
+
 	gui.isAtBottom = function(){
 		var messages = document.getElementById("messages");
 		if (!messages) return false;

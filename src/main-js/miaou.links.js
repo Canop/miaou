@@ -47,6 +47,9 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 				} else {
 					// it's an url for another room or for a message in another room
 					$link.click(function(e){
+						if (gui.currentDownKey==17) { // ctrl
+							return;
+						}
 						location = this.href;
 						return false;
 					}).bubbleOn({
