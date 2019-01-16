@@ -20,7 +20,7 @@ You probably already have them if you coded on that computer. Basically you'll n
 
 # node & npm
 
-There are various valid ways to install them. Be sure to install a recent version of node. Versions lower than 9 aren't compatible with Miaou.
+There are various valid ways to install them. Be sure to install a recent version of node. Versions lower than 10 aren't compatible with Miaou.
 
 # gulp cli
 
