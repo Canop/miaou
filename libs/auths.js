@@ -175,12 +175,16 @@ exports.wsOnBan = async function(shoe, o){
 	o.banner = shoe.publicUser.id;
 	o.bannername = shoe.publicUser.name;
 	await db.do(async function(con){
-		let row = await con.getAuthLevel(shoe.room.id, o.banned);
-		let bannedAuth = row ? row.auth : null;
-		if (bannedAuth==="own") throw "A room owner cannot be banned";
-		let bannerAuth = shoe.room.auth;
-		if (bannedAuth==="admin" && bannerAuth!=="own") throw "Only a room owner can ban an admin";
-		if (bannerAuth!=="admin" && bannerAuth!=="own") throw "Only an owner or an admin can ban a user";
+		if (exports.isServerAdmin(shoe.publicUser)) {
+			console.log("ban launched by a server admin");
+		} else {
+			let row = await con.getAuthLevel(shoe.room.id, o.banned);
+			let bannedAuth = row ? row.auth : null;
+			if (bannedAuth==="own") throw "A room owner cannot be banned";
+			let bannerAuth = shoe.room.auth;
+			if (bannedAuth==="admin" && bannerAuth!=="own") throw "Only a room owner can ban an admin";
+			if (bannerAuth!=="admin" && bannerAuth!=="own") throw "Only an owner or an admin can ban a user";
+		}
 		let now = Date.now()/1000|0;
 		await con.insertBan(shoe.room.id, o.banned, now, now+o.duration, shoe.publicUser.id, o.reason);
 		shoe.emitToRoom('ban', o);
