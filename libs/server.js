@@ -32,11 +32,12 @@ passport.deserializeUser(function(id, done){
 function configureOauth2Strategies(){
 	var impls = {
 		google: {
-			strategyConstructor: require('passport-google-oauth2').Strategy,
-			scope: [
-				'https://www.googleapis.com/auth/userinfo.profile',
-				'https://www.googleapis.com/auth/userinfo.email'
-			]
+			strategyConstructor: require('@passport-next/passport-google-oauth2').Strategy,
+			scope: [ 'profile', 'email' ]
+			//scope: [
+			//	'https://www.googleapis.com/auth/userinfo.profile',
+			//	'https://www.googleapis.com/auth/userinfo.email'
+			//]
 		},
 		stackexchange: {
 			strategyConstructor: require('./passport-stackexchange.js').Strategy

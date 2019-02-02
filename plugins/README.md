@@ -320,7 +320,7 @@ Such a command is simple to make, here's the `!!urban` implementation:
 
 To define styles, a plugin can provide CSS files:  `plugins/<plugin>/css/*.css` files are automatically merged with the core styles.
 
-A plugin maker must be aware Miaou is themable. As such, he can't defined hardcoded colors and just hope they'll be fine with any theme. If coloring is necessary, then the solution is to use SCSS.
+A plugin maker must be aware Miaou is themable. As such, he can't define hardcoded colors and just hope they'll be fine with any theme. If coloring is necessary, then the solution is to use SCSS.
 
 `plugins/<plugin>/scss/*.scss` files are compiled with core scss files, and may use all the variables defined in themes and whose names are listed in `src/main-scss/variables-default.scss`. This makes it possible to reuse theme tuned colors either as is or using one of the color transformation functions of scss.
 

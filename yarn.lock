@@ -16,6 +16,24 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
+"@passport-next/passport-google-oauth2@passport-next/passport-google-oauth2":
+  version "1.0.0"
+  resolved "https://codeload.github.com/passport-next/passport-google-oauth2/tar.gz/6982741fdf92bc46a5845b867c39985a93ee123f"
+  dependencies:
+    "@passport-next/passport-oauth2" "1.7.x"
+
+"@passport-next/passport-oauth2@1.7.x":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@passport-next/passport-oauth2/-/passport-oauth2-1.7.0.tgz#48ef05df2a7980e888350a824e706ec177a40d93"
+  dependencies:
+    "@passport-next/passport-strategy" "1.1.x"
+    lodash ">=4.17.5"
+    oauth "0.9.x"
+
+"@passport-next/passport-strategy@1.1.x":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@passport-next/passport-strategy/-/passport-strategy-1.1.0.tgz#4c0df069e2ec9262791b9ef1e23320c1d73bdb74"
+
 "@types/babel-types@*", "@types/babel-types@^7.0.0":
   version "7.0.4"
   resolved "https://registry.yarnpkg.com/@types/babel-types/-/babel-types-7.0.4.tgz#bfd5b0d0d1ba13e351dff65b6e52783b816826c8"
@@ -3717,7 +3735,7 @@ lodash.templatesettings@^3.0.0:
     lodash._reinterpolate "^3.0.0"
     lodash.escape "^3.0.0"
 
-lodash@^4.0.0, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@~4.17.10:
+lodash@>=4.17.5, lodash@^4.0.0, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@~4.17.10:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
 
@@ -4392,12 +4410,6 @@ passport-github2@^0.1.11:
   dependencies:
     passport-oauth2 "1.x.x"
 
-passport-google-oauth2@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/passport-google-oauth2/-/passport-google-oauth2-0.1.6.tgz#dfd7016ac7449fe27cfeb252ae974afc23257a0d"
-  dependencies:
-    passport-oauth2 "^1.1.2"
-
 passport-oauth1@1.x.x:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/passport-oauth1/-/passport-oauth1-1.1.0.tgz#a7de988a211f9cf4687377130ea74df32730c918"
@@ -4406,7 +4418,7 @@ passport-oauth1@1.x.x:
     passport-strategy "1.x.x"
     utils-merge "1.x.x"
 
-passport-oauth2@1.x.x, passport-oauth2@^1.1.2:
+passport-oauth2@1.x.x:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/passport-oauth2/-/passport-oauth2-1.4.0.tgz#f62f81583cbe12609be7ce6f160b9395a27b86ad"
   dependencies:

@@ -8,6 +8,7 @@
     "url": "https://github.com/Canop/miaou"
   },
   "dependencies": {
+    "@passport-next/passport-google-oauth2": "passport-next/passport-google-oauth2",
     "bluebird": ">=1.0.4",
     "body-parser": ">=1.5.2",
     "bounded-cache": ">=0.0.0",
@@ -24,7 +25,6 @@
     "iconv-lite": ">=0.2.11",
     "passport": ">=0.2.2",
     "passport-github2": "^0.1.11",
-    "passport-google-oauth2": "^0.1.6",
     "passport-oauth": ">=1.0.0",
     "passport-reddit": ">=0.2.4",
     "pg": ">=4.5.5",
