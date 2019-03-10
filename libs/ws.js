@@ -325,7 +325,7 @@ function handleUserInRoom(socket, completeUser){
 		userIP = socket.handshake.headers["x-forwarded-for"]||socket.request.connection.remoteAddress,
 		welcomed = false;
 
-	console.log(completeUser.name, "connects from IP", userIP);
+	//console.log(completeUser.name, "connects from IP", userIP);
 
 	function send(v, m){
 		io.sockets.in(shoe.room.id).emit(v, clean(m));
@@ -866,7 +866,7 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('rm_ping', function(mid){
-		console.log('rm_ping', mid, shoe.publicUser.id);
+		//console.log('rm_ping', mid, shoe.publicUser.id);
 		throttle();
 		// remove the ping(s) related to that message and propagate to other sockets of same user
 		return db.on([mid, shoe.publicUser.id])
@@ -877,7 +877,7 @@ function handleUserInRoom(socket, completeUser){
 	});
 
 	on('rm_pings', async function(mids){
-		console.log('rm_pings', mids, shoe.publicUser.id);
+		//console.log('rm_pings', mids, shoe.publicUser.id);
 		if (!mids.length) {
 			console.log("empty array in rm_pings from", shoe.publicUser.name);
 			return;

@@ -47,7 +47,7 @@ async function getSubscriptionInfo(con, username){
 	}
 	let user = await con.getUserByName(username);
 	if (!user) {
-		console.log("getSubscription: user not found", username);
+		//console.log("getSubscription: user not found", username);
 		return;
 	}
 	let info = await con.getWebPushSubscription(user.id, maxSubscriptionAge);
@@ -71,7 +71,7 @@ async function notify(con, username, alert){
 	stat.queries++;
 	let info = await getSubscriptionInfo(con, username);
 	if (!info) {
-		console.log("no subscription found for", username);
+		//console.log("no subscription found for", username);
 		stat.withoutSubscription++;
 		return;
 	}
@@ -80,7 +80,7 @@ async function notify(con, username, alert){
 		stat.unauthorized++;
 		return;
 	}
-	console.log("trying pushing something", username);
+	//console.log("trying pushing something", username);
 	webPush.sendNotification(
 		info.subscription,
 		null, // payload in web push events isn't currently supported by browsers

@@ -14,6 +14,10 @@
 			theme = localThemePref;
 		}
 	}
+	let urlThemeMatch = document.location.toString().match(/[?&]theme=([\w-]+)(&|$)/);
+	if (urlThemeMatch && themes.includes(urlThemeMatch[1])) {
+		theme = urlThemeMatch[1];
+	}
 	if (theme=="default") {
 		theme = themes[1]; // themes[0] is "default"
 	}
