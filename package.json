@@ -1,6 +1,6 @@
 {
   "name": "miaou",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "description": "A node based chat server",
   "repository": {
@@ -21,6 +21,7 @@
     "express": ">=3.4.0",
     "express-session": ">=1.7.2",
     "file-archive": "^0.1.0",
+    "file-type": "10.9.0",
     "graceful-fs": "^4.1.11",
     "iconv-lite": ">=0.2.11",
     "passport": ">=0.2.2",
@@ -48,14 +49,14 @@
   "devDependencies": {
     "del": ">=2.2.0",
     "glob": "^7.1.2",
-    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp": "4.0",
     "gulp-cli": "gulpjs/gulp-cli",
     "gulp-concat": ">=2.6.0",
     "gulp-debug": "^4.0.0",
     "gulp-eslint": ">=5.0.0",
     "gulp-if": ">=2.0.0",
     "gulp-rename": ">=1.2.2",
-    "gulp-sass": ">=2.2.0",
+    "gulp-sass": "4.0.2",
     "gulp-uglify-es": "^1.0.4",
     "gulp-util": ">=3.0.7",
     "jest": "^23.3.0",

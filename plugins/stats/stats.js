@@ -5,8 +5,20 @@ const	fmt = require('../../libs/fmt.js'),
 	monthstats = require('./stats-months.js'),
 	mptf = require('./stats-messages-per-time-field.js'),
 	webpush = require('./stats-web-push.js'),
-	siostats = require('./stats-sockets.js');
+	siostats = require('./stats-sockets.js'),
+	statsMakers = new Map; // topic -> function
 
+
+// register a delegate function assuming the stats generation
+//  for a given topic. This should be used by other plugins.
+// fun is supposed to be an async function taking as parameters
+// - con: a db connection
+// - options: an object {
+//
+// }
+exports.registerStatsMaker = function(topic, fun){
+	statsMakers.set(topic, fun);
+}
 
 function fmtTag(_, name){
 	return "[tag:"+name+"]";
@@ -76,6 +88,17 @@ exports.doStats = function(ct, miaou){
 		} else {
 			topic = "server-graph";
 		}
+	}
+
+	let statsMaker = statsMakers.get(topic);
+	if (statsMaker) {
+		return statsMaker(this, ct, {
+			params,
+			usernames,
+			room,
+			roomIds,
+			n,
+		});
 	}
 
 	if (/^socket/i.test(topic)) {

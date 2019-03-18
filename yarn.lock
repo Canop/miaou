@@ -1917,6 +1917,10 @@ file-entry-cache@^2.0.0:
     flat-cache "^1.2.1"
     object-assign "^4.0.1"
 
+file-type@10.9.0:
+  version "10.9.0"
+  resolved "https://registry.yarnpkg.com/file-type/-/file-type-10.9.0.tgz#f6c12c7cb9e6b8aeefd6917555fd4f9eadf31891"
+
 filename-regex@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/filename-regex/-/filename-regex-2.0.1.tgz#c1c4b9bee3e09725ddb106b75c1e301fe2f18b26"
@@ -2366,7 +2370,7 @@ gulp-rename@>=1.2.2:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/gulp-rename/-/gulp-rename-1.4.0.tgz#de1c718e7c4095ae861f7296ef4f3248648240bd"
 
-gulp-sass@>=2.2.0:
+gulp-sass@4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/gulp-sass/-/gulp-sass-4.0.2.tgz#cfb1e3eff2bd9852431c7ce87f43880807d8d505"
   dependencies:
@@ -2412,9 +2416,9 @@ gulp-util@>=3.0.7:
     through2 "^2.0.0"
     vinyl "^0.5.0"
 
-"gulp@github:gulpjs/gulp#4.0":
+gulp@4.0:
   version "4.0.0"
-  resolved "https://codeload.github.com/gulpjs/gulp/tar.gz/55eb23a268dcc7340bb40808600fd4802848c06f"
+  resolved "https://registry.yarnpkg.com/gulp/-/gulp-4.0.0.tgz#95766c601dade4a77ed3e7b2b6dc03881b596366"
   dependencies:
     glob-watcher "^5.0.0"
     gulp-cli "^2.0.0"

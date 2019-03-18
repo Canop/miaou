@@ -23,10 +23,14 @@ miaou(function(ed, chat){
 	// register either a function or an array describing how arguments of
 	//  this command can be autocompleted
 	ed.registerCommandArgAutocompleter = function(commandName, matcher){
-		if (Array.isArray(matcher)) { // if not we assume it's a function
-			matcher = arrayToMatcher(matcher);
+		let existing = commandArgAutocompleters.get(commandName);
+		if (existing && Array.isArray(matcher) && Array.isArray(existing)) {
+			// several plugins can contribute to the completion of a command
+			// so we merge if we can
+			existing.push(...matcher);
+		} else {
+			commandArgAutocompleters.set(commandName, matcher);
 		}
-		commandArgAutocompleters.set(commandName, matcher);
 	}
 
 	// returns the currently autocompletable typed command, if any
@@ -46,6 +50,12 @@ miaou(function(ed, chat){
 		if (!m) return;
 		var matcher = commandArgAutocompleters.get(m[1]);
 		if (!matcher) return;
+		if (Array.isArray(matcher)) { // if not we assume it's a function
+			// we kept the array the longest possible time to allow completions
+			// (several plugins can modify the same matcher)
+			matcher = arrayToMatcher(matcher);
+			commandArgAutocompleters.set(m[1], matcher);
+		}
 		var	tokens = m[2].split(/\s+/),
 			ac = { cmd:m[1], matcher, args: m[2] };
 		ac.arg = tokens.pop();

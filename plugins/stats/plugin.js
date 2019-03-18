@@ -36,3 +36,5 @@ exports.registerCommands = function(registerCommand){
 
 	});
 }
+
+exports.registerStatsMaker = stats.registerStatsMaker;
