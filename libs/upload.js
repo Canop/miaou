@@ -1,21 +1,33 @@
 
 var	bench = require('./bench.js'),
 	request = require('request'),
-	clientID,
+	detectType = require('file-type'),
+	imgurClientID,
+	miaou,
 	Busboy = require('busboy');
 
-exports.configure = function(miaou){
-	clientID = miaou.conf("imgur", "clientID");
+exports.configure = function(_miaou){
+	miaou = _miaou;
+	imgurClientID = miaou.conf("imgur", "clientID");
 	return this;
 }
 
 exports.sendImageToImgur = function(bytes){
+	throw new Error("removed function, use storeImage");
+}
+
+async function storeImageOnFileHost(fileHoster, image){
+	let saved = await fileHoster.saveFile(image.ext, image.uploader, image.bytes);
+	image.url = saved.url;
+}
+
+function storeImageOnImgur(image){
 	return new Promise(function(resolve, reject){
 		var	bo = bench.start("Image Upload / to imgur");
-		console.log('Trying to send image of '+ bytes.length +' bytes to imgur');
+		console.log('Trying to save image of '+ image.bytes.length +' bytes to imgur');
 		var options = {
 			url: 'https://api.imgur.com/3/upload',
-			headers: { Authorization: 'Client-ID ' + clientID }
+			headers: { Authorization: 'Client-ID ' + imgurClientID }
 		};
 		var r = request.post(options, function(err, req, body){
 			if (err) {
@@ -32,6 +44,7 @@ exports.sendImageToImgur = function(bytes){
 				console.log(body);
 				return reject(new Error("Invalid JSON in imgur's answer"));
 			}
+			console.log('data:', data);
 			if (data && data.error) {
 				return reject(new Error("imgur answered : "+data.error));
 			}
@@ -43,25 +56,55 @@ exports.sendImageToImgur = function(bytes){
 		})
 		var form = r.form();
 		form.append('type', 'file');
-		form.append('image', bytes);
+		form.append('image', image.bytes);
 	});
 }
 
-exports.appPostUpload = function(req, res){
-	if (!clientID) {
-		console.log(
-			'To activate the imgur service, register your application'
-			+ ' at imgur.com and set the imgur.clientID property in the config.json file.'
-		);
-		return res.send({error:"upload service not available"}); // todo : don't show upload button in this case
+// store the image using the available storage solution
+// Takes an object {
+// 	ext
+// 	uploader
+// 	bytes
+// }
+//
+// adds the following fields: {
+// 	id
+// 	url
+// }
+exports.storeImage = async function(image){
+	try {
+		let fileHoster = miaou.plugin("file-host");
+		if (fileHoster) {
+			await storeImageOnFileHost(fileHoster, image);
+		} else if (imgurClientID) {
+			let imgurData = await storeImageOnImgur(image);
+			image.url = imgurData.link;
+		} else {
+			console.log("Found no solution for image hosting");
+			console.log(
+				'To activate the imgur service, register your application'
+				+ ' at imgur.com and set the imgur.clientID property in the config.json file.'
+			);
+			throw new Error("No configured File Hoster");
+		}
+	} catch (error) {
+		image.error = error.toString();
+		console.log("Error on upload: " + image.error);
 	}
+	return image;
+}
+
+exports.appPostUpload = function(req, res){
 	var	busboy = new Busboy({ headers: req.headers }),
-		files=[];
+		files = [];
 	console.log("receiving upload task...");
 	busboy
 	.on('field', function(fieldname, dataUrl, fieldnameTruncated, valTruncated, encoding, mimetype){
 		var buffer = new Buffer(dataUrl.split(",")[1], 'base64');
-		files.push({name:fieldname, bytes:buffer});
+		files.push({
+			name:fieldname,
+			bytes:buffer
+		});
 	})
 	.on('file', function(fieldname, file){
 		var	chunks = [],
@@ -75,13 +118,22 @@ exports.appPostUpload = function(req, res){
 			bo.end();
 		});
 	})
-	.on('finish', function(){
+	.on('finish', async function(){
 		if (!files.length) {
 			return res.send({error:'found nothing in form'});
 		}
 		// for now, we handle only the first file, we'll see later if we want to upload galleries
-		exports.sendImageToImgur(files[0].bytes).then(data=>{
-			res.send({image:data});
+		let file = files[0];
+		let type = detectType(file.bytes);
+		let image = {
+			bytes: file.bytes,
+			ext: type.ext,
+			uploader: req.user.id
+		};
+		await exports.storeImage(image);
+		res.send({
+			url: image.url,
+			error: image.error,
 		});
 	});
 	req.pipe(busboy);

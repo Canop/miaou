@@ -1,4 +1,4 @@
-const	apiversion = 108,
+const	apiversion = 110,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -322,7 +322,7 @@ function handleUserInRoom(socket, completeUser){
 		routes = new Map,
 		pendingEvent,
 		usernameRegex = new RegExp("^"+completeUser.name.toLowerCase()+"$"), // used to test for self pings
-		userIP = socket.handshake.headers["x-forwarded-for"]||socket.request.connection.remoteAddress,
+		//userIP = socket.handshake.headers["x-forwarded-for"]||socket.request.connection.remoteAddress,
 		welcomed = false;
 
 	//console.log(completeUser.name, "connects from IP", userIP);
@@ -443,7 +443,6 @@ function handleUserInRoom(socket, completeUser){
 			}
 			let pings = await con.fetchUserPings(completeUser.id, entry.lastMessageSeen);
 			if (pings.length) {
-				console.log('pings sent on enter of ',  completeUser.name, 'in room', shoe.room.id,  ':', pings);
 				socket.emit('pings', pings);
 			}
 			socket.broadcast.to(shoe.room.id).emit('enter', shoe.publicUser);

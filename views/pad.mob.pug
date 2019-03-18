@@ -9,7 +9,7 @@ html
 		script(src="static/jquery-3.3.1.min.js")
 		script(src="socket.io/socket.io.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
-		script(src="static/miaou.min.js?v=19")
+		script(src="static/miaou.min.js?v=20")
 		script(src="static/pad.mob.min.js?v=9")
 	body#mpad.chat.mobile
 		#mvert
@@ -35,7 +35,7 @@ html
 						button#uploadSend Send Image
 						button#cancelUpload Cancel Upload
 					#upload-wait(style="display:none")
-						p Uploading image to imgur...
+						p Uploading image...
 						img(src="static/ajax-loader-bar.gif")
 				.mpad-row
 					.mpad-button#cancel-write Cancel

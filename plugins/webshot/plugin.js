@@ -4,10 +4,10 @@ const HEIGHT = 1000;
 
 exports.name = "webshot";
 
-let sendToImgur;
+let storeImage;
 
 exports.init = function(miaou){
-	sendToImgur = miaou.lib("upload").sendImageToImgur;
+	storeImage = miaou.lib("upload").storeImage;
 }
 
 async function onCommand(ct){
@@ -34,10 +34,13 @@ async function onCommand(ct){
 		if (status=="fail") {
 			throw new Error("URL fetching failed");
 		}
-		let b64 = await page.renderBase64("png");
-		let data = await sendToImgur(b64);
-		console.log('data:', data);
-		if (!data.link) { // should not happen, I think (because handled in "upload" lib
+		let image = {
+			bytes: await page.renderBase64("png"),
+			uploader: ct.shoe.publicUser.id,
+			ext: 'png'
+		};
+		let data = await storeImage(image);
+		if (!data.url) { // should not happen, I think (because handled in "upload" lib)
 			if (data.error) {
 				throw new Error("Imgur sent an error: " + data.error);
 			} else {
@@ -45,7 +48,7 @@ async function onCommand(ct){
 			}
 		}
 		//ct.reply(`Screenshot of ${url} :\n${data.link}`);
-		ct.reply(data.link);
+		ct.reply(data.url);
 	} finally {
 		await instance.exit();
 	}
