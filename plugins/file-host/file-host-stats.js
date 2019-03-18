@@ -27,7 +27,7 @@ exports.init = function(miaou){
 
 async function doStats_global(con){
 	let row = await con.queryRow(
-		"select count(id) n, count(uploader) ups, sum(size) sumsize from hosted_file",
+		"select count(id) n, count(distinct uploader) ups, sum(size) sumsize from hosted_file",
 		[],
 		"hosted_file / stats / global raw"
 	);
