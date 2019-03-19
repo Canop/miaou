@@ -186,8 +186,14 @@
 	}
 
 	setTimeout(function(){
+		// we make it a different function to not disturb other event bindings
+		function checkOverOnce(event){
+			fish.checkOver(event);
+		}
 		$("#message-scroller").on("scroll", function(){
-			fish.closeBubbles();
+			if (!current) return;
+			// we need a mousemove event in order to have the mouse position
+			$(window).one('mousemove', checkOverOnce);
 		});
 	}, 0);
 

@@ -94,7 +94,7 @@ miaou(function(hist, gui, locals, md, time, ws){
 		}
 		let	page = res.search.page||0,
 			nbPages = Math.ceil(res.result.count / res.search.pageSize);
-		md.showMessages(res.result.messages, $('#search-results'), page);
+		md.showSideMessages(res.result.messages, $('#search-results'), page);
 		$('#search-results-count').text(res.result.count + " messages found");
 		$("#search-results-page").text(`page ${page+1} / ${nbPages}`);
 		$("#search-results-previous-page").toggleClass("enabled", page>0);

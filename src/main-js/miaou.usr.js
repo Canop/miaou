@@ -53,6 +53,12 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 		}
 	}
 
+	usr.pick = function(userId){
+		for (user of recentUsers) {
+			if (user.id==userId) return user;
+		}
+	}
+
 	usr.recentNamesStartingWith = function(s){
 		return recentUsers.filter(function(u){
 			return !u.name.lastIndexOf(s, 0)

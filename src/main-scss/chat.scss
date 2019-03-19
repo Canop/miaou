@@ -227,13 +227,19 @@ body.pad #me {
 	}
 }
 
-.user-messages {
-	position: relative;
+#messages .user-messages {
 	margin-top: $user-messages-vmargin;
 	margin-bottom: $user-messages-vmargin;
 	border-top: $user-messages-border-top;
 	border-bottom: $user-messages-border-bottom;
 	padding: $user-messages-padding;
+	.user {
+		position: absolute;
+		left:0;
+		top:0;
+		bottom:0;
+		width: 110px;
+	}
 	&.me {
 		background: $message-me-bg;
 		border-top: $user-messages-me-border-top;
@@ -242,13 +248,48 @@ body.pad #me {
 			color: $message-me-user-color;
 		}
 	}
+}
+.room-message-bubble {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	.room-bubble + .message-bubble {
+		margin-left: 8px;
+		display: flex;
+	}
+	.user-messages.single {
+		border-radius: 3px;
+		color: $general-text-color;
+		background: $bg-color;
+		min-width: 600px;
+		.opener {
+			display: none;
+		}
+	}
+}
+.user-messages.single {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
 	.user {
-		position: absolute;
-		left:0;
-		top:0;
-		bottom:0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		flex: 0 0 90px;
+		font-size: 90%;
+		.nminfo {
+			color: $general-text-color;
+		}
+	}
+	.message {
+		flex: 1 1 auto;
+	}
+}
+
+.user-messages {
+	position: relative;
+	.user {
 		padding: $user-padding-in-message;
-		width: 110px;
 		z-index: 6;
 		display: flex;
 		flex-direction: row;
@@ -393,11 +434,12 @@ body.pad #me {
 		display: inline-block;
 		max-width: 100%;
 		max-height: 55vh;
+		box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+		margin: 5px 0;
 	}
 	table {
 		border-collapse: collapse;
 		display: inline-table;
-		margin: 5px 0;
 		th, td {
 			border: 1px solid $message-content-table-border-color;
 			padding: 0 3px;

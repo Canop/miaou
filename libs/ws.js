@@ -1,4 +1,4 @@
-const	apiversion = 110,
+const	apiversion = 111,
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -557,15 +557,20 @@ function handleUserInRoom(socket, completeUser){
 		}).finally(db.off);
 	});
 
-	on('get_message', function(mid){
-		return db.on(+mid)
-		.then(db.getMessage)
-		.then(function(m){
+	on('get_message', async function(mid){
+		await db.do(async function(con){
+			let m = await con.getMessage(+mid, 0, true);
+			if (m.room !== shoe.room.id) {
+				let room = await con.fetchRoomAndUserAuth(m.room, shoe.publicUser.id);
+				if (room.private && !auths.checkAtLeast(room.auth, 'write')) {
+					throw "unauthorized";
+				}
+			}
 			m.vote = '?';
 			shoe.pluginTransformAndSend(m, function(v, m){
 				shoe.emit(v, clean(m));
 			});
-		}).finally(db.off);
+		});
 	});
 
 	on('get_newer', function(cmd){

@@ -885,9 +885,10 @@ proto.rawHistogram = function(roomId){
 
 // fetches one message. Votes of the passed user are included if user is provided
 // avatar isn't given (now)
-proto.getMessage = function(messageId, userId){
+proto.getMessage = async function(messageId, userId, addPrevAndNext){
+	let message;
 	if (userId) {
-		return this.queryRow(
+		message = await this.queryRow(
 			'select message.id, message.room, author, player.name as authorname, player.bot, room, content,'+
 			' message.created as created, message.changed, pin, star, up, down, vote, score from message'+
 			' left join message_vote on message.id=message and message_vote.player=$2'+
@@ -897,7 +898,7 @@ proto.getMessage = function(messageId, userId){
 			"get_message_for_user"
 		)
 	} else {
-		return this.queryRow(
+		message = await this.queryRow(
 			'select message.id, message.room, author, player.name as authorname, player.bot, room, content,'+
 			' message.created as created, message.changed, pin, star, up, down, score from message'+
 			' inner join player on author=player.id'+
@@ -906,6 +907,21 @@ proto.getMessage = function(messageId, userId){
 			"get_message"
 		)
 	}
+	if (addPrevAndNext) {
+		let row = await this.queryRow(
+			"select max(id) prev_id from message where room=$1 and id<$2",
+			[message.room, message.id],
+			"get_prev_message_id"
+		);
+		if (row) message.prev = row.prev_id;
+		row = await this.queryRow(
+			"select min(id) next_id from message where room=$1 and id>$2",
+			[message.room, message.id],
+			"get_next_message_id"
+		);
+		if (row) message.next = row.next_id;
+	}
+	return message;
 }
 
 proto._insertMessage = function(m){

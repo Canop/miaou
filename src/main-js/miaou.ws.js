@@ -76,7 +76,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 		})
 		.on('box', md.box)
 		.on('notables', function(notableMessages){
-			md.showMessages(notableMessages, $('#notable-messages'));
+			md.showSideMessages(notableMessages, $('#notable-messages'));
 		})
 		.on('notableIds', md.updateNotableMessages)
 		.on('request', md.showRequestAccess)

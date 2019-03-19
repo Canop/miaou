@@ -20,11 +20,11 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 			var	$link = $(this),
 				parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
 			if (parts && parts.length===5 && parts[1]===server) {
-				var roomId = +parts[2];
+				let roomId = +parts[2];
+				let mid = +parts[4];
 				// it's an url towards a room or message on this server
 				if (locals.room && locals.room.id===roomId) {
 					// it's an url for the same room
-					var mid = +parts[4];
 					if (mid) {
 						// it's an url for a message
 						this.href = locals.room.path + '#' + mid
@@ -34,6 +34,7 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 						});
 						if (!gui.mobile) {
 							$link
+							.addClass("message-bubbler").attr("mid", mid) // for bubbling
 							.on('mouseenter', internalLinkWzin.bind(this, mid))
 							.on('mouseleave', removeLinkWzin);
 						}
@@ -52,23 +53,8 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 						}
 						location = this.href;
 						return false;
-					}).bubbleOn({
-						classes: "room-bubble",
-						blower:function($c){
-							$.get("json/room?id="+roomId, function(data){
-								var room = data.room;
-								if (!room) {
-									$c.text("Unknown Room:" + roomId);
-									return;
-								}
-								roomFinder.$square(room).appendTo($c);
-								if (!room.private || room.auth) return;
-								$("<div class=no-access>")
-								.text("You don't have access to this room")
-								.appendTo($c);
-							});
-						}
-					});
+					})
+					.addClass('message-bubbler').attr('roomId', roomId).attr('mid', mid);
 				}
 			} else {
 				$link.click(function(e){

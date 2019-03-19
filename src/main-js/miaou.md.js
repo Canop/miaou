@@ -67,8 +67,15 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		if ($message.length) return $message.eq(0).dat('message');
 	}
 
-	// used for notable messages and search results
 	md.showMessages = function(messages, $div, append){
+		if (!append) $div.empty();
+		for (var i=0; i<messages.length; i++) {
+			md.addUserMessageDiv(messages[i], $div);
+		}
+	}
+
+	// used for notable messages and search results
+	md.showSideMessages = function(messages, $div, append){
 		if (!append) $div.empty();
 		var notable = $div[0].id==="notable-messages"; // not very pretty...
 		for (var i=0; i<messages.length; i++) {
@@ -82,6 +89,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// builds the message div and append it to the container, managing resizing.
 	// May be used for notable messages and search results
 	md.addSideMessageDiv = function(m, $div, $repl){
+		//return md.addUserMessageDiv(m, $div, $repl);
 		var $content = $('<div>').addClass('content');
 		var $md = $('<div>').addClass('message').dat('message', m).append($content).append(
 			$('<div>').addClass('nminfo')
@@ -91,8 +99,9 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		if ($repl) {
 			$repl.replaceWith($md);
 			chat.trigger("notable", m, $md);
+		} else {
+			$md.appendTo($div);
 		}
-		else $md.appendTo($div);
 		if (m.id) $md.attr('mid', m.id);
 		$md.addClass(m.pin ? 'pin' : 'star');
 		md.render($content, m);
@@ -219,6 +228,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	}
 
 	md.updateLoaders = function(){
+		console.log("update loaders");
 		$('.olderLoader,.newerLoader').remove();
 		var 	i,
 			idmap = {},
@@ -253,6 +263,47 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	function selfHide(){
 		this.style.visibility="hidden";
 	}
+
+	md.addUserMessageDiv = function(m, $container, $replInNotable){
+		let user = usr.pick(m.author) || {id: m.author, name: m.authorname};
+
+		let $mud = $("<div>").addClass("user-messages single").dat('user', user);
+
+		let $user = $('<div>').addClass('user').appendTo($mud);
+		$user.css('color', skin.stringToColour(user.name)).append($('<span>').text(user.name));
+		let avsrc = usr.avatarsrc(user);
+		if (avsrc) {
+			$('<div>').addClass('avatar-wrapper').prependTo($user).append(
+				$('<img>').attr('src', avsrc).addClass('avatar').imgOn('error', selfHide)
+			);
+		} else {
+			$('<div>').addClass('avatar').prependTo($user);
+		}
+		if (user.bot) $user.addClass('bot');
+		if (user.id===locals.me.id) $mud.addClass('me');
+
+		$("<div>").addClass("nminfo").html(md.votesAbstract(m)).appendTo($user);
+		$("<div>").addClass("nminfo").html(time.formatTime(m.created)).appendTo($user);
+
+		let $content = $('<div>').addClass('content');
+		let $md = $('<div>').addClass('message').dat('message', m).append($content).appendTo($mud);
+		if (m.author===locals.me.id) $md.addClass('me');
+		if ($replInNotable) {
+			$replInNotable.replaceWith($mud);
+			chat.trigger("notable", m, $md);
+		} else {
+			$mud.appendTo($container);
+		}
+		if (m.id) $md.attr('mid', m.id);
+		$md.addClass(m.pin ? 'pin' : 'star');
+		md.render($content, m);
+		if ($content.height()>80) {
+			$content.addClass("closed");
+			$md.append('<div class=opener>');
+		}
+		return $mud;
+	}
+
 
 	// builds a new .user-messages div for the passed user)
 	function usermessagesdiv(user){
