@@ -107,6 +107,10 @@ miaou(function(chat, hist, horn, links, locals, md, notif, gui, plugins, skin, t
 
 		messages.forEach(function(message){
 			if (chat.trigger('incoming_message', message) === false) return;
+			if (message.room !== locals.room.id) {
+				console.log("message of other room not displayed", message);
+				return;
+			}
 			if (shouldStickToBottom && !visible) {
 				var $lastSeen = $('#messages .rvis').last();
 				if ($lastSeen.length) {

@@ -257,13 +257,28 @@ body.pad #me {
 		margin-left: 8px;
 		display: flex;
 	}
+	.conversation {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		overflow: hidden;
+	}
+	.previous-in-conv {
+		overflow: hidden;
+		margin-bottom: 5px;
+		transform: scale(.97);
+	}
 	.user-messages.single {
 		border-radius: 3px;
 		color: $general-text-color;
 		background: $bg-color;
 		min-width: 600px;
+		padding: 5px;
 		.opener {
 			display: none;
+		}
+		.user span {
+			font-size: 90%;
 		}
 	}
 }
@@ -276,7 +291,7 @@ body.pad #me {
 		flex-direction: column;
 		align-items: center;
 		flex: 0 0 90px;
-		font-size: 90%;
+		overflow: hidden;
 		.nminfo {
 			color: $general-text-color;
 		}

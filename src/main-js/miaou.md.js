@@ -89,7 +89,6 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// builds the message div and append it to the container, managing resizing.
 	// May be used for notable messages and search results
 	md.addSideMessageDiv = function(m, $div, $repl){
-		//return md.addUserMessageDiv(m, $div, $repl);
 		var $content = $('<div>').addClass('content');
 		var $md = $('<div>').addClass('message').dat('message', m).append($content).append(
 			$('<div>').addClass('nminfo')
@@ -228,7 +227,6 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	}
 
 	md.updateLoaders = function(){
-		console.log("update loaders");
 		$('.olderLoader,.newerLoader').remove();
 		var 	i,
 			idmap = {},
@@ -264,7 +262,28 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		this.style.visibility="hidden";
 	}
 
-	md.addUserMessageDiv = function(m, $container, $replInNotable){
+	// m can be either a message (i.e. an object) or a message id (i.e. a number)
+	md.addUserMessageDiv = function(m, $container, $replInNotable, convCount){
+		if (typeof m === "number" || typeof m === "string") {
+			let messageId = +m;
+			if (!messageId) return;
+			let $existingMessage = $("#messages .message[mid="+messageId+"]");
+			if (!$existingMessage.length) {
+				return md.fetchMessageForDiv(messageId, $container, convCount);
+			}
+			var mtop = $existingMessage.offset().top;
+			if (mtop>0) return false; // message is visible, no need for the bulruk
+			m = $existingMessage.dat('message');
+		}
+		if (!m.content) return;
+		if (convCount>0 && !$replInNotable) {
+			let rto = m.content.match(/^\s*@\w[\w\-]{2,}#(\d+)\s/);
+			if (rto) {
+				let previousMessageId = +rto[1];
+				let $previousInConv = $("<div class=previous-in-conv>").appendTo($container);
+				md.addUserMessageDiv(previousMessageId, $previousInConv, null, convCount-1);
+			}
+		}
 		let user = usr.pick(m.author) || {id: m.author, name: m.authorname};
 
 		let $mud = $("<div>").addClass("user-messages single").dat('user', user);
@@ -282,7 +301,10 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		if (user.bot) $user.addClass('bot');
 		if (user.id===locals.me.id) $mud.addClass('me');
 
-		$("<div>").addClass("nminfo").html(md.votesAbstract(m)).appendTo($user);
+		let votesAbstract = md.votesAbstract(m);
+		if (votesAbstract) {
+			$("<div>").addClass("nminfo").html(votesAbstract).appendTo($user);
+		}
 		$("<div>").addClass("nminfo").html(time.formatTime(m.created)).appendTo($user);
 
 		let $content = $('<div>').addClass('content');

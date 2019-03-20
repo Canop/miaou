@@ -5,7 +5,10 @@ miaou(function(md, chat, gui, locals, roomFinder, skin, time, usr, ws){
 
 	// fetch a message
 	// TODO same room only ?
-	md.fetchMessageForDiv = function(mid, $c){
+	md.fetchMessageForDiv = function(mid, $c, convCount){
+		if (convCount>0) {
+			$c.attr('conv-count', convCount);
+		}
 		$c.addClass("content waiting_for_"+mid)
 		ws.emit('get_message', mid);
 	}
@@ -15,18 +18,32 @@ miaou(function(md, chat, gui, locals, roomFinder, skin, time, usr, ws){
 	chat.on('incoming_message', function(m){
 		let idcls = 'waiting_for_'+m.id;
 		let mes = document.getElementsByClassName(idcls);
-		for (me of mes) {
-			let $c = $(me);
-			md.addUserMessageDiv(m, $c);
-			$c.removeClass(idcls);
+		if (mes.length) {
+			for (me of mes) {
+				let $c = $(me);
+				md.addUserMessageDiv(m, $c, null, +$c.attr('conv-count'));
+				$c.removeClass(idcls);
+			}
+			// The return false here means there's no addition in the #messages
+			// stream. This is a little better as the message would be isolated
+			// and would sometimes make the whole page scroll.
+			// But it also means the message is fetched every times the mouse
+			// hovers the link (a solution for this could be a local cache).
+			// This false means we could also not fetch prev and next in
+			// libs/ws/get_message
+			return false;
 		}
 	});
 
-	function fillBubbleWithMessage(roomId, messageId, $c){
-		$c.addClass("room-message-bubble");
-		let $existingMessage = $("#messages .message[mid="+messageId+"]");
+	function fillBubbleWithMessage(roomId, messageId, $content){
+		$content
+		.addClass("room-message-bubble")
+		.on('click', ".message", function(){
+			md.focusMessage(+$(this).attr('mid'));
+		});
+
 		if (+roomId) {
-			$room = $("<div class=room-bubble>").appendTo($c);
+			$room = $("<div class=room-bubble>").appendTo($content);
 			$.get("json/room?id="+roomId, function(data){
 				var room = data.room;
 				if (!room) {
@@ -39,18 +56,9 @@ miaou(function(md, chat, gui, locals, roomFinder, skin, time, usr, ws){
 				.text("You don't have access to this room")
 				.appendTo($room);
 			});
-			$message = $("<div class=message-bubble>").appendTo($c);
-			$c = $message;
 		}
-		if (+messageId) {
-			if ($existingMessage.length) {
-				var mtop = $existingMessage.offset().top;
-				if (mtop>0) return false; // message is visible, no need for the bulruk
-				md.addUserMessageDiv($existingMessage.dat('message'), $c);
-			} else {
-				md.fetchMessageForDiv(messageId, $c);
-			}
-		}
+		let $conversation = $("<div class=conversation>").appendTo($content);
+		return md.addUserMessageDiv(messageId, $conversation, null, 6);
 	}
 
 	$("#messages")
