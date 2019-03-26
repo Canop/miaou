@@ -253,6 +253,7 @@ body.pad #me {
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
+	max-width: 70vw;
 	.room-bubble + .message-bubble {
 		margin-left: 8px;
 		display: flex;
@@ -264,8 +265,10 @@ body.pad #me {
 		overflow: hidden;
 	}
 	.previous-in-conv {
+		display: flex;
+		flex-direction: column;
 		overflow: hidden;
-		margin-bottom: 5px;
+		margin: 5px 0;
 		transform: scale(.97);
 	}
 	.user-messages.single {
@@ -273,6 +276,7 @@ body.pad #me {
 		color: $general-text-color;
 		background: $bg-color;
 		min-width: 600px;
+		width: 100%;
 		padding: 5px;
 		.opener {
 			display: none;
@@ -282,6 +286,7 @@ body.pad #me {
 		}
 	}
 }
+
 .user-messages.single {
 	display: flex;
 	flex-direction: row;
@@ -599,6 +604,10 @@ body.pad #me {
 }
 .content img {
 	cursor: pointer;
+	box-shadow: $img-shadow;
+	&:hover {
+		box-shadow: $img-hover-shadow;
+	}
 }
 
 #search-query {
