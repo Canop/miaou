@@ -7,8 +7,9 @@ miaou(function(fish, ed, md, plugins){
 	function render($c){
 		replacer.replaceTextWithHTMLInHTMLUsingRegex(
 			$c[0],
-			/(^|\s|\()(-?\d+)d(\d+)([+-]\d+)?\b/ig,
-			function(s, b, N, S, C){
+			/(^|\s|\()(-?\d+)(d)(\d+)([+-]\d+)?\b/ig,
+			function(_, b, N, d, S, C){
+				let s = N + d + S + (C||"");
 				let mean = +N * (+S+1)/2 + (+C||0);
 				return `${b}<span class=dice-roll-def data-def="${s}" bubble="Mean: ${mean}">${s}</span>`;
 			}
