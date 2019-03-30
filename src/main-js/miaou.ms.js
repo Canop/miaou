@@ -31,10 +31,9 @@ miaou(function(ms, chat, locals, time, usr){
 		}
 		var	created = time.local(message.created),
 			deleted = !message.content,
-			modDeleted = /^!!deleted/.test(message.content),
-			isLast = message.id==chat.lastMessageId;
+			modDeleted = /^!!deleted/.test(message.content);
 		status.answerable = !deleted && message.author!==locals.me.id;
-		status.continuable = !deleted && !isLast && message.author===locals.me.id;
+		status.continuable = !deleted && message.author===locals.me.id;
 		status.old =  time.now() - created > chat.config.maxAgeForMessageEdition;
 		status.deletable = status.editable =
 			!deleted
