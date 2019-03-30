@@ -777,6 +777,8 @@ proto._searchConditions = function(s, args, cons){
 	if (s.link) {
 		psname += "_link";
 		cons.push(`content ~* 'https?:\/\/(?!i\\.imgur|dystroy\\.org)\\w+'`);
+		// FIXME don't use hardcoded domains here (to allow not using imgur and for
+		// Miaou installation not on dystroy.org)
 	}
 	if (s.roomId) {
 		psname += "_room";
