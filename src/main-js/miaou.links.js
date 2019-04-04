@@ -57,7 +57,7 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 					.addClass('message-bubbler').attr('roomId', roomId).attr('mid', mid);
 				}
 			} else {
-				$link.click(function(e){
+				$link.addClass("external-link").click(function(e){
 					e.stopPropagation();
 				});
 			}
