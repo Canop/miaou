@@ -2,7 +2,7 @@ const	request = require('request'),
 	Promise = require("bluebird"),
 	$$ = require('cheerio'),
 	bench = require('./bench.js'),
-	cache = require('bounded-cache')(300),
+	cache = require('bounded-cache')(1000),
 	Deque = require("double-ended-queue"),
 	TTL = 30*60*1000,
 	boxers = [], // boxers: {name,pattern,box(function),TTL,urler(function)}
@@ -46,7 +46,7 @@ function dequeue(){
 			var box = task.boxer.box.apply(null, args);
 			cache.set(line, box, task.boxer.TTL);
 			benchOperation.end();
-			task.send('box', {mid:task.mid, from:line, to:box});
+			if (box) task.send('box', {mid:task.mid, from:line, to:box});
 		});
 	})
 	.catch(function(err){

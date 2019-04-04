@@ -10,6 +10,7 @@ var	db,
 	rateLimitSumSize,
 	rateLimitNumber,
 	rateLimitPeriod,
+	allowUnloggedReaders,
 	lastId = 0;
 
 exports.name = "file-host";
@@ -23,6 +24,7 @@ exports.init = async function(miaou){
 	rateLimitSumSize = miaou.conf("pluginConfig", "file-host", "rate-limit", "sum-size") || (2*1024*1024);
 	rateLimitNumber = miaou.conf("pluginConfig", "file-host", "rate-limit", "number") || (1000);
 	rateLimitPeriod = miaou.conf("pluginConfig", "file-host", "rate-limit", "period") || (24*60*60*1000);
+	allowUnloggedReaders = !!miaou.conf("pluginConfig", "file-host", "allow-unlogged-readers");
 	if (!baseDirectory) throw new Error("No base-directory configured for file-host plugin");
 	fs.mkdir(baseDirectory, {recursive: true});
 	await require("./file-host-stats.js").init(miaou);
@@ -103,5 +105,5 @@ exports.registerRoutes = map=>{
 	map("get", /^\/file-host\/([0-9a-f]{10,64})\.(\w+)$/, function(req, res, next){
 		//res.setHeader("Cache-Control", "public, max-age=3600"); // in seconds
 		res.sendFile(pathPartsForHash(req.params[0], req.params[1]).file);
-	});
+	}, allowUnloggedReaders, allowUnloggedReaders);
 }
