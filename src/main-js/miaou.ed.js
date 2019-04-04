@@ -186,6 +186,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 
 	function replyPreviousOrNext(dif){
 		var messages = md.getMessages().filter(function(m){
+			if (m==editedMessage) return false;
 			ms.updateStatus(m);
 			return m.status.answerable || m.status.continuable;
 		});
