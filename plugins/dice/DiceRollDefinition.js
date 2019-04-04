@@ -7,6 +7,10 @@ class DiceRoll{
 	}
 }
 
+// A Dice Roll Definition is NdS+C, for example 3D5-4
+//   N is the number of dice (may be negative)
+//   S is the number of sides per die
+//   C is the added constant (may be negative)
 class DiceRollDefinition{
 	constructor(str){
 		let m = str.match(/^(-?\d+)\s*d\s*(\d+)\s*([+-]\s*\d+)?$/i);

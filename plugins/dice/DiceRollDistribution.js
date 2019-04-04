@@ -1,4 +1,3 @@
-
 let fmt;
 let bench;
 let graph;
@@ -34,8 +33,11 @@ function computeCombinations(N, S){
 class DiceRollDistribution{
 	constructor(N, S, C=0){
 		this.aN = Math.abs(N);
-		if (this.aN<1||this.aN>500) throw new Error("Invalid N");
-		if (S<2||S>200) throw new Error("Invalid S");
+		if (this.aN<1) throw new Error("Dice underflow - Nothing to roll");
+		if (this.aN>500) throw new Error("Dice overflow - Board is flooded");
+		if (S<1) throw new Error("Dice too weird - Sides not found");
+		if (S==1) throw new Error("Don't know how to roll a Möbius die");
+		if (S>200) throw new Error("Dice too spherical - Never stops rolling");
 		let bo = bench.start("Dice Distribution");
 		this.N = N;
 		this.S = S;
@@ -48,7 +50,7 @@ class DiceRollDistribution{
 		this.max = this.N*this.S + this.C; // max possible value
 		if (this.N<0) [this.min, this.max] = [this.max, this.min];
 	}
-	// returns the number of ways you can get a possible value (must be an integer).
+	// return the number of ways you can get a possible value (must be an integer).
 	//  distrib.combinations(3)/distrib.totalCombinations is the probability
 	//  you get 3 by rolling the dice
 	combinations(v){
