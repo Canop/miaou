@@ -64,7 +64,8 @@ miaou(function(md, chat, gui, locals, roomFinder, skin, time, usr, ws){
 	$("#messages")
 	.bubbleOn('.reply', function($c){ // bulruk
 		return fillBubbleWithMessage(0, $(this).attr('to'), $c);
-	})
+	});
+	$("#messages, #notable-messages, #search-results")
 	.bubbleOn('.message-bubbler', function($c){
 		return fillBubbleWithMessage($(this).attr('roomId'), $(this).attr('mid'), $c);
 	});
