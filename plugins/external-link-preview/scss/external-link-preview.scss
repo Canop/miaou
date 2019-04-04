@@ -1,0 +1,17 @@
+.external-link-preview {
+	display: flex;
+	flex-direction: row;
+	.text {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+	}
+	p, h2, img {
+		max-width: 25vw;
+	}
+	img {
+		max-height: 20vh;
+		float: left;
+		margin-right: 10px;
+	}
+}
