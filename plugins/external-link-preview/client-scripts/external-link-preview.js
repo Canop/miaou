@@ -7,6 +7,10 @@ miaou(function(gui, fish, plugins){
 	const cache = new WeakMap; // link element -> content
 
 	function blowWith($c, con){
+		if (con.error) {
+			console.log('error in external link preview building:', con.error);
+			return false;
+		}
 		$c.addClass("external-link-preview");
 		if (con.image) $("<img>").attr("src", con.image).appendTo($c);
 		let $text = $("<div class=text>").appendTo($c);

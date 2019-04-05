@@ -5,7 +5,7 @@
 // Links with query parameters are ignored (we neither want to query a
 // dynamic page or cache something which is suspected to be dynamic)
 
-const	request = require('request'),
+const	fetch = require('node-fetch'),
 	$$ = require('cheerio'),
 	cache = require('bounded-cache')(1000); // url -> promise
 
@@ -33,34 +33,37 @@ exports.registerRoutes = map=>{
 
 // return a promise which either is solved with a non null content
 // or rejects
-async function getContent(url){
+function getContent(url){
 	console.log('read content of:', url);
 	let p = cache.get(url);
 	if (!p) {
-		p = new Promise(function(resolve, reject){
-			benchOperation = bench.start("External Link Preview Build"),
-			request(url, function(error, res, body){
-				if (error || !res || res.statusCode!==200) {
-					console.log('error:', error, "res:", res);
-					return reject("bug while fetching url");
-				}
-				let con;
-				try {
-					let $ = $$.load(body);
-					con = readOpenGraph($) || readBasic($);
-				} catch (err) {
-					console.error("BUG in get preview:", err);
-					return reject("bug in computing preview");
-				}
-				if (!con) return reject("empty preview");
-				if (con.site_name==con.title) con.site_name = undefined;
-				resolve(con);
-			});
-
+		benchOperation = bench.start("external-link-preview / build"),
+		p = fetch(url, {
+			size: 5*1024*1024,
+		})
+		.then(res => {
+			if (!res.ok) throw new Error("Error in fetching " + url);
+			if (!/^text\/html/i.test(res.headers.get('content-type'))) {
+				throw new Error("no html in return of", url);
+			}
+			return res.text();
+		})
+		.then(html => {
+			try {
+				let $ = $$.load(html);
+				con = readOpenGraph($) || readBasic($);
+			} catch (err) {
+				console.error("BUG in get preview:", err);
+				throw new Error("bug in computing preview");
+			}
+			if (!con) throw new Error("empty preview");
+			if (con.site_name==con.title) con.site_name = undefined;
+			benchOperation.end();
+			return con;
 		});
 		cache.set(url, p);
 	}
-	return await p;
+	return p;
 }
 
 // read information following the Open Graph protocol

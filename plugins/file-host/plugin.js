@@ -103,7 +103,7 @@ exports.saveFile = async function(ext, uploader, bytes){
 
 exports.registerRoutes = map=>{
 	map("get", /^\/file-host\/([0-9a-f]{10,64})\.(\w+)$/, function(req, res, next){
-		//res.setHeader("Cache-Control", "public, max-age=3600"); // in seconds
+		res.setHeader("Cache-Control", "public, max-age=360000"); // in seconds
 		res.sendFile(pathPartsForHash(req.params[0], req.params[1]).file);
 	}, allowUnloggedReaders, allowUnloggedReaders);
 }
