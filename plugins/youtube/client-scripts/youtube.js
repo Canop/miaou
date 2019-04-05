@@ -1,6 +1,8 @@
 miaou(function(plugins, md, prefs){
 
-	var regex = /^\s*(<span[^>]+>[^<]+<\/span>)?\s*<a[^>]* href="https?:\/\/(?:www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=|youtu\.be\/)([a-zA-Z0-9-_]+)(?:[?&]t=(\d+))?[\?&#\w\d=]*">[^<>]+<\/a>\s*$/;
+	// TODO: the following regex isn't reliable
+	// We should parse the line as HTML, check it's a A element and then check the href instead
+	var regex = /^\s*(<span[^>]+>[^<]+<\/span>)?\s*<a[^>]* href="https?:\/\/(?:www\.youtube\.com\/watch[\?&#\w\d=]*[\?&]v=|youtu\.be\/)([a-zA-Z0-9-_]+)(?:[?&]t=(\d+))?[\?&#\w\d=]*"( class="[^"]+")?>[^<>]+<\/a>\s*$/;
 
 	var expand;
 
