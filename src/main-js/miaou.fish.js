@@ -153,6 +153,12 @@
 			bubble: $b[0]
 		};
 		$(window).on('mousemove', fish.checkOver);
+		// we don't display the bubble immediately so that the user isn't incommoded if the mouse
+		//  is only passing over. The content is still fetched immediately.
+		$b.hide();
+		setTimeout(function(){
+			$b.show();
+		}, 250);
 		return this;
 	}
 
