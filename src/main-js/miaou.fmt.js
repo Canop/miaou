@@ -34,8 +34,11 @@ miaou(function(fmt, time){
 				if (!braceSpanClassWhitelist.has(clas)) return s;
 				return '<span class='+clas+'>'+con+'</span>';
 			})
+			// Matching URLs in text is tricky: the syntax is fundamentally ambiguous and
+			// we try to detect what looks like an URl and not the text around.
+			// See cases in /tests/format/format-links.tests.js
 			.replace( // example : [dystroy](http://dystroy.org)
-				/\[([^\]<>]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
+				/\[([^\]<>]+)\]\((https?:\/\/[^()\s"<>]+(?:\([^()\s"<>]*\)[^()\s"<>]*)*)\)/ig,
 				'<a target=_blank href="$2">$1</a>'
 			)
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s, t, r, _, m){
@@ -48,11 +51,16 @@ miaou(function(fmt, time){
 				// example : [some user](u/1234)
 				return '<a target=_blank href=user/'+u+'>'+t+'</a>';
 			})
+			/* eslint-disable max-len */
 			.replace(
 				// example : https://dystroy.org
-				/(^|[^"<>])((?:https?|ftp):\/\/[^\s"\[\]]*[^\s"\)\[\]\.,;<>])($|[ \(\),\.\:])/ig,
+				// most of the complexity here is related to accepting
+				// - balanced (not nested) parenthesis
+				// - punctuation, but not as last character
+				/(^|[^"<>])((?:https?|ftp):\/\/(?:[^\s"[\]()]*\([^\s"[\]()]*\)|[^\s"[\]()]*[^\s"()[\],.:])+)($|[ \(\),\.\:])/ig,
 				'$1<a target=_blank href="$2">$2</a>$3'
 			)
+			/* eslint-enable max-len */
 			.replace(/\[[ .]\]/g, "☐")
 			.replace(/\[x]/ig, "☑")
 			.replace(/(^|>)([^<]*)(<|$)/g, function(_, a, b, c){

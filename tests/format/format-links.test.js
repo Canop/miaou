@@ -29,6 +29,10 @@ doTests("Formatting - Links", {
 		"[dystroy](http://dystroy.org/bla,bla,bla)",
 		'<a target=_blank href="http://dystroy.org/bla,bla,bla">dystroy</a>'
 	),
+	"markdown link with parentheses, between parentheses": t(
+		"test ([un fromage](https://fr.wikipedia.org/wiki/Morge_(fromage)))",
+		'test (<a target=_blank href="https://fr.wikipedia.org/wiki/Morge_(fromage)">un fromage</a>)'
+	),
 	"markdown link with an URL as name": t(
 		'[http://dystroy.org](http://dystroy.org/cv)',
 		'<a target=_blank href="http://dystroy.org/cv">http://dystroy.org</a>'
@@ -36,6 +40,26 @@ doTests("Formatting - Links", {
 	"tricky URL with underscores - 1": t(
 		"http://this.link/shouldnt_be_styled/index.xml",
 		'<a target=_blank href="http://this.link/shouldnt_be_styled/index.xml">http://this.link/shouldnt_be_styled/index.xml</a>'
+	),
+	"URL between parentheses": t(
+		"see my site (https://dystroy.org)",
+		'see my site (<a target=_blank href="https://dystroy.org">https://dystroy.org</a>)'
+	),
+	"URL with parentheses": t(
+		"see wikipedia: https://fr.wikipedia.org/wiki/Morge_(fromage)",
+		'see wikipedia: <a target=_blank href="https://fr.wikipedia.org/wiki/Morge_(fromage)">https://fr.wikipedia.org/wiki/Morge_(fromage)</a>'
+	),
+	"// URL with nested parentheses between parentheses": t(
+		"yes (https://a.org/wiki/(b(c)))",
+		'yes (<a target=_blank href="https://a.org/wiki/(b(c))">https://a.org/wiki/(b(c))</a>)'
+	),
+	"URL with parentheses between parentheses": t(
+		"yes (see wikipedia: https://fr.wikipedia.org/wiki/Morge_(fromage))!",
+		'yes (see wikipedia: <a target=_blank href="https://fr.wikipedia.org/wiki/Morge_(fromage)">https://fr.wikipedia.org/wiki/Morge_(fromage)</a>)!'
+	),
+	"comma separated list of tricky URLs, between parentheses": t(
+		"yes (https://fr.wikipedia.org/wiki/Morge_(fromage), https://dystroy.org/a?b=c,d)!",
+		'yes (<a target=_blank href="https://fr.wikipedia.org/wiki/Morge_(fromage)">https://fr.wikipedia.org/wiki/Morge_(fromage)</a>, <a target=_blank href="https://dystroy.org/a?b=c,d">https://dystroy.org/a?b=c,d</a>)!'
 	),
 	"tricky URL with underscores - 2": t(
 		"[This link has a tricky href](http://miaou.dystroy.org/help#Ping_and_reply)",
