@@ -5,13 +5,12 @@
 #  if you need it and we'll resurect it
 
 # Based on docker official node image
-FROM node:8
+FROM node
 
 # Install "nodemon" and "buster" globally
 USER node
 RUN mkdir ~/.npm-global
 ENV NPM_CONFIG_PREFIX ~/.npm-global
-RUN npm install -g nodemon buster
 
 # Setup workspace
 USER root
