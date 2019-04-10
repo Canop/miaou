@@ -58,8 +58,12 @@ doTests("Formatting - Links", {
 		'yes (see wikipedia: <a target=_blank href="https://fr.wikipedia.org/wiki/Morge_(fromage)">https://fr.wikipedia.org/wiki/Morge_(fromage)</a>)!'
 	),
 	"comma separated list of tricky URLs, between parentheses": t(
-		"yes (https://fr.wikipedia.org/wiki/Morge_(fromage), https://dystroy.org/a?b=c,d)!",
-		'yes (<a target=_blank href="https://fr.wikipedia.org/wiki/Morge_(fromage)">https://fr.wikipedia.org/wiki/Morge_(fromage)</a>, <a target=_blank href="https://dystroy.org/a?b=c,d">https://dystroy.org/a?b=c,d</a>)!'
+		"yes (https://fr.w.org/w/M_(a), https://dystroy.org/a?b=c,d)!",
+		'yes (<a target=_blank href="https://fr.w.org/w/M_(a)">https://fr.w.org/w/M_(a)</a>, <a target=_blank href="https://dystroy.org/a?b=c,d">https://dystroy.org/a?b=c,d</a>)!'
+	),
+	"URLs with only one space as separator": t(
+		"https://dystroy.org http://canop.org/(a) https://miaou.com",
+		'<a target=_blank href="https://dystroy.org">https://dystroy.org</a> <a target=_blank href="http://canop.org/(a)">http://canop.org/(a)</a> <a target=_blank href="https://miaou.com">https://miaou.com</a>',
 	),
 	"tricky URL with underscores - 2": t(
 		"[This link has a tricky href](http://miaou.dystroy.org/help#Ping_and_reply)",

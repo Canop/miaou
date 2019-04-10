@@ -8,7 +8,6 @@
 // 3. mdMcToHtml     : conversion of a message content. #messages related elements
 //                     like the reply mark may be added at this level
 miaou(function(fmt, time){
-
 	// format of the line, between the header and the body of a table,
 	//  defining the column alignements.
 	// This is how we recognize a table in Markdown
@@ -38,7 +37,10 @@ miaou(function(fmt, time){
 			// we try to detect what looks like an URl and not the text around.
 			// See cases in /tests/format/format-links.tests.js
 			.replace( // example : [dystroy](http://dystroy.org)
+				// /\[([^\]<>]+)\]\((https?:\/\/[^\)\s"<>]+)\)/ig,
+
 				/\[([^\]<>]+)\]\((https?:\/\/[^()\s"<>]+(?:\([^()\s"<>]*\)[^()\s"<>]*)*)\)/ig,
+
 				'<a target=_blank href="$2">$1</a>'
 			)
 			.replace(/\[([^\]]+)\]\((\d+)?(\?\w*)?#(\d*)\)/g, function(s, t, r, _, m){
@@ -57,8 +59,11 @@ miaou(function(fmt, time){
 				// most of the complexity here is related to accepting
 				// - balanced (not nested) parenthesis
 				// - punctuation, but not as last character
-				/(^|[^"<>])((?:https?|ftp):\/\/(?:[^\s"[\]()]*\([^\s"[\]()]*\)|[^\s"[\]()]*[^\s"()[\],.:])+)($|[ \(\),\.\:])/ig,
-				'$1<a target=_blank href="$2">$2</a>$3'
+				// while minimizing the risk of catastrophic backtracking
+
+				/(^|[^"<>])((?:https?|ftp):\/\/(?:(?:[^\s"[\]()]*\([^\s"[\]()]*\))*|(?:[^\s"[\]()]*\([^\s"[\]()]*\))*[^\s"()[\]]+[^\s"()[\],.:]))(?=$|[ \(\),\.\:])/gi,
+
+				'$1<a target=_blank href="$2">$2</a>'
 			)
 			/* eslint-enable max-len */
 			.replace(/\[[ .]\]/g, "☐")
@@ -208,7 +213,15 @@ miaou(function(fmt, time){
 				lout.push('<hr>');
 				continue;
 			}
-			s = fmt.mdStringToHtml(s, username, noThumb);
+
+			let timeBefore = Date.now();
+			s_t = fmt.mdStringToHtml(s, username, noThumb);
+			let duration = Date.now() - timeBefore;
+			if (duration>2) {
+				// to detect catastrophic backtracking
+				console.log("Slow mdStringToHtml. Duration=", duration, "text:", s);
+			}
+			s = s_t;
 
 			m=s.match(/^(?:&gt;\s*)(.*)$/);
 			if (citation) {
