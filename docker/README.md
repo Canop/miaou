@@ -8,11 +8,11 @@ Miaou development environment using Docker
 ### Linux
 
  - [Docker and Docker Compose](https://docs.docker.com/engine/installation/linux/)
- - Docker needs Hyper-V activated and purpose to activate it itself (restart needed). Beware : activating Hyper-V disables any other virtualisation softwares.
 
 ### Windows
 
  - [Docker and Docker Compose](https://docs.docker.com/engine/installation/windows/)
+ - Docker needs Hyper-V activated and purpose to activate it itself (restart needed). Beware : activating Hyper-V disables any other virtualisation softwares.
 
 ### Mac OS X
 
