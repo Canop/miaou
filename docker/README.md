@@ -40,9 +40,10 @@ Miaou development environment using Docker
 
  4. Prebuild Miaou:
  
-	Windows configuration : 
-		- When cloning miaou repository, make sure you keep LF and not CRLF or it will generate end of files errors during the prebuild
-		- Open PowerShell, you must be at the root directory of Miaou which contains the DockerFile
+	Windows configuration :
+	
+	- When cloning miaou repository, make sure you keep LF and not CRLF or it will generate end of files errors during the prebuild
+	- Open PowerShell, you must be at the root directory of Miaou which contains the DockerFile
  
     ```bash
     docker-compose up -d
