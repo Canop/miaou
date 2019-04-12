@@ -166,6 +166,7 @@
 	//   $(parentElement).bubbleOn("delegateSelector", options);
 	//   $(bubblingElement).bubbleOn(options);
 	// Options:
+	//   text (optiona): a text with which to fill the bubble
 	//   side (optional): where the bubble should open
 	//   blower: function called on the element with bubble content element as argument
 	//		(may return false to prevent the bubble)

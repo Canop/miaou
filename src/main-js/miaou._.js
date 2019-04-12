@@ -152,8 +152,8 @@ function miaou(f){
 			return;
 		}
 		$.post((miaou.root||"/")+"error", {
-			user:miaou.locals.me ? miaou.locals.me.name : "?",
-			page:location.href,
+			user: miaou.locals.me ? miaou.locals.me.name : "?",
+			page: location.href,
 			message,
 			url,
 			line,

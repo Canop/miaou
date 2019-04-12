@@ -254,6 +254,9 @@ body.pad #me {
 	flex-direction: row;
 	align-items: stretch;
 	max-width: 70vw;
+	.room-bubble + .conversation {
+		margin-left: 8px;
+	}
 	.room-bubble + .message-bubble {
 		margin-left: 8px;
 		display: flex;

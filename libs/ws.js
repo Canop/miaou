@@ -1,4 +1,4 @@
-const	apiversion = 114,
+const	apiversion = 116, // increment this when you want the client JS to be reloaded
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,

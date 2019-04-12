@@ -1,4 +1,4 @@
-miaou(function(links, gui, locals, md, roomFinder, skin){
+miaou(function(links, gui, locals, md, roomFinder, skin, usr){
 
 	var linkwzin;
 
@@ -14,15 +14,40 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 		linkwzin = null;
 	}
 
-	links.transformLinksToMiaou = function($c){
-		var server = (location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1];
+	links.transformLinks = function($c){
+		let server = (location.origin+location.pathname).match(/(.*\/)[^\/]*$/)[1];
 		$c.find('a[href]').each(function(){
-			var	$link = $(this),
-				parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
+			let $link = $(this);
+			// Is it a link to an image ?
+			if (/\.(svg|png|gif|jpeg?)($|\?)/i.test(this.href)) {
+				$link.bubbleOn($c=>{
+					$("<img>").attr("src", this.href).appendTo($c);
+				});
+				return;
+			}
+			// Is it a link to a Miaou user page on the same server ?
+			let parts = this.href.match(/^([^?#]+\/)user\/(\w+)$/);
+			if (parts && parts[1]===server) {
+				$link.bubbleOn(function($c){
+					$.getJSON(
+						`${server}json/user?user=${parts[2]}`,
+						function(user){
+							$c.addClass("miaou-user");
+							let img = usr.avatarsrc(user);
+							if (img) $("<img>").attr("src", img).appendTo($c);
+							if (user.name) $("<h2>").text(user.name).appendTo($c);
+							$("<i>").text("a Miaou user").appendTo($c);
+						}
+					);
+				});
+				return;
+			}
+			// Is it a link to a room or message on the same server ?
+			parts = this.href.match(/^([^?#]+\/)(\d+)(\?[^#?]*)?#?(\d+)?$/);
 			if (parts && parts.length===5 && parts[1]===server) {
+				// it's an url towards a room or message on this server
 				let roomId = +parts[2];
 				let mid = +parts[4];
-				// it's an url towards a room or message on this server
 				if (locals.room && locals.room.id===roomId) {
 					// it's an url for the same room
 					if (mid) {
@@ -56,16 +81,17 @@ miaou(function(links, gui, locals, md, roomFinder, skin){
 					})
 					.addClass('message-bubbler').attr('roomId', roomId).attr('mid', mid);
 				}
-			} else {
-				$link.addClass("external-link").click(function(e){
-					e.stopPropagation();
-				});
+				return;
 			}
+			// It's just a standard "external" linl
+			$link.addClass("external-link").click(function(e){
+				e.stopPropagation();
+			});
 		});
 	}
 
 	links.init = function(){
-		md.registerRenderer(links.transformLinksToMiaou, true);
+		md.registerRenderer(links.transformLinks, true);
 	};
 
 	links.permalink = function(message){
