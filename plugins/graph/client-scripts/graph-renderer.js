@@ -127,7 +127,7 @@ miaou(function(fmt, fish, md, plugins){
 	function TGraph($table, options){
 		this.$table = $table;
 		this.options = options || {};
-		if (!this.options.highlightedX) this.options.highlightedX = {};
+		//if (!this.options["highlight-x"]) this.options["highlight-x"] = {};
 		this.$wrapper = null; // wrapper around the svg objet
 		this.cols = [];
 		for (var i=0, nbcols=$table.find('tr:first-child th').length; i<nbcols; i++) {
@@ -147,13 +147,24 @@ miaou(function(fmt, fish, md, plugins){
 	}
 	TGraph.prototype._chooseCols = function(){
 		var xcol;
+		let xdefined = false;
+		let ydefined = false;
+		if (this.options.xcol) {
+			xcol = this.cols[+this.options.xcol];
+			xdefined = true;
+		}
 		var ycols = [];
+		if (this.options.ycols) {
+			ycols = this.options.ycols.match(/\d+/g).map(i=>this.cols[+i]).filter(Boolean);
+			ydefined = true;
+		}
 		var varycols = []; // non constant ones
 		for (var i=0; i<this.cols.length; i++) {
 			var col = this.cols[i];
-			if (!xcol && col.xvals) {
+			if (!xdefined && col.xvals) {
 				xcol = col;
-			} else if (col.yvals) {
+				xdefined = true;
+			} else if (!ydefined && col!=xcol && col.yvals) {
 				ycols.push(col);
 				if (!allIdentical(col.yvals)) varycols.push(col);
 			}
@@ -298,7 +309,7 @@ miaou(function(fmt, fish, md, plugins){
 			var	x1 = ml + i*xWidth,
 				x2 = x1 + xWidth,
 				xm = (x1+x2)/2,
-				xhighlight = options.highlightedX[xval.label];
+				xhighlight = options["highlight-x"] == xval.label;
 			var rect = ù('<rect', g).attr({
 				class: "xval",
 				x:x1, width:xWidth-1, y:0, height:h+mt, fill:"transparent", cursor:'crosshair'
@@ -379,14 +390,12 @@ miaou(function(fmt, fish, md, plugins){
 	function pragmaOptions($pragma){
 		var match = $pragma.html().match(/(?:^|\s)#graph(\([^\)]+\))?(?:$|\s)/);
 		if (!match) return; // should not really happen
-		var options= {
-			highlightedX:{}
-		};
+		var options= {};
 		if (match[1]) {
 			match[1].slice(1, -1).split(/,\s*/).forEach(function(k){
-				var mk = k.match(/^highlight-x:(.*)$/);
+				var mk = k.match(/^([\w-]+):(.*)$/);
 				if (mk) {
-					options.highlightedX[mk[1]] = true;
+					options[mk[1]] = mk[2];
 				} else {
 					options[k] = true;
 				}

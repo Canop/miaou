@@ -1,5 +1,7 @@
 
-This client-side only plugin introduces a rendering pragma, `#graph`, which instructs the browser to automatically add an interactive SVG graph using the first found data table.
+This client-side plugin introduces a rendering pragma, `#graph`, which instructs the browser to automatically add an interactive SVG graph using the first found data table.
+
+The server side part offers a facility to generate the pragma.
 
 ## Usage
 
@@ -35,6 +37,9 @@ Rendering options can be provided in the #pragma graph the following way:
 	#pragma(option1,option2,option3)
 
 To see the options on rendered graphs, simply hover the line before the graph to reveal it.
+
+Note: While a pragma can be written by hand, or composed by concatenating strings, it's recommanded
+for plugins to use the `pragma` function of the lib as the format isn't yet guaranteed to stay unchanged.
 
 For example the message produced by the `!!stats graph @dystroy @Shaks` command contains the following pragma:
 
@@ -78,3 +83,10 @@ The current hour is highlighted using this pragma:
 
 	#graph(hideTable,highlight-x:18h)
 
+### Columns selection
+
+Columns are normally automatically selected but you might want to override this behavior by using the `xcol` and/or `ycols` options and passing the relevant 0-based indexes.
+
+For example:
+
+	#graph(xcol: 1, ycols: 2 3)
