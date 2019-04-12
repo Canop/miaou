@@ -34,10 +34,6 @@ function configureOauth2Strategies(){
 		google: {
 			strategyConstructor: require('@passport-next/passport-google-oauth2').Strategy,
 			scope: [ 'profile', 'email' ]
-			//scope: [
-			//	'https://www.googleapis.com/auth/userinfo.profile',
-			//	'https://www.googleapis.com/auth/userinfo.email'
-			//]
 		},
 		stackexchange: {
 			strategyConstructor: require('./passport-stackexchange.js').Strategy
@@ -145,6 +141,7 @@ async function defineAppRoutes(){
 	map('get', '/json/tag', tags.appGetJsonTag);
 	map('get', '/json/rooms', rooms.appGetJsonRooms);
 	map('get', '/json/room', rooms.appGetJsonRoom);
+	map('get', '/json/user', profile.appGetJsonUser);
 	map('get', '/json/messages/last', messages.appGetJsonLastMessages);
 	map('get', '/json/pings', pings.appGetJsonPings);
 	map('get', '/vapidPublicKey', webPush.appGetVapidPublicKey); // FIXME send in page locals

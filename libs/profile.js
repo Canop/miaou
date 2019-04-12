@@ -183,3 +183,25 @@ exports.appGetUser = function(req, res){
 		server.renderErr(req, res, err, '../');
 	});
 }
+
+exports.appGetJsonUser = function(req, res){
+	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
+	db.do(async function(con){
+		let userIdOrName = req.query.user;
+		let user;
+		if (userIdOrName==+userIdOrName) {
+			user = await con.getUserById(+userIdOrName);
+		} else {
+			user = await con.getUserByName(userIdOrName);
+		}
+		res.json({
+			id: user.id,
+			name: user.name,
+			avs: user.avatarsrc,
+			avk: user.avatarkey,
+		});
+	}, function(err){
+		res.json({error: err.toString()});
+	});
+}
+
