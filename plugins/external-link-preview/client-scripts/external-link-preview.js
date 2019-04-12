@@ -21,26 +21,18 @@ miaou(function(gui, fish, plugins){
 
 	function bindBubbles(){
 		$("#messages, #watches, #notable-messages, #search-results").bubbleOn(
-			".content a.external-link",
-			{
-				blower: function($c){
-					let url = this.attr("href");
-					if (!/^https?:\/\/[^\s?]+$/.test(url)) {
-						console.log("non previewable url:", url);
-						return false;
+			".content a.external-link", function($c){
+				let url = this.prop("href");
+				let element = this[0];
+				let con = cache.get(element);
+				if (con) return blowWith($c, con);
+				$.getJSON(
+					"json/external-link-preview?url="+encodeURIComponent(url),
+					function(con){
+						cache.set(element, con);
+						blowWith($c, con);
 					}
-					let element = this[0];
-					let con = cache.get(element);
-					if (con) return blowWith($c, con);
-					$.getJSON(
-						"json/external-link-preview"+
-						"?url="+encodeURIComponent(url),
-						function(con){
-							cache.set(element, con);
-							blowWith($c, con);
-						}
-					);
-				}
+				);
 			}
 		);
 	}

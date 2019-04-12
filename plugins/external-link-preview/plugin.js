@@ -20,8 +20,8 @@ exports.registerRoutes = map=>{
 		res.setHeader("Cache-Control", "public, max-age=3600"); // une heure
 		let url = req.query.url;
 		try {
-			if (!/^https?:\/\/[^\s?]+$/.test(url)) {
-				throw new Error("Invalid URL given to external link previewer", url);
+			if (!/^https?:\/\/[^\s"]+$/.test(url)) {
+				throw new Error("Invalid URL given to external link previewer: \""+url+"\"");
 			}
 			let con = await getContent(url);
 			res.json(con);
