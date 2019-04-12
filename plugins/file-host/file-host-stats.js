@@ -66,7 +66,7 @@ async function doStats_topusers(con, n){
 	return fmt.tbl({
 		cols: ["User", "Files", "Size Sum"],
 		rows,
-		ranks: true,
+		rank: true,
 	});
 }
 
@@ -81,7 +81,7 @@ async function doStats_toptypes(con, n){
 	return fmt.tbl({
 		cols: ["Extension", "Users", "Files", "Size Sum"],
 		rows,
-		ranks: true,
+		rank: true,
 	});
 }
 
