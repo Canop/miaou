@@ -3,6 +3,9 @@ html
 	head
 		title=vars.user.name + ' @ Miaou'
 		meta(name="viewport", content="initial-scale=1, maximum-scale=1")
+		meta(property="og:title", content='@'+vars.user.name)
+		meta(property="og:description", content="A Miaou user")
+		meta(property="og:image", content=vars.avatar)
 		link(rel="icon",type="image/png",href="static/M-32.png")
 		script(src="../static/jquery-3.3.1.min.js")
 		script#locals(type="Application/JSON") !{inlineJSON(vars)}
