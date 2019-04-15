@@ -496,9 +496,10 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 
 	// replaces one line of a message
 	md.box = function(args){
-		var	$from = $('<div>'+miaou.fmt.mdTextToHtml(args.from)+'</div>'),
+		var	$from = $('<div>'),
 			$m = $('.message[mid='+args.mid+']'),
 			wab = gui.isAtBottom();
+		md.render($from, args.from);
 		try {
 			$m.find('.content').addClass('wide').html(function(_, h){
 				return h.replace(
