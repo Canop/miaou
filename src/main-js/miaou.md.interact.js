@@ -59,6 +59,9 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		if (message.old && !message.editable) infos.push('too old to edit');
 		infos.push(time.formatRelativeTime(message.created));
 		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ';
+		h += `<a class=copysrc>`
+		+ '&#xf121;' // fontello icon-code
+		+ '</a> ';
 		if (message.id) {
 			h += '<a class=link target=_blank href="'
 			+ links.permalink(message)
@@ -70,9 +73,6 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 				+ '&#xe82a;' // fontello icon-window
 				+ '</a> ';
 			}
-			h += `<a class=copysrc title="copy source: put the message's markdown in the clipboard">`
-			+ '&#xf121;' // fontello icon-code
-			+ '</a> ';
 			var possibleVotes = [];
 			if (usr.checkAuth('admin')) possibleVotes.push(chat.voteLevels[0]); // pin
 			if (message.author!==locals.me.id || usr.checkAuth('admin')) {
