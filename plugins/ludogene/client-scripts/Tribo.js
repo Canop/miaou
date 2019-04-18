@@ -140,6 +140,13 @@
 				g.status = "finished";
 				g.current = -1;
 			}
+		},
+		// computes for Elo rating the value of the winner sw score when
+		//  the opponent has a score of sl (in the case of Tribo sl is
+		//  redundant).
+		// The Elo computation system needs a value in ]0.6, 1[
+		scoreEloV: function(sw, sl){
+			return .6 + (sw-50)*.0084; // in ].6,1[
 		}
 	}
 

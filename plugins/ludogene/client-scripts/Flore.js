@@ -155,10 +155,20 @@ var Flore = (function(){
 				}
 			}
 			g.current = g.status==="finished" ? -1 : g.moves.length%2;
+		},
+		// computes for Elo rating the value of the winner sw score when
+		//  the opponent has a score of sl.
+		// The Elo computation system needs a value in ]0.6, 1[
+		scoreEloV: function(sw, sl){
+			return .57 + relax((sw*1.27 - sl)*.1)*.43;
 		}
 	}
 
 })();
+
+function relax(t){
+	return (1 - Math.exp(-t)) / (1 + Math.exp(-t))
+}
 
 if (typeof module !== 'undefined') {
 	for (var fname in Flore) {

@@ -5,9 +5,11 @@ const	ludodb = require('./db.js'),
 	R = 750, // 300 to 1500 are OK. Make it greater to lower the impact of the Elo diff on gains
 	NB_OPPONENTS_MIN = 3;
 let	noLadderRooms; // public rooms from which we don't want games for the ladder
+let 	gametypes;
 
-exports.init = function(miaou){
+exports.init = function(miaou, _gametypes){
 	noLadderRooms = miaou.conf("pluginConfig", "ludogene", "noLadderRooms") || [];
+	gametypes = _gametypes;
 }
 
 function Rating(playerId){ // rating of a player
@@ -63,7 +65,7 @@ Rating.prototype.computeMalus = function(){
 	this.ms = m.reduce((s, e) => s+e[1], 0);
 }
 
-function GameImpact(m, r){ // impact of a game (note: the constructor has side effects on r)
+function GameImpact(m, r, scoreEloV){ // impact of a game (note: the constructor has side effects on r)
 	let g = m.g;
 	this.p0 = r[0].id;
 	this.p1 = r[1].id;
@@ -113,7 +115,7 @@ function GameImpact(m, r){ // impact of a game (note: the constructor has side e
 		} else {
 			this.coef = 1;
 		}
-		let v = .6 + (g.scores[winnerIndex]-50)*.0084; // in ].6,1[
+		let v = scoreEloV(g.scores[winnerIndex], g.scores[+!winnerIndex]); // in ].6,1[
 		this.v = winnerIndex ? 1-v : v;
 		this.D = r[0].e0-r[1].e1;
 		if (this.D>100) this.D = 100 + (this.D-100)*.7;
@@ -145,7 +147,7 @@ GameImpact.prototype.gameLink = function(data){
 function userLink(data, userId){
 	return "["+data.ratingsMap.get(userId).name+"](u/"+userId+")";
 }
-function compute(messages){
+function compute(messages, scoreEloV){
 	let	ratingsMap = new Map(),
 		ratings = [],
 		log = [];
@@ -162,7 +164,7 @@ function compute(messages){
 			r[i].name = g.players[i].name;
 			r[i].n++;
 		}
-		log.push(new GameImpact(m, r));
+		log.push(new GameImpact(m, r, scoreEloV));
 	});
 	ratings.forEach(function(r){
 		r.r = r.e0+r.e1;
@@ -262,13 +264,14 @@ function opponentsTable(data, r){
 // computes the Ladder
 exports.getLadder = async function(con, gameType){
 	let messages = await ludodb.getGameMessages(con);
+	let scoreEloV = gametypes[gameType].scoreEloV;
 	messages = messages.filter(m =>
 		!noLadderRooms.includes(m.room)
 		&& m.g.type===gameType
 		&& m.g.scores
 		&& (m.g.status==="running"||m.g.status==="finished")
 	);
-	return compute(messages);
+	return compute(messages, scoreEloV);
 }
 
 // handles the !!triboladder and !!floreladder commands
