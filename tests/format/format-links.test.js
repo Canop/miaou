@@ -53,6 +53,14 @@ doTests("Formatting - Links", {
 		"yes (https://a.org/wiki/(b(c)))",
 		'yes (<a target=_blank href="https://a.org/wiki/(b(c))">https://a.org/wiki/(b(c))</a>)'
 	),
+	"Google Maps URL": t(
+		"test: https://www.google.com/maps/dir/Chez+Alain,+18+Rue+Poullain+Duparc,+35000+Rennes/Acc%C3%A8s+au+Gymnase+de+la+Courrouze+(Parking),+Avenue+Jules+Maniez,+35000+Rennes/@48.1029505,-1.6962157,15z/am=t/data=!4m18!4m17!1m5!1m1!1s0x480ede3344059169:0x5227241621f08b6e!2m2!1d-1.6810263!2d48.1087104!1m5!1m1!1s0x480edf46cf8183d3:0x6136b7a70903bedc!2m2!1d-1.6947851!2d48.987701!2m3!6e1!7e2!8j1555435800!3e3",
+		'test: <a target=_blank href="https://www.google.com/maps/dir/Chez+Alain,+18+Rue+Poullain+Duparc,+35000+Rennes/Acc%C3%A8s+au+Gymnase+de+la+Courrouze+(Parking),+Avenue+Jules+Maniez,+35000+Rennes/@48.1029505,-1.6962157,15z/am=t/data=!4m18!4m17!1m5!1m1!1s0x480ede3344059169:0x5227241621f08b6e!2m2!1d-1.6810263!2d48.1087104!1m5!1m1!1s0x480edf46cf8183d3:0x6136b7a70903bedc!2m2!1d-1.6947851!2d48.987701!2m3!6e1!7e2!8j1555435800!3e3">https://www.google.com/maps/dir/Chez+Alain,+18+Rue+Poullain+Duparc,+35000+Rennes/Acc%C3%A8s+au+Gymnase+de+la+Courrouze+(Parking),+Avenue+Jules+Maniez,+35000+Rennes/@48.1029505,-1.6962157,15z/am=t/data=!4m18!4m17!1m5!1m1!1s0x480ede3344059169:0x5227241621f08b6e!2m2!1d-1.6810263!2d48.1087104!1m5!1m1!1s0x480edf46cf8183d3:0x6136b7a70903bedc!2m2!1d-1.6947851!2d48.987701!2m3!6e1!7e2!8j1555435800!3e3</a>'
+	),
+	"PHP BB": t(
+		`[url=http://www.mountyhall.com/Forum/display_topic_threads.php?ThreadID=2539853#2539853]test[/url]`,
+		`[url=<a target=_blank href="http://www.mountyhall.com/Forum/display_topic_threads.php?ThreadID=2539853#2539853">http://www.mountyhall.com/Forum/display_topic_threads.php?ThreadID=2539853#2539853</a>]test[/url]`
+	),
 	"URL with parentheses between parentheses": t(
 		"yes (see wikipedia: https://fr.wikipedia.org/wiki/Morge_(fromage))!",
 		'yes (see wikipedia: <a target=_blank href="https://fr.wikipedia.org/wiki/Morge_(fromage)">https://fr.wikipedia.org/wiki/Morge_(fromage)</a>)!'
