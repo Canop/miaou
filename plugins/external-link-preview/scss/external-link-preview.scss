@@ -9,6 +9,10 @@
 	p, h2, img {
 		max-width: 25vw;
 	}
+	.description {
+		max-height: 40vh;
+		overflow-y: auto;
+	}
 	img {
 		max-height: 20vh;
 		float: left;

@@ -12,11 +12,19 @@ miaou(function(gui, fish, plugins){
 			return false;
 		}
 		$c.addClass("external-link-preview");
-		if (con.image) $("<img>").attr("src", con.image).appendTo($c);
+		if (con.image) {
+			$("<img>").attr("src", con.image).appendTo($c);
+		}
 		let $text = $("<div class=text>").appendTo($c);
-		if (con.title) $("<h2>").text(con.title).appendTo($text);
-		if (con.description) $("<p>").text(con.description).appendTo($text);
-		if (con.site_name) $("<i>").text(con.site_name).appendTo($text);
+		if (con.title) {
+			$("<h2>").text(con.title).appendTo($text);
+		}
+		if (con.description) {
+			$("<p>").addClass("description").text(con.description).appendTo($text);
+		}
+		if (con.site_name) {
+			$("<i>").text(con.site_name).appendTo($text);
+		}
 	}
 
 	function bindBubbles(){
