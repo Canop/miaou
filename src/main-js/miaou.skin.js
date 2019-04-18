@@ -4,22 +4,24 @@
 	// Defined by the server, locals.theme takes into account whether the browser is mobile,
 	//  the default server themes (mobile and desktop), and the global user pref.
 	//  It doesn't take into account the localStorage pref, hence the computation here.
-	let def = miaou.locals.prefDefinitions.find(def=>def.key=="theme");
 	let theme = miaou.locals.theme;
-	let me = miaou.locals.me;
-	let themes = def.values.map(v=>v.value);
-	if (me) {
-		let localThemePref = localStorage.getItem("miaou." + me.id + ".prefs.theme");
-		if (themes.includes(localThemePref)) {
-			theme = localThemePref;
+	if (miaou.locals.prefDefinitions) {
+		let def = miaou.locals.prefDefinitions.find(def=>def.key=="theme");
+		let me = miaou.locals.me;
+		let themes = def.values.map(v=>v.value);
+		if (me) {
+			let localThemePref = localStorage.getItem("miaou." + me.id + ".prefs.theme");
+			if (themes.includes(localThemePref)) {
+				theme = localThemePref;
+			}
 		}
-	}
-	let urlThemeMatch = document.location.toString().match(/[?&]theme=([\w-]+)(&|$)/);
-	if (urlThemeMatch && themes.includes(urlThemeMatch[1])) {
-		theme = urlThemeMatch[1];
-	}
-	if (theme=="default") {
-		theme = themes[1]; // themes[0] is "default"
+		let urlThemeMatch = document.location.toString().match(/[?&]theme=([\w-]+)(&|$)/);
+		if (urlThemeMatch && themes.includes(urlThemeMatch[1])) {
+			theme = urlThemeMatch[1];
+		}
+		if (theme=="default") {
+			theme = themes[1]; // themes[0] is "default"
+		}
 	}
 	// document.write avoids a delay in css application (with the downside that js execution waits for the
 	//  theme to be downloaded)
