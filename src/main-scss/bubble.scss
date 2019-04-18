@@ -13,13 +13,14 @@
 		.bubble-title {
 			font-weight: bold;
 		}
-		//code {
-		//	color: $bubble-color;
-		//}
 		min-width: 22px;
 		min-height: 22px;
 		&.text {
 			max-width: 400px;
+		}
+		pre code {
+			background: $bubble-bg;
+			color: $bubble-color;
 		}
 	}
 	h1, h2, h3, h4 {
