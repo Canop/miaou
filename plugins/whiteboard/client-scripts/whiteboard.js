@@ -19,14 +19,16 @@ miaou(function(plugins, chat, locals, md, ms){
 				}
 			}, true);
 			chat.on('sending_message', function(m){
-				if (m.id) {
-					var oldMessage = md.getMessage(m.id);
-					if (oldMessage && oldMessage.whiteboard && oldMessage.author!==locals.me.id) {
-						if (!r.test(m.content)) {
-							// to avoid an error, let's silently restore the !!whiteboard if it's missing
-							m.content = m.content.replace(/^(@[\w-]{3,}#?\d*\s+)?/, '$1!!whiteboard ');
-						}
-					}
+				if (!m.id) return;
+				var oldMessage = md.getMessage(m.id);
+				if (
+					oldMessage
+					&& oldMessage.whiteboard
+					&& oldMessage.author!==locals.me.id
+					&& !r.test(m.content)
+				) {
+					// to avoid an error, let's silently restore the !!whiteboard if it's missing
+					m.content = m.content.replace(/^(@[\w-]{3,}#?\d*\s+)?/, '$1!!whiteboard ');
 				}
 			});
 		}
