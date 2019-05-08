@@ -24,7 +24,7 @@ exports.configure = function(miaou){
 
 // diacritics removal: http://stackoverflow.com/a/18391901/263525
 /* eslint-disable max-len */
-var defaultDiacriticsRemovalap = [
+const defaultDiacriticsRemovalMap = [
 	{'base':'A', 'letters':'\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F'},
 	{'base':'AA', 'letters':'\uA732'},
 	{'base':'AE', 'letters':'\u00C6\u01FC\u01E2'},
@@ -114,11 +114,11 @@ var defaultDiacriticsRemovalap = [
 ];
 /* eslint-enable max-len */
 
-var diacriticsMap = {};
-for (var i=0; i < defaultDiacriticsRemovalap.length; i++) {
-	var letters = defaultDiacriticsRemovalap[i].letters.split("");
+const diacriticsMap = Object.create(null);
+for (var i=0; i < defaultDiacriticsRemovalMap.length; i++) {
+	var letters = defaultDiacriticsRemovalMap[i].letters.split("");
 	for (var j=0; j < letters.length ; j++) {
-		diacriticsMap[letters[j]] = defaultDiacriticsRemovalap[i].base;
+		diacriticsMap[letters[j]] = defaultDiacriticsRemovalMap[i].base;
 	}
 }
 var removeDiacritics = exports.removeDiacritics = function(str){
