@@ -7,7 +7,7 @@ miaou(function(broadcast, fmt, links, locals, md, ms, plugins, ws){
 				" broadcasts from room ["+bm.room.name+"]("+bm.room.id+"#"+bm.mid+"):*\n"+
 				bm.content;
 			var $div = $("<div>").html(fmt.mdTextToHtml(md));
-			links.transformLinksToMiaou($div);
+			links.transformLinks($div);
 			$div.appendTo($c);
 		});
 	}

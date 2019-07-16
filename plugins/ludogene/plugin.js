@@ -28,6 +28,7 @@ exports.init = async function(miaou){
 	ws = miaou.lib("ws");
 	tournament.init(miaou);
 	elo.init(miaou, gametypes);
+	suggest.init(miaou, gametypes);
 	setTimeout(function(){
 		require('./db.js').cleanOldInvitations(db, 5*24*60*60);
 	}, 15*60*1000);
@@ -120,7 +121,7 @@ function onCommand(ct){
 		if (/tournament/i.test(ct.args)) {
 			return tournament.handle.call(this, ct, gameType);
 		}
-		return suggest.call(this, ct, gameType);
+		return suggest.doCommand.call(this, ct, gameType);
 	}
 	var otherUserName = match[1];
 	if (shoe.room.tags.includes("Tournament")) {

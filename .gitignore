@@ -35,9 +35,6 @@ plugins/sciz/
 # imported plugins stuff
 roulette-*
 
-# edition byproducts
-*.swp
-
 # compilation & test byproducts
 test/format/miaou.format.node.js
 .sass-cache
@@ -51,7 +48,6 @@ miaou.min.js.map
 static
 
 # execution byproducts
-*.log
 dump.rdb
 miaou.pid
 
@@ -62,6 +58,3 @@ vagrant/manifests/modules/*
 # docker
 docker/miaou.env
 !docker/config.js
-
-# IDE metadata
-.idea/

@@ -12,7 +12,7 @@ const	ws = require('../../libs/ws.js'),
 	fmt = require('../../libs/fmt.js'),
 	ludo = require('./plugin.js');
 
-const	removedPlayers = new Set(['p4km4n']);
+const	removedPlayers = new Set(['Shaks', 'Andy_Kw']);
 
 var	db,
 	bot;
@@ -26,8 +26,8 @@ exports.init = function(miaou){
 	});
 }
 
-function write(roomId, content){
-	ws.botMessage(bot, roomId, content);
+async function write(roomId, content){
+	await ws.botMessage(bot, roomId, content);
 }
 function listPlayers(ct, gameType){
 	var roomId = ct.shoe.room.id;
@@ -54,17 +54,23 @@ function listPlayers(ct, gameType){
 function startTournament(ct, gameType){
 	var roomId = ct.shoe.room.id;
 	ct.shoe.checkAuth('own');
-	db.on().then(function(){
-		return this.queryRow(
+	return db.do(async function(con){
+		// look for the players list
+		let listMessage = await con.queryOptionalRow(
 			"select content from message where room=$1 and author=$2"+
 			" and content like '"+titles.list+"%'"+
 			" order by id desc limit 1",
 			[roomId, bot.id],
-			"ludogene / fuzzy"
+			"ludogene / find title message"
 		);
-	}).then(function(m){
-		var players = [];
-		m.content.split('\n').forEach(function(line){
+		if (!listMessage) {
+			return ct.reply(
+				"You need a list of players."+
+				" Use `!!" + gameType.toLowerCase() + " tournament list` to create one."
+			);
+		}
+		let players = [];
+		listMessage.content.split('\n').forEach(function(line){
 			var match = line.match(/^(\d+)\|(\w[\w-]{2,19})$/);
 			if (!match) return;
 			players.push({id:+match[1], name:match[2]});
@@ -73,16 +79,14 @@ function startTournament(ct, gameType){
 		if (players.length<2) {
 			return ct.reply("At least 2 players are needed for a tournament");
 		}
-		write(roomId, titles.start);
+		await write(roomId, titles.start);
 		for (var i=0; i<players.length; i++) {
 			for (var j=0; j<players.length; j++) {
 				if (i==j) continue;
-				ludo.startGame(roomId, gameType, [players[i], players[j]]);
+				await ludo.startGame(roomId, gameType, [players[i], players[j]]);
 			}
 		}
-	}).catch(db.NoRowError, function(){
-		ct.reply("You need a list of players. Use `!!tribo tournament list` to create one.");
-	}).finally(db.off);
+	});
 }
 
 // context must be a db con
@@ -117,12 +121,40 @@ function getGames(roomId, gameType){
 	});
 }
 
+const specifics = {
+	Tribo: {
+		additionalColumns: [],
+		// determines if the player won (for a finished game)
+		isWinner(g, idx){
+			return g.scores[idx] + idx/2 > 50;
+		},
+		// compute the gain of the (finished) game
+		gain(g, idx, won){
+			return g.scores[idx] + won * 3;
+		}
+	},
+	Flore: {
+		additionalColumns: [
+			{name: "Killed Flowers", key: "sumScores"},
+			{name: "Lost Flowers", key: "sumOpponentScores"},
+		],
+		isWinner(g, idx){
+			return g.scores[idx] + idx/2 > g.scores[+!idx];
+		},
+		gain(g, idx, won){
+			return 3*g.scores[idx] -2*g.scores[+!idx] + won * 5;
+		}
+	}
+}
+
 function writeScore(ct, gameType){
 	var	roomId = ct.shoe.room.id;
-	db.on([roomId, gameType])
+	let now = Date.now()/1000|0;
+	let specific = specifics[gameType];
+	return db.on([roomId, gameType])
 	.spread(getGames)
 	.filter(function(m){
-		return m.g.status!=='ask';
+		return m.g.scores;
 	})
 	.reduce(function(map, m){
 		m.g.players.forEach(function(p, i){
@@ -130,49 +162,55 @@ function writeScore(ct, gameType){
 			if (!pm) {
 				pm = p;
 				pm.nbGames = 0;
-				pm.sumScores = 0;
-				pm.sumEndScores = 0;
-				pm.nbDrops = 0;
+				pm.nbDrops = 0; // unused now
 				pm.nbWins = 0;
 				pm.nbFinishedGames = 0;
+				pm.sumScores = 0;
+				pm.sumOpponentScores = 0;
+				pm.sumGains = 0; // only counting finished games
 				map.set(p.id, pm);
 			}
 			pm.nbGames++;
-			pm.sumScores += m.g.scores[i];
 			if (m.g.status==='finished') {
 				pm.nbFinishedGames++;
-				pm.sumEndScores += m.g.scores[i];
-				if (m.g.scores[i]+i/2>50) pm.nbWins++;
+				let won = specific.isWinner(m.g, i);
+				if (won) pm.nbWins++;
+				pm.sumGains += specific.gain(m.g, i, won);
+				pm.sumScores += m.g.scores[i];
+				pm.sumOpponentScores += m.g.scores[+!i];
 			}
 			if (
 				m.g.status === 'running'
 				&& m.g.current === i
-				&& m.changed < Date.now()/1000 - 30*60
+				&& m.changed < now - 30*60
 			) pm.nbDrops++;
 		});
 		return map;
 	}, new Map)
 	.then(function(map){
-		var players = [];
-		map.forEach(function(p){
-			p.twcScore = 3*p.nbWins + p.sumScores -10*p.nbDrops;
-			players.push(p);
-		});
-		players = players.sort((a, b) => b.twcScore-a.twcScore);
+		var players = Array.from(map.values());
+		players = players.sort((a, b) => b.sumGains-a.sumGains);
 		write(roomId, titles.score + "\n" + fmt.tbl({
 			rank: true,
-			cols: ['Player', 'Finished', 'Wins', 'Drops', 'Mean Gain', 'Running Score', 'TWC Score'],
+			cols: [
+				'Player',
+				'Finished',
+				'Drops',
+				'Wins',
+				...specific.additionalColumns.map(c=>c.name),
+				'Mean Gain',
+				'Score'
+			],
 			rows: players.map(function(p, i){
-				var	meanGain = (p.sumEndScores+p.nbWins*3)/p.nbFinishedGames,
-					runningScore = 3*p.nbWins + p.sumEndScores;
+				var	meanGain = p.sumGains / p.nbFinishedGames;
 				return [
 					"["+p.name+"](u/"+p.id+")",
 					p.nbFinishedGames,
-					p.nbWins || " ",
 					p.nbDrops || " ",
+					p.nbWins || " ",
+					...specific.additionalColumns.map(c=>p[c.key]||" "),
 					meanGain ? meanGain.toFixed(1) : ' ',
-					runningScore,
-					p.twcScore
+					p.sumGains
 				];
 			})
 		}));
@@ -184,12 +222,13 @@ function writeScore(ct, gameType){
 }
 
 function listGames(ct, gameType){
-	var	roomId = ct.shoe.room.id;
-	db.on([roomId, gameType])
+	let roomId = ct.shoe.room.id;
+	let specific = specifics[gameType];
+	return db.on([roomId, gameType])
 	.spread(getGames)
 	.then(function(messages){
 		var lines = [titles.games];
-		lines.push('Player 1|Player 2|Result');
+		lines.push('Player 1|Player 2|Result|Player 1 Gain|Player 2 Gain');
 		lines.push(lines[lines.length-1].replace(/[^|]+/g, ':-:'));
 		messages.forEach(function(m){
 			var g = m.g;
@@ -199,11 +238,18 @@ function listGames(ct, gameType){
 			} else {
 				r = 'Waiting for **'+g.players[g.current||0].name+'**';
 			}
-			lines.push([
+			let cells = [
 				g.players[0].name,
 				g.players[1].name,
 				"["+r+"](#"+m.id+")"
-			].join('|'));
+			];
+			if (g.status == "finished") {
+				cells.push(specific.gain(g, 0, specific.isWinner(g, 0)));
+				cells.push(specific.gain(g, 1, specific.isWinner(g, 1)));
+			} else {
+				cells.push(" ", " ");
+			}
+			lines.push(cells.join('|'));
 		});
 		write(roomId, lines.join('\n'));
 	})

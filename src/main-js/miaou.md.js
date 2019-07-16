@@ -499,7 +499,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		var	$from = $('<div>'),
 			$m = $('.message[mid='+args.mid+']'),
 			wab = gui.isAtBottom();
-		md.render($from, args.from);
+		md.render($from, {content: args.from});
 		try {
 			$m.find('.content').addClass('wide').html(function(_, h){
 				return h.replace(
