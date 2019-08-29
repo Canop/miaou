@@ -190,7 +190,7 @@ exports.parse = function(str, tzoffset, now){
 }
 
 function doCommandNewAlarm(ct){
-	var	tzoffset = ct.shoe.publicUser.tzoffset;
+	let tzoffset = ct.shoe.publicUser.tzoffset;
 	if (tzoffset===undefined) throw new Error("unknown timezone");
 	var alarm = exports.parse(ct.args, tzoffset);
 	ct.withSavedMessage = function(shoe, message){
@@ -215,7 +215,6 @@ function doCommandNewAlarm(ct){
 		.then(function(){
 			var formattedDate = fmt.date(alarm.date, "YYYY/MM/DD hh:mm");
 			shoe.botReply(bot, message.id, "I'll ping you in this room on " + formattedDate);
-			alarmMap.set(message.id, alarm);
 			alarm.room = shoe.room.id;
 			alarm.username = shoe.publicUser.name;
 			programPing(alarm);
@@ -319,6 +318,7 @@ function setBigTimeout(fun, delay){
 function programPing(alarm){
 	var existingAlarm = alarmMap.get(alarm.message); // not defined if previous alarm already done
 	if (existingAlarm && existingAlarm.timeout) existingAlarm.timeout.clear();
+	alarmMap.set(alarm.message, alarm);
 	alarm.timeout = setBigTimeout(function(){
 		console.log("Ringing alarm:", alarm);
 		var text = alarm.text||"drrriiiiiinnnngggg!";
