@@ -40,7 +40,7 @@ miaou(function(tableControls, md, plugins){
 	};
 
 	function toNumber(s){
-		var m = s.replace(/\s+/g, '').match(/-?\d+(\.\d+)?/);
+		var m = s.replace(/[^.\d-]+/g, '').match(/-?\d+(\.\d+)?/);
 		return m ? +m[0] : NaN;
 	}
 
