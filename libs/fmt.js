@@ -79,7 +79,7 @@ exports.tbl = function(o){
 	c += "|\n" + o.rows.map(function(row, l){
 		let line="|";
 		if (rank) line += l+1+"|";
-		line += row.map(c=>c===""?" ":c).join("|")+"|";
+		line += row.map(c=>(c===""||c===undefined||c===null)?" ":c).join("|")+"|";
 		return line;
 	}).join("\n");
 	return c;
