@@ -91,8 +91,8 @@ exports.playerLink = function(name){
 	return "["+mdname+"](u/"+name+")";
 }
 
-exports.roomLink = function(room){
-	return "["+naming.makeMarkdownCompatible(room.name)+"]("+room.id+"#)";
+exports.roomLink = function({id, name}){
+	return "["+naming.makeMarkdownCompatible(name)+"]("+id+"#)";
 }
 
 // make a list in the Oxford comma style (eg "a, b, c, and d")
