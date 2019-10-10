@@ -62,7 +62,7 @@ async function doCommand(ct){
 
 exports.registerCommands = function(registerCommand){
 	registerCommand({
-		name: 'rooms',
+		name: 'myrooms',
 		fun: doCommand,
 		help: "list all my rooms",
 		canBePrivate: true,
