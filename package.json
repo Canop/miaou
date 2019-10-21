@@ -50,7 +50,7 @@
   "devDependencies": {
     "del": "^4.1.0",
     "glob": "^7.1.2",
-    "gulp": "4.0",
+    "gulp": "^4.0.2",
     "gulp-cli": "gulpjs/gulp-cli",
     "gulp-concat": ">=2.6.0",
     "gulp-debug": "^4.0.0",

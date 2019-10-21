@@ -85,14 +85,23 @@ exports.tbl = function(o){
 	return c;
 }
 
+exports.link = function(name, url){
+	return `[${naming.makeMarkdownCompatible(name)}](${url})`;
+}
+
 exports.playerLink = function(name){
-	let mdname = naming.makeMarkdownCompatible(name);
-	if (!naming.isValidUsername(name)) return mdname;
-	return "["+mdname+"](u/"+name+")";
+	if (!naming.isValidUsername(name)) {
+		return naming.makeMarkdownCompatible(name);
+	}
+	return exports.link(name, `u/${name}`);
 }
 
 exports.roomLink = function({id, name}){
-	return "["+naming.makeMarkdownCompatible(name)+"]("+id+"#)";
+	return exports.link(name, `${id}#`);
+}
+
+exports.messageLink = function({id, room}){
+	return exports.link(""+id, `${room}#${id}`);
 }
 
 // make a list in the Oxford comma style (eg "a, b, c, and d")

@@ -1,4 +1,4 @@
-const	apiversion = 117, // increment this when you want the client JS to be reloaded
+const	apiversion = 120, // increment this when you want the client JS to be reloaded
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -559,7 +559,15 @@ function handleUserInRoom(socket, completeUser){
 
 	on('get_message', async function(mid){
 		await db.do(async function(con){
-			let m = await con.getMessage(+mid, 0, true);
+			let m;
+			try {
+				m = await con.getMessage(+mid, 0, true);
+			} catch (e) {
+				// this is usually a NoRowError due to a user querying a
+				// missing message
+				console.error("Error on fetching message " + mid);
+				return;
+			}
 			if (m.room !== shoe.room.id) {
 				let room = await con.fetchRoomAndUserAuth(m.room, shoe.publicUser.id);
 				if (room.private && !auths.checkAtLeast(room.auth, 'write')) {

@@ -19,3 +19,17 @@ This plugin needs a configuration, which must be added into the `"pluginConfig"`
 		}
 	}
 
+When the *stats* plugin is available, a few stats subcommands are added:
+
+- `!!stats file-host`
+- `!!stats users`
+- `!!stats types`
+
+This plugin also adds the `!!!filehost` commands which lets users manage their hosted files:
+
+- `!!!filehost list` lists all files of the logged user in a clickable thumbnail view
+- `!!!filehost info 12345` gives info on a specific file
+- `!!!filehost delete 12345` delete the file
+
+The `info` and `delete` subcommands aren't usually typed but obtained from the list.
+

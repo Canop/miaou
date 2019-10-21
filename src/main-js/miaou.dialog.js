@@ -69,6 +69,18 @@ miaou(function(){
 		return d;
 	}
 
+	// callback is called when user confirms
+	miaou.dialog.confirm = function(question, cb){
+		miaou.dialog({
+			title: "Please confirm",
+			content: question,
+			buttons: {
+				Yes: cb,
+				No: null,
+			}
+		});
+	}
+
 	// returns true if a dialog is currently open
 	miaou.dialog.has = function(){
 		return !!dialogs.length;

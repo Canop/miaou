@@ -1,4 +1,6 @@
-
+// statistics of file-host storage.
+// Statistics are called by the stats plugin of miaou on commands
+// starting with `!!stats file-host`
 let fmt;
 
 async function doStats(con, ct, options){
