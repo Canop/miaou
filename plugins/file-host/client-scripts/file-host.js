@@ -33,7 +33,7 @@ miaou(function(chat, ed, fmt, md, plugins){
 				miaou.dialog.confirm(
 					"Do you really want to delete this file ?",
 					function(){
-						chat.sendMessage(`!!filehost delete ${fileId}`);
+						chat.sendMessage(`!!!filehost delete ${fileId}`);
 					}
 				);
 				return false;
