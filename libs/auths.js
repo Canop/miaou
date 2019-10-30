@@ -57,8 +57,8 @@ exports.checkAtLeast = function(auth, neededAuth){
 	return false;
 }
 
-exports.isServerAdmin = function(user){
-	return serverAdminIds.has(user.id);
+exports.isServerAdmin = function({id}){
+	return serverAdminIds.has(id);
 }
 
 // handles GET of the auths /page

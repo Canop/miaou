@@ -5,6 +5,7 @@ const	path = require("path"),
 
 var	db,
 	appUtils,
+	auths,
 	baseDirectory,
 	maxSize,
 	rateLimitSumSize,
@@ -14,6 +15,7 @@ var	db,
 
 exports.init = async function(miaou, plugin){
 	appUtils = miaou.lib("app-utils");
+	auths = miaou.lib("auths");
 	db = miaou.db;
 	await db.upgrade(plugin.name, path.resolve(__dirname, 'sql'));
 	baseDirectory = miaou.conf("pluginConfig", "file-host", "base-directory");
@@ -83,12 +85,14 @@ exports.saveFile = async function(ext, uploader, bytes){
 	if (bytes.length < 1 || bytes.length > maxSize) {
 		throw new Error("Invalid file length: " + bytes.length);
 	}
-	let ru = await recentUploads(uploader, rateLimitPeriod);
-	if (ru.number > rateLimitNumber) {
-		throw new Error("Too many recent uploads");
-	}
-	if (ru.sumsize > rateLimitSumSize) {
-		throw new Error("Sum of recent upload sizes is too big");
+	if (!auths.isServerAdmin({id:uploader})) {
+		let ru = await recentUploads(uploader, rateLimitPeriod);
+		if (ru.number > rateLimitNumber) {
+			throw new Error("Too many recent uploads");
+		}
+		if (ru.sumsize > rateLimitSumSize) {
+			throw new Error("Sum of recent upload sizes is too big");
+		}
 	}
 	let id = newId();
 	let hasher = crypto.createHash('sha1');
