@@ -271,8 +271,9 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 			if (!$existingMessage.length) {
 				return md.fetchMessageForDiv(messageId, $container, convCount);
 			}
-			var mtop = $existingMessage.offset().top;
-			if (mtop>0) return false; // message is visible, no need for the bulruk
+			// experiment: the two following lines would make the bulruk only when necessary
+			// var mtop = $existingMessage.offset().top;
+			// if (mtop>0) return false; // message is visible, no need for the bulruk
 			m = $existingMessage.dat('message');
 		}
 		if (!m.content) return;
