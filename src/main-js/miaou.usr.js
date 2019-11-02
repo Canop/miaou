@@ -2,7 +2,7 @@
 
 miaou(function(usr, chat, ed, locals, mod, time, ws){
 
-	var	levels = ['read', 'write', 'admin', 'own'],
+	var	levels = ['member', 'admin', 'owner'],
 		recentUsers = []; // sorted list of {id,name,mc} (this list isn't displayed but used for ping autocompletion)
 
 	// o is an object with avs and avk (may be a user or a message)

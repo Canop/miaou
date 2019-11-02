@@ -3,7 +3,7 @@ miaou(function(attention, chat, locals, plugins, ws){
 	function onNotable(m, $md){
 		if (!m.pin) return;
 		var $icon = $("<div>").addClass('attention-icon').text("!").appendTo($md);
-		var admin = locals.room.auth==='admin'||locals.room.auth==='own';
+		var admin = locals.room.auth==='admin'||locals.room.auth==='owner';
 		if (admin) $icon.addClass('attention-action');
 		$icon
 		.on('click', function(){

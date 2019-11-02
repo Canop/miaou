@@ -7,7 +7,7 @@ exports.configure = function(miaou){
 
 function la(ct){
 	return this.listRoomAuths(ct.shoe.room.id)
-	.filter(a => a.auth==="admin" || a.auth==="own")
+	.filter(a => a.auth==="admin" || a.auth==="owner")
 	.then(function(auths){
 		ct.nostore = true;
 		var lines = [

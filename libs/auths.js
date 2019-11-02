@@ -1,6 +1,6 @@
 // manage authorizations and bans
 
-const	levels = ['read', 'write', 'admin', 'own'],
+const	levels = ['member', 'admin', 'owner'],
 	naming = require('./naming.js'),
 	server = require('./server.js'),
 	prefs = require('./prefs.js'),
@@ -125,8 +125,8 @@ exports.appPostAuths = function(req, res){
 					denyMessage = req.body['deny_message_'+m[1]];
 				modifiedUser = await con.getUserById(+m[1]);
 				if (accepted) {
-					messageLines.push(`@${author} gave *write* right to @${modifiedUser.name}.`);
-					actions.push({cmd:'insert_auth', auth:'write', user:modifiedUser.id});
+					messageLines.push(`@${author} gave *member* role to @${modifiedUser.name}.`);
+					actions.push({cmd:'insert_auth', auth:'member', user:modifiedUser.id});
 					actions.push({cmd:'delete_ar', user:modifiedUser.id});
 				} else {
 					actions.push({cmd:'deny_ar', user:modifiedUser.id, message:denyMessage||''});
@@ -180,10 +180,10 @@ exports.wsOnBan = async function(shoe, o){
 		} else {
 			let row = await con.getAuthLevel(shoe.room.id, o.banned);
 			let bannedAuth = row ? row.auth : null;
-			if (bannedAuth==="own") throw "A room owner cannot be banned";
+			if (bannedAuth==="owner") throw "A room owner cannot be banned";
 			let bannerAuth = shoe.room.auth;
-			if (bannedAuth==="admin" && bannerAuth!=="own") throw "Only a room owner can ban an admin";
-			if (bannerAuth!=="admin" && bannerAuth!=="own") throw "Only an owner or an admin can ban a user";
+			if (bannedAuth==="admin" && bannerAuth!=="owner") throw "Only a room owner can ban an admin";
+			if (bannerAuth!=="admin" && bannerAuth!=="owner") throw "Only an owner or an admin can ban a user";
 		}
 		let now = Date.now()/1000|0;
 		await con.insertBan(shoe.room.id, o.banned, now, now+o.duration, shoe.publicUser.id, o.reason);

@@ -426,6 +426,7 @@ function handleUserInRoom(socket, completeUser){
 			}
 			memroom = await rooms.mem.call(con, entry.roomId);
 			let r = await con.fetchRoomAndUserAuth(entry.roomId, shoe.publicUser.id);
+			console.log('r:', r);
 			if (r.private && !r.auth) {
 				throw new Error('Unauthorized user');
 			}
@@ -465,7 +466,7 @@ function handleUserInRoom(socket, completeUser){
 				socket.emit('enter', s.publicUser);
 			}
 			if (pings.length) await con.deleteRoomPings(shoe.room.id, shoe.publicUser.id);
-			if (shoe.room.auth==='admin'||shoe.room.auth==='own') {
+			if (shoe.room.auth==='admin'||shoe.room.auth==='owner') {
 				let accessRequests = await con.listOpenAccessRequests(shoe.room.id);
 				accessRequests = accessRequests.slice(-5); // limit the number of notifications
 				for (let j=accessRequests.length; j--;) {
@@ -570,7 +571,7 @@ function handleUserInRoom(socket, completeUser){
 			}
 			if (m.room !== shoe.room.id) {
 				let room = await con.fetchRoomAndUserAuth(m.room, shoe.publicUser.id);
-				if (room.private && !auths.checkAtLeast(room.auth, 'write')) {
+				if (room.private && !room.auth) {
 					throw "unauthorized";
 				}
 			}
@@ -596,7 +597,7 @@ function handleUserInRoom(socket, completeUser){
 
 	on('grant_access', function(grant){ // grant: {user:{id,name}, pingId, pingContent}
 		throttle();
-		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		if (!(shoe.room.auth==='admin'||shoe.room.auth==='owner')) return;
 		return db.on(grant.user.id)
 		.then(db.getUserById)
 		.then(function(user){
@@ -608,7 +609,7 @@ function handleUserInRoom(socket, completeUser){
 			let text = "@"+user.name+" has been granted access by @"+shoe.publicUser.name;
 			shoe.emitBotFlakeToRoom(bot, text, shoe.room.id);
 			return this.changeRights([
-				{cmd:"insert_auth", user:user.id, auth:"write"}, {cmd:"delete_ar", user:user.id}
+				{cmd:"insert_auth", user:user.id, auth:"member"}, {cmd:"delete_ar", user:user.id}
 			], shoe.publicUser.id, shoe.room);
 		}).then(function(){
 			exports.emitAccessRequestAnswer(shoe.room.id, grant.user.id, true);
@@ -713,7 +714,7 @@ function handleUserInRoom(socket, completeUser){
 							name: shoe.room.name,
 							private: true,
 							dialog: true,
-							auth: 'own',
+							auth: 'owner',
 							nbunseen: 1,
 							nbrequests: 0,
 							last_seen: inserted.last_seen
@@ -786,7 +787,7 @@ function handleUserInRoom(socket, completeUser){
 			while ((match=r.exec(m.content))) {
 				let ping = match[1].toLowerCase();
 				if (ping==="room") {
-					if (!shoe.room.private && shoe.room.auth!=='admin' && shoe.room.auth!=='own') {
+					if (!shoe.room.private && shoe.room.auth!=='admin' && shoe.room.auth!=='owner') {
 						shoe.error("Only an admin can ping @room in a public room");
 					} else {
 						let roomUsers = await con.listRoomUsers(shoe.room.id);
@@ -848,7 +849,7 @@ function handleUserInRoom(socket, completeUser){
 	on('mod_delete', function(ids){
 		throttle();
 		if (!shoe.room) return;
-		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		if (!(shoe.room.auth==='admin'||shoe.room.auth==='owner')) return;
 		return db.on(ids)
 		.map(db.getMessage)
 		.map(function(m){
@@ -937,7 +938,7 @@ function handleUserInRoom(socket, completeUser){
 
 	on('unpin', function(mid){
 		throttle();
-		if (!(shoe.room.auth==='admin'||shoe.room.auth==='own')) return;
+		if (!(shoe.room.auth==='admin'||shoe.room.auth==='owner')) return;
 		return db.on([shoe.room.id, shoe.publicUser.id, mid])
 		.spread(db.unpin)
 		.then(function(updatedMessage){
