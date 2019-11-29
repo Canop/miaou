@@ -12,7 +12,7 @@ const	ws = require('../../libs/ws.js'),
 	fmt = require('../../libs/fmt.js'),
 	ludo = require('./plugin.js');
 
-const	removedPlayers = new Set(['Shaks', 'Andy_Kw']);
+const	removedPlayers = new Set(['t1wc', 'Unihedron']);
 
 var	db,
 	bot;
