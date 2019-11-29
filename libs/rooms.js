@@ -156,7 +156,7 @@ exports.appPostRoom = function(req, res){
 		} else {
 			// room edition
 			let oldroom = await con.fetchRoomAndUserAuth(roomId, req.user.id);
-			if (oldroom.auth!=='admin' && oldroom.auth!=='own') {
+			if (oldroom.auth!=='admin' && oldroom.auth!=='owner') {
 				throw "Unauthorized user";
 			}
 			room.id = roomId;

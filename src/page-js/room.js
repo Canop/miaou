@@ -17,7 +17,9 @@ miaou(function(locals, roomFinder){
 		$('#description').val(room.description);
 		$('#private').val(room.private ? 'on' : 'off');
 		$('#listed').val(room.listed ? 'on' : 'off');
-		if (room.auth!=='own') $('#private').prop('disabled', true);
+		if (room.auth!=='owner') {
+			$('#private').prop('disabled', true);
+		}
 		$('#lang').val(room.lang || langs[0].key);
 		$('#id').val(room.id);
 		$("#tags").val(room.tags.join(" "));

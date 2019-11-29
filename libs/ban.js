@@ -22,10 +22,10 @@ exports.registerCommands = function(registerCommand){
 			} else {
 				shoe.checkAuth('admin');
 				let authLevel = await this.getAuthLevel(shoe.room.id, user.id);
-				if (authLevel==="own") {
+				if (authLevel==="owner") {
 					throw "You can't ban a room owner";
 				}
-				if (authLevel==="admin" && shoe.room.auth!=="own") {
+				if (authLevel==="admin" && shoe.room.auth!=="owner") {
 					throw "Only a room owner can ban a room admin";
 				}
 			}

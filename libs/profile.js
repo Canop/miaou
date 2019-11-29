@@ -74,9 +74,8 @@ exports.appAllUsername = function(req, res){
 }
 
 function authToRole(auth, rprivate){
-	if (auth==='write') return "writer";
-	if (auth==='admin') return "admin";
-	if (auth==='own') return "owner";
+	// this is trivial since patch 30
+	if (auth) return auth;
 	return rprivate ? "no access" : "none";
 }
 

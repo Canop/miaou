@@ -10,7 +10,7 @@ miaou(function(gui, locals, prof, time){
 		return Date.now()/1000-t<15*60 ? "just now" : time.formatRelativeTime(t);
 	});
 	$('input,select').change(function(){ this.name = this.getAttribute('_name') });
-	if (!(room.auth==='own'||room.auth==='admin')) {
+	if (!(room.auth==='owner'||room.auth==='admin')) {
 		$('input,select').prop('disabled', true);
 	} else {
 		$('input, select').change(function(){ $('#submit_bar input').prop('disabled', false) })

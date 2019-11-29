@@ -268,7 +268,7 @@ proto.createRoom = function(r, owners){
 	}).map(function(user){
 		return this.queryRow(
 			'insert into room_auth (room, player, auth, granted) values ($1, $2, $3, $4)',
-			[r.id, user.id, 'own', now()],
+			[r.id, user.id, 'owner', now()],
 			"insert_room_owner"
 		);
 	})

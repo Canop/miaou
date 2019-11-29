@@ -27,7 +27,7 @@ html
 				clear:both;
 			}
 	body
-		- authLevels = ['read', 'write', 'admin', 'own']
+		- authLevels = ['member', 'admin', 'owner']
 		- rol = authLevels.indexOf(room.auth)
 		- canseeauths = true
 		form(method="post")
@@ -45,7 +45,7 @@ html
 					p This room is public, everybody can read and write messages but authorizations are needed to change the name and description or manage authorizations.
 				p
 					case room.auth
-						when 'own'
+						when 'owner'
 							| As a room owner you can change everybody's rights. You can also &nbsp;
 							a(href="room?id="+room.id)
 								| edit the room
@@ -104,7 +104,7 @@ html
 												- var name = "insert_auth_"+u.id
 												select(_name=name)
 													option(value="admin") admin
-													option(value="write") write
+													option(value="member") member
 													option(value="none",selected) no access
 						else
 							p none currently
@@ -120,10 +120,10 @@ html
 										td.auth
 											- var name = "change_auth_"+ua.player
 											select(_name=name)
-												if room.auth === 'own'
-													option(value="own", selected=ua.auth==="own") own
+												if room.auth === 'owner'
+													option(value="owner", selected=ua.auth==="owner") owner
 												option(value="admin", selected=ua.auth==="admin") admin
-												option(value="write", selected=ua.auth==="write") write
+												option(value="member", selected=ua.auth==="member") member
 												option(value="none") no access
 									else
 										td.auth= ua.auth

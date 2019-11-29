@@ -48,7 +48,7 @@ miaou(function(watch, chat, fish, gui, locals, md, notif, prefs, usr, ws){
 			.appendTo('#watches');
 			var $c = $('<span>').addClass('count').text(w.nbunseen||'').prependTo($w);
 			if (w.nbunseen) $w.addClass('has-unseen');
-			if (w.nbrequests && (w.auth==="admin"||w.auth==="own")) $w.addClass('has-requests');
+			if (w.nbrequests && (w.auth==="admin"||w.auth==="owner")) $w.addClass('has-requests');
 			if (notif.hasPing(w.id)) $c.addClass('ping');
 		});
 		$('#watches').append($('#watches .watch').detach().slice().sort(function(a, b){

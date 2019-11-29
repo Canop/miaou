@@ -43,7 +43,7 @@ exports.appGet = function(req, res){
 			userGlobalPrefs = await prefs.getUserGlobalPrefs(con, userId),
 			theme = await prefs.theme(con, userId, req.query.theme, isMobile);
 		let ban = await con.getRoomUserActiveBan(roomId, userId);
-		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'write'))) {
+		if (ban || (room.private && !auths.checkAtLeast(room.auth, 'member'))) {
 			let lastAccessRequest = await con.getLastAccessRequest(roomId, userId);
 			let args = {
 				vars: {
