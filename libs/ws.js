@@ -1,4 +1,4 @@
-const	apiversion = 120, // increment this when you want the client JS to be reloaded
+const	apiversion = 121, // increment this when you want the client JS to be reloaded
 	nbMessagesAtLoad = 50,
 	nbMessagesPerPage = 15,
 	nbMessagesBeforeTarget = 8,
@@ -426,7 +426,6 @@ function handleUserInRoom(socket, completeUser){
 			}
 			memroom = await rooms.mem.call(con, entry.roomId);
 			let r = await con.fetchRoomAndUserAuth(entry.roomId, shoe.publicUser.id);
-			console.log('r:', r);
 			if (r.private && !r.auth) {
 				throw new Error('Unauthorized user');
 			}
