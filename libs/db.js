@@ -276,7 +276,7 @@ proto.createRoom = function(r, owners){
 
 // note: doesn't update the tags
 proto.updateRoom = function(r, author, authlevel){
-	if (authlevel==="own") {
+	if (authlevel==="owner") {
 		return this.execute(
 			"update room set name=$1, private=$2, listed=$3, dialog=$4, img=$5, description=$6, lang=$7 where id=$8",
 			[r.name, r.private, r.listed, r.dialog, r.img, r.description||'', r.lang, r.id],
