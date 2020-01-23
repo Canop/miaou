@@ -135,7 +135,11 @@ exports.provider = {
 	command: "github",
 	botName: "GitHub-Bot",
 	botAvatar: {src:'url', key:'https://i.imgur.com/JeB730V.png'},
-	botInfo: {location:'The Big Cloud In The Sky', lang:'en', description:"I watch GitHub repositories. Use !!github"},
+	botInfo: {
+		location:'The Big Cloud In The Sky',
+		lang:'en',
+		description:"I watch GitHub repositories. Use !!github"
+	},
 	repoURL: repo => "https://github.com/"+repo,
 	analyzeIncomingData,
 	help: "interact with GitHub. Type `!!help !!github` to learn more.",

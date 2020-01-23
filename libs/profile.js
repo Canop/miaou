@@ -19,6 +19,11 @@ exports.configure = function(miaou){
 var avatarsrc = exports.avatarsrc = function(source, key){
 	if (!key) return;
 	if (/^https?:\/\//.test(key)) return key; // this is hacky...
+	if (/^\/\//.test(key)) {
+		// bad hack mainly to support some avatars I receive from MountyHall with
+		// protocol missing
+		return 'https:' + key;
+	}
 	if (source==="gravatar") { // because avatars.io redirects https to http, I try to avoid it
 		return "https://www.gravatar.com/avatar/"+key+"?s=200";
 	}

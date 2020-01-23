@@ -9,6 +9,11 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 	usr.avatarsrc = function(o){
 		if (!o.avk) return;
 		if (/^https?:\/\//.test(o.avk)) return o.avk; // this is hacky...
+		if (/^\/\//.test(o.avk)) {
+			// bad hack mainly to support some avatars I receive from MountyHall with
+			// protocol missing
+			return 'https:' + o.avk;
+		}
 		if (o.avs==="gravatar") { // because avatars.io redirects https to http, I try to avoid it
 			return "https://www.gravatar.com/avatar/"+o.avk+"?s=200";
 		}
