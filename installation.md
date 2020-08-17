@@ -1,5 +1,3 @@
-
-
 # Introduction
 
 
@@ -30,11 +28,21 @@ There are various valid ways to install them. Be sure to install a recent versio
 
 You must install and start redis. There's no specific configuration to do for Miaou (it's preferable to configure redis to *not* save on disk, as we only use it as a session cache making it possible to restart miaou without the users noticing).
 
+## Debian & Co
+
 	sudo apt-get install redis-server
 
 There's several ways to start it. Here's the simplest one:
 
 	redis-server &
+
+## Arch linux
+
+	sudo pacman -S redis
+	sudo systemctl start redis # only start server for this session
+	sudo systemctl enable redis # will start server for every **future** session
+
+[See](https://wiki.archlinux.org/index.php/Redis)
 
 # Installing Miaou
 
@@ -85,17 +93,20 @@ Most of the configuration is simple and documented in the file itself. We'll see
 
 ## Installing postgresql
 
+### Debian & Co
+
 A different aventure every time. Basically it should be something like
 
 	sudo apt-get install postgresql
 
 but it might be a little harder.
 
-## Creating the Miaou database and user
+
+#### Creating the Miaou database and user
 
 First create the DB and user, and grant the rights.
 
-	> sudo su postgres
+	> sudo -iu postgres
 	[sudo] password for youruser:
 	postgres@yourcomputer:/home/youruser$ psql
 	psql (9.4.0)
@@ -123,6 +134,21 @@ Then restart pg :
 
 	sudo /etc/init.d/postgresql restart
 
+### Arch linux
+
+	sudo pacman -S postgresql
+	sudo -iu postgres
+	# You are now connected as postgres user
+	initdb -D /var/lib/postgres/data
+	echo """local   all             miaou                                   md5""" >> /var/lib/postgres/data/pg_hba.conf
+	echo """create database miaou;create user miaou with password 'chooseanotherpwdplease';grant all privileges on database "miaou" to miaou;""" | psql
+	exit
+	# You are not anymore connected as postgres user
+	sudo systemctl start postgresql.service 
+    sudo systemctl enable postgresql.service
+
+[See](https://wiki.archlinux.org/index.php/PostgreSQL)
+
 ## Start the pg shell
 
 You'll need this shell every time you want to mess with the tables, or for the first installation. Here's how it's launched :
@@ -135,7 +161,7 @@ A solution is to copy-paste the content of `/sql/postgres-creation.sql` into the
 
 Alternatively you can run the script from the standard shell using
 
-        psql -U miaou -d miaou -a -f postgres.creation.sql
+	psql -U miaou -d miaou -a -f postgres.creation.sql
 
 Note that you won't have to update the tables yourself, Miaou takes care of this updating when the schema changes or when a plugin needs a specific table.
 
@@ -144,7 +170,7 @@ Note that you won't have to update the tables yourself, Miaou takes care of this
 In the config.js file, set up the required configuration :
 
 	"database": {
-	        database:"miaou",
+	    database:"miaou",
 		user:"miaou",
 		password:"choose-another-password-please",
 		"url": "postgres://miaou:choose-another-password-please@localhost/miaou",
@@ -155,7 +181,7 @@ In the config.js file, set up the required configuration :
 
 You need to set up at least one OAuth provider.
 
-* Google: create an OAuth account on https://code.google.com/apis/console/
+* Google: create an OAuth account on https://code.google.com/apis/console/ (Read Hints bellow)
 * StackExchange: create an OAuth account on http://stackapps.com/apps/oauth/
 * Github: create an OAuth account on https://github.com/settings/applications
 
@@ -212,7 +238,7 @@ Use the script:
 
 	./restart.sh
 
-# Configure a reverse proxy with nginx (optional)
+# Configure a reverse proxy with nginx (optional)
 
 This makes it easy to share the 80 port with other applications and to let nginx serve static resources for better performances. It's also the recommended solution to serve Miaou in HTTPS.
 
