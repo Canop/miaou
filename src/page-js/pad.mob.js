@@ -75,6 +75,8 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		$('.mpad-tabs').hide();
 		$('#input').focus();
 	}
+	gui.revealInput = tabs['write'].open.bind(tabs['write']);
+
 	tabs['write'].close = function(){
 		$('#input').blur();
 		this.$tab.filter('.open').removeClass('open');

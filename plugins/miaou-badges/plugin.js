@@ -136,6 +136,7 @@ exports.init = function(miaou){
 	}
 	return miaou.requestTag({
 		name: "Miaou",
+		description: "All about Miaou",
 		condition: "Discuss Miaou usage, features, bugs, installation, code, etc."
 	})
 	.then(function(){

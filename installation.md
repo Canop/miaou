@@ -95,11 +95,7 @@ Most of the configuration is simple and documented in the file itself. We'll see
 
 ### Debian & Co
 
-A different aventure every time. Basically it should be something like
-
-	sudo apt-get install postgresql
-
-but it might be a little harder.
+A different aventure every time. Be sure to install at least version 12.
 
 
 #### Creating the Miaou database and user
@@ -144,7 +140,7 @@ Then restart pg :
 	echo """create database miaou;create user miaou with password 'chooseanotherpwdplease';grant all privileges on database "miaou" to miaou;""" | psql
 	exit
 	# You are not anymore connected as postgres user
-	sudo systemctl start postgresql.service 
+	sudo systemctl start postgresql.service
     sudo systemctl enable postgresql.service
 
 [See](https://wiki.archlinux.org/index.php/PostgreSQL)
@@ -155,13 +151,15 @@ You'll need this shell every time you want to mess with the tables, or for the f
 
 	psql -U miaou -W miaou
 
+(the command to quit psql is `\q`)
+
 ## Create the tables
 
 A solution is to copy-paste the content of `/sql/postgres-creation.sql` into the pg shell.
 
 Alternatively you can run the script from the standard shell using
 
-	psql -U miaou -d miaou -a -f postgres.creation.sql
+	psql -U miaou -d miaou -a -f sql/postgres.creation.sql
 
 Note that you won't have to update the tables yourself, Miaou takes care of this updating when the schema changes or when a plugin needs a specific table.
 

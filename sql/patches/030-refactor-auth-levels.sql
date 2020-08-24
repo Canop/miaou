@@ -9,6 +9,9 @@
 #
 # postgresql does not seem to support dropping or renaming enum values
 # so we have a few operations to do.
+#
+# In case you don't manage to run the following enum add in the standard
+# patch process, I suggest you add them manually with psql
 
 # first add the new names to the old enum
 alter type auth_level add value 'member' before 'read';

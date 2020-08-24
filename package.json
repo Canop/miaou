@@ -45,7 +45,8 @@
     "start": "sh start.sh",
     "test": "jest",
     "lint": "gulp lint",
-    "build": "gulp build"
+    "build": "gulp build",
+    "gulp": "gulp"
   },
   "devDependencies": {
     "del": "^4.1.0",
