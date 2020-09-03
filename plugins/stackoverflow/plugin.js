@@ -2,23 +2,34 @@
 var	Promise = require("bluebird"),
 	seboxer = require("./se-boxer.js"),
 	config,
-	request = require('request');
+	https = require('follow-redirects').https;
 
 exports.name = "StackOverflow";
 
 // returns a promise
 // updates and provides in resolution the pluginPlayerInfos if successful, else throws an error
 function createSOProfile(user, ppi, vals){
-	var p = Promise.defer(), num = +vals.so_num;
-	request('http://stackoverflow.com/users/'+num, function(error, res, body){
-		if (!error && res.statusCode===200) {
+	var 	p = Promise.defer(),
+		num = +vals.so_num;
+	var req = https.request({
+		hostname: "stackoverflow.com",
+		path: `users/${num}`,
+		method: "GET"
+	}, function(res){
+		var body = '';
+		res.on('data', function(chunk){
+			body += chunk;
+		}).on('end', function(){
 			var found, m, r=/<a[^<>]*href="([^"]+)"[^<>]*>([^<>]+)<\/a>/ig;
 			while ((m=r.exec(body))) {
 				if (m[1].indexOf(config.server)==0 && /\bmiaou\b/i.test(m[2])) {
-					if (~m[2].split(/\w/).indexOf(user.name)) {
+					// the following test isn't really secure if users change names
+					/*if (~m[2].split(/\w/).indexOf(user.name)) {
 						found = m[0];
 						console.log('found with username', found);
-					} else if (m[1]===config.server+"/user/"+user.id) {
+					} else*/
+					if (m[1]===config.server+"/user/"+user.id) {
+						console.log('server:', config.server);
 						found = m[0];
 						console.log('found with user id', found);
 					} else {
@@ -31,10 +42,12 @@ function createSOProfile(user, ppi, vals){
 				}
 			}
 			p.reject("Required link wasn't found in Stack Overflow profile.");
-		} else {
-			p.reject(new Error('Error in querying stackoverflow.com'));
-		}
+		});
 	});
+	req.on('error', function(e){
+		p.reject(e);
+	});
+	req.end();
 	return p.promise;
 }
 
