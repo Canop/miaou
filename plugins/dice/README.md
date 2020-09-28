@@ -1,4 +1,4 @@
-The `dices` plugin simulates throwing dices with an arbitrary number of sides, such as the ones of Role Playing Games.
+The `dice` plugin simulates throwing dice with an arbitrary number of sides, such as the ones of Role Playing Games.
 
 It lets you
 
