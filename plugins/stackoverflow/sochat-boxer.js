@@ -25,7 +25,7 @@ exports.init = function(miaou){
 		name: "SO Chat",
 		pattern:/^\s*https?:\/\/chat\.stackoverflow\.com\/transcript\/(?:\d+\?m=|message\/)(\d+)\S*\s*$/,
 		urler:function(line, id){
-			return "http://chat.stackoverflow.com/messages/"+id+"/history";
+			return "https://chat.stackoverflow.com/messages/"+id+"/history";
 		},
 		box:abstract
 	});

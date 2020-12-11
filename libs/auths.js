@@ -32,6 +32,7 @@ exports.init = async function(){ // make miaou.lib async to avoid this ?
 
 function startPeriodicAccessRequestCleaning(miaou){
 	let checkInterval = miaou.conf("cleaning-frequencies", "old-access-requests") || 5*60*60; // 5 hours
+	let maxAge = 10*24*60*60;
 	setInterval(function(){
 		console.log("checking access requests");
 		db.do(async function(con){

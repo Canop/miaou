@@ -30,7 +30,7 @@ miaou(function(gui, fish, plugins){
 	function bindBubbles(){
 		$("#messages, #watches, #notable-messages, #search-results").bubbleOn(
 			".content a.external-link", function($c){
-				let url = this.prop("href");
+				let url = this.prop("href").replace(/^http:/, "https:");
 				let element = this[0];
 				let con = cache.get(element);
 				if (con) return blowWith($c, con);
