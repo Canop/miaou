@@ -274,7 +274,12 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 					return /^\*[\s\S]*\*$/.test(s) ? s.slice(1, -1) : '*'+s+'*'
 				});
 				return false;
-			case 13: // ctrl - enter : insert new line
+			case 36: // ctrl - $ : toggle strikethrough
+				$input.replaceSelection(function(s){
+					return /^---[\s\S]*---$/.test(s) ? s.slice(3, -3) : '---'+s+'---'
+				});
+				return false;
+				case 13: // ctrl - enter : insert new line
 				$input.replaceSelection(function(s){ return s+'\n' });
 				return false;
 			case 38: // ctrl - up arrow
