@@ -754,6 +754,7 @@ proto.getNotableMessages = function(roomId, createdAfter){
 
 // append to the args and conditions arrays, from the s search options
 // return the completed ps name
+/* eslint-disable max-len */
 proto._searchConditions = function(s, args, cons){
 	var psname = "";
 	if (s._regex) {
@@ -772,7 +773,7 @@ proto._searchConditions = function(s, args, cons){
 	}
 	if (s.img) {
 		psname += "_img";
-		cons.push(`content ~* '(^|\\n)\\s*(https?:\/\/[^\\s<>"]+\/[^\\s<>"]+)\\.(png|webp|gif|jpe?g|svg)\\s*($|\\n)'`);
+		cons.push(`content ~* '(^|\\n)\\s*(https?:\/\/[^\\s<>"]+\/[^\\s<>"]+)\\.(png|webp|gif|jpe?g|svg)(?:\\?[^\\s]*)?\\s*($|\\n)'`);
 	}
 	if (s.link) {
 		psname += "_link";
@@ -812,6 +813,7 @@ proto._searchConditions = function(s, args, cons){
 	}
 	return psname;
 }
+/* eslint-enable max-len */
 
 proto.search = async function(s){
 	let	args = [],
