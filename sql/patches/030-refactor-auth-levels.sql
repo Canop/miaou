@@ -17,6 +17,8 @@
 alter type auth_level add value 'member' before 'read';
 alter type auth_level add value 'owner' after 'own';
 
+commit;
+
 # use the new value
 update room_auth set auth='member' where auth='write';
 update room_auth set auth='owner' where auth='own';
