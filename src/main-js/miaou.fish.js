@@ -68,19 +68,23 @@
 		if (targetRect.width<=1 || targetRect.height<=1) return;
 		if (options.classes) $b.addClass(options.classes);
 		$('<div>').addClass('bubble-arrow').appendTo($b);
-		if (options.side) {
-			if (/-/.test(options.side)) {
-				side = options.side;
-			} else if (options.side === "horizontal") {
+		let options_side = options.side;
+		if (typeof options_side == "function") {
+			options_side = options_side.call(this, targetRect);
+		}
+		if (options_side) {
+			if (/-/.test(options_side)) {
+				side = options_side;
+			} else if (options_side === "horizontal") {
 				side = (targetRect.left<ww/2 ? "right" : "left") + "-" + (targetRect.top<wh/2 ? "bottom" : "top");
-			} else if (options.side === "vertical") {
+			} else if (options_side === "vertical") {
 				side = (targetRect.top<wh/2 ? "bottom" : "top") + "-" + (targetRect.left<ww/2 ? "right" : "left");
-			} else if ((match=options.side.match(/^(top|bottom)/))) {
+			} else if ((match=options_side.match(/^(top|bottom)/))) {
 				side = match[1] + "-" + (targetRect.left<ww/2 ? "right" : "left");
 			} else {
-				side = ( (options.side.match(/left|right/)||[])[0] || (targetRect.left<ww/2 ? "right" : "left") )
+				side = ( (options_side.match(/left|right/)||[])[0] || (targetRect.left<ww/2 ? "right" : "left") )
 				+ "-"
-				+ ( (options.side.match(/bottom|top/)||[])[0] || (targetRect.top<wh/2 ? "bottom" : "top") );
+				+ ( (options_side.match(/bottom|top/)||[])[0] || (targetRect.top<wh/2 ? "bottom" : "top") );
 			}
 		} else {
 			side = (targetRect.top<wh/2 ? "bottom" : "top")
