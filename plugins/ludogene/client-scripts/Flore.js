@@ -115,6 +115,7 @@ var Flore = (function(){
 			obj.scores = g.scores;
 			obj.cells = g.cells;
 		},
+		// creation of a new game
 		init: function(g){
 			g.current = 0;
 			g.scores = [0, 0];
@@ -130,8 +131,22 @@ var Flore = (function(){
 			g.cells[0][T-1] = NO_CELL;
 			g.cells[T-1][0] = NO_CELL;
 			g.cells[T-1][T-1] = NO_CELL;
-			for (var i=Math.random()*2+3|0; i-->0;) {
-				g.cells[Math.random()*T|0][Math.random()*T|0] = NO_CELL
+			let centerCells = [
+				[T/2-1, T/2-1],
+				[T/2, T/2-1],
+				[T/2-1, T/2],
+				[T/2, T/2]
+			];
+			let cell = centerCells[Math.random()*5|0];
+			if (cell) {
+				g.cells[cell[0]][cell[1]] = NO_CELL;
+			}
+			let n = Math.random()*2+1|0;
+			if (Math.random()>.8) {
+				n += 3;
+			}
+			for (var i=n; i-->0;) {
+				g.cells[Math.random()*T|0][Math.random()*T|0] = NO_CELL;
 			}
 		},
 		// (re)builds the state of the game
