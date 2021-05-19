@@ -15,6 +15,8 @@ The commands takes as parameters
 * when the ping must be thrown
 * an optional text to display with the ping
 
+If the command starts with "every" or "chaque", you'll get a "repeat" button on notifications.
+
 The command is versatile enough to accept several ways to set the date:
 
 	!!pingme 14h25 meeting
@@ -26,7 +28,10 @@ The command is versatile enough to accept several ways to set the date:
 	!!pingme at 3h
 	!!pingme in 5 minutes back to work
 	!!pingme 2025/02/23 4h05
-	!!pingme 2019/03/11 6h Christine's birthday
+	!!pingme every year on 11/03 at 6h Christine's birthday
+	!!pingme chaque année le 11/03 à 6h Anniversaire de Christine
+	!!pingme chaque lundi à 20h15 sortir la poubelle verte
+	!!pingme every day at 8h light on the calistalater
 
 It's also possible to list all programed alarms and to cancel one:
 

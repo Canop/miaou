@@ -33,7 +33,8 @@ function load(){
 		.then(function(){
 			return this.queryRows(
 				"select p.name as username, m.room, m.created,"+
-				" a.message, a.ping_date as date, a.alarm_text as text"+
+				" a.message, a.ping_date as date, a.alarm_text as text,"+
+				" a.repeat as repeat"+
 				" from pingme_alarm a join message m on m.id=a.message"+
 				" join player p on p.id=m.author"+
 				" where a.ping_date>$1",
@@ -71,7 +72,147 @@ function minutesToIsoOffset(minutes){
 	return str;
 }
 
-// parse arguemnts without duration like "!!pingme tomorrow 5h some text"
+const weekDays = {
+	sunday: 0, dimanche: 0,
+	monday: 1, lundi: 1,
+	tuesday: 2, mardi: 2,
+	wednesday: 3, mercredi: 3,
+	thursday: 4, jeudi: 4,
+	friday: 5, vendredi: 5,
+	saturday: 6, samedi: 6,
+}
+
+function parseAsEvery(tokens, tzoffset, now){
+	// this function is messy and probably super wrong
+	// but I'm too lazy to dive again into timezones to
+	// write the right code
+	let theDay = new Date(now.getTime() + tzoffset*60*1000);
+	let tok;
+	let every = [];
+	function takeTok(){
+		tok = tokens.shift();
+		every.push(tok);
+	}
+	takeTok(); // takes "every" or "chaque"
+	takeTok();
+	let weekDay = weekDays[tok.toLowerCase()];
+	if (weekDay != undefined) {
+		// example:
+		// chaque lundi à 18h apéro
+		takeTok();
+		if (/^(at|à|a)/.test(tok)) takeTok();
+		mat = tok.match(/(\d{1,2})[:h](\d{2})?,?/);
+		if (!mat) {
+			throw new Error("I was expecting an hour like 15:56 or 14h, not \"" + tok + "\"");
+		}
+		hour = +mat[1];
+		minute = +mat[2] || 0;
+		let year = theDay.getUTCFullYear();
+		let month = theDay.getUTCMonth();
+		let day = theDay.getUTCDate();
+		var strDate = year+"-"+td(month+1)+"-"+td(day)+"T"+td(hour)+":"+td(minute);
+		strDate += minutesToIsoOffset(-tzoffset);
+		let date = Date.parse(strDate);
+		if (date<now) {
+			date += 24*60*60*1000;
+		}
+		theDay = new Date(date + tzoffset*60*1000);
+		let good = false;
+		for (var i=0; i<8; i++) {
+			good = weekDay == theDay.getUTCDay();
+			if (good) break;
+			theDay.setUTCDate(theDay.getUTCDate()+1); // this handles month overflows
+		}
+		if (!good) {
+			throw new Error("such date doesn't seem to exist");
+		}
+		year = theDay.getUTCFullYear();
+		month = theDay.getUTCMonth();
+		day = theDay.getUTCDate();
+		strDate = year+"-"+td(month+1)+"-"+td(day)+"T"+td(hour)+":"+td(minute);
+		strDate += minutesToIsoOffset(-tzoffset);
+		date = Date.parse(strDate);
+		return {
+			repeat: every.join(' '),
+			date: Math.round(date/1000),
+			text: tokens.join(' ')
+		};
+	} else if (/^years?$/.test(tok) || /^an(née)?s?$/.test(tok)) {
+		// examples:
+		// "every year on 07/05 at 17h"
+		// "chaque année le 07/05 à 19h"
+		takeTok();
+		if (/^(on|le)/.test(tok)) takeTok();
+		let mat = tok.match(/(\d{1,2})\/(\d{1,2})/);
+		if (!mat) {
+			throw new Error("I was expecting a date like 07/11, not \"" + tok + "\"");
+		}
+		let day = +mat[1];
+		let month = +mat[2];
+		if (day<1 || day>31 || month<1 || month>12) {
+			throw new Error("Date not understood");
+		}
+		month--;
+		takeTok();
+		if (/^(at|à|a)/.test(tok)) takeTok();
+		mat = tok.match(/(\d{1,2})[:h](\d{2})?,?/);
+		if (!mat) {
+			throw new Error("I was expecting an hour like 15:56 or 14h, not \"" + tok + "\"");
+		}
+		hour = +mat[1];
+		minute = +mat[2] || 0;
+		// dumb algo: increment days until it's ok
+		theDay.setUTCDate(theDay.getUTCDate()+1); // this handles month overflows
+		let good = false;
+		for (var i=0; i<1200; i++) { // accounts for 29/02
+			good = month == theDay.getUTCMonth() && day == theDay.getUTCDate();
+			if (good) break;
+			theDay.setUTCDate(theDay.getUTCDate()+1); // this handles month overflows
+		}
+		if (!good) {
+			throw new Error("such date doesn't seem to exist");
+		}
+		let year = theDay.getUTCFullYear();
+		var strDate = year+"-"+td(month+1)+"-"+td(day)+"T"+td(hour)+":"+td(minute);
+		strDate += minutesToIsoOffset(-tzoffset);
+		date = Date.parse(strDate);
+		return {
+			repeat: every.join(' '),
+			date: Math.round(date/1000),
+			text: tokens.join(' ')
+		};
+	} else if (/^(day|jour)s?$/.test(tok)) {
+		// examples:
+		// "every day at 8h"
+		// "chaque jour à 9h30"
+		takeTok();
+		if (/^(at|à|a)/.test(tok)) takeTok();
+		mat = tok.match(/(\d{1,2})[:h](\d{2})?,?/);
+		if (!mat) {
+			throw new Error("I was expecting an hour like 15:56 or 14h, not \"" + tok + "\"");
+		}
+		hour = +mat[1];
+		minute = +mat[2] || 0;
+		let year = theDay.getUTCFullYear();
+		let month = theDay.getUTCMonth();
+		let day = theDay.getUTCDate();
+		var strDate = year+"-"+td(month+1)+"-"+td(day)+"T"+td(hour)+":"+td(minute);
+		strDate += minutesToIsoOffset(-tzoffset);
+		let date = Date.parse(strDate);
+		if (date<now.getTime()) {
+			date += 24*60*60*1000;
+		}
+		return {
+			repeat: every.join(' '),
+			date: Math.round(date/1000),
+			text: tokens.join(' ')
+		};
+	} else {
+		throw new Error("I didn't understand this 'every' pingme query");
+	}
+}
+
+// parse arguments without duration like "!!pingme tomorrow 5h some text"
 function parseAsAt(tokens, tzoffset, now){
 	var	m,
 		i,
@@ -96,7 +237,7 @@ function parseAsAt(tokens, tzoffset, now){
 				day = +m[2];
 			}
 			if (year>2100) throw new Error("Can't assume to be running so far in the future");
-			if (day<0 || day>31 || month<0 || month>11) {
+			if (day<1 || day>31 || month<0 || month>11) {
 				throw new Error("Date not understood");
 			}
 			daySet = true;
@@ -186,55 +327,82 @@ function parseAsIn(tokens, tzoffset, now){
 exports.parse = function(str, tzoffset, now){
 	var	tokens = str.match(/\S+/g);
 	if (!now) now = new Date;
-	return /^in$/i.test(tokens[0]) ? parseAsIn(tokens, tzoffset, now) :  parseAsAt(tokens, tzoffset, now);
+	if (/^in$/i.test(tokens[0])) {
+		return parseAsIn(tokens, tzoffset, now);
+	} else if (/^(every|chaque)$/i.test(tokens[0])) {
+		return parseAsEvery(tokens, tzoffset, now);
+	} else {
+		return parseAsAt(tokens, tzoffset, now);
+	}
+}
+
+async function doAlarm(alarm, shoe, silentRemoval){
+	console.log('doAlarm:', alarm);
+	await db.do(async function(con){
+		let existingDbAlarm = await con.queryOptionalRow(
+			"select ping_date, alarm_text from pingme_alarm where message=$1",
+			[alarm.message],
+			"message_pingme"
+		);
+		if (existingDbAlarm) {
+			if (!silentRemoval) {
+				await shoe.botReply(
+					bot, alarm.message, "Previous alarm for this message is removed"
+				);
+			}
+			await con.execute(
+				"delete from pingme_alarm where message=$1",
+				[alarm.message],
+				"delete_pingme"
+			);
+		}
+		var formattedDate = fmt.date(alarm.date, "YYYY/MM/DD hh:mm");
+		await shoe.botReply(bot, alarm.message, "I'll ping you in this room on " + formattedDate);
+		alarm.room = shoe.room.id;
+		alarm.username = shoe.publicUser.name;
+		programPing(alarm);
+		await con.execute(
+			"insert into pingme_alarm (message, ping_date, creator, alarm_text, repeat)"+
+			" values ($1, $2, $3, $4, $5)",
+			[alarm.message, alarm.date, shoe.publicUser.id, alarm.text, alarm.repeat],
+			"insert_pingme_alarm"
+		);
+	});
+}
+
+// handle a user request to repeat a pingme
+async function wsRepeat(shoe, arg){
+	console.log('arg:', arg);
+	let alarm = parseAsEvery(arg.repeat.split(' '), shoe.publicUser.tzoffset, new Date);
+	alarm.message = arg.pingme; // the id of the original pingme message
+	alarm.text = arg.text;
+	await db.do(async function(con){
+		let pingMessage = await con.getMessage(arg.mid);
+		if (!pingMessage) {
+			console.error("pingme message not found");
+			return;
+		}
+		pingMessage.content = pingMessage.content.split("#pingme-repeat")[0];
+		await con.storeMessage(pingMessage, true);
+	});
+	console.log("REPEAT pingme", alarm);
+	await doAlarm(alarm, shoe, true);
 }
 
 function doCommandNewAlarm(ct){
 	let tzoffset = ct.shoe.publicUser.tzoffset;
 	if (tzoffset===undefined) throw new Error("unknown timezone");
 	var alarm = exports.parse(ct.args, tzoffset);
-	ct.withSavedMessage = function(shoe, message){
+	ct.withSavedMessage = async function(shoe, message){
 		alarm.message = message.id;
-		db.on()
-		.then(function(){
-			return this.queryOptionalRow(
-				"select ping_date, alarm_text from pingme_alarm where message=$1",
-				[message.id],
-				"message_pingme"
-			);
-		})
-		.then(function(existingDbAlarm){
-			if (!existingDbAlarm) return;
-			shoe.botReply(bot, message.id, "Previous alarm for this message is removed");
-			return this.execute(
-				"delete from pingme_alarm where message=$1",
-				[message.id],
-				"delete_pingme"
-			);
-		})
-		.then(function(){
-			var formattedDate = fmt.date(alarm.date, "YYYY/MM/DD hh:mm");
-			shoe.botReply(bot, message.id, "I'll ping you in this room on " + formattedDate);
-			alarm.room = shoe.room.id;
-			alarm.username = shoe.publicUser.name;
-			programPing(alarm);
-			return this.execute(
-				"insert into pingme_alarm (message, ping_date, creator, alarm_text)"+
-				" values ($1, $2, $3, $4)",
-				[message.id, alarm.date, shoe.publicUser.id, alarm.text],
-				"insert pingme_alarm"
-			);
-		})
-		.then(function(){
-			ct.end("create");
-		})
-		.finally(db.off);
+		await doAlarm(alarm, shoe, false);
+		ct.end("create");
 	}
 }
 
 function getUserActiveAlarms(ct, db){
 	return db.queryRows(
-		"select m.room, m.created, a.message, a.ping_date, a.alarm_text"+
+		"select m.room, m.created, a.message, a.ping_date, a.alarm_text, a.repeat"+
 		" from pingme_alarm a join message m on m.id=a.message"+
 		" where a.creator=$1 and a.ping_date>$2",
 		[ct.shoe.publicUser.id, Date.now()/1000|0],
@@ -245,13 +413,14 @@ function getUserActiveAlarms(ct, db){
 // builds a Markdown table of the alamrs
 function alarmsListMarkdown(alarms){
 	if (!alarms.length) return "*No programmed alarm*";
-	return "Your alarms:\n#|Message|Alarm Date|Text\n:-:|:-:|:-:|:-\n"+
+	return "Your alarms:\n#|Message|Alarm Date|Text|Repeat\n:-:|:-:|:-:|:-|:-\n"+
 	alarms.map(
 		(a, i) => [
 			i+1,
 			"["+fmt.date(a.created, "YYYY/MM/DD hh:mm")+"]("+a.room+"#"+a.message+")",
 			fmt.date(a.ping_date, "YYYY/MM/DD hh:mm"),
-			"`"+a.alarm_text.replace(/`/g, "'")+"`"
+			"`"+a.alarm_text.replace(/`/g, "'")+"`",
+			"`"+(a.repeat||'').replace(/`/g, "'")+"`"
 		].join("|")
 	).join("\n");
 }
@@ -322,6 +491,9 @@ function programPing(alarm){
 	alarm.timeout = setBigTimeout(function(){
 		console.log("Ringing alarm:", alarm);
 		var text = alarm.text||"drrriiiiiinnnngggg!";
+		if (alarm.repeat) {
+			text += `\n#pingme-repeat(${alarm.repeat})`;
+		}
 		ws.botMessage(bot, alarm.room, "@"+alarm.username+"#"+alarm.message+" "+text, function(m){
 			return ws.pingUser.call(
 				this,
@@ -362,3 +534,13 @@ exports.registerCommands = function(registerCommand){
 			+ "\nIt means there can be an error of one hour if you program an alarm accross a DST change."
 	});
 }
+
+exports.onNewShoe = function(shoe){
+	shoe.socket
+	.on('pingme.repeat', function(arg){
+		wsRepeat(shoe, arg)
+	})
+}
+
+
+

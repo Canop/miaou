@@ -418,7 +418,6 @@ function handleUserInRoom(socket, completeUser){
 			if (entry.tzoffset>=-720 && entry.tzoffset<=840) {
 				if (entry.tzoffset != shoe.publicUser.tzoffset) {
 					shoe.publicUser.tzoffset = shoe.completeUser.tzoffset = entry.tzoffset;
-					console.log("new tzoffset", shoe.publicUser);
 					await con.updateUserTzoffset(shoe.publicUser);
 				}
 			} else {
@@ -771,7 +770,7 @@ function handleUserInRoom(socket, completeUser){
 				}
 			}
 			if (commandTask.withSavedMessage && m.id) {
-				commandTask.withSavedMessage(shoe, m);
+				await commandTask.withSavedMessage(shoe, m);
 			}
 			if (!m.id ||!m.content) return;
 			if (m.id>memroom.lastMessageId) {
