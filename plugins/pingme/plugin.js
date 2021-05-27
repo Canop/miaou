@@ -357,8 +357,18 @@ async function doAlarm(alarm, shoe, silentRemoval){
 			);
 		}
 		var formattedDate = fmt.date(alarm.date, "YYYY/MM/DD hh:mm");
-		await shoe.botReply(bot, alarm.message, "I'll ping you in this room on " + formattedDate);
-		alarm.room = shoe.room.id;
+		let content = `@${shoe.publicUser.name}#${alarm.message} I'll ping you on ${formattedDate}`;
+		await ws.botMessage(bot, alarm.room, content);
+		let message = await con.getMessage(alarm.message);
+		if (!message) {
+			console.log("no message found for alarm", alarm);
+			return;
+		}
+		if (message.author != shoe.publicUser.id) {
+			console.log("author mismatch message=", message, "alarm=", alarm);
+			return;
+		}
+		alarm.room = message.room;
 		alarm.username = shoe.publicUser.name;
 		programPing(alarm);
 		await con.execute(
@@ -373,6 +383,10 @@ async function doAlarm(alarm, shoe, silentRemoval){
 // handle a user request to repeat a pingme
 async function wsRepeat(shoe, arg){
 	console.log('arg:', arg);
+	if (!arg.pingme) {
+		console.log("missing pingme in ws repeat command", arg);
+		return;
+	}
 	let alarm = parseAsEvery(arg.repeat.split(' '), shoe.publicUser.tzoffset, new Date);
 	alarm.message = arg.pingme; // the id of the original pingme message
 	alarm.text = arg.text;
@@ -382,9 +396,13 @@ async function wsRepeat(shoe, arg){
 			console.error("pingme message not found");
 			return;
 		}
+		alarm.room = pingMessage.room;
 		pingMessage.content = pingMessage.content.split("#pingme-repeat")[0];
 		await con.storeMessage(pingMessage, true);
 	});
+	if (!alarm.room) {
+		return;
+	}
 	console.log("REPEAT pingme", alarm);
 	await doAlarm(alarm, shoe, true);
 }
@@ -395,6 +413,7 @@ function doCommandNewAlarm(ct){
 	var alarm = exports.parse(ct.args, tzoffset);
 	ct.withSavedMessage = async function(shoe, message){
 		alarm.message = message.id;
+		alarm.room = message.room;
 		await doAlarm(alarm, shoe, false);
 		ct.end("create");
 	}
