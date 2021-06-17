@@ -13,6 +13,9 @@
 	}
 
 	var Tribo = {
+
+		matrix,
+
 		// is the cell playable by p (assuming he's the current player) ?
 		canPlay: function(g, x, y, p){
 			var c = g.cells;

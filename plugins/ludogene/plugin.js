@@ -93,7 +93,7 @@ exports.startGame = function(roomId, type, players, running){
 }
 
 // serializes the game in the message and asynchronously notifies observers
-function storeInMess(m, game){
+function storeInMess(m, game, room){
 	var	saved = {type:game.type, status:game.status, players:game.players},
 		gametype = gametypes[game.type];
 	if (game.scores) saved.scores = game.scores;
@@ -105,7 +105,7 @@ function storeInMess(m, game){
 		// warning : at this point it's still possible the message has no id
 		// we should provide a way for the observer to be notified after the message has been saved
 		gametype.observers.forEach(function(fun){
-			setTimeout(fun, 500, m, game);
+			setTimeout(fun, 500, m, game, room);
 		});
 	}
 }
@@ -127,36 +127,47 @@ function onCommand(ct){
 	if (shoe.room.tags.includes("Tournament")) {
 		throw "You can't propose a game in a Tournament room";
 	}
-	if (otherUserName===shoe.publicUser.name) throw "You can't play against yourself (you would lose anyway)";
+	if (otherUserName===shoe.publicUser.name) {
+		throw "You can't play against yourself (you would lose anyway)";
+	}
 	return this.getUserByName(otherUserName).then(function(otherUser){
 		if (!otherUser) throw "User @"+otherUserName+" not found";
-		storeInMess(m, newGame(gameType, [
-			{name:otherUserName}, // id will be resolved later
-			{id:m.author, name:m.authorname}
-		]));
+		storeInMess(
+			m,
+			newGame(gameType, [
+				{name:otherUserName}, // id will be resolved later
+				{id:m.author, name:m.authorname}
+			]),
+			ct.shoe.room
+		);
 		ct.end();
 	});
 }
 
-function onBotCommand(cmd, args, bot, m){
+async function onBotCommand(cmd, args, bot, m){
 	var	gameType = cmd.name==='game' ? 'Tribo' : cmd.name[0].toUpperCase()+cmd.name.slice(1),
 		match = args.match(/^@(\w[\w_\-\d]{2,})/);
 	if (!match) {
 		console.log("wrong command from a bot", m);
 		return;
 	}
-	storeInMess(m, newGame(gameType, [
-		{name:match[1]}, // id will be resolved later
-		{id:bot.id, name:bot.name}
-	]));
+	let room = await this.fetchRoom(m.room);
+	if (!room) {
+		console.log("no room in onBotCommand");
+	} else {
+		storeInMess(m, newGame(gameType, [
+			{name:match[1]}, // id will be resolved later
+			{id:bot.id, name:bot.name}
+		]), room);
+	}
 }
 
-exports.accept = function(mid, accepter){
+exports.accept = function(mid, accepter, room){
 	dbGetGame(mid).spread(function(m, game){
 		game.players[0].id = accepter.id;
 		game.status = 'running';
 		m.changed = Date.now()/1000|0;
-		storeInMess(m, game);
+		storeInMess(m, game, room);
 		return this.storeMessage(m, true);
 	}).then(function(m){
 		ws.emitToRoom(m.room, 'message', m);
@@ -176,14 +187,14 @@ function pingOpponents(move, game, message){
 	});
 }
 
-exports.move = function(mid, encodedMove){
+exports.move = function(mid, encodedMove, room){
 	dbGetGame(mid).spread(function(m, game){
 		var	gametype = gametypes[game.type],
 			move = gametype.decodeMove(encodedMove);
 		if (gametype.isValid(game, move)) {
 			game.moves += encodedMove;
 			gametype.apply(game, move);
-			storeInMess(m, game);
+			storeInMess(m, game, room);
 			ws.emitToRoom(m.room, 'ludo.move', {mid:m.id, move:move});
 			m.changed = Date.now()/1000|0;
 			rooms.updateMessage(m);
@@ -199,10 +210,10 @@ exports.move = function(mid, encodedMove){
 exports.onNewShoe = function(shoe){
 	shoe.socket
 	.on('ludo.accept', function(arg){
-		exports.accept(arg.mid, shoe.publicUser)
+		exports.accept(arg.mid, shoe.publicUser, shoe.room)
 	})
 	.on('ludo.move', function(arg){
-		exports.move(arg.mid, arg.move)
+		exports.move(arg.mid, arg.move, shoe.room)
 	});
 }
 
@@ -266,7 +277,7 @@ exports.onSendMessage = function(shoe, m, send){
 				console.log("re-observing game ", m.id);
 				gametype.restore(g);
 				gametype.observers.forEach(function(fun){
-					setTimeout(fun, 200, m, g);
+					setTimeout(fun, 200, m, g, shoe.room);
 				});
 			}
 		}
