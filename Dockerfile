@@ -1,29 +1,21 @@
 #
 # Dockerfile for Miaou application
 #
-# The docker solution isn't really maintained. Ping us on miaou.dystroy.org
-#  if you need it and we'll resurect it
 
-# Based on docker official node image
-FROM node
+FROM node:10
 
-# Install "nodemon" and "buster" globally
-USER node
-RUN mkdir ~/.npm-global
-ENV NPM_CONFIG_PREFIX ~/.npm-global
-
-# Setup workspace
 USER root
 RUN mkdir -p /var/www/miaou
 WORKDIR /var/www/miaou
 
 # NPM install (this is done before copying the whole application, in order to be cached)
 COPY package.json /var/www/miaou/
-RUN npm install
+RUN yarn add gulp
+RUN yarn
 
 # Copy and build application
 COPY . /var/www/miaou/
-RUN npm run build
+RUN yarn run gulp build
 
 # Define exposable ports
 EXPOSE 8204

@@ -53,7 +53,7 @@
     "del": "^4.1.0",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
-    "gulp-concat": ">=2.6.0",
+    "gulp-concat": ">=2.6.1",
     "gulp-debug": "^4.0.0",
     "gulp-eslint": ">=5.0.0",
     "gulp-if": ">=2.0.0",
