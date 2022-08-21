@@ -61,18 +61,30 @@ miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 		$('#auths').hide();
 	}
 
-	var righttab = window.righttab = function(page){
+	var righttab = window.righttab = function(page, createIfNotExists){
+		console.log('rigttab page:', page);
+		let $page = $(document.getElementById(page));
+		if (!$page.length) {
+			if (!createIfNotExists) return;
+			$page = $("<div>").addClass("page").attr("id", page).appendTo("#right");
+			$("<span>").addClass("tab").attr("page", page).text(page)
+			.click(function(){
+				righttab(page)
+			})
+			.appendTo("#right .tabs");
+		}
 		$('#right .tab').removeClass('selected');
 		$('#right .tab[page='+page+']').addClass('selected');
 		$('.page').removeClass('selected');
-		$('#'+page).addClass('selected');
+		$page.addClass('selected');
 		if (page==="search") {
 			miaou.hist.open();
 			$('#search-input').focus();
-		} else if (page==="notablemessagespage") {
+		} else {
 			miaou.hist.close();
 		}
 		miaou.md.resizeAll();
+		return $page;
 	}
 	$('#right .tab').click(function(){
 		righttab($(this).attr('page'));

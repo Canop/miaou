@@ -82,6 +82,7 @@ const weekDays = {
 	saturday: 6, samedi: 6,
 }
 
+// parse repeatable pingmes like "every day at 15h"
 function parseAsEvery(tokens, tzoffset, now){
 	// this function is messy and probably super wrong
 	// but I'm too lazy to dive again into timezones to
@@ -142,7 +143,7 @@ function parseAsEvery(tokens, tzoffset, now){
 		// "every year on 07/05 at 17h"
 		// "chaque année le 07/05 à 19h"
 		takeTok();
-		if (/^(on|le)/.test(tok)) takeTok();
+		if (/^(on|le|the)/.test(tok)) takeTok();
 		let mat = tok.match(/(\d{1,2})\/(\d{1,2})/);
 		if (!mat) {
 			throw new Error("I was expecting a date like 07/11, not \"" + tok + "\"");
@@ -173,6 +174,45 @@ function parseAsEvery(tokens, tzoffset, now){
 			throw new Error("such date doesn't seem to exist");
 		}
 		let year = theDay.getUTCFullYear();
+		var strDate = year+"-"+td(month+1)+"-"+td(day)+"T"+td(hour)+":"+td(minute);
+		strDate += minutesToIsoOffset(-tzoffset);
+		date = Date.parse(strDate);
+		return {
+			repeat: every.join(' '),
+			date: Math.round(date/1000),
+			text: tokens.join(' ')
+		};
+	} else if (/^month?$/.test(tok) || /^mois$/.test(tok)) {
+		// examples:
+		// "every month on 07 at 17h"
+		// "chaque mois le 07 à 19h"
+		takeTok();
+		if (/^(on|le|the)/.test(tok)) takeTok();
+		let day = + tok;
+		if (!day || day<1 || day>31) {
+			throw new Error("Day not understood");
+		}
+		takeTok();
+		if (/^(at|à|a)/.test(tok)) takeTok();
+		mat = tok.match(/(\d{1,2})[:h](\d{2})?,?/);
+		if (!mat) {
+			throw new Error("I was expecting an hour like 15:56 or 14h, not \"" + tok + "\"");
+		}
+		hour = +mat[1];
+		minute = +mat[2] || 0;
+		// dumb algo: increment days until it's ok
+		theDay.setUTCDate(theDay.getUTCDate()+1); // this handles month overflows
+		let good = false;
+		for (var i=0; i<33; i++) {
+			good = day == theDay.getUTCDate();
+			if (good) break;
+			theDay.setUTCDate(theDay.getUTCDate()+1); // this handles month overflows
+		}
+		if (!good) {
+			throw new Error("such date doesn't seem to exist");
+		}
+		let year = theDay.getUTCFullYear();
+		let month = theDay.getUTCMonth();
 		var strDate = year+"-"+td(month+1)+"-"+td(day)+"T"+td(hour)+":"+td(minute);
 		strDate += minutesToIsoOffset(-tzoffset);
 		date = Date.parse(strDate);

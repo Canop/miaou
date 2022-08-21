@@ -23,7 +23,7 @@ miaou(function(chat, locals){
 		if (page==="search") {
 			miaou.hist.open();
 			$('#search-input').focus();
-		} else if (page==="notablemessagespage") {
+		} else {
 			miaou.hist.close();
 		}
 		miaou.md.resizeAll();
@@ -40,6 +40,20 @@ miaou(function(chat, locals){
 		$('#upload-panel').hide();
 		$('#input-panel').show();
 	});
+
+	// return a tab page container
+	// Create the tab if necessary
+	// (dedicated to plugins)
+	// warning: page will be used as a dom element id
+	chat.showTab = function(page){
+		let $page = $(document.getElementById(page));
+		if (!$page.length) {
+			$("#right .tabs").append($("<span>").addClass("tab").attr("page", page).text(page));
+			$page = $("<div>").attr("id", page).appendTo("#right");
+		}
+		tab(page); // select the tab
+		return $page;
+	};
 
 	$(window).on('keydown', function(e){
 		if (e.which===70 && e.ctrlKey && !e.altKey) {
