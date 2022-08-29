@@ -1300,10 +1300,14 @@ function now(){
 }
 
 function logQuery(sql, args){ // used in debug
-	console.log(sql.replace(/\$(\d+)/g, function(_, i){
-		var s=args[i-1];
-		return typeof s==="string" ? "'"+s+"'" : s
-	}));
+	try {
+		console.log(sql.replace(/\$(\d+)/g, function(_, i){
+			var s=args[i-1];
+			return typeof s==="string" ? "'"+s+"'" : s
+		}));
+	} catch (e) {
+		console.log("sql:", sql);
+	}
 }
 
 // concatenate the conditions to the base query, ensuring the proper numbering

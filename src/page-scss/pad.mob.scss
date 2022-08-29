@@ -93,6 +93,20 @@ $input-height: 50px;
 	display: none;
 	color: white;
 }
+.mpad-standard-page {
+	z-index: 21;
+	margin: 0 -2px;
+	position: fixed;
+	background: $mpad-room-bg;
+	box-shadow: 0 2px 2px rgba(0,0,0,.8);
+	top: $tabs-height - 1px;
+	left: 0;
+	right: 0;
+	max-height: calc(100% - #{$tabs-height} - 20px);
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+}
 #mpad-page-room {
 	z-index: 21;
 	margin: 0 -2px;

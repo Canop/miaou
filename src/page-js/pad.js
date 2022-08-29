@@ -62,7 +62,6 @@ miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 	}
 
 	var righttab = window.righttab = function(page, createIfNotExists){
-		console.log('rigttab page:', page);
 		let $page = $(document.getElementById(page));
 		if (!$page.length) {
 			if (!createIfNotExists) return;

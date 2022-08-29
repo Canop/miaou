@@ -56,6 +56,24 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 	}
 	$('#notable-messages,#search-results').on('click', '.message', chat.closeAllTabs);
 
+	window.righttab = function(page, createIfNotExists){ // for plugins
+		console.log("righttab", page);
+		let tab = tabs[page];
+		console.log('tab:', tab);
+		if (!tab) {
+			if (!createIfNotExists) return;
+			$(`<div id="mpad-tab-${page}">`).addClass("mpad-tab")
+			.append(
+				$("<div>").addClass("mpad-tab-label mpad-icon").text(page)
+			)
+			.appendTo("#mpad-top-tabs");
+			$(`<div id="mpad-page-${page}">`).addClass("mpad-page mpad-standard-page").appendTo("body");
+			tab = tabs[page] = new Tab(page);
+			console.log('created tab:', tab);
+		}
+		return tab.$page;
+	}
+
 	// "search" tab
 	tabs["search"].open = function(cb){
 		Tabs.open.call(this, cb);
