@@ -98,12 +98,4 @@ miaou(function(links, gui, locals, md, roomFinder, skin, usr){
 		return miaou.root + locals.room.path + '#' + message.id;
 	}
 
-	// protects against opener attacks (see https://mathiasbynens.github.io/rel-noopener/)
-	$(document.body).on("click", "a[target]", function(){
-		var w = window.open();
-		w.opener = null;
-		w.location = this.getAttribute('href');
-		return false;
-	});
-
 });

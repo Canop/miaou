@@ -34,12 +34,12 @@ miaou(function(chat, locals, prof){
 			return false; // prevent message buttons
 		}
 	});
-	// profile closing
-	$(document.body).click(function(){
-		if (prof.displayed()) {
-			prof.hide();
-		}
-	});
+	//// profile closing
+	//$(document.body).click(function(){
+	//	if (prof.displayed()) {
+	//		prof.hide();
+	//	}
+	//});
 
 	chat.start();
 });

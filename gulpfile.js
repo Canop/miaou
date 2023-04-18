@@ -101,7 +101,7 @@ gulp.task("server-js", ()=>
 			"linebreak-style": [ 2, "unix" ],
 			"no-eval": 2,
 			"max-len": [2, {
-				"code": 120,
+				"code": 140,
 				// "ignoreRegExpLiterals": true
 				//"ignorePattern": "^\\s*(var )?\\w+ = \\/.*\\/\\w*(,|;)$" // regex declarations
 			}],
@@ -129,7 +129,7 @@ gulp.task("server-js", ()=>
 				"keywords": "always",
 				classes: "never"
 			}],
-			"no-lonely-if": 2,
+			//"no-lonely-if": 2,
 		}
 	}))
 	.pipe(eslint.format())

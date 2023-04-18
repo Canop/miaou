@@ -240,14 +240,13 @@ body.desktop #rooms-page {
 }
 
 #right #room-area {
-	flex: 0 0 auto;
+	flex: 0 40 350px;
 	position: relative;
 	background-size: cover;
 	background-position: center center;
 	-webkit-mask-image: linear-gradient(black, black, transparent);
 	mask-image: linear-gradient(black, black, transparent);
 	margin-bottom: 15px;
-	height: 90px;
 	transition: all .5s .9s;
 	display: flex;
 	flex-direction: column;
@@ -274,7 +273,6 @@ body.desktop #rooms-page {
 	}
 }
 #right #room-area:hover {
-	height: 350px;
 	transition: all .5s;
 	#room-controls {
 		height: 30px;

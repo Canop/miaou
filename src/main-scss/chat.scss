@@ -1337,6 +1337,9 @@ body.mobile {
 		color: transparentize($title-text-color, 0.5);
 		cursor: pointer;
 		font-weight: bold;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		&:hover {
 			color: transparentize($title-text-color, 0.2);
 		}
