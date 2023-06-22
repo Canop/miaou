@@ -2,7 +2,7 @@
 
 miaou(function(horn, gui, locals, md, prefs){
 
-	var sounds = {
+	let sounds = {
 		standard: 'ping-standard.wav'
 	};
 	var audio;

@@ -12,6 +12,18 @@ function asCode(description){
 }
 
 function doCommand(ct){
+	if (!ct.args) {
+		// listing all tags
+		return this.listTags().then(tags=>{
+			ct.reply(
+				"All tags:\n" +
+				tags
+					.map(tag=>`[tag:${tag.name}]`)
+					.join('\n')
+			);
+			ct.end();
+		});
+	}
 	var m = ct.args.match(/^\s*(delete )?([A-Za-zÀ-ÿ0-9-]{3,50})$/);
 	if (!m) throw new Error("invalid command call or invalid tag");
 	var isDelete = !!m[1];

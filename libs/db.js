@@ -405,6 +405,14 @@ proto.searchTags = function(pattern){
 	);
 }
 
+proto.listTags = function(pattern){
+	return this.queryRows(
+		"select name, description from tag",
+		[],
+		"list_tags"
+	);
+}
+
 proto.setRoomTags = function(roomId, tags){
 	var	values = [],
 		args = [],
