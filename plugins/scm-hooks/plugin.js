@@ -8,6 +8,7 @@
 // }
 
 const	providers = [require("./github.js").provider],
+	test = require("./test.js"),
 	path = require('path');
 
 var	config,
@@ -127,6 +128,15 @@ async function onCommand(ct, provider){
 	if ((m=ct.args.match(/^watch (?:https?:\/\/github\.com\/)?([\w-]+\/[\w-.]+)/))) {
 		ct.shoe.checkAuth("admin");
 		await watchRepo.call(this, ct, provider, m[1]);
+	} else if ((m=ct.args.match(/^simulate (.*)/))) {
+		ct.shoe.checkAuth("admin");
+		let req = test.simulate.call(this, ct, provider, m[1]);
+		if (req) {
+			if (!req.query) {
+				req.query = { room: ""+ct.shoe.room.id };
+			}
+			scmCalling(provider, req);
+		}
 	} else if ((m=ct.args.match(/^unwatch (?:https?:\/\/github\.com\/)?([\w-]+\/[\w-.]+)/))) {
 		ct.shoe.checkAuth("admin");
 		await unwatchRepo.call(this, ct, provider, m[1]);
@@ -151,7 +161,11 @@ function scmCalling(provider, req, res){
 		console.log("ERROR WHILE ANALYZING HOOK MESSAGE:", e);
 		return res.status(400).send('Hu?');
 	}
-	res.send('Okey');
+	if (!anal) {
+		console.log("scmCalling - nothing to do");
+		return;
+	}
+	if (res) res.send('Okey');
 	db.on()
 	.then(function(){
 		return this.execute(
@@ -178,6 +192,7 @@ function scmCalling(provider, req, res){
 		);
 	})
 	.then(function(rows){
+		let con = this;
 		if (!anal.content) {
 			console.log("empty message not sent");
 			return;
@@ -187,7 +202,10 @@ function scmCalling(provider, req, res){
 				console.log("Not in white list:", row.room);
 				return;
 			}
-			ws.botMessage(provider.bot, row.room, anal.content);
+			return ws.botSendMessage(con, provider.bot, row.room, anal.content, anal.messageId)
+				.then(message=> {
+					if (anal.cb) anal.cb(message);
+				});
 		});
 	})
 	.finally(db.off);

@@ -1,18 +1,28 @@
 
+const fmt = require("../../libs/fmt.js");
+
 // return {
+// 	messageId: optional id of a message to edit (instead of creating a new one)
 // 	repo: name of the repo (exemple: "Canop/miaou")
 // 	content: content (markdown) of the message to send to the room, null if no message must be sent
+// 	cb: an optional callback which will be called with the sent message
 // }
 // throw an exception in case of bad data
 function analyzeIncomingData(headers, data){
 	if (!data.repository) {
 		throw new Error('bad github request');
 	}
-	return {
-		repo: data.repository.full_name,
-		content: eventToMarkdown(headers['x-github-event'], data)
-	};
+	let message = eventToMessage(headers['x-github-event'], data);
+	if (message) {
+		message.repo = data.repository.full_name;
+	}
+	return message;
 }
+
+const REUSE_DURATION = 5*60*1000; // in ms
+
+// A map {repo, {created, starrers, messageId}}, which makes it possible to reuse messages
+const starrings = new Map;
 
 function detailedHelp(config){
 	return "In order to receive in a Miaou room all events related to a GitHub repository, you must\n"
@@ -56,19 +66,21 @@ function pushComment(arr, comment){
 	}));
 }
 
-// Builds the markdown from the received data
+// Build {messageId, content}
 // Not (yet) done:
 //  - https://developer.github.com/v3/activity/events/types/#deploymentevent
 //  - https://developer.github.com/v3/activity/events/types/#deploymentstatusevent
 //  - https://developer.github.com/v3/activity/events/types/#memberevent
 //  - https://developer.github.com/v3/activity/events/types/#publicevent
 //  - https://developer.github.com/v3/activity/events/types/#statusevent
-function eventToMarkdown(event, data){
+function eventToMessage(event, data){
 	var	repo = data.repository,
 		big = [],
 		small = [];
 	if (event==='watch' && data.sender) {
-		small.push('★ ' + link(data.sender) + " starred " + link(repo));
+		let sender = data.sender;
+		sender = sender.name || sender.login;
+		return starEventToMessage(sender, repo);
 	}
 	if (data.pusher) { // event: push
 		big.push(link(data.pusher) + " pushed in " + link(repo));
@@ -126,8 +138,46 @@ function eventToMarkdown(event, data){
 					c.message.split('\n', 1)[0]+'|\n';
 			}).join(''));
 	}
-	return big.map(t => "**"+t+"**\n")
-	+ small.join('\n');
+	return {
+		content: big.map(t => "**"+t+"**\n") + small.join('\n')
+	};
+}
+
+// Build {messageId, content} for the case the event is a star ('watch')
+function starEventToMessage(starrer, repo){
+	let now = (new Date).getTime();
+	let starrers;
+	let messageId;
+	let cb;
+	let key = repo.full_name;
+	let starring = starrings.get(key);
+	if (starring && starring.created+REUSE_DURATION>now) {
+		if (starring.starrers.includes(starrer)) {
+			console.log("duplicated star");
+			return;
+		}
+		starring.starrers.push(starrer);
+		starrers = starring.starrers;
+		messageId = starring.messageId;
+	} else {
+		starrers = [starrer];
+		starring = {
+			created: now,
+			repo,
+			starrers,
+		};
+		cb = function(message){
+			starring.messageId = message.id;
+			starrings.set(key, starring);
+		};
+	}
+	let content = '★ ' + fmt.oxford(starrers.map(name => link({name}))) + " starred " + link(repo);
+	let o = {
+		messageId,
+		content,
+		cb,
+	};
+	return o;
 }
 
 exports.provider = {
