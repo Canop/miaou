@@ -207,11 +207,13 @@ exports.botMessage = function(bot, roomId, content, cb){
 
 // to be used by bot, store a message in DB, sends it. Doesn't ping users.
 // There's no delay.
+// If an id is provided, the message is updated, otherwise it's a new message.
 // Asynchronously returns the sent message (with id).
-exports.botSendMessage = async function(con, bot, roomId, content){
+exports.botSendMessage = async function(con, bot, roomId, content, messageId){
 	if (!roomId) throw new Error("missing room Id");
 	if (!bot) bot = miaou.bot;
 	var message = {content, author:bot.id, authorname:bot.name, room:roomId, created:Date.now()/1000|0};
+	if (messageId) message.id = +messageId;
 	await commands.onBotMessage.call(con, bot, message);
 	message = await con.storeMessage(message);
 	message.authorname = bot.name;
@@ -222,9 +224,11 @@ exports.botSendMessage = async function(con, bot, roomId, content){
 	pageBoxer.onSendMessage(con, message, function(t, c){
 		emitToRoom(roomId, t, c);
 	});
-	var memroom = rooms.mem.call(con, roomId);
-	if (!(message.id<=memroom.lastMessageId)) {
-		memroom.lastMessageId = message.id;
+	if (!messageId) {
+		var memroom = rooms.mem.call(con, roomId);
+		if (!(message.id<=memroom.lastMessageId)) {
+			memroom.lastMessageId = message.id;
+		}
 	}
 	emitToRoom(roomId, 'message', message);
 	if (message.id) {
