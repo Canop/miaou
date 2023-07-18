@@ -19,7 +19,7 @@ function analyzeIncomingData(headers, data){
 	return message;
 }
 
-const REUSE_DURATION = 5*60*1000; // in ms
+const REUSE_DURATION = 24*60*60*1000; // in ms
 
 // A map {repo, {created, starrers, messageId}}, which makes it possible to reuse messages
 const starrings = new Map;
