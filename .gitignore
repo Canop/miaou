@@ -10,6 +10,7 @@ deploy.sh
 autopgbackup.sh
 config-dystroy.json
 config-dystroy.js
+pgbackup.sh
 
 # personal notes & work files
 notes.dev
@@ -19,18 +20,19 @@ pub
 graphics/*.png
 
 # imported plugins
-plugins/miaou.bot
-plugins/mountyhall
 plugins/fireworks
-plugins/snow
-plugins/miaou.static-user-list
 plugins/local-dev
-plugins/ufo
 plugins/localbot/ 
 plugins/mastodon/ 
+plugins/miaou.bot
+plugins/miaou.gpt
+plugins/miaou.static-user-list
+plugins/mountyhall
 plugins/mountypedia/ 
 plugins/sample-view/ 
 plugins/sciz/ 
+plugins/snow
+plugins/ufo
 
 # imported plugins stuff
 roulette-*

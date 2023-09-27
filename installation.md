@@ -20,6 +20,10 @@ You probably already have them if you coded on that computer. Basically you'll n
 
 There are various valid ways to install them. Be sure to install a recent version of node. Versions lower than 11 aren't compatible with Miaou.
 
+## Note:
+
+The current version of miaou's build chain isn't compatible with node 13+
+
 # gulp cli
 
 	npm install -g gulp-cli
