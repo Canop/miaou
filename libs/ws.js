@@ -231,7 +231,7 @@ exports.botSendMessage = async function(con, bot, roomId, content, messageId){
 		}
 	}
 	emitToRoom(roomId, 'message', message);
-	if (message.id) {
+	if (message.id && !messageId) {
 		io.sockets.in('w'+roomId).emit('watch_incr', {r:roomId, m:message.id, f:message.author});
 	}
 	return message;

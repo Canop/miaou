@@ -84,6 +84,7 @@ miaou(function(watch, chat, fish, gui, locals, md, notif, prefs, usr, ws){
 		updateDimensions();
 	}
 
+	// called when there's a new or updated message in a watched room
 	watch.incr = function(incr){
 		if (incr.f===locals.me.id) {
 			console.log("dismissing watch increment from self");
