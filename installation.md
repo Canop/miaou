@@ -118,6 +118,8 @@ First create the DB and user, and grant the rights.
 	CREATE ROLE
 	postgres=# grant all privileges on database "miaou" to miaou;
 	GRANT
+	postgres=# alter database miaou owner to miaou;
+	ALTER DATABASE
 	postgres=# SHOW hba_file;
 				   hba_file
 	--------------------------------------
