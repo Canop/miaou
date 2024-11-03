@@ -18,15 +18,11 @@ You probably already have them if you coded on that computer. Basically you'll n
 
 # node & npm
 
-There are various valid ways to install them. Be sure to install a recent version of node. Versions lower than 11 aren't compatible with Miaou.
+There are various valid ways to install them. Be sure to install a recent version of node (tested on node 22).
 
-## Note:
+# miaou-builder
 
-The current version of miaou's build chain isn't compatible with node 13+
-
-# gulp cli
-
-	npm install -g gulp-cli
+	cargo install miaou-builder
 
 # redis
 
@@ -70,19 +66,13 @@ When you'll want to update Miaou later, you'll do
 
 ## Build Miaou
 
-To build the application, run
+To build the application, first set the env variable `MIAOU_ROOT` then run
 
-	gulp
+	miaou-builder all
 
-If you want a continuous build of the client side files, in order to test while you code, do
+## Continuous watch
 
-	gulp watch
-
-## Test
-
-You only need to do it when you change the source code.
-
-	./test.sh
+[WIP]
 
 ## Fill the configuration
 

@@ -1,5 +1,9 @@
 "use strict";
 
+// This gulpfile is now obsolete: it uses gulp 3 and the gulp-uglify plugin which are deprecated.
+// The new way to build Miaou is to use the miaou-builder program
+// (https://github.com/Canop/miaou-builder).
+
 let	gulp = require("gulp"),
 	fs = require("fs"),
 	concat = require("gulp-concat"),
