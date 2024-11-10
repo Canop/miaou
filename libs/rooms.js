@@ -201,7 +201,6 @@ exports.appGetRooms = function(req, res){
 				langs: langs.legal,
 				mobile,
 				prefDefinitions: prefs.getDefinitions(),
-				me: req.user,
 				welcomeRooms,
 				userGlobalPrefs,
 				watches,

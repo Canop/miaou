@@ -702,7 +702,7 @@ function handleUserInRoom(socket, completeUser){
 			let error = onReceiveMessagePlugins[i].onReceiveMessage(shoe, m);
 			if (error) {
 				shoe.error(error, m.content);
-				return;d
+				return;
 			}
 		}
 
@@ -760,8 +760,6 @@ function handleUserInRoom(socket, completeUser){
 			send('message', m);
 			if (commandTask.replyContent) {
 				let txt = commandTask.replyContent;
-				if (m.id) {
-				}
 				let repl = "@" + m.authorname;
 				if (m.id) repl += "#" + m.id;
 				let sep = /^[#\s*-]/.test(txt) ? "\n" : " "; // let's not break title, code, etc.

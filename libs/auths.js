@@ -68,6 +68,7 @@ exports.appGetAuths = function(req, res){
 		try {
 			room = await con.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
 		} catch (err) {
+			console.error(err);
 			return server.renderErr(req, res, "room not found");
 		}
 		room.path = server.roomPath(room);
@@ -104,6 +105,7 @@ exports.appPostAuths = function(req, res){
 		try {
 			room = await con.fetchRoomAndUserAuth(+req.query.id, +req.user.id);
 		} catch (err) {
+			console.error(err);
 			return server.renderErr(req, res, "room not found");
 		}
 		room.path = room.id+'?'+naming.toUrlDecoration(room.name);

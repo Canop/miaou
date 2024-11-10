@@ -28,7 +28,7 @@ exports.filter = function(req, res, next){
 	if (!session.secret) session.secret = (Math.random()*Math.pow(36, 5)|0).toString(36);
 	if (req.method==='POST' && !whitemap.has(req.path)) {
 		if (!req.headers.referer) return fail(res);
-		var refererHostMatch = req.headers.referer.match(/^https?:\/\/([^\/\:]+)/);
+		var refererHostMatch = req.headers.referer.match(/^https?:\/\/([^/:]+)/);
 		if (!refererHostMatch) return fail(res);
 		var refererHost = refererHostMatch[1];
 		if (req.body.secret!==session.secret || refererHost!=req.hostname) {

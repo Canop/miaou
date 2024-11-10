@@ -1,0 +1,13 @@
+# This is a configuration file for the bacon tool
+#
+# Complete help on configuration: https://dystroy.org/bacon/config/
+
+default_job = "eslint-server"
+
+[jobs.eslint-server]
+command = ["npx", "eslint", "--color", "libs/*"]
+need_stdout = true
+analyzer = "eslint"
+watch = ["libs"]
+
+[keybindings]

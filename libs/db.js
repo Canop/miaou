@@ -405,7 +405,7 @@ proto.searchTags = function(pattern){
 	);
 }
 
-proto.listTags = function(pattern){
+proto.listTags = function(){
 	return this.queryRows(
 		"select name, description from tag",
 		[],
@@ -781,11 +781,11 @@ proto._searchConditions = function(s, args, cons){
 	}
 	if (s.img) {
 		psname += "_img";
-		cons.push(`content ~* '(^|\\n)\\s*(https?:\/\/[^\\s<>"]+\/[^\\s<>"]+)\\.(png|webp|gif|jpe?g|svg)(?:\\?[^\\s]*)?\\s*($|\\n)'`);
+		cons.push(`content ~* '(^|\\n)\\s*(https?://[^\\s<>"]+\/[^\\s<>"]+)\\.(png|webp|gif|jpe?g|svg)(?:\\?[^\\s]*)?\\s*($|\\n)'`);
 	}
 	if (s.link) {
 		psname += "_link";
-		cons.push(`content ~* 'https?:\/\/(?!i\\.imgur|dystroy\\.org)\\w+'`);
+		cons.push(`content ~* 'https?://(?!i\\.imgur|dystroy\\.org)\\w+'`);
 		// FIXME don't use hardcoded domains here (to allow not using imgur and for
 		// Miaou installation not on dystroy.org)
 	}
