@@ -1,7 +1,7 @@
 
 miaou(function(locals, prefs, usr){
 
-	var	valid = locals.valid,
+	let	valid = locals.valid,
 		langs = locals.langs,
 		userinfo = locals.userinfo,
 		userPrefs = locals.userPrefs,
@@ -14,21 +14,21 @@ miaou(function(locals, prefs, usr){
 	miaou.horn.init();
 
 	function getPrefDefinition(key){
-		for (var def of locals.prefDefinitions) {
+		for (let def of locals.prefDefinitions) {
 			if (def.key===key) return def;
 		}
 	}
 
-	var localPrefs = prefs.allLocalPrefs();
+	let localPrefs = prefs.allLocalPrefs();
 	console.log('localPrefs:', localPrefs);
 
 	$("tr[data-pref]").each(function(){
-		var key = $(this).data("pref");
-		var def = getPrefDefinition(key);
+		let key = $(this).data("pref");
+		let def = getPrefDefinition(key);
 		console.log('def:', def);
 		$("<th>").text(def.name).prependTo(this);
 		// we allow the preexistence of some content in the tr/td
-		var $td = $("td", this);
+		let $td = $("td", this);
 		if (!$td.length) $td = $("<td>").appendTo(this);
 		if (localPrefs[def.key]) {
 			$("<span class=pref-help-note>")
@@ -42,13 +42,13 @@ miaou(function(locals, prefs, usr){
 	});
 
 	function selectTab(i){
-		if (typeof i === "string" && i!=+i) {
-			var tabs = $(".home-tab").map(function(){ return $(this).text().toLowerCase(); }).get();
+		if (typeof i === "string" && i!==+i) {
+			let tabs = $(".home-tab").map(function(){ return $(this).text().toLowerCase(); }).get();
 			i = tabs.indexOf(i.toLowerCase());
 			if (i<0) return;
 		}
 		$('.home-tab').removeClass('selected').filter(':nth-child('+(i+1)+')').addClass('selected');
-		var $container = $('#prefs-main-content');
+		let $container = $('#prefs-main-content');
 		$container.find('.home-page').removeClass('selected').eq(i).addClass('selected');
 		if ($(window).scrollTop()>tabletop) $(window).scrollTop(tabletop);
 	}
@@ -58,12 +58,12 @@ miaou(function(locals, prefs, usr){
 		selectTab($(this).index());
 	});
 	$('#logout').click(function(){
-		delete localStorage['successfulLoginLastTime'];
-		setTimeout(function(){ location = 'logout' }, 100);
+		localStorage.removeItem('successfulLoginLastTime');
+		setTimeout(function(){ document.location = 'logout' }, 100);
 	});
 
-	for (var key in langs) {
-		var lang = langs[key];
+	for (let key in langs) {
+		let lang = langs[key];
 		$('#lang').append($('<option>').attr('value', key).text(lang.name));
 	}
 	$('#name').keyup(function(){
@@ -88,7 +88,7 @@ miaou(function(locals, prefs, usr){
 
 	// preferences
 	Object.keys(userPrefs).forEach(function(key){
-		var $input = $('#'+key);
+		let $input = $('#'+key);
 		if ($input.length) {
 			$input.val(userPrefs[key]);
 		} else {
@@ -99,7 +99,7 @@ miaou(function(locals, prefs, usr){
 	});
 
 	$("#avatar-fields").on("click", "#gravatar-compute-hash", function(){
-		var email = $("#gravatar-email").val().trim();
+		let email = $("#gravatar-email").val().trim();
 		if (!email) {
 			alert("you must give an email");
 		} else {
@@ -111,7 +111,7 @@ miaou(function(locals, prefs, usr){
 	});
 
 	// Avatar preferences management
-	var avatarSources = {
+	let avatarSources = {
 		gravatar:{
 			keyLabel: 'hash',
 			description: 'Gravatar is a free service'+
@@ -143,14 +143,14 @@ miaou(function(locals, prefs, usr){
 	}
 
 	function avatarTry(){
-		var	srcname = $('#avatar-src').val(),
+		let	srcname = $('#avatar-src').val(),
 			src = avatarSources[srcname],
 			key = $('#avatar-key').val().trim() || src.key ;
 		if (key.length<1) {
 			$('#avatar-preview').empty();
 			return;
 		}
-		var url = usr.avatarsrc({
+		let url = usr.avatarsrc({
 			avs: srcname, avk: key
 		});
 		$('#avatar-preview').empty();
@@ -165,7 +165,7 @@ miaou(function(locals, prefs, usr){
 
 	function onchangeAvatarSrc(){
 		$('#avatar-preview').empty();
-		var src = avatarSources[$('#avatar-src').val()];
+		let src = avatarSources[$('#avatar-src').val()];
 		if (src) {
 			if (src.keyLabel) {
 				$('#avatar-key-label').html(src.keyLabel+':');
@@ -191,7 +191,7 @@ miaou(function(locals, prefs, usr){
 	if (locals.avatarsrc) {
 		$('#avatar-src').val(locals.avatarsrc);
 		$('#avatar-key').val(locals.avatarkey);
-		var src = avatarSources[locals.avatarsrc];
+		let src = avatarSources[locals.avatarsrc];
 		if (src.keyLabel) {
 			src.key = locals.avatarkey;
 			$('#avatar-key-label').html(src.keyLabel+':');
@@ -214,15 +214,15 @@ miaou(function(locals, prefs, usr){
 
 	if (!valid) $('#close').hide();
 
-	var roomMatch = location.href.match(/(\?|&)room=(\d+)/);
+	let roomMatch = location.href.match(/(\?|&)room=(\d+)/);
 	if (roomMatch) {
 		$('#close').text("Back to room").click(function(){
-			location=roomMatch[2];
+			document.location=roomMatch[2];
 			return false;
 		});
 	} else {
 		$('#close').click(function(){
-			location='rooms';
+			document.location='rooms';
 			return false;
 		});
 	}

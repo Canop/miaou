@@ -1,9 +1,9 @@
 miaou(function(chat, locals){
-	var	me = locals.me,
-		room = locals.room;
+	let	me = locals.me;
+	let room = locals.room;
 
 	if (room) window.name = 'room_'+room.id;
-	else location = 'rooms';
+	else document.location = 'rooms';
 	if (room.private) {
 		$('#roomname').addClass('private').attr('title', 'This room is private');
 	}

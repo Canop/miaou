@@ -1,35 +1,35 @@
 
 miaou(function(locals, notif, roomFinder){
 
-	var	langs = locals.langs,
-		loginRoom = localStorage['login.room'];
+	let	langs = locals.langs,
+		loginRoom = localStorage.getItem('login.room');
 
 	if (loginRoom) {
-		delete localStorage['login.room'];
-		location = loginRoom;
+		localStorage.removeItem('login.room');
+		document.location = loginRoom;
 	}
-	delete localStorage['room'];
+	localStorage.removeItem('room');
 
 	function roomWatch(roomId){
-		for (var i=0; i<locals.watches.length; i++) {
+		for (let i=0; i<locals.watches.length; i++) {
 			if (locals.watches[i].id===roomId) return locals.watches[i];
 		}
 	}
 
 	function hasPing(roomId){
-		for (var i=0; i<locals.pings.length; i++) {
+		for (let i=0; i<locals.pings.length; i++) {
 			if (locals.pings[i].room===roomId) return true;
 		}
 	}
 
 	$('#logout').click(function(){
-		delete localStorage['successfulLoginLastTime'];
-		setTimeout(function(){ location = 'logout' }, 100);
+		localStorage.removeItem('successfulLoginLastTime');
+		setTimeout(function(){ document.location = 'logout' }, 100);
 	});
 
 	function applyLangs(trans){
 		$.each(langs, function(key, lang){
-			var $lang = $(document.getElementById(key));
+			let $lang = $(document.getElementById(key));
 			$('.room.'+key)[lang.on ? 'show' : 'hide'](trans*800);
 			if (lang.on) {
 				$lang.addClass('on').removeClass('off')
@@ -41,7 +41,7 @@ miaou(function(locals, notif, roomFinder){
 		});
 	}
 	$.each(langs, function(key, lang){
-		var $lang = $(document.getElementById(key));
+		let $lang = $(document.getElementById(key));
 		lang.on = localStorage[key] !== 'off';
 		$lang.click(function(){
 			lang.on = !lang.on;

@@ -2,7 +2,8 @@
 miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 
 	// Global working of all tabs
-	var tabs = chat.tabs = {};
+	let tabs = {};
+	chat.tabs = {};
 	function Tab(id){
 		this.id = id;
 		this.$tab = $('#mpad-tab-'+id);
@@ -10,11 +11,11 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		this.bindEvents();
 	}
 	chat.closeAllTabs = function(){ // for now this only exists when the chat is mobile
-		for (var tabId in tabs) {
+		for (let tabId in tabs) {
 			tabs[tabId].close();
 		}
 	}
-	var Tabs = Tab.prototype;
+	let Tabs = Tab.prototype;
 	Tabs.open = function(cb){
 		this.$tab.addClass('open');
 		this.$page.addClass('open').slideDown(cb);
@@ -26,7 +27,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		$('#mpad-untabber').hide();
 	}
 	Tabs.bindEvents = function(){
-		var tab = this;
+		let tab = this;
 		this.$tab.click(function(){
 			if (tab.$tab.hasClass('open')) {
 				tab.close();
@@ -86,7 +87,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 
 	// "write" tab (the one with the input)
 	tabs['write'].open = function(){
-		var iab = gui.isAtBottom();
+		let iab = gui.isAtBottom();
 		this.$tab.addClass('open');
 		this.$page.addClass('open').show();
 		if (iab) gui.scrollToBottom();
@@ -113,7 +114,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		tabs['write'].open();
 	});
 
-	if (!locals.room) location = 'rooms';
+	if (!locals.room) document.location = 'rooms';
 	if (locals.room.private) {
 		$('#roomname').addClass('private');
 	}
@@ -121,7 +122,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		$('#auths').hide();
 	}
 	$('#watch-button').click(function(){
-		var r = locals.room;
+		let r = locals.room;
 		if (r.watched) {
 			ws.emit('unwat', r.id);
 			$(this).text('watch');
@@ -131,11 +132,11 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		}
 	});
 	$('#menu-logout').click(function(){
-		delete localStorage['successfulLoginLastTime'];
-		setTimeout(function(){ location = 'logout' }, 100);
+		localStorage.removeItem('successfulLoginLastTime');
+		setTimeout(function(){ document.location = 'logout' }, 100);
 	});
 	$('#menu-settings').attr('href', "prefs?room="+locals.room.id);
-	$('#changeroom').click(function(){ location = 'rooms' });
+	$('#changeroom').click(function(){ document.location = 'rooms' });
 	$('#me').text(locals.me.name);
 
 	$('#users').on('click', '.user', prof.toggle);
@@ -149,7 +150,7 @@ miaou(function(chat, ed, gui, locals, prof, time, watch, ws){
 		$('#input-panel').show();
 	});
 
-	var ready = false;
+	let ready = false;
 	chat.on("ready", function(){
 		if (ready) return;
 		$("<div id=global-watch>")

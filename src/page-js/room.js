@@ -3,11 +3,11 @@ miaou(function(locals, roomFinder){
 	$(document.body).addClass(
 		/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
 	);
-	var	langs = locals.langs,
+	let	langs = locals.langs,
 		room = locals.room,
 		error=locals.error;
-	for (var key in langs) {
-		var lang = langs[key];
+	for (let key in langs) {
+		let lang = langs[key];
 		$('#lang').append($('<option>').attr('value', key).text(lang.name));
 	}
 	if (room) {
@@ -24,18 +24,18 @@ miaou(function(locals, roomFinder){
 		$('#id').val(room.id);
 		$("#tags").val(room.tags.join(" "));
 		$('#cancel').click(function(){
-			location = room.id
+			document.location = room.id
 		});
 	} else {
 		$('#cancel').click(function(){
-			location = 'rooms'
+			document.location = 'rooms'
 		});
 	}
 	$("#tags").editTagSet();
 	if (error) {
 		$('#err').text(error);
 	}
-	if (room && room.dialog) {
+	if (room?.dialog) {
 		$('#name,#private,#listed').prop('disabled', true);
 	}
 	$('form')[0].action = location;

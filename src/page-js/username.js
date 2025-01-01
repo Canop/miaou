@@ -3,7 +3,7 @@ miaou(function(locals){
 	$(document.body).addClass(
 		/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
 	);
-	var valid = locals.valid;
+	let valid = locals.valid;
 	$('#name').focus().keyup(function(){
 		if (!this.validity.valid) {
 			if (this.value[0]==='-') {
@@ -20,10 +20,10 @@ miaou(function(locals){
 			$('#submit').show();
 		}
 	});
-	$('#close').click(function(){ location = 'rooms'; return false; });
+	$('#close').click(function(){ document.location = 'rooms'; return false; });
 
 	if (!valid) $('#gotochat, #gotoextendedprofile').hide();
-	$('#gotochat').click(function(){ location = 'rooms'; return false; });
-	$('#gotoextendedprofile').click(function(){ location = 'prefs'; return false; });
+	$('#gotochat').click(function(){ document.location = 'rooms'; return false; });
+	$('#gotoextendedprofile').click(function(){ document.location = 'prefs'; return false; });
 
 });

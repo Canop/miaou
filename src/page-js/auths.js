@@ -5,7 +5,7 @@ $(function(){
 });
 
 miaou(function(gui, locals, prof, time){
-	var room = locals.room;
+	let room = locals.room;
 	$('.date').text(function(_, t){
 		return Date.now()/1000-t<15*60 ? "just now" : time.formatRelativeTime(t);
 	});
@@ -18,14 +18,17 @@ miaou(function(gui, locals, prof, time){
 	}
 	$('#auths-page')
 	.on('mouseenter', '.user', prof.show).on('mouseleave', '.profile', prof.hide);
-	$('#backToRoom').click(function(){ location = room.path; return false });
+	$('#backToRoom').click(function(){
+		document.location = room.path;
+		return false;
+	});
 	$('input[type=radio]').click(function(){
-		var $row = $(this).closest('tr').nextAll('.denyMessageTr').first();
-		if (this.value=='deny') $row.show().find('input').focus();
+		let $row = $(this).closest('tr').nextAll('.denyMessageTr').first();
+		if (this.value==='deny') $row.show().find('input').focus();
 		else $row.hide();
 	})
 	$('td.rendered').each(function(){
-		var h = this.innerHTML;
+		let h = this.innerHTML;
 		if (h) this.innerHTML = miaou.fmt.mdTextToHtml(h);
 		else $(this).closest('tr').hide()
 	})

@@ -36,7 +36,7 @@ window.wzin = (function(){
 		this.svg.remove();
 		if (this.observer) this.observer.disconnect();
 		while (this.bindings.length) {
-			var args = this.bindings.shift();
+			let args = this.bindings.shift();
 			args[0].off(args[1], args[2]);
 		}
 		if (this.savedBg) {
@@ -92,7 +92,7 @@ window.wzin = (function(){
 				path += " H "+l2;
 				path += " V "+p2.top;
 				path += " H "+pl;
-				var dx = Math.min(s, p2.top-p1.top-h1+10);
+				let dx = Math.min(s, p2.top-p1.top-h1+10);
 				path += " C "+(pl-dx)+' '+(p2.top)+ ', '+(pl-dx)+' '+B1+ ', '+l1+' '+B1;
 			} else {
 				path += " C "+(pl-S)+' '+p1.top+ ', '+(pl-S)+' '+B2+ ', '+l2+' '+B;
@@ -105,7 +105,7 @@ window.wzin = (function(){
 				}
 			}
 		} else {
-			var	r1 = l1+w1,
+			let	r1 = l1+w1,
 				r2 = l2+w2,
 				r = Math.max(r1, r2);
 			path = "M "+r1+' '+p1.top;
