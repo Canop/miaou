@@ -16,11 +16,11 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 				return (r.hasself || r.auth) && !r.dialog
 			});
 			if (myRooms.length<5 && locals.welcomeRooms) {
-				var roomIds = myRooms.reduce(function(s, r){
+				let roomIds = myRooms.reduce(function(s, r){
 					return s.add(r.id);
 				}, new Set);
-				for (var j=0; j<locals.welcomeRooms.length; j++) {
-					var room = locals.welcomeRooms[j];
+				for (let j=0; j<locals.welcomeRooms.length; j++) {
+					let room = locals.welcomeRooms[j];
 					if (!roomIds.has(room.id)) myRooms.unshift(room);
 				}
 			}
@@ -114,8 +114,8 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 			var	$room = roomFinder.$square(r),
 				w = getWatch(r.id);
 			if (w) {
-				var $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
-				var txt = "You're watching this room.";
+				let $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
+				let txt = "You're watching this room.";
 				if (w.nbunseen) {
 					$unseen.addClass('has-unseen');
 					txt += " There's "+w.nbunseen+" new message";
@@ -131,13 +131,13 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 				$unseen.attr('title', txt).appendTo($room.find(".room-head"));
 			}
 			if (connected) {
-				var $hover = $("<div>").addClass("room-hover").appendTo($room);
-				var $last = $('<div>').addClass('room-last-created').appendTo($hover);
+				let $hover = $("<div>").addClass("room-hover").appendTo($room);
+				let $last = $('<div>').addClass('room-last-created').appendTo($hover);
 				if (r.lastcreated) {
 					$last.html(time.formatRelativeTime(r.lastcreated))
 				}
-				var $buts = $('<div>').addClass("room-buttons").appendTo($hover);
-				var iswatched = !!w;
+				let $buts = $('<div>').addClass("room-buttons").appendTo($hover);
+				let iswatched = !!w;
 				$('<button>').text(w ? 'unwatch' : 'watch').click(function(){
 					if (iswatched) {
 						ws.emit('unwat', r.id);
@@ -152,7 +152,7 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 				$("<button>").addClass("room-enter").text("enter").appendTo($buts);
 			}
 			$room.appendTo($t).click(function(){
-				location = r.path;
+				document.location = r.path;
 			});
 		});
 		return $container.append($t);
@@ -192,9 +192,9 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 				$("#room-search-input").val('');
 				fetchRooms(callback);
 			});
-			var	pageWidth = $('#rooms-page').innerWidth() - 3;
+			let	pageWidth = $('#rooms-page').innerWidth() - 3;
 			if (pageWidth>100) {
-				var style = document.createElement('style');
+				let style = document.createElement('style');
 				style.type = 'text/css';
 				style.innerHTML = cssFitSquares('.room', 175, pageWidth)
 				+ cssFitSquares('.room.dialog-square', 130, pageWidth);

@@ -1,5 +1,8 @@
 {
   "files": {
-    "ignore": ["jquery-*.js"]
+    "ignore": [
+        "jquery-*.js",
+        "prettify/*"
+    ]
   }
 }

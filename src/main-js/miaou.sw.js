@@ -8,7 +8,7 @@ miaou(function(sw, chat, prefs, ws){
 
 	let wppref = prefs.get("web-push");
 	console.log('wppref:', wppref);
-	if (wppref != "on_ping" && wppref != "on_alert") return;
+	if (wppref !== "on_ping" && wppref !== "on_alert") return;
 
 	let subscription;
 	let registered = false;

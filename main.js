@@ -1,5 +1,5 @@
-var	config,
-	server = require('./libs/server.js');
+const server = require('./libs/server.js');
+let	config;
 
 console.log("Miaou running on "+process.title+" "+process.version);
 

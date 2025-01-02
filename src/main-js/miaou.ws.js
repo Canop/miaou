@@ -3,7 +3,7 @@
 miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr, watch){
 
 	ws.init = function(){
-		var	nbEntries = 0, // grows on disconnect+reconnect
+		let	nbEntries = 0, // grows on disconnect+reconnect
 			socket = window.io.connect(location.origin);
 
 		ws.emit = socket.emit.bind(socket);
@@ -17,7 +17,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 		}
 
 		function enter(){
-			var entry = {
+			let entry = {
 				roomId: locals.room.id,
 				nbEntries: nbEntries,
 				tzoffset: (new Date).getTimezoneOffset()
@@ -51,7 +51,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 		.on('auth_dialog', md.showGrantAccessDialog)
 		.on('ban', mod.showBan)
 		.on('config', function(serverConfig){
-			for (var key in serverConfig) chat.config[key] = serverConfig[key];
+			for (let key in serverConfig) chat.config[key] = serverConfig[key];
 		})
 		.on('set_enter_time', time.setRoomEnterTime)
 		.on('server_commands', function(commandNames){
@@ -94,13 +94,13 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 			chat.state = 'connected';
 			gui.entered = true;
 			gui.scrollToBottom();
-			var m = location.hash.match(/^#?(\d+)$/);
+			let m = location.hash.match(/^#?(\d+)$/);
 			if (m) {
 				md.focusMessage(+m[1]);
 				location.hash = '';
 			} else if (localStorage.destMessage) {
 				md.focusMessage(+localStorage.destMessage);
-				delete localStorage.destMessage;
+				localStorage.removeItem("destMessage");
 			}
 			usr.showEntry(locals.me);
 			if (watch.enabled) socket.emit('start_watch');
@@ -113,11 +113,11 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 			chat.trigger("ready");
 		})
 		.on('invitation', function(invit){
-			var $md = $('<div>').html(
+			let $md = $('<div>').html(
 				'You have been invited by <span class=user>'+invit.byname+'</span> in a private lounge.'
 			).addClass('notification').append(
 				$('<button>').addClass('openroom').text('Enter room').click(function(){
-					location = invit.room;
+					document.location = invit.room;
 				})
 			).append(
 				$('<button>').addClass('remover').text('X').click(function(){ $md.remove() })
@@ -126,7 +126,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, prefs, time, usr
 			gui.scrollToBottom();
 		})
 		.on('pm_room', function(roomId){
-			location = roomId;
+			document.location = roomId;
 		})
 		.on('go_to', function(messageId){
 			setTimeout(function(){ md.goToMessageDiv(messageId) }, 200);
