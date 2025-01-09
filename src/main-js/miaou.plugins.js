@@ -16,7 +16,7 @@ miaou(function(plugins, locals){
 	//  is deprecated and will be removed
 	plugins.add = function(name, obj){
 		if (!plugins[name]) plugins[name] = Object.create(null);
-		for (var key in obj) plugins[name][key] = obj[key];
+		for (let key in obj) plugins[name][key] = obj[key];
 	}
 
 });

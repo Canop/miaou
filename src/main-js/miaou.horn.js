@@ -5,7 +5,7 @@ miaou(function(horn, gui, locals, md, prefs){
 	let sounds = {
 		standard: 'ping-standard.wav'
 	};
-	var audio;
+	let audio;
 
 	horn.init = function(){
 		if (gui.mobile) {
@@ -38,7 +38,7 @@ miaou(function(horn, gui, locals, md, prefs){
 		volume = +volume;
 		if (!(volume>=0 && volume<=1)) volume = +prefs.get("volume");
 		if (!audio) {
-			var sound = prefs.get("sound") || sounds.standard;
+			let sound = prefs.get("sound") || sounds.standard;
 			audio = new Audio('static/'+sound);
 		}
 		if (volume) {
@@ -49,20 +49,19 @@ miaou(function(horn, gui, locals, md, prefs){
 
 	horn.show = function(mid, room, authorname, content){
 		mid = mid||0;
-		var title = typeof room === "string" ? room : (room || locals.room).name;
-		if (mid==localStorage.lastnotif) {
+		let title = typeof room === "string" ? room : (room || locals.room).name;
+		if (mid===localStorage.lastnotif) {
 			console.log("avoiding duplicate notif mid=", mid); // yes, also for no id messages
 			return;
-		} else {
-			localStorage.lastnotif = mid;
 		}
+		localStorage.lastnotif = mid;
 		if (authorname) title = authorname + ' in ' + title;
-		var dsk = {};
+		let dsk = {};
 		dsk.icon = 'static/M-64.png';
 		if (content && prefs.get("connot")==="yes") {
 			dsk.body = content.replace(/^@\w[\w\-]{2,}#\d+/, '');
 		}
-		var n = new Notification(title, dsk);
+		let n = new Notification(title, dsk);
 		setTimeout(function(){ n.close() }, 15000);
 		n.onclick = function(){ window.focus(); n.close(); };
 		horn.honk();

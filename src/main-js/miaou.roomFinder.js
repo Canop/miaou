@@ -4,15 +4,15 @@
 // - the desktop pad
 miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
-	var	rooms = [],
+	let	rooms = [],
 		initialized = false,
 		connected,
 		hasPing,
 		getWatch;
 
-	var roomSets = {
+	let roomSets = {
 		"Your Main Rooms": function(){
-			var myRooms = rooms.filter(function(r){
+			let myRooms = rooms.filter(function(r){
 				return (r.hasself || r.auth) && !r.dialog
 			});
 			if (myRooms.length<5 && locals.welcomeRooms) {
@@ -38,7 +38,7 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 	};
 
 	function fetchRooms(callback){
-		var pat = $("#room-search-input").val() || '';
+		let pat = $("#room-search-input").val() || '';
 		$("#room-search-reset").toggleClass("visible", !!pat);
 		$.get('json/rooms?pattern='+encodeURIComponent(pat), function(data){
 			if (pat!==($("#room-search-input").val()||'')) {
@@ -53,12 +53,12 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
 	function updateRoomsTabsAndPage(){
 		$('#rooms-page').empty();
-		var selectedSetIndex = $('.rooms-tabs .tab.selected').index();
+		let selectedSetIndex = $('.rooms-tabs .tab.selected').index();
 		Object.keys(roomSets).forEach(function(name, i){
-			var tabRooms = roomSets[name]();
+			let tabRooms = roomSets[name]();
 			if (i===selectedSetIndex) showRooms(tabRooms);
-			var nbunseen = tabRooms.reduce(function(sum, r){
-				var w = getWatch(r.id);
+			let nbunseen = tabRooms.reduce(function(sum, r){
+				let w = getWatch(r.id);
 				if (w) sum += w.nbunseen;
 				return sum;
 			}, 0);
@@ -75,7 +75,7 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 	}
 
 	function fillSquareDescription($room, r){
-		var	html = miaou.fmt.mdTextToHtml(r.description),
+		let	html = miaou.fmt.mdTextToHtml(r.description),
 			$underDescription = $('<div>').addClass('under-room-description').appendTo($room);
 		if (r.img) {
 			$underDescription.css('background-image', 'url("'+r.img+'")');
@@ -84,15 +84,15 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 	}
 
 	function fillDialogSquareDescription($room, r){
-		var $underDescription = $('<div>').addClass('under-room-description').appendTo($room);
+		let $underDescription = $('<div>').addClass('under-room-description').appendTo($room);
 		$underDescription.css('background-image', 'url("'+usr.avatarsrc(r)+'")');
 	}
 
 	roomFinder.$square = function(r){
-		var $room = $("<div>").addClass("room");
+		let $room = $("<div>").addClass("room");
 		$room.addClass(r.lang).addClass(r.private?'private':'public');
 		if (r.dialog) $room.addClass("dialog-square");
-		var $roomHead = $("<div>").addClass("room-head").appendTo($room);
+		let $roomHead = $("<div>").addClass("room-head").appendTo($room);
 		fillSquareTitle($roomHead, r);
 		if (r.avk) fillDialogSquareDescription($room, r);
 		else fillSquareDescription($room, r);
@@ -106,12 +106,12 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
 	function showRooms(rooms){
 		$("#room-search-input").focus();
-		var $container = $('#rooms-page').empty();
+		let $container = $('#rooms-page').empty();
 		if (!rooms.length) return;
-		var $t = $('<div>').addClass('room-list');
+		let $t = $('<div>').addClass('room-list');
 		rooms.forEach(function(r){
 			if (locals.room && r.id===locals.room.id) return;
-			var	$room = roomFinder.$square(r),
+			let	$room = roomFinder.$square(r),
 				w = getWatch(r.id);
 			if (w) {
 				let $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
@@ -159,7 +159,7 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 	}
 
 	function cssFitSquares(selector, minSize, pageWidth){
-		var	nbSquares = Math.max(pageWidth/ minSize | 0, 2),
+		let	nbSquares = Math.max(pageWidth/ minSize | 0, 2),
 			squareSide = (((pageWidth-24) / nbSquares) - 3) | 0;
 		return selector + '{'
 		+ 'width:'+squareSide+'px !important;'

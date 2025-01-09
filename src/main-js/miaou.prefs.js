@@ -1,7 +1,7 @@
 
 miaou(function(prefs, chat, ed, locals, md, ws){
 
-	var	definitions, // not always defined, normally available in chat
+	let	definitions, // not always defined, normally available in chat
 		defaults = {},
 		localPrefsPrefix = locals.me ? `miaou.${locals.me.id}.prefs.` : "miaou.prefs.",
 		valmap,
@@ -20,7 +20,7 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 	})();
 
 	function local(key, value){
-		var lsk = localPrefsPrefix + key;
+		let lsk = localPrefsPrefix + key;
 		if (value===undefined) return localStorage.getItem(lsk);
 		if (value===null) return localStorage.removeItem(lsk);
 		localStorage.setItem(lsk, value);
@@ -37,7 +37,7 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 
 	prefs.allLocalPrefs = function(){
 		return prefs.allKeys().reduce((m, k)=>{
-			var v = local(k)
+			let v = local(k)
 			if (v) m[k] = v;
 			return m;
 		}, {});
@@ -74,24 +74,24 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 	}
 
 	function matcher(ac){
-		var path = ac.args.split(" ");
+		let path = ac.args.split(" ");
 		path.pop();
-		var depth = path.length;
-		if (depth==0) return ["describe", "get", "list", "set", "unset"];
+		let depth = path.length;
+		if (depth===0) return ["describe", "get", "list", "set", "unset"];
 		switch (path[0]) {
 		case "describe":
 		case "get":
-			return depth==1 ? prefs.allKeys() : undefined;
+			return depth===1 ? prefs.allKeys() : undefined;
 		case "list":
 			return;
 		case "set":
-			if (depth==1) return ["local", "global"];
-			if (depth==2) return prefs.allKeys();
-			if (depth==3) return valmap.get(path[2]);
+			if (depth===1) return ["local", "global"];
+			if (depth===2) return prefs.allKeys();
+			if (depth===3) return valmap.get(path[2]);
 			return;
 		case "unset":
-			if (depth==1) return ["local", "global"];
-			if (depth==2) return prefs.allKeys();
+			if (depth===1) return ["local", "global"];
+			if (depth===2) return prefs.allKeys();
 			return;
 		default:
 			return;
@@ -101,12 +101,12 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 	// called on 'cmd_pref' sio event, which is part of the !!pref command handling workflow
 	prefs.handleCmdPref = function(arg){
 		if (arg.cmd) {
-			var localMatch = arg.cmd.match(/^!!!?pref\s*(set|unset)\s*local\s*(\S+)\s*(.+)?$/);
+			let localMatch = arg.cmd.match(/^!!!?pref\s*(set|unset)\s*local\s*(\S+)\s*(.+)?$/);
 			if (localMatch) {
-				var verb = localMatch[1];
-				var key = localMatch[2];
-				var value = localMatch[3];
-				local(key, verb=="set" ? value : null);
+				let verb = localMatch[1];
+				let key = localMatch[2];
+				let value = localMatch[3];
+				local(key, verb==="set" ? value : null);
 			}
 		}
 		ws.emit("prefs", {
@@ -118,10 +118,10 @@ miaou(function(prefs, chat, ed, locals, md, ws){
 	prefs.funLowerThan = function(min){
 		// in case of doubt we say yes
 		if (!definitions || !merged) return true;
-		for (var i=definitions.length; i--;) {
-			if (definitions[i].key!="fun") continue;
-			var values = definitions[i].values.map(v=>v.value);
-			var value = merged["fun"];
+		for (let i=definitions.length; i--;) {
+			if (definitions[i].key!=="fun") continue;
+			let values = definitions[i].values.map(v=>v.value);
+			let value = merged["fun"];
 			return value && values.indexOf(min)>values.indexOf(value);
 		}
 		return true;

@@ -3,7 +3,7 @@
 
 miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 
-	var renderers = [], unrenderers = [];
+	let renderers = [], unrenderers = [];
 
 	// registers a function which will be called when a message needs rendering
 	// Unless a renderer returns true, the other renderers will be called.
@@ -31,21 +31,21 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		//if (oldMessage && message.content===oldMessage.content && $content.text().length) {
 		//	return; // mainly to avoid removing boxed content
 		//}
-		for (var i=0; i<renderers.length; i++) {
+		for (let i=0; i<renderers.length; i++) {
 			if (renderers[i]($content, message, oldMessage)) break;
 		}
 	}
 	md.unrender = function($content, message){
-		for (var i=0; i<unrenderers.length; i++) {
+		for (let i=0; i<unrenderers.length; i++) {
 			if (unrenderers[i]($content, message)) break;
 		}
 	}
 
 	// used for rerendering, for example on resizing or sliding
 	$.fn.renderMessages = function(){
-		var $messages = $('.message', this).add(this).filter('.message');
+		let $messages = $('.message', this).add(this).filter('.message');
 		$messages.each(function(){
-			var	$m = $(this),
+			let	$m = $(this),
 				m = $m.dat('message'),
 				$c = $m.find('.content');
 			md.render($c, m);
@@ -63,13 +63,13 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	}
 
 	md.getMessage = function(mid){
-		var $message = $('#messages .message[mid='+mid+']');
+		let $message = $('#messages .message[mid='+mid+']');
 		if ($message.length) return $message.eq(0).dat('message');
 	}
 
 	md.showMessages = function(messages, $div, append){
 		if (!append) $div.empty();
-		for (var i=0; i<messages.length; i++) {
+		for (let i=0; i<messages.length; i++) {
 			md.addUserMessageDiv(messages[i], $div);
 		}
 	}
@@ -77,9 +77,9 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// used for notable messages and search results
 	md.showSideMessages = function(messages, $div, append){
 		if (!append) $div.empty();
-		var notable = $div[0].id==="notable-messages"; // not very pretty...
-		for (var i=0; i<messages.length; i++) {
-			var $md = md.addSideMessageDiv(messages[i], $div);
+		let notable = $div[0].id==="notable-messages"; // not very pretty...
+		for (let i=0; i<messages.length; i++) {
+			let $md = md.addSideMessageDiv(messages[i], $div);
 			if (notable) {
 				chat.trigger("notable", messages[i], $md);
 			}
@@ -89,8 +89,8 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// builds the message div and append it to the container, managing resizing.
 	// May be used for notable messages and search results
 	md.addSideMessageDiv = function(m, $div, $repl){
-		var $content = $('<div>').addClass('content');
-		var $md = $('<div>').addClass('message').dat('message', m).append($content).append(
+		let $content = $('<div>').addClass('content');
+		let $md = $('<div>').addClass('message').dat('message', m).append($content).append(
 			$('<div>').addClass('nminfo')
 			.html(md.votesAbstract(m) + ' ' + time.formatTime(m.created) + ' by ' + m.authorname)
 		);
@@ -114,7 +114,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// if the message is present among notable ones, we replace the div
 	//  with the new version
 	md.updateNotableMessage = function(m){
-		var	$container = $('#notable-messages'),
+		let	$container = $('#notable-messages'),
 			$repl = $container.children('.message[mid='+m.id+']');
 		if ($repl.length) md.addSideMessageDiv(m, $container, $repl);
 	}
@@ -123,18 +123,18 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	//  ids : sorted ids of notable messages
 	//  m : optional message which is entering the list
 	md.updateNotableMessages = function(upd){
-		var	$container = $('#notable-messages'),
+		let	$container = $('#notable-messages'),
 			mmap = {};
 		$container.find('.message').each(function(){
-			var m = $(this).dat('message');
+			let m = $(this).dat('message');
 			mmap[m.id] = m;
 		});
 		if (upd.m) mmap[upd.m.id] = upd.m;
 		$container.empty();
 		upd.ids.forEach(function(id){
-			var m = mmap[id];
+			let m = mmap[id];
 			if (!m) return console.log("No message in notables for id ", id);
-			var $md = md.addSideMessageDiv(m, $container);
+			let $md = md.addSideMessageDiv(m, $container);
 			chat.trigger("notable", m, $md);
 		});
 	}
@@ -160,7 +160,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// builds a notification message with a close button. The fill callback
 	//  is passed the container and a close function
 	md.notificationMessage = function(fill){
-		var	notification = {closelisteners:[]},
+		let	notification = {closelisteners:[]},
 			wab = gui.isAtBottom(),
 			$md = notification.$md = $('<div>').addClass('notification');
 		$md.appendTo('#notifications').dat('notification', notification);
@@ -187,8 +187,8 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// checks immediately and potentially after image loading that
 	//  the message div isn't greater than authorized
 	md.resize = function($md, wasAtBottom){
-		var $content = $md.find('.content');
-		var resize = function(){
+		let $content = $md.find('.content');
+		let resize = function(){
 			$content.removeClass("closed");
 			$md.removeClass('has-opener');
 			$md.find('.opener,.closer').remove();
@@ -205,13 +205,13 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 	// resizes all messages. This must be called each time a container of
 	//  .message elements change width.
 	md.resizeAll = function(){
-		var	todo = [],
+		let	todo = [],
 			wasAtBottom = gui.isAtBottom(),
 			$messages = $('.message');
 		$messages.find('.closed').removeClass('closed');
 		$messages.find('.opener').remove();
 		$messages.each(function(){
-			var	$md = $(this),
+			let	$md = $(this),
 				$content = $md.find('.content'),
 				h = $content.height();
 			if (h>158) todo.push({$md:$md, $content:$content});
@@ -228,7 +228,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 
 	md.updateLoaders = function(){
 		$('.olderLoader,.newerLoader').remove();
-		var 	i,
+		let 	i,
 			idmap = {},
 			$messages = $('#messages .message'),
 			messages = [],
@@ -330,7 +330,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 
 	// builds a new .user-messages div for the passed user)
 	function usermessagesdiv(user){
-		var	$usermessages = $('<div>').addClass('user-messages').dat('user', user),
+		let	$usermessages = $('<div>').addClass('user-messages').dat('user', user),
 			$user = $('<div>').addClass('user').appendTo($usermessages),
 			avsrc = usr.avatarsrc(user);
 		$user.css('color', skin.stringToColour(user.name)).append($('<span/>').text(user.name));
@@ -348,7 +348,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 
 	// inserts or updates a message in the main #messages div
 	md.addMessage = function(message, shouldStickToBottom){
-		var	messages = md.getMessages(),
+		let	messages = md.getMessages(),
 			oldMessage,
 			insertionIndex = messages.length - 1, // -1 : insert at begining, i>=0 : insert after i
 			//~ wasAtBottom = gui.isAtBottom(),
@@ -360,7 +360,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		if (message.bot) user.bot = true;
 		if (message.id) {
 			$md.attr('mid', message.id);
-			for (var i=messages.length; i--;) {
+			for (let i=messages.length; i--;) {
 				if (messages[i].id===message.id) {
 					oldMessage = messages[insertionIndex = i];
 					break;
@@ -375,7 +375,9 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 					insertionIndex = -1;
 					// the following line because of the possible special case of a
 					//  pin vote being removed by somebody's else
-					if (message.vote && !message[message.vote]) delete message.vote; // fixme ???
+					if (message.vote && !message[message.vote]) {
+						message.vote = undefined;
+					}
 				} else {
 					while ( insertionIndex && (
 						messages[insertionIndex].id>message.id
@@ -390,7 +392,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		if (message.content) {
 			// Updates the link (as reply) to upwards messages
 			// To make things simpler, we consider only one link upwards
-			var matches = message.content.match(/^\s*@\w[\w\-]{2,}#(\d+)/);
+			let matches = message.content.match(/^\s*@\w[\w\-]{2,}#(\d+)/);
 			if (matches) message.repliesTo = +matches[1];
 		}
 		usr.insert(user, message.changed||message.created);
@@ -398,7 +400,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 			$md.addClass('me');
 			$('.error').remove();
 		}
-		var	$previousmessageset,
+		let	$previousmessageset,
 			$nextmessageset,
 			noEndOfBatch =  !message.prev && !message.next;
 		if (~insertionIndex) {
@@ -445,19 +447,19 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 			}
 		}
 		if (message.content && message.changed) {
-			var $pen = $('<div>&#xe817;</div>') // fontello icon-pencil
+			let $pen = $('<div>&#xe817;</div>') // fontello icon-pencil
 			.addClass('decoration pen').appendTo($decorations);
 			if (message.previous) $pen.addClass('clickable').attr('title', 'Click for message history');
 		}
 		if (!message.id) {
 			if (message.private) {
-				var desc = "this private message was sent to no one else and will disappear when you refresh the page";
+				let desc = "this private message was sent to no one else and will disappear when you refresh the page";
 				$('<div>&#xf21b;</div>') // fontello icon-snow
 				.appendTo($decorations)
 				.addClass('decoration snap')
 				.attr('title', "Private : "+desc);
 			} else {
-				var desc = "only sent to people currently in the room, and will disappear if you refresh the page";
+				let desc = "only sent to people currently in the room, and will disappear if you refresh the page";
 				$('<div>&#xe82d;</div>') // fontello icon-snow
 				.appendTo($decorations)
 				.addClass('decoration snap')
@@ -469,19 +471,19 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 		$mc.appendTo($md);
 		md.render($mc, message, oldMessage);
 		if (!gui.mobile && prefs.get("datdpl")!=="hover") {
-			var $mdate = $('<div>').addClass('mdate').text(time.formatTime(message.created)).appendTo($md);
+			let $mdate = $('<div>').addClass('mdate').text(time.formatTime(message.created)).appendTo($md);
 			if (prefs.get("datdpl")!=="always") $mdate.hide();
 		}
 		return $md;
 	}
 
 	md.showMessageFlowDisruptions = function(){
-		var	$messages = $('#messages .message'),
+		let	$messages = $('#messages .message'),
 			lastMessage, $lastMessage;
 		$messages.find('.before-disrupt').removeClass('before-disrupt');
 		$messages.find('.after-disrupt').removeClass('after-disrupt');
-		for (var i=0; i<$messages.length; i++) {
-			var	$message = $messages.eq(i),
+		for (let i=0; i<$messages.length; i++) {
+			let	$message = $messages.eq(i),
 				message = $message.dat('message');
 			if (lastMessage && message.created-lastMessage.created > miaou.chat.DISRUPTION_THRESHOLD) {
 				$lastMessage.addClass('before-disrupt');
@@ -497,7 +499,7 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 
 	// replaces one line of a message
 	md.box = function(args){
-		var	$from = $('<div>'),
+		let	$from = $('<div>'),
 			$m = $('.message[mid='+args.mid+']'),
 			wab = gui.isAtBottom();
 		md.render($from, {content: args.from});
@@ -516,20 +518,20 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 
 	// cleaning of #messages .messages when there are too many of them
 	md.startAutoCleaner = function(){
-		var nbMessagesThreshold = +prefs.get("mclean");
+		let nbMessagesThreshold = +prefs.get("mclean");
 		if (nbMessagesThreshold>50) {
 			setInterval(function(){
 				if (!gui.isAtBottom()) return;
-				var userMessages = Array.from(document.querySelectorAll("#messages .user-messages"));
-				var	nbMessages = 0,
+				let userMessages = Array.from(document.querySelectorAll("#messages .user-messages"));
+				let	nbMessages = 0,
 					remove = false;
-				for (var i=userMessages.length; i--;) {
-					var um = userMessages[i];
+				for (let i=userMessages.length; i--;) {
+					let um = userMessages[i];
 					if (remove) {
 						um.remove();
 						continue;
 					}
-					for (var j=um.children.length; j--;) {
+					for (let j=um.children.length; j--;) {
 						if (um.children[j].classList.contains("message")) {
 							nbMessages++;
 						}
@@ -539,8 +541,8 @@ miaou(function(md, chat, gui, hist, locals, prefs, skin, time, usr){
 						remove = true;
 						// but we must restore the "prev" property of the message
 						if (!um.previousSibling) return; // we're at the end anyway
-						var previousMessageElement = um.previousSibling.lastChild;
-						var previousMessage = $(previousMessageElement).dat("message");
+						let previousMessageElement = um.previousSibling.lastChild;
+						let previousMessage = $(previousMessageElement).dat("message");
 						if (previousMessage) { // null if there was a loader there (no restoring needed)
 							$(um).find(".message").first().dat("message").prev = previousMessage.id;
 						}
