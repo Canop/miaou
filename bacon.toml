@@ -2,9 +2,9 @@
 #
 # Complete help on configuration: https://dystroy.org/bacon/config/
 
-default_job = "biome-libs"
+default_job = "biome-backend"
 
-[jobs.biome-libs]
+[jobs.biome-backend]
 env.RAYON_NUM_THREADS = "1" # for reproducible order
 command = [
     "npx", "@biomejs/biome", "lint",
@@ -37,7 +37,7 @@ command = [
 need_stdout = true
 analyzer = "biome"
 watch = [
-    "libs",
+    "src",
     "biome.json",
 ]
 
@@ -49,4 +49,5 @@ analyzer = "eslint"
 watch = ["libs"]
 
 [keybindings]
+b = "job:biome-backend"
 c = "job:biome-client"
