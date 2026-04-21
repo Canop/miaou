@@ -74,7 +74,7 @@ async function doStats_topusers(con, n){
 
 async function doStats_toptypes(con, n){
 	let rows = await con.queryRows(
-		"select ext, count(id) n, count(uploader) ups, sum(size) sumsize"+
+		"select ext, count(id) n, count(distinct uploader) ups, sum(size) sumsize"+
 		" from hosted_file group by ext order by sumsize desc limit $1",
 		[n||10],
 		"hosted_file / stats / top exts"
