@@ -2,8 +2,8 @@
 //  var visible = vis(); // gives the current state
 //  vis(function(){});   // register a visibility change event handler
 window.vis = (function(){
-	var stateKey, eventKey;
-	var keys = {
+	let stateKey, eventKey;
+	let keys = {
 		hidden: "visibilitychange",
 		webkitHidden: "webkitvisibilitychange",
 		mozHidden: "mozvisibilitychange",

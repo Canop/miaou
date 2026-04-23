@@ -24,7 +24,7 @@ class PingsAbstract{
 	}
 	title(){
 		let title = "Miaou";
-		if (this.nbRooms()==1) title += ` - ${this.pings[0].rname}`;
+		if (this.nbRooms()===1) title += ` - ${this.pings[0].rname}`;
 		return title;
 	}
 	body(){
@@ -68,7 +68,7 @@ async function onPushEvent(){
 		log("merging old notification", notification);
 		tag = notification.tag;
 		log('tag of current notification:', tag);
-		if (notification.data && notification.data.pings) {
+		if (notification.data?.pings) {
 			lastAbstract = new PingsAbstract(notification.data.pings);
 		}
 		notification.close();
@@ -80,8 +80,8 @@ async function onPushEvent(){
 	let abstract = new PingsAbstract(pings);
 	// if renotify is true there's no sound or vibration
 	let renotify = !!lastAbstract
-		&& lastAbstract.nbRooms()==abstract.nbRooms()
-		&& lastAbstract.nbAuthors()==abstract.nbAuthors();
+		&& lastAbstract.nbRooms()===abstract.nbRooms()
+		&& lastAbstract.nbAuthors()===abstract.nbAuthors();
 	if (!pings.length) renotify = true; // it may happen. Don't ring in that case.
 	log('renotify:', renotify);
 	let icon = `${base}/static/M-192.png`;
@@ -102,7 +102,7 @@ async function goToPage(url){
 		includeUncontrolled: true
 	});
 	for (let window of windows) {
-		if (window.url==url) {
+		if (window.url===url) {
 			await window.focus();
 			return;
 		}
@@ -135,7 +135,7 @@ self.addEventListener('notificationclick', function(event){
 });
 
 self.addEventListener("message", function(event){
-	if (event.data=="new-chat") {
+	if (event.data==="new-chat") {
 		closeAllNotifications();
 	}
 });

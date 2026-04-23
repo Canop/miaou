@@ -2,7 +2,7 @@
 
 miaou(function(mh, time){
 	mh.show = function(message){
-		var $content = $('<div>').addClass('message-history'),
+		let $content = $('<div>').addClass('message-history'),
 			current = message;
 		for (;;) {
 			$('<div>').addClass('item').append(

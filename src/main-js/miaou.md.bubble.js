@@ -45,7 +45,7 @@ miaou(function(md, chat, gui, locals, roomFinder, skin, time, usr, ws){
 		if (+roomId) {
 			$room = $("<div class=room-bubble>").appendTo($content);
 			$.get("json/room?id="+roomId, function(data){
-				var room = data.room;
+				let room = data.room;
 				if (!room) {
 					$r.text("Unknown Room:" + roomId);
 					return;

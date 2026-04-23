@@ -1,18 +1,17 @@
 // https://github.com/Canop/taliner.js
 $.fn.taliner = function(){
 
-	var	$t = this,
-		$d = $('<div>').appendTo('body'),
+	let	$d = $('<div>').appendTo('body'),
 		$s1 = $('<span>').text('a').appendTo($d),
 		$s2 = $('<span>').appendTo($d),
 		lh =  $s1.height();
 
 	$d.css({
-		width: $t.width(),
-		height: $t.height(),
-		font: $t.css('font'),
-		fontFamily: $t.css('fontFamily'), // for FF/linux
-		fontSize: $t.css('fontSize'),
+		width: this.width(),
+		height: this.height(),
+		font: this.css('font'),
+		fontFamily: this.css('fontFamily'), // for FF/linux
+		fontSize: this.css('fontSize'),
 		whiteSpace : 'pre-wrap',
 		wordWrap : 'break-word',
 		overflowY: 'auto',
@@ -23,7 +22,7 @@ $.fn.taliner = function(){
 		zIndex: 666
 	});
 
-	var	input = this[0],
+	let	input = this[0],
 		se = input.selectionEnd,
 		v = input.value,
 		res = {};

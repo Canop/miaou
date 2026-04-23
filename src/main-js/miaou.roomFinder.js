@@ -4,23 +4,23 @@
 // - the desktop pad
 miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
-	var	rooms = [],
+	let	rooms = [],
 		initialized = false,
 		connected,
 		hasPing,
 		getWatch;
 
-	var roomSets = {
+	let roomSets = {
 		"Your Main Rooms": function(){
-			var myRooms = rooms.filter(function(r){
+			let myRooms = rooms.filter(function(r){
 				return (r.hasself || r.auth) && !r.dialog
 			});
 			if (myRooms.length<5 && locals.welcomeRooms) {
-				var roomIds = myRooms.reduce(function(s, r){
+				let roomIds = myRooms.reduce(function(s, r){
 					return s.add(r.id);
 				}, new Set);
-				for (var j=0; j<locals.welcomeRooms.length; j++) {
-					var room = locals.welcomeRooms[j];
+				for (let j=0; j<locals.welcomeRooms.length; j++) {
+					let room = locals.welcomeRooms[j];
 					if (!roomIds.has(room.id)) myRooms.unshift(room);
 				}
 			}
@@ -38,7 +38,7 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 	};
 
 	function fetchRooms(callback){
-		var pat = $("#room-search-input").val() || '';
+		let pat = $("#room-search-input").val() || '';
 		$("#room-search-reset").toggleClass("visible", !!pat);
 		$.get('json/rooms?pattern='+encodeURIComponent(pat), function(data){
 			if (pat!==($("#room-search-input").val()||'')) {
@@ -53,12 +53,12 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
 	function updateRoomsTabsAndPage(){
 		$('#rooms-page').empty();
-		var selectedSetIndex = $('.rooms-tabs .tab.selected').index();
+		let selectedSetIndex = $('.rooms-tabs .tab.selected').index();
 		Object.keys(roomSets).forEach(function(name, i){
-			var tabRooms = roomSets[name]();
+			let tabRooms = roomSets[name]();
 			if (i===selectedSetIndex) showRooms(tabRooms);
-			var nbunseen = tabRooms.reduce(function(sum, r){
-				var w = getWatch(r.id);
+			let nbunseen = tabRooms.reduce(function(sum, r){
+				let w = getWatch(r.id);
 				if (w) sum += w.nbunseen;
 				return sum;
 			}, 0);
@@ -75,7 +75,7 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 	}
 
 	function fillSquareDescription($room, r){
-		var	html = miaou.fmt.mdTextToHtml(r.description),
+		let	html = miaou.fmt.mdTextToHtml(r.description),
 			$underDescription = $('<div>').addClass('under-room-description').appendTo($room);
 		if (r.img) {
 			$underDescription.css('background-image', 'url("'+r.img+'")');
@@ -84,15 +84,15 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 	}
 
 	function fillDialogSquareDescription($room, r){
-		var $underDescription = $('<div>').addClass('under-room-description').appendTo($room);
+		let $underDescription = $('<div>').addClass('under-room-description').appendTo($room);
 		$underDescription.css('background-image', 'url("'+usr.avatarsrc(r)+'")');
 	}
 
 	roomFinder.$square = function(r){
-		var $room = $("<div>").addClass("room");
+		let $room = $("<div>").addClass("room");
 		$room.addClass(r.lang).addClass(r.private?'private':'public');
 		if (r.dialog) $room.addClass("dialog-square");
-		var $roomHead = $("<div>").addClass("room-head").appendTo($room);
+		let $roomHead = $("<div>").addClass("room-head").appendTo($room);
 		fillSquareTitle($roomHead, r);
 		if (r.avk) fillDialogSquareDescription($room, r);
 		else fillSquareDescription($room, r);
@@ -106,16 +106,16 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 
 	function showRooms(rooms){
 		$("#room-search-input").focus();
-		var $container = $('#rooms-page').empty();
+		let $container = $('#rooms-page').empty();
 		if (!rooms.length) return;
-		var $t = $('<div>').addClass('room-list');
+		let $t = $('<div>').addClass('room-list');
 		rooms.forEach(function(r){
 			if (locals.room && r.id===locals.room.id) return;
-			var	$room = roomFinder.$square(r),
+			let	$room = roomFinder.$square(r),
 				w = getWatch(r.id);
 			if (w) {
-				var $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
-				var txt = "You're watching this room.";
+				let $unseen = $('<span>').addClass('watch-count').text(w.nbunseen);
+				let txt = "You're watching this room.";
 				if (w.nbunseen) {
 					$unseen.addClass('has-unseen');
 					txt += " There's "+w.nbunseen+" new message";
@@ -131,13 +131,13 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 				$unseen.attr('title', txt).appendTo($room.find(".room-head"));
 			}
 			if (connected) {
-				var $hover = $("<div>").addClass("room-hover").appendTo($room);
-				var $last = $('<div>').addClass('room-last-created').appendTo($hover);
+				let $hover = $("<div>").addClass("room-hover").appendTo($room);
+				let $last = $('<div>').addClass('room-last-created').appendTo($hover);
 				if (r.lastcreated) {
 					$last.html(time.formatRelativeTime(r.lastcreated))
 				}
-				var $buts = $('<div>').addClass("room-buttons").appendTo($hover);
-				var iswatched = !!w;
+				let $buts = $('<div>').addClass("room-buttons").appendTo($hover);
+				let iswatched = !!w;
 				$('<button>').text(w ? 'unwatch' : 'watch').click(function(){
 					if (iswatched) {
 						ws.emit('unwat', r.id);
@@ -152,14 +152,14 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 				$("<button>").addClass("room-enter").text("enter").appendTo($buts);
 			}
 			$room.appendTo($t).click(function(){
-				location = r.path;
+				document.location = r.path;
 			});
 		});
 		return $container.append($t);
 	}
 
 	function cssFitSquares(selector, minSize, pageWidth){
-		var	nbSquares = Math.max(pageWidth/ minSize | 0, 2),
+		let	nbSquares = Math.max(pageWidth/ minSize | 0, 2),
 			squareSide = (((pageWidth-24) / nbSquares) - 3) | 0;
 		return selector + '{'
 		+ 'width:'+squareSide+'px !important;'
@@ -192,9 +192,9 @@ miaou(function(roomFinder, locals, notif, time, watch, usr, ws){
 				$("#room-search-input").val('');
 				fetchRooms(callback);
 			});
-			var	pageWidth = $('#rooms-page').innerWidth() - 3;
+			let	pageWidth = $('#rooms-page').innerWidth() - 3;
 			if (pageWidth>100) {
-				var style = document.createElement('style');
+				let style = document.createElement('style');
 				style.type = 'text/css';
 				style.innerHTML = cssFitSquares('.room', 175, pageWidth)
 				+ cssFitSquares('.room.dialog-square', 130, pageWidth);

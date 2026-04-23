@@ -5,16 +5,16 @@ miaou(function(win, chat, gui, md, ws){
 
 	if (gui.mobile) return;
 
-	var sides = ['left', 'bottom', 'right'];
+	let sides = ['left', 'bottom', 'right'];
 
 	sides.forEach(function(side){
 		$('<div/>').addClass('mwincontainer').addClass(side).appendTo(document.body);
 	});
 
 	chat.on('incoming_message', function(message){
-		$('.mwintab').filter(function(){ return $(this).attr('mid')==message.id }).addClass('new');
-		var $mwin = $('#mwin');
-		if ($mwin.length && $mwin.attr('mid')==message.id) {
+		$('.mwintab').filter(function(){ return $(this).attr('mid')===message.id }).addClass('new');
+		let $mwin = $('#mwin');
+		if ($mwin.length && $mwin.attr('mid')===message.id) {
 			$mwin.dat('message', message);
 			md.render(
 				$mwin.find('.content').empty().css('max-height', $(window).height()*.85),
@@ -25,9 +25,9 @@ miaou(function(win, chat, gui, md, ws){
 
 	// called for the big central mwin only
 	function closeMWin(){
-		var $mwin = $('#mwin');
+		let $mwin = $('#mwin');
 		if ($mwin.length) {
-			var	$c = $mwin.find('.content'),
+			let	$c = $mwin.find('.content'),
 				m = $mwin.dat('message');
 			if (m && $c.length)	md.unrender($c, m);
 			$mwin.remove();
@@ -39,7 +39,7 @@ miaou(function(win, chat, gui, md, ws){
 		closeMWin();
 		$('.mwintab[mid='+message.id+']').remove();
 		if (side) {
-			var	line = (message.content||message.authorname).split("\n")[0],
+			let	line = (message.content||message.authorname).split("\n")[0],
 				tokens = line.split(/\s+/),
 				title = tokens[0], i=1;
 			while (i<tokens.length && title.length+tokens[i].length<20) title += ' '+tokens[i++];
@@ -48,8 +48,8 @@ miaou(function(win, chat, gui, md, ws){
 				.attr('mid', message.id).click(function(){ win.add(message) })
 			)
 		} else {
-			var $mc = $('<div/>').addClass('content');
-			var $mwin = $('<div id=mwin/>').attr('mid', message.id).addClass('message').append($mc);
+			let $mc = $('<div/>').addClass('content');
+			let $mwin = $('<div id=mwin/>').attr('mid', message.id).addClass('message').append($mc);
 			$mwin.append($('<div class=remover/>').text('X').click(closeMWin)).appendTo(document.body);
 			sides.forEach(function(side){
 				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));

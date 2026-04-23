@@ -2,7 +2,7 @@
 
 miaou(function(usr, chat, ed, locals, mod, time, ws){
 
-	var	levels = ['member', 'admin', 'owner'],
+	let	levels = ['member', 'admin', 'owner'],
 		recentUsers = []; // sorted list of {id,name,mc} (this list isn't displayed but used for ping autocompletion)
 
 	// o is an object with avs and avk (may be a user or a message)
@@ -23,7 +23,7 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 	// if the room is a dialog room and we guess the name of the other user, return this name
 	usr.interlocutor = function(w){
 		if (!w.dialog) return;
-		var names = w.name.match(/^([a-zA-Z][\w\-]{2,19}) & ([a-zA-Z][\w\-]{2,19})$/);
+		let names = w.name.match(/^([a-zA-Z][\w\-]{2,19}) & ([a-zA-Z][\w\-]{2,19})$/);
 		if (!names) return;
 		if (names[1]===locals.me.name) return names[2];
 		if (names[2]===locals.me.name) return names[1];
@@ -42,9 +42,9 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 	}
 
 	usr.showUserHoverButtons = function(){
-		var user = $(this).dat('user');
+		let user = $(this).dat('user');
 		if (user.name===locals.me.name) return;
-		var decs = $('.decorations', this)
+		let decs = $('.decorations', this)
 		.append($('<button>').text('ping').click(function(){
 			ed.ping(user.name);
 		}))
@@ -60,7 +60,7 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 
 	usr.pick = function(userId){
 		for (user of recentUsers) {
-			if (user.id==userId) return user;
+			if (user.id===userId) return user;
 		}
 	}
 
@@ -86,7 +86,7 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 	}
 
 	usr.insertAmongRecentUsers = function(user, enterTime){
-		var i;
+		let i;
 		user.mc = enterTime;
 		for (i=0; i<recentUsers.length; i++) {
 			if (recentUsers[i].id===user.id) {
@@ -104,7 +104,7 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 	}
 
 	usr.insertInUserList = function(user, enterTime){
-		var target, $u = $user(user);
+		let target, $u = $user(user);
 		if (!enterTime) enterTime = time.now();
 		if ($u.length) {
 			if (enterTime <= $u.dat('time')) return $u;
@@ -140,7 +140,7 @@ miaou(function(usr, chat, ed, locals, mod, time, ws){
 
 	// returns true if the user's authorization level in room is at least the passed one
 	usr.checkAuth = function(auth){
-		for (var i=levels.length; i--;) {
+		for (let i=levels.length; i--;) {
 			if (levels[i]===locals.room.auth) return true;
 			if (levels[i]===auth) return false;
 		}

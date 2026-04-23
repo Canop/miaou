@@ -2,15 +2,15 @@
 
 miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 
-	var	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid}
+	let	notifications = [], // array of {r:roomId, rname:roomname, mid:messageid}
 		notifMessage, // an object created with md.notificationMessage displaying notifications
 		hasWatchUnseen = false,
 		nbUnseenMessages = 0,
 		lastUserAction = 0; // ms
 
 	function lastNotificationInRoom(roomId){
-		for (var i=notifications.length; i--;) {
-			if (notifications[i].r==(roomId||locals.room.id)) return notifications[i];
+		for (let i=notifications.length; i--;) {
+			if (notifications[i].r===(roomId||locals.room.id)) return notifications[i];
 		}
 	}
 
@@ -38,17 +38,16 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 	// goes to next ping in the room. Return true if there's still another one after that
 	notif.nextPing = function(){
 		lastUserAction = Date.now();
-		var done = false;
-		for (var i=0; i<notifications.length; i++) {
-			if (notifications[i].r==locals.room.id) {
+		let done = false;
+		for (let i=0; i<notifications.length; i++) {
+			if (notifications[i].r===locals.room.id) {
 				if (done) {
 					return true;
-				} else {
-					md.focusMessage(notifications[i].mid);
-					ws.emit("rm_ping", notifications[i].mid);
-					notifications.splice(i++, 1);
-					done = true;
 				}
+				md.focusMessage(notifications[i].mid);
+				ws.emit("rm_ping", notifications[i].mid);
+				notifications.splice(i++, 1);
+				done = true;
 			}
 		}
 		return false;
@@ -56,8 +55,8 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 
 	notif.clearPings = function(roomId){
 		let mids = [];
-		for (var i=notifications.length; i--;) {
-			if (!roomId || notifications[i].r==roomId) {
+		for (let i=notifications.length; i--;) {
+			if (!roomId || notifications[i].r===roomId) {
 				mids.push(notifications[i].mid);
 				notifications.splice(i, 1);
 			}
@@ -76,9 +75,9 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 			return;
 		}
 		if (notifMessage) notifMessage.remove();
-		var	localPings = [], otherRooms = {};
+		let	localPings = [], otherRooms = {};
 		notifications.forEach(function(n){
-			if (locals.room.id==n.r) {
+			if (locals.room.id===n.r) {
 				localPings.push(n);
 			} else {
 				otherRooms[n.r] = n.rname;
@@ -102,17 +101,17 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 					})
 				).appendTo($c)
 			}
-			var	otherRoomIds = Object.keys(otherRooms),
+			let	otherRoomIds = Object.keys(otherRooms),
 				nbotherrooms = otherRoomIds.length;
 			if (nbotherrooms) {
-				var t = "You've been pinged in room";
+				let t = "You've been pinged in room";
 				if (nbotherrooms>1) t += 's';
-				var $otherrooms = $('<div>').append($('<span>').text(t)).appendTo($c);
+				let $otherrooms = $('<div>').append($('<span>').text(t)).appendTo($c);
 				$.each(otherRooms, function(r, rname){
-					var $brs = $('<div>').addClass('pingroom').appendTo($otherrooms);
+					let $brs = $('<div>').addClass('pingroom').appendTo($otherrooms);
 					$('<button>').addClass('openroom').text(rname).click(function(){
 						ws.emit('watch_raz');
-						setTimeout(function(){	location = r; }, 250); // timeout so that the raz is sent
+						setTimeout(function(){	document.location = r; }, 250); // timeout so that the raz is sent
 					}).appendTo($brs);
 					$('<button>').addClass('clearpings').text('clear').click(function(){
 						notif.clearPings(r);
@@ -125,7 +124,7 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 
 	// add pings to the list and update the GUI
 	notif.pings = function(pings){
-		var	changed = false,
+		let	changed = false,
 			visible = vis(),
 			lastUserActionAge = Date.now()-lastUserAction,
 			map = notifications.reduce(function(map, n){ map[n.mid]=1;return map; }, {});
@@ -153,10 +152,10 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 	notif.removePing = function(mid, forwardToServer, flash){
 		if (!mid) return;
 		// we assume here there's at most one notification to a given message
-		for (var i=0; i<notifications.length; i++) {
-			if (notifications[i].mid==mid) {
+		for (let i=0; i<notifications.length; i++) {
+			if (notifications[i].mid===mid) {
 				if (flash) {
-					var $md = $('#messages .message[mid='+mid+']');
+					let $md = $('#messages .message[mid='+mid+']');
 					if ($md.length) {
 						md.goToMessageDiv($md);
 					}
@@ -182,7 +181,7 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 	// FIXME : it's also called if the message isn't really new (loading old pages)
 	notif.touch = function(mid, ping, from, text, r, $md){
 		r = r || locals.room;
-		var	visible = vis(),
+		let	visible = vis(),
 			lastUserActionAge = Date.now()-lastUserAction;
 		if (ping && (mid||$md) && !$('#mwin[mid='+mid+']').length) {
 			if (visible  && lastUserActionAge<2000) {
@@ -206,7 +205,7 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 	}
 
 	notif.updateTab = function(hasPing, nbUnseenMessages){
-		var	title = locals.room.name,
+		let	title = locals.room.name,
 			icon = 'static/M-32';
 		if (hasPing) {
 			title = '*'+title;
@@ -221,16 +220,16 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 		$('#favicon').attr('href', icon+'.png');
 	}
 
-	var lastfocustime = 0;
+	let lastfocustime = 0;
 	function onfocus(){
-		var now = Date.now();
+		let now = Date.now();
 		if (now-lastfocustime<1000) return;
 		lastfocustime = now;
 		ws.emit('watch_raz');
 		nbUnseenMessages = 0;
 		notif.updateTab(0, 0);
 		// we go to the last notification message, highlight it and remove the ping
-		var ln = lastNotificationInRoom();
+		let ln = lastNotificationInRoom();
 		if (ln) notif.removePing(ln.mid, true, true);
 		if (!gui.mobile) $('#input').focus();
 		notif.userAct();

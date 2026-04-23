@@ -31,7 +31,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 
 	gui.scrollToBottom = function($m){
 		_scrollToBottom();
-		if ($m && $m.find) { // FIXME : cleaner API
+		if ($m?.find) { // FIXME : cleaner API
 			$m.find('img').imgOn('load', _scrollToBottom);
 		}
 	}
@@ -123,7 +123,7 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 				vote = $e.attr('vote-level'),
 				o = { mid:message.id};
 			if (message.vote) o.remove = message.vote;
-			if (message.vote!=vote) o.add = vote;
+			if (message.vote!==vote) o.add = vote;
 			md.applyVote(o);
 			ws.emit('vote', o);
 			notif.userAct(message.id);
@@ -235,9 +235,16 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		.on('click', '.opener', md.opener)
 		.on('click', '.closer', md.closer);
 
-		if (usr.checkAuth('admin')) $('#room-edit').click(function(){ location = 'room?id='+locals.room.id });
-		else $('#room-edit').hide();
-		$('#auths').click(function(){ location = 'auths?id='+locals.room.id });
+		if (usr.checkAuth('admin')) {
+			$('#room-edit').click(function(){
+				document.location = 'room?id='+locals.room.id;
+			});
+		} else {
+			$('#room-edit').hide();
+		}
+		$('#auths').click(function(){
+			document.location = 'auths?id='+locals.room.id;
+		});
 
 		$('#showPreview').click(function(){
 			$(this).hide();

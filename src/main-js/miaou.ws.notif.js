@@ -1,7 +1,7 @@
 // notification of ws connections or reconnections
 miaou(function(ws, md){
 
-	var	notif,
+	let	notif,
 		timer;
 
 	function onOff(){

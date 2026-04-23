@@ -10,7 +10,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	//	add and remove are in [ up, down, star, pin ] (optional)
 	md.applyVote = function(o){
 		$('.message[mid='+o.mid+']').each(function(){
-			var	$md = $(this),
+			let	$md = $(this),
 				m = $md.dat('message');
 			if (o.add) m[o.add] = (m[o.add]||0)+1;
 			if (o.remove) m[o.remove] = (m[o.remove]||0)-1;
@@ -28,10 +28,10 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	}
 
 	md.opendIfClosed = function($message){
-		var $opener = $message.find(".opener");
+		let $opener = $message.find(".opener");
 		if (!$opener.length) return;
 		$opener.removeClass('opener').addClass('closer');
-		var wab = gui.isAtBottom();
+		let wab = gui.isAtBottom();
 		$message.find('.content').removeClass('closed');
 		notif.userAct($message.dat('message').id);
 		if (wab) gui.scrollToBottom();
@@ -42,7 +42,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		return false;
 	}
 	md.closer = function(e){
-		var	wab = gui.isAtBottom(),
+		let	wab = gui.isAtBottom(),
 			$md = $(this).removeClass('closer').addClass('opener').closest('.message');
 		$md.find('.content').addClass('closed');
 		notif.userAct($md.dat('message').id);
@@ -55,11 +55,11 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	// returns the html needed to fill the message menu (the thing at the top right visible on hover)
 	// Message status is assumed to be up to date
 	function getMessageMenuHtml(message){
-		var infos = [];
+		let infos = [];
 		if (message.old && !message.editable) infos.push('too old to edit');
 		infos.push(time.formatRelativeTime(message.created));
-		var h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ';
-		h += `<a class=copysrc>`
+		let h = infos.map(function(txt){ return '<span class=txt>'+txt+'</span>' }).join(' - ') + ' ';
+		h += "<a class=copysrc>"
 		+ '&#xf121;' // fontello icon-code
 		+ '</a> ';
 		if (message.id) {
@@ -73,7 +73,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 				+ '&#xe82a;' // fontello icon-window
 				+ '</a> ';
 			}
-			var possibleVotes = [];
+			let possibleVotes = [];
 			if (usr.checkAuth('admin')) possibleVotes.push(chat.voteLevels[0]); // pin
 			if (message.author!==locals.me.id || usr.checkAuth('admin')) {
 				possibleVotes.push(chat.voteLevels[1]); // star
@@ -85,17 +85,17 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 				'" vote-level='+l.key+' title="'+l.key+'">'+l.icon+'</span>'
 			})
 			.join('');
-			if (message.pin>(message.vote=="pin") && usr.checkAuth('admin')) {
+			if (message.pin>(message.vote==="pin") && usr.checkAuth('admin')) {
 				h += ' - <span class=unpin>unpin</span>';
 			}
 		}
 		return h;
 	}
 
-	var $hoveredMessage;
+	let $hoveredMessage;
 	md.showMessageHoverInfos = function(){
 		md.hideMessageHoverInfos();
-		var	$message = $(this),
+		let	$message = $(this),
 			message = $message.dat('message'),
 			$decs = $message.find('.decorations');
 		$hoveredMessage = $message;
@@ -132,8 +132,8 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	// mainly a workaround for some mouseleave events I can't catch
 	md.hideNotHoveredMessageInfos = function(e){
 		if ($hoveredMessage) {
-			var off = $hoveredMessage.offset();
-			var x = e.pageX-off.left, y = e.pageY-off.top;
+			let off = $hoveredMessage.offset();
+			let x = e.pageX-off.left, y = e.pageY-off.top;
 			if (x<0 || x>$hoveredMessage.outerWidth() || y<0 || y>$hoveredMessage.outerHeight()) {
 				md.hideMessageHoverInfos();
 			}
@@ -142,13 +142,13 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 
 	// argument : messageId or $messageDiv
 	md.goToMessageDiv = function(arg){
-		var	$messages = gui.$messageScroller,
+		let	$messages = gui.$messageScroller,
 			mstop = $messages.offset().top,
 			$message = typeof arg === "number" || typeof arg === "string" ? $('.message[mid='+arg+']', $messages) : arg;
 		if (!$message.length) return;
 		$message.addClass('goingto');
 		setTimeout(function(){
-			var mtop = $message.offset().top;
+			let mtop = $message.offset().top;
 			if (mtop<mstop || mtop>mstop+$messages.height()) {
 				$messages.animate({scrollTop: mtop-mstop+$messages.scrollTop()-25}, 400);
 			}
@@ -161,7 +161,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	//  and then scroll to it and flashes it
 	md.focusMessage = function(messageId){
 		if (!messageId) return;
-		var	$messages = $('#messages .message'),
+		let	$messages = $('#messages .message'),
 			i,
 			l = $messages.length,
 			beforeId = 0,

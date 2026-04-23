@@ -2,11 +2,11 @@
 
 miaou(function(mod, chat, md, ws){
 
-	var durs = {};
+	let durs = {};
 	durs['d'] = 24 * (durs['h'] = 60 * (durs['m'] = 60));
 
 	mod.dialog = function(user){
-		var $c = $('<p>').addClass('ban-dialog');
+		let $c = $('<p>').addClass('ban-dialog');
 		$('<span>').text("Duration :").appendTo($c);
 		function radio(idval, text, $r){
 			$c.append('<br>').append(
@@ -38,7 +38,7 @@ miaou(function(mod, chat, md, ws){
 			buttons:{
 				Cancel: null,
 				Ban: function(){
-					var	ban = {banned:user.id, bannedname:user.name, reason:$('#ban-reason').val()},
+					let	ban = {banned:user.id, bannedname:user.name, reason:$('#ban-reason').val()},
 						durationtype = $('input[name=duration-type]:checked').val(),
 						m = durationtype.match(/^([a-z]+)(\d+)$/);
 					if (m) {

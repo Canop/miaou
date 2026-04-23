@@ -1,7 +1,7 @@
 
 miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 
-	var openpaneltimer, showroomstimer;
+	let openpaneltimer, showroomstimer;
 	function openRoomsPanel(){
 		if ($('#rooms-panel').hasClass('open')) return;
 		fish.closeBubbles();
@@ -53,7 +53,7 @@ miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 	$('#menu-settings').attr('href', "prefs?room="+locals.room.id);
 
 	if (locals.room) window.name = 'room_'+locals.room.id;
-	else location = 'rooms';
+	else document.location = 'rooms';
 	if (locals.room.private) {
 		$('#roomname').addClass('private').attr('title', 'This room is private');
 	}
@@ -61,7 +61,7 @@ miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 		$('#auths').hide();
 	}
 
-	var righttab = window.righttab = function(page, createIfNotExists){
+	let righttab = function(page, createIfNotExists){
 		let $page = $(document.getElementById(page));
 		if (!$page.length) {
 			if (!createIfNotExists) return;
@@ -84,7 +84,8 @@ miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 		}
 		miaou.md.resizeAll();
 		return $page;
-	}
+	};
+	window.righttab = righttab;
 	$('#right .tab').click(function(){
 		righttab($(this).attr('page'));
 	});
@@ -99,12 +100,12 @@ miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 	});
 
 	$('#menu-logout').click(function(){
-		delete localStorage['successfulLoginLastTime'];
-		setTimeout(function(){ location = 'logout' }, 100);
+		localStorage.removeItem('successfulLoginLastTime');
+		setTimeout(function(){ document.location = 'logout' }, 100);
 	});
 	$('#me').text(locals.me.name);
 
-	$('#create-room').click(function(){ location="room" });
+	$('#create-room').click(function(){ document.location="room" });
 
 	$('#M-menu').on('mouseenter', function(){
 		hideRoomsPanel();
@@ -163,7 +164,7 @@ miaou(function(chat, fish, gui, locals, roomFinder, time, watch, ws){
 			if (hclass) $panel.addClass(hclass);
 		}
 
-		setInputPanelHeight(parseInt(localStorage.getItem("input-panel-height")));
+		setInputPanelHeight(Number.parseInt(localStorage.getItem("input-panel-height")));
 
 		$(window).on("mousemove", function(e){
 			let x = e.pageX - dx;

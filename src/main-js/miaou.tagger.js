@@ -7,7 +7,7 @@ miaou(function(tagger, fmt, locals){
 	// this is expected to wrap a .tag-set element
 	$.fn.editTagSet = function(){
 		this.hide();
-		var	$field = this,
+		let	$field = this,
 			tags = this.val().split(/\s+/g).filter(Boolean),
 			$tagSet = $("<div>").addClass("tag-set edited").append(tags.map(function(t){
 				return $("<span class=tag>").text(t);
@@ -33,13 +33,13 @@ miaou(function(tagger, fmt, locals){
 				console.log("disregard obsolete completion", $input.val(), matches);
 				return;
 			}
-			var apt = alreadyPresentTags();
+			let apt = alreadyPresentTags();
 			matches = matches.filter(function(t){
 				return !~apt.indexOf(t.name);
 			});
 			$input.toggleClass("invalid", !matches.length);
 			if (!matches.length) return $menu.hide();
-			var offset = $tagSet.offset();
+			let offset = $tagSet.offset();
 			$menu.css({
 				position: "fixed",
 				left: offset.left,
@@ -62,7 +62,7 @@ miaou(function(tagger, fmt, locals){
 			$input.val(lastPat).focus();
 		}
 		function moveSelect(d){ // d: 1 or -1
-			var	$items = $menu.find(".autocomplete-tag"),
+			let	$items = $menu.find(".autocomplete-tag"),
 				$selected = $menu.find(".selected"),
 				n = $items.length,
 				index;
@@ -80,23 +80,23 @@ miaou(function(tagger, fmt, locals){
 		$input
 		.on('keydown', function(e){
 			if ($menu.is(":visible")) {
-				var pat = $input.val();
-				if (e.which==38||e.which==37) { // up/left arrow
+				let pat = $input.val();
+				if (e.which===38||e.which===37) { // up/left arrow
 					moveSelect(-1);
-				} else if (e.which==40||e.which==39) { //down/right arrow
+				} else if (e.which===40||e.which===39) { //down/right arrow
 					moveSelect(1);
-				} else if (e.which==27) { // escape
+				} else if (e.which===27) { // escape
 					$menu.hide();
 					// revert to pre-enter state ?
-				} else if (e.which==13) { // enter
-					var s = $menu.find(".selected .tag").text();
+				} else if (e.which===13) { // enter
+					let s = $menu.find(".selected .tag").text();
 					if (s) select(s);
 					$menu.hide();
-				} else if (pat && (e.which==32||e.which==9||e.which==13)) { // space/tab/enter
+				} else if (pat && (e.which===32||e.which===9||e.which===13)) { // space/tab/enter
 					$.get('json/tags?pattern='+encodeURIComponent(pat), function(matches){
-						var val = $input.val().trim();
-						for (var i=0; i<matches.length; i++) {
-							if (val==matches[i].name) {
+						let val = $input.val().trim();
+						for (let i=0; i<matches.length; i++) {
+							if (val===matches[i].name) {
 								select(val);
 								$input.val("");
 								$menu.hide();
@@ -111,14 +111,14 @@ miaou(function(tagger, fmt, locals){
 			}
 		})
 		.on('keyup', function(e){
-			var pat = this.value.trim();
+			let pat = this.value.trim();
 			if (pat===lastPat) return;
 			if (pat) {
 				$.get('json/tags?pattern='+encodeURIComponent(pat), receiveMatches);
 			} else {
 				$menu.hide();
 			}
-			if (e.which==13) return false;
+			if (e.which===13) return false;
 			lastPat = pat;
 		})
 		.on('blur', function(){

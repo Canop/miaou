@@ -1,9 +1,9 @@
 miaou(function(links, gui, locals, md, roomFinder, skin, usr){
 
-	var linkwzin;
+	let linkwzin;
 
 	function internalLinkWzin(mid){
-		var $dest = $('#messages .message[mid='+mid+']');
+		let $dest = $('#messages .message[mid='+mid+']');
 		if (!$dest.length) return;
 		linkwzin = wzin($dest, $(this), {zIndex:5, fill:skin.wzincolors.link, scrollable:'#message-scroller'})
 	}
@@ -73,10 +73,10 @@ miaou(function(links, gui, locals, md, roomFinder, skin, usr){
 				} else {
 					// it's an url for another room or for a message in another room
 					$link.click(function(e){
-						if (gui.currentDownKey==17) { // ctrl
+						if (gui.currentDownKey===17) { // ctrl
 							return;
 						}
-						location = this.href;
+						document.location = this.href;
 						return false;
 					})
 					.addClass('message-bubbler').attr('roomId', roomId).attr('mid', mid);

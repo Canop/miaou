@@ -4,7 +4,7 @@
 
 window.wzin = (function(){
 
-	var nextId = 0;
+	let nextId = 0;
 
 	function Wzin(e1, e2, opts){
 		this.id = nextId++;
@@ -36,7 +36,7 @@ window.wzin = (function(){
 		this.svg.remove();
 		if (this.observer) this.observer.disconnect();
 		while (this.bindings.length) {
-			var args = this.bindings.shift();
+			let args = this.bindings.shift();
 			args[0].off(args[1], args[2]);
 		}
 		if (this.savedBg) {
@@ -46,7 +46,7 @@ window.wzin = (function(){
 	}
 
 	Wzin.prototype.update = function(){
-		var e1, e2; // inside this function, e1 is the topmost of this.e1 and this.e2
+		let e1, e2; // inside this function, e1 is the topmost of this.e1 and this.e2
 		if (this.e1.offset().top<=this.e2.offset().top) {
 			e1 = this.e1; e2 = this.e2;
 		} else {
@@ -59,7 +59,7 @@ window.wzin = (function(){
 			this.savedBg = [this.e1.css('background'), this.e2.css('background')];
 			$().add(e1).add(e2).css({background:this.fill});
 		}
-		var	p1 = e1.offset(), h1 = e1.outerHeight(), w1 = e1.outerWidth(),
+		let	p1 = e1.offset(), h1 = e1.outerHeight(), w1 = e1.outerWidth(),
 			p2 = e2.offset(), h2 = e2.outerHeight(), w2 = e2.outerWidth(),
 			H = Math.max(p2.top+h2, p1.top+h1) - p1.top,
 			S = 100, // width of the wzin itself (the external curve, without the elements)
@@ -75,10 +75,10 @@ window.wzin = (function(){
 
 		p1.left -= ps.left; p1.top -= ps.top;
 		p2.left -= ps.left; p2.top -= ps.top;
-		var	pl = Math.min(p1.left, p2.left),
+		let	pl = Math.min(p1.left, p2.left),
 			antitwist = Math.abs(p1.left-p2.left) > p2.top-p1.top-h1;
 
-		var	path,
+		let	path,
 			l1 = p1.left,
 			l2 = p2.left,
 			B1 = p1.top+h1,
@@ -92,7 +92,7 @@ window.wzin = (function(){
 				path += " H "+l2;
 				path += " V "+p2.top;
 				path += " H "+pl;
-				var dx = Math.min(s, p2.top-p1.top-h1+10);
+				let dx = Math.min(s, p2.top-p1.top-h1+10);
 				path += " C "+(pl-dx)+' '+(p2.top)+ ', '+(pl-dx)+' '+B1+ ', '+l1+' '+B1;
 			} else {
 				path += " C "+(pl-S)+' '+p1.top+ ', '+(pl-S)+' '+B2+ ', '+l2+' '+B;
@@ -105,7 +105,7 @@ window.wzin = (function(){
 				}
 			}
 		} else {
-			var	r1 = l1+w1,
+			let	r1 = l1+w1,
 				r2 = l2+w2,
 				r = Math.max(r1, r2);
 			path = "M "+r1+' '+p1.top;
@@ -119,12 +119,12 @@ window.wzin = (function(){
 			}
 		}
 
-		var svg = this.svg = ù('<svg', this.parent)
+		let svg = this.svg = ù('<svg', this.parent)
 		.css({position:'fixed', zIndex:this.zIndex, pointerEvents:'none', width:W, height:H});
 		$(svg.n).offset(ps).css({pointerEvents:'none'});
 		ù('<path', svg).attr({d:path, fill:this.fill});
 		if (!this.chbg) {
-			var grad = svg.def('<linearGradient').stops(
+			let grad = svg.def('<linearGradient').stops(
 				{offset:"0%", stopColor:this.fill, stopOpacity:1},
 				{offset:"7%", stopColor:this.fill, stopOpacity:0.9},
 				{offset:"20%", stopColor:this.fill, stopOpacity:0.2},

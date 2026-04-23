@@ -3,7 +3,7 @@ miaou(function(locals){
 		$(document.body).addClass('mobile');
 	}
 
-	var	room = locals.room,
+	let	room = locals.room,
 		socket = window.io.connect(location.origin);
 
 	socket.on('connect', function(){
@@ -14,9 +14,9 @@ miaou(function(locals){
 		$('#response').text('accepted');
 	}).on('request_outcome', function(outcome){
 		if (outcome.granted) {
-			location = room.id;
+			document.location = room.id;
 		} else {
-			var t = "You have been denied access to the room";
+			let t = "You have been denied access to the room";
 			if (outcome.message) {
 				t += ' with this message:';
 				$('#denyMessage').html(miaou.fmt.mdTextToHtml(outcome.message));
@@ -26,7 +26,7 @@ miaou(function(locals){
 	});
 
 	$('.rendered').html(function(_, h){ return miaou.fmt.mdTextToHtml(h) });
-	$('#cancel').click(function(){ location="rooms" });
+	$('#cancel').click(function(){ document.location="rooms" });
 	$('#request').click(function(){
 		socket.emit('request', {room:room.id, message:$('#request_speech').val() });
 		$('#request_speech').replaceWith($('<div>').addClass('rendered')

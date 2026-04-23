@@ -2,12 +2,51 @@
 #
 # Complete help on configuration: https://dystroy.org/bacon/config/
 
-default_job = "eslint-server"
+default_job = "biome-libs"
 
-[jobs.eslint-server]
+[jobs.biome-libs]
+env.RAYON_NUM_THREADS = "1" # for reproducible order
+command = [
+    "npx", "@biomejs/biome", "lint",
+    "--colors", "force",
+    "./libs",
+    "--skip", "complexity/useArrowFunction",
+    "--skip", "style/useTemplate",
+]
+need_stdout = true
+analyzer = "biome"
+watch = ["libs"]
+
+[jobs.biome-client]
+env.RAYON_NUM_THREADS = "1" # for reproducible order
+command = [
+    "npx", "@biomejs/biome", "lint",
+    "--colors", "force",
+    "./src",
+    "--skip", "complexity/useArrowFunction",
+    "--skip", "style/useTemplate",
+    "--skip", "style/noArguments",
+    "--skip", "style/useConst",
+    "--skip", "suspicious/noRedundantUseStrict",
+    "--skip", "style/useSingleVarDeclarator",
+    "--skip", "complexity/noForEach",
+    "--skip", "style/noParameterAssign",
+    "--skip", "complexity/useLiteralKeys",
+    "--skip", "suspicious/noAssignInExpressions", # TODO clean 
+]
+need_stdout = true
+analyzer = "biome"
+watch = [
+    "libs",
+    "biome.json",
+]
+
+
+[jobs.eslint-libs]
 command = ["npx", "eslint", "--color", "libs/*"]
 need_stdout = true
 analyzer = "eslint"
 watch = ["libs"]
 
 [keybindings]
+c = "job:biome-client"

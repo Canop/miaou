@@ -4,7 +4,7 @@ miaou(function(wz, gui, skin){
 
 	if (gui.mobile) return;
 
-	var	wzins = [],
+	let	wzins = [],
 		frozen;
 
 	// highlights the conversation graph on hover of one message
@@ -12,22 +12,22 @@ miaou(function(wz, gui, skin){
 	//  to a future message) and guarantees acyclicity
 	wz.onmouseenter = function(){
 		if (wzins.length) return;
-		var	colors = skin.wzincolors.conv,
+		let	colors = skin.wzincolors.conv,
 			opts = { zIndex:5, fill:colors[0], scrollable:gui.$messageScroller },
 			$message = $(this), w,
 			ci = -1, // index of the central message among all
 			cid = $message.dat('message').id;
 		if (!cid) return;
-		var $messages = $('#messages .message');
-		var messages = $messages.map(function(i){
-			var m=$(this).dat('message');
+		let $messages = $('#messages .message');
+		let messages = $messages.map(function(i){
+			let m=$(this).dat('message');
 			if (m.id===cid) ci=i;
 			return m
 		}).get();
 		while ((w=wzins.pop())) w.remove();
-		for (var ui=ci, i=ci; i-- && messages[ui].repliesTo;) {
+		for (let ui=ci, i=ci; i-- && messages[ui].repliesTo;) {
 			if (messages[i].id===messages[ui].repliesTo) {
-				var self = messages[i].author===messages[ui].author;
+				let self = messages[i].author===messages[ui].author;
 				wzins.push(wzin(
 					$messages.eq(ui),
 					$messages.eq(i),
@@ -41,9 +41,9 @@ miaou(function(wz, gui, skin){
 		}
 		opts.fill = undefined;
 		(function down(si, colorIndex){
-			for (var i=si+1; i<messages.length; i++) {
+			for (let i=si+1; i<messages.length; i++) {
 				if (messages[i].repliesTo && messages[i].repliesTo===messages[si].id) { // be wary of flakes
-					var self = messages[i].author===messages[si].author;
+					let self = messages[i].author===messages[si].author;
 					wzins.push(wzin(
 						$messages.eq(si),
 						$messages.eq(i),
@@ -62,12 +62,12 @@ miaou(function(wz, gui, skin){
 
 	wz.onmouseleave = function(){
 		if (frozen) return;
-		var w;
+		let w;
 		while ((w=wzins.pop())) w.remove();
 	}
 
 	wz.updateAll = function(){
-		for (var i=0; i<wzins.length; i++) wzins[i].update();
+		for (let i=0; i<wzins.length; i++) wzins[i].update();
 	}
 
 	$(window).click(function(){

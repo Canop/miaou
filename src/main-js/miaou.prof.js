@@ -2,12 +2,12 @@
 
 miaou(function(prof, chat, ed, gui, locals, skin, ws){
 
-	var showTimer;
+	let showTimer;
 
 	prof.checkOverProfile = function(e){
-		var elems = $('.profile,.profiled,.profiler').get();
-		for (var i=0; i<elems.length; i++) {
-			var $o = $(elems[i]), off = $o.offset();
+		let elems = $('.profile,.profiled,.profiler').get();
+		for (let i=0; i<elems.length; i++) {
+			let $o = $(elems[i]), off = $o.offset();
 			if (
 				e.pageX>=off.left && e.pageX<=off.left+$o.outerWidth()
 				&& e.pageY>=off.top && e.pageY<=off.top+$o.outerHeight()
@@ -20,7 +20,7 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 
 	function joinDivs($1, $2, cl){
 		$("."+cl).remove();
-		var	o1 = $1[0].getBoundingClientRect(),
+		let	o1 = $1[0].getBoundingClientRect(),
 			o2 = $2[0].getBoundingClientRect(),
 			top = Math.max(o1.top, o2.top),
 			bottom = Math.min(o1.top+o1.height, o2.top+o2.height);
@@ -36,18 +36,18 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 
 	prof.showNow = function(){
 		if ($('.dialog').length) return;
-		var $user = $(this).closest('.user');
+		let $user = $(this).closest('.user');
 		if (!$user.length) $user = $(this).closest('.user-messages').find('.user');
 		if (!$user.length) {
 			console.log("no $user", this);
 			return; // happens when we leave a removed message decoration
 		}
-		var	user = $user.dat('user') || $user.closest('.notification,.user-messages,.user-line').dat('user'),
+		let	user = $user.dat('user') || $user.closest('.notification,.user-messages,.user-line').dat('user'),
 			isInMessages = !!$user.closest("#messages").length,
 			$p = $('<div>').addClass('profile'),
 			url = 'publicProfile?user='+user.id+'&room='+locals.room.id;
 		if (gui.mobile) {
-			var	$page = $("<div>").addClass("profile-page").appendTo("body"),
+			let	$page = $("<div>").addClass("profile-page").appendTo("body"),
 				$buttons = $("<div class=profile-buttons>").appendTo($page);
 			$("<button>").text("back").appendTo($buttons).click(prof.hide);
 			if (user.id !== locals.me.id) {
@@ -69,7 +69,7 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 			}
 			$p.text('loading profile...').load(url).appendTo($page);
 		} else {
-			var	uo = $user.offset(),
+			let	uo = $user.offset(),
 				uh = $user.outerHeight(), uw = $user.width(),
 				wh = $(window).height(),
 				mintop = 0, maxbot = wh,
@@ -100,7 +100,7 @@ miaou(function(prof, chat, ed, gui, locals, skin, ws){
 
 	// used in chat.jade, chat.mob.jade and auths.jade
 	prof.show = function(){
-		var $user = $(this).closest('.user');
+		let $user = $(this).closest('.user');
 		if (!$user.length) $user = $(this).closest(".user-messages").children(".user");
 		if ($user.hasClass("profiler")) return;
 		prof.hide();

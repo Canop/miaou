@@ -2,7 +2,7 @@
 
 miaou(function(time){
 
-	var	offsetWithServer = 0, // in seconds
+	let	offsetWithServer = 0, // in seconds
 		roomEnterTime; // in seconds since epoch, server time
 
 	time.MMM = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -21,15 +21,15 @@ miaou(function(time){
 	}
 
 	time.formatDateDDMMM = function(date){
-		var d = date.getDate();
+		let d = date.getDate();
 		return (d<10 ? '0' : '') + d + ' ' + time.MMM[date.getMonth()];
 	}
 
 	// choose whether to add a relative date or an absolute one depending on the age
 	time.formatDateAuto = function(date){
-		var	now = new Date,
+		let	now = new Date,
 			m = date.getMinutes(), h = date.getHours(), Y = date.getFullYear(),
-			s = s = (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+			s = (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
 		if (now.getFullYear()===Y && now.getMonth()===date.getMonth() && now.getDate()===date.getDate()) {
 			return s;
 		}
@@ -37,7 +37,7 @@ miaou(function(time){
 	}
 
 	time.formatDate = function(t, f){ // t:time in ms
-		var	date = new Date(t);
+		let	date = new Date(t);
 		if (!f) return time.formatDateAuto(date);
 		return f
 		.replace(/YYYY/g, date.getFullYear())
@@ -51,10 +51,10 @@ miaou(function(time){
 	}
 
 	time.formatRelativeDate = function(t){ // time in ms
-		var now = Date.now(), a = (now - t) / 1000;
+		let now = Date.now(), a = (now - t) / 1000;
 		if (a < 50) return "a few seconds ago";
 		if (a < 500) {
-			var m = Math.round(a / 60);
+			let m = Math.round(a / 60);
 			return m > 1 ? (m  + ' minutes ago') : 'a minute ago';
 		}
 		return time.formatDate(t);
