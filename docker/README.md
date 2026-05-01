@@ -12,6 +12,7 @@ Miaou development environment using Docker
 ### Windows
 
  - [Docker and Docker Compose](https://docs.docker.com/engine/installation/windows/)
+ - Docker needs Hyper-V activated and purpose to activate it itself (restart needed). Beware : activating Hyper-V disables any other virtualisation softwares.
 
 ### Mac OS X
 
@@ -38,6 +39,11 @@ Miaou development environment using Docker
     Now you'll be given a *Client ID* and a *Client secret* that you'll have to copy/paste in your new `config.js` file.
 
  4. Prebuild Miaou:
+ 
+	Windows configuration :
+	
+	- When cloning miaou repository, make sure you keep LF and not CRLF or it will generate end of files errors during the prebuild
+	- Open PowerShell, you must be at the root directory of Miaou which contains the DockerFile
  
     ```bash
     docker-compose up -d
