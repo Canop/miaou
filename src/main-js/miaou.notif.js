@@ -56,7 +56,7 @@ miaou(function(notif, chat, gui, horn, locals, md, prefs, watch, ws){
 	notif.clearPings = function(roomId){
 		let mids = [];
 		for (let i=notifications.length; i--;) {
-			if (!roomId || notifications[i].r===roomId) {
+			if (!roomId || notifications[i].r == roomId) {
 				mids.push(notifications[i].mid);
 				notifications.splice(i, 1);
 			}
