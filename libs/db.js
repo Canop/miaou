@@ -996,6 +996,9 @@ proto.storeMessage = function(m, dontCheckAge){
 }
 
 proto.updateGetMessage = function(messageId, expr, userId){
+	if (!SAFE_UPDATE_EXPR.test(expr)) {
+		throw new Error('Unsafe message update expression: ' + expr);
+	}
 	return this.execute(
 		"update message set "+expr+" where id=$1",
 		[messageId],
@@ -1117,17 +1120,27 @@ proto.fetchUserPingRooms = function(userId){
 
 //////////////////////////////////////////////// #votes
 
-proto.addVote = function(roomId, userId, messageId, level){
-	var sql, args;
-	switch (level) {
-	case 'pin': case 'star': case 'up': case 'down':
-		sql = "insert into message_vote (message, player, vote) select $1, $2, $3";
-		sql += " where exists(select * from message where id=$1 and room=$4)"; // security check
-		args = [messageId, userId, level, roomId];
-		break;
-	default:
-		throw new Error('Unknown vote level:', level);
+// A vote level becomes part of the column names in the `update message set`
+// statement, so it may never be interpolated without passing this check.
+const VOTE_LEVELS = new Set(['pin', 'star', 'up', 'down']);
+
+// updateGetMessage concatenates its expression into the SQL text. Every caller
+// builds it from constants today, so restrict it to that grammar as defence in
+// depth: `col=<int>` or `col=<col>±<int>`, comma separated.
+const SAFE_UPDATE_EXPR = /^(?:(?:pin|star|up|down)=(?:\d+|(?:pin|star|up|down)(?:[+-]\d+)?))(?:,(?:pin|star|up|down)=(?:\d+|(?:pin|star|up|down)(?:[+-]\d+)?))*$/;
+
+function checkVoteLevel(level){
+	if (!VOTE_LEVELS.has(level)) {
+		throw new Error('Unknown vote level: ' + level);
 	}
+	return level;
+}
+
+proto.addVote = function(roomId, userId, messageId, level){
+	checkVoteLevel(level);
+	var sql = "insert into message_vote (message, player, vote) select $1, $2, $3";
+	sql += " where exists(select * from message where id=$1 and room=$4)"; // security check
+	var args = [messageId, userId, level, roomId];
 	return this.queryOptionalRow(sql, args, "add_vote")
 	.then(function(nb){
 		if (nb) return this.updateGetMessage(messageId, level+"="+level+"+"+nb, userId);
@@ -1135,6 +1148,7 @@ proto.addVote = function(roomId, userId, messageId, level){
 }
 
 proto.removeVote = function(roomId, userId, messageId, level){
+	checkVoteLevel(level);
 	return this.execute(
 		"delete from message_vote where message=$1 and player=$2 and vote=$3",
 		[messageId, userId, level],
@@ -1149,6 +1163,8 @@ proto.removeVote = function(roomId, userId, messageId, level){
 
 // to be used in the specific case a vote is changed (for example was "thumb up" and is now "star"
 proto.updateVote = function(roomId, userId, messageId, removedVoteLevel, addedVoteLevel){
+	checkVoteLevel(removedVoteLevel);
+	checkVoteLevel(addedVoteLevel);
 	return this.execute(
 		"update message_vote set vote=$3 where message=$1 and player=$2",
 		[messageId, userId, addedVoteLevel],

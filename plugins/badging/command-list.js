@@ -42,8 +42,9 @@ exports.doList = async function(con, ct, args){
 			if (user) userid = user.id;
 			continue;
 		}
-		if (/bronze|silver|gold/i.test(token)) {
-			levels.push(token);
+		var level = token.match(/^(bronze|silver|gold)$/i);
+		if (level) {
+			levels.push(level[1].toLowerCase());
 			continue;
 		}
 		if (token.endsWith("/")) token = token.slice(0, -1);
@@ -58,11 +59,13 @@ exports.doList = async function(con, ct, args){
 		conds++;
 	}
 	if (levels.length) {
-		sql += (conds ? " and" : " where") + " level in (" + levels.map(w=>`'${w}'`) + ")";
+		params.push(levels);
+		sql += (conds ? " and" : " where") + " level = any($" + params.length + ")";
 		conds++;
 	}
 	if (tags.length) {
-		sql += (conds ? " and" : " where") + " tag in (" + tags.map(w=>`'${w}'`) + ")";
+		params.push(tags);
+		sql += (conds ? " and" : " where") + " tag = any($" + params.length + ")";
 		conds++;
 	}
 	sql += " order by level desc, name";
