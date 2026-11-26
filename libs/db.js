@@ -1026,15 +1026,14 @@ proto.storePing = function(roomId, userId, messageId){
 	);
 }
 
-// users must be a sanitized array of usernames
+// users is an array of usernames
 proto.storePings = function(roomId, users, messageId){
 	//console.log("db storePings", users, messageId);
 	return this.execute(
-		"insert into ping (room, player, message) select " +
-		roomId + ", id, " + messageId +
-		" from player where lower(name) in (" + users.map(n => "'"+n.toLowerCase()+"'").join(',') + ")" +
+		"insert into ping (room, player, message)" +
+		" select $1, id, $3 from player where lower(name) = any($2)" +
 		" on conflict do nothing",
-		null,
+		[roomId, users.map(n => n.toLowerCase()), messageId],
 		"store_pings"
 	);
 }
