@@ -970,10 +970,6 @@ function handleUserInRoom(socket, completeUser){
 	on('vote', async function(vote){
 		throttle();
 		if (vote.add==='pin'||vote.remove==='pin') shoe.checkAuth('admin');
-		// The vote levels are interpolated into the UPDATE column list in db.js.
-		// Reject anything outside the known set before it reaches the database.
-		if (vote.add && !['pin','star','up','down'].includes(vote.add)) return;
-		if (vote.remove && !['pin','star','up','down'].includes(vote.remove)) return;
 		await db.do(async function(con){
 			let	roomId = shoe.room.id,
 				userId = shoe.publicUser.id,
